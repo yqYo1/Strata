@@ -265668,5 +265668,28 @@
         "errors": []
       }
     ]
+  },
+  "qsa16_bulk_mirror_model_entry_v1": {
+    "stage": "failed",
+    "failure_phase": "prepare/native-evidence reader before output-root creation",
+    "source_commit": "be4236fcc61bf846c50d162b9884b9b39498cf32",
+    "command": [
+      "python3",
+      "-B",
+      "tools/sycl/qsa_bulk_model_entry.py",
+      "prepare"
+    ],
+    "controller_exit_code": 1,
+    "error": "KeyError('controller_admission') in inherited qsa16_stream_model_entry.native; fresh device record correctly has no historical controller-repair receipt.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_execution_attempted": false,
+    "model_executed": false,
+    "output_root_created": false,
+    "limits": "Prelaunch controller failure only; no model/numerical/performance/fault result. Fresh five-stage native qualification remains intact.",
+    "next": "Fresh V2 plan with an explicit fresh-device evidence reader; keep exact source/recipe/five-ELF/host/device/fault gates. Do not fabricate or relabel the legacy repair receipt."
   }
 }

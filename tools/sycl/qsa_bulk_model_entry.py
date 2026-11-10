@@ -5,6 +5,7 @@ Main-authored from the maintained owned streamed-model controls; repo LICENSE.
 This diagnostic uses the compiled candidate, not an inherited model result.
 """
 import fcntl
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -18,9 +19,56 @@ import qsa16_stream_bench as benchmark
 import qsa_bulk_mirror as component
 
 P, B = device.P, device.B
-ROOT, KEY = B / 'qsa16-bulk-mirror-model-entry-v1', 'qsa16_bulk_mirror_model_entry_v1'
+ROOT, KEY = B / 'qsa16-bulk-mirror-model-entry-v2', 'qsa16_bulk_mirror_model_entry_v2'
 THIS = 'tools/sycl/qsa_bulk_model_entry.py'
 require, sha = original.require, original.sha
+
+
+def native(expected=None):
+    """Admit the fresh five-stage result, without a legacy repair receipt."""
+    dev = device.context()
+    n = dev.native(observers={dev.THIS, THIS})
+    prior = dev.validation.committed(dev.RESULT, (device.KEY,))
+    results = prior['results']
+    require(prior['stage'] == 'closed' and prior['passed'] and prior['complete']
+        and prior['ownership_closed'] and not prior['active']
+        and prior['binaries'] == n['binaries']
+        and prior['native_source_commit'] == n['native_source_commit']
+        and [v['mode'] for v in results] == list(device.STAGES)
+        and all(v['passed'] and v['ownership_closed'] and v['native_exit_code'] == 0
+                for v in results), 'fresh closed five-stage same-native result required')
+    host = results[0]
+    require(not host['GPU_executed'] and host['reader_cases'] == 50
+        and host['native_cases'] == 11 and host['policy_check']['passed']
+        and host['policy_check']['native_exit_code'] == 0
+        and host['selected_head_IR']['same_as_current_reference']
+        and host['selected_head_IR']['engine_fixture_identical'],
+        'fresh reader/refusal/policy/head-module controls required')
+    require(all(v['GPU_executed'] and v['native_execution_attempted']
+        and v['host_probe_accepted'] and v['fresh_faults'] == []
+        and v['boot_unchanged'] and v['driver_after'] == prior['driver']
+        for v in results[1:]), 'fresh normal device closures without faults required')
+    require(prior['native_observer_admission']['exact_seed_recipe_sha256']
+        == n['observer_admission']['exact_seed_recipe_sha256'],
+        'same exact qualified compiler recipe required')
+    admission = prior['source_commit']
+    source = dev.common.source.git(P, 'show', admission + ':' + dev.THIS)
+    source_sha = hashlib.sha256(source).hexdigest()
+    require(source_sha == prior['native_observer_admission']['added_observers'][dev.THIS]
+        == n['observer_admission']['added_observers'][dev.THIS],
+        'original qualified device-reader source must remain exact and recoverable')
+    proof = dict(n['observer_admission'], device_key=device.KEY,
+        device_evidence_sha256=original.signature(prior),
+        qualified_device_observer_source=admission,
+        qualified_device_observer_sha256=source_sha,
+        fresh_five_stage_controls=True,
+        changed_controller_scope='This new model reader only;fresh five-stage device '
+            'evidence and exact original native/helper/fixture/recipe/SDK/ELF inputs. '
+            'No historical controller-repair field or earlier model result inherited.',
+        earlier_model_result_inherited=False)
+    require(expected is None or proof == expected, 'bulk model admission changed')
+    n['model_observer_admission'] = proof
+    return n
 
 
 def route(text):
@@ -44,6 +92,7 @@ def context():
     spec.loader.exec_module(ctx)
     ctx.ROOT, ctx.KEY, ctx.THIS = ROOT, KEY, THIS
     ctx.device = device.context()
+    ctx.native = native
     # Reuse the existing owned-stage host/execution checks. Preparation below
     # is fresh; it does not enter the old attempt's historical V2 branch.
     ctx.ATTEMPT = 'v2'
