@@ -78,7 +78,9 @@ def recipe_controls(seed):
                 GPU_executed=False)
 
 
-def native(expected=None):
+def native(expected=None,*,observers=None):
+    observers={THIS} if observers is None else set(observers)
+    require(THIS in observers,'native observer must remain pinned')
     row=json.loads((NATIVE/'record.json').read_text())
     require(validation.committed(RESULT,(NATIVE_KEY,))==candidate.compact(row) and
         row['stage']=='built' and row['passed'] and row['complete'] and
@@ -88,9 +90,9 @@ def native(expected=None):
     a,b=original['source_sha256'],current['source_sha256']
     require(a=={p:hashlib.sha256(raw).hexdigest() for p,raw in
         common.source.blobs(P,original['revision'],a)} and
-        set(b)-set(a)=={THIS} and not set(a)-set(b) and
+        set(b)-set(a)==observers and not set(a)-set(b) and
         all(b[p]==h for p,h in a.items()),
-        'only this committed observer may extend the exact native build')
+        'only declared committed observers may extend the exact native build')
     require(row['native_source_commit']==original['revision']==row['actual_inputs']['source_commit']
         and row['actual_inputs']['translation_units']==128 and row['actual_inputs']['uncovered']==0,
         'original native source and complete compiler census required')
@@ -122,7 +124,7 @@ def native(expected=None):
         for p,h in census[field].items()),'actual compiled/header/link inputs changed')
     proof=dict(native_source_commit=row['native_source_commit'],original_source_files=len(a),
         observer_source_files=len(b),observer_source_sha256=common.signature(b),
-        added_observers={THIS:b[THIS]},exact_five_ELFs_census_recipe=True,
+        added_observers={p:b[p] for p in sorted(observers)},exact_five_ELFs_census_recipe=True,
         exact_seed_recipe_sha256=recipe_sha256,
         native_recompiled=False,GPU_result_inherited=False)
     require(expected is None or proof==expected,'native observer admission changed')
