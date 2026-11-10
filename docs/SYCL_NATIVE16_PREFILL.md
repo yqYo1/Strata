@@ -3614,12 +3614,16 @@ original source/recipe recovery and validated migration remain independent holds
 
 Niko1221/Strata remains the only upstream. The maintained
 [`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
-records the last actual check at **2026-11-07 20:27:59 UTC**,
-`146df3c468739147f520ac3816de806f71232571`(`v0.2.11-98-g146df3c4`).
-Shared Python/setup/control/server/CLI imports are present, but the native
-function ledger, full host validation and hardware-tuned unmodified-upstream
-evaluation remain incomplete. The next check is due approximately48hours after
-that timestamp. **DeepSeek and35B execution support remain excluded until the
+records the last actual check at **2026-11-09 19:52:50 UTC**,
+`504b143342a9fe1aa8320a7b31e11f5c0ac265c3`(`v0.2.13.1-1-g504b1433`).
+The220additional commits/816changed paths are fetched,not imported. The current
+630-path functional import still targets
+`146df3c468739147f520ac3816de806f71232571`(`v0.2.12`):shared Python/setup/
+control/server/API/Web/CLI source is present with partial validation. Native
+disk-session SAVE/RESTORE,BGEN/capability and desktop ports,the whole function
+ledger,full host validation and hardware-tuned unmodified-upstream evaluation
+remain incomplete. The next actual check is due around **2026-11-11 19:52:50 UTC**.
+**DeepSeek and35B execution support remain excluded until the
 user explicitly requests them, including future syncs.**
 
 Unsloth v3.1 catalog/pinned metadata and the stock DFlash2 Q4 pack are present.
