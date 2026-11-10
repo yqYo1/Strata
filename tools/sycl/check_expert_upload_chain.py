@@ -19,8 +19,8 @@ import check_qsa_cached_model as device
 import qsa_cached_subgroup as shared
 
 P, B, RESULT = device.P, device.B, device.RESULT
-ROOT = B / 'expert-upload-chain-v1'
-KEY = 'expert_upload_chain_v1'
+ROOT = B / 'expert-upload-chain-v2'
+KEY = 'expert_upload_chain_v2'
 THIS = 'tools/sycl/check_expert_upload_chain.py'
 CPP = 'tests/sycl/expert_upload_chain.cpp'
 OBSERVERS = {device.THIS, 'tools/sycl/qsa_cached_model_entry.py', THIS, CPP}
@@ -81,6 +81,12 @@ def dependencies(path, cwd):
 
 def prepare():
     require(not ROOT.exists(), 'fresh bounded comparison only; no overwrite/retry')
+    previous = device.original.validation.committed(RESULT, ('expert_upload_chain_v1',))
+    require(previous['stage'] == 'failed' and not previous['passed']
+        and previous['outcomes']['smoke']['passed'] and not previous['outcomes']['check']['passed']
+        and previous['outcomes']['check']['native_exit_code'] == 1
+        and previous['outcomes']['check']['ownership_closed']
+        and previous['outcomes']['check']['fresh_faults'] == [], 'preserve closed V1 oracle failure')
     n = native(); build = device.build.ROOT/'build'
     database = json.loads((build/'compile_commands.json').read_text())
     template, = [v for v in database if v['file'].endswith('/tests/sycl/mmvq.cpp')]
@@ -125,7 +131,7 @@ def prepare():
             source='New single TU links the exact existing eight-target engine libraries and vLLM image objects. No engine, CMake, dispatch, queue, or runtime change.',
             shapes='Actual N2560/F640,GU22/Down20=1971200 bytes and GU23/Down20=2662400 bytes;synthetic valid blocks,not actual model weights. Rows640/1280 are production unfused jobs;32/1 are numerical/small checks. No fused>=2334 claim.',
             memory='Ordinary prefaulted immutable512-expert slab;three private bank slots(two retained,one scratch),same custom in-order queue;four Host-USM slots only for staged copies. This probes the dependency path,not the actual384-slot model scheduler.',
-            correctness='17queued output readbacks per arm,bitwise equality for every final tensor,ring wrap,cache hits/scratch overwrite,source/tensor/bank/host guards. Full final-expert GU/Down dequant against ggml FP16 bits. Stagewise FP64 sampled dot oracle uses BF16-RNE FP16 operands,FP32 gammaK forward-error bound plus2BF16ULPs. Every SwiGLU output uses2e-6+0.002abs(reference) tolerance with FP16 saturation. Actual previous-stage tensors are each next-stage inputs;not a full CPU end-to-end model oracle.',
+            correctness='17queued output readbacks per arm,bitwise equality for every final tensor,ring wrap,cache hits/scratch overwrite,source/tensor/bank/host guards. Full final-expert GU/Down dequant against ggml FP16 bits. Stagewise FP64 sampled dot oracle uses actual FP16 operands,FP32 gammaK forward-error bound plus2BF16ULPs for the output. Every SwiGLU output uses2e-6+0.002abs(reference) tolerance with FP16 saturation. Actual previous-stage tensors are each next-stage inputs;not a full CPU end-to-end model oracle.',
             timing='Six separate immutable parameter-validated processes ABBAAB;each has32warmup jobs per shape,then two256-job batches with192misses/64hits;checked queue completion included. Every batch>=100ms. Setup,allocations,prefaulting,oracles,readbacks and final guards excluded;all production wrapper admission,CPU stage copy,slot waits,upload,dequant,GU,SwiGLU,Down and final drain included.',
             decision='Pair process0/1,3/2,4/5;compare per-shape medians of two batches. All three staged/direct ratios must be<1 for all four shapes before component advancement. Collect all six unless correctness,fault,ownership,budget or eligibility fails. No speed-based stopping. No automatic retries,hash refresh or threshold changes.',
             limits='Parameter-validation overhead is charged equally;not clean model speed or physical PCIe saturation. No model advancement/default adoption from correctness alone. Then separately commit model32K/64K repeated bench.sh plan and independent decode/full262144/RESTORE/task gates.'),
@@ -135,6 +141,10 @@ def prepare():
             outcome='failed_component_gain_gate_preserved',
             large_process_ratios=[.943385240,1.049832685,.525887815],
             reason='Earlier byte-consumer fixture did not qualify full dequant/GEMM or model advancement. This prospective current-SDK full-chain question does not rewrite that outcome.'),
+        previous_attempt=dict(key='expert_upload_chain_v1', evidence_commit='372e83af21e41d2365fb4987de55dcb25ae6bdc3',
+            source_commit=previous['source_commit'], binary=previous['binary'],
+            outcome='failed_GEMM_oracle_preserved', native_exit_code=1, ownership_closed=True,
+            correction='V1 incorrectly BF16-rounded the FP16 input operands in its CPU oracle. Gemm::f16_out16 calls vllm_submit(input_bf16=false),which dispatches cutlass::half_t operands with FP32 accumulation and the requested BF16 output. V2 fixes only that CPU reference and adds bounded mismatch coordinates. No numerical tolerance or performance criterion is relaxed;production source/libraries remain unchanged. Fresh traced smoke and all representative checks are required.'),
         retention='One small fixture alongside the existing engine,not another engine generation. Keep individual timings and decisions in Git. At closure retire normal trace,depfiles,object,private receipts and unused fixture after exact-source recovery;never remove original native proof dependencies or physical component holds here.')
     current(row, committed=False); save(row)
     print('Prepared production-linked chain;commit before scan.',flush=True)

@@ -160,16 +160,22 @@ struct Chain {
             for (int row : {0, rows / 2, rows - 1}) for (int col : {0, 1, 17, cols - 1}) {
                 double sum = 0, magnitudes = 0;
                 for (int k = 0; k < width; ++k) {
-                    const double term = double(unbf(bf(unhalf(a[size_t(row) * width + k])))) *
-                        unbf(bf(unhalf(w[size_t(col) * width + k])));
+                    const double term = double(unhalf(a[size_t(row) * width + k])) *
+                        unhalf(w[size_t(col) * width + k]);
                     sum += term; magnitudes += std::abs(term);
                 }
                 const double expected = unbf(bf(float(sum)));
                 const double ulp = std::ldexp(1., std::ilogb(std::max(std::abs(expected), 0x1p-126)) - 7);
                 const double gamma = width * double(std::numeric_limits<float>::epsilon());
                 const double bound = 2 * ulp + gamma / (1 - gamma) * magnitudes;
-                need(std::abs(unbf(out[size_t(row) * cols + col]) - expected) <= bound,
-                     "BF16 operands/FP32 accumulator GEMM oracle");
+                const double actual = unbf(out[size_t(row) * cols + col]);
+                if (!(std::abs(actual - expected) <= bound)) {
+                    std::cerr << std::setprecision(17) << "oracle stage=" << (cols == N ? "Down" : "GU")
+                        << " type=" << layout.gu_type << " rows=" << rows << " row=" << row
+                        << " col=" << col << " actual=" << actual << " expected=" << expected
+                        << " bound=" << bound << '\n';
+                    throw std::runtime_error("FP16 operands/FP32 accumulator/BF16 output GEMM oracle");
+                }
             }
         };
         dot(input, gw, g, N, 2 * F);
