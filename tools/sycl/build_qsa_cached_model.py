@@ -15,7 +15,7 @@ import check_qsa16_stream as original
 import qsa_cached_subgroup as component
 
 P, B, RESULT = original.P, original.B, original.RESULT
-ROOT, KEY = B/'qsa-cached-subgroup-model-native-v1', 'qsa_cached_subgroup_model_native_v1'
+ROOT, KEY = B/'qsa-cached-subgroup-model-native-v2', 'qsa_cached_subgroup_model_native_v2'
 TARGETS = ['strata', 'sycl_q6_head_owner_test', 'sycl_submission_test',
     'sycl_verifier_retirement_test', 'sycl_verify_window_policy_test',
     'sycl_qsa_bf16_prefix_cached_subgroup_test',
@@ -81,7 +81,11 @@ def prepare():
     decode=json.loads((B/'q6-dense-head-backing-native-v3/record.json').read_text())
     require(decode['passed'] and decode['complete'] and decode['ownership_closed'],
         'preserve independent sustained-decode generation')
-    row['preserved_binaries'].append(decode['binary'])
+    row['preserved_binaries'].append(decode['binaries']['strata'])
+    row['previous_preparation']=dict(source_commit='deeddb764ed83d346481721c7b12fe9fdb232a4b',
+        evidence_commit=original.common.source.git(P,'rev-parse','HEAD').decode().strip(),
+        key='qsa_cached_subgroup_model_native_v1',stage='preparation_failed',
+        reason='Wrong top-level binary lookup;actual reference is binaries.strata. No configure/build/test/GPU process started. Original failed preparation remains in Git.')
     row['plan']=('Commit every stage. Reuse exact56cad9 compiler/SDK/configure recipe and '
         'complete source/generated/link census;build the engine,four owner/submission/retirement/'
         'phase fixtures,the fresh cached-subgroup numerical/timing fixtures and streamed producer. '
