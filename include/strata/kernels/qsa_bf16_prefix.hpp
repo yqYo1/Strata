@@ -73,6 +73,14 @@ bool qsa_bf16_prefix_subgroup_batch(const uint16_t *q, const QsaAttnPools &pools
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+// Component candidate: cached Q/typed KVvec4 with the existing subgroup
+// FP32 max/sum. Reassociates the normalizer relative to ordered_exp; retains
+// BF16 probability rounding, FP32 online state and all admission/lifetimes.
+// No model or decode dispatch selects this export.
+bool qsa_bf16_prefix_cached_subgroup_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 // Same score33 arithmetic/order/payload; dense16 A and BF16 pair-packed B.
 bool qsa_bf16_prefix_tilepack_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,

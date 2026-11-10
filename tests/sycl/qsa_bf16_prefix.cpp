@@ -145,6 +145,12 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},&rt->compute()),"BF16 matrix unavailable");
     rt->wait();
+#if defined(STRATA_QSA_COMPARE_SUBGROUP)
+    const auto subgroup_candidate=out.get();out.put(sentinel);
+    require(qsa_bf16_prefix_subgroup_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+        out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"subgroup reference unavailable");
+    rt->wait();require(out.get()==subgroup_candidate,"complete uncached subgroup bit identity");
+#endif
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
     // Compare every output bit, including NaN diagnostics, masks and guards.
     // Both calls use the same inputs; the second refreshes identical scratch.
