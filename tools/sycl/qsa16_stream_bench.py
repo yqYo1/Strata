@@ -5,15 +5,18 @@ Main-authored from this fork's owned benchmark controls; repository LICENSE.
 Source, original native build, workload and individual samples remain distinct.
 This curve is not a matched speedup, sustained decode or model-adoption test.
 """
+import ast
 import copy
 import fcntl
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import socket
 import statistics
 import sys
+from types import SimpleNamespace
 
 sys.dont_write_bytecode = True
 import qsa16_stream_profile as source
@@ -32,6 +35,7 @@ shared, build = comparison.shared, comparison.build
 FAST_ROOT, FAST_KEY = B / 'qsa16-stream-fast-entry-v1', 'qsa16_stream_fast_entry_v1'
 CLEAN_FAST = False
 FIT_POINT = False
+MODEL_PROFILE = False
 COLLECTOR_ROOT = B / 'qsa16-stream-collector-active-v2'
 COLLECTOR_KEY = 'qsa16_stream_collector_active_v2'
 FAST = dict(STRATA_PREFILL_RELEASE_MTP_EXPERTS='1', STRATA_SYCL_PREFILL_MOE_WINDOW='10',
@@ -65,6 +69,13 @@ def configure_fast_fit_point():
     global ROOT, KEY, READS, ORDER, CLEAN_FAST, FIT_POINT
     ROOT, KEY = B / 'qsa16-stream-fast-fit-point-v1', 'qsa16_stream_fast_fit_point_v1'
     READS, ORDER, CLEAN_FAST, FIT_POINT = (57345,), [(57345, 1)], True, True
+
+
+def configure_model_profile():
+    global ROOT, KEY, READS, ORDER, RUNS, CLEAN_FAST, MODEL_PROFILE
+    ROOT, KEY = B / 'qsa16-stream-fast-profile-v1', 'qsa16_stream_fast_profile_v1'
+    READS, ORDER, RUNS = (32769,) * 3, [(32769, 1)] * 3, 2
+    CLEAN_FAST, MODEL_PROFILE = True, True
 
 
 def pins(revision):
@@ -152,6 +163,9 @@ def environment(row, plan):
         'preserve actual admitted placement/math/decode and private preload')
     if CLEAN_FAST:
         require(all(env.get(k) == v for k, v in FAST.items()), 'exact qualified fast settings required')
+    if MODEL_PROFILE and plan.get('profile', False):
+        env.update(STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1',
+            UNITRACE_ChromeKernelLogging='1', UNITRACE_ChromeEventBufferSize='128')
     return env
 
 
@@ -182,6 +196,19 @@ def current(row):
         'benchmark/server Python providers changed')
     if FIT_POINT:
         require(curve_fit_basis(row)[1] == row['curve_reference'], 'closed curve basis changed')
+    if MODEL_PROFILE:
+        require(row['collector_control'] == profile_control_proof(native)
+            and row['profile_clock_controls'] == profile_window_controls()
+            and row['maximum_observer_ratio'] == 1.2
+            and [p['profile'] for p in row['plans']] == [False, True, False],
+            'committed current-native collector/observer order changed')
+        plan = row['plans'][1]
+        require(plan['native_profile']['mode'] == 'aggregate'
+            and all(plan['native_profile'][k] == v for k, v in row['collector_control']['assets'].items()),
+            'profile mode or exact collector changed')
+        if len(row['processes']) == 1:
+            providers = dict(providers)
+            item = plan['native_profile']['collector']; providers[item['path']] = item['sha256']
     return providers, python
 
 
@@ -368,6 +395,235 @@ def collector_prepare():
         next='Commit representative32K+ current fast-route capture and matched observer-overhead plan before attributing model resources. Keep service coverage,wall critical path and hardware saturation distinct.')
     ctx.save(row)
     print('Prepared corrected current-build collector V2;commit before GPU.', flush=True)
+
+
+def profile_control_proof(native):
+    ctx = collector_context()
+    row = json.loads((COLLECTOR_ROOT / 'record.json').read_text())
+    require(ctx.base.committed(RESULT)[COLLECTOR_KEY] == ctx.compact(row)
+        and row['stage'] == 'closed' and row['passed'] and row['complete']
+        and row['ownership_closed'] and not row['active'] and len(row['cases']) == 1
+        and row['native_source_commit'] == native['native_source_commit']
+        and row['engine'] == native['binaries']['strata']
+        and row['binary'] == native['binaries']['sycl_submission_test'],
+        'closed exact same-native class-qualified collector required')
+    case, = row['cases']; trace = case['trace']
+    require(case['passed'] and case['native_exit_code'] == 0 and case['ownership_closed']
+        and case['fresh_faults'] == [] and trace['collection_active_from_exec']
+        and trace['native_host_flow_joins_unique']
+        and trace['class_inventory']['observed'] == dict(direct=1, producer=37, consumer=24),
+        'actual exact-class native collector proof required')
+    head = source.device.common.source.git(P, 'rev-parse', 'HEAD').decode().strip()
+    recovered = ctx.base.controls(row['source_commit'], reuse_revision=head,
+        controller_changes=(THIS,), controller=P / THIS)
+    require(recovered == row['sources'], 'original collector controls not recoverable')
+    original = source.device.common.source.git(P, 'show', row['source_commit'] + ':' + THIS)
+    def functions(raw):
+        return {n.name: ast.dump(n, include_attributes=False) for n in ast.parse(raw).body
+                if isinstance(n, ast.FunctionDef)}
+    before, after = functions(original), functions((P / THIS).read_bytes())
+    require(all(before[k] == after[k] for k in
+        ('compatibility_inventory', 'collector_controls', 'collector_context', 'collector_prepare')),
+        'qualified collector/class/environment functions changed')
+    assets = ctx.profile.collector_assets(json.loads(RESULT.read_text()))
+    require(assets == row['assets'], 'collector native assets changed')
+    return dict(key=COLLECTOR_KEY, source_commit=row['source_commit'],
+        evidence_commit='710bb481d3acb467de47c6d0b8ec2518dad079d2',
+        receipt_sha256=digest(COLLECTOR_ROOT / 'record.json'),
+        original_control_files_recovered=len(recovered), changed_observers=[THIS],
+        critical_collector_functions_unchanged=True, assets=assets,
+        limits='Same five native ELFs/recipe/runtime;only prospective model observer changes. No inherited model coverage,overhead,speed or saturation.')
+
+
+def profile_prepare():
+    controls = profile_window_controls()
+    native, _, _, _ = basis(); proof = profile_control_proof(native)
+    prepare()
+    row = json.loads((ROOT / 'record.json').read_text())
+    row.update(collector_control=proof, profile_clock_controls=controls, maximum_observer_ratio=1.2,
+        budgets=dict(row['budgets'], file_cap=256 << 20, total_cap=512 << 20), whole_bytes=768 << 20)
+    row['plan'] = dict(question='Which device services and disjoint main-thread wait/host regions dominate current fast streamed32K prefill,and how much does whole-process observation perturb it?',
+        order='Three fresh immutable processes:clean-before,profile,clean-after. Each runs identical bench.sh fixed-workload bodies,two distinct-nonce exact32769-input thinking-on requests,24outputs. First-use and second-request scopes separate. Commit each closed result before next;no speed-based early stop.',
+        settings='Same b9aa/1e598 five-ELF native generation,nine FAST values,logical262144/resident20480,owned264MiBstage,8192chunks,packed384bank,1256decode slots,5workers,spec4,head2/dense1/Hostbacking0. Decode implementation/placement and qualified runtime safety unchanged. Only middle process enables STRATA_TRACE1,CPU_WAIT_PROFILE1 and the current qualified Sysman0 active-from-exec aggregate/kernel-only collector.',
+        acceptance='Fresh current-source frontend probes,original native/recipe/fiveELFs/collector/runtime/Python/model identities,exact bodies/counts/reuse,actual all-GPU384bank routes and journal,quiet pre-main validation,normal native/benchmark0,closed ownership and unchanged boot/no fresh fault. Require complete conserved CPUv4/status partitions,flushed timeline,finite contained clocks and unique native host-flow joins on PCI05:00.0. Stop first correctness/source/owner/fault/budget failure;no retry or pin refresh.',
+        observer='Per request position,profile prompt time and clientTTFT must each be<=1.2times BOTH bracketing clean values to qualify normal-route attribution. Preserve individual ratios and mixed/failing results. Finish the bracket even if latency exceeds the screen. Two clean processes are a bounded admission screen,not precise process variance or an engine speedup.',
+        clocks='Sample RAW/MONOTONIC before launch,at both client gates,and after native exit. Same native/controller time namespace;existing BOOTTIME continuity check. Require<=1ms individual brackets and<=5ms observed offset span. Slice request-start through first nonempty thinking/content using midpoint observed offset;retain the sampled envelope and boundary-command count. This includes first-token/handoff work,not an exact engine-prefill endpoint or a bound on unsampled clock error.',
+        retention='Main owns the full active trace because paused graph construction loses later kernels. Finite256MiB/file,512MiB/job,768MiBwhole,2400s/104GiBRSS. Reduce immediately after native exit;retain compact per-request samples,CPU partitions,top families/gaps,clocks,joins and decision. Retire successful raw traces/logs/JIT after verified reduction and bracket decision. Existing three named engine generations unchanged.',
+        limits='Diagnostic only. Device services/API-request payloads and observed gaps do not establish arithmetic utilization,physical PCIe/RAM/VRAM traffic,complete critical-path dependencies or saturation. No sustainedTG,task/agent quality,physical262144/RESTORE,ordinary-provider teardown,1000PP target qualification or adoption.')
+    for plan in row['plans']:
+        plan['profile'] = plan['trace_progress'] = plan['index'] == 1
+        root = Path(plan['root'])
+        if plan['profile']:
+            (root / 'trace').mkdir(mode=0o700)
+            plan['native_profile'] = dict(source.compatibility.profile.profiling(root, proof['assets']), mode='aggregate')
+            generated = json.loads((root / 'plan.json').read_text())
+            generated['native_profile'] = plan['native_profile']; write(root / 'plan.json', generated)
+            plan['generated']['plan.json'] = digest(root / 'plan.json')
+        plan['environment_sha256'] = comparison.fingerprint(environment(row, plan))
+    save(row); print('Prepared matched current-route32K observer bracket;commit before host/native.', flush=True)
+
+
+def profile_decision(processes):
+    require(len(processes) == 3 and all(p['passed'] for p in processes), 'complete three-process bracket required')
+    ratios = []
+    for position in range(RUNS):
+        observed = processes[1]['samples'][position]
+        refs = [processes[i]['samples'][position] for i in (0, 2)]
+        ratios.append(dict(request=position, scope='first-use' if position == 0 else 'second-request',
+            prompt=[observed['prompt_ms'] / p['prompt_ms'] for p in refs],
+            client_TTFT=[observed['ttft_s'] / p['ttft_s'] for p in refs]))
+    passed = all(v <= 1.2 for p in ratios for k in ('prompt', 'client_TTFT') for v in p[k])
+    return dict(observer_ratios=ratios, maximum_observer_ratio=1.2,
+        observer_cost_qualified=passed, normal_route_attribution_qualified=passed,
+        clean_speedup_qualified=False, hardware_saturation_known=False, inference_adopted=False,
+        limits='Two bracketing clean processes,one profile;request positions separate. A failed observer screen leaves instrumented services diagnostic only. Services and API payloads are not saturation or physical traffic.')
+
+
+def profile_window(interval, clocks):
+    require(type(interval) is dict and type(clocks) is list and len(clocks) >= 4, 'missing client clocks')
+    begin, end = [interval.get(k) for k in ('request_begin_monotonic_ns', 'first_output_monotonic_ns')]
+    require(type(begin) is int and type(end) is int and 0 < begin < end, 'invalid first-output interval')
+    offsets, previous = [], 0
+    for c in clocks:
+        lo, mid, hi = [c[k] for k in ('raw_before_ns', 'monotonic_ns', 'raw_after_ns')]
+        require(all(type(v) is int and v > 0 for v in (lo, mid, hi)) and mid > previous
+            and 0 <= hi - lo <= 1000000,
+            'invalid clock bracket')
+        offsets.extend((lo - mid, hi - mid))
+        previous = mid
+    low, high = min(offsets), max(offsets)
+    require(high - low <= 5000000 and clocks[0]['monotonic_ns'] < begin < end < clocks[-1]['monotonic_ns'],
+        'client interval outside finite sampled clock envelope')
+    offset = (low + high) // 2
+    return dict(begin_raw_ns=begin + offset, end_raw_ns=end + offset,
+        sampled_offset_range_ns=[low, high], sampled_offset_span_ns=high - low,
+        client_interval=interval, limits='Observed clock envelope,not an unsampled bound;request-to-first-output includes handoff/first-token work.')
+
+
+def profile_window_controls():
+    clocks = [dict(monotonic_ns=v, raw_before_ns=v + 999900, raw_after_ns=v + 1000100)
+        for v in (1000000000, 1100000000, 1200000000, 1300000000)]
+    interval = dict(request_begin_monotonic_ns=1110000000, first_output_monotonic_ns=1190000000)
+    valid = profile_window(interval, clocks)
+    require((valid['begin_raw_ns'], valid['end_raw_ns'], valid['sampled_offset_span_ns']) ==
+        (1111000000, 1191000000, 200), 'known RAW window differs')
+    bad_clock = copy.deepcopy(clocks); bad_clock[1]['raw_after_ns'] += 1000001
+    bad_drift = copy.deepcopy(clocks); bad_drift[1]['raw_before_ns'] += 6000000; bad_drift[1]['raw_after_ns'] += 6000000
+    bad_order = copy.deepcopy(clocks); bad_order[1:3] = reversed(bad_order[1:3])
+    invalid = [(dict(interval, first_output_monotonic_ns=1110000000), clocks),
+        (dict(interval, first_output_monotonic_ns=float('nan')), clocks),
+        (dict(interval, request_begin_monotonic_ns=1), clocks), (interval, clocks[:3]),
+        (interval, bad_clock), (interval, bad_drift), (interval, bad_order)]
+    for args in invalid:
+        try: profile_window(*args)
+        except RuntimeError: pass
+        else: raise RuntimeError('corrupt client/RAW clock window accepted')
+    return dict(passed=True, valid_windows=1, rejected_windows=7,
+        limits='CPU clock-window controls only;not a runtime/provider/trace or overhead result.')
+
+
+def profile_run(index):
+    row = json.loads((ROOT / 'record.json').read_text()); plan = row['plans'][index]
+    root, prof = Path(plan['root']), plan.get('native_profile')
+    module = source.device.load_module('qsa16_model_profile_comparison', comparison.__file__)
+    module.engine_once = source.device.load_module('qsa16_model_profile_native_environment', comparison.engine_once.__file__)
+    original_environment = module.engine_once.native_environment
+    profile = source.compatibility.profile
+    clocks, capture = [profile.clock_pair()], {}
+
+    def native_context_for_profile(value, selected):
+        n = native_context(value, selected)
+        if prof: n['native_profile'] = prof
+        return n
+
+    def expected(n, env):
+        claim = json.loads((root / 'engine-start.json').read_text())['native']
+        require(os.readlink('/proc/' + str(claim['pid']) + '/ns/time') == os.readlink('/proc/self/ns/time'),
+            'native/controller time namespace differs')
+        clocks.append(profile.clock_pair())
+        if not prof: return original_environment(n, env)
+        profile.session_state(prof['session'], 0)
+        require(prof['collector']['path'] in shared.runtime.executable_mappings(
+            Path('/proc', str(claim['pid']), 'maps').read_text()), 'collector not mapped at native gate')
+        value = profile.expected_target_environment(n, env, prof)
+        for key in ('UNITRACE_StartPaused', 'UNITRACE_HostTiming', 'UNITRACE_ChromeCallLogging'): value.pop(key)
+        value['UNITRACE_Verbose'] = '1'
+        return value
+
+    def route(text, selected):
+        value = request_route(text, selected)
+        if prof:
+            value['cpu_partition'] = profile.d.gen.common.extract_cpu_observers(text, 4)
+            value['status_partition'] = profile.status_summary(text)
+            require(value['status_partition']['scopes'] == 48, 'actual48window CPU/status coverage required')
+        return value
+
+    def analyze(text, selected):
+        if not prof:
+            require('strata prefill cpu wait:' not in text and 'strata prefill status:' not in text,
+                'clean control contains CPU observer')
+            return
+        require(not any(x in text for x in ('[WARNING]', '[ERROR]')), 'collector warning/error')
+        clocks.append(profile.clock_pair())
+        native = json.loads((root / 'engine-exit.json').read_text())['native']
+        paths = list((root / 'trace').rglob('*.json'))
+        require(len(paths) == 1 and paths[0].stat().st_size <= row['budgets']['file_cap'],
+            'one bounded fully flushed timeline required')
+        events = json.loads(paths[0].read_text())['traceEvents']
+        full = profile.trace_summary(events, native['pid'], clocks[0]['raw_before_ns'], clocks[-1]['raw_after_ns'])
+        files = list((root / 'bench').glob('*/results.json')); require(len(files) == 1, 'one client result required')
+        samples = json.loads(files[0].read_text())['results']['prefill_only']['requests']
+        require(len(samples) == RUNS and len(clocks) == 2 + 2 * RUNS, 'complete request/clock samples required')
+        windows = []
+        for sample in samples:
+            window = profile_window(sample['client_interval'], clocks)
+            begin, end = window['begin_raw_ns'] / 1000, window['end_raw_ns'] / 1000
+            clipped, boundary = [], 0
+            for e in events:
+                if e.get('ph') != 'X' or e.get('cat') not in ('gpu_op', 'cpu_op'): continue
+                if not (e['ts'] < end and e['ts'] + e['dur'] > begin): continue
+                start, finish = max(begin, e['ts']), min(end, e['ts'] + e['dur'])
+                boundary += int(e.get('cat') == 'gpu_op' and (start != e['ts'] or finish != e['ts'] + e['dur']))
+                clipped.append(dict(e, ts=start, dur=finish - start))
+            reduced = profile.family_summary(clipped, window['begin_raw_ns'], window['end_raw_ns'])
+            windows.append(dict(clock=window, GPU_boundary_commands=boundary, services=reduced))
+        capture.update(complete=True, native_PID=native['pid'], clocks=clocks, full_capture=full,
+            windows=windows, timeline=dict(path=str(paths[0]),sha256=digest(paths[0]),bytes=paths[0].stat().st_size),
+            limits='Window service is clipped;payload counts are complete API-request bytes for touching commands,not proportional boundary or physical wire traffic. Native startup/warmups excluded by client windows. No resource saturation or complete dependency-path proof.')
+
+    def finish(value):
+        p = value['processes'][-1]
+        if prof:
+            controls = build.supervision.Owner(root / 'collector-controls')
+            try:
+                require(p.get('ownership_closed'), 'native ownership not closed;keep session pending')
+                if profile.session_path(prof['session']).exists():
+                    command, _, _ = controls.run('stop', [prof['launcher']['path'], '--stop', prof['session']],
+                        environment(value, plan), P, wall=15, cpu=15, rss_cap=2 << 30,
+                        text_cap=1 << 20, file_cap=2 << 20, total_cap=8 << 20)
+                    require(build.supervision.closed(command) and command['exit_code'] == 0, 'collector stop failed')
+                require(not profile.session_path(prof['session']).exists() and controls.active is None,
+                    'collector session remains')
+                p['resource_observation'] = capture
+                require(capture.get('complete'), 'model trace reduction incomplete')
+                p['collector_session_removed'] = True
+            except BaseException as error:
+                p.update(passed=False, error=p.get('error', repr(error)), resource_observation=capture)
+                value.update(stage='failed', passed=False, complete=False)
+                value.pop('decision', None)
+            finally:
+                closed = controls.active is None and all(build.supervision.closed(c) for c in controls.commands)
+                p['ownership_closed'] = bool(p.get('ownership_closed') and closed)
+                value['ownership_closed'] = bool(value['ownership_closed'] and closed)
+                value['active'] = bool(value['active'] or controls.active)
+        save(value)
+
+    module.engine_once.native_environment = expected
+    policy = SimpleNamespace(ROOT=ROOT, ORDER=ORDER, RUNS=RUNS, current=current,
+        environment=environment, native_context=native_context_for_profile, request_route=route,
+        validate_model_text=analyze, decision=profile_decision, save=finish)
+    if prof: require(not profile.session_path(prof['session']).exists(), 'fresh owned collector session required')
+    module.run(index, policy)
 
 
 def request_route(text, plan):
@@ -781,8 +1037,10 @@ if __name__ == '__main__':
             configure_fast_curve(); action = action[1:]
         elif action[:1] == ['fast-fit-point']:
             configure_fast_fit_point(); action = action[1:]
-        if action == ['prepare']: prepare()
+        elif action[:1] == ['fast-profile']:
+            configure_model_profile(); action = action[1:]
+        if action == ['prepare']: profile_prepare() if MODEL_PROFILE else prepare()
         elif action == ['host']: comparison.host(sys.modules[__name__])
         elif len(action) == 1 and action[0].isdigit() and int(action[0]) < len(ORDER):
-            comparison.run(int(action[0]), sys.modules[__name__])
+            profile_run(int(action[0])) if MODEL_PROFILE else comparison.run(int(action[0]), sys.modules[__name__])
         else: raise RuntimeError('use prepare|host|INDEX0..4')
