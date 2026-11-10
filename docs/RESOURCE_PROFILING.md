@@ -303,7 +303,8 @@ resident size/cache count is selected from payload arithmetic alone. The
 current full-engine source basis remains native221e95e9ad890383deb418d0a865ee32c99168b6;
 The unchanged `expert_slot_sizes.hpp`, `expert_cache.cpp`, `layer.cpp` and
 `session.cpp` supply the capacity arithmetic above. The new QSA16 prefill route
-remains unqualified until the separate attention/model gates close.
+does not alone qualify attention/model execution;the bounded model result below
+now supplies that separate route evidence.
 Source and component evidence are merged into the pushed permanent
 `feature/sycl` at `340ea79f9fe0914383643efaf0148da4fd5e4b19`. Every original
 measured child commit remains reachable there;the completed
@@ -357,11 +358,36 @@ same1363148800-byte layer cache. The intervening82-token prompt still uses
 decode placement. All three produce32tokens;two head retire/restore cycles
 and33live decode-C4replays pass. Native exit is0,all owners close,validation
 is quiet,boot unchanged,no fresh fault,and all15final model hashes match.
-This qualifies the bounded actual mode1route/handoff,not clean throughput,
-numerical/task quality,physical262144fill/tails/RESTORE or adoption. Use the
-existing owned UnitTrace launcher with explicit Sysman0 for a newly pinned
-resource-attribution window,and separate`bench.sh`length/phase comparisons;
-the older collector/engine qualifications are not inherited by this engine.
+This qualifies the bounded actual mode1route/handoff. Numerical/task quality
+and physical262144fill/tails/RESTORE remain open.
+
+The separate clean`qsa16_stream_prefill_baseline_v2`now closes at controller
+source`5e9c1f85715b862ac76f1ab8ca216d847ba6f67f`,using the same b9aa/1e598
+native generation. Four thinking-on`bench.sh`exact32769-input requests each
+produce24tokens with zero reuse. First measured PP is443.791tok/s and client
+TTFT74.122s;subsequent prompt times are63872.0/63655.9/63720.7ms,with median
+**514.2599tok/s**,63.7207s prompt time and63.863s client TTFT. All four actual
+8192chunk/BF16QSA/head-handoff/residual-conservation checks pass;all32768HC4
+residual rows stay on GPU. Native/benchmark exit0,owners close,validation is
+quiet,no fresh fault occurs,and all15final model hashes match. Evidence is
+`55f4a341ffcb4a8849c1056f3bd4bb4e5dd4985a`;the CSV keeps first and subsequent
+scope separate. This is one process at one length,not an input-length curve,
+independent-process repeatability,a matched gain,the>=64K throughput target,
+sustained decode,model quality,physical full context or adoption.
+
+The current admission settings deliberately differ from the faster552b
+117Kreference:release-MTP-experts,MoE window,score GEMM,mixed scratch,
+packed384-slot expert bank,cache scratch lease,MTP FP16batch and split
+accumulator remain disabled(nine environment differences,counting bank size
+and packed mode separately). Restore and qualify that owned fast-prefill
+configuration on the new streamed state before a full curve sweep of the
+admission configuration. Keep decode selection independent and
+preserve the validated552b fallback. Actual hardware saturation is unknown.
+Use the existing owned UnitTrace launcher with Sysman0 for later attribution;
+current collector V1 refused before native launch because its parent already
+carried the target preload. A fresh plan must also discriminate the declared
+kernel inventory rather than accepting62arbitrary named joined events. Older
+collector/engine qualifications do not qualify this generation.
 
 ## Numerical reference for replacement kernels
 

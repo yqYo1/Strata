@@ -1680,12 +1680,16 @@ FP16 expansion in VRAM. This finding covers NativeDense,not the whole process.
 `layer.cpp::kv_plan`selects streamed mode1when`--kv-resident`is below the
 configured context. The original8/32cohort's QSA16 branch requires mode0,
 INT8,all pages resident and no host backing;its context/residency remains131072.
-The independently authored streamed-QSA16 extension now passes its small and
-physical262144producer components,and the full candidate's same-build native
-prerequisites close under`qsa16_stream_model_device_v1`. See
-[the resource decision](RESOURCE_PROFILING.md) for source/recipe identities and
-remaining actual typed-attention/model gates. These components do not select
-a production resident/cache size or qualify a smaller-context workload.
+The independently authored streamed-QSA16 extension passes its small/full262144
+producer components,the same-build native prerequisites,and actual typed-QSA
+32769/82/32769model handoffs at logical262144/resident20480/owned stage. Its
+separate clean32K`bench.sh`baseline now passes all four requests:subsequent-three
+median514.2599PP/clientTTFT63.863s in one process. Nine fastest552b prefill
+choices remain disabled in that admission configuration;next qualify their
+composition before collecting the new input-length curve. See
+[the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
+limits and pending profiler/full-context/task gates. This does not replace the
+validated552b117Kreference or adopt a production resident/cache policy.
 For a future capacity screen,the pinned main-QSA state-arena formula gives
 an exact948699136-byte(904.75MiB)reduction from131072to65536configured cells
 under resident Mode0/K8V8. The12QSA layers have2KV heads of256elements,
