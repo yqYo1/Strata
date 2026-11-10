@@ -1808,11 +1808,58 @@ ownership result remains false;the native/wrapper are gone and the owned
 benchmark session is independently observed empty. No fresh driver fault is
 recorded;GPU health and the stall's exact cause are unproved. No64K run/retry. The source review corrects the timeline:the layer18 trace follows a successful entry drain;it does not identify the subsequent blocked operation. Separate GDN-subinterval logging was not established.
 The successor adds `STRATA_SYCL_PREFILL_MOE_CENSUS=1` independently of GPU
-timing. Its host-only counters use the existing router data and record accepted
-uploads/hits once per expert,including format/blob/row bins,after the existing
-checked HC-write drain. It adds no GPU event,readback,wait or math. Source and
-The successor native source `dc645342a8e23f8fd2d76396caa6604b2f234bd7` builds nine targets;engine ELF `97fda7bab47b05fa0750609b7dfe82228d68dc87c6db8a3b51c5045dc36a5900`. Its fresh nine-stage qualification closes at `c734c4fc8aa449a3fd2c68ed10a7144181794944`:CPU census controls,54reader tests,11native refusals,phase policy and decode-module identity;small traced submission/phase;real-shard head0/head2 ownership and numeric checks;attention11cases including262144live cells;producer off/on262144fill/last-cell overwrite. All normal0/closed,no fresh fault. This is native/component evidence,not model qualification or a cause/health/performance claim. The new `moe_host_census_model_v1` plan uses the already exercised32769/82/32769thinking route,32outputs each,ordered-exp/bulk1/FAST9,private parameter validation and `STRATA_PREFILL_LAYER_MAJOR_PROFILE=0` with `STRATA_SYCL_PREFILL_MOE_CENSUS=1`. It changes only host observation versus the established timing-off path;new model results remain pending. Retain per-format accepted upload/hit row bins,requested bytes and conservation after complete requests;no physical PCIe/saturation claim. Next obtain complete32K/64K geometry before selecting a transfer policy. Reconcile split-expert reuse and
-cache misses before treating job rows as upload rows.
+timing. Its host-only counters use existing router data after checked drains;
+they add no GPU event, readback, wait or inference math. Native source
+`dc645342a8e23f8fd2d76396caa6604b2f234bd7` produces engine ELF `97fda7ba`.
+Its fresh nine native/component gates pass at `c734c4fc8`, including selected
+decode-module identity and attention/producer 262144-cell boundary checks.
+Those component checks do not qualify full-model 262144/RESTORE or sustained TG.
+
+The actual thinking-enabled 32769/82/32769-token model sequence now closes at
+`46bb1a8313cd89563676dbc9c9742b5564f16b62`: normal exit0, closed owners,
+unchanged model/runtime identities and no fresh driver fault. Timing observation
+is off; the host census is on. Each long request completes 48 planned and 48
+accepted frames, with identical histograms: 22320 accepted expert uploads,
+zero cache hits and 45,841,868,800 requested weight bytes. There are 22479 jobs,
+131 split experts and 15,728,640 routed-row assignments. Splitting adds jobs,
+not another weight upload for that expert. First expert jobs below128 rows
+account for 9474 uploads (42.45%) and 19,470,156,800 requested bytes (42.47%),
+while all sub128-row jobs account for only353715 row assignments (2.25%).
+These are logical requested bytes and a token-tiled diagnostic workload, not
+physical PCIe traffic, saturation, clean model speed or a bench.sh census.
+Representative bench.sh32K/64K geometry and resource attribution remain open.
+
+The compact16x64 GU/SwiGLU adapter comparison closes at
+`d6bbdccf892a5293c38e5c8f2c6a7cb25513b03a`. Fixture source is
+`116ba612755e3890a41de0b79b7ff88f421e49f6`; it links the exact current
+native archives/images without rebuilding or changing engine dispatch.
+Smoke plus20 compact/wide numerical cases pass; every observed difference is
+0FP16ULP, BF16 GEMM captures are exact and input/guard checks pass.
+The first timing attempt remains failed:8192 repeats did not reach the
+declared150ms calibration floor. The new committed plan increases only the
+finite repeat cap to262144, preserving150ms calibration and100ms sample floors.
+Three fresh processes each complete four rotated matched pairs per shape,
+with parameter validation, no API/profiler trace and no GPU timing events.
+
+| Rows | Fused/separate median paired ratios, by process | Component follow-up |
+| --- | --- | --- |
+| 1 | 0.59174, 0.58872, 0.68659 | Eligible |
+| 16 | 0.54409, 0.46521, 0.51260 | Eligible |
+| 64 | 0.88536, 0.82526, 0.86605 | Eligible |
+| 128 | 1.00226, 0.98035, 0.97052 | Gain gate failed |
+| 256 | 0.93813, 0.98902, 0.97351 | Eligible |
+| 640 | 0.91017, 0.97602, 0.89904 | Eligible |
+| 1280 | 0.96566, 0.96653, 0.96583 | Eligible |
+
+Both measured arms use the compact adapter. Production auto dispatch instead
+uses compact below128 rows and wide at128 and above; do not treat the latter
+component ratios as gains over production. Production binding/finish wrappers,
+dequant, gather and PCIe are excluded. Next measure the actual wait-inclusive
+production entry and relevant row boundaries before a separately planned
+long-model comparison; preserve independent decode. No model/default adoption
+or PP/TG gain follows from this component result. The performance CSV records
+all seven points, including the failed128-row gate, with model metrics blank.
+
 Global staging remains off after its failed component gate;
 1280-row component gains alone do not qualify a selective model policy or
 physical PCIe/CPU saturation. The native source audit closes the old helper-
