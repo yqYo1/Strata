@@ -285646,7 +285646,7 @@
     }
   },
   "gu_compact_device_v1": {
-    "stage": "in_progress",
+    "stage": "failed",
     "source_commit": "de3e1266397b61ab271cea0541996fe3f5b63660",
     "controller_sha256": "4fefd2abc8766d5415cb23e07258daeb88d93bae41c73c0f4d343779350e98d2",
     "fixture_build_key": "gu_compact_component_v2",
@@ -285780,6 +285780,25 @@
         "stdout_sha256": "5d749aef09210b6b2391dafecfd0b1eca4fc93c22ed0a76247ddded0596b9d7d",
         "stderr_sha256": "e94c449668e7d218c9aef37901028b1c9bf2462bf94c1764133c56a8c9f96365",
         "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "perf0",
+        "passed": false,
+        "complete": false,
+        "GPU_executed": false,
+        "native_execution_attempted": true,
+        "error": "RuntimeError('normal validated fixture closure required')",
         "ownership_closed": true,
         "fresh_faults": [],
         "boot_unchanged": true,
