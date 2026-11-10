@@ -277051,7 +277051,7 @@
     }
   },
   "expert_upload_chain_v2": {
-    "stage": "prepared",
+    "stage": "scanned",
     "source_commit": "3efcb16e2be631630cfed31fa3865050fed05028",
     "native_source_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
     "inputs": {
@@ -277244,8 +277244,49 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "outcomes": {},
-    "passed": false,
+    "outcomes": {
+      "scan": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "commands": [
+          {
+            "argv": [
+              "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+              "-DSTRATA_CPU_SERVICE_PROFILE=1",
+              "-DSTRATA_ENABLE_SYCL=1",
+              "-DSTRATA_SYCL_GGML_ORACLE=1",
+              "-DSTRATA_VERSION=\"0.1.38\"",
+              "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+              "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+              "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+              "-fsycl-id-queries-range=size_t",
+              "-Wno-error=deprecated-declarations",
+              "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20",
+              "-fno-fast-math",
+              "-ffp-contract=off",
+              "-fsycl",
+              "-fsycl-id-queries-range=size_t",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/expert_upload_chain.cpp",
+              "-M",
+              "-MF",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-upload-chain-v2/planned.d",
+              "-MT",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-upload-chain-v2/expert-upload-chain.o"
+            ],
+            "exit_code": 0,
+            "closed": true
+          }
+        ]
+      }
+    },
+    "passed": true,
     "complete": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -277296,6 +277337,10 @@
       "ownership_closed": true,
       "correction": "V1 incorrectly BF16-rounded the FP16 input operands in its CPU oracle. Gemm::f16_out16 calls vllm_submit(input_bf16=false),which dispatches cutlass::half_t operands with FP32 accumulation and the requested BF16 output. V2 fixes only that CPU reference and adds bounded mismatch coordinates. No numerical tolerance or performance criterion is relaxed;production source/libraries remain unchanged. Fresh traced smoke and all representative checks are required."
     },
-    "retention": "One small fixture alongside the existing engine,not another engine generation. Keep individual timings and decisions in Git. At closure retire normal trace,depfiles,object,private receipts and unused fixture after exact-source recovery;never remove original native proof dependencies or physical component holds here."
+    "retention": "One small fixture alongside the existing engine,not another engine generation. Keep individual timings and decisions in Git. At closure retire normal trace,depfiles,object,private receipts and unused fixture after exact-source recovery;never remove original native proof dependencies or physical component holds here.",
+    "headers_summary": {
+      "files": 707,
+      "sha256": "91cecc617b071869940fc99ef46fc30587978c3dbcbd02ee3d6e4b5e5f5eb23d"
+    }
   }
 }
