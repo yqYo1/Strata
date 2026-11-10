@@ -161,7 +161,7 @@ def admit():
     save(row);print('Admitted exact compiled artifacts for new40CPU reader controls;commit first.',flush=True)
 
 
-def planned_compilation(text):
+def planned_compilation(text, *, allowed_duplicate_targets=None):
     """Read actual Ninja outputs, including dependencies in nested directories."""
     units = []
     for line in text.splitlines():
@@ -180,7 +180,16 @@ def planned_compilation(text):
         require(at + 1 < len(parts) and parts[at].endswith('.dir') and len(parts[at]) > 4,
                 'selected target compile output required')
         units.append(dict(file=name, output=str(relative), target=parts[at][:-4]))
-    require(len(units) == len({v['file'] for v in units}),
+    groups = {}
+    for unit in units:
+        groups.setdefault(unit['file'], []).append(unit['target'])
+    duplicates = {name: sorted(targets) for name, targets in groups.items() if len(targets) > 1}
+    declared = {} if allowed_duplicate_targets is None else allowed_duplicate_targets
+    require(isinstance(declared, dict) and all(isinstance(targets, (list, tuple)) and
+            len(targets) > 1 and len(set(targets)) == len(targets) for targets in declared.values()),
+            'duplicate selected source compilation requires explicit admission')
+    expected = {str(Path(name).resolve()): sorted(targets) for name, targets in declared.items()}
+    require(duplicates == expected and len({v['output'] for v in units}) == len(units),
             'duplicate selected source compilation requires explicit admission')
     return units
 

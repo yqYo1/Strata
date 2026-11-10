@@ -15,12 +15,14 @@ import check_qsa16_stream as original
 import qsa_cached_subgroup as component
 
 P, B, RESULT = original.P, original.B, original.RESULT
-ROOT, KEY = B/'qsa-cached-subgroup-model-native-v2', 'qsa_cached_subgroup_model_native_v2'
+ROOT, KEY = B/'qsa-cached-subgroup-model-native-v3', 'qsa_cached_subgroup_model_native_v3'
 TARGETS = ['strata', 'sycl_q6_head_owner_test', 'sycl_submission_test',
     'sycl_verifier_retirement_test', 'sycl_verify_window_policy_test',
     'sycl_qsa_bf16_prefix_cached_subgroup_test',
     'sycl_qsa_bf16_prefix_cached_subgroup_bench', 'sycl_native16_qsa_test']
 require, sha = original.require, original.sha
+DUPLICATE_TARGETS = {str(P/'src/prefill/sycl/qsa_native16.cpp'):
+    ['strata_prefill', 'sycl_native16_qsa_test']}
 
 def component_reference():
     path=component.ROOT/'record.json';row=json.loads(path.read_text())
@@ -73,6 +75,12 @@ def context():
     ctx.SEED=B/'qsa16-bulk-mirror-model-native-v1/record.json'
     ctx.SEED_KEY='qsa16_bulk_mirror_model_native_v1'
     ctx.component_reference=component_reference
+    default_context=ctx.context
+    def build_context():
+        native=default_context();parse=native.planned_compilation
+        native.planned_compilation=lambda text:parse(text,allowed_duplicate_targets=DUPLICATE_TARGETS)
+        return native
+    ctx.context=build_context
     return ctx
 
 def prepare():
@@ -86,6 +94,11 @@ def prepare():
         evidence_commit=original.common.source.git(P,'rev-parse','HEAD').decode().strip(),
         key='qsa_cached_subgroup_model_native_v1',stage='preparation_failed',
         reason='Wrong top-level binary lookup;actual reference is binaries.strata. No configure/build/test/GPU process started. Original failed preparation remains in Git.')
+    row['previous_configuration']=dict(source_commit='3fc7945dd23b47f47b14ef0f7d57c0a20c1bbc94',
+        evidence_commit=original.common.source.git(P,'rev-parse','HEAD').decode().strip(),
+        key='qsa_cached_subgroup_model_native_v2',stage='failed',
+        reason='All3configure/host/planned commands closed0;generic parser refused the explicitly intended qsa_native16.cpp production/test target pair. No engine compilation or GPU/model execution. Original refusal stays failed.')
+    row['duplicate_source_admission']=DUPLICATE_TARGETS
     row['plan']=('Commit every stage. Reuse exact56cad9 compiler/SDK/configure recipe and '
         'complete source/generated/link census;build the engine,four owner/submission/retirement/'
         'phase fixtures,the fresh cached-subgroup numerical/timing fixtures and streamed producer. '

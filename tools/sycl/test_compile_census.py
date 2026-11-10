@@ -65,6 +65,32 @@ class PlannedCommands(unittest.TestCase):
             model_build.planned_compilation('icpx -o CMakeFiles/one.dir/a.o -c /repo/a.cpp\n'
                                            'icpx -o nested/CMakeFiles/two.dir/a.o -c /repo/a.cpp')
 
+    def test_exact_declared_duplicate_targets(self):
+        commands = ('icpx -o CMakeFiles/one.dir/a.o -c /repo/a.cpp\n'
+                    'icpx -o CMakeFiles/two.dir/a.o -c /repo/a.cpp')
+        units = model_build.planned_compilation(commands,
+            allowed_duplicate_targets={'/repo/a.cpp': ['one', 'two']})
+        self.assertEqual([v['target'] for v in units], ['one', 'two'])
+
+    def test_declared_duplicate_must_actually_exist(self):
+        with self.assertRaisesRegex(RuntimeError, 'explicit admission'):
+            model_build.planned_compilation('icpx -o CMakeFiles/one.dir/a.o -c /repo/a.cpp',
+                allowed_duplicate_targets={'/repo/a.cpp': ['one', 'two']})
+
+    def test_duplicate_within_declared_target_refused(self):
+        with self.assertRaisesRegex(RuntimeError, 'explicit admission'):
+            model_build.planned_compilation(
+                'icpx -o CMakeFiles/one.dir/a.o -c /repo/a.cpp\n'
+                'icpx -o CMakeFiles/one.dir/b.o -c /repo/a.cpp',
+                allowed_duplicate_targets={'/repo/a.cpp': ['one', 'two']})
+
+    def test_extra_duplicate_target_refused(self):
+        commands = '\n'.join('icpx -o CMakeFiles/' + target + '.dir/a.o -c /repo/a.cpp'
+                             for target in ('one', 'two', 'three'))
+        with self.assertRaisesRegex(RuntimeError, 'explicit admission'):
+            model_build.planned_compilation(commands,
+                allowed_duplicate_targets={'/repo/a.cpp': ['one', 'two']})
+
 
 class SpirvOrder(unittest.TestCase):
     @staticmethod
