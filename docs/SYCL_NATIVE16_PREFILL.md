@@ -4063,6 +4063,36 @@ authorized merge, merge the updated default back normally and verify the origina
 identities again. The last
 verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce5c`.
 
+## Expert upload chain decision
+
+The closed `expert_upload_chain_v2` result tests the existing four-slot Host-USM
+staging through upload, GU/Down dequant, native16 GU, SwiGLU and Down. Six fresh
+processes use ABBAAB, with two 256-job batches per shape/process; all 48 batches
+exceed 100 ms. Parameter validation is charged in both arms. These are synthetic
+N2560/F640 three-slot dependency probes, not model throughput or the384-slot scheduler.
+
+| Expert rows | GU / Down type | Paired geometric-mean staged/direct wall time |
+| --- | --- | --- |
+| 640 | IQ2_S / IQ4_NL | 0.943; one of three pairs slower |
+| 640 | IQ4_XS / IQ4_NL | 1.100; all three pairs slower |
+| 1280 | IQ2_S / IQ4_NL | 0.758; all three pairs faster |
+| 1280 | IQ4_XS / IQ4_NL | 0.890; all three pairs faster |
+
+The all-shape gain criterion fails. Keep global staging disabled; do not advance
+that flag to a model trial. The1280-row results justify investigating an
+actual-job-size policy, not assuming the same gain at other rows or fused jobs.
+Map the production job geometry before that new experiment. The independent
+cached-QSA candidate remains eligible for its own32K/64K model comparison.
+
+V1 failed because its CPU oracle BF16-rounded FP16 inputs. The actual path uses
+FP16 inputs, FP32 accumulation and BF16 output. The corrected source
+`3efcb16e2` passes both formats at32/640/1280 rows, all17direct/staged output pairs
+per case, independent dequant/dot/activation checks and guards; no fresh GPU fault.
+Original V1 and older byte-only V5 failures remain unchanged. The compact result
+keeps all individual timings; full source/recipe is recoverable from its pinned
+Git evidence. Closed fixture binaries, raw traces and research transaction/source
+copies are retired. No model PP/TG/TTFT, saturation or default adoption follows.
+
 ## Evidence pointers
 
 The cumulative user-requested index is
