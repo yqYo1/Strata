@@ -286099,7 +286099,7 @@
     }
   },
   "gu_compact_device_v2": {
-    "stage": "in_progress",
+    "stage": "closed",
     "source_commit": "da62721163df060ca9d096c1b9735c6a466375f2",
     "controller_sha256": "809ce95c7dcad12c4c057620efa688af73a29206588145d171f0dc71cfccda23",
     "fixture_build_key": "gu_compact_component_v3",
@@ -286648,12 +286648,225 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "perf2",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "correctness_cases": 7,
+        "max_half_ulp": 0,
+        "BF16_capture_exact": true,
+        "guards": true,
+        "inputs_immutable": true,
+        "shapes": [
+          {
+            "rows": 1,
+            "repeat": 16384,
+            "calibration_ms": [
+              363.729374,
+              219.557235
+            ],
+            "separate_batch_ms": [
+              397.321182,
+              361.339197,
+              373.719133,
+              368.341646
+            ],
+            "fused_batch_ms": [
+              330.199862,
+              280.410901,
+              220.01708,
+              219.956817
+            ],
+            "separate_median_us": 22.64589779663086,
+            "fused_median_us": 15.271850006103517,
+            "median_paired_fused_over_separate": 0.6865933439040857
+          },
+          {
+            "rows": 16,
+            "repeat": 16384,
+            "calibration_ms": [
+              374.279717,
+              198.936104
+            ],
+            "separate_batch_ms": [
+              372.701191,
+              394.167293,
+              579.708627,
+              382.518194
+            ],
+            "fused_batch_ms": [
+              198.148588,
+              199.497932,
+              252.32637,
+              198.553301
+            ],
+            "separate_median_us": 23.70256002807617,
+            "fused_median_us": 12.147559600830078,
+            "median_paired_fused_over_separate": 0.5125969674118918
+          },
+          {
+            "rows": 64,
+            "repeat": 8192,
+            "calibration_ms": [
+              210.370616,
+              188.738379
+            ],
+            "separate_batch_ms": [
+              210.242644,
+              398.320167,
+              210.571673,
+              210.250618
+            ],
+            "fused_batch_ms": [
+              182.204344,
+              182.229691,
+              182.239891,
+              182.260859
+            ],
+            "separate_median_us": 25.68495428466797,
+            "fused_median_us": 22.245457885742187,
+            "median_paired_fused_over_separate": 0.8660457006458371
+          },
+          {
+            "rows": 128,
+            "repeat": 4096,
+            "calibration_ms": [
+              233.20741,
+              231.618615
+            ],
+            "separate_batch_ms": [
+              382.281554,
+              244.47063,
+              233.252524,
+              233.188653
+            ],
+            "fused_batch_ms": [
+              265.421531,
+              231.748319,
+              235.562889,
+              231.574861
+            ],
+            "separate_median_us": 58.31581469726563,
+            "fused_median_us": 57.044825195312505,
+            "median_paired_fused_over_separate": 0.970519607197589
+          },
+          {
+            "rows": 256,
+            "repeat": 2048,
+            "calibration_ms": [
+              172.056103,
+              177.807995
+            ],
+            "separate_batch_ms": [
+              311.505755,
+              171.964139,
+              171.963999,
+              177.125188
+            ],
+            "fused_batch_ms": [
+              174.864276,
+              174.073354,
+              169.886904,
+              169.881203
+            ],
+            "separate_median_us": 85.22688647460939,
+            "fused_median_us": 83.97467236328124,
+            "median_paired_fused_over_separate": 0.9735118975375592
+          },
+          {
+            "rows": 640,
+            "repeat": 1024,
+            "calibration_ms": [
+              174.783522,
+              171.255663
+            ],
+            "separate_batch_ms": [
+              207.40908,
+              210.831681,
+              174.796166,
+              176.102248
+            ],
+            "fused_batch_ms": [
+              171.272435,
+              171.153139,
+              171.234263,
+              171.224715
+            ],
+            "separate_median_us": 187.261390625,
+            "fused_median_us": 167.2162978515625,
+            "median_paired_fused_over_separate": 0.8990369937323277
+          },
+          {
+            "rows": 1280,
+            "repeat": 512,
+            "calibration_ms": [
+              171.109637,
+              165.255303
+            ],
+            "separate_batch_ms": [
+              171.104738,
+              171.033813,
+              171.093035,
+              171.060614
+            ],
+            "fused_batch_ms": [
+              165.332408,
+              165.228812,
+              165.208624,
+              165.139945
+            ],
+            "separate_median_us": 334.1344228515625,
+            "fused_median_us": 322.69280859375,
+            "median_paired_fused_over_separate": 0.9658331444236137
+          }
+        ],
+        "validation": {
+          "pid": 3156035,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "stdout_sha256": "4d23077cc4e38d0ccd45acba2bca76f8b6bfc791a674f590229035b11fcbe93b",
+        "stderr_sha256": "05746b56b0be0b8d1f1e757d49d1b8ec95dc3d066a190cb992ad029f54ce8bad",
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": true
+    "GPU_executed": true,
+    "decision": {
+      "eligible_rows": [
+        1,
+        16,
+        64,
+        256,
+        640,
+        1280
+      ],
+      "scope": "Component follow-up eligibility only;production wrapper/model/independent decode gates remain open."
+    }
   }
 }
