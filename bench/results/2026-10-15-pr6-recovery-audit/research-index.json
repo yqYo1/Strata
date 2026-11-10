@@ -28992,5 +28992,180 @@
       "all_captured_executors_gone": true,
       "exact_created_terminals_closed": true
     }
+  },
+  "post_bulk_existing_hoststaging_20261111": {
+    "classification": "knowledge_collection",
+    "title": "Existing four-slot host staging on the current packed expert route",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "stage": "reviewed_completed_and_executors_closed",
+    "source_commit": "2df0b0feae47aaa3a8bf0f7f058071b43cafd464",
+    "source_files": 15,
+    "source_manifest": {
+      "sha256": "fa5ed2431e9ddcaded86011ec1b09ab96b5e70a57ab422e8c1b8c6100f2a9f3d",
+      "retired": true,
+      "original_sources_recovered_from_pushed_Git": true
+    },
+    "task": "task_c6d1bbb1379e",
+    "dispatch": "ctx_f2bc96cb5605",
+    "terminal": "term_e34fa200-58a9-4175-8f34-0fd5d5cb7d95",
+    "read_only_preflight_passed": true,
+    "ownership_closed": true,
+    "worker_completion_confirmed": true,
+    "captured_executors_gone": true,
+    "terminal_closed": true,
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/post-bulk-existing-hoststaging-20261111/report.md",
+      "bytes": 12519,
+      "sha256": "131899d51abb4e11b02a0926b9a56a68b2405bfa49db95825e6f01fe50cb59d4"
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "digest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/post-bulk-upload-review-20261111/digest.json",
+        "sha256": "1584c477fa9272a3fed2af819e1d0ce23bc56bc88810741ffc7a26b788d4fca0"
+      },
+      "verdict": "Sound, focused source audit; useful route-specific facts, no adoption claim."
+    },
+    "main_reads_collection_body_on_arrival": false,
+    "reviewed_findings": [
+      "The environment flag is cached on first read. It constructs the four-slot staging helper only with an admitted staged packed bank; the private-bank miss path passes it to enqueue, while hits bypass upload. Nonpacked/generic paths do not use it; failed admission can reject the route.",
+      "Direct source-view upload passes the Arena pointer to q.memcpy. Staging adds a CPU memcpy into four guarded Host-USM slots and a per-slot copy event/wait on reuse. That ring protects host-source reuse; destination reuse still depends on the existing same-queue bank protocol and checked lease/layer drains.",
+      "Potential CPU/GPU overlap, host-USM setup cost, direct-pointer runtime staging, enqueue cost, critical-path effect and physical PCIe bytes remain unmeasured. The supplied 4.677669s upload-submit CPU / 4.769164s wall / 17,413 calls and 0.000044s source-copy are prior direct-route accounting, not a staged result or saturation proof."
+    ],
+    "retrieval_tags": [
+      "existing-host-usm-expert-staging",
+      "packed384-private-bank",
+      "source-view-direct-copy",
+      "upload-ring-lifetime",
+      "same-in-order-queue",
+      "requested-not-wire-bytes"
+    ],
+    "limitations": "No material factual correction. Keep STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING set before runtime initialization in separate arms; the source caches its first value.",
+    "retention": "Keep the12KiB report only for the imminent same-binary host-staging comparison and disjoint upload-cost decision;Main reads the short native review. Retire the full report after that decision if the digest/curated facts suffice. Source copies,CLI state,launch/completion/review transaction outputs have no remaining consumer.",
+    "review_point": "After the same-binary staging comparison and, only if material, disjoint upload subregion attribution close.",
+    "follow_up_eligibility": [
+      {
+        "scope": "Main-owned same-binary whole-route staging comparison",
+        "schedulable_now": false,
+        "owner": "Main serialized measurement; not a delegated research task",
+        "recorded_prerequisites": [
+          "Close and verify the current owned measurement boundary before starting another arm.",
+          "Use the same committed binary and route markers for chunk8192/native16/packed384/source-view1/private-bank/cache-lease, same in-order queue and intact owner lifetime.",
+          "Set STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING=0 or1 before exec in separate fresh processes; verify actual upload hits/counts/bytes and correctness in both arms. Separate first use from repeated warmed requests."
+        ],
+        "discriminator": "Repeated paired whole-request latency/throughput plus CPU time determines whether the existing Host-USM path is worth retaining for this route; source facts alone do not."
+      },
+      {
+        "scope": "Disjoint attribution of the private-bank upload wrapper and any concrete lease-bound reuse candidate",
+        "schedulable_now": false,
+        "owner": "Main source/measurement; no new collector until evidence selects a bounded question",
+        "recorded_prerequisites": [
+          "The existing aggregate upload-submit CPU interval is present, but no descriptor/span/queue/pointer-query/runtime-check/observer subcost is isolated.",
+          "First obtain a nonoverlapping CPU-only attribution on the exact representative route; preserve the current per-command error checks and event ownership.",
+          "Only if one repeated cost is material, define a concrete lease identity/generation API and negative cases for owner reuse, span boundary, queue mismatch and sticky async error before considering any check change."
+        ],
+        "discriminator": "A source-bound subregion profile plus fault behavior can accept or reject lease-bound caching; the measured interval must separate host preparation, submission, waits, observer work and unclassified time."
+      }
+    ],
+    "raw_retirement": {
+      "outcome": "deleted_verified",
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/closed-post-bulk-upload-research-raw-retirement-20261111.json",
+      "sha256": "be2b3ec4e1b560687acbd01070d8450ae7bd01fdfbecbd608031f7b8be8883a7",
+      "files": 907,
+      "bytes": 219701165,
+      "retained_reports_bytes": 24068,
+      "retained_review_bytes": 7653,
+      "all_original_source_pins_recovered": true
+    }
+  },
+  "post_bulk_upload_validation_contract_20261111": {
+    "classification": "knowledge_collection",
+    "title": "Amortizable source-span checks at the production expert upload boundary",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "stage": "reviewed_completed_and_executors_closed",
+    "source_commit": "2df0b0feae47aaa3a8bf0f7f058071b43cafd464",
+    "source_files": 14,
+    "source_manifest": {
+      "sha256": "dadfc91b8b32866e057c973348eed91af86b1d3ac048f7f5e89b91ba443d3c34",
+      "retired": true,
+      "original_sources_recovered_from_pushed_Git": true
+    },
+    "task": "task_c22d782af82d",
+    "dispatch": "ctx_9568a1379c67",
+    "terminal": "term_9ca0415a-5c39-4238-8eca-0d24df252255",
+    "read_only_preflight_passed": true,
+    "ownership_closed": true,
+    "worker_completion_confirmed": true,
+    "captured_executors_gone": true,
+    "terminal_closed": true,
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/post-bulk-upload-validation-contract-20261111/report.md",
+      "bytes": 11549,
+      "sha256": "5cf4b43c45e73da4ffe1dfd1dac97a5312379c36c3fd8664a8600ef438016223"
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "digest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/post-bulk-upload-review-20261111/digest.json",
+        "sha256": "1584c477fa9272a3fed2af819e1d0ce23bc56bc88810741ffc7a26b788d4fca0"
+      },
+      "verdict": "Strong source-contract audit; appropriately leaves a prepared view unadopted and retains per-command obligations."
+    },
+    "main_reads_collection_body_on_arrival": false,
+    "reviewed_findings": [
+      "The report traces both nested paths: outer owner/span/ticket/source-offset checks; compatibility sticky-error check, queue/context lookup, memcpy and event observer; staging destination/storage-span checks, source USM query, ring wait, CPU copy, memcpy and observer. These checks differ in scope, so the aggregate upload-submit interval cannot identify removable cost.",
+      "Only lease-bound identities/limits could be candidates for reuse after proving cache/bank/slab/queue/context identity and lifetime. Ticket, expert/slot generation, exact source offset/length, enqueue result, current runtime error state and event observation remain command-specific; staging also has slot/event state.",
+      "The source stores the first async exception as sticky. A process-global descriptor can survive cache/slab reuse into a different owner generation; a cached healthy check can also miss a later async failure. Neither report supports guard removal or a performance claim."
+    ],
+    "retrieval_tags": [
+      "expert-upload",
+      "private-packed-bank",
+      "SYCL-USM",
+      "validation-amortization",
+      "owner-generation",
+      "async-errors",
+      "measurement-prerequisite"
+    ],
+    "limitations": "No unsupported check-removal or import-path claim found. B pins SYCL 2020 revision 13 and Intel guide 2025.2; A's live Khronos handler reference should keep its accessed-date/revision label if reused. No Level Zero core versus Unified Runtime experimental-import misattribution was found.",
+    "retention": "Keep the12KiB report only for the imminent same-binary host-staging comparison and disjoint upload-cost decision;Main reads the short native review. Retire the full report after that decision if the digest/curated facts suffice. Source copies,CLI state,launch/completion/review transaction outputs have no remaining consumer.",
+    "review_point": "After the same-binary staging comparison and, only if material, disjoint upload subregion attribution close.",
+    "follow_up_eligibility": [
+      {
+        "scope": "Main-owned same-binary whole-route staging comparison",
+        "schedulable_now": false,
+        "owner": "Main serialized measurement; not a delegated research task",
+        "recorded_prerequisites": [
+          "Close and verify the current owned measurement boundary before starting another arm.",
+          "Use the same committed binary and route markers for chunk8192/native16/packed384/source-view1/private-bank/cache-lease, same in-order queue and intact owner lifetime.",
+          "Set STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING=0 or1 before exec in separate fresh processes; verify actual upload hits/counts/bytes and correctness in both arms. Separate first use from repeated warmed requests."
+        ],
+        "discriminator": "Repeated paired whole-request latency/throughput plus CPU time determines whether the existing Host-USM path is worth retaining for this route; source facts alone do not."
+      },
+      {
+        "scope": "Disjoint attribution of the private-bank upload wrapper and any concrete lease-bound reuse candidate",
+        "schedulable_now": false,
+        "owner": "Main source/measurement; no new collector until evidence selects a bounded question",
+        "recorded_prerequisites": [
+          "The existing aggregate upload-submit CPU interval is present, but no descriptor/span/queue/pointer-query/runtime-check/observer subcost is isolated.",
+          "First obtain a nonoverlapping CPU-only attribution on the exact representative route; preserve the current per-command error checks and event ownership.",
+          "Only if one repeated cost is material, define a concrete lease identity/generation API and negative cases for owner reuse, span boundary, queue mismatch and sticky async error before considering any check change."
+        ],
+        "discriminator": "A source-bound subregion profile plus fault behavior can accept or reject lease-bound caching; the measured interval must separate host preparation, submission, waits, observer work and unclassified time."
+      }
+    ],
+    "raw_retirement": {
+      "outcome": "deleted_verified",
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/closed-post-bulk-upload-research-raw-retirement-20261111.json",
+      "sha256": "be2b3ec4e1b560687acbd01070d8450ae7bd01fdfbecbd608031f7b8be8883a7",
+      "files": 907,
+      "bytes": 219701165,
+      "retained_reports_bytes": 24068,
+      "retained_review_bytes": 7653,
+      "all_original_source_pins_recovered": true
+    }
   }
 }
