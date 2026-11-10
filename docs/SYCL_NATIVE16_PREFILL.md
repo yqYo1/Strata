@@ -1754,8 +1754,14 @@ Second-request prefix service is6.796s versus append0.0838s;copy/kernel
 overlap is only0.0064s. Main outside-wait CPU is20.518s,with upload-submit
 4.678s and GEMM-submit3.670s;grouping and source copying are negligible.
 These are diagnostic intervals,not physical saturation or additive wall
-costs. Prioritize the cached-Q/vector-KV plus subgroup-normalizer composition
-and upload-path source/registration work over further append arithmetic. See
+costs. The cached-Q/vector-KV subgroup component now passes11numerical cases
+(including262144live cells)and108paired timings across3fresh processes at
+5dcdec7e0:the3shape median time reductions are0.6120%,0.5359%and0.9736%,
+geomean ratio0.99292646. This is the same bba952e33 mechanism,not a new one;
+its older<=0.95speed gate remains failed. The new prospectively committed
+reproducibility gate passes without a minimum gain. No model PP/TG or
+adoption follows. Keep it for a combined prefill candidate and prioritize
+upload preparation/submission or actual selector-locality evidence. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
 validated552b117Kreference or adopt a production resident/cache policy.

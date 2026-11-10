@@ -2322,7 +2322,15 @@
     "source_and_contract": "docs/SYCL_NATIVE16_PREFILL.md#cached-qkvvec4-parallel-fp32-sum-candidate",
     "historical_scope_commit": "0ef1b9640ccec3932ed28ece150252c70dad9abd",
     "report_transaction_retired": true,
-    "next_review": "Only for a distinct combined mechanism or numerical question; current next mechanism is production-matched Down fallback."
+    "next_review": "Only for a distinct combined mechanism or numerical question; current next mechanism is production-matched Down fallback.",
+    "later_reassessment": {
+      "key": "qsa_cached_subgroup_component_v2",
+      "evidence_commit": "5dcdec7e0a0048ab619c6ab519887383699ec91b",
+      "old_gate_and_outcome_unchanged": true,
+      "same_template_and_admission_body": true,
+      "new_ratio": 0.9929264603265178,
+      "scope": "Current3process component reassessment with a prospectively revised reproducibility gate;no model adoption. Do not repeat the isolated mechanism."
+    }
   },
   "down_fallback_comparison_contract_scope": {
     "classification": "decision support",
@@ -28885,12 +28893,12 @@
     "title": "Cached Q subgroup softmax numerical and collective contract",
     "model": "gpt-6-luna",
     "reasoning_effort": "medium",
-    "stage": "finite_source_collection_running",
+    "stage": "reviewed_curated_executors_and_terminal_closed",
     "source_commit": "7350b16d00bc47d13eb68f41327042d94e695db8",
     "source_files": 10,
     "source_manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa-cached-subgroup-numerical-contract-20261110/source.json",
-      "sha256": "a86d5b4602badd96ec3d9b442d3af9fc5f8a68ab5b4eb4fb02fdda6e8bd5d190"
+      "sha256": "a86d5b4602badd96ec3d9b442d3af9fc5f8a68ab5b4eb4fb02fdda6e8bd5d190",
+      "retired": true
     },
     "task": "task_3e950de02410",
     "dispatch": "ctx_aa22cab50776",
@@ -28905,19 +28913,53 @@
     },
     "report_budget_bytes": 24576,
     "main_reads_collection_body_on_arrival": false,
-    "retention": "Native Codex gpt-6-luna max reviews the returned report. Main reads only its short digest;retain substantive current decision/reusable facts,then retire closed transaction/source snapshots and duplicate raw output after actual process closure."
+    "retention": "Keep only the short native digest through the combined-model decision;original report,source snapshots and transactions physically retired. Original report body is not promised recoverable. Important novelty correction is in current component evidence and reachable own source.",
+    "ownership_closed": true,
+    "worker_completion_confirmed": true,
+    "captured_executors_gone": true,
+    "terminal_closed": true,
+    "report": {
+      "bytes": 12704,
+      "sha256": "2a9ad09c9ec710caf9ed2c280b75535ea39e870088eb7e74d54b3d8de8a370ed",
+      "retired": true
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "stage": "completed",
+      "digest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa-cached-subgroup-numerical-contract-review-20261110/digest.json",
+        "bytes": 5060,
+        "sha256": "37b261decd9f40875c0a6d74110a1eb391555ea5dae7bb4745a7143b53328287"
+      },
+      "main_reads_only_short_digest": true
+    },
+    "findings": [
+      "Same mechanism as prior bba952e33;Main independently verified the complete template/admission body is byte-identical. Original<=0.95 failed screen remains failed;new current-envelope paired result passes its different precommitted reproducibility gate.",
+      "Static collective/SLM/vector alignment review supports the composition;no runtime or exact-framework equivalence follows from research. New independent CPU/subgroup and paired timing evidence is separate5dcdec7e0.",
+      "vLLM source was pinned by review at4e3463c87493ebd2c5d5fbe4be6469911e23e2bf;SGLang citation remains mutable. No external code copied."
+    ],
+    "raw_retirement": {
+      "outcome": "deleted_verified",
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/closed-qsa-contract-research-raw-retirement-20261110.json",
+      "manifest_sha256": "62d6fa46827f2f2ada5dbf70b07779c324466b118fe4add54cd72224f6641443",
+      "files": 903,
+      "bytes": 211212118,
+      "all_captured_executors_gone": true,
+      "exact_created_terminals_closed": true
+    }
   },
   "post_bulk_expert_upload_submission_20261110": {
     "classification": "knowledge_collection",
     "title": "Expert source registration and upload submission cost after source-view removal",
     "model": "gpt-6-luna",
     "reasoning_effort": "medium",
-    "stage": "finite_source_collection_running",
+    "stage": "failed_no_report_closed",
     "source_commit": "7350b16d00bc47d13eb68f41327042d94e695db8",
     "source_files": 12,
     "source_manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/post-bulk-expert-upload-submission-20261110/source.json",
-      "sha256": "7918ab7859500b22a48483c70e81ef762692cea7cc5d424a44e9800ba7df81ec"
+      "sha256": "7918ab7859500b22a48483c70e81ef762692cea7cc5d424a44e9800ba7df81ec",
+      "retired": true
     },
     "task": "task_e7d430ac0b18",
     "dispatch": "ctx_30e062f2a909",
@@ -28932,6 +28974,23 @@
     },
     "report_budget_bytes": 24576,
     "main_reads_collection_body_on_arrival": false,
-    "retention": "Native Codex gpt-6-luna max reviews the returned report. Main reads only its short digest;retain substantive current decision/reusable facts,then retire closed transaction/source snapshots and duplicate raw output after actual process closure."
+    "retention": "Native Codex gpt-6-luna max reviews the returned report. Main reads only its short digest;retain substantive current decision/reusable facts,then retire closed transaction/source snapshots and duplicate raw output after actual process closure.",
+    "ownership_closed": true,
+    "worker_completion_confirmed": false,
+    "captured_executors_gone": true,
+    "terminal_closed": true,
+    "dispatch_fenced": true,
+    "task_status": "failed",
+    "failure": "Captured bounded Codex/namespace/timeout executors exited without report.md or worker_done. Terminal identity matched the coordinator-created incarnation;dispatch fenced and exact terminal closed. No timeout cause or technical finding claimed.",
+    "next_action": "Use a fresh bounded source-only transfer-registration question after checking existing staging/pinning interfaces;do not repeat the unfinished broad task verbatim.",
+    "raw_retirement": {
+      "outcome": "deleted_verified",
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/closed-qsa-contract-research-raw-retirement-20261110.json",
+      "manifest_sha256": "62d6fa46827f2f2ada5dbf70b07779c324466b118fe4add54cd72224f6641443",
+      "files": 903,
+      "bytes": 211212118,
+      "all_captured_executors_gone": true,
+      "exact_created_terminals_closed": true
+    }
   }
 }

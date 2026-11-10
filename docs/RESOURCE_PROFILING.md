@@ -609,10 +609,18 @@ old2.2177s append cost no longer selects a quantizer optimization. Main CPU
 has19.9011s in known waits and20.5176s outside,including4.6777s upload-submit,
 3.6695s GEMM-submit,0.07558s grouping and0.000046s source copying. These
 CPU categories overlap GPU work;source-view copying is already eliminated.
-Next test the existing subgroup-softmax arithmetic combined with cached Q
-and vector K/V in the measured prefix path,and investigate actual upload
-registration/coalescing. Keep numerical/physical-context and independent
-decode gates. Hardware saturation and the limiting physical resource remain
+The cached-Q/vector-KV subgroup component now passes11numerical/boundary
+cases and108paired timings across3fresh processes at5dcdec7e0. Whole-entry
+ordered/candidate medians are8.7367185/8.683248ms(cap33gather),
+224.2698465/223.068008ms(cap2051gather),and139.9996785/138.6366405ms
+(cap2051clustered);geomean time ratio0.99292646. All process medians improve.
+This re-evaluates the existing bba952e33 algorithm,whose original0.993646
+ratio failed its<=0.95gate;that result remains failed. Main verified identical
+template/admission source bodies. The new precommitted reproducibility gate
+has no minimum gain and passes;model PP,TG,quality and adoption remain unrun.
+Keep this choice for a combined prefill trial;prioritize actual upload
+registration/submission or selector-locality evidence instead of another
+isolated sum experiment. Keep physical-context and independent decode gates. Hardware saturation and the limiting physical resource remain
 unknown;observed GPU copy services are not wire traffic.
 The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
 limit. Its original ownership result stays false;the four captured executors
