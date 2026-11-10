@@ -540,6 +540,18 @@ expert staging and GPU-local quantization followed by bounded bulk mirror
 copies are candidates,not adopted improvements. Preserve exact KV codes/scales,
 partial-page/tail writes,authoritative host state,checked lifetime and decode
 handoff. Each candidate needs its own committed plan and clean phase comparison.
+The bulk-mirror candidate is now prepared in`src/prefill/sycl/qsa_native16.cpp`,
+default off under`STRATA_SYCL_PREFILL_QSA_BULK_HOST_MIRROR=1`. The quantizer
+keeps resident/Device-stage writes and publishes the Host mirror through
+same-queue copies. Whole pages use one contiguous span;each partial page uses
+an exact per-head span. Existing owner/domain/alias checks precede every
+submission,and completion observation includes the copies. This source has
+not been compiled or executed. Next commit its original-input/build/fixture
+plan,then run the existing independent streamed-code/scale/guard oracles in
+separate immutable off/on processes,including physical262144full fill and
+last-cell overwrite,before any32K/64Kmodel or clean-speed comparison. Keep the
+three existing named native generations until that plan selects a replacement;
+no fourth engine generation has been built.
 The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
 limit. Its original ownership result stays false;the four captured executors
 are gone and its exact named collector session is separately removed. V2 used

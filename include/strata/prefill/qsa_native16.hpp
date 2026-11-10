@@ -73,6 +73,9 @@ void append_q8(const uint16_t* k, const uint16_t* v, int64_t tokens,
 // separately uses {logical_pages,logical_pages}. No CPU tensor conversion.
 // Caller retains every owner/map through completion, forbids concurrent CPU
 // access, and guarantees injective valid resident mappings for written cells.
+// Optional STRATA_SYCL_PREFILL_QSA_BULK_HOST_MIRROR=1 publishes Host storage
+// with same-queue copies from Device staging. Only written logical cells move;
+// partial-page neighbours and every byte outside the owners stay untouched.
 void append_q8_streamed(const uint16_t* k, const uint16_t* v, int64_t tokens,
                         int64_t input_ld, int64_t pos0,
                         const Q8WritePools& resident,
