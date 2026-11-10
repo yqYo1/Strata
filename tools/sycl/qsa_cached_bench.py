@@ -29,8 +29,9 @@ RUNS = 3
 require, sha = model.require, model.sha
 
 
-def basis():
-    native = device.native(observers={device.THIS, model.THIS, THIS})
+def basis(*, observer_files=frozenset()):
+    observers = {THIS, *observer_files}
+    native = device.native(observers={device.THIS, model.THIS, *observers})
     prior = device.original.validation.committed(RESULT, (model.KEY,))
     dev = device.original.validation.committed(RESULT, (device.KEY,))
     require(prior['stage'] == 'closed' and all(prior[k] for k in
@@ -73,9 +74,9 @@ def basis():
     aggregate = hashlib.sha256(json.dumps(before,sort_keys=True,separators=(',',':')).encode()).hexdigest()
     after = device.original.common.source.pin(P,prefixes)['source_sha256']
     require(len(before) == pin['count'] and aggregate == pin['aggregate_sha256']
-        and set(after)-set(before) == {THIS} and not set(before)-set(after)
+        and set(after)-set(before) == observers and not set(before)-set(after)
         and all(after[p] == h for p,h in before.items()),
-        'recover exact original model controls;only this new observer may extend them')
+        'recover exact original model controls;only explicitly declared observers may extend them')
     reference = json.loads(model.original.REFERENCE.read_text())
     require(reference['models_sha256'] == prior['models_sha256']
         == model.original.signature(reference['models']), 'original15asset manifest changed')
@@ -97,7 +98,7 @@ def basis():
         model_PP_TG_task_full262144_RESTORE_inherited=False)
     prior['observer_admission'] = dict(native=native['observer_admission'],
         original_model_evidence=diagnostic,original_model_controls_recovered=len(before),
-        added_observers={THIS:after[THIS]},fast_configuration_diagnostic=diagnostic,
+        added_observers={p:after[p] for p in sorted(observers)},fast_configuration_diagnostic=diagnostic,
         native_recompiled=False,earlier_clean_result_inherited=False,
         retired_raw_model_directory_consumed=False)
     return native, prior, providers, None
