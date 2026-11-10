@@ -463,6 +463,17 @@ current collector V1 refused before native launch because its parent already
 carried the target preload. A fresh plan must also discriminate the declared
 kernel inventory rather than accepting62arbitrary named joined events. Older
 collector/engine qualifications do not qualify this generation.
+After the56Kpoint closes,keep that failed V1 and its observer source unchanged.
+Extend the existing benchmark observer for a fresh V2 control:its clean
+admission already permits that one observer to change while native inputs
+stay exact. Strip only the previously verified private preload/expected-loader
+fields before the native wrapper attaches them;retain all runtime safety.
+The pinned no-argument compatibility fixture requires1direct,37producer and
+24consumer kernel instances,with exact class identity and unique native
+host-flow joins. Reject a same-total wrong-class CPU control before GPU use.
+Then qualify that current same-build fixture before a bounded representative
+32Kmodel trace and matched observer-overhead comparison. This is the next
+attribution plan,not an implemented collector or current resource conclusion.
 
 ## Numerical reference for replacement kernels
 
