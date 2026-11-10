@@ -280890,7 +280890,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "moe_job_geometry_v1": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "a2a3a55828e118046fee58f80c68386369e853ab",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-model-native-v3/build/strata",
@@ -281122,13 +281122,48 @@
         "trace_progress": true
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 32769,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-model-native-v3/build/strata",
+          "sha256": "9af655168c619329456d8720ca98bdcc787f2330dbf4e58eb0f8675a20eab972",
+          "bytes": 26447840,
+          "origin_source_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35"
+        },
+        "native_source_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
+        "native_identity": {
+          "pid": 2883610,
+          "start_ticks": 268919726,
+          "sid": 2883549
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "wall": 2400,
       "cpu": 28800,
@@ -281172,6 +281207,66 @@
         "passed": true
       }
     ],
+    "post_failure_observation": {
+      "checked_unix": 1794341533.7853193,
+      "native_exit_code": -6,
+      "watchdog_seconds": 480,
+      "last_stage": "GDN/input of layer18,first8192chunk of32768prefill rows",
+      "original_native_and_wrapper": [
+        {
+          "pid": 2883610,
+          "start_ticks": 268919726,
+          "sid": 2883549,
+          "original_instance_gone": true
+        },
+        {
+          "pid": 2883595,
+          "start_ticks": 268919691,
+          "sid": 2883549,
+          "original_instance_gone": true
+        }
+      ],
+      "owned_bench_session_empty": true,
+      "owned_bench_exit_code": -15,
+      "original_ownership_closed_false_preserved": true,
+      "planned_census_layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "completed_requests": 0,
+      "full48layer_or_speed_result": false,
+      "fresh_GPU_faults": [],
+      "xpu_smi_ps_exit_code": 0,
+      "xpu_smi_reported_processes": 0,
+      "device_health_verified": false,
+      "core_debugger": "Attempted passive stack observation after watchdog exit;identity guard found native absent,so GDB never attached. coredumpctl unavailable. No process replay or GPU reset.",
+      "validation_file": {
+        "bytes": 0,
+        "forbidden_marker_present": false
+      },
+      "representative": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-job-geometry-v1/0/stall-excerpt.txt",
+        "bytes": 1926,
+        "sha256": "a9ee33bda1856e280e4c4b5e121fb57fdc4eafdacc367c007a603eeee239dc9a"
+      },
+      "distinction": "A live host-side CPU spin and watchdog abort were observed;no fresh driver fault or proven device hang. LM_PROFILE also activates GPU event timing,so separate host census from that unqualified observer path before another model attempt. No root-cause or health claim."
+    },
     "source_inputs": {
       "files": 703,
       "sha256": "d525de6eb59c587f35d34b9e119ba8a0b7bd3abdbe3bde35e2091f66ca517581"
