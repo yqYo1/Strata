@@ -580,14 +580,18 @@ requests,so crosswalk its earlier4.5512%gain before repeating it. The two-point
 adjacent slopes0.9215233/0.8523079ms pertoken(off/on)are local only. The flag
 stays default off;1000PP,sustained decode,task/agent,full262144model/RESTORE,
 ordinary-provider teardown and adoption remain open.
-The temporary fourth generation needs a concrete consumer migration before
-retirement:the current native reader hashes all11preservedELFs,including the
-five b9aa files. Preserve original records/outcomes;commit a scoped reader
-update that retains current native/recipe/five-fixture evidence,verify its
-admission,and recover original b9aa inputs before retiring the superseded
-build. Review this hold before another build/GPU campaign. Keep552bfor its
-faster117Kprefill revalidation and a347for the independent sustained-decode
-comparison;this is not a new default four-build quota.
+The prospective reader at source07eed6e6a now passes the current native,
+recipe,all five same-build ELFs,complete compiler inputs and original closed
+device/model/runtime evidence without reading historical comparator ELFs.
+Its18host refusal cases preserve native-source/current-fixture/count gates;
+exact24is selected by the new policy while legacy range defaults remain.
+Original measurement source93d908and all24samples/outcomes remain unchanged.
+The actual b9aa1132project inputs and two dependency revisions,128TUs/1462
+compiler inputs,recipe and generated header are recovered in the compact
+generation review. Actual retirement and before/after admission are next,
+before the same-binary bulk clean/profile/clean bracket. Keep552bfor its
+faster117Kprefill revalidation and a347for independent sustained decode.
+This is not an expanded build quota or a new native/GPU validation.
 The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
 limit. Its original ownership result stays false;the four captured executors
 are gone and its exact named collector session is separately removed. V2 used
