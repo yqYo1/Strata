@@ -277051,7 +277051,7 @@
     }
   },
   "expert_upload_chain_v2": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "3efcb16e2be631630cfed31fa3865050fed05028",
     "native_source_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
     "inputs": {
@@ -277366,12 +277366,45 @@
             "closed": true
           }
         ]
+      },
+      "smoke": {
+        "passed": true,
+        "complete": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2562514,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "checks": [
+          "CHECK gu=22 down=20 rows=1 bytes=1971200 equal_outputs=17 staging_copies=14 host_slots=4 guards=checked oracle=passed"
+        ],
+        "samples": [],
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     },
     "passed": true,
     "complete": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "plan": {
       "order": [
         "scan",
