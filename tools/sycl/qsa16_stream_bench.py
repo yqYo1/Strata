@@ -31,6 +31,7 @@ require, digest, write = source.require, source.sha, source.device.write
 shared, build = comparison.shared, comparison.build
 FAST_ROOT, FAST_KEY = B / 'qsa16-stream-fast-entry-v1', 'qsa16_stream_fast_entry_v1'
 CLEAN_FAST = False
+FIT_POINT = False
 FAST = dict(STRATA_PREFILL_RELEASE_MTP_EXPERTS='1', STRATA_SYCL_PREFILL_MOE_WINDOW='10',
     STRATA_SYCL_PREFILL_SCORE_GEMM='1', STRATA_SYCL_PREFILL_MIXED_SCRATCH='1',
     STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS='384', STRATA_SYCL_CACHE_SCRATCH_LEASE='1',
@@ -56,6 +57,12 @@ def configure_fast_curve():
     ROOT, KEY = B / 'qsa16-stream-fast-curve-v1', 'qsa16_stream_fast_curve_v1'
     READS = (32769, 49153, 65537, 81921, 98305)
     ORDER, CLEAN_FAST = [(n, 1) for n in READS], True
+
+
+def configure_fast_fit_point():
+    global ROOT, KEY, READS, ORDER, CLEAN_FAST, FIT_POINT
+    ROOT, KEY = B / 'qsa16-stream-fast-fit-point-v1', 'qsa16_stream_fast_fit_point_v1'
+    READS, ORDER, CLEAN_FAST, FIT_POINT = (57345,), [(57345, 1)], True, True
 
 
 def pins(revision):
@@ -171,7 +178,63 @@ def current(row):
     contract, python = frontend.python_manifest()
     require(contract == row['python_contract'] and python['selected'] == row['python_selected'],
         'benchmark/server Python providers changed')
+    if FIT_POINT:
+        require(curve_fit_basis(row)[1] == row['curve_reference'], 'closed curve basis changed')
     return providers, python
+
+
+def curve_fit_basis(row):
+    root, key = B / 'qsa16-stream-fast-curve-v1', 'qsa16_stream_fast_curve_v1'
+    old = json.loads((root / 'record.json').read_text())
+    require(build.committed(RESULT)[key] == compact(old) and old['stage'] == 'closed'
+        and old['passed'] and old['complete'] and old['ownership_closed'] and not old['active']
+        and [p['read'] for p in old['processes']] == [32769, 49153, 65537, 81921, 98305]
+        and old['binary'] == row['binary'] and old['native_source_commit'] == row['native_source_commit']
+        and old['model_assets'] == row['model_assets'] and old['configuration'] == row['configuration']
+        and old['boot'] == row['boot'] and old['driver'] == row['driver'],
+        'closed exact five-length native/configuration/model basis required')
+    require(set(old['sources']) == set(row['sources'])
+        and {p for p in old['sources'] if old['sources'][p] != row['sources'][p]} == {THIS}
+        and {k: v.replace(str(root), str(ROOT)) for k, v in old['environment_template'].items()}
+            == row['environment_template'], 'only the prospective observer and private paths may change')
+    return old, dict(key=key, source_commit=old['source_commit'],
+        receipt=dict(path=str(root / 'record.json'), sha256=digest(root / 'record.json')),
+        evidence_sha256=source.signature(compact(old)),
+        unchanged_source_inputs=len(old['sources']) - 1,
+        limits='Reuse the closed final15asset hashes after exact identities;no native rebuild or inherited new-point result.')
+
+
+def extended_approximations(points):
+    row = json.loads((ROOT / 'record.json').read_text())
+    old, proof = curve_fit_basis(row)
+    require(proof == row['curve_reference'], 'immutable prior curve required for analysis')
+    combined = sorted(old['decision']['points'] + points, key=lambda p: p['read'])
+    require([p['read'] for p in combined] == [32769, 49153, 57345, 65537, 81921, 98305]
+        and all(p['placement_unchanged_within_process'] for p in combined),
+        'six distinct lengths with unchanged actual placement required')
+    groups = {}
+    for p in combined:
+        groups.setdefault(p['route_group'], []).append(p)
+    ordinary = groups.get('all_GPU/slots384/staged1/split0', [])
+    require([p['read'] for p in ordinary] == [32769, 49153, 57345, 65537, 81921],
+        'five distinct compatible ordinary-route points required;do not pool96K')
+    scopes = dict(first_prompt_ms=lambda p: p['first_use']['prompt_ms'],
+        warmed_median_prompt_ms=lambda p: p['median_prompt_ms'],
+        first_client_TTFT_ms=lambda p: p['first_use']['ttft_s'] * 1000,
+        warmed_median_client_TTFT_ms=lambda p: p['median_TTFT_s'] * 1000)
+    fits = {}
+    for group, values in groups.items():
+        fits[group] = {}
+        for name, metric in scopes.items():
+            data = [dict(actual_read_tokens=p['read'], prompt_ms=metric(p)) for p in values]
+            fits[group][name] = dict(affine=linear_fit(data), alternatives=approximation_models(data),
+                adjacent_ms_per_token=[(b['prompt_ms']-a['prompt_ms']) /
+                    (b['actual_read_tokens']-a['actual_read_tokens']) for a, b in zip(data, data[1:])])
+    return dict(prior_curve=proof, lengths=[p['read'] for p in combined], route_scoped_fits=fits,
+        within_process_spread=[dict(read=p['read'],
+            subsequent_prompt_range_ms=[min(p['subsequent_prompt_ms']), max(p['subsequent_prompt_ms'])],
+            subsequent_TTFT_range_s=[min(p['subsequent_TTFT_s']), max(p['subsequent_TTFT_s'])]) for p in combined],
+        limits='Five compatible lengths,one process each;first and subsequent timing scopes stay separate. Compare whole-length held-out errors with sample spread. No extrapolation,physical fixed-cost attribution,saturation,paired gain or adoption. The96Ksplit route has one point and no fit.')
 
 
 def request_route(text, plan):
@@ -258,12 +321,15 @@ def decision(processes):
         adjacent_ms_per_token=[(b['prompt_ms']-a['prompt_ms']) /
             (b['actual_read_tokens']-a['actual_read_tokens']) for a, b in zip(values, values[1:])])
         for key, values in groups.items()}
-    return dict(points=points, route_group_approximations=fits,
+    value = dict(points=points, route_group_approximations=fits,
         single_process_per_length=True, clean_speed=True,
         input_length_curve_complete=len(READS) > 1,
         next='Fit only compatible route groups using actual n and retained individual times;compare affine,nlogn and quadratic residuals/held-out errors with sample spread. Gather independent-process repeats for promising points before claiming a gain or target.',
         matched_speedup=False, resource_saturation_qualified=False,
         sustained_decode_qualified=False, physical262144_qualified=False, inference_adopted=False)
+    if FIT_POINT:
+        value['extended_curve_approximation'] = extended_approximations(points)
+    return value
 
 
 def prepare():
@@ -343,11 +409,17 @@ def prepare():
             settings=row['plan']['settings'].replace('MTP_BATCH_F16=0', 'MTP_BATCH_F16=1') +
                 ' Restore exactly the nine FAST values from the owned552b reference before exec;qualified by the closed3d2a diagnostic. No native rebuild or decode-selector change.',
             acceptance=row['plan']['acceptance'] +
-                ' Require all actual prefill rows on GPU,window10,checked bank drains and complete675MiB MTP expert restoration. At32/48/64/80K require staged384bank and ordinary accumulation;96K requires the actual staged128/split route with checked tail guard/drain. Keep observed jobs/copy counts;compare placement separately from these counters.',
+                ' Require all actual prefill rows on GPU,window10,checked bank drains and complete675MiB MTP expert restoration. At32/48/56/64/80K require staged384bank and ordinary accumulation;96K requires the actual staged128/split route with checked tail guard/drain. Keep observed jobs/copy counts;compare placement separately from these counters.',
             stopping=row['plan']['stopping'].replace('Full15asset hashes before and after the cohort.',
                 'Reuse the exact closed fast-diagnostic final full hashes after identity/source recovery;hash all15assets again after this cohort.'),
             limits=row['plan']['limits'] +
                 ' The old baseline is one earlier process,not a prospective repeated pair. Retain that distinction;no gain/target/adoption claim from one process per length. Group fits by actual GPU residency AND bank/split route;do not fit the96Ksplit point with the ordinary384-bank points. Compare affine,nlogn,quadratic models using residuals/held-out errors and adjacent slopes,without assigning a mixed-route intercept to physical fixed work.')
+    if FIT_POINT:
+        row['curve_reference'] = curve_fit_basis(row)[1]
+        row['plan'].update(question='Add the prospectively declared57345-input ordinary384-slot point after the closed original five-process curve;compare time models without mixing the96Ksplit route.',
+            order='One fresh process,four distinct-nonce thinking-on bench.sh requests,24outputs each. First use separate from subsequent3. Original five-process outcome and source identities remain unchanged.',
+            analysis='Combine only the five distinct ordinary384-slot lengths32769/49153/57345/65537/81921. Separate first/warmed prompt and clientTTFT series. Compare affine,quadratic,nlogn residuals,whole-length held-out errors,adjacent slopes and retained within-process spread. Keep96Ksplit as a separate one-point route. No selected law,extrapolation,physical fixed-cost interpretation,paired gain or target/adoption claim.',
+            stopping='Stop first source,provider,owner,clock,count,route,validation,fault or finite budget failure. No retry,pin refresh or speed-based exclusion. Reuse the immediately preceding closed curve final15asset hashes with exact identities;hash all15again after this process.')
     for index, (read, heads) in enumerate(ORDER):
         root = ROOT / str(index); root.mkdir(mode=0o700)
         for part in ('tmp', 'cache'): (root / part).mkdir()
@@ -570,6 +642,8 @@ if __name__ == '__main__':
             configure_fast_clean(); action = action[1:]
         elif action[:1] == ['fast-curve']:
             configure_fast_curve(); action = action[1:]
+        elif action[:1] == ['fast-fit-point']:
+            configure_fast_fit_point(); action = action[1:]
         if action == ['prepare']: prepare()
         elif action == ['host']: comparison.host(sys.modules[__name__])
         elif len(action) == 1 and action[0].isdigit() and int(action[0]) < len(ORDER):
