@@ -29589,5 +29589,166 @@
       "bytes": 780185037,
       "source_inputs_recovered": true
     }
+  },
+  "expert_upload_chain_mixed_format_coverage_20261111": {
+    "stage": "reviewed_curated_reference",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "main_reads_collection_body_on_arrival": false,
+    "native_review_sha256": "c5c98b0bd5af582a8806ae2afbbf8a3798a42b1fa4f5a1040f02771d2ce6d2f6",
+    "not_adoption": true,
+    "topic_id": "expert_upload_chain_mixed_format_coverage_20261111",
+    "classification": "decision_support",
+    "report_sha256": "47bed4416f593f543d2dc649595878c0043c5feaa0378067e111ffcf9eb87aa5",
+    "source_pins": {
+      "Strata": "b6fc8adcb08942589ebb613993567d0cbed0afd5",
+      "original_fixture": "3efcb16e2be631630cfed31fa3865050fed05028",
+      "GGML": "3cf03257f219afbe7334045ff7c6a06ac68c627d"
+    },
+    "finding": "Descriptor metadata records seven pairs across 48 layers: 18/20=14,18/42=3,21/20=9,21/42=1,22/20=15,22/42=5,23/20=1. Old fixture covered only 22/20 and 23/20 (16/48). Correct extents at N2560/F640: 18/20=2,176,000;18/42=1,715,200;21/20=2,329,600;21/42=1,868,800;22/20=1,971,200;22/42=1,510,400;23/20=2,662,400 bytes. Metadata/source support is not GPU launch coverage. Snapshot omits native_expert_layout/native_fmt definitions, so pair admission is unknown. Preserve failed global-staging gate; only 1280-row leads remain consistent; metadata gives no selective threshold.",
+    "applicability": "Source planning for expanded synthetic correctness/dependency-chain fixture; not model qualification or speed evidence.",
+    "consumer": "Revisit after checked host-only census counts accepted uploads/hits/formats/rows and exact layout implementation is pinned.",
+    "review_point": "Before committing expanded fixture/measurement plan; afterward curate reusable conclusions and retire body when Git/history suffices.",
+    "provenance_and_license": "Strata MIT; original fixture hashes verified; GGML type-trait dependency pinned in reference.json. No XeStrata material."
+  },
+  "compressed_gguf_b_to_native16_fragment_20261111": {
+    "stage": "reviewed_curated_reference",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "main_reads_collection_body_on_arrival": false,
+    "native_review_sha256": "c5c98b0bd5af582a8806ae2afbbf8a3798a42b1fa4f5a1040f02771d2ce6d2f6",
+    "not_adoption": true,
+    "topic_id": "compressed_gguf_b_to_native16_fragment_20261111",
+    "classification": "knowledge_collection",
+    "report_sha256": "d17b25a322650f87b142bb2e129464286d771b85f362f6fd3c0995229ac79333",
+    "source_pins": {
+      "Strata": "b6fc8adcb08942589ebb613993567d0cbed0afd5",
+      "local BSD vLLM-derived tile": "6b30c9b92cc525c32729df988b5f918e7c5661a5"
+    },
+    "finding": "Current native16 Problem accepts dense uint16 A/B/output pointers and cannot carry GGUF block descriptors, decoder callbacks/codebook metadata, or register fragments across a kernel boundary. Removing full global FP16 B materialization therefore needs a new internal fused decode/MMA seam; unchanged public dense API cannot do it. Compare register fragments, CTA-local SLM decode, and full dense FP16 dequant as correctness baseline/fallback. Preserve FP16 A and decoded FP16 B, FP32 accumulation, one BF16 RNE output; moving scale/sign or conversion boundaries can change bits. Select no design without critical-path/reuse and resource evidence.",
+    "primary_sources": [
+      {
+        "url": "https://github.com/intel/sycl-tla/blob/main/media/docs/cpp/xe_rearchitecture.md",
+        "license": "SYCL*TLA BSD-3-Clause",
+        "revision_status": "moving main; pin before adaptation"
+      },
+      {
+        "url": "https://github.com/intel/sycl-tla",
+        "license": "BSD-3-Clause",
+        "revision_status": "moving main"
+      },
+      {
+        "url": "https://github.com/vllm-project/vllm-xpu-kernels",
+        "license": "current repository Apache-2.0; distinct from local BSD header",
+        "revision_status": "moving main"
+      }
+    ],
+    "applicability": "Only if later measured dependency path identifies dequant/weight traffic as critical-path cost; not a speed prediction.",
+    "consumer": "Source/API design review after a selected format/shape set and clean request-level attribution.",
+    "review_point": "Before implementation proposal; pin immutable upstream revisions/per-file licenses and require numeric, tail, spill/SLM, resource, and matched elapsed-time evidence.",
+    "limitations": "Old 1.56 s sum is kernel service, not elapsed savings. No XeStrata or unlicensed vLLM policy source, activation-int8 change, or implementation."
+  },
+  "strata_native16_tile_grf_feasibility_20261111": {
+    "stage": "reviewed_curated_reference",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "main_reads_collection_body_on_arrival": false,
+    "native_review_sha256": "c5c98b0bd5af582a8806ae2afbbf8a3798a42b1fa4f5a1040f02771d2ce6d2f6",
+    "not_adoption": true,
+    "topic_id": "strata_native16_tile_grf_feasibility_20261111",
+    "classification": "knowledge_collection",
+    "report_sha256": "83a07be68a49bc4a1ce663d34c42e256e2cdc6c092a409e79b54492df8113d40",
+    "source_pins": {
+      "Strata": "b6fc8adcb08942589ebb613993567d0cbed0afd5",
+      "Intel oneAPI GPU Optimization Guide": "2025-2",
+      "SYCL*TLA": "main (moving)",
+      "Intel Graphics Compiler DPAS docs": "master (moving)"
+    },
+    "finding": "Adapter uses compact 16x64/64-item and wide 128x128/128-item tiles, SG16, K32, requested grf_size<256>, and automatic compact only at M<128. Illustrative M640/1280 counts favor fewer wide groups; M129 exposes a compact-to-wide grid discontinuity. These are layout/work-count facts, not speed or occupancy. Intermediate BM32/64 ideas need exact collective ownership and epilogue proofs; GU preserves even/odd interleave and Down its FP32 FMA scatter after BF16 rounding. GRF property/logical accumulator size do not expose generated spills or occupancy.",
+    "primary_sources": [
+      {
+        "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/thread-mapping-and-gpu-occupancy.html",
+        "license": "official Intel documentation",
+        "revision_status": "versioned 2025-2"
+      },
+      {
+        "url": "https://github.com/intel/intel-graphics-compiler/blob/master/documentation/visa/instructions/DPAS.md",
+        "license": "documentation-only; no code reused",
+        "revision_status": "moving master"
+      },
+      {
+        "url": "https://github.com/intel/sycl-tla/blob/main/media/docs/cpp/xe_rearchitecture.md",
+        "license": "SYCL*TLA BSD-3-Clause",
+        "revision_status": "moving main; pin before adaptation"
+      }
+    ],
+    "applicability": "Strata-specific source feasibility map supplemental to generic register/spill refs; no tile or decode adoption.",
+    "consumer": "Only if census and exact compiled kernel/resource evidence select a tile question.",
+    "review_point": "When that evidence and a frozen component comparison exist; schedulable_now=false until then.",
+    "limitations": "No actual histogram, compiled resource data, GPU measurement, Xe2 saturation result, or decode qualification."
+  },
+  "host_census_coarse_event_separation_20261111": {
+    "stage": "reviewed_curated_source_decision",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "main_reads_collection_body_on_arrival": false,
+    "native_review_sha256": "e8eb98659f4ded468e0b5ada5ec7dfee86895160c879ec0a4cc8d48d4a4af7ba",
+    "review_correction": "Original layer18 trace follows a successful entry drain;it does not locate the later stall. GDN subinterval logging needs a separate unestablished flag. Source audit has no cause/health/performance result.",
+    "classification": "decision_support",
+    "title": "Layer-major timing observer and host-only upload census",
+    "source_revisions": {
+      "original_native": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
+      "reviewed_census_snapshot": "c01883fe6d0d0cadfad020614bd02409cc407d2",
+      "current_main_candidate": "dc645342a8e23f8fd2d76396caa6604b2f234bd7"
+    },
+    "findings": [
+      {
+        "id": "layer-major-profile-adds-queue-observation",
+        "classification": "source_fact_with_unproven_cause",
+        "fact": "LayerMajorCoarseProfile begin/end use cudaEventRecord. In the pinned compatibility layer, cudaEventRecord submits ext_oneapi_submit_barrier on the selected queue; the compute queue is in-order. The timing observer adds queue commands and host submission work, so it is not passive host metadata.",
+        "source_anchors": [
+          "original-native/include/strata/prefill/layermajor_coarse_profile.hpp:56-69",
+          "original-native/src/sycl/compat.cpp:399-415",
+          "original-native/src/sycl/runtime.cpp:84-101"
+        ],
+        "limit": "This establishes an observer effect possibility, not that it caused the layer-18 stall. Detailed GDN subinterval markers additionally require STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE=1; the incident task evidence does not establish that separate switch."
+      },
+      {
+        "id": "layer-start-trace-follows-boundary-drain",
+        "classification": "source_fact",
+        "fact": "The layer-major loop completes its checked drain before printing the STRATA_TRACE layer-start line. Seeing the layer-18 line means that entry boundary drain returned successfully; it does not locate any later stall.",
+        "source_anchors": [
+          "original-native/src/prefill/layer_major.inc:865-874"
+        ],
+        "limit": "The report's contrary statement that the trace precedes the boundary drain requires correction."
+      },
+      {
+        "id": "upload-census-is-host-only-after-existing-drains",
+        "classification": "source_fact",
+        "fact": "In the pinned c018 successor snapshot, the planned-job census reads already-owned route/job metadata after the existing router D2H readback and drain. MoeUploadCensus records the first-job staging result from ticket.upload versus cache hit and emits after the existing checked HC-write drain. The selector adds host counters and formatted output, with no extra GPU submission, event, wait, tensor readback, inference math, or ordering operation in the inspected path.",
+        "source_anchors": [
+          "source-inputs/src/prefill/moe_window.inc:151-175,227-239,358-362",
+          "source-inputs/include/strata/prefill/moe_upload_census.hpp:13-60"
+        ],
+        "limit": "Counts are planned work and accepted staging decisions, not physical bus traffic. Output failure may return an error after the drain. The reviewed snapshot is c018; Main's dc645 candidate must be tied to its own exact build record."
+      }
+    ],
+    "incident_status": {
+      "result": "failed; 0 completed requests in the supplied incident evidence",
+      "root_cause": "unresolved",
+      "device_health": "unverified",
+      "performance_or_model_qualification": "none"
+    },
+    "current_consumer": "Interpret Main's host-only census qualification and avoid timing-observer contamination during tuning.",
+    "review_point": "At closure of the current dc645 host-only qualification or a future explicit observer decision.",
+    "retrieval_tags": [
+      "layer-major-timing-observer",
+      "cudaEventRecord-barrier",
+      "GDN-profile-flag",
+      "host-only-upload-census",
+      "trace-boundary-order",
+      "prefill-census-semantics"
+    ],
+    "retention": "Keep only these compact findings if they are consumed by the current decision. The planned-job histogram overlaps expert_window_job_geometry_20261111; avoid duplicating that entry. Do not auto-retain the full report or dispatch paperwork."
   }
 }

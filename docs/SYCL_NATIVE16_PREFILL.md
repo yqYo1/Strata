@@ -1806,14 +1806,12 @@ stage until the480-second watchdog aborts the native process(-6). Planned
 censuses cover layers0..17 only;zero requests complete. The original failed
 ownership result remains false;the native/wrapper are gone and the owned
 benchmark session is independently observed empty. No fresh driver fault is
-recorded;GPU health and the stall's exact cause are unproved. No64K run/retry.
+recorded;GPU health and the stall's exact cause are unproved. No64K run/retry. The source review corrects the timeline:the layer18 trace follows a successful entry drain;it does not identify the subsequent blocked operation. Separate GDN-subinterval logging was not established.
 The successor adds `STRATA_SYCL_PREFILL_MOE_CENSUS=1` independently of GPU
 timing. Its host-only counters use the existing router data and record accepted
 uploads/hits once per expert,including format/blob/row bins,after the existing
 checked HC-write drain. It adds no GPU event,readback,wait or math. Source and
-CPU controls are prepared;new native and model qualification remain pending.
-Keep LM_PROFILE off for that successor. Next collect the complete32K/64K
-geometry before selecting a transfer policy. Reconcile split-expert reuse and
+The successor native source `dc645342a8e23f8fd2d76396caa6604b2f234bd7` builds nine targets;engine ELF `97fda7bab47b05fa0750609b7dfe82228d68dc87c6db8a3b51c5045dc36a5900`. Its fresh nine-stage qualification closes at `c734c4fc8aa449a3fd2c68ed10a7144181794944`:CPU census controls,54reader tests,11native refusals,phase policy and decode-module identity;small traced submission/phase;real-shard head0/head2 ownership and numeric checks;attention11cases including262144live cells;producer off/on262144fill/last-cell overwrite. All normal0/closed,no fresh fault. This is native/component evidence,not model qualification or a cause/health/performance claim. The new `moe_host_census_model_v1` plan uses the already exercised32769/82/32769thinking route,32outputs each,ordered-exp/bulk1/FAST9,private parameter validation and `STRATA_PREFILL_LAYER_MAJOR_PROFILE=0` with `STRATA_SYCL_PREFILL_MOE_CENSUS=1`. It changes only host observation versus the established timing-off path;new model results remain pending. Retain per-format accepted upload/hit row bins,requested bytes and conservation after complete requests;no physical PCIe/saturation claim. Next obtain complete32K/64K geometry before selecting a transfer policy. Reconcile split-expert reuse and
 cache misses before treating job rows as upload rows.
 Global staging remains off after its failed component gate;
 1280-row component gains alone do not qualify a selective model policy or
