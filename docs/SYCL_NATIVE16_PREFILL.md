@@ -1685,8 +1685,12 @@ producer components,the same-build native prerequisites,and actual typed-QSA
 32769/82/32769model handoffs at logical262144/resident20480/owned stage. Its
 separate clean32K`bench.sh`baseline now passes all four requests:subsequent-three
 median514.2599PP/clientTTFT63.863s in one process. Nine fastest552b prefill
-choices remain disabled in that admission configuration;next qualify their
-composition before collecting the new input-length curve. See
+choices remain disabled in that admission configuration. Their separate
+`qsa16_stream_fast_entry_v1` composition now passes actual long/short/long
+route,packed-bank/cache-loan,MTP expert restoration and decode recapture
+checks on the same native build. This is an observed diagnostic,not clean
+speed or adoption;next collect matched clean points before the new length
+curve. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
 validated552b117Kreference or adopt a production resident/cache policy.

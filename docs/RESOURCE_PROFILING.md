@@ -375,14 +375,26 @@ scope separate. This is one process at one length,not an input-length curve,
 independent-process repeatability,a matched gain,the>=64K throughput target,
 sustained decode,model quality,physical full context or adoption.
 
-The current admission settings deliberately differ from the faster552b
-117Kreference:release-MTP-experts,MoE window,score GEMM,mixed scratch,
-packed384-slot expert bank,cache scratch lease,MTP FP16batch and split
-accumulator remain disabled(nine environment differences,counting bank size
-and packed mode separately). Restore and qualify that owned fast-prefill
-configuration on the new streamed state before a full curve sweep of the
-admission configuration. Keep decode selection independent and
-preserve the validated552b fallback. Actual hardware saturation is unknown.
+The clean admission baseline deliberately disables nine settings from the
+faster552b117Kreference. Their composition now passes the separately committed
+`qsa16_stream_fast_entry_v1` diagnostic:release-MTP-experts,MoE window10,
+score GEMM,mixed scratch,packed384-slot expert bank,cache scratch lease,
+MTP FP16batch and split accumulator(counting bank size and packed mode
+separately). Controller source is`3d2a9d4224dd82ba10e129b7ffb81a00670315f9`;
+native b9aa/1e598 and independent head2/dense1 decode remain unchanged.
+Thinking32769/82/32769inputs each produce32tokens. Both long requests use
+8192chunks and typed BF16QSA;96packed layer entries have384..512slots,
+both675MiB MTP expert restores complete,and four uncoupled round recaptures
+and27decode-C4replays succeed. Eight8192-row mode2draft callbacks select
+the pinned FP16batch branch. Checked cache bindings/final drains,normal0,
+closed owners,quiet validation,no fresh faults and all15final model hashes
+pass. These token-tiled diagnostics include observers and are not clean speed,
+sustained decode,task quality,physical262144/RESTORE or adoption evidence.
+Next collect clean matched`bench.sh`points before the input-length curve;
+preserve the validated552b fallback. The reviewed runtime split gate is
+actual prefill rows>90112and<=117488,with additional admission checks;its
+accepted replan requests128slots. Do not assume the32K384-slot geometry
+at117489input tokens. Actual hardware saturation remains unknown.
 Use the existing owned UnitTrace launcher with Sysman0 for later attribution;
 current collector V1 refused before native launch because its parent already
 carried the target preload. A fresh plan must also discriminate the declared
