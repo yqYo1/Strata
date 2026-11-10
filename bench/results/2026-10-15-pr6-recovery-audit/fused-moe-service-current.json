@@ -265169,6 +265169,188 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "head0-backing0",
+        "passed": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "87ec032b8690ce72a0f74a406d3ea4b520a065a608f91555578a9b20e5d59daa",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_immutable": true
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "00227b007c62f21661fc45437764911ebd1c4f1fa7f28b393d651de42b0980a9",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_immutable": true
+          }
+        ],
+        "native_identity": {
+          "pid": 1539795,
+          "state": "S",
+          "ppid": 1536783,
+          "pgid": 1539795,
+          "sid": 1539795,
+          "start_ticks": 265367088,
+          "rss_bytes": 61657088
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1539795,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "owner": {
+          "dpas": 0,
+          "numeric": [
+            {
+              "cycle": -1,
+              "seed": 7,
+              "max_abs_pair_error": 0.0,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": -1,
+              "seed": 19,
+              "max_abs_pair_error": 0.0,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": 0,
+              "seed": 31,
+              "max_abs_pair_error": 0.0,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": 1,
+              "seed": 32,
+              "max_abs_pair_error": 0.0,
+              "outputs": 993280,
+              "oracle_rows": 543
+            }
+          ],
+          "transitions": [
+            {
+              "phase": "load",
+              "cycle": -1,
+              "wall_ns": 197530484,
+              "thread_cpu_ns": 175434511
+            },
+            {
+              "phase": "prepare",
+              "cycle": 0,
+              "wall_ns": 249518487,
+              "thread_cpu_ns": 249468697
+            },
+            {
+              "phase": "retire_readers",
+              "cycle": 0,
+              "wall_ns": 268917,
+              "thread_cpu_ns": 269055
+            },
+            {
+              "phase": "detach",
+              "cycle": 0,
+              "wall_ns": 95163321,
+              "thread_cpu_ns": 94466198
+            },
+            {
+              "phase": "restore",
+              "cycle": 0,
+              "wall_ns": 89757378,
+              "thread_cpu_ns": 68197885
+            },
+            {
+              "phase": "resume",
+              "cycle": 0,
+              "wall_ns": 45518069,
+              "thread_cpu_ns": 45442092
+            },
+            {
+              "phase": "prepare",
+              "cycle": 1,
+              "wall_ns": 249430030,
+              "thread_cpu_ns": 249362616
+            },
+            {
+              "phase": "retire_readers",
+              "cycle": 1,
+              "wall_ns": 243309,
+              "thread_cpu_ns": 243506
+            },
+            {
+              "phase": "detach",
+              "cycle": 1,
+              "wall_ns": 95119619,
+              "thread_cpu_ns": 94221118
+            },
+            {
+              "phase": "restore",
+              "cycle": 1,
+              "wall_ns": 125747911,
+              "thread_cpu_ns": 69752496
+            },
+            {
+              "phase": "resume",
+              "cycle": 1,
+              "wall_ns": 49118100,
+              "thread_cpu_ns": 48356114
+            }
+          ],
+          "restore_cycles": 2,
+          "blocked_cases": 4,
+          "graph_replays": 12,
+          "graphs_each_capture": 3,
+          "nodes_each_graph": 2,
+          "canonical_bytes": 521472000,
+          "layout": "canonical",
+          "primary_packed": false,
+          "partial_cases": 0,
+          "extra_device_weight_bytes": 0,
+          "extra_host_weight_bytes": 0,
+          "host_backed": false,
+          "max_alloc_bytes": 10132807680,
+          "canonical_immutable": true,
+          "scope": "Actual NativeHead and selector with fixture graphs;not production Verifier/model ownership or speed."
+        },
+        "assets_pre_post_match": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "backing": 0,
+        "head_mode": 0,
+        "trace_errors_checked": true
       }
     ],
     "passed": false,
@@ -265284,6 +265466,13 @@
       },
       {
         "label": "phase",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "native-head0-backing0",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
