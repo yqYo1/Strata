@@ -1704,8 +1704,16 @@ prompt error versus affine1.618%/3.908%;first and warmed timing scopes stay
 separate. Treat this as bounded interpolation,not a physical cost law. The
 current-build collector V2 now passes its exact1/37/24kernel-class and
 host-flow checks,normal0,quiet validation,closed ownership and no fresh fault.
-Next collect a bounded32Kmodel trace and matched observer-overhead comparison;
-the small control does not identify the limiting resource. This is
+The matched32Kmodel clean/profile/clean bracket now closes under
+`qsa16_stream_fast_profile_v2`:six requests,normal0,quiet validation,closed
+owners,no fresh fault and15final hashes pass. Profile overhead1.071..1.092
+passes the prospective1.2screen. The second observed request has29.775s of
+GPU kernel union,10.152s M2D copy service and negligible observed copy/compute
+overlap;main CPU has21.977s inside waits and20.304s outside,including0.074s
+row grouping. Physical traffic,saturation and the limiting resource remain
+unknown. Next independently assess expert-copy preparation/submission and
+streamed KV Host-USM mirror writes;these are candidates,not adopted changes.
+This is
 characterization,not a repeated
 paired gain,sustained decode,1000PPtarget qualification or adoption. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,

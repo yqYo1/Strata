@@ -493,9 +493,61 @@ timeline is flushed with finite contained clocks. Original numerical/copy/
 event/graph/lifetime checks,pre-main validation and normal0pass;owners are
 closed,the named session is removed,and boot/driver remain unchanged with no
 fresh fault. This qualifies current-build small-fixture collection only.
-Next commit a bounded representative32Kmodel trace and matched observer-cost
-comparison. Model coverage,observer overhead,physical traffic/saturation and
-the limiting hardware resource remain unmeasured;no speed or adoption follows.
+
+The representative `qsa16_stream_fast_profile_v2` model bracket now closes at
+evidence`c2984a6d1`,with controller source`1a907b77a427ce92ad9185d988b22c4c7c7638ef`
+and plan`917d3ca3682f8cb6cd1472567ea53b32523cba62`. Native b9aa/1e598 and
+all five original ELFs remain unchanged. Three fresh clean/profile/clean
+processes each ran two identical32769-input,thinking-on24-output requests.
+Both clean second requests are785.6389/788.3740PP and41.924/41.702s client
+TTFT;their first requests are633.9598/634.6437PP and51.833/51.770s TTFT.
+The profile's prompt/TTFT ratios against both brackets are1.071..1.092,
+passing the prospective1.2observer screen. All six requests,unique native
+host-flow joins,CPU/status conservation,normal0,quiet validation,closed owners,
+unchanged boot/driver,no fresh fault and15final model hashes pass. This
+qualifies bounded attribution,not a speedup or precise process variance.
+
+The second profiled request has45.2316s prompt time and45.5320s client TTFT.
+Its event window ends at the first nonempty output and includes handoff/first
+token work. These intervals and CPU regions overlap and must not be added.
+
+| Measured scope | Second profiled request |
+| --- | ---: |
+| Union of observed GPU kernel intervals,excluding copies |29.7750s |
+| Memory-copy M2D service sum;API-requested payload |10.1518s;46.505GB |
+| QSA prefix kernel service sum |6.7955s |
+| Streamed Q8 KV append kernel service sum |2.2177s |
+| GDN recurrence kernel service sum |2.1996s |
+| Main-thread CPU inside observed waits |21.9770s |
+| Main-thread CPU outside observed waits |20.3037s |
+| Outside-wait CPU:upload / GEMM submission / row grouping |4.5490 /3.6367 /0.0744s |
+| CPU outside classified waits/host regions |3.0221s |
+
+For this window,all observed GPU service sums total40.6446594s;their union is
+`window_seconds-observed_gpu_gap_total_s=40.6340712s`. The0.0105882s excess
+is an upper bound on cross-family overlap:the observed copy and compute
+intervals have negligible overlap here. The4.8979411s outside that union
+means gaps in observation,not established hardware idle or CPU causality.
+`M2D` is the collector's memory classification;its payload and service quotient
+are not physical PCIe traffic/bandwidth. GPU host-memory stores are also absent
+from copy-API payload totals. Arithmetic utilization,VRAM/RAM/PCIe saturation
+and the limiting hardware resource remain unknown. A busy main CPU thread
+includes substantial completion waiting;row grouping alone is small.
+
+Next assess expert-copy preparation/submission and the streamed append's
+direct Host-USM mirror stores independently. The existing optional Host-USM
+expert staging and GPU-local quantization followed by bounded bulk mirror
+copies are candidates,not adopted improvements. Preserve exact KV codes/scales,
+partial-page/tail writes,authoritative host state,checked lifetime and decode
+handoff. Each candidate needs its own committed plan and clean phase comparison.
+The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
+limit. Its original ownership result stays false;the four captured executors
+are gone and its exact named collector session is separately removed. V2 used
+a prospective1GiB/file,1.5GiB/job,2GiBwhole budget and a581101981-byte flushed
+trace. V1's incomplete timeline and V2's raw trace are due for retirement after
+the compact evidence and this resource decision are committed;retain no timeline merely because a
+run succeeded or failed. Task/agent quality,sustained TG,physical262144/RESTORE,
+ordinary provider teardown and overall model adoption remain open.
 
 ## Numerical reference for replacement kernels
 
