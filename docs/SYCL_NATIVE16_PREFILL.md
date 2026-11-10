@@ -1688,9 +1688,11 @@ median514.2599PP/clientTTFT63.863s in one process. Nine fastest552b prefill
 choices remain disabled in that admission configuration. Their separate
 `qsa16_stream_fast_entry_v1` composition now passes actual long/short/long
 route,packed-bank/cache-loan,MTP expert restoration and decode recapture
-checks on the same native build. This is an observed diagnostic,not clean
-speed or adoption;next collect matched clean points before the new length
-curve. See
+checks on the same native build. Its first separate clean32769-input
+`bench.sh`point now closes at639.5848PP first use and788.3531PP subsequent-
+three median/clientTTFT41.738s,with all32768residual rows on GPU. This is
+one process,not a repeated paired gain,sustained decode,>=64Ktarget or
+adoption;next repeat and collect the new length/route curve. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
 validated552b117Kreference or adopt a production resident/cache policy.

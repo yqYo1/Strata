@@ -390,8 +390,25 @@ the pinned FP16batch branch. Checked cache bindings/final drains,normal0,
 closed owners,quiet validation,no fresh faults and all15final model hashes
 pass. These token-tiled diagnostics include observers and are not clean speed,
 sustained decode,task quality,physical262144/RESTORE or adoption evidence.
-Next collect clean matched`bench.sh`points before the input-length curve;
-preserve the validated552b fallback. The reviewed runtime split gate is
+The first clean fast-setting point now closes under
+`qsa16_stream_fast_prefill_v1`,controller`ec9bbe3c4dca857ea7afb673c9ae962229e96da3`,
+with the same native build. Four thinking-on`bench.sh`32769-input requests
+produce24tokens each with zero reuse. First prompt time is51.2348s and
+client TTFT51.374s(639.5848PP). Subsequent prompt times are41.5926/41.2262/
+41.5664s,with median**788.3531PP**and client TTFT41.738s. All four actual
+window10/staged384/ordinary-accumulator routes keep all32768BF16 residual
+rows on GPU and restore the675MiB MTP expert bank. Native/benchmark exit0,
+closed owners,quiet validation,no fresh fault and all15final hashes pass.
+The earlier514.2599PPbaseline and this point are one process each,not a
+prospective repeated pair. Keep first/subsequent scopes separate;24outputs
+do not qualify sustained decode. Record evidence is`3863ba3ef`and the CSV.
+Observed MoE bank copy requests are35.343..35.493GB/request,plus62,914,560
+bytes reported by the dequant source counter;these are requested operations,
+not measured wire bytes or copy time. Job/copy counts vary across nonce
+requests while placement stays all-GPU/staged384;whole route-record
+inequality is not a placement change. Next repeat promising points and
+characterize length/route before adoption or a>=64Ktarget claim. Preserve
+the validated552b fallback. The reviewed runtime split gate is
 actual prefill rows>90112and<=117488,with additional admission checks;its
 accepted replan requests128slots. Do not assume the32K384-slot geometry
 at117489input tokens. Actual hardware saturation remains unknown.
