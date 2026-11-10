@@ -16,7 +16,7 @@ sys.dont_write_bytecode = True
 import build_gu_compact as build
 
 P, B, RESULT = build.P, build.B, build.RESULT
-ROOT, KEY = B/'gu-compact-device-v1', 'gu_compact_device_v1'
+ROOT, KEY = B/'gu-compact-device-v2', 'gu_compact_device_v2'
 THIS = 'tools/sycl/check_gu_compact.py'
 STAGES = ('smoke', 'numerics', 'perf0', 'perf1', 'perf2')
 ROWS = (1, 16, 64, 128, 256, 640, 1280)
@@ -97,7 +97,7 @@ def parsed(text, stage):
     valid_ms = lambda v, floor: type(v) in (int,float) and math.isfinite(v) and v >= floor
     shapes = []
     for ordinal,(rows,cal) in enumerate(zip(ROWS,calibrations)):
-        require(type(cal['repeat']) is int and cal['repeat'] in (64,128,256,512,1024,2048,4096,8192)
+        require(type(cal['repeat']) is int and cal['repeat'] in tuple(2**n for n in range(6,19))
             and valid_ms(cal['separate_ms'],150) and valid_ms(cal['fused_ms'],150),
             'declared calibration floor/repeat budget failed')
         values = [v for v in samples if v['rows'] == rows]
@@ -131,7 +131,7 @@ def prepare():
         environment_sha256=original.common.signature(basis['environment']),boot=basis['boot'],driver=basis['driver'],
         plan=dict(order=list(STAGES),commands=['--smoke','--numerics','--bench 0','--bench 1','--bench 2'],
             correctness='Exact BF16 dense capture;independent integer-dot oracle for M1/3;<=1FP16ULP,NaN/saturation,guards and immutable inputs. Compact and wide numerical shapes include partial tiles.',
-            timing='Resident same FP16 X/W,compact separate GEMM+SwiGLU versus fused GU/SwiGLU. No profiling queue or GPU timing events. Warm8each;calibrate both >=150ms;64..8192 same repeats;4 rotated pairs each shape per process;all samples >=100ms. Three fresh processes. Reset/oracle/guards outside timing.',
+            timing='Resident same FP16 X/W,compact separate GEMM+SwiGLU versus fused GU/SwiGLU. No profiling queue or GPU timing events. Warm8each;calibrate both >=150ms;64..262144 same repeats;4 rotated pairs each shape per process;all samples >=100ms. Three fresh processes. Reset/oracle/guards outside timing.',
             eligibility='A shape is a follow-up candidate only when all three independent-process median paired fused/separate ratios are <1. No blanket minimum gain. Retain all4matched pairs and process spread. This does not advance a model route.',
             safety='First smoke full UR trace and parameter validation;later parameter validation without API trace. Preserve copy-offload/direct-submission avoidance. Stop first failure;no retry/reset/foreign signalling.'),
         budget=dict(wall=240,cpu=720,rss_cap=4<<30,text_cap=64<<20,file_cap=64<<20,total_cap=80<<20),

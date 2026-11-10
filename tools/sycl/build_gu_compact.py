@@ -16,7 +16,7 @@ import check_moe_census_model as device
 import measurement_owner as owner
 
 P,B,RESULT=device.P,device.B,device.RESULT
-ROOT,KEY=B/'gu-compact-component-v2','gu_compact_component_v2'
+ROOT,KEY=B/'gu-compact-component-v3','gu_compact_component_v3'
 THIS,CPP='tools/sycl/build_gu_compact.py','bench/sycl/gu_compact.cpp'
 NATIVE=device.build.ROOT
 require,sha=device.require,device.sha
@@ -24,7 +24,7 @@ require,sha=device.require,device.sha
 
 def native(extra_observers=frozenset()):
     return device.native(observers={device.THIS,'tools/sycl/moe_host_census_model.py',
-        THIS,CPP,*extra_observers})
+        THIS,CPP,'tools/sycl/check_gu_compact.py',*extra_observers})
 
 
 def compact(row):
@@ -89,9 +89,10 @@ def prepare():
         native_admission=n['observer_admission'],compile_seed=dict(path=str(seed),sha256=sha(seed)),
         link_inputs=libraries,recipe=dict(compile=compile_argv,link=link,cwd=str(build),environment=env),
         plan='Compile only this fixture and link the exact97fda7ba engine archive,image-object and runtime set;do not overwrite/reconfigure the native engine. CPU source/native/recipe/SDK checks precede any build. Commit build evidence before fresh bounded traced smoke,numerics and separately planned clean component timing.',
-        prospective_checks='Smoke compact M3 finite/edge;numeric compact/wide M1,3,17,33,64,127,129,640,1280 plus edge17. Exact BF16capture,independent small integer-dot oracle,<=1FP16ULP,guards,immutableinputs. No profiling queue or GPU timing markers. Later3processes x7rowshapes x4matched wall-time pairs;150mscalibration,100mseligibilityfloor,max8192repeats. Select a shape only from consistent per-process gains;no blanket minimum gain. Resident reused operands omit dequant,gather,PCIe and production dispatcher;no model advancement solely from these times.',
+        prospective_checks='Smoke compact M3 finite/edge;numeric compact/wide M1,3,17,33,64,127,129,640,1280 plus edge17. Exact BF16capture,independent small integer-dot oracle,<=1FP16ULP,guards,immutableinputs. No profiling queue or GPU timing markers. Later3processes x7rowshapes x4matched wall-time pairs;150mscalibration,100mseligibilityfloor,max262144repeats. Select a shape only from consistent per-process gains;no blanket minimum gain. Resident reused operands omit dequant,gather,PCIe and production dispatcher;no model advancement solely from these times.',
         retention='One current-API component fixture using the existing native generation;no new engine generation. Retire object/build output after useful compiled-input/safety/speed evidence is committed and the next production decision closes. Five existing engine/proof holds remain separate and are under source review.',
         previous_failure=dict(key='gu_compact_component_v1',source_commit='e3b4069d086c250b05748c20eec50e058c3adcf5',evidence_commit='b56f19571',stage='failed',GPU_executed=False,reason='Verifier-only link rule omitted prefill and vllm image/host objects. V2uses the actual engine link rule;no engine rebuild or mathematical change.'),
+        previous_calibration=dict(key='gu_compact_device_v1',evidence_commit='03a4407eaa0968e74c2a2e897bb51f9ff9ec7348',stage='failed',native_exit_code=1,ownership_closed=True,fresh_faults=[],reason='M1 exhausted8192repeats before the frozen150mscalibration floor. No eligible speed sample. Increase only the finite repeat cap to262144;keep150mscalibration/100mseligibility and every numerical gate. Rebuild and requalify the fixture;do not relabel V1.'),
         budget=dict(wall=300,cpu=600,rss_cap=8<<30,text_cap=32<<20,file_cap=128<<20,total_cap=512<<20),
         active=False,ownership_closed=True,passed=False,complete=False,GPU_executed=False,commands=[])
     save(row);print('Prepared current-library compact-GU fixture;commit before building.',flush=True)

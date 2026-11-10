@@ -160,7 +160,7 @@ void bench(int process,sycl::queue& q) {
     for (;;) {
       first=batch(c,false,repeat);second=batch(c,true,repeat);
       if (first>=150 && second>=150) break;
-      need(repeat<8192,"calibration budget reached before150ms");repeat*=2;
+      need(repeat<262144,"calibration budget reached before150ms");repeat*=2;
     }
     std::cout<<"{\"kind\":\"calibration\",\"rows\":"<<rows<<",\"repeat\":"<<repeat
       <<",\"separate_ms\":"<<first<<",\"fused_ms\":"<<second<<"}\n";
