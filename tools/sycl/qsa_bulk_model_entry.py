@@ -19,8 +19,9 @@ import qsa16_stream_bench as benchmark
 import qsa_bulk_mirror as component
 
 P, B = device.P, device.B
-ROOT, KEY = B / 'qsa16-bulk-mirror-model-entry-v2', 'qsa16_bulk_mirror_model_entry_v2'
+ROOT, KEY = B / 'qsa16-bulk-mirror-model-entry-v3', 'qsa16_bulk_mirror_model_entry_v3'
 THIS = 'tools/sycl/qsa_bulk_model_entry.py'
+PYTHON = '/home/yayoi/.local/share/strata-sycl/venv/bin/python3'
 require, sha = original.require, original.sha
 
 
@@ -177,6 +178,8 @@ def prepare():
 
 
 if __name__ == '__main__':
+    require(sys.executable == PYTHON,
+        'Use the existing pinned prompt-generator interpreter: ' + PYTHON)
     require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'host', 'run'),
         'qsa_bulk_model_entry.py prepare|host|run')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
