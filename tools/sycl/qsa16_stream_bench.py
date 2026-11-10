@@ -29,6 +29,12 @@ ORDER = [(n, 1) for n in READS]
 REFERENCE = B / 'decode-iq3-audit-speed-v2/record.json'
 require, digest, write = source.require, source.sha, source.device.write
 shared, build = comparison.shared, comparison.build
+FAST_ROOT, FAST_KEY = B / 'qsa16-stream-fast-entry-v1', 'qsa16_stream_fast_entry_v1'
+FAST = dict(STRATA_PREFILL_RELEASE_MTP_EXPERTS='1', STRATA_SYCL_PREFILL_MOE_WINDOW='10',
+    STRATA_SYCL_PREFILL_SCORE_GEMM='1', STRATA_SYCL_PREFILL_MIXED_SCRATCH='1',
+    STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS='384', STRATA_SYCL_CACHE_SCRATCH_LEASE='1',
+    STRATA_MTP_BATCH_F16='1', STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED='1',
+    STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR='1')
 
 
 def configure_baseline():
@@ -296,10 +302,171 @@ def prepare():
     save(row); print(f'Prepared{len(READS)}clean streamed-route processes;commit before host/native.', flush=True)
 
 
+def baseline_proof(native, prior):
+    """Recover the exact closed benchmark; allow only this new controller delta."""
+    root = B / 'qsa16-stream-prefill-baseline-v2'
+    old = json.loads((root / 'record.json').read_text())
+    require(build.committed(RESULT)['qsa16_stream_prefill_baseline_v2'] == compact(old)
+        and old['stage'] == 'closed' and all(old[k] for k in ('passed', 'complete', 'ownership_closed'))
+        and not old['active'] and len(old['processes']) == 1
+        and old['processes'][0]['native_exit_code'] == 0 and not old['processes'][0]['fresh_faults']
+        and old['binary'] == native['binaries']['strata']
+        and old['native_source_commit'] == native['native_source_commit']
+        and old['model_assets'] == prior['models'], 'closed same-engine clean32K baseline required')
+    recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
+        source.device.common.source.blobs(P, old['source_commit'], old['sources'])}
+    revision = source.device.common.source.git(P, 'rev-parse', 'HEAD').decode().strip()
+    current = pins(revision)
+    require(recovered == old['sources'] and current.keys() == recovered.keys()
+        and {p for p in current if current[p] != recovered[p]} == {THIS},
+        'only this explicitly committed prospective controller may change')
+    source.model.previous.assets(prior)
+    return old, dict(key='qsa16_stream_prefill_baseline_v2',
+        evidence_commit='55f4a341ffcb4a8849c1056f3bd4bb4e5dd4985a',
+        original_source_commit=old['source_commit'], receipt_sha256=digest(root / 'record.json'),
+        source_files_recovered=len(recovered), changed_controller=[THIS],
+        model_assets_sha256=source.signature(old['model_assets']),
+        meaning='Original closed source recovered;all15full final model hashes precede this new plan and every identity remains exact. Reuse before-run hashes,rehash all15after the new process. No native rebuild or inherited fast-setting GPU result.')
+
+
+def fast_native(expected=None):
+    native, prior, _, _ = basis()
+    proof = prior['observer_admission']
+    require(expected is None or proof == expected, 'prospective fast native admission changed')
+    return dict(native, model_observer_admission=proof)
+
+
+def fast_route(text):
+    result = source.model.route(text)
+    def records(prefix, fields):
+        values = []
+        for line in text.splitlines():
+            if not line.startswith(prefix): continue
+            pairs = [p.split('=', 1) for p in line[len(prefix):].split()]
+            require(line.isascii() and all(len(p) == 2 and p[0] and p[1] for p in pairs)
+                and len(pairs) == len(fields) == len({p[0] for p in pairs})
+                and {p[0] for p in pairs} == fields, 'exact fast-route producer schema required')
+            values.append(dict(pairs))
+        return values
+    packed = records('strata packed expert bank: ',
+        {'layer', 'slots', 'stride', 'used_bytes', 'backing_bytes', 'full_fit'})
+    require(len(packed) == 96 and [int(v['layer']) for v in packed] == list(range(48)) * 2
+        and all(384 <= int(v['slots']) <= 512 and int(v['stride']) > 0
+            and int(v['used_bytes']) == int(v['slots']) * int(v['stride'])
+            and int(v['used_bytes']) <= int(v['backing_bytes'])
+            and int(v['full_fit']) == int(v['slots'] == '512') for v in packed),
+        'actual packed bank geometry/48layer entries required in each long prefill')
+    banks = records('strata MoE expert bank: ', {'requested_slots', 'effective_slots', 'staged',
+        'host_slab_bytes', 'device_bytes', 'residual_gpu_rows', 'allocation_limit_bytes', 'general_map'})
+    require(len(banks) == 2 and all(v['requested_slots'] == v['effective_slots'] == '384'
+        and v['staged'] == '1' and v['residual_gpu_rows'] == '32768'
+        and v['general_map'] == 'private_scratch_never_published' for v in banks),
+        'actual staged384/private-map route required')
+    phases = re.findall(r'^strata mtp: prompt expert phase=(\S+) ', text, re.M)
+    require(phases == ['before-detach', 'after-detach', 'after-prompt-before-restore', 'after-restore'] * 2
+        and re.findall(r'^strata mtp: experts restored bytes=(\d+),', text, re.M) == ['707788800'] * 2,
+        'both complete actual675MiB MTP expert retirement/restores required')
+    require(len(re.findall(r'^strata prefill cache binding: generation=\d+ parent_match=1 execution_distinct=1$', text, re.M)) == 2
+        and len(re.findall(r'^strata MoE expert bank complete: .* final_drain=checked$', text, re.M)) == 2,
+        'bound lease/private execution and final bank drains required')
+    recaptures = re.findall(r'^strata mtp: expert decode recapture kind=round coupled=(\d+) ok=(\d+) ', text, re.M)
+    require(len(recaptures) >= 2 and all(v == ('0', '1') for v in recaptures),
+        'successful independent MTP round recapture after restoration required')
+    callbacks = re.findall(r'^strata serve: DRAFT_PREFILL path=(\w+) mode=(\d+) cells=(\d+)$', text, re.M)
+    require(callbacks == [('batched', '2', '8192')] * 8,
+        'actual32Kring callbacks must reach the immutable FP16batch selector')
+    result.update(packed_layer_entries=96, bank_slots_min=min(int(v['slots']) for v in packed),
+        bank_slots_max=max(int(v['slots']) for v in packed), staged_bank_headers=2,
+        MTP_expert_restore_bytes=[707788800, 707788800], MTP_round_recaptures=len(recaptures),
+        actual_batched_ring_callbacks=8, cache_binding_and_final_drains=True,
+        precision='Immutable MTP_BATCH_F16=1 plus actual batched mode2 callbacks selects the pinned FP16projection branch. No per-launch projector telemetry or task-quality claim.')
+    return result
+
+
+def fast_context(before_hashes=None):
+    ctx = source.device.load_module('qsa16_stream_fast_model_context', source.model.__file__)
+    ctx.ROOT, ctx.KEY, ctx.ATTEMPT = FAST_ROOT, FAST_KEY, 'v2'
+    ctx.native, ctx.route = fast_native, fast_route
+    original_context = ctx.context
+
+    def private_context(admission=None):
+        value = original_context(admission)
+        if before_hashes is not None:
+            original_assets = value.assets
+
+            def assets(row, full=False):
+                require(row['models'] == before_hashes['model_assets'], 'reused before-run assets changed')
+                original_assets(row, full=False)
+
+            value.assets = assets
+        return value
+
+    ctx.context = private_context
+    return ctx
+
+
+def fast_prepare():
+    native, prior, _, _ = basis(); old, proof = baseline_proof(native, prior)
+    best = build.committed(RESULT)['cache_map_prefill_speed117489_v1']
+    require(all(best['environment_template'].get(k) == v for k, v in FAST.items()),
+        'recover exact owned fastest-prefill settings,not an invented configuration')
+    ctx = fast_context(old); ctx.prepare()
+    row = json.loads((FAST_ROOT / 'record.json').read_text())
+    require(row['stage'] == 'prepared' and not row['results'], 'fresh unexecuted generated plan only')
+    row['environment'].update(FAST)
+    row['fast_configuration'] = dict(settings=FAST, baseline=proof,
+        fastest_reference_source=best['source_commit'], fastest_native_source=best['native_source_commit'],
+        fastest_binary=best['binary']['sha256'], original_native_and_decode_implementation_unchanged=True)
+    row['plan'] = ('New configuration diagnostic,not a clean speed comparison. Same b9aa/1e598 native/five fixtures,'
+        'logical262144/resident20480INT8,own264MiBstage,8192chunks,1256decode slots,spec4,'
+        'head2/dense1/Hostbacking0 and immutable safety. Restore exactly nine owned552b prefill settings'
+        'before exec:window10,scoreGEMM,mixed scratch,packed384bank,lease,splitacc,MTPFP16batch,'
+        'release675MiBMTPexperts. Thinking32769/82/32769input,32outputs each. Require existing exact'
+        'READY/fullINFO/source/runtime/protocol/handoff/quiet validation/normal0/closure/no-fault gates,'
+        '96actual packed-layer entries,staged384private bank,checked final drains,bound current leases,'
+        'two full MTP expert restores,successful uncoupled round recaptures and8actual8192mode2batch callbacks.'
+        'Original FP16branch is selected from immutable environment and actual callback,not extra telemetry.'
+        'Reuse the closed clean baseline final full model hashes with exact identities;rehash all15after'
+        'this process. Stop first failure;no retry,hash refresh or output-equality requirement.')
+    row['limits'] = ('Prospective fast-setting composition/ownership/route check only. No clean speed,gain,'
+        'sustainedTG,task quality,physical262144fill/RESTORE or adoption. The following clean bench.sh'
+        'comparison must preserve actual bodies/configuration,repeat promising points and characterize length.')
+    ctx.context().save(row)
+    print('Prepared owned fast-prefill configuration diagnostic;commit before host/native.', flush=True)
+
+
+def fast_execute(action):
+    ctx = fast_context(); row = json.loads((FAST_ROOT / 'record.json').read_text())
+    native, prior, _, _ = basis(); _, proof = baseline_proof(native, prior)
+    require(row['fast_configuration']['baseline'] == proof and
+        all(row['environment'].get(k) == v for k, v in FAST.items()), 'frozen fast configuration changed')
+    if action == 'host':
+        require(row['stage'] == 'prepared', 'one fresh configuration check only')
+        ctx.context(row['native_observer_admission']).verify(row)
+        args = row['argv']
+        require(all(args.count(k) == 1 and args[args.index(k)+1] == v for k, v in
+            {'--max-context':'262144', '--kv-resident':'20480', '--prefill':'8192', '--expert-cache':'1256',
+             '--kv':'int8', '--spec':'4'}.items()) and '--no-token-graph' in args
+            and '--no-coupled-draft' in args and '--mtp' in args and '--draft' not in args,
+            'single-GPU native MTP4/lease configuration required')
+        row.update(stage='host_passed', host_controls=dict(configuration_checked=True,
+            original_INFO_controls_reused_from='qsa16_stream_model_entry_v2',
+            INFO_source_commit='48e4a5e02f15b48b5f75a91e341bca4dc3dc53f9',
+            new_numerical_tests_executed=False, GPU_executed=False))
+        ctx.context().save(row); print('Fast configuration/native input checks pass;commit before GPU.', flush=True)
+    else:
+        require(action == 'run', 'use fast prepare|host|run')
+        ctx.execute('run')
+
+
 if __name__ == '__main__':
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); source.model.guards.no_model_owners([])
         action = sys.argv[1:]
+        if action[:1] == ['fast']:
+            require(len(action) == 2 and action[1] in ('prepare', 'host', 'run'), 'use fast prepare|host|run')
+            fast_prepare() if action[1] == 'prepare' else fast_execute(action[1])
+            raise SystemExit(0)
         if action[:1] == ['baseline']:
             configure_baseline(); action = action[1:]
         if action == ['prepare']: prepare()
