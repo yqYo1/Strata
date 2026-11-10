@@ -277051,7 +277051,7 @@
     }
   },
   "expert_upload_chain_v2": {
-    "stage": "checked",
+    "stage": "closed",
     "source_commit": "3efcb16e2be631630cfed31fa3865050fed05028",
     "native_source_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
     "inputs": {
@@ -278077,10 +278077,138 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      "perf5": {
+        "passed": true,
+        "complete": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2599269,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "checks": [],
+        "samples": [
+          {
+            "gu": "22",
+            "down": "20",
+            "rows": "640",
+            "bytes": "1971200",
+            "staged": "1",
+            "batch": "0",
+            "jobs": "256",
+            "uploads": "192",
+            "hits": "64",
+            "ms": "318.49341"
+          },
+          {
+            "gu": "22",
+            "down": "20",
+            "rows": "640",
+            "bytes": "1971200",
+            "staged": "1",
+            "batch": "1",
+            "jobs": "256",
+            "uploads": "192",
+            "hits": "64",
+            "ms": "334.477983"
+          },
+          {
+            "gu": "23",
+            "down": "20",
+            "rows": "640",
+            "bytes": "2662400",
+            "staged": "1",
+            "batch": "0",
+            "jobs": "256",
+            "uploads": "192",
+            "hits": "64",
+            "ms": "501.548071"
+          },
+          {
+            "gu": "23",
+            "down": "20",
+            "rows": "640",
+            "bytes": "2662400",
+            "staged": "1",
+            "batch": "1",
+            "jobs": "256",
+            "uploads": "192",
+            "hits": "64",
+            "ms": "446.002574"
+          },
+          {
+            "gu": "22",
+            "down": "20",
+            "rows": "1280",
+            "bytes": "1971200",
+            "staged": "1",
+            "batch": "0",
+            "jobs": "256",
+            "uploads": "192",
+            "hits": "64",
+            "ms": "387.477048"
+          },
+          {
+            "gu": "22",
+            "down": "20",
+            "rows": "1280",
+            "bytes": "1971200",
+            "staged": "1",
+            "batch": "1",
+            "jobs": "256",
+            "uploads": "192",
+            "hits": "64",
+            "ms": "414.377108"
+          },
+          {
+            "gu": "23",
+            "down": "20",
+            "rows": "1280",
+            "bytes": "2662400",
+            "staged": "1",
+            "batch": "0",
+            "jobs": "256",
+            "uploads": "192",
+            "hits": "64",
+            "ms": "469.10648"
+          },
+          {
+            "gu": "23",
+            "down": "20",
+            "rows": "1280",
+            "bytes": "2662400",
+            "staged": "1",
+            "batch": "1",
+            "jobs": "256",
+            "uploads": "192",
+            "hits": "64",
+            "ms": "474.631161"
+          }
+        ],
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     },
     "passed": true,
-    "complete": false,
+    "complete": true,
     "ownership_closed": true,
     "GPU_executed": true,
     "plan": {
@@ -278227,6 +278355,86 @@
           "host_ld_trace_presence_claimed": false
         }
       }
+    },
+    "performance": {
+      "shapes": [
+        {
+          "rows": 640,
+          "gu_type": 22,
+          "process_median_ms": [
+            327.2807745,
+            328.39060500000005,
+            281.7751445,
+            325.8647445,
+            338.0568085,
+            326.4856965
+          ],
+          "paired_ratios": [
+            1.0033910653679416,
+            0.8646996929120082,
+            0.9657716936649127
+          ],
+          "geometric_mean_ratio": 0.9427647492454095
+        },
+        {
+          "rows": 640,
+          "gu_type": 23,
+          "process_median_ms": [
+            446.6484415,
+            466.963348,
+            440.039308,
+            405.95996249999996,
+            403.028092,
+            473.7753225
+          ],
+          "paired_ratios": [
+            1.0454829897800058,
+            1.083947553079203,
+            1.175539204100939
+          ],
+          "geometric_mean_ratio": 1.1003245071286964
+        },
+        {
+          "rows": 1280,
+          "gu_type": 22,
+          "process_median_ms": [
+            459.486561,
+            318.6808305,
+            324.2884755,
+            457.44009700000004,
+            452.814446,
+            400.92707800000005
+          ],
+          "paired_ratios": [
+            0.6935585445773245,
+            0.7089200916726808,
+            0.8854114119848554
+          ],
+          "geometric_mean_ratio": 0.7578940698413892
+        },
+        {
+          "rows": 1280,
+          "gu_type": 23,
+          "process_median_ms": [
+            464.13840700000003,
+            402.9256135,
+            425.170397,
+            489.80190600000003,
+            504.841803,
+            471.86882049999997
+          ],
+          "paired_ratios": [
+            0.8681152161148344,
+            0.8680456155676943,
+            0.9346865051506045
+          ],
+          "geometric_mean_ratio": 0.8897376386037162
+        }
+      ],
+      "component_advance_eligible": false,
+      "model_speed_measured": false,
+      "default_adopted": false,
+      "physical_resource_saturation_qualified": false
     },
     "headers_summary": {
       "files": 707,
