@@ -27495,66 +27495,46 @@
   "qsa16_stream_native_observer_audit_20261110": {
     "classification": "decision_support",
     "topic": "Streamed model native observer audit",
-    "stage": "reviewed_executors_closed_body_review_due",
-    "schedulable_now": false,
-    "prerequisite": "orca_ro_bound_context_preflight_20261110",
-    "prerequisite_evidence": "New179-line committed same-build observer and actual closed128-TU/five-ELF native build exist. Host50/11/policy/2443-instruction IR gates now pass. Prior source reports did not audit this observer;only static/source audit is requested,not a duplicate actual model gate.",
-    "model": "gpt-6-luna",
-    "reasoning_effort": "medium",
     "source_commit": "7d1e511d1eda4d4179ffd3334f8d79d28686b8b7",
-    "helper_source_commit": "69a8051893e0b6dac27fb73c76b1ddbda58c1480",
-    "helper_sha256": "c41550676cbc0d80f4c7351faa940d01879a4e90fa7befd3aa0562336aa1ec19",
-    "implementation_root": "/home/yayoi/orca/workspaces/Strata/sycl",
-    "implementation_revision": "7d1e511d1eda4d4179ffd3334f8d79d28686b8b7",
-    "implementation_inputs_sha256": "add0f20b99187b65180e11f9e282b99d4846921eb4fcf5426ad206f20b7a7b68",
-    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-native-observer-audit-20261110",
-    "spec_sha256": "bca00b6ed3ee1728186c4987c8285224698b74e4bfbf16a9759d484d40729f19",
-    "launch_input_sha256": {
-      "preflight.py": "d1c380af3525b33c7405aadaccd8b92430a0a37eb3aad596dc5e085ff5089070",
-      "finish.py": "5c1425c4d7021939b1faa59d1111cd75311950daf7db6783859655ba3089dfea",
-      "task-spec.md": "bca00b6ed3ee1728186c4987c8285224698b74e4bfbf16a9759d484d40729f19"
-    },
-    "report_budget_bytes": 24576,
-    "wall_budget_seconds": 480,
-    "owner": "Main",
-    "next_review": "Only source-audit report and deletion manifest remain in each worker root. Retain these bodies only through the now-running native actual-model report review;the recipe gap is resolved and collection body is largely redundant. At that closure curate useful source distinctions and retire bodies without a remaining concrete consumer. Do not recreate closed private CLI/transaction history.",
-    "task": "task_4168756ed2f5",
-    "dispatch": "ctx_10d29b9374ca",
-    "terminal": "term_356d2178-3df7-4fbe-a7a9-9a8ecbe5d6f1",
-    "captured_executor_closed": true,
-    "worker_capability_passed": true,
-    "preflight": {
-      "sha256": "7c8647da677a474379f7a98aaadd35fffee5ecca1d7090b8290467fedb616dcd",
-      "passed": true,
-      "payload_retired": true
-    },
+    "stage": "curated_body_and_transactions_retired",
+    "schedulable_now": false,
     "report": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-native-observer-audit-20261110/report.md",
       "bytes": 7784,
-      "sha256": "3ba5918e0b83bd4d18c113ca1ce60ce35d236f84c74334243aaeca7185c62f8f"
-    },
-    "dispatch_settlement": {
-      "status": "completed",
-      "completed_at": "2026-11-10T01:31:15.920Z",
-      "failure_count": 0
+      "sha256": "3ba5918e0b83bd4d18c113ca1ce60ce35d236f84c74334243aaeca7185c62f8f",
+      "body_retired": true
     },
     "review": {
-      "agent": "/root/review_stream_native_observer_reports_20261110",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "state": "completed",
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-native-review-20261110/review.md",
       "bytes": 7284,
       "sha256": "51e5a321fae7c7b8aa0b5da8d47261da535b5f39941db7161a64a98ff529f7e7",
       "verdict": "One admission proof gap: seed hash alone does not compare the recorded recipe to its exact expected relocation. No observed native-build difference or false numerical pass.",
-      "transaction_retirement": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-native-review-20261110/retirement.json",
-        "sha256": "468a71bd1a8c82a37cd637ab1f15b41a836d3ebd260aff9149699fa9c95aa6a6",
+      "body_retired": true,
+      "retirement": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-native-review-20261110/body-retirement.json",
+        "sha256": "177dfdf4f99ea130072675b868928be411310be3963667011816d4756051ab0e",
         "files": 1,
-        "bytes": 3454
+        "bytes": 7284,
+        "symlinks": 0
       }
     },
-    "recipe_observation": {
+    "retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-native-observer-audit-20261110/body-retirement.json",
+      "sha256": "1eaa36acca76560565e4a22ebb9c2d244f77897dffd5da772b03876c05e73d3a",
+      "files": 1,
+      "bytes": 7784,
+      "symlinks": 0
+    },
+    "source_transaction_evidence": "17a5f9a79",
+    "earlier_transaction_retirement": {
+      "files": 429,
+      "bytes": 109191747,
+      "symlinks": 4,
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-native-observer-audit-20261110/retirement.json",
+      "sha256": "59b61928c51db76dc9d3fc32d8563ca4902e5c3ce0f716e36584defb6d0dcd89",
+      "evidence_commit": "8579b3949afdef8e38508da73ac3a5e9278b513d"
+    },
+    "correction": {
       "exact_expected_recipe_matches": true,
       "expected_recipe_sha256": "937bf0671a29b72ab39b032361553c882e809436680f737144997b804257985d",
       "scope": "Exact recipe equality and all original native/fixture inputs checked at the closed four-stage boundary. Prior results unchanged;no new GPU result or model qualification.",
@@ -27567,147 +27547,89 @@
       },
       "evidence_key": "qsa16_stream_model_device_v1.controller_admission"
     },
-    "retirement": {
-      "files": 429,
-      "bytes": 109191747,
-      "symlinks": 4,
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-native-observer-audit-20261110/retirement.json",
-      "sha256": "59b61928c51db76dc9d3fc32d8563ca4902e5c3ce0f716e36584defb6d0dcd89",
-      "evidence_commit": "8579b3949afdef8e38508da73ac3a5e9278b513d"
-    }
+    "next_review": "Exact seed recipe equality enforced and12CPU controls pass;original source/results retained under qsa16_stream_model_device_v1.controller_admission. Do not repeat the resolved observer/recipe survey."
   },
   "gpu_host_publication_efficiency_20261110": {
     "classification": "knowledge_collection",
     "topic": "GPU host-output publication efficiency",
-    "stage": "reviewed_executors_closed_body_review_due",
-    "schedulable_now": false,
-    "prerequisite": "orca_ro_bound_context_preflight_20261110",
-    "prerequisite_evidence": "A concrete independently authored WG64/SG32 three-store producer now passes small/full262144GPU component checks. Remote2-byte scale/contiguous64-byte code publication can be compared to bulk DMA at the literature level;no physical traffic/saturation claim or model admission is a prerequisite to this retrieval-only collection. Prior Host legality and generic PCIe method references are provided as novelty exclusions.",
-    "model": "gpt-6-luna",
-    "reasoning_effort": "medium",
     "source_commit": "7d1e511d1eda4d4179ffd3334f8d79d28686b8b7",
-    "helper_source_commit": "69a8051893e0b6dac27fb73c76b1ddbda58c1480",
-    "helper_sha256": "c41550676cbc0d80f4c7351faa940d01879a4e90fa7befd3aa0562336aa1ec19",
-    "implementation_root": "/home/yayoi/orca/workspaces/Strata/sycl",
-    "implementation_revision": "7d1e511d1eda4d4179ffd3334f8d79d28686b8b7",
-    "implementation_inputs_sha256": "add0f20b99187b65180e11f9e282b99d4846921eb4fcf5426ad206f20b7a7b68",
-    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-host-publication-efficiency-20261110",
-    "spec_sha256": "6325198d70b0145d8f0f51c960749257a8e0d67e1f2d82cd984fe8b84da13bf3",
-    "launch_input_sha256": {
-      "preflight.py": "d1c380af3525b33c7405aadaccd8b92430a0a37eb3aad596dc5e085ff5089070",
-      "finish.py": "5c1425c4d7021939b1faa59d1111cd75311950daf7db6783859655ba3089dfea",
-      "task-spec.md": "6325198d70b0145d8f0f51c960749257a8e0d67e1f2d82cd984fe8b84da13bf3"
-    },
-    "report_budget_bytes": 24576,
-    "wall_budget_seconds": 480,
-    "owner": "Main",
-    "next_review": "Only source-audit report and deletion manifest remain in each worker root. Retain these bodies only through the now-running native actual-model report review;the recipe gap is resolved and collection body is largely redundant. At that closure curate useful source distinctions and retire bodies without a remaining concrete consumer. Do not recreate closed private CLI/transaction history.",
-    "task": "task_62405b6048e9",
-    "dispatch": "ctx_7bf2688c23d5",
-    "terminal": "term_52b73c41-fa9f-4963-9d44-0cec5da6f08c",
-    "captured_executor_closed": true,
-    "worker_capability_passed": true,
-    "preflight": {
-      "sha256": "ed7316d01bcfeab80aaa94f25f793905c470767eecb9e82c5180508b24f91860",
-      "passed": true,
-      "payload_retired": true
-    },
+    "stage": "curated_body_and_transactions_retired",
+    "schedulable_now": false,
     "report": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-host-publication-efficiency-20261110/report.md",
       "bytes": 10533,
-      "sha256": "ba52f4266defad4992f645e0b2f581995df117f327ac3d7c2252a775e6d349d1"
-    },
-    "dispatch_settlement": {
-      "status": "completed",
-      "completed_at": "2026-11-10T01:32:05.652Z",
-      "failure_count": 0
+      "sha256": "ba52f4266defad4992f645e0b2f581995df117f327ac3d7c2252a775e6d349d1",
+      "body_retired": true
     },
     "review": {
-      "agent": "/root/review_stream_native_observer_reports_20261110",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "state": "completed",
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-native-review-20261110/review.md",
       "bytes": 7284,
       "sha256": "51e5a321fae7c7b8aa0b5da8d47261da535b5f39941db7161a64a98ff529f7e7",
       "verdict": "Substantially redundant with existing mapped-host/publication references. Keep only indexed distinctions until an admitted production critical-path sample makes publication material.",
-      "transaction_retirement": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-native-review-20261110/retirement.json",
-        "sha256": "468a71bd1a8c82a37cd637ab1f15b41a836d3ebd260aff9149699fa9c95aa6a6",
+      "body_retired": true,
+      "retirement": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-native-review-20261110/body-retirement.json",
+        "sha256": "177dfdf4f99ea130072675b868928be411310be3963667011816d4756051ab0e",
         "files": 1,
-        "bytes": 3454
+        "bytes": 7284,
+        "symlinks": 0
       }
     },
     "retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-host-publication-efficiency-20261110/body-retirement.json",
+      "sha256": "86eea56beebe14df3b0fb91fc8b1eabe15c5f937d3d0a2685d8ca85fe65b206a",
+      "files": 1,
+      "bytes": 10533,
+      "symlinks": 0
+    },
+    "source_transaction_evidence": "17a5f9a79",
+    "earlier_transaction_retirement": {
       "files": 429,
       "bytes": 110287474,
       "symlinks": 4,
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-host-publication-efficiency-20261110/retirement.json",
       "sha256": "db53defa0d6012372be6fd63d79dd017d274e21a9feee31ccfe92a792cc72d30",
       "evidence_commit": "8579b3949afdef8e38508da73ac3a5e9278b513d"
-    }
+    },
+    "primary_prior_reference": "usm_host_publication_20261110",
+    "retrieval_distinctions": "Host-allocation cache bias differs from shared-allocation placement;B60 coherence does not predict B570;protocol byte enables do not measure Xe2 transaction formation.",
+    "source_reference": "https://oneapi-src.github.io/level-zero-spec/level-zero/1.20.41/core/api/apis/mem.html",
+    "next_review": "Retrieve existing mapped-host methods only if an admitted production critical-path sample makes publication material. No new publication task is eligible."
   },
   "qsa16_stream_actual_model_audit_20261110": {
     "classification": "decision_support",
     "topic": "Actual streamed QSA16 model admission audit",
-    "stage": "reviewed_INFO_schema_guard_host_passed",
-    "schedulable_now": false,
-    "prerequisite": "qsa16_stream_model_device_v1",
-    "prerequisite_evidence": "Closed five-stage same-build native cohort and committed216-line actual-model reader with prospective262144logical/20480resident,8192chunk,32Kthinking diagnostic exist. This new source/consumer was not reviewed by prior producer/device-observer tasks.",
-    "model": "gpt-6-luna",
-    "reasoning_effort": "medium",
     "source_commit": "016bec0f20c3bf7db6e4dfb2800b8e855aea1801",
-    "helper_source_commit": "69a8051893e0b6dac27fb73c76b1ddbda58c1480",
-    "helper_sha256": "c41550676cbc0d80f4c7351faa940d01879a4e90fa7befd3aa0562336aa1ec19",
-    "implementation_root": "/home/yayoi/orca/workspaces/Strata/sycl",
-    "implementation_revision": "016bec0f20c3bf7db6e4dfb2800b8e855aea1801",
-    "implementation_inputs_sha256": "6ea1397433e9c3d55f9835023948dee8d60f3e50f0ca73c7af2e39be1c30b206",
-    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-actual-model-audit-20261110",
-    "spec_sha256": "f351d37bbf40ca8b6c177b75d80614b664a8a5c613ea0af8825db1fb5b75d12c",
-    "launch_input_sha256": {
-      "preflight.py": "d1c380af3525b33c7405aadaccd8b92430a0a37eb3aad596dc5e085ff5089070",
-      "finish.py": "5c1425c4d7021939b1faa59d1111cd75311950daf7db6783859655ba3089dfea",
-      "task-spec.md": "f351d37bbf40ca8b6c177b75d80614b664a8a5c613ea0af8825db1fb5b75d12c"
-    },
-    "expected_report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-actual-model-audit-20261110/report.md",
-    "report_budget_bytes": 24576,
-    "wall_budget_seconds": 480,
-    "owner": "Main",
-    "next_review": "Strict INFO correction passes15CPU controls. Main may execute only the newly committed own-stage V2 after retention closure;original4096V1 remains failed. Bodies/private CLI/transaction consumers ended;retire them now,keeping compact source correction and manifest evidence. No new research prerequisite is satisfied by CPU controls alone.",
-    "task": "task_3322621d9413",
-    "dispatch": "ctx_28b64523f3e5",
-    "terminal": "term_d8375495-c802-429a-a707-91603f8620a5",
-    "captured_executor_closed": true,
-    "owned_identity_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-actual-model-audit-20261110/owned-launch.json",
-    "worker_capability_passed": true,
-    "preflight": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-actual-model-audit-20261110/capability.json",
-      "sha256": "baee131436846259909ce94c14f72f71b2342a2314329ec84c8de911dd410fed",
-      "passed": true
-    },
+    "stage": "curated_body_and_transactions_retired",
+    "schedulable_now": false,
     "report": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-actual-model-audit-20261110/report.md",
       "bytes": 9001,
-      "sha256": "11931f8a6ee94069e0cc30466e91251d57e41ad95279fc775bcbac6b738e24e0"
+      "sha256": "11931f8a6ee94069e0cc30466e91251d57e41ad95279fc775bcbac6b738e24e0",
+      "body_retired": true
     },
-    "dispatch_settlement": {
-      "status": "completed",
-      "completed_at": "2026-11-10T02:17:30.358Z",
-      "failure_count": 0
-    },
-    "remaining_captured_identities": [],
     "review": {
-      "agent": "/root/review_stream_actual_model_report_20261110",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "task_spec": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-actual-model-review-20261110/task-spec.md",
-      "expected_report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-actual-model-review-20261110/review.md",
-      "state": "completed",
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-actual-model-review-20261110/review.md",
       "bytes": 4271,
       "sha256": "5f6d4081bbf56c77b3b8010f38a56a806723b54400d5db5c27e958ea748887af",
-      "verdict": "Real duplicate/extra INFO-field false-pass edge;validate raw pairs and the complete20-field producer schema. No observed duplicated production output or production engine bug. Preserve original4096route rejection;own stage is only a fresh candidate."
+      "verdict": "Real duplicate/extra INFO-field false-pass edge;validate raw pairs and the complete20-field producer schema. No observed duplicated production output or production engine bug. Preserve original4096route rejection;own stage is only a fresh candidate.",
+      "body_retired": true,
+      "retirement": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/stream-actual-model-review-20261110/retirement.json",
+        "sha256": "b444e58f8a7bb56f38b142ae0c0e1b50c3df383e0b4fc86301b16bb9f8f41c6b",
+        "files": 2,
+        "bytes": 6829,
+        "symlinks": 0
+      }
     },
+    "retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-actual-model-audit-20261110/retirement.json",
+      "sha256": "18b0fd17056b0f89d1b37d5609a81f1874742876746a5a1ad3f8ed9425ca6cd2",
+      "files": 431,
+      "bytes": 106732610,
+      "symlinks": 4
+    },
+    "source_transaction_evidence": "17a5f9a79",
     "correction": {
       "scope": "INFO raw token/schema validation",
       "status": "host_qualified",
@@ -27717,6 +27639,8 @@
       "positive": 2,
       "negative": 13,
       "passed": true
-    }
+    },
+    "observed_failure": "Original V1 actual4096 route remains failed despite normal0 and complete thinking GENs;new own-stage V2 still needs actual8192 admission.",
+    "next_review": "Use committed full20-field INFO guard and15CPU cases. Main owns fresh own-stage model admission;no additional research scope follows from this review alone."
   }
 }
