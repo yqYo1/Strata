@@ -287309,6 +287309,323 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "perf0",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "correctness_cases": 12,
+        "max_half_ulp": 0,
+        "BF16_capture_exact": true,
+        "guards": true,
+        "inputs_immutable": true,
+        "shapes": [
+          {
+            "rows": 1,
+            "repeat": 16384,
+            "calibration_ms": [
+              375.949488,
+              219.313787
+            ],
+            "separate_batch_ms": [
+              361.470199,
+              610.041156,
+              392.962771,
+              364.197177
+            ],
+            "fused_batch_ms": [
+              226.40177,
+              226.681337,
+              219.587452,
+              228.660566
+            ],
+            "separate_median_us": 23.106687866210937,
+            "fused_median_us": 13.826999114990235,
+            "median_paired_fused_over_separate": 0.5925677767167767
+          },
+          {
+            "rows": 16,
+            "repeat": 16384,
+            "calibration_ms": [
+              694.925577,
+              211.188468
+            ],
+            "separate_batch_ms": [
+              385.438374,
+              368.816008,
+              363.532694,
+              639.620041
+            ],
+            "fused_batch_ms": [
+              222.078735,
+              197.734952,
+              205.234531,
+              197.640033
+            ],
+            "separate_median_us": 23.018017028808597,
+            "fused_median_us": 12.297652679443358,
+            "median_paired_fused_over_separate": 0.5503451590215263
+          },
+          {
+            "rows": 32,
+            "repeat": 16384,
+            "calibration_ms": [
+              373.120116,
+              247.935278
+            ],
+            "separate_batch_ms": [
+              414.062321,
+              388.680681,
+              445.166471,
+              376.505243
+            ],
+            "fused_batch_ms": [
+              368.290908,
+              309.129297,
+              247.076932,
+              245.369895
+            ],
+            "separate_median_us": 24.49777227783203,
+            "fused_median_us": 16.974067047119142,
+            "median_paired_fused_over_separate": 0.7235167563264284
+          },
+          {
+            "rows": 64,
+            "repeat": 8192,
+            "calibration_ms": [
+              231.731801,
+              180.428727
+            ],
+            "separate_batch_ms": [
+              210.317366,
+              207.11874,
+              208.125707,
+              207.910802
+            ],
+            "fused_batch_ms": [
+              180.421914,
+              180.430069,
+              186.96988,
+              180.407827
+            ],
+            "separate_median_us": 25.392853332519532,
+            "fused_median_us": 22.024657165527344,
+            "median_paired_fused_over_separate": 0.8694302842807073
+          },
+          {
+            "rows": 65,
+            "repeat": 8192,
+            "calibration_ms": [
+              237.078273,
+              215.979394
+            ],
+            "separate_batch_ms": [
+              236.266164,
+              244.39047,
+              241.98093,
+              357.794071
+            ],
+            "fused_batch_ms": [
+              209.550892,
+              209.554468,
+              211.007826,
+              305.713731
+            ],
+            "separate_median_us": 29.68575439453125,
+            "fused_median_us": 25.669085327148437,
+            "median_paired_fused_over_separate": 0.8647297445990607
+          },
+          {
+            "rows": 96,
+            "repeat": 8192,
+            "calibration_ms": [
+              316.823653,
+              282.136372
+            ],
+            "separate_batch_ms": [
+              312.771579,
+              565.573134,
+              310.220672,
+              309.873288
+            ],
+            "fused_batch_ms": [
+              282.129609,
+              282.185644,
+              287.601679,
+              287.987976
+            ],
+            "separate_median_us": 38.024429382324215,
+            "fused_median_us": 34.77705828857422,
+            "median_paired_fused_over_separate": 0.9145591226513634
+          },
+          {
+            "rows": 127,
+            "repeat": 4096,
+            "calibration_ms": [
+              443.300552,
+              233.226676
+            ],
+            "separate_batch_ms": [
+              239.216141,
+              238.85521,
+              232.706977,
+              333.77647
+            ],
+            "fused_batch_ms": [
+              231.348567,
+              231.369137,
+              231.366501,
+              231.383694
+            ],
+            "separate_median_us": 58.35831921386718,
+            "fused_median_us": 56.48628393554687,
+            "median_paired_fused_over_separate": 0.9678847776674353
+          },
+          {
+            "rows": 128,
+            "repeat": 8192,
+            "calibration_ms": [
+              278.023022,
+              463.170176
+            ],
+            "separate_batch_ms": [
+              375.060108,
+              429.756295,
+              271.276271,
+              271.106831
+            ],
+            "fused_batch_ms": [
+              467.457914,
+              463.468328,
+              468.628279,
+              469.148558
+            ],
+            "separate_median_us": 39.44924188232422,
+            "fused_median_us": 57.13416705322266,
+            "median_paired_fused_over_separate": 1.4869246045343223
+          },
+          {
+            "rows": 129,
+            "repeat": 4096,
+            "calibration_ms": [
+              166.808835,
+              270.74545
+            ],
+            "separate_batch_ms": [
+              166.753221,
+              174.04615,
+              166.80097,
+              312.260323
+            ],
+            "fused_batch_ms": [
+              267.313785,
+              267.255595,
+              267.422881,
+              267.131801
+            ],
+            "separate_median_us": 41.607314453125,
+            "fused_median_us": 65.25505126953125,
+            "median_paired_fused_over_separate": 1.5692973137405135
+          },
+          {
+            "rows": 256,
+            "repeat": 4096,
+            "calibration_ms": [
+              182.133336,
+              341.594489
+            ],
+            "separate_batch_ms": [
+              182.47493,
+              181.989265,
+              190.742324,
+              182.057964
+            ],
+            "fused_batch_ms": [
+              340.016845,
+              384.015097,
+              375.787717,
+              341.723771
+            ],
+            "separate_median_us": 44.49864428710937,
+            "fused_median_us": 87.5868515625,
+            "median_paired_fused_over_separate": 1.9235690923864563
+          },
+          {
+            "rows": 640,
+            "repeat": 2048,
+            "calibration_ms": [
+              155.890104,
+              343.725953
+            ],
+            "separate_batch_ms": [
+              162.973428,
+              155.806436,
+              155.727767,
+              155.884463
+            ],
+            "fused_batch_ms": [
+              342.487659,
+              342.354739,
+              342.447756,
+              342.35416
+            ],
+            "separate_median_us": 76.09641088867187,
+            "fused_median_us": 167.18810913085937,
+            "median_paired_fused_over_separate": 2.196756287240401
+          },
+          {
+            "rows": 1280,
+            "repeat": 1024,
+            "calibration_ms": [
+              207.11125,
+              332.249404
+            ],
+            "separate_batch_ms": [
+              172.115481,
+              173.84515,
+              173.327986,
+              172.256067
+            ],
+            "fused_batch_ms": [
+              332.803865,
+              330.591517,
+              330.460009,
+              330.498542
+            ],
+            "separate_median_us": 168.74221337890626,
+            "fused_median_us": 322.79788037109375,
+            "median_paired_fused_over_separate": 1.9126028063888665
+          }
+        ],
+        "validation": {
+          "pid": 3187066,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "stdout_sha256": "5bc89824bcaf1a2d88038d2f1f3cac18107eb8df49f0d3d8a7fc7c40fd3b66ea",
+        "stderr_sha256": "7bdc9fa7288c50198daa28ebf6e0a45c948745da4130b13d58ca2437a91c4846",
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "passed": false,
