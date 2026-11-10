@@ -266302,5 +266302,512 @@
         "errors": []
       }
     ]
+  },
+  "qsa16_bulk_mirror_prefill_compare_v1": {
+    "stage": "prepared",
+    "source_commit": "93d908410c15d526b855b3de0c54f9d703ea7b48",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-model-native-v1/build/strata",
+      "sha256": "56cad9eb45f8f5fc9158eef968504424ac83a47e75cef7ad1bfa1ea8c436a93d",
+      "bytes": 26401120,
+      "origin_source_commit": "611a0fd6fecc4593e17160c294103cd4464a292b"
+    },
+    "native_source_commit": "611a0fd6fecc4593e17160c294103cd4464a292b",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "observer_admission": {
+      "native": {
+        "native_source_commit": "611a0fd6fecc4593e17160c294103cd4464a292b",
+        "original_source_files": 1138,
+        "observer_source_files": 1141,
+        "observer_source_sha256": "6393bea9909c6b97e3a541dc5aee11e78659986dcc55186f982725efa1a0bc56",
+        "added_observers": {
+          "tools/sycl/check_qsa_bulk_model.py": "bdcc6dc74d6a07589b8c0d8e4298ddcc6f036d2cb0933c0654e9890159eb61e9",
+          "tools/sycl/qsa_bulk_bench.py": "5f12d16110876723d923230d762fad40e4e1b7b13e07d2ed2734d7be05850116",
+          "tools/sycl/qsa_bulk_model_entry.py": "cb3abe85852050d00a87d7e9ce3768f9cd12d10dbf489175c637b666c76635ed"
+        },
+        "exact_five_ELFs_census_recipe": true,
+        "exact_seed_recipe_sha256": "478f3abb3298b3fc7f3e939c4bceea0b4022e674a332f1539d5c61b7d1f4bdc5",
+        "native_recompiled": false,
+        "GPU_result_inherited": false
+      },
+      "original_model_source": "00de0f2f4a806f6f8ccce6bb464b58f82373b321",
+      "original_model_evidence_sha256": "f6091a4e61e6f483e468d712e26290cb538b86487c915eb389489b039a83f81f",
+      "original_model_receipt_sha256": "9daf26721345175029b9e93ca8f595546136ce2cab2ed6ab03b84f2160eb9f79",
+      "original_model_controls_recovered": 302,
+      "added_observers": {
+        "tools/sycl/qsa_bulk_bench.py": "5f12d16110876723d923230d762fad40e4e1b7b13e07d2ed2734d7be05850116"
+      },
+      "fast_configuration_diagnostic": {
+        "key": "qsa16_bulk_mirror_model_entry_v3",
+        "evidence_commit": "f79a5cd2145efb91ff85445710bbb31f62f00e61",
+        "original_controller_source": "00de0f2f4a806f6f8ccce6bb464b58f82373b321",
+        "original_native_source": "611a0fd6fecc4593e17160c294103cd4464a292b",
+        "receipt_sha256": "9daf26721345175029b9e93ca8f595546136ce2cab2ed6ab03b84f2160eb9f79",
+        "recovered_controller_inputs": 302,
+        "changed_controller": [
+          "tools/sycl/qsa_bulk_bench.py"
+        ],
+        "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+        "meaning": "Exact closed bulk-model final15full hashes reused with unchanged identities;rehash all15after this cohort. No inherited clean speed or adoption."
+      },
+      "collector_qualification_inherited": false,
+      "native_recompiled": false,
+      "earlier_clean_result_inherited": false
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "plans": [
+      {
+        "index": 0,
+        "read": 32769,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/0",
+        "generated": {
+          "config.json": "e23c5cdcc20711edae82e65e9096830c96712394fafba2e6331b39b0ed0f90f3",
+          "plan.json": "fe7fb9eadf555703b99e99d2a469b46db37618bb80b98fedf807900959d4a07c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/0/config.json",
+          "--port",
+          "40845",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/0/bench"
+        ],
+        "environment_sha256": "c2ad1a74096722f7d187c34c4117db641d94c781c760f2e83b3d752a21b7f315",
+        "bulk_mirror": 0
+      },
+      {
+        "index": 1,
+        "read": 32769,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/1",
+        "generated": {
+          "config.json": "2af4bbd23802c7f494a06819e19ca2ae925d79e8a6306b002f6c24ad32baa846",
+          "plan.json": "fe7fb9eadf555703b99e99d2a469b46db37618bb80b98fedf807900959d4a07c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/1/config.json",
+          "--port",
+          "54211",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/1/bench"
+        ],
+        "environment_sha256": "5663308ca231cea2052cc79c41364649586bf4d2c2f65462f3be71d8fb977129",
+        "bulk_mirror": 1
+      },
+      {
+        "index": 2,
+        "read": 32769,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/2",
+        "generated": {
+          "config.json": "6195e215c49a2959af6b4b5ea673fe339ec9ab61211fde1f30e2ec7be539587a",
+          "plan.json": "fe7fb9eadf555703b99e99d2a469b46db37618bb80b98fedf807900959d4a07c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/2/config.json",
+          "--port",
+          "33295",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/2/bench"
+        ],
+        "environment_sha256": "440c83f370921cbc276b4a6c9ce7e8f8a32beaecaac6790e03beafd54c27e3e2",
+        "bulk_mirror": 1
+      },
+      {
+        "index": 3,
+        "read": 32769,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/3",
+        "generated": {
+          "config.json": "e59f6a21f9f7449e44f40471c4dd54d8bf4b201c1247761bcd6de7f0db0d9c14",
+          "plan.json": "fe7fb9eadf555703b99e99d2a469b46db37618bb80b98fedf807900959d4a07c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/3/config.json",
+          "--port",
+          "47865",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/3/bench"
+        ],
+        "environment_sha256": "0385700d94a727c4b7e2aabb748b1a5ad3b37646c61fc74c9ee319bfdf112d4a",
+        "bulk_mirror": 0
+      },
+      {
+        "index": 4,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/4",
+        "generated": {
+          "config.json": "95e9a5e16d5483e0ac6b4d381a6bdef32bc66d7ed41b1a5d4d507bcdc7f2d8a5",
+          "plan.json": "fe7fb9eadf555703b99e99d2a469b46db37618bb80b98fedf807900959d4a07c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/4/config.json",
+          "--port",
+          "48545",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/4/bench"
+        ],
+        "environment_sha256": "1691aff18d78b8280a106044601b19117280094f805c895110ad9e3581209e45",
+        "bulk_mirror": 0
+      },
+      {
+        "index": 5,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/5",
+        "generated": {
+          "config.json": "fb1000481e3ddb0d03f197b68b982d9046869f04ccce4bfc01e2e3ac102b95ed",
+          "plan.json": "fe7fb9eadf555703b99e99d2a469b46db37618bb80b98fedf807900959d4a07c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/5/config.json",
+          "--port",
+          "42489",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/5/bench"
+        ],
+        "environment_sha256": "bf691892ad835ac5fffc9fde9900af07bc63f0b6b1547334b1d04243e373407a",
+        "bulk_mirror": 1
+      },
+      {
+        "index": 6,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/6",
+        "generated": {
+          "config.json": "07b5da8fa3c967701d247cc42c3d02cdfdf86c9b28d8c50f1d537841cefedd11",
+          "plan.json": "fe7fb9eadf555703b99e99d2a469b46db37618bb80b98fedf807900959d4a07c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/6/config.json",
+          "--port",
+          "59361",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/6/bench"
+        ],
+        "environment_sha256": "3e3ec8e07764d2c9de11f9385f3b21c8599b85123b311d55546b773ee5de9023",
+        "bulk_mirror": 1
+      },
+      {
+        "index": 7,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/7",
+        "generated": {
+          "config.json": "ea409a89358631fe348b8fdbb441a8e462ae7414ea7ae0b8a4942db5ca3fce84",
+          "plan.json": "fe7fb9eadf555703b99e99d2a469b46db37618bb80b98fedf807900959d4a07c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/7/config.json",
+          "--port",
+          "41709",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-prefill-compare-v1/7/bench"
+        ],
+        "environment_sha256": "4768c14aba68e54cd889043e8f811f04eb136ba8951d81db1078008415e75a56",
+        "bulk_mirror": 0
+      }
+    ],
+    "processes": [],
+    "request_hashes": {},
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "budgets": {
+      "wall": 2400,
+      "cpu": 28800,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 134217728
+    },
+    "whole_bytes": 1073741824,
+    "plan": {
+      "question": "Does bounded same-queue bulk Host mirror publication improve actual long-prefill PP/clientTTFT over direct Host-USM stores?",
+      "order": "Eight fresh processes:32769off/on/on/off,then65537off/on/on/off. Three exact-count thinking-on bench.sh requests each,24outputs. First measured long request separate from subsequent2. Two independent processes per arm/length. Identical per-length nonce/body sequence across arms;zero reuse. Commit every closed process before advancing.",
+      "settings": "Same56cad9/611a0fd6native and five exact fixtures,logical262144/resident20480INT8,owned264MiBstage,8192chunks,1256decode slots,5workers,spec4,throughput,head2/dense1/backing0 and all nine qualified FAST settings. Only immutable bulk flag0/1 and private process paths differ. Preserve qualified runtime safety;remove trace/timing/audit observers. No native rebuild or decode selection change.",
+      "acceptance": "Existing fresh host/source/provider/ownership/request-journal/count/clock/clientTTFT/quiet-validation/normal0/unchanged-boot/no-fault gates. Actual per-request8192BF16QSA,all residual rows onGPU,staged384bank,ordinary accumulation,checked drains,head/MTP restore. Native environment is observed at both gates. Clean-mode bulk selection additionally follows exact recovered deterministic dispatch;no per-launch command or physical traffic claim.",
+      "comparison": "Use per-process subsequent2 median times,and AB/BA paired off/on ratios at each length. Repeated improvement requires both independent pairs favor bulk at both lengths;no arbitrary minimum gain. Mixed results need a fresh committed repetition plan. First PP/clientTTFT and spread remain separate,not a throughput veto or pooled warm sample.",
+      "stopping": "Stop first source/owner/provider/count/clock/route/validation/fault/finite-budget failure. No retries,pin refresh,changed criteria,speed-based early stop or dropped samples. Reuse original closed-model final15hashes with exact identities;hash all15again after this cohort.",
+      "limits": "Local same-binary prefill mechanism comparison only;24outputs do not qualify sustainedTG. No actual task/agent quality,full262144model/RESTORE,ordinary-provider teardown,paired comparison against b9aa,hardware saturation or overall adoption. Two lengths permit local slopes,not a new fitted law.",
+      "retention": "Keep24compact individual samples,actual routes,source/native/environment/workload and decision. Retire successful raw stage/journal/cache history after cohort closure. Keep the declared four temporary engine generations only through matched phase selection;recover original inputs and retire the superseded generation. No new binary generation."
+    },
+    "previous_attempt": {
+      "key": "qsa16_bulk_mirror_model_entry_v3",
+      "evidence_commit": "f79a5cd2145efb91ff85445710bbb31f62f00e61",
+      "original_controller_source": "00de0f2f4a806f6f8ccce6bb464b58f82373b321",
+      "original_native_source": "611a0fd6fecc4593e17160c294103cd4464a292b",
+      "receipt_sha256": "9daf26721345175029b9e93ca8f595546136ce2cab2ed6ab03b84f2160eb9f79",
+      "recovered_controller_inputs": 302,
+      "changed_controller": [
+        "tools/sycl/qsa_bulk_bench.py"
+      ],
+      "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+      "meaning": "Exact closed bulk-model final15full hashes reused with unchanged identities;rehash all15after this cohort. No inherited clean speed or adoption."
+    },
+    "arm_order": [
+      [
+        32769,
+        0
+      ],
+      [
+        32769,
+        1
+      ],
+      [
+        32769,
+        1
+      ],
+      [
+        32769,
+        0
+      ],
+      [
+        65537,
+        0
+      ],
+      [
+        65537,
+        1
+      ],
+      [
+        65537,
+        1
+      ],
+      [
+        65537,
+        0
+      ]
+    ],
+    "source_inputs": {
+      "files": 694,
+      "sha256": "8e119711bf669db940b1efb7d12271fd69a8d339df2cf882ac639801a19349a5"
+    },
+    "environment_template_sha256": "ba05c0520948e8b1d048efa436c4416a9372f6fbcda586e1c99a260e725c4e6c",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
