@@ -249,20 +249,61 @@ do not establish net headroom or allocation admission. Keep262144logical
 capacity and its full-fill/tail/RESTORE/handoff requirements in the proposed
 residency experiment; do not reduce logical capacity to manufacture headroom.
 
-The current QSA16 preflight in `src/prefill/layer_major.inc` explicitly rejects
-mode1 streamed main KV and host mirrors before request submission. Merely
-lowering `--kv-resident` cannot run the current native16 long-prefill route.
-Before a residency/cache comparison, a separate prefill implementation must
-preserve BF16 tensor IO while publishing quantized K/V to authoritative host
-storage, full-range stage storage and any resident slots. Stage and resident
-page capacities differ; every attention consumer and restoration path must
-use the correct extent and event lifetime. Preserve the existing mode0 path
-and independently tuned decode. This is a prospective interface requirement,
-not an implemented candidate, measured speedup or identified physical limit.
-The source basis is native221e95e9ad890383deb418d0a865ee32c99168b6;
-`expert_slot_sizes.hpp`, `expert_cache.cpp`, `layer.cpp`, `session.cpp` and the
-QSA16 preflight retain that compiled implementation. Numerical component checks
-must not impose identical complete generated text as a task-quality criterion.
+The compiled native221e QSA16 preflight rejects mode1 main KV before request
+submission. The isolated `experiment/qsa16-streamed-prefill` source now adds
+an opt-in `STRATA_SYCL_PREFILL_QSA_STREAM=1` route alongside the existing
+native16/QSA selectors. Default mode0 retains its original producer. The new
+producer quantizes BF16 K/V once on the GPU, publishing the same INT8 codes
+and FP16 scales to registered Host storage, full-logical-range Device staging
+and valid resident slots. Missing/invalid resident pages do not suppress the
+two complete mirrors. Each writable view, input and page table is checked for
+extent, domain and aliases before submission. Stage attention uses
+`{n_pages,n_pages}`; resident attention keeps `{n_pages,n_slots}`. All ten
+typed attention selections use the actual owner extent. Every QSA layer is
+preflighted before the request submits work. Decode kernels and dispatch stay
+unchanged; the shared Allocation lifetime changes need regression qualification.
+
+The Host registry is distinct from the existing Device-only registry, retaining
+the owning Runtime across Allocation moves. Runtime device selection requires
+`usm_host_allocations`; `malloc_host` and the consuming queue share its context
+and device. This matches the [SYCL USM accessibility contract](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#_unified_shared_memory_usm).
+Inputs/maps/owners must live through completion; CPU access waits for checked
+completion. Production mode1 backing in `layer.cpp` comes from the registered
+Host allocator through `cudaHostAlloc`/`cudaHostGetDevicePointer`, rather than
+ordinary pageable memory. No foreign pointer is admitted merely by its USM kind.
+
+The tests in `tests/sycl/qsa_native16.cpp` add Host-domain/move/retirement
+refusals, three-store dyadic numerical and nonfinite/underflow/overflow checks,
+missing/invalid resident maps, page tails, padding, aliases and short owners.
+The default small screen preserves the resident tests. Separate
+`sycl_native16_qsa_test --streamed-full-extent` fills all262144logical cells in
+32chunks, overwrites the final cell and compares both full mirrors and the
+first/last resident pages against an independent component oracle. The test
+reads Host data directly only after checked completion. Its CMake target links
+the actual producer TU and Runtime with the production strict arithmetic flags,
+without building the entire engine. This is not an attention/model/RESTORE or
+performance qualification, nor an identical-generated-text requirement.
+
+At native source `7067084897574ad727bae6d93ca3a4726ea6e00c`,the supervised
+five-TU component build passes24host compiler-census controls and records
+724compiler inputs/24external links/zero uncovered inputs. Its executable
+SHA256 is `dcc3097facc58b9603f5662709e97176746a13ac0e0a8ab0f1378a257f974cf2`.
+The small traced/parameter-validated fixture and the separate262144-cell
+producer fixture both pass on this Arc B570:normal0,closed owners,quiet
+parameter warnings,unchanged boot and no fresh driver faults. Both use the
+qualified runtime safety environment and pre-main loader probe;ordinary
+provider teardown remains unqualified. Follow `qsa16_stream_components_v1`
+in the compact committed results. No model or speed is measured by these tests.
+Preserve the552b prefill fallback and a347 current decode reference. Retire
+the temporary component build before a fresh engine generation after exact
+source/recipe recovery;keep only the compact evidence required by that build.
+Typed staged attention,whole-model physical262144/RESTORE/handoff and matched
+PP/TG/TTFT are separate remaining gates before a cache-residency choice. No
+resident size/cache count is selected from payload arithmetic alone. The
+current full-engine source basis remains native221e95e9ad890383deb418d0a865ee32c99168b6;
+The unchanged `expert_slot_sizes.hpp`, `expert_cache.cpp`, `layer.cpp` and
+`session.cpp` supply the capacity arithmetic above. The new QSA16 prefill route
+remains unqualified until the separate attention/model gates close.
 
 ## Numerical reference for replacement kernels
 
