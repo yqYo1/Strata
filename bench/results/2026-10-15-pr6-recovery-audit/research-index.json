@@ -27495,7 +27495,7 @@
   "qsa16_stream_native_observer_audit_20261110": {
     "classification": "decision_support",
     "topic": "Streamed model native observer audit",
-    "stage": "reviewed_recipe_reconciliation_required",
+    "stage": "reviewed_recipe_guard_reconciled",
     "schedulable_now": false,
     "prerequisite": "orca_ro_bound_context_preflight_20261110",
     "prerequisite_evidence": "New179-line committed same-build observer and actual closed128-TU/five-ELF native build exist. Host50/11/policy/2443-instruction IR gates now pass. Prior source reports did not audit this observer;only static/source audit is requested,not a duplicate actual model gate.",
@@ -27518,7 +27518,7 @@
     "report_budget_bytes": 24576,
     "wall_budget_seconds": 480,
     "owner": "Main",
-    "next_review": "Commit an exact recipe guard and negative controls,then a prospective controller-only admission before packed-head or model GPU execution. Preserve original four successful stage results and original native source.",
+    "next_review": "Commit this prospective admission,then resume only the remaining packed-head stage;actual streamed model still needs its separately committed plan.",
     "task": "task_4168756ed2f5",
     "dispatch": "ctx_10d29b9374ca",
     "terminal": "term_356d2178-3df7-4fbe-a7a9-9a8ecbe5d6f1",
@@ -27555,7 +27555,15 @@
     "recipe_observation": {
       "exact_expected_recipe_matches": true,
       "expected_recipe_sha256": "937bf0671a29b72ab39b032361553c882e809436680f737144997b804257985d",
-      "scope": "Read-only reconciliation after head0 closure;not yet an enforced admission guard or fresh GPU qualification."
+      "scope": "Exact recipe equality and all original native/fixture inputs checked at the closed four-stage boundary. Prior results unchanged;no new GPU result or model qualification.",
+      "enforced": true,
+      "guard_source_commit": "54e1f9ffaff3fbf54d1fa240db3e00aae5381981",
+      "controls": {
+        "positive": 1,
+        "negative": 11,
+        "passed": true
+      },
+      "evidence_key": "qsa16_stream_model_device_v1.controller_admission"
     }
   },
   "gpu_host_publication_efficiency_20261110": {
