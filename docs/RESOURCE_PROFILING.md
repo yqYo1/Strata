@@ -420,6 +420,17 @@ the validated552b fallback. The reviewed runtime split gate is
 actual prefill rows>90112and<=117488,with additional admission checks;its
 accepted replan requests128slots. Do not assume the32K384-slot geometry
 at117489input tokens. Actual hardware saturation remains unknown.
+The committed `qsa16_stream_fast_curve_v1` campaign uses32/48/64/80/96K
+actual inputs in that order,with four requests per fresh process. Its first
+four lengths share the ordinary384-slot route;96K has a separately required
+128-slot split route. `tools/prefill_scaling_bench.py::approximation_models`
+requires five length points for its held-out affine/quadratic/n-log-n
+comparison. Four compatible lengths therefore permit the descriptive affine
+fit,but not that comparison. After this original cohort closes,prepare a
+separate57345-input(56K)point with the same ordinary route and settings,
+then fit only the five distinct compatible lengths. Keep first-use and
+subsequent-request series separate. Do not pool the96Ksplit point or lower
+the model-comparison data requirement merely to obtain coefficients.
 Use the existing owned UnitTrace launcher with Sysman0 for later attribution;
 current collector V1 refused before native launch because its parent already
 carried the target preload. A fresh plan must also discriminate the declared
