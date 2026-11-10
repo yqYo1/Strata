@@ -1763,9 +1763,22 @@ reproducibility gate passes without a minimum gain. No model PP/TG or
 adoption follows. The explicit startup selection
 `STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-cached-subgroup`now connects
 long-prefill scratch admission,dispatch and diagnostics;defaults and decode
-source are unchanged. This model wiring still needs a fresh full native build
-and actual handoff/phase comparison. Keep it for a combined prefill candidate
-and prioritize upload preparation/submission or actual selector-locality evidence. See
+source are unchanged. The fresh full build at`cf7ad7bc4`now produces
+engine`9af65516...`and seven same-build fixtures,with131unique sources,
+132selected object commands,1465actual compiler inputs and zero uncovered
+inputs. Its9-stage native qualification passes at`82e8ce35a`:54CPU reader
+cases,11CPU-only refusals,submission10/phase16,canonical and packed-head
+numeric/restore checks,11attention oracle cases including262144live cells,
+and off/on producer full-fill plus final-cell overwrite. All8GPU stages
+close normally without fresh faults. This is component/native evidence;
+actual long/short/long model handoff,matched phase speed,task quality and
+physical262144model/RESTORE remain open. Keep the startup choice explicit
+and prioritize upload preparation/submission or actual selector-locality evidence.
+The old two component ELFs remain a bounded proof-reader dependency until
+that consumer is updated to this qualified successor;retire them at the current
+model-entry/comparison boundary. The current9af candidate temporarily joins
+56cad9,552b and the independent a347decode reference;select candidate or56cad9
+at matched phase closure rather than expanding the normal retention quota. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
 validated552b117Kreference or adopt a production resident/cache policy.
