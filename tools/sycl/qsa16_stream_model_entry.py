@@ -21,10 +21,22 @@ import q6_dense_model_entry as dense
 
 P,B,RESULT=device.P,device.B,device.RESULT
 ROOT,KEY=B/'qsa16-stream-model-entry-v1','qsa16_stream_model_entry_v1'
+ATTEMPT='v1'
 THIS='tools/sycl/qsa16_stream_model_entry.py'
 REFERENCE=B/'q6-dense-head-backing-model-v1/record.json'
 require,sha,write,signature=device.require,device.sha,device.write,device.common.signature
 owner,guards,validation=previous.owner,previous.guards,previous.validation
+INFO_FIELDS=set('context kv kv_resident expert_slots expert_cache_mib expert_slots_primary '
+    'expert_cache_primary_mib spec mtp_max lookup vram_free_mib cvec arena_mib pool_workers '
+    'pcie_frac spec_min_p conversation_cache_mib conversation_cache_slots '
+    'conversation_cache_min_free_mib engine'.split())
+
+
+def configure(attempt):
+    global ROOT,KEY,ATTEMPT
+    require(attempt in ('v1','v2'),'declared model attempt only')
+    ATTEMPT=attempt;ROOT=B/('qsa16-stream-model-entry-'+attempt)
+    KEY='qsa16_stream_model_entry_'+attempt
 
 
 def native(expected=None):
@@ -79,10 +91,24 @@ def context(admission=None):
     return ctx
 
 
+def parse_info(text):
+    pairs=[p.split('=',1) for p in text.split()]
+    require(text.isascii() and all(len(p)==2 and p[0] and p[1] for p in pairs) and
+        len({p[0] for p in pairs})==len(pairs) and {p[0] for p in pairs}==INFO_FIELDS,
+        'exact producer INFO schema,without duplicates,missing or extra fields')
+    fields=dict(pairs);placement(fields);return fields
+
+
 def placement(fields):
     expected=dict(context='262144',kv='int8',kv_resident='20480',expert_slots='1256',
-        spec='4',pool_workers='5',pcie_frac='0.00',mtp_max='0')
-    require(all(fields.get(k)==v for k,v in expected.items()),'actual streamed placement differs')
+        expert_slots_primary='1256',spec='4',pool_workers='5',pcie_frac='0.00',mtp_max='0',
+        lookup='0',cvec='0',spec_min_p='0.00',conversation_cache_mib='0')
+    integers=INFO_FIELDS-{'kv','pcie_frac','spec_min_p','engine'}
+    require(set(fields)==INFO_FIELDS and all(fields.get(k)==v for k,v in expected.items()) and
+        all(type(fields[k]) is str and fields[k].isascii() and fields[k].isdecimal() for k in integers) and
+        int(fields['arena_mib'])>0 and fields['expert_cache_primary_mib']==fields['expert_cache_mib'] and
+        re.fullmatch(r'\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.]+)?',fields['engine']),
+        'actual streamed placement or producer field format differs')
 
 
 def route(text):
@@ -108,6 +134,8 @@ def prepare():
         require(argv.count(flag)==1,'one explicit argument: '+flag);argv[argv.index(flag)+1]=value
     old=reference['environment']['STRATA_MEASUREMENT_ROOT']
     env={k:v.replace(old,str(ROOT)) for k,v in reference['environment'].items()}
+    require('STRATA_KV_STAGE_OWN' not in env,'stage allocation must be an explicit treatment')
+    if ATTEMPT=='v2':env['STRATA_KV_STAGE_OWN']='1'
     env.update(TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache'),
         STRATA_MEASUREMENT_ROOT=str(ROOT),STRATA_SYCL_PREFILL_QSA_STREAM='1',
         STRATA_SYCL_DECODE_Q6_DPAS_HEAD='2',STRATA_SYCL_DECODE_Q6_DPAS_DENSE='1',
@@ -139,6 +167,17 @@ def prepare():
         results=[],commands=[],passed=False,complete=False,active=False,ownership_closed=True,
         model_executed=False,speed_eligible=False,model_adoption_qualified=False,
         retention='Retain compact actual placement,progress/head/mode extents and original failures. Retire successful full stage/UR logs and generated token/wire copies after evidence verification. No new native generation;keep a347/552b for imminent independent-phase comparisons and review extra candidate after comparison.')
+    if ATTEMPT=='v2':
+        old_root=B/'qsa16-stream-model-entry-v1';old=json.loads((old_root/'record.json').read_text())
+        require(validation.committed(RESULT,('qsa16_stream_model_entry_v1',))==ctx.compact(old) and
+            old['stage']=='failed' and not old['passed'] and old['ownership_closed'] and not old['active'] and
+            old['failure_analysis']['actual_chunk']==4096 and old['failure_analysis']['native_exit_code']==0 and
+            old['failure_analysis']['all_three_requests_completed'] and old['native_build']==row['native_build'],
+            'preserve the original closed4096route rejection;no native result inherited')
+        row['previous_attempt']=dict(key='qsa16_stream_model_entry_v1',source_commit=old['source_commit'],
+            private_record_sha256=sha(old_root/'record.json'),passed=False,native_exit_code=0,actual_chunk=4096)
+        row['capacity']['stage_allocation']='Separately owned264MiB excluded from expert-cache scratch loan;actual8192admission still required.'
+        row['plan']+=' V2 changes only the pre-exec stage allocation to STRATA_KV_STAGE_OWN=1. Preserve the failed V1,original native source/five ELFs,decoder,logical/resident capacities,1256expert slots,8192actual-route requirement and all other criteria. Correct the INFO reader to validate the full20-field producer schema with duplicate/extra/missing/numeric guards before admission.'
     ctx.assets(row,full=True);ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache'):(ROOT/name).mkdir()
     ctx.save(row);print('Prepared physical262144-capacity actual mode1 route;commit before host/GPU.',flush=True)
@@ -149,12 +188,26 @@ def execute(stage):
     if stage=='host':
         require(row['stage']=='prepared','one prospective host admission only')
         good=dict(context='262144',kv='int8',kv_resident='20480',expert_slots='1256',
-            spec='4',pool_workers='5',pcie_frac='0.00',mtp_max='0');placement(good)
+            spec='4',pool_workers='5',pcie_frac='0.00',mtp_max='0',expert_cache_mib='2455',
+            expert_slots_primary='1256',expert_cache_primary_mib='2455',lookup='0',vram_free_mib='942',
+            cvec='0',arena_mib='47962',spec_min_p='0.00',conversation_cache_mib='0',
+            conversation_cache_slots='4',conversation_cache_min_free_mib='2560',engine='0.1.38')
+        wire=lambda f:' '.join(k+'='+v for k,v in f.items())
+        text=wire(good);parse_info(text);parse_info(wire(dict(reversed(list(good.items())))))
+        bad=[]
         for key,value in (('context','131072'),('kv_resident','0'),('kv_resident','262144'),('expert_slots','1536')):
-            try:placement(dict(good,**{key:value}))
+            bad.append(wire(dict(good,**{key:value})))
+        bad.extend(['context=131072 '+text,text+' extra=1',wire({k:v for k,v in good.items() if k!='engine'}),
+            text.replace('context=262144','context262144'),text.replace('engine=0.1.38','engine='),
+            wire(dict(good,arena_mib='nan')),wire(dict(good,vram_free_mib='-1')),
+            wire(dict(good,spec_min_p='nan')),wire(dict(good,expert_cache_primary_mib='2454'))])
+        for broken in bad:
+            try:parse_info(broken)
             except RuntimeError:continue
-            raise RuntimeError('placement guard accepted '+key+'='+value)
-        row.update(stage='host_passed',host_controls=dict(positive=1,negative=4,passed=True,GPU_executed=False))
+            raise RuntimeError('INFO guard accepted malformed or wrong placement')
+        require(('STRATA_KV_STAGE_OWN' in row['environment'])==(ATTEMPT=='v2') and
+            (ATTEMPT!='v2' or row['environment']['STRATA_KV_STAGE_OWN']=='1'),'frozen stage treatment')
+        row.update(stage='host_passed',host_controls=dict(positive=2,negative=len(bad),passed=True,GPU_executed=False))
         ctx.save(row);print('Host placement guards pass;commit before actual model.',flush=True);return
     require(stage=='run' and row['stage']=='host_passed' and not row['results'],'one native process;no retry')
     frozen=copy.deepcopy(row);scope=None;result=dict(passed=False,requests=[])
@@ -171,7 +224,7 @@ def execute(stage):
                 if line.startswith('READY '):break
             require(line=='READY 262144 stop','full configured capacity required')
             info=[v[5:] for v in startup if v.startswith('INFO ')];require(len(info)==1,'one actual INFO')
-            result['placement']=dict(v.split('=',1) for v in info[0].split());placement(result['placement'])
+            result['placement']=parse_info(info[0])
             actual=dict(v.split('=',1) for v in Path('/proc',str(command['pid']),'environ').read_text().split('\0') if '=' in v)
             require(actual==row['environment'],'immutable native environment')
             result.update(previous.model.runtime_evidence(row,command['pid'],
@@ -210,7 +263,10 @@ def execute(stage):
 
 
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','host','run'),'prepare|host|run')
+    require(len(sys.argv) in (2,3) and (len(sys.argv)==2 or sys.argv[1]=='v2'),
+        '[v2] prepare|host|run')
+    configure('v2' if len(sys.argv)==3 else 'v1');action=sys.argv[-1]
+    require(action in ('prepare','host','run'),'prepare|host|run')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
-        prepare() if sys.argv[1]=='prepare' else execute(sys.argv[1])
+        prepare() if action=='prepare' else execute(action)
