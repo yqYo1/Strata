@@ -311,6 +311,17 @@ measured child commit remains reachable there;the completed
 The prospective `check_qsa16_stream.py engine-*` build reuses the a347
 compiler/SDK recipe,requires exact original producer/Runtime/fixture bytes
 and a complete full-engine census,and inherits no model qualification.
+That full candidate now builds at source
+`b9aa9c4dea9ca512ed20731fc81d805a1a695c2c`,engine SHA256
+`1e598e8e6f04c4bf2e65fb295fb7c9fea9d66406084d612c7d7cda8744ddf391`.
+Its closed `qsa16_stream_model_native_v2` build records128TUs,
+1462compiler inputs,one generated input,29external links and zero uncovered
+inputs,plus four same-build ownership/submission/retirement/policy fixtures.
+V1 closed after successful configuration,before native compilation,to replace
+full public parser arrays with a count/hash summary;its temporary configuration
+is retired. V2 retains the exact original producer/Runtime/test bytes. Fresh
+native fixture checks and an actual streamed model session remain pending;
+compilation does not establish numerical,model,physical-context or speed gates.
 
 ## Numerical reference for replacement kernels
 
