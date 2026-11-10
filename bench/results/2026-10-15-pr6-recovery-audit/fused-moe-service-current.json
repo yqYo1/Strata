@@ -255709,7 +255709,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "qsa16_stream_prefill_baseline_v2": {
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "5e9c1f85715b862ac76f1ab8ca216d847ba6f67f",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
@@ -255893,7 +255893,7 @@
     ],
     "processes": [],
     "request_hashes": {},
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -255925,6 +255925,16 @@
       "model_hash_reuse": "The exact recovered V1 prepare fully hashed all15assets before its CPU/mock host refusal. Every full file identity and manifest still matches;no native ran. Reuse these before-cohort hashes,not a fresh full-hash claim. Hash all15again after the V2 cohort.",
       "correction": "Pin complete current Control/CLI/packaging/setup source packages in addition to serve/tools. Keep native,config,workloads,environment and all acceptance criteria unchanged."
     },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "role": "server",
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 689,
       "sha256": "4e07c312a8f5e74c4302ee759b2564b7ea64c925a390561769e4d10ea325f057"
