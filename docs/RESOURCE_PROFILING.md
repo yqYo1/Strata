@@ -174,7 +174,7 @@ already has `STRATA_CPU_SERVICE_PROFILE:BOOL=ON`. Its compiled `pool.cpp` and
 `pool.hpp` match the producers in `verify_window_cpu_service_overhead_v1`.
 The existing `STRATA_CPU_SERVICE=1` startup setting can therefore expose the
 CPU pool's GU/Down and other leaf wall/thread-CPU clocks without a new native
-build. This is source/build evidence, not a current collection or overhead pass.
+build. The fresh current-engine collection below now qualifies its observer cost.
 The older overhead result bounds only its original incremental observer cost;
 it does not transfer that bound to a347 or establish RAM/arithmetic saturation.
 The dense-DPAS official comparison is now closed. The source-prepared
@@ -189,12 +189,27 @@ per-token latency ratios within1.05 qualify the incremental observer cost only.
 The new admission verifies the original native inputs, five ELFs and complete
 compiler/link census, separately from this noncompiled observer. It consumes
 the closed comparison evidence, without rerunning its historical V1 raw reader
-or changing the original failure or adoption status. V3's first off/on pair now
-closes normally with matched work/output hashes and on/off per-token decode
-latency1.00904. The observed leaf CPU totals are349.82s GU,165.31s Down and
-1.00s hidden quantization over4923generated tokens and1254500CPU expert jobs.
-These are concurrent CPU sums including memory stalls;the other two pairs
-remain required before observer-cost qualification. V1's prelaunch
+or changing the original failure or adoption status. V3 is closed with all six
+processes normally0, quiet validation, closed owners, no fresh fault and all15
+final model-asset hashes. Each long request has33208fresh/4923generated tokens,
+4419offered/3451accepted drafts and identical aggregate work/output hashes.
+The three on/off per-token decode-latency ratios are
+1.009036828/1.007815412/1.007968429 (geometric mean1.008273410), passing the
+predeclared1.05cost limit in every pair. This qualifies the incremental leaf
+observer cost, not clean speed or inference adoption.
+
+The three observed long requests each execute1254500CPU expert jobs and
+1450668CPU entries on six threads. GU occupies67.78..67.88% of concurrent
+leaf CPU time, Down31.93..32.03%, and hidden quantization about0.19%.
+NT1 accounts for86.7825% of CPU job count. The repeated top GU CPU bins are
+GU18/Down20/NT1, GU21/Down20/NT1 and GU22/Down20/NT1; their ordering below
+the leading bin varies. Concurrent leaf CPU totals span515.93..517.17s;
+they include memory stalls and are not additive wall critical path or a
+measurement of physical RAM/PCIe traffic. These results prioritize the GU
+working set and a smaller-resident-KV/larger-expert-cache comparison, while
+actual hardware saturation remains unknown. Follow `q6_dense_cpu_leaves_v3`
+in the compact result for every sample and the selected operation/bin totals.
+V1's prelaunch
 artifact-reader lookup and V2's end-gate/client-journal ordering failures remain
 failed in their original records. The end gate precedes client result append:
 bind four warmups before begin, and all five client/native leaf records after
