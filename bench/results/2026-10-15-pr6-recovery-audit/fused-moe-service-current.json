@@ -261002,7 +261002,7 @@
     "environment_template_sha256": "42621817354afa9874fd37e05e8a8f989bb9d533be22ec556892164154162c1f"
   },
   "qsa16_stream_fast_profile_v1": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "e1a8e4452b173f1072cbd7c17320b365a4fa13fe",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
@@ -261445,6 +261445,41 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 1,
+        "read": 32769,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
+          "sha256": "1e598e8e6f04c4bf2e65fb295fb7c9fea9d66406084d612c7d7cda8744ddf391",
+          "bytes": 26382496,
+          "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
+        },
+        "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
+        "native_identity": {
+          "pid": 1249493,
+          "start_ticks": 264574576,
+          "sid": 1249427
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false,
+        "resource_observation": {}
       }
     ],
     "request_hashes": {
@@ -261457,7 +261492,7 @@
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "wall": 2400,
       "cpu": 28800,
@@ -261531,6 +261566,22 @@
         "passed": true
       }
     ],
+    "post_failure_reconciliation": {
+      "stage": "physical_executors_gone_named_session_cleanup_pending",
+      "cause": "Native SIGXFSZ(-25) at the exact256MiB RLIMIT_FSIZE;incomplete first request. Benchmark owner terminated/reaped its session. No model/collector coverage or observer-cost qualification.",
+      "observed_native_exit_code": -25,
+      "incomplete_timeline": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-fast-profile-v1/1/trace/strata.1249493.json",
+        "bytes": 268435456,
+        "sha256": "0caed4c6851d9547240ea6fdaf04893d9506a5134c30b37aff2a2f42208ea00f"
+      },
+      "physical_executors_gone": true,
+      "captured_identities": 4,
+      "original_ownership_result_preserved": false,
+      "named_session": "StrataPrefilla9af4f9e9310b91db9ff7908",
+      "named_session_removed": false,
+      "next": "Commit this failed outcome;close only the exact abandoned collector session after fresh identity checks. Then commit a fresh prospective V2 with justified1GiB/file and new three-process bracket;never refresh V1 pins or relabel it."
+    },
     "source_inputs": {
       "files": 689,
       "sha256": "e5bcfb7f9a2c2bbe012793546957e80b3a3e193499cebe6149c7c120f050e118"
