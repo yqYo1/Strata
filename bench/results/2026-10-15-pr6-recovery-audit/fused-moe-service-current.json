@@ -285183,7 +285183,7 @@
     ]
   },
   "gu_compact_component_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "e3b4069d086c250b05748c20eec50e058c3adcf5",
     "native_source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
     "engine": {
@@ -285328,6 +285328,51 @@
     "passed": false,
     "complete": false,
     "GPU_executed": false,
-    "commands": []
+    "commands": [
+      {
+        "label": "compile",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_CPU_SERVICE_PROFILE=1",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v1/fixture.o",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gu_compact.cpp",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v1/fixture.d"
+        ],
+        "exit_code": 0,
+        "ownership_closed": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "error": "RuntimeError('component link failed')",
+    "failure_diagnostic": {
+      "phase": "link",
+      "GPU_executed": false,
+      "source_commit": "e3b4069d086c250b05748c20eec50e058c3adcf5",
+      "mechanism": "Verifier fixture link recipe lacks prefill archive and separately compiled vLLM host/device-image objects;undefined beta0,gu_swiglu,swiglu and Gemm constructor. No GPU body or inference workload ran.",
+      "next": "New source/plan V2 must clone the actual engine link rule,replace exactly the two program objects with this fixture,and retain/hash all original image objects,archives and libraries. Preserve V1failed."
+    }
   }
 }
