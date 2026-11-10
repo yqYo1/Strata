@@ -235,7 +235,7 @@ def prepare():
     print('Prepared production-head model build; commit before host/configure.', flush=True)
 
 
-def census(row, dependency_output, link_output):
+def census(row, dependency_output, link_output, *, minimum_translation_units=21):
     allowed = {}
     for pin in (row['project'], *row['dependencies']):
         allowed.update({str((Path(pin['root']) / p).resolve()): h
@@ -254,7 +254,9 @@ def census(row, dependency_output, link_output):
         (generated if path.is_relative_to(ROOT / 'build') else compiled)[str(path)] = digest(path)
     expected = set(row['planned_translation_units'])
     observed = {p for p in compiled if Path(p).suffix in ('.cpp', '.c', '.cc', '.cxx', '.cu')}
-    require(expected == observed and len(expected) > 20, 'actual selected translation-unit census differs')
+    require(type(minimum_translation_units) is int and minimum_translation_units > 0 and
+            expected == observed and len(expected) >= minimum_translation_units,
+            'actual selected translation-unit census differs')
     database = json.loads((ROOT / 'build/compile_commands.json').read_text())
     commands = []
     groups = {}
