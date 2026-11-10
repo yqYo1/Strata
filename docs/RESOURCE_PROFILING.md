@@ -330,9 +330,9 @@ validation,unchanged boot and no fresh fault. At the closed four-stage boundary,
 controller source`54e1f9ffaff3fbf54d1fa240db3e00aae5381981`adds exact seed-recipe
 equality and12CPU controls before head2. The actual recipe matches;the original
 observer's missing equality predicate and original results remain recorded.
-No engine/fixture is rebuilt or relabelled. Typed attention in an actual
-streamed model session,whole-model physical262144/RESTORE,task behavior and
-matched PP/TG/TTFT remain unqualified.
+No engine/fixture is rebuilt or relabelled. These prerequisites alone do not
+qualify an actual typed-attention model route,whole-model physical262144/
+RESTORE,task behavior or matched PP/TG/TTFT.
 The first actual`qsa16_stream_model_entry_v1`is **failed**,with normal native
 exit0,closed owners and no fresh fault. All32769/82/32769thinking requests
 produce32tokens,but the planner selects4096chunks despite the8192argument;
@@ -341,11 +341,27 @@ logical cells,20480resident cells,1256expert slots and1206MiB free. Each long
 entry borrows704slots,keeps all32768BF16residual rows on GPU(671088640bytes)
 and allocates1363148800bytes for the layer cache. The full logical INT8 stage
 adds276824064bytes to the shared scratch loan. Existing`STRATA_KV_STAGE_OWN=1`
-can allocate that stage separately;it is the next unmeasured configuration
-candidate for preserving8192chunks with the same decode placement. Do not
+allocates that stage separately. Do not
 relax V1's predicate or label its4096execution a successful8192admission.
 Final full model hashes were not reached after that rejection. Physical full
 context,RESTORE,numerical/task and clean speed remain separate gates.
+
+The separate`qsa16_stream_model_entry_v2`at controller source
+`48e4a5e02f15b48b5f75a91e341bca4dc3dc53f9`now **passes** with that own-stage
+setting and the same native source/five ELFs. The full20-field INFO reader
+passes two valid and13corrupt host cases,including duplicates and extra fields.
+Actual READY retains262144logical/20480resident cells,1256expert slots and
+reports942MiB free. Both32769-token thinking prompts run8192chunks,borrowing
+1124slots while retaining132,with all32768BF16residual rows on GPU and the
+same1363148800-byte layer cache. The intervening82-token prompt still uses
+decode placement. All three produce32tokens;two head retire/restore cycles
+and33live decode-C4replays pass. Native exit is0,all owners close,validation
+is quiet,boot unchanged,no fresh fault,and all15final model hashes match.
+This qualifies the bounded actual mode1route/handoff,not clean throughput,
+numerical/task quality,physical262144fill/tails/RESTORE or adoption. Use the
+existing owned UnitTrace launcher with explicit Sysman0 for a newly pinned
+resource-attribution window,and separate`bench.sh`length/phase comparisons;
+the older collector/engine qualifications are not inherited by this engine.
 
 ## Numerical reference for replacement kernels
 
