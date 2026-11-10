@@ -32,6 +32,8 @@ shared, build = comparison.shared, comparison.build
 FAST_ROOT, FAST_KEY = B / 'qsa16-stream-fast-entry-v1', 'qsa16_stream_fast_entry_v1'
 CLEAN_FAST = False
 FIT_POINT = False
+COLLECTOR_ROOT = B / 'qsa16-stream-collector-active-v2'
+COLLECTOR_KEY = 'qsa16_stream_collector_active_v2'
 FAST = dict(STRATA_PREFILL_RELEASE_MTP_EXPERTS='1', STRATA_SYCL_PREFILL_MOE_WINDOW='10',
     STRATA_SYCL_PREFILL_SCORE_GEMM='1', STRATA_SYCL_PREFILL_MIXED_SCRATCH='1',
     STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS='384', STRATA_SYCL_CACHE_SCRATCH_LEASE='1',
@@ -235,6 +237,137 @@ def extended_approximations(points):
             subsequent_prompt_range_ms=[min(p['subsequent_prompt_ms']), max(p['subsequent_prompt_ms'])],
             subsequent_TTFT_range_s=[min(p['subsequent_TTFT_s']), max(p['subsequent_TTFT_s'])]) for p in combined],
         limits='Five compatible lengths,one process each;first and subsequent timing scopes stay separate. Compare whole-length held-out errors with sample spread. No extrapolation,physical fixed-cost attribution,saturation,paired gain or adoption. The96Ksplit route has one point and no fit.')
+
+
+def compatibility_inventory(events):
+    # Exact types from the unchanged fad954... fixture ELF and compat.cpp.
+    # No-argument execution excludes the two submission-only kernel types.
+    aliases, expected = {}, dict(direct=1, producer=37, consumer=24)
+    for kind, suffix, ordinal in (('direct', '', 1), ('producer', '2', 4), ('consumer', '3', 5)):
+        plain = f'main::{{lambda(sycl::_V1::id<1>)#{ordinal}}}'
+        rounded = f'sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, {plain}>'
+        for name in (plain, rounded, '_ZTSZ4mainEUlN4sycl3_V12idILi1EEEE' + suffix + '_',
+                     '_ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZ4mainEUlNS0_2idILi1EEEE' + suffix + '_EE'):
+            aliases[name] = kind
+    observed, names = dict.fromkeys(expected, 0), {}
+    for event in events:
+        if event.get('ph') != 'X' or event.get('cat') != 'gpu_op': continue
+        name = event.get('name')
+        require(type(name) is str, 'GPU operation name missing')
+        if name.startswith('zeCommandList'): continue
+        base = name.split('[SIMD', 1)[0].strip().removeprefix('typeinfo name for ')
+        require(base in aliases, 'unexpected compatibility kernel type: ' + base)
+        observed[aliases[base]] += 1
+        names[base] = names.get(base, 0) + 1
+    require(observed == expected, 'compatibility kernel class inventory differs: ' + str(observed))
+    return dict(expected=expected, observed=observed, kernel_instances=sum(observed.values()),
+        observed_aliases=names, exact_class_identity=True)
+
+
+def collector_controls():
+    def events(rounded=False, prefix=False, mangled=False):
+        result = []
+        for count, suffix, ordinal in ((1, '', 1), (37, '2', 4), (24, '3', 5)):
+            plain = f'main::{{lambda(sycl::_V1::id<1>)#{ordinal}}}'
+            if mangled:
+                name = ('_ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZ4mainEUlNS0_2idILi1EEEE' + suffix + '_EE'
+                    if rounded else '_ZTSZ4mainEUlN4sycl3_V12idILi1EEEE' + suffix + '_')
+            else:
+                name = f'sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, {plain}>' if rounded else plain
+                if prefix: name = 'typeinfo name for ' + name
+            result.extend(dict(ph='X', cat='gpu_op', name=name + '[SIMD16]') for _ in range(count))
+        return result
+    for rounded, prefix, mangled in ((False, False, False), (True, False, False),
+            (False, True, False), (True, True, False), (False, False, True), (True, False, True)):
+        require(compatibility_inventory(events(rounded, prefix, mangled))['kernel_instances'] == 62,
+            'valid exact fixture inventory rejected')
+    valid = events()
+    invalid = [valid[1:], valid + valid[:1], [dict(e, name='named_but_wrong') for e in valid],
+        [dict(e, name=valid[1]['name']) for e in valid],
+        [dict(e, name=e['name'].replace('#4}', '#2}')) for e in valid],
+        [dict(e, name=valid[1]['name']) if i == 0 else e for i, e in enumerate(valid)]]
+    for case in invalid:
+        try: compatibility_inventory(case)
+        except RuntimeError: pass
+        else: raise RuntimeError('corrupt/misclassified compatibility inventory accepted')
+    return dict(passed=True, valid_inventories=6, rejected_inventories=6,
+        scope='CPU class-inventory controls only;no native/GPU/clock/join/collector qualification.')
+
+
+def collector_context():
+    ctx = source.device.load_module('qsa16_stream_collector_v2', source.compatibility.__file__)
+    ctx.ROOT = ctx.CONTROL_ROOT = COLLECTOR_ROOT
+    ctx.KEY = ctx.CONTROL_KEY = COLLECTOR_KEY
+    ctx.SOURCE, ctx.ACTIVE_FROM_EXEC = P / THIS, True
+    ctx.profile = source.device.load_module('qsa16_stream_collector_v2_profile', ctx.profile.__file__)
+    ctx.inventory = None
+
+    def admission():
+        n, prior, providers, _ = basis()
+        require(n['binaries']['sycl_submission_test']['sha256'] ==
+            'fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7',
+            'exact source-derived compatibility fixture required')
+        assets = ctx.profile.collector_assets(json.loads(RESULT.read_text()))
+        return dict(n, source_commit=n['native_source_commit']), dict(prior,
+            native_validation_probe=prior['probe']), providers, assets
+
+    def current(row):
+        require(ctx.base.committed(RESULT)[COLLECTOR_KEY] == ctx.compact(row)
+            and ctx.base.controls(row['source_commit'], controller=P / THIS) == row['sources'],
+            'commit exact prospective collector inputs and plan')
+        n, prior, providers, assets = admission()
+        require(row['native_source_commit'] == n['native_source_commit']
+            and row['engine'] == n['binaries']['strata'] and row['binary'] == n['binaries']['sycl_submission_test']
+            and row['observer_admission'] == prior['observer_admission']
+            and row['native_validation_probe'] == prior['probe'] and row['environment_template'] == prior['environment']
+            and row['boot'] == prior['boot'] and row['driver'] == prior['driver']
+            and row['assets'] == assets and all(row['profile'][k] == v for k, v in assets.items())
+            and row['profile']['mode'] == 'aggregate'
+            and row['profile']['environment']['UNITRACE_TraceOutputDir'] == str(COLLECTOR_ROOT / 'trace')
+            and row['budgets'] == ctx.BUDGET and row['whole_bytes'] == 128 << 20
+            and row['host_controls'] == collector_controls(), 'collector native/runtime/envelope changed')
+        return providers
+
+    original_environment, original_summary, original_save = ctx.environment, ctx.profile.trace_summary, ctx.save
+
+    def environment(row):
+        env = original_environment(row)
+        require(env.get('LD_PRELOAD') == row['native_validation_probe']['library']['path']
+            and env.get('STRATA_UR_PROBE_EXPECTED_LOADER') ==
+                str(Path(row['native_validation_probe']['loader']['path']).resolve()),
+            'only the exact previously qualified private preload may be detached')
+        env.pop('LD_PRELOAD'); env.pop('STRATA_UR_PROBE_EXPECTED_LOADER')
+        return env
+
+    def summary(events, native, begin, end):
+        value = original_summary(events, native, begin, end)
+        ctx.inventory = compatibility_inventory(events)
+        return value
+
+    def save(row):
+        if row.get('cases') and ctx.inventory is not None:
+            row['cases'][-1].setdefault('trace', {})['class_inventory'] = ctx.inventory
+        original_save(row)
+
+    ctx.basis, ctx.current, ctx.environment = admission, current, environment
+    ctx.profile.trace_summary, ctx.save = summary, save
+    return ctx
+
+
+def collector_prepare():
+    controls = collector_controls()
+    ctx = collector_context(); ctx.prepare()
+    row = json.loads((COLLECTOR_ROOT / 'record.json').read_text())
+    _, prior, _, _ = ctx.basis()
+    row.update(host_controls=controls, observer_admission=prior['observer_admission'])
+    row['plan'].update(question='Does the unchanged owned Sysman0 indexed collector cover exact current b9aa fixture kernel classes,flow joins and graph lifecycle?',
+        native='Same b9aa/1e598 engine and fad954 compatibility fixture,all five original native ELFs/recipe/runtime exact. Existing MIT collector/launcher;no native rebuild. No arguments:ordinary graph recording/replay,not --native or --submission.',
+        order='CPU6valid/6refusal inventory controls,then one fresh finite active-from-exec aggregate/kernel-only collection with original two native gates. Detach only the exact qualified inherited probe fields before the native wrapper attaches its private preload. All runtime safety remains immutable before exec.',
+        acceptance='Require1direct/37producer/24consumer exact kernel types,62unique native host-flow joins,finite contained clocks,original numerical/copy/event/graph/lifetime pass,pre-main parameter validation,normal0,closed owners,unchanged boot/no fresh fault and removed collector session. Stop first failure;no retry,pin refresh or count-only replacement.',
+        limits='Current-build collector control only. No model trace/overhead,physical traffic,saturation,clean PP/TG,task quality,physical262144/RESTORE,ordinary-provider teardown or inference adoption.',
+        next='Commit representative32K+ current fast-route capture and matched observer-overhead plan before attributing model resources. Keep service coverage,wall critical path and hardware saturation distinct.')
+    ctx.save(row)
+    print('Prepared corrected current-build collector V2;commit before GPU.', flush=True)
 
 
 def request_route(text, plan):
@@ -632,6 +765,10 @@ if __name__ == '__main__':
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); source.model.guards.no_model_owners([])
         action = sys.argv[1:]
+        if action[:1] == ['collector']:
+            require(len(action) == 2 and action[1] in ('prepare', 'check'), 'use collector prepare|check')
+            collector_prepare() if action[1] == 'prepare' else collector_context().check()
+            raise SystemExit(0)
         if action[:1] == ['fast']:
             require(len(action) == 2 and action[1] in ('prepare', 'host', 'run'), 'use fast prepare|host|run')
             fast_prepare() if action[1] == 'prepare' else fast_execute(action[1])

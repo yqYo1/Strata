@@ -28020,7 +28020,7 @@
     "classification": "knowledge_collection",
     "model": "gpt-6-luna",
     "reasoning_effort": "medium",
-    "stage": "report_and_executors_closed_native_review_pending",
+    "stage": "reviewed_source_map_no_implementation_adoption",
     "schedulable_now": false,
     "source_commit": "670f15cd4842586e7099883caf70775ecb09c031",
     "source_files": 14,
@@ -28043,8 +28043,55 @@
     "native_review": {
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "state": "pending"
+      "state": "completed",
+      "review": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-router-execution-contract-review-20261110/review.md",
+        "bytes": 3474,
+        "sha256": "a4acf52251c3a5062d9eaf643a2a7904c67e92436af14bedf6dcb4974dad7a6c"
+      },
+      "digest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-router-execution-contract-review-20261110/digest.json",
+        "bytes": 2514,
+        "sha256": "1684738ca52917cfe1ebd9878d3a702d944bef05debbc6a8480ac955f866db6e"
+      },
+      "source_hashes_verified": 14,
+      "corrections": "Generic FP64 vs native FP32 remains source-only. fmax single-NaN wording,stale CUDA comment,generic pointer/test-coverage limits corrected;native router provenance is MIT llama.cpp3cf03257,not XeStrata."
     },
-    "retention": "Native Luna-max reviews actual router/phase coverage and novelty versus existing GPU route-construction and prompt-domain references. Commit only substantive reusable deltas;retire closed transaction/CLI outputs after review."
+    "retention": "R3 target-production-contract review consumes this report and native digest. Preserve those two until R3 curation;retire closed private CLI/transactions after useful evidence is committed. Main has not read report body.",
+    "retrieval_question": "For a concrete router precision or dispatch proposal, does the actual model's route preserve the SGLang/vLLM producer-rounding, normalization, tie-order and phase-selection contract?"
+  },
+  "target_router_production_contract_20261110": {
+    "classification": "knowledge_collection",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "stage": "report_and_executors_closed_native_review_running",
+    "schedulable_now": false,
+    "source_commit": "cb1151b7473189de78173ac148e04fe92a431a6c",
+    "source_files": 15,
+    "prerequisite_evidence": "Completed Luna-max actual-router review identified the missing target SGLang/vLLM numerical contract. Fresh source/model-header comparison needed no absent profile;15 immutable pins and bounded header-only model identity input,not a repeated routing survey.",
+    "task": "task_d6f32e1c7fc3",
+    "dispatch": "ctx_fff6505273a4",
+    "terminal": "term_31c7ebd7-1566-4e7c-8da3-bbc5229a8924",
+    "worker_bound_IPC_preflight_passed": true,
+    "ownership_closed": true,
+    "ownership": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/target-router-production-contract-20261110/owned-launch.json",
+      "bytes": 1141,
+      "sha256": "987dd9278547bdde15a97963e74ff65d0b6e4069531a192aac8be021341dc1c5"
+    },
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/target-router-production-contract-20261110/report.md",
+      "bytes": 10023,
+      "sha256": "641c70c95701c5fa40030c0b54a21ed43b00ea6a3416acbaaeb974815a527f68"
+    },
+    "main_has_read_report_body": false,
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "state": "running",
+      "task": "/root/review_target_router_contract_20261110"
+    },
+    "limits": "Orca task/dispatch completed,capability revoked,failure_count0;all4 original executor identities gone. Source/model-header knowledge only;no GPU,runtime numerical,resource saturation,speed or adoption evidence.",
+    "retention": "Native review decides unique reusable contract findings. Keep report,pins and R2 report/digest until review;retire closed CLI/transaction output afterward. Main reads only short native digest."
   }
 }
