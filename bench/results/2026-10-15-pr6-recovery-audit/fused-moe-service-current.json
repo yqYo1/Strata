@@ -277536,6 +277536,30 @@
       "sha256": "bcdf700ada271dc79b061003d73b21a923c0874f53e61241f3ef4e2dbb95fd44",
       "bytes": 15186512
     },
+    "pre_timing_controls": {
+      "state": "planned_before_any_timing_process",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
+        "-B",
+        "-c",
+        "import json,statistics,time\ni=time.get_clock_info('monotonic')\nassert i.monotonic and not i.adjustable and i.implementation=='clock_gettime(CLOCK_MONOTONIC)'\nsamples=[]\nfor _ in range(20000):\n a=time.monotonic_ns();b=time.monotonic_ns();samples.append(b-a)\nm=statistics.median(samples)\nassert min(samples)>=0 and i.resolution<=1e-6 and m<=100000\nprint(json.dumps(dict(monotonic=True,implementation=i.implementation,resolution_ns=i.resolution*1e9,empty_bracket_median_ns=m,empty_bracket_max_ns=max(samples),samples=len(samples),minimum_batch_ms=100,median_overhead_fraction=m/1e8,scope='CPython-inclusive calls to the same Linux monotonic clock;not a direct C++ ABI measurement.'),sort_keys=True))\n"
+      ],
+      "program_sha256": "b7a8f9512c71d941fdf5026d4d536994e1e6a6fb86b7609f616722eb44c81262",
+      "budget": {
+        "wall": 30,
+        "cpu": 30,
+        "rss_cap": 268435456,
+        "text_cap": 1048576,
+        "total_cap": 4194304
+      },
+      "clock_scope": "Linux monotonic resolution and CPython-inclusive empty-bracket sanity;not a direct C++ ABI cost measurement. Fixed100ms batch floor stays unchanged.",
+      "link_scope": "Require exact observed external host-provider set: original qualified native link inputs plus explicit linked objects,excluding exactly the two SYCL image/host objects transformed by the compiler before GNU ld. Their exact original command-input hashes remain pinned;do not call this a full device-link trace.",
+      "decision": "Before perf0 require normal closed timer process,monotonic clock<=1us resolution and<=100us median empty bracket;exact expected host-provider set and unchanged explicit input hashes. Stop on failure,no retry or relaxed floor. All earlier failed gates remain unchanged.",
+      "previous_preparation": {
+        "outcome": "refused_before_mutation",
+        "reason": "Closed numerical result was not yet committed;no clock test or performance process started. The result is now committed before this prospective preparation."
+      }
+    },
     "headers_summary": {
       "files": 707,
       "sha256": "91cecc617b071869940fc99ef46fc30587978c3dbcbd02ee3d6e4b5e5f5eb23d"
