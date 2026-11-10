@@ -255347,7 +255347,7 @@
     ]
   },
   "qsa16_stream_collector_active_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "663efcb9e0f790a7402236eb1aa93dff89036aca",
     "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
     "engine": {
@@ -255462,6 +255462,20 @@
         "tools/sycl/qsa16_stream_profile.py": "aaa8707207375ca98482535e936f736727436305735d574faa96a072cf4d1c97"
       },
       "meaning": "Controller-only addition;original native/recipe/five fixtures/runtime and model evidence exact. No native rebuild or inherited collector qualification."
+    },
+    "prelaunch_failure": {
+      "source_commit": "663efcb9e0f790a7402236eb1aa93dff89036aca",
+      "prepared_evidence_commit": "6a23ed18d763ba68b8c6c20e50b2e2d0f849bebf",
+      "prepared_private_receipt_sha256": "e386c64d87b559c1c40eab6b357150a05d728fa709edb69e1bfddb1a4d366335",
+      "controller_exit_code": 1,
+      "error": "RuntimeError: probe requires private native preload and immutable startup environment",
+      "callsite": "profile_selected_compat.check -> profile_split.profile_target_environment -> engine_once.native_environment",
+      "cause": "The reused direct-native model template already contains its validation LD_PRELOAD. The existing owned profiler launcher expects an unpreloaded parent and attaches that exact probe only to the native child.",
+      "native_execution_attempted": false,
+      "GPU_executed": false,
+      "owned_native_commands": 0,
+      "evidence": "Admission raised before owner construction,execution.json creation,session creation or native launch. Do not count this controller guard as a GPU failure or successful collector control.",
+      "next": "Preserve V1 failed. Prepare a separate committed V2 whose parent environment omits LD_PRELOAD and the stale expected-loader observer before engine_once adds the exact pinned native probe. Keep current source/ELFs/62kernels/safety/collector and all other criteria."
     },
     "sources_sha256": "242c4821a4099dd602f6f8ee96eb43cecb9d1399feb555d748339ee7b0559a77",
     "environment_template_sha256": "42621817354afa9874fd37e05e8a8f989bb9d533be22ec556892164154162c1f"
