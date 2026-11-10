@@ -259513,7 +259513,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "qsa16_stream_fast_fit_point_v1": {
-    "stage": "ready",
+    "stage": "closed",
     "source_commit": "6e51f04b114a9939bbfe632d8e3e937cb502a9e8",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
@@ -259708,11 +259708,283 @@
         "environment_sha256": "01582aec0f16215532bc446bf708e6740b53315cd54c6bd1de3d31bd4029bc5d"
       }
     ],
-    "processes": [],
-    "request_hashes": {},
+    "processes": [
+      {
+        "index": 0,
+        "read": 57345,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
+          "sha256": "1e598e8e6f04c4bf2e65fb295fb7c9fea9d66406084d612c7d7cda8744ddf391",
+          "bytes": 26382496,
+          "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
+        },
+        "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
+        "native_identity": {
+          "pid": 1068470,
+          "start_ticks": 264079891,
+          "sid": 1068403
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1068470,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 57344,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 57344,
+            "residual_gpu_bytes": 1174405120,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 57344,
+              "residual_gpu_rows": 57344,
+              "residual_gpu_bytes": 1174405120,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20008,
+              "fused_down_jobs": 3694,
+              "maximum_window_rows": 57344,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 36759270400,
+              "requested_dequant_H2D_bytes": 110100480,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800
+          },
+          {
+            "rows": 57344,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 57344,
+            "residual_gpu_bytes": 1174405120,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 57344,
+              "residual_gpu_rows": 57344,
+              "residual_gpu_bytes": 1174405120,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20049,
+              "fused_down_jobs": 3698,
+              "maximum_window_rows": 57344,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 36829004800,
+              "requested_dequant_H2D_bytes": 110100480,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800
+          },
+          {
+            "rows": 57344,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 57344,
+            "residual_gpu_bytes": 1174405120,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 57344,
+              "residual_gpu_rows": 57344,
+              "residual_gpu_bytes": 1174405120,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20024,
+              "fused_down_jobs": 3676,
+              "maximum_window_rows": 57344,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 36813286400,
+              "requested_dequant_H2D_bytes": 110100480,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800
+          },
+          {
+            "rows": 57344,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 57344,
+            "residual_gpu_bytes": 1174405120,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 57344,
+              "residual_gpu_rows": 57344,
+              "residual_gpu_bytes": 1174405120,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20048,
+              "fused_down_jobs": 3694,
+              "maximum_window_rows": 57344,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 36861619200,
+              "requested_dequant_H2D_bytes": 110100480,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 73068.3,
+            "prompt_tps": 784.8,
+            "ttft_s": 73.226,
+            "total_s": 74.921,
+            "generated_tokens": 24,
+            "request_sha256": "aaa41a947b9da160ad55a5f6c3df5653b3c7a454a251e27ad4d1712b8fad5291",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 62747.9,
+            "prompt_tps": 913.9,
+            "ttft_s": 62.904,
+            "total_s": 64.432,
+            "generated_tokens": 24,
+            "request_sha256": "6863ed21fba8ec42be4fb21f41a7cb789b8371e03bfa78d2054351a66e828c9e",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 62931.1,
+            "prompt_tps": 911.2,
+            "ttft_s": 63.084,
+            "total_s": 64.565,
+            "generated_tokens": 24,
+            "request_sha256": "013b057ffc09da901d56d5883451e7c0b2394d80b5b1a91fda708fd4e01547f1",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 63011.4,
+            "prompt_tps": 910.1,
+            "ttft_s": 63.167,
+            "total_s": 64.719,
+            "generated_tokens": 24,
+            "request_sha256": "8d28ac2f49581e13158319ff5f3fd406e9d9bca7bd3536b0b3b44ff707c605b3",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 62931.1,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
+    "request_hashes": {
+      "57345": [
+        "aaa41a947b9da160ad55a5f6c3df5653b3c7a454a251e27ad4d1712b8fad5291",
+        "6863ed21fba8ec42be4fb21f41a7cb789b8371e03bfa78d2054351a66e828c9e",
+        "013b057ffc09da901d56d5883451e7c0b2394d80b5b1a91fda708fd4e01547f1",
+        "8d28ac2f49581e13158319ff5f3fd406e9d9bca7bd3536b0b3b44ff707c605b3"
+      ]
+    },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
@@ -259768,6 +260040,680 @@
         "passed": true
       }
     ],
+    "decision": {
+      "points": [
+        {
+          "read": 57345,
+          "first_use": {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 73068.3,
+            "prompt_tps": 784.8,
+            "ttft_s": 73.226,
+            "total_s": 74.921,
+            "generated_tokens": 24,
+            "request_sha256": "aaa41a947b9da160ad55a5f6c3df5653b3c7a454a251e27ad4d1712b8fad5291",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            62747.9,
+            62931.1,
+            63011.4
+          ],
+          "subsequent_TTFT_s": [
+            62.904,
+            63.084,
+            63.167
+          ],
+          "median_prompt_ms": 62931.1,
+          "median_PP": 911.2346677556884,
+          "median_TTFT_s": 63.084,
+          "residual_GPU_rows": 57344,
+          "placement": {
+            "rows": 57344,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 57344,
+            "residual_gpu_bytes": 1174405120,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "window": {
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "maximum_window_rows": 57344
+            }
+          },
+          "placement_unchanged_within_process": true,
+          "route_group": "all_GPU/slots384/staged1/split0"
+        }
+      ],
+      "route_group_approximations": {
+        "all_GPU/slots384/staged1/split0": {
+          "affine": null,
+          "alternatives": null,
+          "adjacent_ms_per_token": []
+        }
+      },
+      "single_process_per_length": true,
+      "clean_speed": true,
+      "input_length_curve_complete": false,
+      "next": "Fit only compatible route groups using actual n and retained individual times;compare affine,nlogn and quadratic residuals/held-out errors with sample spread. Gather independent-process repeats for promising points before claiming a gain or target.",
+      "matched_speedup": false,
+      "resource_saturation_qualified": false,
+      "sustained_decode_qualified": false,
+      "physical262144_qualified": false,
+      "inference_adopted": false,
+      "extended_curve_approximation": {
+        "prior_curve": {
+          "key": "qsa16_stream_fast_curve_v1",
+          "source_commit": "131ce053b106df631037355fe62b0cd9eb1da79c",
+          "receipt": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-fast-curve-v1/record.json",
+            "sha256": "f042b222cfd3a910c48bc4ce34916e8dc4e54b6ca9131feee4ae8953f3b0983c"
+          },
+          "evidence_sha256": "f16b25fffd2ca059cc786dca10ab6cc8598aa90a81278b43edd9154ca0fff45f",
+          "unchanged_source_inputs": 688,
+          "limits": "Reuse the closed final15asset hashes after exact identities;no native rebuild or inherited new-point result."
+        },
+        "lengths": [
+          32769,
+          49153,
+          57345,
+          65537,
+          81921,
+          98305
+        ],
+        "route_scoped_fits": {
+          "all_GPU/slots384/staged1/split0": {
+            "first_prompt_ms": {
+              "affine": {
+                "intercept_ms": 20090.72045898436,
+                "ms_per_token": 0.9395410156250001,
+                "r_squared": 0.9985978897170477,
+                "max_relative_residual": 0.012322717238528803,
+                "points": [
+                  {
+                    "actual_read_tokens": 32769,
+                    "prompt_ms": 51448.5,
+                    "residual_ms": 569.9600000000064
+                  },
+                  {
+                    "actual_read_tokens": 49153,
+                    "prompt_ms": 66242.9,
+                    "residual_ms": -29.080000000001746
+                  },
+                  {
+                    "actual_read_tokens": 57345,
+                    "prompt_ms": 73068.3,
+                    "residual_ms": -900.3999999999942
+                  },
+                  {
+                    "actual_read_tokens": 65537,
+                    "prompt_ms": 81364.3,
+                    "residual_ms": -301.11999999999534
+                  },
+                  {
+                    "actual_read_tokens": 81921,
+                    "prompt_ms": 97719.5,
+                    "residual_ms": 660.6399999999994
+                  }
+                ],
+                "interpretation": "Descriptive only. Check route, chunk boundaries and residuals before interpreting the intercept as fixed cost; no linearity or saturation qualification."
+              },
+              "alternatives": {
+                "candidates": {
+                  "affine": {
+                    "formula_ms": "a+b*x",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 20090.720458984404,
+                      "b": 61573.759999999966
+                    },
+                    "residual_ms": [
+                      569.9599999999919,
+                      -29.080000000016298,
+                      -900.3999999999942,
+                      -301.11999999999534,
+                      660.640000000014
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      -1628.457142857107,
+                      38.77333333334536,
+                      1125.5,
+                      401.493333333332,
+                      -1887.542857142893
+                    ],
+                    "mean_held_out_relative_error": 0.01437826787340101,
+                    "max_held_out_relative_error": 0.03165217922499406
+                  },
+                  "quadratic": {
+                    "formula_ms": "a+b*x+c*x^2",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 25847.296215401602,
+                      "b": 47246.57682477608,
+                      "c": 8186.8190476194295
+                    },
+                    "residual_ms": [
+                      -69.63523809527396,
+                      354.6771428571519,
+                      -388.7238095237699,
+                      82.63714285717288,
+                      21.044761904748157
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      1329.4000000008382,
+                      -551.7200000002194,
+                      637.7499999999418,
+                      -128.54666666670528,
+                      -401.7636363633501
+                    ],
+                    "mean_held_out_relative_error": 0.009717519108092017,
+                    "max_held_out_relative_error": 0.025839431664690674
+                  },
+                  "n_log_n": {
+                    "formula_ms": "a+b*x+c*x*log2(x)",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 31171.849941786808,
+                      "b": 50157.52751812776,
+                      "c": 9454.983932999752
+                    },
+                    "residual_ms": [
+                      -75.4509489832999,
+                      395.1204780198168,
+                      -398.55810968349397,
+                      33.949055435470655,
+                      44.93952521150641
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      1931.2040342371765,
+                      -641.7602986693528,
+                      651.2234506813547,
+                      -50.959482766411384,
+                      -670.3700069109182
+                    ],
+                    "mean_held_out_relative_error": 0.012724723798985572,
+                    "max_held_out_relative_error": 0.03753664410502107
+                  }
+                },
+                "selected_model": null,
+                "interpretation": "Hypotheses, not a required law. Compare held-out error against measured spread; inspect route/chunk changes and prefer a simpler adequate model. Piecewise route-specific fits may be required. Do not extrapolate outside measured lengths."
+              },
+              "adjacent_ms_per_token": [
+                0.9029785156249996,
+                0.8331787109375011,
+                1.0126953125,
+                0.9982421874999998
+              ]
+            },
+            "warmed_median_prompt_ms": {
+              "affine": {
+                "intercept_ms": 9690.60495971681,
+                "ms_per_token": 0.9450402832031248,
+                "r_squared": 0.9986801532225864,
+                "max_relative_residual": 0.015141003414845821,
+                "points": [
+                  {
+                    "actual_read_tokens": 32769,
+                    "prompt_ms": 41222.4,
+                    "residual_ms": 563.7699999999968
+                  },
+                  {
+                    "actual_read_tokens": 49153,
+                    "prompt_ms": 56072.8,
+                    "residual_ms": -69.37000000000262
+                  },
+                  {
+                    "actual_read_tokens": 57345,
+                    "prompt_ms": 62931.1,
+                    "residual_ms": -952.8400000000038
+                  },
+                  {
+                    "actual_read_tokens": 65537,
+                    "prompt_ms": 71502.4,
+                    "residual_ms": -123.30999999999767
+                  },
+                  {
+                    "actual_read_tokens": 81921,
+                    "prompt_ms": 87691.0,
+                    "residual_ms": 581.75
+                  }
+                ],
+                "interpretation": "Descriptive only. Check route, chunk boundaries and residuals before interpreting the intercept as fixed cost; no linearity or saturation qualification."
+              },
+              "alternatives": {
+                "candidates": {
+                  "affine": {
+                    "formula_ms": "a+b*x",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 9690.604959716831,
+                      "b": 61934.15999999996
+                    },
+                    "residual_ms": [
+                      563.7699999999822,
+                      -69.37000000000262,
+                      -952.8400000000038,
+                      -123.30999999999767,
+                      581.7500000000146
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      -1610.771428571432,
+                      92.49333333334653,
+                      1191.050000000003,
+                      164.41333333335933,
+                      -1662.1428571429278
+                    ],
+                    "mean_held_out_relative_error": 0.01618097580318423,
+                    "max_held_out_relative_error": 0.03907514915607611
+                  },
+                  "quadratic": {
+                    "formula_ms": "a+b*x+c*x^2",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 15110.632220975576,
+                      "b": 48444.59143135986,
+                      "c": 7708.190476191453
+                    },
+                    "residual_ms": [
+                      -38.43238095247216,
+                      291.95142857146857,
+                      -471.07809523803735,
+                      238.0114285714808,
+                      -20.452380952454405
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      733.7090909092149,
+                      -454.14666666663106,
+                      772.8624999999956,
+                      -370.2399999999325,
+                      390.45454545493703
+                    ],
+                    "mean_held_out_relative_error": 0.009561949032930794,
+                    "max_held_out_relative_error": 0.017798796064984447
+                  },
+                  "n_log_n": {
+                    "formula_ms": "a+b*x+c*x*log2(x)",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 20203.17455001226,
+                      "b": 51103.68115658144,
+                      "c": 8969.859681275733
+                    },
+                    "residual_ms": [
+                      -48.52566228384967,
+                      333.06524383871874,
+                      -476.7470346154514,
+                      194.56705109724135,
+                      -2.3595980366662843
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      1242.0381191916167,
+                      -540.969304940947,
+                      778.9801322345447,
+                      -292.0563226312952,
+                      35.19849719660124
+                    ],
+                    "mean_held_out_relative_error": 0.011328411938769779,
+                    "max_held_out_relative_error": 0.030130174836778465
+                  }
+                },
+                "selected_model": null,
+                "interpretation": "Hypotheses, not a required law. Compare held-out error against measured spread; inspect route/chunk changes and prefer a simpler adequate model. Piecewise route-specific fits may be required. Do not extrapolate outside measured lengths."
+              },
+              "adjacent_ms_per_token": [
+                0.9063964843750001,
+                0.8371948242187495,
+                1.0463012695312495,
+                0.9880737304687504
+              ]
+            },
+            "first_client_TTFT_ms": {
+              "affine": {
+                "intercept_ms": 20212.209942626956,
+                "ms_per_token": 0.940057373046875,
+                "r_squared": 0.9986144248072566,
+                "max_relative_residual": 0.012206047032474843,
+                "points": [
+                  {
+                    "actual_read_tokens": 32769,
+                    "prompt_ms": 51583.0,
+                    "residual_ms": 566.0500000000029
+                  },
+                  {
+                    "actual_read_tokens": 49153,
+                    "prompt_ms": 66392.0,
+                    "residual_ms": -26.85000000000582
+                  },
+                  {
+                    "actual_read_tokens": 57345,
+                    "prompt_ms": 73226.0,
+                    "residual_ms": -893.8000000000029
+                  },
+                  {
+                    "actual_read_tokens": 65537,
+                    "prompt_ms": 81517.0,
+                    "residual_ms": -303.75
+                  },
+                  {
+                    "actual_read_tokens": 81921,
+                    "prompt_ms": 97881.0,
+                    "residual_ms": 658.3500000000058
+                  }
+                ],
+                "interpretation": "Descriptive only. Check route, chunk boundaries and residuals before interpreting the intercept as fixed cost; no linearity or saturation qualification."
+              },
+              "alternatives": {
+                "candidates": {
+                  "affine": {
+                    "formula_ms": "a+b*x",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 20212.209942626956,
+                      "b": 61607.6
+                    },
+                    "residual_ms": [
+                      566.0500000000029,
+                      -26.85000000000582,
+                      -893.8000000000029,
+                      -303.75,
+                      658.3500000000058
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      -1617.2857142857174,
+                      35.80000000000291,
+                      1117.25,
+                      405.0,
+                      -1881.0
+                    ],
+                    "mean_held_out_relative_error": 0.014267071569460025,
+                    "max_held_out_relative_error": 0.03135307590263686
+                  },
+                  "quadratic": {
+                    "formula_ms": "a+b*x+c*x^2",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 25938.67741278495,
+                      "b": 47355.35146484349,
+                      "c": 8144.00000000015
+                    },
+                    "residual_ms": [
+                      -70.20000000001164,
+                      354.90000000000873,
+                      -384.79999999998836,
+                      78.00000000001455,
+                      22.09999999999127
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      1340.1818181816125,
+                      -552.0666666666511,
+                      631.3125000000146,
+                      -121.33333333332848,
+                      -421.9090909091756
+                    ],
+                    "mean_held_out_relative_error": 0.009743326162096886,
+                    "max_held_out_relative_error": 0.025981075512894025
+                  },
+                  "n_log_n": {
+                    "formula_ms": "a+b*x+c*x*log2(x)",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 31232.872738959184,
+                      "b": 50253.662769818824,
+                      "c": 9403.39067710065
+                    },
+                    "residual_ms": [
+                      -75.83911832901504,
+                      395.03573227619927,
+                      -394.6965233340743,
+                      29.49067543572164,
+                      46.0092339511466
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      1941.1394189667335,
+                      -641.6226534275484,
+                      644.9138172139501,
+                      -44.26719822861196,
+                      -686.3270214067161
+                    ],
+                    "mean_held_out_relative_error": 0.012731519748960375,
+                    "max_held_out_relative_error": 0.03763137892264377
+                  }
+                },
+                "selected_model": null,
+                "interpretation": "Hypotheses, not a required law. Compare held-out error against measured spread; inspect route/chunk changes and prefer a simpler adequate model. Piecewise route-specific fits may be required. Do not extrapolate outside measured lengths."
+              },
+              "adjacent_ms_per_token": [
+                0.90386962890625,
+                0.834228515625,
+                1.0120849609375,
+                0.998779296875
+              ]
+            },
+            "warmed_median_client_TTFT_ms": {
+              "affine": {
+                "intercept_ms": 9796.60413208008,
+                "ms_per_token": 0.945867919921875,
+                "r_squared": 0.9986787197494031,
+                "max_relative_residual": 0.015113182423435442,
+                "points": [
+                  {
+                    "actual_read_tokens": 32769,
+                    "prompt_ms": 41357.0,
+                    "residual_ms": 565.25
+                  },
+                  {
+                    "actual_read_tokens": 49153,
+                    "prompt_ms": 56218.0,
+                    "residual_ms": -70.85000000000582
+                  },
+                  {
+                    "actual_read_tokens": 57345,
+                    "prompt_ms": 63084.0,
+                    "residual_ms": -953.4000000000015
+                  },
+                  {
+                    "actual_read_tokens": 65537,
+                    "prompt_ms": 71662.0,
+                    "residual_ms": -123.95000000001164
+                  },
+                  {
+                    "actual_read_tokens": 81921,
+                    "prompt_ms": 87866.0,
+                    "residual_ms": 582.9499999999825
+                  }
+                ],
+                "interpretation": "Descriptive only. Check route, chunk boundaries and residuals before interpreting the intercept as fixed cost; no linearity or saturation qualification."
+              },
+              "alternatives": {
+                "candidates": {
+                  "affine": {
+                    "formula_ms": "a+b*x",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 9796.60413208008,
+                      "b": 61988.4
+                    },
+                    "residual_ms": [
+                      565.25,
+                      -70.85000000000582,
+                      -953.4000000000015,
+                      -123.95000000001164,
+                      582.9499999999825
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      -1615.0,
+                      94.46666666665988,
+                      1191.75,
+                      165.2666666666628,
+                      -1665.5714285714203
+                    ],
+                    "mean_held_out_relative_error": 0.016176814377669768,
+                    "max_held_out_relative_error": 0.039050221244287545
+                  },
+                  "quadratic": {
+                    "formula_ms": "a+b*x+c*x^2",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 15228.417555218877,
+                      "b": 48469.49758649559,
+                      "c": 7724.952380952347
+                    },
+                    "residual_ms": [
+                      -38.26190476190095,
+                      291.2571428571391,
+                      -470.59047619048215,
+                      238.1571428571333,
+                      -20.561904761911137
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      730.4545454545223,
+                      -453.066666666673,
+                      772.0624999999927,
+                      -370.4666666666744,
+                      392.545454545485
+                    ],
+                    "mean_held_out_relative_error": 0.009519421072325274,
+                    "max_held_out_relative_error": 0.017662174370832562
+                  },
+                  "n_log_n": {
+                    "formula_ms": "a+b*x+c*x*log2(x)",
+                    "x": "actual_read_tokens/65536",
+                    "coefficients_ms": {
+                      "a": 20332.47685453186,
+                      "b": 51133.91331742884,
+                      "c": 8989.743100242078
+                    },
+                    "residual_ms": [
+                      -48.402933369121456,
+                      332.4773189485277,
+                      -476.25168300080986,
+                      194.6316867115529,
+                      -2.4543892901274376
+                    ],
+                    "leave_one_length_out_error_ms": [
+                      1238.8968124445237,
+                      -540.0143889744795,
+                      778.1707531755164,
+                      -292.15334440223523,
+                      36.61251331960375
+                    ],
+                    "mean_held_out_relative_error": 0.011278171405325032,
+                    "max_held_out_relative_error": 0.02995615766241564
+                  }
+                },
+                "selected_model": null,
+                "interpretation": "Hypotheses, not a required law. Compare held-out error against measured spread; inspect route/chunk changes and prefer a simpler adequate model. Piecewise route-specific fits may be required. Do not extrapolate outside measured lengths."
+              },
+              "adjacent_ms_per_token": [
+                0.90704345703125,
+                0.838134765625,
+                1.047119140625,
+                0.989013671875
+              ]
+            }
+          },
+          "all_GPU/slots128/staged1/split1": {
+            "first_prompt_ms": {
+              "affine": null,
+              "alternatives": null,
+              "adjacent_ms_per_token": []
+            },
+            "warmed_median_prompt_ms": {
+              "affine": null,
+              "alternatives": null,
+              "adjacent_ms_per_token": []
+            },
+            "first_client_TTFT_ms": {
+              "affine": null,
+              "alternatives": null,
+              "adjacent_ms_per_token": []
+            },
+            "warmed_median_client_TTFT_ms": {
+              "affine": null,
+              "alternatives": null,
+              "adjacent_ms_per_token": []
+            }
+          }
+        },
+        "within_process_spread": [
+          {
+            "read": 32769,
+            "subsequent_prompt_range_ms": [
+              41071.1,
+              41385.9
+            ],
+            "subsequent_TTFT_range_s": [
+              41.217,
+              41.624
+            ]
+          },
+          {
+            "read": 49153,
+            "subsequent_prompt_range_ms": [
+              55791.2,
+              56095.7
+            ],
+            "subsequent_TTFT_range_s": [
+              55.942,
+              56.24
+            ]
+          },
+          {
+            "read": 57345,
+            "subsequent_prompt_range_ms": [
+              62747.9,
+              63011.4
+            ],
+            "subsequent_TTFT_range_s": [
+              62.904,
+              63.167
+            ]
+          },
+          {
+            "read": 65537,
+            "subsequent_prompt_range_ms": [
+              71348.1,
+              71604.3
+            ],
+            "subsequent_TTFT_range_s": [
+              71.538,
+              71.789
+            ]
+          },
+          {
+            "read": 81921,
+            "subsequent_prompt_range_ms": [
+              87482.0,
+              87977.6
+            ],
+            "subsequent_TTFT_range_s": [
+              87.652,
+              88.16
+            ]
+          },
+          {
+            "read": 98305,
+            "subsequent_prompt_range_ms": [
+              103462.8,
+              104015.0
+            ],
+            "subsequent_TTFT_range_s": [
+              103.641,
+              104.191
+            ]
+          }
+        ],
+        "limits": "Five compatible lengths,one process each;first and subsequent timing scopes stay separate. Compare whole-length held-out errors with sample spread. No extrapolation,physical fixed-cost attribution,saturation,paired gain or adoption. The96Ksplit route has one point and no fit."
+      }
+    },
     "source_inputs": {
       "files": 689,
       "sha256": "013bd401c04a04b0b64187efafdca52e1df145a9d097941baf6d44221317276e"
