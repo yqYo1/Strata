@@ -4,6 +4,7 @@
 Main-authored from this fork's owned supervision; repository LICENSE (MIT).
 No new executable or numerical implementation. Main serializes every stage.
 """
+import copy
 import fcntl
 import hashlib
 import importlib.util
@@ -29,7 +30,52 @@ ROOT,KEY=B/'qsa16-stream-model-device-v1','qsa16_stream_model_device_v1'
 THIS='tools/sycl/check_qsa16_stream_model.py'
 PRIOR='q6_dense_head_backing_device_v1'
 STAGES=('host','submission','phase','head0-backing0','head2-backing0')
+TARGETS=['strata','sycl_q6_head_owner_test','sycl_submission_test',
+         'sycl_verifier_retirement_test','sycl_verify_window_policy_test']
 require,sha,write=guards.require,common.digest,common.write
+
+
+def expected_recipe(seed):
+    recipe=copy.deepcopy(seed['recipe']);old=str(candidate.SEED.parent)
+    recipe['configure']=[str(NATIVE)+v[len(old):] if v.startswith(old) else v
+                         for v in recipe['configure']]
+    recipe['configure'][recipe['configure'].index('-S')+1]=str(P)
+    recipe['environment']={k:v.replace(old,str(NATIVE))
+                           for k,v in recipe['environment'].items()}
+    recipe['environment']['STRATA_SYCL_PREFILL_QSA_STREAM']='1'
+    recipe['targets']=recipe['build_targets']=TARGETS.copy()
+    return recipe
+
+
+def check_recipe(actual,seed):
+    require(actual==expected_recipe(seed),'native recipe differs from exact seed relocation')
+    return hashlib.sha256(json.dumps(actual,sort_keys=True).encode()).hexdigest()
+
+
+def recipe_controls(seed):
+    expected=expected_recipe(seed);cases=[]
+    def changed(label,edit):
+        altered=copy.deepcopy(expected);edit(altered);cases.append((label,altered))
+    def argument(recipe,flag,value):
+        recipe['configure'][recipe['configure'].index(flag)+1]=value
+    changed('source-root',lambda r:argument(r,'-S','/wrong/source'))
+    changed('build-root',lambda r:argument(r,'-B','/wrong/build'))
+    changed('configure-tool',lambda r:r['configure'].__setitem__(0,'/wrong/cmake'))
+    changed('extra-cmake-flag',lambda r:r['configure'].append('-DSTRATA_ENABLE_SYCL=OFF'))
+    changed('missing-fixture',lambda r:r['build_targets'].pop())
+    changed('target-order',lambda r:r.__setitem__('targets',list(reversed(TARGETS))))
+    changed('stream-disabled',lambda r:r['environment'].__setitem__('STRATA_SYCL_PREFILL_QSA_STREAM','0'))
+    changed('stream-absent',lambda r:r['environment'].pop('STRATA_SYCL_PREFILL_QSA_STREAM'))
+    changed('extra-environment',lambda r:r['environment'].__setitem__('UNPLANNED_SETTING','1'))
+    changed('unrelocated-environment',lambda r:r['environment'].__setitem__('TMPDIR',str(candidate.SEED.parent)))
+    changed('missing-field',lambda r:r.pop('targets'))
+    check_recipe(copy.deepcopy(expected),seed)
+    for label,altered in cases:
+        try:check_recipe(altered,seed)
+        except RuntimeError:continue
+        raise RuntimeError('recipe guard accepted '+label)
+    return dict(passed=True,positive=1,negative=len(cases),cases=[k for k,_ in cases],
+                GPU_executed=False)
 
 
 def native(expected=None):
@@ -59,6 +105,7 @@ def native(expected=None):
         all(sha(p)==h for p,h in json.loads(Path(row['external_inputs']['path']).read_text()).items()),
         'compiler/SDK/recipe seed changed')
     seed=json.loads(candidate.SEED.read_text())
+    recipe_sha256=check_recipe(row['recipe'],seed)
     require(common.HOST_PYTHON==seed['host_python'] and
         sha(common.HOST_PYTHON)==seed['host_python_sha256'],
         'qualified host-control interpreter changed')
@@ -76,9 +123,45 @@ def native(expected=None):
     proof=dict(native_source_commit=row['native_source_commit'],original_source_files=len(a),
         observer_source_files=len(b),observer_source_sha256=common.signature(b),
         added_observers={THIS:b[THIS]},exact_five_ELFs_census_recipe=True,
+        exact_seed_recipe_sha256=recipe_sha256,
         native_recompiled=False,GPU_result_inherited=False)
     require(expected is None or proof==expected,'native observer admission changed')
     return dict(row,observer_admission=proof)
+
+
+def admit_recipe():
+    """Prospective controller-only reconciliation; preserve original test evidence."""
+    row=json.loads((ROOT/'record.json').read_text());ctx=context()
+    require(validation.committed(RESULT,(KEY,))==ctx.compact(row) and
+        row['stage']=='in_progress' and not row['active'] and row['ownership_closed'] and
+        [r['mode'] for r in row['results']]==list(STAGES[:4]) and
+        all(r['passed'] and r['ownership_closed'] for r in row['results']) and
+        all(owner.closed(c) for c in row['commands']) and 'controller_admission' not in row,
+        'one closed four-stage boundary required;no retry or completed-plan mutation')
+    before=row['controller'];after=common.source.pin(P,['tools/sycl'])
+    require(before['revision']=='8c877de24186368c979db2cb7e899042acd57698' and
+        common.signature(before['source_sha256'])==before['aggregate_sha256'] and
+        before['source_sha256']=={p:hashlib.sha256(raw).hexdigest() for p,raw in
+            common.source.blobs(P,before['revision'],before['source_sha256'])} and
+        set(before['source_sha256'])==set(after['source_sha256']) and
+        {p for p,h in before['source_sha256'].items() if after['source_sha256'][p]!=h}=={THIS},
+        'only the committed observer may change;keep every native/helper/fixture input')
+    controls=recipe_controls(json.loads(candidate.SEED.read_text()));n=native()
+    result_sha=hashlib.sha256(json.dumps(row['results'],sort_keys=True).encode()).hexdigest()
+    admission=dict(source_commit=after['revision'],previous_evidence_commit=common.source.git(
+        P,'rev-parse','HEAD').decode().strip(),previous_private_record_sha256=sha(ROOT/'record.json'),
+        previous_controller={k:v for k,v in before.items() if k!='source_sha256'},
+        previous_native_observer_admission=row['native_observer_admission'],
+        changed_files=[THIS],recipe_sha256=n['observer_admission']['exact_seed_recipe_sha256'],
+        controls=controls,preserved_results_sha256=result_sha,preserved_modes=list(STAGES[:4]),
+        reason='The original observer pinned the seed but omitted exact recipe equality. Actual recorded recipe matches its independently reconstructed relocation. Enforce that predicate prospectively before packed-head/model GPU work. Original stage results/source remain unchanged;no failed gate or hash is refreshed.',
+        native_recompiled=False,new_GPU_qualification=False)
+    row['controller_admission']=admission;row['controller']=after
+    row['native_observer_admission']=n['observer_admission']
+    row['plan']['recipe_admission']='One explicit controller-only admission at the closed four-stage boundary;commit before the final packed-head stage. Native source,ELFs,environment,numerical/closure/fault criteria and prior results stay unchanged.'
+    require(hashlib.sha256(json.dumps(row['results'],sort_keys=True).encode()).hexdigest()==result_sha,
+        'original stage results must remain exact')
+    ctx.save(row);print('Exact recipe reconciled;12CPU controls pass. Commit admission before GPU.',flush=True)
 
 
 def load_module(name,path):
@@ -171,9 +254,10 @@ def execute(stage):
 
 
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('prepare',*STAGES),
-        'check_qsa16_stream_model.py prepare|'+'|'.join(STAGES))
+    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','admit-recipe',*STAGES),
+        'check_qsa16_stream_model.py prepare|admit-recipe|'+'|'.join(STAGES))
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
         if sys.argv[1]=='prepare':prepare()
+        elif sys.argv[1]=='admit-recipe':admit_recipe()
         else:execute(sys.argv[1])
