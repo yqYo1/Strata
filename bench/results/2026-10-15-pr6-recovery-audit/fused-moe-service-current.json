@@ -287164,7 +287164,7 @@
     }
   },
   "gu_compact_device_v3": {
-    "stage": "in_progress",
+    "stage": "closed",
     "source_commit": "26386096413aa188ef2b64a24dec8526846129c9",
     "controller_sha256": "17230c322070a8629e012a6fbae08286eb76d290be18138e5001a64bf789ad9b",
     "fixture_build_key": "gu_compact_component_v4",
@@ -287943,12 +287943,340 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "perf2",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "correctness_cases": 12,
+        "max_half_ulp": 0,
+        "BF16_capture_exact": true,
+        "guards": true,
+        "inputs_immutable": true,
+        "shapes": [
+          {
+            "rows": 1,
+            "repeat": 16384,
+            "calibration_ms": [
+              411.469559,
+              245.890571
+            ],
+            "separate_batch_ms": [
+              496.831104,
+              358.594007,
+              367.652472,
+              664.111037
+            ],
+            "fused_batch_ms": [
+              220.015434,
+              219.985077,
+              220.790333,
+              224.645577
+            ],
+            "separate_median_us": 26.381945068359375,
+            "fused_median_us": 13.452324432373047,
+            "median_paired_fused_over_separate": 0.5216891716647118
+          },
+          {
+            "rows": 16,
+            "repeat": 16384,
+            "calibration_ms": [
+              453.924182,
+              205.688733
+            ],
+            "separate_batch_ms": [
+              406.352931,
+              600.883502,
+              367.069854,
+              364.407628
+            ],
+            "fused_batch_ms": [
+              217.622987,
+              197.629971,
+              206.761595,
+              206.249019
+            ],
+            "separate_median_us": 23.60299026489258,
+            "fused_median_us": 12.60408367919922,
+            "median_paired_fused_over_separate": 0.549413770270943
+          },
+          {
+            "rows": 32,
+            "repeat": 8192,
+            "calibration_ms": [
+              208.439115,
+              176.619939
+            ],
+            "separate_batch_ms": [
+              338.124621,
+              181.058401,
+              183.270449,
+              191.624357
+            ],
+            "fused_batch_ms": [
+              122.658509,
+              122.402908,
+              122.570474,
+              122.777905
+            ],
+            "separate_median_us": 22.88176306152344,
+            "fused_median_us": 14.967589294433594,
+            "median_paired_fused_over_separate": 0.6547587165551112
+          },
+          {
+            "rows": 64,
+            "repeat": 8192,
+            "calibration_ms": [
+              207.629399,
+              180.445437
+            ],
+            "separate_batch_ms": [
+              403.139997,
+              207.595235,
+              209.009118,
+              208.063647
+            ],
+            "fused_batch_ms": [
+              244.831965,
+              186.921066,
+              180.400041,
+              180.480652
+            ],
+            "separate_median_us": 25.456101379394532,
+            "fused_median_us": 22.424421264648434,
+            "median_paired_fused_over_separate": 0.8652752243127522
+          },
+          {
+            "rows": 65,
+            "repeat": 8192,
+            "calibration_ms": [
+              237.182785,
+              377.04296
+            ],
+            "separate_batch_ms": [
+              318.63813,
+              236.379722,
+              243.256417,
+              236.584478
+            ],
+            "fused_batch_ms": [
+              209.601163,
+              209.620149,
+              209.595162,
+              209.619889
+            ],
+            "separate_median_us": 29.28716400146484,
+            "fused_median_us": 25.587222412109373,
+            "median_paired_fused_over_separate": 0.8738239356099495
+          },
+          {
+            "rows": 96,
+            "repeat": 8192,
+            "calibration_ms": [
+              326.577267,
+              282.133328
+            ],
+            "separate_batch_ms": [
+              319.077117,
+              309.393424,
+              463.274834,
+              316.000171
+            ],
+            "fused_batch_ms": [
+              282.102179,
+              282.066712,
+              334.275651,
+              282.062575
+            ],
+            "separate_median_us": 38.76204150390625,
+            "fused_median_us": 34.43413641357422,
+            "median_paired_fused_over_separate": 0.888360859809179
+          },
+          {
+            "rows": 127,
+            "repeat": 4096,
+            "calibration_ms": [
+              232.631099,
+              231.406873
+            ],
+            "separate_batch_ms": [
+              232.70583,
+              250.942687,
+              232.648503,
+              232.595753
+            ],
+            "fused_batch_ms": [
+              231.301174,
+              259.242003,
+              231.436278,
+              235.415906
+            ],
+            "separate_median_us": 56.80594885253906,
+            "fused_median_us": 56.988791992187494,
+            "median_paired_fused_over_separate": 1.0034570770003197
+          },
+          {
+            "rows": 128,
+            "repeat": 8192,
+            "calibration_ms": [
+              500.123224,
+              463.52748
+            ],
+            "separate_batch_ms": [
+              271.015091,
+              277.676431,
+              311.574622,
+              270.54755
+            ],
+            "fused_batch_ms": [
+              476.004756,
+              463.230951,
+              511.993436,
+              467.627234
+            ],
+            "separate_median_us": 33.48947277832031,
+            "fused_median_us": 57.59472595214844,
+            "median_paired_fused_over_separate": 1.6983437846733447
+          },
+          {
+            "rows": 129,
+            "repeat": 4096,
+            "calibration_ms": [
+              167.080356,
+              270.847786
+            ],
+            "separate_batch_ms": [
+              211.639602,
+              182.399706,
+              166.89637,
+              167.337651
+            ],
+            "fused_batch_ms": [
+              288.029865,
+              269.015563,
+              267.449834,
+              267.277229
+            ],
+            "separate_median_us": 42.69254846191406,
+            "fused_median_us": 65.48649865722655,
+            "median_paired_fused_over_separate": 1.5360507331496187
+          },
+          {
+            "rows": 256,
+            "repeat": 4096,
+            "calibration_ms": [
+              182.880493,
+              349.787583
+            ],
+            "separate_batch_ms": [
+              191.935271,
+              182.07733,
+              182.599984,
+              182.034719
+            ],
+            "fused_batch_ms": [
+              345.192645,
+              341.204091,
+              340.497711,
+              341.648088
+            ],
+            "separate_median_us": 44.51627368164063,
+            "fused_median_us": 83.35597888183594,
+            "median_paired_fused_over_separate": 1.8693354054800526
+          },
+          {
+            "rows": 640,
+            "repeat": 2048,
+            "calibration_ms": [
+              155.753357,
+              342.360149
+            ],
+            "separate_batch_ms": [
+              155.680039,
+              155.585491,
+              155.726516,
+              184.206469
+            ],
+            "fused_batch_ms": [
+              342.386969,
+              342.288644,
+              342.489592,
+              342.545809
+            ],
+            "separate_median_us": 76.02699096679689,
+            "fused_median_us": 167.20619165039062,
+            "median_paired_fused_over_separate": 2.19930039988846
+          },
+          {
+            "rows": 1280,
+            "repeat": 1024,
+            "calibration_ms": [
+              173.407395,
+              330.644868
+            ],
+            "separate_batch_ms": [
+              172.286544,
+              173.173705,
+              172.254523,
+              175.986715
+            ],
+            "fused_batch_ms": [
+              330.432178,
+              330.625561,
+              333.176918,
+              330.552994
+            ],
+            "separate_median_us": 168.68176220703123,
+            "fused_median_us": 322.8410913085937,
+            "median_paired_fused_over_separate": 1.9135677807666047
+          }
+        ],
+        "validation": {
+          "pid": 3192763,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "stdout_sha256": "19032ba5b238b019ba1da8034fe4449a4cf57e0e128a43e074bd8ae2e3c3c009",
+        "stderr_sha256": "0d21eb59ef49341eb9785293efeda01682f0253af800bba54230d9b775609a1c",
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": true
+    "GPU_executed": true,
+    "decision": {
+      "eligible_rows": [
+        1,
+        16,
+        32,
+        64,
+        65,
+        96
+      ],
+      "scope": "Component follow-up eligibility only;production wrapper/model/independent decode gates remain open."
+    }
   }
 }
