@@ -1701,8 +1701,11 @@ with911.2347PP/63.084s clientTTFT subsequent median. Only the observer changed;
 688other source hashes,configuration and native binary remain exact. On five
 compatible lengths,quadratic has0.956%mean/1.780%maximum whole-length held-out
 prompt error versus affine1.618%/3.908%;first and warmed timing scopes stay
-separate. Treat this as bounded interpolation,not a physical cost law. Next
-qualify the current collector and profile the actual route. This is
+separate. Treat this as bounded interpolation,not a physical cost law. The
+current-build collector V2 now passes its exact1/37/24kernel-class and
+host-flow checks,normal0,quiet validation,closed ownership and no fresh fault.
+Next collect a bounded32Kmodel trace and matched observer-overhead comparison;
+the small control does not identify the limiting resource. This is
 characterization,not a repeated
 paired gain,sustained decode,1000PPtarget qualification or adoption. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,

@@ -260731,7 +260731,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "qsa16_stream_collector_active_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "9cc9711af4b6d1b36cf32cbf0a98b14ba588bec8",
     "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
     "engine": {
@@ -260797,7 +260797,72 @@
         "LD_DEBUG": "libs"
       }
     },
-    "cases": [],
+    "cases": [
+      {
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1156763,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "trace": {
+          "expected_kernels": 62,
+          "observed_kernels": 62,
+          "native_PID": 1156763,
+          "GPU_events": 249,
+          "host_events": 770,
+          "collection_active_from_exec": true,
+          "native_host_flow_joins_unique": true,
+          "all_kernel_names_present": true,
+          "timeline_sha256": "0edb3d3a09918875fd15c0bb59af220e3645239a97eb79c4ab3789def2f7567e",
+          "timeline_bytes": 274453,
+          "class_inventory": {
+            "expected": {
+              "direct": 1,
+              "producer": 37,
+              "consumer": 24
+            },
+            "observed": {
+              "direct": 1,
+              "producer": 37,
+              "consumer": 24
+            },
+            "kernel_instances": 62,
+            "observed_aliases": {
+              "main::{lambda(sycl::_V1::id<1>)#1}": 1,
+              "main::{lambda(sycl::_V1::id<1>)#4}": 37,
+              "main::{lambda(sycl::_V1::id<1>)#5}": 24
+            },
+            "exact_class_identity": true
+          }
+        },
+        "clocks": {
+          "begin": 2643279850635028,
+          "end": 2643280174896705
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "plan": {
       "question": "Does the unchanged owned Sysman0 indexed collector cover exact current b9aa fixture kernel classes,flow joins and graph lifecycle?",
       "native": "Same b9aa/1e598 engine and fad954 compatibility fixture,all five original native ELFs/recipe/runtime exact. Existing MIT collector/launcher;no native rebuild. No arguments:ordinary graph recording/replay,not --native or --submission.",
@@ -260817,8 +260882,8 @@
       "total_cap": 67108864
     },
     "whole_bytes": 134217728,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "host_controls": {

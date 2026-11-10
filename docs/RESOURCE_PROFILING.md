@@ -477,22 +477,25 @@ variance. The56Kpoint also reveals a local slope change,so this is only an
 interpolation aid within measured32..80Kand this route. Do not extrapolate or
 attribute any fitted intercept to physical fixed work. Keep all three models
 and their residuals/held-out errors;no hardware-bottleneck conclusion follows.
-Use the existing owned UnitTrace launcher with Sysman0 for later attribution;
-current collector V1 refused before native launch because its parent already
-carried the target preload. A fresh plan must also discriminate the declared
-kernel inventory rather than accepting62arbitrary named joined events. Older
-collector/engine qualifications do not qualify this generation.
-After the56Kpoint closes,keep that failed V1 and its observer source unchanged.
-Extend the existing benchmark observer for a fresh V2 control:its clean
-admission already permits that one observer to change while native inputs
-stay exact. Strip only the previously verified private preload/expected-loader
-fields before the native wrapper attaches them;retain all runtime safety.
-The pinned no-argument compatibility fixture requires1direct,37producer and
-24consumer kernel instances,with exact class identity and unique native
-host-flow joins. Reject a same-total wrong-class CPU control before GPU use.
-Then qualify that current same-build fixture before a bounded representative
-32Kmodel trace and matched observer-overhead comparison. This is the next
-attribution plan,not an implemented collector or current resource conclusion.
+The original collector V1 remains failed before native launch because its
+parent already carried the target preload. V2,implemented in the existing
+benchmark observer at`9cc9711af4b6d1b36cf32cbf0a98b14ba588bec8`with plan
+`ed03edb82bebdb4dd0b36d297a94e9dd19085651`,now passes under
+`qsa16_stream_collector_active_v2`. All five original b9aa native ELFs,recipe,
+runtime and existing owned Sysman0 UnitTrace launcher/collector remain exact.
+Only the exact qualified inherited private preload/expected-loader fields are
+detached before the native wrapper attaches them;runtime safety is preserved.
+Six valid CPU inventories pass and six corrupt inventories are rejected,
+including a same-total wrong-class case. The no-argument compatibility fixture
+then records1direct,37producer and24consumer kernels,with exact type identity,
+62unique native host-flow joins,249GPU events and770host events. The274453-byte
+timeline is flushed with finite contained clocks. Original numerical/copy/
+event/graph/lifetime checks,pre-main validation and normal0pass;owners are
+closed,the named session is removed,and boot/driver remain unchanged with no
+fresh fault. This qualifies current-build small-fixture collection only.
+Next commit a bounded representative32Kmodel trace and matched observer-cost
+comparison. Model coverage,observer overhead,physical traffic/saturation and
+the limiting hardware resource remain unmeasured;no speed or adoption follows.
 
 ## Numerical reference for replacement kernels
 
