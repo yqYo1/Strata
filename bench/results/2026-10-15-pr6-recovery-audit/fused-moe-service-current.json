@@ -271738,7 +271738,7 @@
     }
   },
   "qsa_cached_subgroup_component_v2": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "9aee32940c48cd70b78fc4ce5310a6653d29bf51",
     "basis": {
       "native": {
@@ -272062,7 +272062,7 @@
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "plan": "Commit source/recipe before build. Smoke then full numerical component,then3fresh processes with6rotated timed samples per arm at each of3existing geometries. Full entry wall includes admission,prefix pack,attention and checked drain;upload/readback/oracles outside. Each timed production-shaped sample must exceed2ms. Candidate must exactly equal the existing uncached subgroup export and pass the unchanged independent CPU BF16 operand oracle,nonfinite/domain/alias/guard/input tests. Ordered-versus-subgroup output differences are recorded,never called bit-identical or model-quality evidence. No model/decode dispatcher changes. V2 changes only the diagnostic controller and private temp/cache paths;reuses exact original compiled native/fixture bytes7350b16d,without relabelling them as the controller source. Original V1 stays failed.",
     "performance_gate": "All3pooled shape-median candidate/base ratios<=1 and geometric mean<1;at least2of3process medians improve for each cap2051pattern. No blanket minimum gain. Numerical/ownership/runtime/fault and timing-completeness gates must all pass before a separate prospective model plan.",
     "numerical_policy": "The independent BF16 operand oracle retains its existing1BF16-ULP+2e-6 tolerance. A failure remains failed. Any framework-contract criterion revision requires source-based justification and a new committed prospective plan;no model advance from self-consistency alone.",
@@ -272085,7 +272085,277 @@
       "ownership_closed": true
     },
     "native_source_commit": "7350b16d00bc47d13eb68f41327042d94e695db8",
-    "outcomes": {},
+    "outcomes": {
+      "smoke": {
+        "passed": true,
+        "complete": true,
+        "checks": [
+          {
+            "binary": "numerical",
+            "command": [
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-component-v1/numerical",
+              "--smoke"
+            ],
+            "exit_code": 0,
+            "ownership_closed": true,
+            "validation": {
+              "pid": 2169051,
+              "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "cases": [
+              "case positive_logical_page_overflow=PASS status=PASS",
+              "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+              "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+              "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+            ],
+            "references": [],
+            "samples": []
+          },
+          {
+            "binary": "fixture",
+            "command": [
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-component-v1/fixture",
+              "--smoke"
+            ],
+            "exit_code": 0,
+            "ownership_closed": true,
+            "validation": {
+              "pid": 2169195,
+              "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "cases": [
+              "case cells=97 queries=3 cap=33 pattern=gather samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS",
+              "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+            ],
+            "references": [
+              "reference baseline=ordered_exp candidate=uncached_subgroup differing=0 compared=18432 max_absolute=0 comparison=diagnostic_not_model_quality"
+            ],
+            "samples": [
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "0",
+                "order": "0",
+                "variant": "0",
+                "implementation": "ordered_exp",
+                "milliseconds": "0.45724",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "0",
+                "order": "1",
+                "variant": "1",
+                "implementation": "cached_subgroup",
+                "milliseconds": "0.528835",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "1",
+                "order": "0",
+                "variant": "1",
+                "implementation": "cached_subgroup",
+                "milliseconds": "0.424589",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "1",
+                "order": "1",
+                "variant": "0",
+                "implementation": "ordered_exp",
+                "milliseconds": "0.421132",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "2",
+                "order": "0",
+                "variant": "0",
+                "implementation": "ordered_exp",
+                "milliseconds": "0.426592",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "2",
+                "order": "1",
+                "variant": "1",
+                "implementation": "cached_subgroup",
+                "milliseconds": "0.420621",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "3",
+                "order": "0",
+                "variant": "1",
+                "implementation": "cached_subgroup",
+                "milliseconds": "0.424158",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "3",
+                "order": "1",
+                "variant": "0",
+                "implementation": "ordered_exp",
+                "milliseconds": "0.431402",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "4",
+                "order": "0",
+                "variant": "0",
+                "implementation": "ordered_exp",
+                "milliseconds": "0.419549",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "4",
+                "order": "1",
+                "variant": "1",
+                "implementation": "cached_subgroup",
+                "milliseconds": "0.426051",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "5",
+                "order": "0",
+                "variant": "1",
+                "implementation": "cached_subgroup",
+                "milliseconds": "0.427795",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              },
+              {
+                "process": "0",
+                "cells": "97",
+                "queries": "3",
+                "cap": "33",
+                "pattern": "gather",
+                "round": "5",
+                "order": "1",
+                "variant": "0",
+                "implementation": "ordered_exp",
+                "milliseconds": "0.426191",
+                "compared": "18432",
+                "exact_bits": "PASS",
+                "guards": "PASS",
+                "status": "PASS"
+              }
+            ]
+          }
+        ],
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    },
     "diagnostic_controls": {
       "valid_controls": 2,
       "refused_controls": 6,
