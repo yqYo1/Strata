@@ -67,8 +67,9 @@ def native(expected=None, *, observers=None):
     recipe['environment'] = {k:v.replace(old,str(build.ROOT)) for k,v in recipe['environment'].items()}
     recipe['environment']['STRATA_SYCL_PREFILL_QSA_STREAM'] = '1'
     recipe['targets'] = recipe['build_targets'] = build.TARGETS
-    require(recipe == row['recipe'] and original.common.HOST_PYTHON == seed['host_python']
-        and sha(original.common.HOST_PYTHON) == seed['host_python_sha256'], 'exact seed relocation required')
+    python_seed = json.loads(original.candidate.SEED.read_text())
+    require(recipe == row['recipe'] and original.common.HOST_PYTHON == python_seed['host_python']
+        and sha(original.common.HOST_PYTHON) == python_seed['host_python_sha256'], 'exact seed relocation required')
     for item in (*row['preserved_binaries'], *row['binaries'].values()):
         require(sha(item['path']) == item['sha256']
             and Path(item['path']).stat().st_size == item['bytes'], 'retained or same-build ELF changed')
@@ -149,6 +150,11 @@ def host(device, ctx, row, scope, outcome):
 def prepare():
     ctx = context(); ctx.prepare()
     row = json.loads((ROOT/'record.json').read_text())
+    row['previous_preparation'] = dict(source_commit='70cebc5fcec9752909532624115708fc27332916',
+        stage='preparation_failed',command='check_qsa_cached_model.py prepare',
+        error="KeyError: host_python; the relocated bulk-build receipt has no host-interpreter field",
+        result_created=False,build_test_or_GPU_started=False,
+        correction='Read the exact host interpreter from the original qualified decode recipe; keep the bulk recipe as the native build seed. No engine or fixture changed.')
     row['plan'].update(order=list(STAGES),
         host='54 current CPU reader/census cases,11 native CPU-only refusal processes,phase/shape/cache policy,exact selected head module against independent decode.',
         attention='After the five owner/submission/phase/head stages,fresh traced numerical and benchmark smokes,then11 independent BF16 numerical/masking/guard cases including actual262144 live cells.',
