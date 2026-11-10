@@ -251342,7 +251342,7 @@
     }
   },
   "qsa16_stream_components_v1": {
-    "stage": "prepared",
+    "stage": "configured",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -251539,6 +251539,56 @@
     "model_qualified": false,
     "physical262144_model_qualified": false,
     "performance_qualified": false,
+    "host_controls": {
+      "tests": 24,
+      "passed": true
+    },
+    "planned_compilation": [
+      {
+        "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/tests/sycl/qsa_native16.cpp",
+        "output": "CMakeFiles/sycl_native16_qsa_test.dir/tests/sycl/qsa_native16.cpp.o",
+        "target": "sycl_native16_qsa_test"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/src/prefill/sycl/qsa_native16.cpp",
+        "output": "CMakeFiles/sycl_native16_qsa_test.dir/src/prefill/sycl/qsa_native16.cpp.o",
+        "target": "sycl_native16_qsa_test"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/src/sycl/runtime.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/runtime.cpp.o",
+        "target": "strata_sycl_runtime"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/src/sycl/compat.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/compat.cpp.o",
+        "target": "strata_sycl_runtime"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/src/sycl/command_profile.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/command_profile.cpp.o",
+        "target": "strata_sycl_runtime"
+      }
+    ],
+    "planned_translation_units": [
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/src/prefill/sycl/qsa_native16.cpp",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/src/sycl/command_profile.cpp",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/src/sycl/compat.cpp",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/src/sycl/runtime.cpp",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill/tests/sycl/qsa_native16.cpp"
+    ],
+    "generated_inputs": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-components-v1/build/CMakeFiles/3.28.3/CompilerIdCXX/CMakeCXXCompilerId.cpp": "9b1ebe4919c111011dba043f743e42ada0f1e3804b211e42191d773e7043282c",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-components-v1/build/CMakeFiles/3.28.3/CompilerIdC/CMakeCCompilerId.c": "9a95913d134b6c5dca36f23acb80765b86313bcfd8da754e5ceb2e259e954074",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-components-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "configured_files": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-components-v1/build/build.ninja": "44d9c9548e3b3a49b38515b3b16137438d0c00e4d147ea7094776dd79edffc57",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-components-v1/build/CMakeCache.txt": "33561f1a6ae107978716f28aea9b8ef7bc39f4a51f8594b66e6ef27e527d92c7",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-components-v1/build/compile_commands.json": "844f739a41414fbdb9f392621b4522d37eba8140554ce2fff6f1b27038384fab",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-components-v1/build/CMakeFiles/rules.ninja": "055f208d0447b201bc8d6842a01ee9304e137e450c05889e091ebf3d8eeed541",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-components-v1/configure/owned/planned.stdout": "f1df2eb3337be797ddd6909aaf13283c49fd8d4bfb5468e36f3dde39245965dd"
+    },
     "project": {
       "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-qsa16-streamed-prefill",
       "revision": "7067084897574ad727bae6d93ca3a4726ea6e00c",
@@ -251559,6 +251609,28 @@
         "aggregate_sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
       }
     ],
-    "commands": []
+    "commands": [
+      {
+        "label": "host-controls",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "configure",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "planned",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      }
+    ]
   }
 }
