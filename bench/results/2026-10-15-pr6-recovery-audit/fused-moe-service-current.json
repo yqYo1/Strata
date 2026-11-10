@@ -254136,7 +254136,7 @@
     ]
   },
   "qsa16_stream_model_entry_v1": {
-    "stage": "host_passed",
+    "stage": "failed",
     "source_commit": "016bec0f20c3bf7db6e4dfb2800b8e855aea1801",
     "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
     "native_build": {
@@ -254417,12 +254417,160 @@
     },
     "plan": "Host placement guards,then one fresh actual mode1 process with32769/82/32769thinking prompts and32outputs each. Full262144configured logical capacity,20480resident main cells,INT8KV,8192chunks,1256expert slots. Long prompts exceed resident extent and short request exercises decode placement. Require READY/INFO,immutable environment/providers,complete zero-reuse GEN/MTP output,96layer-major layer visits,typedBF16QSA entry,two complete head retire/restore cycles,quiet validation,normal0,closed owners,unchanged boot/no fresh fault. Hash all15model assets before and after. Stop first failure,no retries or refreshed pins.",
     "limits": "Actual streamed route/handoff admission only. No numerical/task-quality,full262144fill/tail/RESTORE,clean PP/TG/TTFT,sustained decode,ordinary provider teardown or adoption claim. Subsequent comparisons must use bench.sh with long/agent/strong-and-weak thinking workloads and physical full-capacity checks.",
-    "results": [],
+    "results": [
+      {
+        "passed": false,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 32769,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 27,
+            "output_ids_sha256": "853fe774d45ad2795d94f2e3d0ef5da55d6aa927a05aa0d6db20ce73f9f479a3",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 24,
+            "offered": 27,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 32769,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 27,
+            "output_ids_sha256": "853fe774d45ad2795d94f2e3d0ef5da55d6aa927a05aa0d6db20ce73f9f479a3",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "262144",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "1206",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 517517,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "30cd98462ea11b1c739290dfb0e2e2308ef5c199dcdcc601ba6574a7e6476e78",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "memory_at_READY": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58753",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "2816 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "2816 KiB",
+              "drm-total-gtt": "4218920 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "4218920 KiB",
+              "drm-total-vram0": "8634668 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "8634668 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "50413197796052",
+              "drm-total-cycles-vcs": "50413197796052",
+              "drm-total-cycles-vecs": "50413197796052",
+              "drm-total-cycles-bcs": "50413197796052",
+              "drm-total-cycles-ccs": "50413197796052"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "memory_after_requests": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58753",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "0",
+              "drm-shared-system": "0",
+              "drm-resident-system": "0",
+              "drm-total-gtt": "4876328 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "4876328 KiB",
+              "drm-total-vram0": "9408872 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "9408872 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "50417369437256",
+              "drm-total-cycles-vcs": "50417369437256",
+              "drm-total-cycles-vecs": "50417369437256",
+              "drm-total-cycles-bcs": "50417369437256",
+              "drm-total-cycles-ccs": "50417369437256"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "host_probe_accepted": false,
+        "error": "RuntimeError('both long requests must take exact layer-major BF16 route')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "speed_eligible": false,
     "model_adoption_qualified": false,
     "retention": "Retain compact actual placement,progress/head/mode extents and original failures. Retire successful full stage/UR logs and generated token/wire copies after evidence verification. No new native generation;keep a347/552b for imminent independent-phase comparisons and review extra candidate after comparison.",
@@ -254431,6 +254579,29 @@
       "negative": 4,
       "passed": true,
       "GPU_executed": false
+    },
+    "failure_analysis": {
+      "cause": "Requested8192 chunk cannot fit full logical KV stage plus scratch in expert-cache loan;production planner selects4096. Frozen model gate correctly rejects actual4096 rather than treating argv8192 as execution proof.",
+      "native_exit_code": 0,
+      "all_three_requests_completed": true,
+      "configured_logical_cells": 262144,
+      "resident_cells": 20480,
+      "actual_chunk": 4096,
+      "requested_chunk": 8192,
+      "actual_layer_major_headers": [
+        "strata prefill: layer-major candidate, tokens=32768 chunk=4096 residual_dtype=bf16 residual_element_bytes=2 residual_total=671088640 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=0 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata prefill: layer-major candidate, tokens=32768 chunk=4096 residual_dtype=bf16 residual_element_bytes=2 residual_total=671088640 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=0 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "loan_observations": [
+        "strata trace: lent 704 slots for 4096 tokens in 0.4 ms",
+        "strata trace: lent 704 slots for 4096 tokens in 0.1 ms"
+      ],
+      "stage_own_enabled": false,
+      "validation_log_bytes": 0,
+      "source_byte_qualified": true,
+      "original_status_preserved": true,
+      "model_final_full_hash_not_reached": true,
+      "next_candidate": "New committed plan with pre-exec STRATA_KV_STAGE_OWN=1,existing production allocation path. Keep logical262144/resident20480/cache1256/chunk8192,decoder and original8192route predicates;no native recompile. Recheck actual allocation/route;not yet measured."
     },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -254459,6 +254630,14 @@
       "input_files": 34,
       "sha256": "3caaa997d821c22cc83f385028f23e707ff93179a7c572727621b46668e79768"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "model",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }

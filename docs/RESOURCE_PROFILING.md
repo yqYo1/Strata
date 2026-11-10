@@ -333,6 +333,19 @@ observer's missing equality predicate and original results remain recorded.
 No engine/fixture is rebuilt or relabelled. Typed attention in an actual
 streamed model session,whole-model physical262144/RESTORE,task behavior and
 matched PP/TG/TTFT remain unqualified.
+The first actual`qsa16_stream_model_entry_v1`is **failed**,with normal native
+exit0,closed owners and no fresh fault. All32769/82/32769thinking requests
+produce32tokens,but the planner selects4096chunks despite the8192argument;
+the frozen actual-route predicate rejects that result. READY reports262144
+logical cells,20480resident cells,1256expert slots and1206MiB free. Each long
+entry borrows704slots,keeps all32768BF16residual rows on GPU(671088640bytes)
+and allocates1363148800bytes for the layer cache. The full logical INT8 stage
+adds276824064bytes to the shared scratch loan. Existing`STRATA_KV_STAGE_OWN=1`
+can allocate that stage separately;it is the next unmeasured configuration
+candidate for preserving8192chunks with the same decode placement. Do not
+relax V1's predicate or label its4096execution a successful8192admission.
+Final full model hashes were not reached after that rejection. Physical full
+context,RESTORE,numerical/task and clean speed remain separate gates.
 
 ## Numerical reference for replacement kernels
 
