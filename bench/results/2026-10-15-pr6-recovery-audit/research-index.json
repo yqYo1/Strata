@@ -29251,5 +29251,330 @@
       "all_closed": true,
       "no_production_engine_retired": true
     }
+  },
+  "expert_window_job_geometry_20261111": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "stage": "reviewed_curated_source_decision",
+    "main_reads_collection_body_on_arrival": false,
+    "classification": "decision_support",
+    "title": "Actual MoE window geometry and limits of staging-row inference",
+    "reports": [
+      {
+        "source_commit": "8e15a54e89d37a0c6fe06e7b18042f1cc91ce408",
+        "task": "task_ca9bfe84885d",
+        "report_sha256": "5095613887e5ec0a3eaf5184d06fc48bed34574472121d2cbd5625b9a873f17b",
+        "report_bytes": 9680,
+        "read_only_and_IPC_passed": true,
+        "worker_completion_confirmed": true,
+        "captured_executors_and_terminal_closed": true,
+        "raw_retention": "Retire after this curated entry is committed;no remaining full-report consumer."
+      }
+    ],
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "sha256": "a07f30b637783f2457f539edb1bcd3ae7be546885e1950bd0b537430114352a9"
+    },
+    "source_anchors": [
+      "include/strata/prefill/moe_window_routes.hpp:18,94",
+      "src/prefill/moe_window.inc:157,208",
+      "src/prefill/layer_major.inc:793"
+    ],
+    "findings": [
+      "TopK10/512experts and8192-row job cap;32K/64K imply conditional mean640/1280 only,not actual per-expert/job rows.",
+      "Existing planned host census follows the normal router drain and precedes job execution;normal completed request and all48windows must reconcile before interpreting completed coverage.",
+      "Private packed-bank staging handles misses only. Split experts upload on their first job,then reuse the blob/dequant operands. Job-row histogram is not an upload-miss histogram."
+    ],
+    "current_consumer": "Main current-engine32K/64K census before a new selective-upload/grouped-GEMM policy;no extra GPU tensor readback.",
+    "limits": "Source decision support only. No actual row/miss distribution,physical traffic,saturation or speed/adoption proof.",
+    "review_point": "After completed32K/64K census;require actual misses/format/fusion and a prospective comparison before adoption."
+  },
+  "cached_qsa_admission_dispatch_20261111": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "stage": "reviewed_curated_source_decision",
+    "main_reads_collection_body_on_arrival": false,
+    "classification": "decision_support",
+    "title": "Archive-aware QSA comparison admission and static typed dispatch",
+    "reports": [
+      {
+        "source_commit": "8e15a54e89d37a0c6fe06e7b18042f1cc91ce408",
+        "task": "task_00ec0ee0eb3b",
+        "report_sha256": "43ec75caf11f7a2555aabfff993917b484fb8890d484e56711ac477376bca91d",
+        "report_bytes": 10758,
+        "read_only_and_IPC_passed": true,
+        "worker_completion_confirmed": true,
+        "captured_executors_and_terminal_closed": true,
+        "raw_retention": "Retire after this curated entry is committed;no remaining full-report consumer."
+      },
+      {
+        "source_commit": "21502247fe51556b97aec3d1a4e64dfbadfc0a03",
+        "task": "task_406c69ad6f6d",
+        "report_sha256": "ebd51fb837af6b3426fe49b38a47fc4d67df9c4d5e2e8daa591a2c0963b7505e",
+        "report_bytes": 12178,
+        "read_only_and_IPC_passed": true,
+        "worker_completion_confirmed": true,
+        "captured_executors_and_terminal_closed": true,
+        "raw_retention": "Retire after this curated entry is committed;no remaining full-report consumer."
+      }
+    ],
+    "native_reviews": [
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "max",
+        "sha256": "a07f30b637783f2457f539edb1bcd3ae7be546885e1950bd0b537430114352a9"
+      },
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "max",
+        "sha256": "066b0b89dec1456438f2b7a7acd90708c13a4d9cb7865a2943daad4d0578e479"
+      }
+    ],
+    "findings": [
+      "Initial helper/source snapshot gap was audit-only and is closed by the323-file follow-up;no controller defect found in reviewed scope.",
+      "Basis recovers original controller blobs and verifies native/recipe/providers/boot/driver/models from committed results;retired raw model-output directory is not consumed.",
+      "Softmax marker alone is an enum log. Typed-entry marker,immutable live environment and exhaustive frozen source branch identify the expected cached/ordered wrapper. Capability/validation failure hard-fails typed dispatch;no ordinary fallback. Static submission is not completion or numerical proof.",
+      "Comparison source2a308ffcb separates first/subsequent requests and pairs ABBAAB independently at32K/64K. Closed d085a3b2977d4375df0947184cb4d91c3740ff20 has36exact24-output requests;one slower warmed pair at each length fails its repeated-gain gate."
+    ],
+    "corrections": [
+      "Prior alias cached_subgroup_contract_20261110 was wrong;use qsa_cached_subgroup_numerical_contract_20261110."
+    ],
+    "limits": "Runtime completion,numerics and clean timing are separate original measurements;this source review alone qualifies none.",
+    "current_consumer": "Archive-aware current-engine observers and interpretation of the closed QSA comparison.",
+    "review_point": "On observer reuse or a new selector/source change."
+  },
+  "cached_qsa_generation_delta_20261111": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "stage": "reviewed_curated_source_decision",
+    "main_reads_collection_body_on_arrival": false,
+    "classification": "decision_support",
+    "title": "Bounded old/current QSA source and recipe delta",
+    "reports": [
+      {
+        "source_commit": "b99ac3d6a989f934fc4337162cfdfd355ea43915",
+        "task": "task_20b076800125",
+        "report_sha256": "8155eb0ed39d2db892e5d5e2e05a163e4a6861e25b66e2a2aca3b98e3df9cf8b",
+        "report_bytes": 10251,
+        "read_only_and_IPC_passed": true,
+        "worker_completion_confirmed": true,
+        "captured_executors_and_terminal_closed": true,
+        "raw_retention": "Retire after this curated entry is committed;no remaining full-report consumer."
+      }
+    ],
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "sha256": "066b0b89dec1456438f2b7a7acd90708c13a4d9cb7865a2943daad4d0578e479"
+    },
+    "native_sources": [
+      "611a0fd6fecc4593e17160c294103cd4464a292b",
+      "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35"
+    ],
+    "findings": [
+      "Reviewed delta adds cached selector/arm;ordered-exp,producer,bulk path,shared-prefix lifetime and independent decode are unchanged in source scope.",
+      "Toolchain/configure flags,dependencies and model argv match reviewed scope;three current translation units/test targets are added. Exact link-file names were not supplied to this worker;native census is separate evidence.",
+      "Original827.5/970.5PP and later cf7 cohort are unmatched. No causal regression conclusion follows;retain faster owned references and keep Main focused on optimization."
+    ],
+    "limits": "No cross-binary matched timing,generated-code/resource counter data or causal explanation.",
+    "current_consumer": "Select a retained phase reference or a bounded future cross-binary comparison;no repetitive Main root-cause survey.",
+    "review_point": "At the named matched phase decision,or if a concrete new source defect appears."
+  },
+  "native16-ragged-gemm-api-contract": {
+    "classification": "knowledge_collection",
+    "title": "Current native16 ragged GEMM adapter and oneMKL group limits",
+    "source_revision": "87c3c4593cd7d1261f70f98e81001deb887ba8fd",
+    "local_pins": [
+      {
+        "path": "include/strata/prefill/gemm.hpp",
+        "sha256": "92d68b2a21e3194a1206d09a32a1cb1d2313e2b45bd304a6086151ff7caa373e"
+      },
+      {
+        "path": "src/prefill/sycl/gemm16.cpp",
+        "sha256": "1c5841e6cd963b91e7699edd60b79edc783169df3b29d22d36c52f5e2918e478"
+      },
+      {
+        "path": "src/prefill/sycl/vllm_xe2/native16.hpp",
+        "sha256": "c818479e94efe270fa233a6120dde27c71fcb67e15b54437003ad3191575f00d"
+      },
+      {
+        "path": "src/prefill/sycl/vllm_xe2/native16.cpp",
+        "sha256": "a2e42a4095d5c3e13a473af3d81666090f8839136ee6d0fdc5652fabbc5b7357"
+      },
+      {
+        "path": "include/strata/prefill/moe_window_routes.hpp",
+        "sha256": "455b0d9cba3378b1781ad5b9894e2635b9ff7fd1b274e8880c68228d7442d030"
+      },
+      {
+        "path": "src/prefill/moe_window.inc",
+        "sha256": "cd30f4d7a5f1d5c0558684bf9468786139852a90cc42e283e56be3aca39991a2"
+      }
+    ],
+    "facts": [
+      "The production-facing native16 adapter describes and launches one dense GEMM problem at a time; current MoE jobs are expert-major, ragged M spans capped at 8192 rows, with reusable gather and dequant scratch that cannot be overwritten until its consumers finish.",
+      "Intel oneMKL 2025.0 USM group GEMM accepts per-group dimensions and arrays of matrix pointers, but group_size is the count of equal-shape GEMMs in that group. Its published type matrix has FP16×FP16→FP16 or FP32 output and BF16×BF16→BF16 or FP32, but no direct FP16×FP16→BF16 output. FP32 output staging plus conversion would add storage/traffic and another launch; FP16 intermediate rounding changes the current one-final-BF16-RNE contract.",
+      "A returned event/API group name does not establish one GPU dispatch or concurrent scheduling; exact installed backend source/trace is needed."
+    ],
+    "limits": [
+      "Source/API feasibility only; no current row histogram, critical-path bottleneck proof, benchmark, or adoption evidence.",
+      "Keep the prior grouping census, cost findings, owner/numerical gates and full-context budget in the existing index; this entry is only the current adapter/API/type mismatch."
+    ],
+    "primary_sources": [
+      {
+        "title": "Intel oneMKL DPC++ Developer Reference 2025.0: gemm_batch",
+        "url": "https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2025-0/gemm-batch.html",
+        "version": "2025.0"
+      },
+      {
+        "title": "Intel oneMKL License FAQ",
+        "url": "https://www.intel.com/content/www/us/en/developer/articles/tool/onemkl-license-faq.html",
+        "license": "Intel Simplified Software License"
+      }
+    ],
+    "provenance": {
+      "existing_vllm_header": "vLLM-XPU commit 6b30c9b92cc525c32729df988b5f918e7c5661a5, BSD-3-Clause; existing traced code, not a proposal to copy/extend.",
+      "no_external_code_added": true
+    },
+    "retrieval_tags": [
+      "ragged-grouped-gemm",
+      "native16-adapter",
+      "FP16-FP32-BF16-contract",
+      "oneMKL-gemm_batch",
+      "expert-bank-lifetime",
+      "prefill-only"
+    ],
+    "consumer": "A concrete prefill submission-path selection after actual job-shape/dequant counts, CPU-path attribution and full-context memory accounting exist.",
+    "review_point": "At the first current grouped/bucket implementation decision; do not revive a generic batching survey.",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "stage": "reviewed_curated_knowledge",
+    "main_reads_collection_body_on_arrival": false,
+    "report": {
+      "source_commit": "87c3c4593cd7d1261f70f98e81001deb887ba8fd",
+      "task": "task_76e5c85dae4f",
+      "report_sha256": "b99ce9e7c184b90315894146015e0dd4e9dd869d0c5763793fc0f78a62ec50f9",
+      "report_bytes": 13230,
+      "read_only_and_IPC_passed": true,
+      "worker_completion_confirmed": true,
+      "captured_executors_and_terminal_closed": true,
+      "raw_retention": "Retire after this curated entry is committed;no remaining full-report consumer."
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "sha256": "83271949b7168a02f07a7e61a34a2dbc3c468aa3df38ad181a6b9bcda5f8a765"
+    },
+    "proposal_sha256": "3fa3245aa6afc92f02a56258f07ccdeed9df7365d9617c8a18e91b83916ee18b"
+  },
+  "xe2-qsa-logical-slm-vs-runtime-resource": {
+    "classification": "knowledge_collection",
+    "title": "QSA cached-Q alias: source payload is not B570 occupancy evidence",
+    "source_revision": "87c3c4593cd7d1261f70f98e81001deb887ba8fd",
+    "local_pins": [
+      {
+        "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+        "sha256": "eeebba1dd68db3c4c3ffa88d5156475408ac27fac37f594d9277d5df6c18306d"
+      },
+      {
+        "path": "include/strata/kernels/qsa_bf16_prefix.hpp",
+        "sha256": "fca4df929e893f75e719697f353210d8f65eec7f52beaeda10fe2b8a62ec4de5"
+      }
+    ],
+    "facts": [
+      "At score pitch 33, source local payload falls from 28224 to 20036 bytes/work-group when cached Q aliases the KV arena; this is an 8188-byte logical declaration reduction only. It proves no compiled SLM allocation, occupancy change, saturation or speed gain.",
+      "Level Zero v1.19.12 ze_kernel_properties_t exposes localMemSize, privateMemSize, spillMemSize, requiredSubgroupSize and maxNumSubgroups for an exact kernel object; these fields remain metadata and do not report actual resident groups.",
+      "Intel's oneAPI GPU Optimization Guide 2025.2 table lists B580/Xe2-HPG as 128 KB SLM per Xe-core and 128 KB max per work-group. The B570 product page does not give an SLM limit and the guide does not name B570; use B580 only as sibling-SKU context. Do not transfer the guide's Data Center GPU Max allocation-rounding buckets or treat the deck's combined cache/SLM label as allocatable capacity."
+    ],
+    "limits": [
+      "No exact compiled QSA properties, occupancy metrics, physical SLM allocation, hardware saturation or clean speed attribution in this source audit.",
+      "Current comparison is active; do not change its inputs. VTune 2026.4 gpu-hotspots is already indexed as rejecting the Ryzen 5600X before launch; existing B570 counter-selection metadata should be checked before any future profiler plan."
+    ],
+    "primary_sources": [
+      {
+        "title": "Intel Arc B570 Graphics Specifications",
+        "url": "https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html"
+      },
+      {
+        "title": "Intel oneAPI GPU Optimization Guide 2025.2: Thread Mapping and GPU Occupancy",
+        "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/thread-mapping-and-gpu-occupancy.html",
+        "version": "2025.2"
+      },
+      {
+        "title": "Level Zero Specification v1.19.12: Kernel API",
+        "url": "https://oneapi-src.github.io/level-zero-spec/level-zero/1.19.12/core/api/apis/kernel.html",
+        "version": "1.19.12"
+      },
+      {
+        "title": "Intel VTune Profiler 2025.1: GPU Compute/Media Hotspots",
+        "url": "https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2025-1/gpu-compute-media-hotspots-analysis.html",
+        "version": "2025.1"
+      }
+    ],
+    "retrieval_tags": [
+      "Xe2",
+      "Arc-B570",
+      "QSA",
+      "SLM",
+      "local-payload",
+      "occupancy",
+      "GRF",
+      "private-memory",
+      "spill",
+      "score-pitch-33",
+      "SYCL",
+      "Level-Zero"
+    ],
+    "consumer": "Interpret exact compiled-kernel properties for the ordered/cached QSA variants and decide whether local-memory resources plausibly limit their paired comparison.",
+    "review_point": "After the frozen same-binary QSA comparison closes and exact executable/compiler/device identity is pinned; recheck collector capability first.",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "stage": "reviewed_curated_knowledge",
+    "main_reads_collection_body_on_arrival": false,
+    "report": {
+      "source_commit": "87c3c4593cd7d1261f70f98e81001deb887ba8fd",
+      "task": "task_64614c9f835b",
+      "report_sha256": "61e809ca3656b9a53149516ddecc06ad69dc6611c2e012e91c9d73b8df638eb6",
+      "report_bytes": 10831,
+      "read_only_and_IPC_passed": true,
+      "worker_completion_confirmed": true,
+      "captured_executors_and_terminal_closed": true,
+      "raw_retention": "Retire after this curated entry is committed;no remaining full-report consumer."
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "sha256": "83271949b7168a02f07a7e61a34a2dbc3c468aa3df38ad181a6b9bcda5f8a765"
+    },
+    "proposal_sha256": "3fa3245aa6afc92f02a56258f07ccdeed9df7365d9617c8a18e91b83916ee18b"
+  },
+  "current_prefill_research_next_scopes_20261111": {
+    "stage": "Curated knowledge;not an implementation or launch plan.",
+    "native_review_sha256": "83271949b7168a02f07a7e61a34a2dbc3c468aa3df38ad181a6b9bcda5f8a765",
+    "scopes": [
+      {
+        "name": "Concrete ragged grouped-GEMM decision",
+        "schedulable_now": false,
+        "prerequisite_evidence": [
+          "Frozen production source/config and actual per-window job-row histogram plus per-expert dequant reuse/miss counts.",
+          "Disjoint submit/wait CPU and critical-path attribution; repeated submissions alone are not a bottleneck proof.",
+          "262144-context peak VRAM accounting for gathers, metadata, outputs, conversion staging and any additional resident weights.",
+          "Exact installed oneMKL version/backend identity and shipped license, plus inspectable backend source or an authorized launch trace to distinguish a grouped dispatch from a host loop.",
+          "A direct-BF16-output path or explicit FP32 staging/conversion plan that matches the current numerical contract."
+        ],
+        "reason": "The planned histogram is not yet available and Main's frozen QSA comparison is still active; do not dispatch a scope that can only repeat missing-prerequisite findings."
+      },
+      {
+        "name": "Exact QSA kernel resource capture",
+        "schedulable_now": false,
+        "prerequisite_evidence": [
+          "Close the frozen same-binary comparison and pin exact executable, compiler, runtime, driver, device and kernel identity.",
+          "Collect Level Zero local/private/spill/subgroup properties on that exact kernel; treat them as metadata, not occupancy.",
+          "For workload occupancy/counter attribution, confirm the permitted collector and metric validity on this host; VTune 2026.4 gpu-hotspots was previously rejected before target launch, and existing B570 counter mapping should be reused."
+        ],
+        "reason": "No active-comparison input may change; no compiled-kernel property or valid runtime occupancy evidence is present."
+      }
+    ],
+    "main_next_action": "Commit/execute bounded existing-engine32K/64K planned-job census;actual misses/weight-format,compiled properties and saturation remain separate evidence gaps."
   }
 }

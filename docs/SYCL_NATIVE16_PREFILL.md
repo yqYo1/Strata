@@ -1777,11 +1777,37 @@ subgroup dispatch and96bulk calls;MTP restores twice and the live decode
 head records27C4replays. All15model assets match afterward,normal0/closed
 ownership and no fresh fault. This is a validation-charged route/handoff
 diagnostic,not clean PP/TG,task quality or physical262144model/RESTORE
-qualification. Those gates and matched phase speed remain open. Keep the
-startup choice explicit. Next qualify and compare the existing four-slot
-Host-USM expert staging on this private packed route;do not infer savings
-or physical PCIe saturation from upload-submit CPU time. Actual selector
-locality remains another measured-evidence prerequisite.
+qualification. Full-context,task/agent and sustained-decode gates remain open. The clean
+same-binary comparison now closes at `d085a3b2977d4375df0947184cb4d91c3740ff20`:
+12 fresh processes,32K ABBAAB then64K ABBAAB,three thinking-on requests each.
+All36 requests have exactly24 outputs and zero reuse;all owners exit0,with
+quiet validation,no fresh faults and15 final model hashes. Bulk stays1 and
+expert-upload staging0 in both arms;only QSA math and private paths differ.
+
+| Actual input | Request scope | Ordered PP | Cached PP | Ordered client TTFT s | Cached client TTFT s |
+| --- | --- | ---: | ---: | ---: | ---: |
+| 32769 | First request;3process median | 547.9051 | 553.2183 | 60.013 | 59.503 |
+| 32769 | Subsequent2;median of3process medians | 685.9587 | 687.9200 | 47.9985 | 47.8385 |
+| 65537 | First request;3process median | 746.3441 | 730.2417 | 88.108 | 89.961 |
+| 65537 | Subsequent2;median of3process medians | 847.9029 | 850.6085 | 77.5140 | 77.2765 |
+
+At each length one of the three warmed pairs is slower with cached QSA.
+The prospectively declared repeated-gain gate therefore fails at both lengths;
+no model/default adoption or advancement follows. Keep the selectors explicit
+and preserve independent decode. All individual samples and paired ratios are
+in `qsa_cached_subgroup_prefill_compare_v1`;the CSV retains all eight aggregate
+first/warmed points. Local adjacent slopes are0.9009384/0.8975922ms/token,
+not a fitted law or physical fixed cost. Older56cad9/827.5-and970.5PP evidence
+remains a separate retained reference,not a performance claim for this build.
+Next observe the existing planned MoE census at32K/64K before choosing a
+selective Host-USM upload or grouped-GEMM policy. Profile metadata already exists
+on the CPU after the router drain;collecting it adds no GPU tensor readback.
+Reconcile split-expert reuse and cache misses before treating job rows as
+upload rows. Global staging remains off after its failed component gate;
+1280-row component gains alone do not qualify a selective model policy or
+physical PCIe/CPU saturation. The native source audit closes the old helper-
+snapshot gap and finds no ordered-exp/decode replacement;it does not identify
+a cause for the unmatched older/current throughput difference.
 The old two component ELFs remain a bounded proof-reader dependency until
 that consumer is updated to this qualified successor;retire them at the current
 model-entry/comparison boundary. The current9af candidate temporarily joins
