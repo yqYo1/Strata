@@ -266304,7 +266304,7 @@
     ]
   },
   "qsa16_bulk_mirror_prefill_compare_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "93d908410c15d526b855b3de0c54f9d703ea7b48",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-model-native-v1/build/strata",
@@ -268270,6 +268270,226 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 7,
+        "read": 65537,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-model-native-v1/build/strata",
+          "sha256": "56cad9eb45f8f5fc9158eef968504424ac83a47e75cef7ad1bfa1ea8c436a93d",
+          "bytes": 26401120,
+          "origin_source_commit": "611a0fd6fecc4593e17160c294103cd4464a292b"
+        },
+        "native_source_commit": "611a0fd6fecc4593e17160c294103cd4464a292b",
+        "native_identity": {
+          "pid": 1864476,
+          "start_ticks": 266207538,
+          "sid": 1864420
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1864476,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 65536,
+              "residual_gpu_rows": 65536,
+              "residual_gpu_bytes": 1342177280,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20621,
+              "fused_down_jobs": 4217,
+              "maximum_window_rows": 65536,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 37214720000,
+              "requested_dequant_H2D_bytes": 125829120,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "bulk_mirror": 0,
+            "selector_evidence": "Observed typed-QSA request entry plus immutable environment checked at both live request gates and exact recovered production append dispatch. No per-launch bulk telemetry in clean mode.",
+            "actual_bulk_command_count_measured": false
+          },
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 65536,
+              "residual_gpu_rows": 65536,
+              "residual_gpu_bytes": 1342177280,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20591,
+              "fused_down_jobs": 4217,
+              "maximum_window_rows": 65536,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 37173094400,
+              "requested_dequant_H2D_bytes": 125829120,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "bulk_mirror": 0,
+            "selector_evidence": "Observed typed-QSA request entry plus immutable environment checked at both live request gates and exact recovered production append dispatch. No per-launch bulk telemetry in clean mode.",
+            "actual_bulk_command_count_measured": false
+          },
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 65536,
+              "residual_gpu_rows": 65536,
+              "residual_gpu_bytes": 1342177280,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20568,
+              "fused_down_jobs": 4217,
+              "maximum_window_rows": 65536,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 37137228800,
+              "requested_dequant_H2D_bytes": 125829120,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "bulk_mirror": 0,
+            "selector_evidence": "Observed typed-QSA request entry plus immutable environment checked at both live request gates and exact recovered production append dispatch. No per-launch bulk telemetry in clean mode.",
+            "actual_bulk_command_count_measured": false
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 81544.3,
+            "prompt_tps": 803.7,
+            "ttft_s": 81.697,
+            "total_s": 83.521,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 71920.9,
+            "prompt_tps": 911.2,
+            "ttft_s": 72.082,
+            "total_s": 73.597,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 71559.7,
+            "prompt_tps": 915.8,
+            "ttft_s": 71.721,
+            "total_s": 73.419,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 71740.29999999999,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "request_hashes": {
@@ -268285,8 +268505,8 @@
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
@@ -268365,11 +268585,125 @@
         "passed": true
       }
     ],
+    "decision": {
+      "points": [
+        {
+          "read": 32769,
+          "off": {
+            "processes": 2,
+            "subsequent_samples_per_process": 2,
+            "subsequent_median_prompt_ms": 41450.825,
+            "subsequent_PP": 790.5512133956321,
+            "subsequent_process_PP_min": 790.2399851448678,
+            "subsequent_process_PP_max": 790.8626868913586,
+            "subsequent_median_client_TTFT_s": 41.5905,
+            "first_median_prompt_ms": 51740.3,
+            "first_PP": 633.336103578835,
+            "first_median_client_TTFT_s": 51.881
+          },
+          "on": {
+            "processes": 2,
+            "subsequent_samples_per_process": 2,
+            "subsequent_median_prompt_ms": 39600.125,
+            "subsequent_PP": 827.4973879501644,
+            "subsequent_process_PP_min": 825.6152621288775,
+            "subsequent_process_PP_max": 829.3881146093948,
+            "subsequent_median_client_TTFT_s": 39.743750000000006,
+            "first_median_prompt_ms": 50386.45,
+            "first_PP": 650.3534184289626,
+            "first_median_client_TTFT_s": 50.525999999999996
+          },
+          "subsequent_prompt_speedup": 1.0467347009636965,
+          "subsequent_TTFT_speedup": 1.0464664255386065,
+          "paired_subsequent_prompt_ratios": [
+            1.0439426158466532,
+            1.049539545202019
+          ],
+          "both_independent_pairs_favor_bulk": true
+        },
+        {
+          "read": 65537,
+          "off": {
+            "processes": 2,
+            "subsequent_samples_per_process": 2,
+            "subsequent_median_prompt_ms": 71647.29999999999,
+            "subsequent_PP": 914.7169537442445,
+            "subsequent_process_PP_min": 913.5311672797578,
+            "subsequent_process_PP_max": 915.9058225711104,
+            "subsequent_median_client_TTFT_s": 71.811,
+            "first_median_prompt_ms": 81554.55,
+            "first_PP": 803.5971015718926,
+            "first_median_client_TTFT_s": 81.711
+          },
+          "on": {
+            "processes": 2,
+            "subsequent_samples_per_process": 2,
+            "subsequent_median_prompt_ms": 67528.55,
+            "subsequent_PP": 970.5080295667535,
+            "subsequent_process_PP_min": 969.8480935855981,
+            "subsequent_process_PP_max": 971.168864270197,
+            "subsequent_median_client_TTFT_s": 67.687,
+            "first_median_prompt_ms": 77289.5,
+            "first_PP": 847.9418290970959,
+            "first_median_client_TTFT_s": 77.4465
+          },
+          "subsequent_prompt_speedup": 1.0609927208565857,
+          "subsequent_TTFT_speedup": 1.06092750454297,
+          "paired_subsequent_prompt_ratios": [
+            1.0588949973732693,
+            1.063093301087984
+          ],
+          "both_independent_pairs_favor_bulk": true
+        }
+      ],
+      "clean_speed": true,
+      "matched_same_binary": true,
+      "independent_processes_per_arm_per_length": 2,
+      "mechanism_evidence": "repeated_improvement_at_both_lengths",
+      "advance_to_further_model_gates": true,
+      "local_adjacent_ms_per_token": {
+        "off": 0.9215232849121091,
+        "on": 0.8523078918457032
+      },
+      "curve_scope": "Two lengths give local slopes only;no fitted law,physical fixed-cost inference or extrapolation. Extend the existing multi-length characterization after a useful change.",
+      "prefill1000_on_64K_subsequent_median_observed": false,
+      "first_use_is_separate": true,
+      "sustained_decode_qualified": false,
+      "agent_task_quality_qualified": false,
+      "physical262144_qualified": false,
+      "resource_saturation_qualified": false,
+      "inference_adopted": false,
+      "next": "If paired evidence is mixed,commit a fresh repetition plan;do not relabel noise or drop samples. Preserve both selectors. Before adoption compare the retained clean reference and independent sustained decode/agent/task/full262144/RESTORE gates. No prefill gain excuses decode loss."
+    },
     "source_inputs": {
       "files": 694,
       "sha256": "8e119711bf669db940b1efb7d12271fd69a8d339df2cf882ac639801a19349a5"
     },
     "environment_template_sha256": "ba05c0520948e8b1d048efa436c4416a9372f6fbcda586e1c99a260e725c4e6c",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "workload_count_audit": {
+      "requests": 24,
+      "min_generated": 24,
+      "max_generated": 24,
+      "all_exact": true,
+      "criterion_source": "93d908410c15d526b855b3de0c54f9d703ea7b48",
+      "scope": "Main checked every original retained sample at each process closure before advancing and again after the cohort. Exact24was predeclared;the shared runner accepts1..24,so passed alone was insufficient. No sample changed,dropped or recollected. Add a strict production gate before a future cohort."
+    },
+    "existing_source_view_observation": {
+      "actual_request_headers": 24,
+      "distinct_values": [
+        [
+          "1",
+          "1",
+          "48",
+          "0",
+          "50292326400",
+          "eliminated",
+          "unspecified",
+          "caller_through_checked_retirement"
+        ]
+      ],
+      "meaning": "Post-closure diagnostic census only. Current source-view path is already active;crosswalk the old4.5512percent result before any duplicate source-view A/B. Requested payload is not physical PCIe traffic."
+    }
   }
 }
