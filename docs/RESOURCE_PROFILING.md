@@ -402,6 +402,14 @@ closed owners,quiet validation,no fresh fault and all15final hashes pass.
 The earlier514.2599PPbaseline and this point are one process each,not a
 prospective repeated pair. Keep first/subsequent scopes separate;24outputs
 do not qualify sustained decode. Record evidence is`3863ba3ef`and the CSV.
+In this native server path,`generate.cpp`starts`r0`before request-state and
+prefill preparation and closes`prompt_ms`after the prompt wrapper restores
+MTP experts,joint dense/head owners and cache slots. Lazy MTP round-graph
+capture occurs later in decode/client TTFT. This source check defines the
+clock scope;it does not measure any restoration's individual cost. The last
+prompt token enters the first verify window,while reported PP uses the
+native read-token count. Client TTFT includes the first nonempty thinking
+or content output,after the recorded count-only preflight.
 Observed MoE bank copy requests are35.343..35.493GB/request,plus62,914,560
 bytes reported by the dequant source counter;these are requested operations,
 not measured wire bytes or copy time. Job/copy counts vary across nonce
