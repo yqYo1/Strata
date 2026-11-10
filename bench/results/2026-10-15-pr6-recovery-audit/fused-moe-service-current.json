@@ -263909,7 +263909,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "qsa16_bulk_mirror_components_v1": {
-    "stage": "checked-1",
+    "stage": "checked-2",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -264164,6 +264164,42 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      "small-on": {
+        "passed": true,
+        "complete": true,
+        "flag": "1",
+        "mode": "small",
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1464342,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "physical_cells": 24,
+        "actual_bulk_calls": 15,
+        "accepted_copy_commands": 228,
+        "requested_D2H_bytes": 142560,
+        "scope": "Independent component numerical/owner/tail/full-fill oracles only;no attention/model/RESTORE/speed qualification",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     },
     "passed": true,
@@ -264370,6 +264406,13 @@
       },
       {
         "label": "small-off",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "small-on",
         "exit_code": 0,
         "ownership_closed": true,
         "errors": [],
