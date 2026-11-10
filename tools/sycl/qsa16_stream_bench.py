@@ -755,7 +755,8 @@ def profile_run(index):
     module.engine_once.native_environment = expected
     policy = SimpleNamespace(ROOT=ROOT, ORDER=ORDER, RUNS=RUNS, current=current,
         environment=environment, native_context=native_context_for_profile, request_route=route,
-        validate_model_text=analyze, decision=profile_decision, save=finish)
+        validate_model_text=analyze, decision=profile_decision, save=finish,
+        check_sample=globals().get('check_sample', comparison.check_sample))
     if prof: require(not profile.session_path(prof['session']).exists(), 'fresh owned collector session required')
     module.run(index, policy)
 

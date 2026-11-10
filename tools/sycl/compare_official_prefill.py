@@ -550,7 +550,8 @@ def run(index, experiment=None):
         require(len(set(hashes)) == policy.RUNS and all(re.fullmatch('[0-9a-f]{64}', s) for s in hashes)
                 and hashes == row['request_hashes'].get(str(plan['read']), hashes), 'request bodies differ')
         for sample, count in zip(samples, counts):
-            check_sample(sample, count, plan['read'], getattr(policy, 'MIN_PROMPT_MS', 10000))
+            getattr(policy, 'check_sample', check_sample)(
+                sample, count, plan['read'], getattr(policy, 'MIN_PROMPT_MS', 10000))
         require(shared.client.verify_request_journal(outputs[0].parent)['valid'], 'request journal invalid')
         policy.current(row)
         config = json.loads((root / 'config.json').read_text())
