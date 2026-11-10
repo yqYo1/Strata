@@ -30,6 +30,7 @@ REFERENCE = B / 'decode-iq3-audit-speed-v2/record.json'
 require, digest, write = source.require, source.sha, source.device.write
 shared, build = comparison.shared, comparison.build
 FAST_ROOT, FAST_KEY = B / 'qsa16-stream-fast-entry-v1', 'qsa16_stream_fast_entry_v1'
+CLEAN_FAST = False
 FAST = dict(STRATA_PREFILL_RELEASE_MTP_EXPERTS='1', STRATA_SYCL_PREFILL_MOE_WINDOW='10',
     STRATA_SYCL_PREFILL_SCORE_GEMM='1', STRATA_SYCL_PREFILL_MIXED_SCRATCH='1',
     STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS='384', STRATA_SYCL_CACHE_SCRATCH_LEASE='1',
@@ -42,6 +43,12 @@ def configure_baseline():
     ROOT, KEY = B / 'qsa16-stream-prefill-baseline-v2', 'qsa16_stream_prefill_baseline_v2'
     READS = (32769,)
     ORDER = [(32769, 1)]
+
+
+def configure_fast_clean():
+    global ROOT, KEY, READS, ORDER, CLEAN_FAST
+    ROOT, KEY = B / 'qsa16-stream-fast-prefill-v1', 'qsa16_stream_fast_prefill_v1'
+    READS, ORDER, CLEAN_FAST = (32769,), [(32769, 1)], True
 
 
 def pins(revision):
@@ -112,6 +119,8 @@ def basis():
         original_model_controls_recovered=len(before),
         added_observers={p: after[p] for p in (source.THIS, THIS)},
         collector_qualification_inherited=False, native_recompiled=False)
+    if CLEAN_FAST:
+        proof['fast_configuration_diagnostic'] = fast_diagnostic_proof(native, prior)
     return native, dict(prior, observer_admission=proof), prior['runtime_files'], None
 
 
@@ -120,11 +129,13 @@ def environment(row, plan):
     require(not env.get('LD_PRELOAD') and not env.get('STRATA_TRACE') and
         not env.get('STRATA_UR_PROBE_EXPECTED_LOADER') and
         env['STRATA_KV_STAGE_OWN'] == env['STRATA_SYCL_PREFILL_QSA_STREAM'] == '1'
-        and env['STRATA_MTP_BATCH_F16'] == '0'
+        and env['STRATA_MTP_BATCH_F16'] == ('1' if CLEAN_FAST else '0')
         and env['STRATA_SYCL_DECODE_Q6_DPAS_HEAD'] == '2'
         and env['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] == '1'
         and env['STRATA_PREFILL_HEAD_HOST_BACKING'] == '0',
         'preserve actual admitted placement/math/decode and private preload')
+    if CLEAN_FAST:
+        require(all(env.get(k) == v for k, v in FAST.items()), 'exact qualified fast settings required')
     return env
 
 
@@ -177,13 +188,25 @@ def request_route(text, plan):
     draft = re.findall(r'^strata prefill heads: draft detached bytes=(\d+) retained-map-bytes=(\d+)$', text, re.M)
     require(target == [('521472000',) * 3] and draft == [('0', '425196')],
         'admitted target/sole-packed-draft handoff differs')
-    return dict(rows=rows, actual_chunk=8192, residual_dtype='bf16',
+    result = dict(rows=rows, actual_chunk=8192, residual_dtype='bf16',
         residual_gpu_rows=gpu, residual_gpu_bytes=int(f['residual_gpu']),
         residual_host_bytes=int(f['residual_host']), layer_cache_bytes=int(f['layer_cache']),
         actual_typed_QSA=True, configured_context=262144, configured_resident=20480,
         owned_stage=True, stage_payload_bytes=276824064, target_requested_D2H=521472000,
         target_requested_H2D_restore=521472000, draft_requested_D2H=0,
         scope='Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.')
+    if CLEAN_FAST:
+        # A private policy copy keeps the comparator's old joint-head contract
+        # intact. This build's sole packed draft head retires zero device bytes.
+        policy = source.device.load_module('qsa16_stream_clean_window_policy', comparison.__file__)
+        policy.DRAFT_BYTES = 0
+        result['fast_window'] = policy.route(text, plan['read'], plan['heads'], expected_rows=rows)
+        phases = re.findall(r'^strata mtp: prompt expert phase=(\S+) ', text, re.M)
+        require(phases == ['before-detach', 'after-detach', 'after-prompt-before-restore', 'after-restore']
+            and re.findall(r'^strata mtp: experts restored bytes=(\d+),', text, re.M) == ['707788800'],
+            'actual fast-prefill MTP expert handoff required')
+        result['MTP_expert_restore_bytes'] = 707788800
+    return result
 
 
 def decision(processes):
@@ -226,7 +249,11 @@ def prepare():
     reference = json.loads(REFERENCE.read_text())
     contract, python = frontend.python_manifest()
     previous_attempt = None
-    if len(READS) == 1:
+    if CLEAN_FAST:
+        # The preceding diagnostic fully hashed these exact assets after its
+        # normal closed native process; identities are rechecked by basis().
+        previous_attempt = prior['observer_admission']['fast_configuration_diagnostic']
+    elif len(READS) == 1:
         old_root = B / 'qsa16-stream-prefill-baseline-v1'
         old = json.loads((old_root / 'record.json').read_text())
         require(build.committed(RESULT)['qsa16_stream_prefill_baseline_v1'] == compact(old)
@@ -261,6 +288,8 @@ def prepare():
     for key in env:
         if '_AUDIT' in key or '_PROFILE' in key: env[key] = '0'
     env.update(PATH=str(Path(python['selected']['path']).parent) + ':/usr/bin:/bin')
+    if CLEAN_FAST:
+        env.update(FAST)
     ROOT.mkdir(mode=0o700); write(ROOT / 'runtime-inputs.json', providers)
     revision = source.device.common.source.git(P, 'rev-parse', 'HEAD').decode().strip()
     row = dict(stage='prepared', source_commit=revision, sources=pins(revision),
@@ -284,6 +313,16 @@ def prepare():
             limits='Characterization only:one process per length,not a paired engine speedup,independent-process reproducibility,1000PP target qualification,sustainedTG,agent/task quality,full262144fill/RESTORE,ordinary-provider teardown or adoption. Fit by actual route only;no assumed fixed-plus-linear law.',
             retention=f'Keep all{len(READS)*RUNS}compact samples/TTFT,placement and source/native/environment/workload identity. Retire verified successful full logs/journals/cache/ownership output after extraction. Existing current native plus a347/552b imminent phase references unchanged.'))
     if previous_attempt is not None: row['previous_attempt'] = previous_attempt
+    if CLEAN_FAST:
+        row['plan'].update(question='Measure clean32K PP/clientTTFT for the admitted fastest-setting composition on streamed QSA16 before longer shapes and independent-process repeats.',
+            settings=row['plan']['settings'].replace('MTP_BATCH_F16=0', 'MTP_BATCH_F16=1') +
+                ' Restore exactly the nine FAST values from the owned552b reference before exec;qualified by the closed3d2a diagnostic. No native rebuild or decode-selector change.',
+            acceptance=row['plan']['acceptance'] +
+                ' Each actual32Krequest must use all32768GPU residual rows,staged384bank,window10,ordinary accumulator,checked final drains and complete675MiB MTP expert restoration.',
+            stopping=row['plan']['stopping'].replace('Full15asset hashes before and after the cohort.',
+                'Reuse the exact closed fast-diagnostic final full hashes after identity/source recovery;hash all15assets again after this cohort.'),
+            limits=row['plan']['limits'] +
+                ' The old baseline is one earlier process,not a prospective repeated pair. Retain that distinction;no gain/target/adoption claim from this single candidate process.')
     for index, (read, heads) in enumerate(ORDER):
         root = ROOT / str(index); root.mkdir(mode=0o700)
         for part in ('tmp', 'cache'): (root / part).mkdir()
@@ -300,6 +339,39 @@ def prepare():
         plan['environment_sha256'] = comparison.fingerprint(environment(row, plan))
         row['plans'].append(plan)
     save(row); print(f'Prepared{len(READS)}clean streamed-route processes;commit before host/native.', flush=True)
+
+
+def fast_diagnostic_proof(native, prior):
+    """Reuse closed composition evidence without relabeling its native/source."""
+    path = FAST_ROOT / 'record.json'; row = json.loads(path.read_text())
+    require(build.committed(RESULT)[FAST_KEY] == source.model.previous.compact(row)
+        and row['stage'] == 'closed' and all(row[k] for k in
+            ('passed', 'complete', 'ownership_closed', 'model_executed')) and not row['active']
+        and row['native_source_commit'] == native['native_source_commit']
+        and row['native_build']['binaries'] == native['binaries'] and row['models'] == prior['models']
+        and row['fast_configuration']['settings'] == FAST, 'closed exact fast-composition proof required')
+    result, = row['results']; route = result['routes']
+    require(result['native_exit_code'] == 0 and result['ownership_closed'] and not result['fresh_faults']
+        and len(result['requests']) == 3 and route['actual_mode'] == 1 and route['typed_QSA_entry']
+        and route['packed_layer_entries'] == 96 and route['staged_bank_headers'] == 2
+        and route['actual_batched_ring_callbacks'] == 8 and route['cache_binding_and_final_drains']
+        and route['MTP_expert_restore_bytes'] == [707788800] * 2
+        and route['MTP_round_recaptures'] >= 2 and route['decode_routes']['head']['actual_decode_C4_replays'] > 0,
+        'actual composed prefill and restored decode proof required')
+    pin = row['controller']; before = pin['source_sha256']
+    recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
+        source.device.common.source.blobs(P, pin['revision'], before)}
+    after = source.device.common.source.pin(P,
+        ['tools/sycl', 'tools/strata_tokenizer.py', 'data/expert-profile.bin'])['source_sha256']
+    require(recovered == before and source.signature(before) == pin['aggregate_sha256']
+        and before.keys() == after.keys() and {p for p in before if before[p] != after[p]} == {THIS},
+        'only this prospective clean controller may change after the fast diagnostic')
+    source.model.previous.assets(row)
+    return dict(key=FAST_KEY, evidence_commit='7851bc6de0c1d0398cc333d27b861a2efca3fa51',
+        original_controller_source=row['source_commit'], original_native_source=row['native_source_commit'],
+        receipt_sha256=digest(path), recovered_controller_inputs=len(recovered), changed_controller=[THIS],
+        model_assets_sha256=source.signature(row['models']),
+        meaning='Closed original fast diagnostic source/ELFs/recipe/runtime/models recovered. Reuse its final full hashes with exact asset identities;rehash all15after this clean cohort. No inherited clean speed,sustainedTG or adoption.')
 
 
 def baseline_proof(native, prior):
@@ -469,6 +541,8 @@ if __name__ == '__main__':
             raise SystemExit(0)
         if action[:1] == ['baseline']:
             configure_baseline(); action = action[1:]
+        elif action[:1] == ['fast-clean']:
+            configure_fast_clean(); action = action[1:]
         if action == ['prepare']: prepare()
         elif action == ['host']: comparison.host(sys.modules[__name__])
         elif len(action) == 1 and action[0].isdigit() and int(action[0]) < len(ORDER):
