@@ -277537,7 +277537,7 @@
       "bytes": 15186512
     },
     "pre_timing_controls": {
-      "state": "planned_before_any_timing_process",
+      "state": "passed",
       "argv": [
         "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
         "-B",
@@ -277558,6 +277558,34 @@
       "previous_preparation": {
         "outcome": "refused_before_mutation",
         "reason": "Closed numerical result was not yet committed;no clock test or performance process started. The result is now committed before this prospective preparation."
+      },
+      "result": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "clock": {
+          "empty_bracket_max_ns": 3487,
+          "empty_bracket_median_ns": 70.0,
+          "implementation": "clock_gettime(CLOCK_MONOTONIC)",
+          "median_overhead_fraction": 7e-07,
+          "minimum_batch_ms": 100,
+          "monotonic": true,
+          "resolution_ns": 1.0,
+          "samples": 20000,
+          "scope": "CPython-inclusive calls to the same Linux monotonic clock;not a direct C++ ABI measurement."
+        },
+        "known_external_host_link_set": {
+          "files": 38,
+          "sha256": "8a3c6951478beb568b2ab06c0e9fdf88472778c1c96367e05db0a7a9ee2169bf",
+          "exact_match": true
+        },
+        "explicit_SYCL_offload_command_inputs": {
+          "files": 2,
+          "sha256": "b1cec79813db6c4e9d927be577dde00f53127b822e3db4a32b830655bb1f8af0",
+          "hashes_unchanged": true,
+          "host_ld_trace_presence_claimed": false
+        }
       }
     },
     "headers_summary": {
