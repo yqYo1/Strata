@@ -84,7 +84,7 @@
       },
       "reviewed_through": "504b143342a9fe1aa8320a7b31e11f5c0ac265c3"
     },
-    "latest_delta_review": "151commits/303paths require fresh functional/component review;earlier504b source-only findings stay pending and do not cover this new interval.",
+    "latest_delta_review": "Scoped source review completed for router/control/server at c1ff;not the complete303-path delta ledger. Plain GPU ordering/help is source-ported with host validation pending;other functional and inference decisions remain open.",
     "license_changed_since_previous_check": false,
     "initial_all_tags_fetch": {
       "exit_code": 1,
@@ -1433,6 +1433,101 @@
         ],
         "inference_executed_by_count": false,
         "optional_SDK_clients_qualified": false
+      },
+      "incremental_function_ports": {
+        "plain_gpu_order": {
+          "stage": "prepared",
+          "source_commit": "a22f175bd628f1eb0d307eb04ccbe86419366423",
+          "python": {
+            "path": "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
+            "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+          },
+          "qualified_environment_reference": "current_sync.host_test_environment",
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "HOME": "/home/yayoi",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-gpu-list-order-host-v1/tmp"
+          },
+          "commands": [
+            {
+              "label": "gpu-list-replacement",
+              "argv": [
+                "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
+                "-B",
+                "-m",
+                "unittest",
+                "discover",
+                "-s",
+                "tools",
+                "-p",
+                "test_launch_gpu_order.py",
+                "-v"
+              ],
+              "tests": 4
+            },
+            {
+              "label": "existing-gpu-roles",
+              "argv": [
+                "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
+                "-B",
+                "-m",
+                "unittest",
+                "discover",
+                "-s",
+                "tests/terminal",
+                "-p",
+                "test_gpu_roles.py",
+                "-v"
+              ],
+              "tests": 14
+            }
+          ],
+          "budget": {
+            "wall": 60,
+            "cpu": 120,
+            "rss_cap": 1073741824,
+            "text_cap": 65536,
+            "file_cap": 1048576,
+            "total_cap": 8388608
+          },
+          "acceptance": "Both normal0,exactly4and14tests,no failures/errors/skips,observed/reaped/empty sessions,source/runtime/engine hashes exact before/after. Main serializes CPU tests. No GPU,downloads,model run or performance qualification.",
+          "native_engine": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-small-model-native-v2/strata",
+            "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1"
+          },
+          "provenance": {
+            "upstream": "Niko1221/Strata",
+            "commit": "2b9df3fe71cb24cef3052c332e032ea681729abe",
+            "covered_by": "c1ff07f1a1817594811c960039571c6e268fe89a",
+            "license": "MIT;byte-identical project LICENSE",
+            "scope": "Plain --gpu drops stale gpu_order and help clarifies Main selection. Explicit roles and no-selection retain semantics;no inference or excluded-model execution import. Main-authored regression tests."
+          },
+          "results": [],
+          "active": false,
+          "ownership_closed": true,
+          "passed": false,
+          "GPU_executed": false,
+          "source_inputs": {
+            "prefixes": [
+              "strata_cli",
+              "strata_control",
+              "packaging",
+              "setup.py",
+              "serve/runconfig.py",
+              "tools/setup_intel.py",
+              "tools/test_launch_gpu_order.py",
+              "tests/terminal/test_gpu_roles.py",
+              "tests/data/gpu_roles_vectors.json",
+              "tools/sycl/measurement_owner.py",
+              "requirements.txt"
+            ],
+            "files": 131,
+            "sha256": "6b5d65b18b3e4949a247ff44d71c2791c2905b3484e4f48a3f1c90269f195b0c"
+          }
+        }
       }
     },
     "exclusions": {
