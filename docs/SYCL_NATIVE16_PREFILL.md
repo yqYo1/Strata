@@ -1870,18 +1870,42 @@ fails. At128..1280the compact candidate loses against the production wide
 baseline (ratios1.487..2.199). All12points, including failed candidates, are
 in the CSV; useful individual pairs stay in the committed result.
 
-The next prefill-only candidate is implemented at
-`a231eb7b3`:explicit `STRATA_SYCL_PREFILL_GU_SWIGLU=auto` selects compact
-fusion for1..96rows and retains the existing wide fusion at2334or more.
-Rows97..2333 keep the separate production path;existing `0/large` modes
-retain their old selection. The new mode requires native16 BF16, vllm and
-auto tile. It is not enabled by existing configurations. This source change
-is not yet built or GPU/model qualified. Next close the live provenance-reader
-holds needed to retire unused generations, then build the candidate, verify
-actual production selection and boundary/numerical cases and run separately
-planned32K/64K,independent decode and full262144/RESTORE gates. No model/default
-adoption or PP/TG gain follows from these component times. Dequant,gather,
-PCIe and model handoff remain outside the component interval.
+The prefill-only candidate is implemented at `a231eb7b3`, with an explicit
+per-job eligibility overload at `be0dff683`. Startup
+`STRATA_SYCL_PREFILL_GU_SWIGLU=auto` selects compact fusion for1..96rows
+and retains existing wide fusion at2334or more. Rows97..2333 retain the
+separate path;existing0/large selection is preserved. The new mode requires
+native16 BF16,vllm and auto tile and is not selected by existing configurations.
+
+The actual-production comparison closes at
+`d5ea1cb8e7b7e8feaa89c0af93df9a02e82ef509`, wrapper/fixture source
+`213dd970f757460d15b13c994ff17a8f42c88d18`. The private archive replaces
+only `gemm16.cpp.o`;all11other members,original archives/images and nine
+baseline ELFs are verified. The new admission treats historical ELFs as
+provenance,checks the actual nine outputs and passes2positive/23negative CPU
+controls. No original failure is relabeled. Both timed arms now call actual
+production binding,validation and finish under immutable startup configuration;
+only per-job compact eligibility changes. Every actual fused/fallback outcome
+is asserted. Smoke and44numeric cases pass,with0FP16ULP observed,including
+95/96/97,2333/2334and8192rows. Three processes complete4rotated pairs at18shapes.
+
+All changed shapes1,16,32,64,65,95and96pass the repeated-gain gate. M1 process
+ratios are0.58767/0.58403/0.61874;M96ratios are0.84620/0.89288/0.87049.
+Median per-call times across process medians are24.157to14.296us atM1and
+39.572to34.569us atM96. The unchanged-route controls use the same selected
+algorithm but show timing spread,including slower127-row samples in all
+three processes;timing equivalence and model/phase preservation are unproved.
+The two arms use distinct output allocations,so do not attribute that spread
+to a production-code regression or dismiss it as noise. All18points and original
+pairs are retained through the CSV and pinned result.
+
+Next relink the model and required same-build fixtures using the verified
+baseline objects plus this one changed archive,qualify native/phase ownership,
+and measure32K/64K plus sustained independent decode. Preserve the fastest
+56cad9prefill reference and a347decode reference;retire obsolete9af/552bafter
+their exact source/recipe and current-consumer checks. Full-model262144/RESTORE
+and task gates remain open. Dequant,gather,PCIe and handoff are excluded from
+these component intervals;no model PP/TG gain or default adoption is claimed.
 
 Global staging remains off after its failed component gate;
 1280-row component gains alone do not qualify a selective model policy or
