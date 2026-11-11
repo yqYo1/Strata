@@ -43,7 +43,25 @@ def source_controls():
         try:candidate_delta(before,altered,{THIS})
         except RuntimeError:continue
         raise RuntimeError('source admission accepted an undeclared native/controller mutation')
-    return dict(passed=True,positive=1,negative=len(cases),GPU_executed=False)
+    binaries={name:dict(path=str(NATIVE/'build'/name),bytes=i+1,sha256=str(i))
+        for i,name in enumerate(device.build.TARGETS)}
+    inspect=lambda v:(v['bytes'],v['sha256'])
+    current_outputs(binaries,inspect)
+    for name in binaries:
+        for entries,reader in (({k:v for k,v in binaries.items() if k!=name},inspect),
+                (binaries,lambda v:(v['bytes'],'changed') if v is binaries[name] else inspect(v))):
+            try:current_outputs(entries,reader)
+            except RuntimeError:continue
+            raise RuntimeError('current output admission accepted a missing/changed fixture')
+    return dict(passed=True,positive=2,negative=len(cases)+2*len(binaries),GPU_executed=False)
+
+
+def current_outputs(binaries,inspect=None):
+    require(set(binaries)==set(device.build.TARGETS),'all nine actual baseline ELFs required')
+    if inspect is None:inspect=lambda v:(Path(v['path']).stat().st_size,sha(v['path']))
+    for name,v in binaries.items():
+        require(Path(v['path'])==NATIVE/'build'/name and inspect(v)==(v['bytes'],v['sha256']),
+            'current baseline engine/fixture changed')
 
 
 def native(extra_observers=frozenset()):
@@ -85,9 +103,7 @@ def native(extra_observers=frozenset()):
                 require(family=='compiled' and before[str(Path(p).relative_to(P))]==h,
                     'declared source must match original compiler evidence')
             else:require(sha(p)==h,'undeclared baseline actual input changed: '+p)
-    require(len(old['binaries'])==9 and all(sha(v['path'])==v['sha256']
-        and Path(v['path']).stat().st_size==v['bytes'] for v in old['binaries'].values()),
-        'all nine actual baseline ELFs required')
+    current_outputs(old['binaries'])
     require(device.original.candidate.probe_qualification()==
         (old['native_validation_probe'],old['validation_qualification']),'qualified runtime probe changed')
     proof=dict(native_source_commit=old['native_source_commit'],original_source_files=len(before),
