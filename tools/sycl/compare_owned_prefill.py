@@ -20,7 +20,7 @@ import build_qsa_bulk_model as older
 import gu_small_bench as gu
 
 P, B, RESULT = gu.P, gu.B, gu.RESULT
-ROOT, KEY = B/'owned-prefill-pair-v1', 'owned_prefill_pair_v1'
+ROOT, KEY = B/'owned-prefill-pair-v2', 'owned_prefill_pair_v2'
 THIS = 'tools/sycl/compare_owned_prefill.py'
 OLD_SHA = '56cad9eb45f8f5fc9158eef968504424ac83a47e75cef7ad1bfa1ea8c436a93d'
 OLD_SOURCE = '611a0fd6fecc4593e17160c294103cd4464a292b'
@@ -68,6 +68,20 @@ def retained_reference(providers, prior):
         and len(actual['compiled']) == descriptor['compiler_files']
         and len(actual['generated']) == descriptor['generated_files']
         and len(actual['links']) == descriptor['external_link_files'], 'compiler inventory changed')
+    # The original broad dependency prefix did not include ggml/'s nested
+    # sources. Recover every such compiler input from that same immutable Git
+    # revision; a current file hash alone is insufficient source provenance.
+    additional = 0
+    for pin in (private['project'], *private['dependencies']):
+        root = Path(pin['root'])
+        missing = {str(Path(p).relative_to(root)): value
+            for p,value in actual['compiled'].items()
+            if p not in recovered and Path(p).is_relative_to(root)}
+        original = {p: hashlib.sha256(raw).hexdigest() for p,raw in
+            source.blobs(root,pin['revision'],missing)}
+        require(original == missing, 'additional compiler source does not match original Git revision')
+        recovered.update({str(root/p): value for p,value in original.items()})
+        additional += len(original)
     for name, value in actual['compiled'].items():
         if name in recovered:
             require(recovered[name] == value, 'compiled source does not match recovered Git input')
@@ -101,7 +115,8 @@ def retained_reference(providers, prior):
         original_build_evidence_sha256=signature(committed),
         original_model_evidence_sha256=signature(speed),
         original_project_files=private['project']['count'],
-        recovered_source_files=len(recovered), compiler_files=len(actual['compiled']),
+        recovered_source_files=len(recovered), additional_compiler_sources_recovered=additional,
+        compiler_files=len(actual['compiled']),
         original_recipe_sha256=signature(private['recipe']),
         inherited_fixture_or_task_qualification=False,
         source_recovery='Original Git project/dependency blobs,compiler-input coverage,recipe and live SDK/generated inputs;not current-worktree source equivalence or executable hash alone.')
@@ -214,6 +229,10 @@ def prepare():
             native_validation_probe=selected['native_validation_probe']))
         p['generated']['plan.json'] = sha(Path(p['root'])/'plan.json')
     row['whole_bytes'] = 1536 << 20
+    row['previous_preparation'] = dict(key='owned_prefill_pair_v1',
+        source_commit='df5bef02752b919ce3c0b787e47a0e7c6c7375ec',
+        status='refused_before_campaign_creation_or_native_execution',
+        reason='52compiled ggml inputs were outside the original declared dependency prefix;V2recovers them from the same pinned Git revision and requires their original compiler hashes. No recorded hash or comparison criterion is changed.')
     row['plan'] = dict(question='Which retained owned GUlarge engine is faster under matched32K/64K settings?',
         order='8fresh processes:current/retained/retained/current at32K then64K;3thinking-on exact24-output bench.sh requests/process. Separate first measured long request from subsequent2. Commit each closed process before advancing.',
         settings='Same model,providers,safety,logical262144/resident20480K8V8,8192chunk,FAST9,ordered-exp/bulk1,384slots/source_view1/private-map,upload_staging0,head2/dense1/backing0/MTPFP16. Only native executable/source identity and private paths differ. GUlarge in both arms;no environment mutation.',

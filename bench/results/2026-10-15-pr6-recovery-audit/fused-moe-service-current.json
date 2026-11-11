@@ -297041,5 +297041,22 @@
     },
     "environment_template_sha256": "b5cc6578575d685e41d494b88db44e2077db7c6a06dfcc016b53bc3ff0e35524",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "owned_prefill_pair_v1": {
+    "stage": "preparation_failed",
+    "source_commit": "df5bef02752b919ce3c0b787e47a0e7c6c7375ec",
+    "command": [
+      "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "-B",
+      "tools/sycl/compare_owned_prefill.py",
+      "prepare"
+    ],
+    "exit_code": 1,
+    "campaign_root_created": false,
+    "native_execution_attempted": false,
+    "passed": false,
+    "error": "compiled project/dependency input absent from original source inventory",
+    "finding": "52actual compiled ggml subtree inputs are absent from the original broad dependency prefix inventory. Their hashes remain in the original compiler manifest;recover original Git blobs at3cf03257 before any new plan. Do not accept current files alone or refresh recorded hashes.",
+    "next": "Commit the V2source recovery rule and preserve this refusal;prepare a fresh V2campaign only after exact original Git/compiler hashes match."
   }
 }
