@@ -288703,5 +288703,96 @@
       "sha256": "cd99a46ea8a34a2dd03cfe9d65908a4b24242608e97c7e003fa1dcc1b5aef013",
       "bytes": 14155160
     }
+  },
+  "gu_compact_device_v4": {
+    "stage": "prepared",
+    "source_commit": "e28e07c68ded5d8228750b3518e550ee29e30ec0",
+    "controller_sha256": "8e4e9a499f5fa1af7b0a518139b684a1d60254ad8a11e8d3a920d402316393bc",
+    "fixture_build_key": "gu_compact_component_v5",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v5/fixture",
+      "sha256": "cd99a46ea8a34a2dd03cfe9d65908a4b24242608e97c7e003fa1dcc1b5aef013",
+      "bytes": 14155160
+    },
+    "native_admission": {
+      "native_source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
+      "original_source_files": 1152,
+      "observer_source_files": 1157,
+      "added_observers": {
+        "bench/sycl/gu_compact.cpp": "a460127cf83f350cfceb81e795592ed66898e1733cc68f8bea5a09b771d0b244",
+        "tools/sycl/build_gu_compact.py": "b41e00fa241b6909c50bf302082d98ffd05705c56dc28c541241c4f45b532011",
+        "tools/sycl/check_gu_compact.py": "8e4e9a499f5fa1af7b0a518139b684a1d60254ad8a11e8d3a920d402316393bc",
+        "tools/sycl/check_moe_census_model.py": "f0cc8aaf4f9488d88ce649f836f8d4ede20705fcc916ca4c0c03cd50f64a2dc8",
+        "tools/sycl/moe_host_census_model.py": "533d025775fa1c75421ea101bfe381196105d61b5154d21d59f849d620bfa67a"
+      },
+      "declared_recompiled_inputs": {
+        "include/strata/prefill/gemm.hpp": {
+          "original": "92d68b2a21e3194a1206d09a32a1cb1d2313e2b45bd304a6086151ff7caa373e",
+          "candidate": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2"
+        },
+        "src/prefill/sycl/gemm16.cpp": {
+          "original": "1c5841e6cd963b91e7699edd60b79edc783169df3b29d22d36c52f5e2918e478",
+          "candidate": "4549995b96fbacc42d2640d31ad33767a25ec575d5c72ce822a0fd18038ed626"
+        }
+      },
+      "source_admission_controls": {
+        "passed": true,
+        "positive": 2,
+        "negative": 23,
+        "GPU_executed": false
+      },
+      "baseline_compiler_and_nine_ELFs_exact": true,
+      "historical_ELFs_provenance_only": 15,
+      "native_engine_recompiled": false,
+      "candidate_wrapper_requires_recompile": true,
+      "GPU_result_inherited": false
+    },
+    "environment_basis": "moe_host_census_device_v1",
+    "environment_sha256": "7de298490c4ca578b448e82e72b2ea9ad75880d19050237a7d2e7e657e1975db",
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "plan": {
+      "order": [
+        "smoke",
+        "numerics",
+        "perf0",
+        "perf1",
+        "perf2"
+      ],
+      "commands": [
+        "--smoke",
+        "--numerics",
+        "--bench 0",
+        "--bench 1",
+        "--bench 2"
+      ],
+      "correctness": "44numeric cases;independent integer-dot oracle M1/3 and exact BF16 adapter capture. Both actual production arms agree within1FP16ULP with independent unfused adapter;NaN/saturation,guards,immutableinputs,95/96/97,2333/2334and8192row boundaries. Assert every actual fused/fallback outcome.",
+      "timing": "Both arms use actual production try_gu/f16_out16/native SwiGLU with immutable GU_SWIGLU=auto. Explicit compact eligibility false/true;existing large fusion identical. Includes binding,validation,finish and actual route assertions. No profiling queue/GPUtimers. Warm8each;calibrate both>=150ms;64..262144same repeats;4rotated pairs/shape/process;all samples>=100ms. Three fresh processes. Reset/oracle/guards outside timing.",
+      "eligibility": "A shape is a follow-up candidate only when all three independent-process median paired fused/separate ratios are <1. No blanket minimum gain. Retain all4matched pairs and process spread. This does not advance a model route.",
+      "safety": "First smoke full UR trace and parameter validation;later parameter validation without API trace. Preserve copy-offload/direct-submission avoidance. Stop first failure;no retry/reset/foreign signalling."
+    },
+    "budget": {
+      "wall": 240,
+      "cpu": 720,
+      "rss_cap": 4294967296,
+      "text_cap": 67108864,
+      "file_cap": 67108864,
+      "total_cap": 83886080
+    },
+    "limits": "Both actual production arms and outcomes included. Standalone patched-archive component,not a new engine or model. Excludes GGUF dequant,gather,PCIe and model handoff. No model PP/TG/TTFT,decode-preservation,physical262144/RESTORE or default adoption claim.",
+    "retention": "Commit useful numeric summary and individual speed pairs,then retire successful API/build logs. Keep fixture only for this decision and imminent production-dispatch comparison;old native proof holds remain separate.",
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false
   }
 }
