@@ -1526,7 +1526,17 @@
             ],
             "files": 131,
             "sha256": "6b5d65b18b3e4949a247ff44d71c2791c2905b3484e4f48a3f1c90269f195b0c"
-          }
+          },
+          "preflight_attempts": [
+            {
+              "stage": "failed_before_owner_or_tests",
+              "error": "KeyError('prefixes')",
+              "tests_started": false,
+              "GPU_executed": false,
+              "reason": "Main launcher read prefixes from private source object,while preparation kept them only in committed public source_inputs. No source hash,command,criteria or dependency changed.",
+              "correction": "Copy the exact already committed prefix descriptor into the private source object and commit this prospective metadata correction before execution."
+            }
+          ]
         }
       }
     },
