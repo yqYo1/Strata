@@ -17,7 +17,7 @@ sys.dont_write_bytecode = True
 import build_gu_compact as component
 
 P, B, RESULT = component.P, component.B, component.RESULT
-ROOT, KEY = B/'gu-small-model-native-v1', 'gu_small_model_native_v1'
+ROOT, KEY = B/'gu-small-model-native-v2', 'gu_small_model_native_v2'
 THIS = 'tools/sycl/build_gu_small_model.py'
 CHECK = 'tools/sycl/check_gu_small_model.py'
 TARGETS = component.device.build.TARGETS
@@ -146,6 +146,9 @@ def prepare():
         budget=dict(wall=300, cpu=900, rss_cap=8<<30, text_cap=8<<20, file_cap=128<<20, total_cap=320<<20),
         plan='First relink the original objects/archives and require byte-identical original97fda ELF. Stop on any mismatch. Then replace only the qualified GUv5 prefill archive. Reuse eight exact original fixtures:their original link rules contain no changed prefill archive. Fresh native/phase checks and long/short/long model handoff precede clean matched32K/64K and independent sustained decode. No model result inherited.',
         retention='Temporary candidate alongside97fda native fallback,56cad9 imminent prefill and a347 independent decode references. Baseline relink is an identical proof copy,retire after committed hash evidence. Keep candidate only through fresh qualification/comparison;select the validated generation then retire superseded outputs. Old9af/552b already retired;legacy holds remain separate.',
+        previous_failure=dict(key='gu_small_model_native_v1', source_commit='3e535fd9e39a4927fb029d4094ade9e482268c37',
+            evidence_commit='2985c1153', stage='failed', GPU_executed=False, ownership_closed=True,
+            reason='Both links exit0 and original-object baseline is byte-identical97fda,but the controller compared its mutated outcome row with the committed preparation. V2checks the frozen original row instead;all source,ABI,ELF and stop criteria remain unchanged. V1is not relabeled.'),
         commands=[], passed=False, complete=False, active=False, ownership_closed=True, GPU_executed=False)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'): (ROOT/name).mkdir(mode=0o700)
@@ -155,6 +158,7 @@ def prepare():
 
 def build():
     row = json.loads((ROOT/'record.json').read_text()); current(row)
+    frozen = copy.deepcopy(row)
     require(row['stage'] == 'prepared' and row['ownership_closed'] and not row['active'], 'one prospective link')
     scope = None
     def persist():
@@ -174,7 +178,7 @@ def build():
                 require(record['sha256'] == row['baseline']['sha256'] and record['bytes'] == row['baseline']['bytes'],
                     'original-object control must reproduce byte-identical qualified baseline')
                 row['original_object_relink_proof'] = dict(record, byte_identical_qualified_engine=True)
-        current(row)
+        current(frozen)
         row['binary'] = row['commands'][-1]['output']
         row['binaries'] = dict(row['original_binaries'], strata=row['binary'])
         require(set(row['binaries']) == set(TARGETS), 'all nine current output identities required')
