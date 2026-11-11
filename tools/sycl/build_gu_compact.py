@@ -24,6 +24,28 @@ NATIVE=device.build.ROOT
 require,sha=device.require,device.sha
 
 
+def candidate_delta(before,after,observers):
+    changes={p for p in before if p in after and before[p]!=after[p]}
+    require(set(after)-set(before)==set(observers) and not set(before)-set(after)
+        and changes=={WRAPPER,HEADER},'only declared wrapper/header and committed observers may differ')
+    return changes
+
+
+def source_controls():
+    before={WRAPPER:'old-cpp',HEADER:'old-header','src/other.cpp':'fixed'}
+    good=dict(before,**{WRAPPER:'new-cpp',HEADER:'new-header',THIS:'observer'})
+    candidate_delta(before,good,{THIS})
+    cases=[dict(good,**{'src/other.cpp':'changed'}),
+        {p:h for p,h in good.items() if p!='src/other.cpp'},
+        dict(good,**{'src/unplanned.cpp':'extra'}),
+        {p:h for p,h in good.items() if p!=THIS},dict(good,**{HEADER:'old-header'})]
+    for altered in cases:
+        try:candidate_delta(before,altered,{THIS})
+        except RuntimeError:continue
+        raise RuntimeError('source admission accepted an undeclared native/controller mutation')
+    return dict(passed=True,positive=1,negative=len(cases),GPU_executed=False)
+
+
 def native(extra_observers=frozenset()):
     # Prospective component admission. The original97fda engine/SDK remain
     # exact; two declared source inputs are rebuilt into a private archive.
@@ -32,6 +54,10 @@ def native(extra_observers=frozenset()):
     require(validation.committed(RESULT,(device.build.KEY,))==device.build.context().compact(old)
         and old['stage']=='built' and old['passed'] and old['complete']
         and old['ownership_closed'] and not old['active'],'closed exact baseline required')
+    require(old['native_source_commit']==old['project']['revision']==old['actual_inputs']['source_commit']
+        and old['actual_inputs']['translation_units']==132 and old['actual_inputs']['uncovered']==0
+        and len(old['planned_compilation'])==133 and set(old['binaries'])==set(device.build.TARGETS),
+        'exact original nine-target source/compiler census required')
     before=old['project']['source_sha256']
     source=device.original.common.source
     require(before=={p:hashlib.sha256(raw).hexdigest() for p,raw in
@@ -39,9 +65,7 @@ def native(extra_observers=frozenset()):
     after=source.pin(P,device.original.common.PREFIXES)['source_sha256']
     observers={device.THIS,'tools/sycl/moe_host_census_model.py',THIS,CPP,
         'tools/sycl/check_gu_compact.py',*extra_observers}
-    changes={p for p in before if p in after and before[p]!=after[p]}
-    require(set(after)-set(before)==observers and not set(before)-set(after)
-        and changes=={WRAPPER,HEADER},'only declared wrapper/header and committed observers may differ')
+    changes=candidate_delta(before,after,observers)
     for dep in old['dependencies']:
         require(dep['source_sha256']=={p:hashlib.sha256(raw).hexdigest() for p,raw in
             source.blobs(Path(dep['root']),dep['revision'],dep['source_sha256'])}
@@ -69,6 +93,7 @@ def native(extra_observers=frozenset()):
     proof=dict(native_source_commit=old['native_source_commit'],original_source_files=len(before),
         observer_source_files=len(after),added_observers={p:after[p] for p in sorted(observers)},
         declared_recompiled_inputs={p:dict(original=before[p],candidate=after[p]) for p in sorted(changes)},
+        source_admission_controls=source_controls(),
         baseline_compiler_and_nine_ELFs_exact=True,historical_ELFs_provenance_only=len(old['preserved_binaries']),
         native_engine_recompiled=False,candidate_wrapper_requires_recompile=True,GPU_result_inherited=False)
     return dict(old,observer_admission=proof)
