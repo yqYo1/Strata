@@ -1908,9 +1908,22 @@ The two arms use distinct output allocations,so do not attribute that spread
 to a production-code regression or dismiss it as noise. All18points and original
 pairs are retained through the CSV and pinned result.
 
-Next relink the model and required same-build fixtures using the verified
-baseline objects plus this one changed archive,qualify native/phase ownership,
-and measure32K/64K plus sustained independent decode. Preserve the fastest
+The model relink is now built at controller source`53bd39540`,engine
+SHA`dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1`.
+Relinking original objects first reproduces the exact97fda baseline;only the
+qualified GUv5 archive changes in the candidate. The Gemm class layout and
+old declarations match after removing the one added overload. Eight exact
+original fixtures are reused because none links the changed archive. Fresh
+nine-stage native/phase/head/attention/producer gates all pass under
+`gu_small_model_device_v1`,including262144component fill and last-cell overwrite,
+normal closures and no fresh fault. These fixtures do not exercise changed
+GU math;the separate44-case production-GU evidence remains its prerequisite.
+The first relink controller's post-link bookkeeping failure remains failed
+at`2985c1153`;its unused outputs are retired,not adopted retroactively.
+
+Next run the actual thinking-enabled32769/82/32769model handoff,then measure
+32K/64K plus sustained independent decode. Model per-job fused decisions still
+need their own bounded receipt before timed-dispatch/adoption claims. Preserve the fastest
 56cad9prefill reference and a347decode reference. The obsolete9af/552b roots
 are now retired:867files/245903239bytes,with original9af Git inputs and all558
 552b composed inputs recovered from Git and the original recipe. The552b

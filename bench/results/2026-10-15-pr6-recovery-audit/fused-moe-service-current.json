@@ -110604,7 +110604,8 @@
         "current_fallback": "97fda7ba and nine same-build fixtures for imminent relink/native/model checks",
         "fast_prefill": "56cad9 for matched32K/64Kcomparison",
         "independent_decode": "a347 for sustained decode preservation",
-        "component": "actual GU policy v5;closed component qualifies next model trial only"
+        "component": "actual GU policy v5;closed component qualifies next model trial only",
+        "model_candidate": "dcb8efd4 from original DC97fda objects plus GUv5 archive;fresh9native gates passed,imminent actual32K/short/32Kmodel and matched56cad9prefill/a347decode comparisons. No model adoption."
       },
       "remaining_holds": "Three named native generations remain during the imminent prefill/decode comparison;two old QSA ELFs and legacy metadata holds still need migration/review. Not a global retirement claim.",
       "original_statuses_unchanged": true,
@@ -290986,7 +290987,7 @@
     }
   },
   "gu_small_model_device_v1": {
-    "stage": "in_progress",
+    "stage": "closed",
     "source_commit": "766a1802edf81e667f3a1dd1a06c35ed39af2703",
     "native_source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
     "native_record": {
@@ -291895,10 +291896,76 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "producer-full",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "checks": [
+          {
+            "name": "producer-0",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "validation": {
+              "pid": 1465893,
+              "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "flag": "0",
+            "physical_cells": 262144,
+            "bulk_calls": 0,
+            "accepted_copy_commands": 0,
+            "requested_D2H_bytes": 0
+          },
+          {
+            "name": "producer-1",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "validation": {
+              "pid": 1466000,
+              "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "flag": "1",
+            "physical_cells": 262144,
+            "bulk_calls": 33,
+            "accepted_copy_commands": 136,
+            "requested_D2H_bytes": 276825120
+          }
+        ],
+        "native_execution_attempted": true,
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": true,
@@ -292052,6 +292119,20 @@
       },
       {
         "label": "numerical",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "producer-0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "producer-1",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
