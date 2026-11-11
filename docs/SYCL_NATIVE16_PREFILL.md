@@ -1851,14 +1851,37 @@ with parameter validation, no API/profiler trace and no GPU timing events.
 | 640 | 0.91017, 0.97602, 0.89904 | Eligible |
 | 1280 | 0.96566, 0.96653, 0.96583 | Eligible |
 
-Both measured arms use the compact adapter. Production auto dispatch instead
-uses compact below128 rows and wide at128 and above; do not treat the latter
-component ratios as gains over production. Production binding/finish wrappers,
-dequant, gather and PCIe are excluded. Next measure the actual wait-inclusive
-production entry and relevant row boundaries before a separately planned
-long-model comparison; preserve independent decode. No model/default adoption
-or PP/TG gain follows from this component result. The performance CSV records
-all seven points, including the failed128-row gate, with model metrics blank.
+Both measured arms in that first comparison use the compact adapter.
+Production auto dispatch uses compact below128 rows and wide at128 and above;
+those earlier larger-row ratios do not compare against production.
+
+The follow-up production-auto comparison closes at
+`45efc75dc1888aa502b3245c597bd4c6abe96e67`, fixture source
+`e07ce328f9deffbf356e048b0ac4fd984382f2ea`. Baseline calls the actual
+`Gemm::try_gu_swiglu16/f16_out16` and native SwiGLU with immutable auto-tile
+selection. Candidate calls the compact fused adapter plus common finish;
+its future production binding is still excluded. Smoke and32numerical cases
+pass with exact BF16 captures and0FP16ULP observed error. Three fresh processes
+each complete four rotated pairs at12row lengths, with the same150mscalibration/
+100mseligibility floors, validation, no API/profiler trace and no GPU timers.
+The repeated-gain gate passes only at1,16,32,64,65and96rows:per-process ratios
+span0.522..0.915. At127rows two processes have ratios just above1, so that gate
+fails. At128..1280the compact candidate loses against the production wide
+baseline (ratios1.487..2.199). All12points, including failed candidates, are
+in the CSV; useful individual pairs stay in the committed result.
+
+The next prefill-only candidate is implemented at
+`a231eb7b3`:explicit `STRATA_SYCL_PREFILL_GU_SWIGLU=auto` selects compact
+fusion for1..96rows and retains the existing wide fusion at2334or more.
+Rows97..2333 keep the separate production path;existing `0/large` modes
+retain their old selection. The new mode requires native16 BF16, vllm and
+auto tile. It is not enabled by existing configurations. This source change
+is not yet built or GPU/model qualified. Next close the live provenance-reader
+holds needed to retire unused generations, then build the candidate, verify
+actual production selection and boundary/numerical cases and run separately
+planned32K/64K,independent decode and full262144/RESTORE gates. No model/default
+adoption or PP/TG gain follows from these component times. Dequant,gather,
+PCIe and model handoff remain outside the component interval.
 
 Global staging remains off after its failed component gate;
 1280-row component gains alone do not qualify a selective model policy or
