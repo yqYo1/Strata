@@ -1940,8 +1940,21 @@ evidence,not a per-job trace,time attribution or model adoption. The legacy
 GU summary's`min_rows=2334`label describes the old wide threshold and must not
 be interpreted as excluding the separately logged compact1..96policy.
 
-Next commit a fresh32K/64Kmatched bench plan using these existing aggregates
-and independently preserve sustained decode. Preserve the fastest
+The fresh`gu_small_prefill_compare_v1`plan is prepared at source`6be38874d`;
+current-source frontend checks pass. It uses12fresh processes,32K ABBAAB then
+64K ABBAAB,three thinking-on bench.sh requests per process,exactly24outputs,
+first use separate from subsequent2. Both arms use dcb8;only immutable startup
+GUlarge/auto differs. Existing GU-minus-Down aggregates identify actual compact
+jobs under the exact same wide eligibility,without adding kernel observers.
+Parameter validation remains charged. All3paired warmed prompt-time ratios
+must favorauto at both lengths to advance;keep mixed samples and separate
+TTFT/first-use outcomes. A fresh repetition plan may revisit small inconclusive
+gains. Reuse the preceding final15asset hashes only after identity checks and
+hash all15again at cohort closure. The added Niko role-vector JSON is an
+explicit uncompiled input in the prospective native reader;old hashes are not
+refreshed. No GPU comparison sample has qualified yet.
+
+Next run the frozen comparison and independently preserve sustained decode. Preserve the fastest
 56cad9prefill reference and a347decode reference. The obsolete9af/552b roots
 are now retired:867files/245903239bytes,with original9af Git inputs and all558
 552b composed inputs recovered from Git and the original recipe. The552b
