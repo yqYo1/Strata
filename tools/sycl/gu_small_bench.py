@@ -29,8 +29,11 @@ RUNS = 3
 require, sha = build.require, build.sha
 
 
-def basis():
-    n = build.native(observers={model.THIS, THIS, FIXTURE})
+def basis(extra_observers=()):
+    extras = set(extra_observers)
+    require(all(p.startswith('tools/sycl/') and p.endswith('.py') for p in extras),
+        'additional observers must be named Python measurement controls')
+    n = build.native(observers={model.THIS, THIS, FIXTURE, *extras})
     prior = json.loads((model.ROOT/'record.json').read_text())
     committed = model.original.validation.committed(RESULT, (model.KEY,))
     require(committed == model.original.previous.compact(prior)
@@ -40,7 +43,7 @@ def basis():
         and sha(prior['native_record']['path']) == prior['native_record']['sha256'],
         'closed exact candidate/model handoff required')
     native_proof = copy.deepcopy(n['observer_admission'])
-    for name in (THIS, FIXTURE):
+    for name in (THIS, FIXTURE, *sorted(extras)):
         require(name in native_proof['declared_inputs']['added_observers'], 'new observer must be explicit')
         del native_proof['declared_inputs']['added_observers'][name]
         native_proof['declared_inputs']['observer_source_files'] -= 1
@@ -72,7 +75,7 @@ def basis():
     before = pin['source_sha256']
     require(before == {p: hashlib.sha256(raw).hexdigest() for p, raw in
         build.original.common.source.blobs(P, pin['revision'], before)}
-        and set(after)-set(before) == {THIS} and not set(before)-set(after)
+        and set(after)-set(before) == {THIS, *extras} and not set(before)-set(after)
         and all(after[p] == h for p, h in before.items()),
         'recover original model controls;only this new benchmark may extend them')
     require(sha(prior['runtime_manifest']['path']) == prior['runtime_manifest']['sha256'],
