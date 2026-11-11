@@ -23,22 +23,28 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `retained_builds_review_20261103.latest_phase_transition` in the linked result.
   Historical retention instructions below describe their original experiments;
   they do not renew ended binary consumers.
-- The active same-binary `gu_small_prefill_compare_v1` compares immutable
+- The closed same-binary `gu_small_prefill_compare_v1` compares immutable
   GUlarge/auto policies through `bench.sh`:12fresh processes across32K/64K,
   three thinking-enabled requests with24outputs per process. First use and
-  subsequent-request medians stay separate. All18of the32K requests pass;
-  one of three paired warmed times is slightly slower with compact fusion,
-  so32Kdoes not meet the prospectively committed all-pairs-gain gate. Finish
-  the frozen64Kcohort without changing criteria. The first64Kbaseline process
-  passes with warmed PP **1008.4/1007.3** (median from times **1007.8336**),
-  prefill **65.0276s** and client TTFT **65.1955s**;first-use PP is864.3.
-  This is one process,not independent-process reproduction or a gain over56cad9.
-  The evidence at `22da0851e823587883f41b0090b506458b6964ff` and the CSV retain
-  that milestone. Parameter validation and the retained-reference preload are
-  charged;ordinary teardown,agent/task quality,sustained TG and physical262144/
-  RESTORE remain unqualified. Hardware saturation is still unknown. Next close
-  the planned comparison and final15asset hashes,then compare the selected
-  policy with56cad9 while preserving the independent a347decode path.
+  subsequent-request medians stay separate. All36requests close normally0,
+  with exact counts,actual dispatch checks,quiet validation,no fresh fault and
+  all15final asset hashes. Both lengths fail the prospectively committed
+  all-pairs-gain gate;do not adopt compact fusion or advance it through further
+  model gates. Retain GUlarge for the next comparison. Model timing does not
+  consistently reproduce the compact component gain.
+  At32K,the warmed large/auto aggregate PP is **870.042/872.650**;at64K it is
+  **1006.223/1006.552**. The three64Klarge process medians are
+  **1007.834,1006.223,1005.917 tok/s**;aggregate prefill time is **65.1317s**
+  and client TTFT **65.2995s**. First-use large PP is678.422at32Kand862.122at64K.
+  The cohort evidence at `ef1d787134b15d13ebdc13559175b20a5a45601b` and the CSV
+  retain all samples and separate scopes,including the earlier one-process
+  milestone. This is repeated64Kprefill above1000,not a gain over56cad9.
+  The32K-to64K warmed adjacent slopes are0.838257/0.841042ms per token for
+  large/auto;two lengths cannot validate a fitted time law or a physical fixed
+  cost. Parameter validation and the retained-reference preload are charged;
+  ordinary teardown,agent/task quality,sustained TG and physical262144/RESTORE
+  remain unqualified. Hardware saturation is still unknown. Next compare
+  GUlarge with56cad9 while preserving the independent a347decode path.
 - The historical **479a / engine552b** clean117489-token throughput-route result
   is three independent processes, warmed subsequent-three medians
   **1044.845, 1047.067, 1047.336 tok/s** (median 1047.067); first-use results
