@@ -3852,15 +3852,18 @@ original source/recipe recovery and validated migration remain independent holds
 
 Niko1221/Strata remains the only upstream. The maintained
 [`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
-records the last actual check at **2026-11-09 19:52:50 UTC**,
-`504b143342a9fe1aa8320a7b31e11f5c0ac265c3`(`v0.2.13.1-1-g504b1433`).
-The220additional commits/816changed paths are fetched,not imported. The current
+records the last actual check at **2026-11-11 19:42:07 UTC**,
+`c1ff07f1a1817594811c960039571c6e268fe89a`(`v0.2.13.1-152-gc1ff07f1`).
+The latest interval adds151commits/303changed paths beyond504b1433;the whole
+post146df3 interval is fetched,not imported. The current
 630-path functional import still targets
 `146df3c468739147f520ac3816de806f71232571`(`v0.2.12`):shared Python/setup/
 control/server/API/Web/CLI source is present with partial validation. Native
 disk-session SAVE/RESTORE,BGEN/capability and desktop ports,the whole function
 ledger,full host validation and hardware-tuned unmodified-upstream evaluation
-remain incomplete. The next actual check is due around **2026-11-11 19:52:50 UTC**.
+remain incomplete. The latest151commits still need functional/component review;
+the earlier Arc-setup/readiness review covers504b1433only. The next actual check
+is due around **2026-11-13 19:42:07 UTC**.
 **DeepSeek and35B execution support remain excluded until the
 user explicitly requests them, including future syncs.**
 
