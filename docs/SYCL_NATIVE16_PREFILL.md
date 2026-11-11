@@ -8,16 +8,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
-- The current compact-GU candidate is **engine dcb8efd4**, relinked from the
-  original **dc645 / engine97fda** objects and the qualified GUv5 archive from
-  `213dd970`. The original-input baseline relink reproduced97fda byte-for-byte;
-  only the prefill archive changed. The44-case GU numerical check, nine native
-  gates and32K/short/32K model handoff passed. Eight unchanged native fixtures
-  establish their own contracts, not the changed GU arithmetic. The candidate
-  is not an adopted model route. The original97fda remains a live build-proof
-  reader dependency. Keep
-  **611a / engine56cad9** for the matched32K/64Kprefill comparison and
-  **221e / enginea347** for independent sustained-decode preservation.
+- The partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
+  **class-definition coherence hold**. The archive combined the new `Gemm`
+  member declaration from `213dd970` with eleven original archive members,
+  including a translation unit using the old class definition. Layout and
+  existing-symbol equality did not establish C++ ODR coherence. Do not use
+  these binaries for further runtime qualification or target/adoption claims.
+  Preserve the original numerical, normal-exit, fault and timing observations;
+  this finding does not attribute any GPU hang or speed difference to the defect.
+  Correcting evidence is `gu_class_definition_coherence_20261112` at
+  `32bde1b0dba0b5c7f83529a0e182e8d83497afc6` in the linked result.
+  Next commit a coherent full-build recipe, including the existing physical
+  full-context diagnostic, and requalify native/model routes and repeated speed.
+  Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
+  readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
+  and **221e / enginea347** for independent sustained-decode preservation.
   The obsolete9af and552b build roots are physically retired;
   their exact source/recipe recovery and deletion evidence are recorded in
   `retained_builds_review_20261103.latest_phase_transition` in the linked result.
@@ -30,7 +35,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with exact counts,actual dispatch checks,quiet validation,no fresh fault and
   all15final asset hashes. Both lengths fail the prospectively committed
   all-pairs-gain gate;do not adopt compact fusion or advance it through further
-  model gates. Retain GUlarge for the next comparison. Model timing does not
+  model gates. Retain GUlarge as the policy for the coherent rebuild. Model timing does not
   consistently reproduce the compact component gain.
   At32K,the warmed large/auto aggregate PP is **870.042/872.650**;at64K it is
   **1006.223/1006.552**. The three64Klarge process medians are
@@ -38,13 +43,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and client TTFT **65.2995s**. First-use large PP is678.422at32Kand862.122at64K.
   The cohort evidence at `ef1d787134b15d13ebdc13559175b20a5a45601b` and the CSV
   retain all samples and separate scopes,including the earlier one-process
-  milestone. This is repeated64Kprefill above1000,not a gain over56cad9.
+  milestone. These are repeated64K observations above1000,held from target
+  qualification until the coherent rebuild reproduces them;they do not establish
+  a gain over56cad9.
   The32K-to64K warmed adjacent slopes are0.838257/0.841042ms per token for
   large/auto;two lengths cannot validate a fitted time law or a physical fixed
   cost. Parameter validation and the retained-reference preload are charged;
   ordinary teardown,agent/task quality,sustained TG and physical262144/RESTORE
-  remain unqualified. Hardware saturation is still unknown. Next compare
-  GUlarge with56cad9 while preserving the independent a347decode path.
+  remain unqualified. Hardware saturation is still unknown. Both attempted
+  preparations of the subsequent owned-engine comparison failed before any
+  native launch;their original failures remain recorded. That comparison now
+  requires the coherent rebuild while preserving the independent a347decode path.
 - The historical **479a / engine552b** clean117489-token throughput-route result
   is three independent processes, warmed subsequent-three medians
   **1044.845, 1047.067, 1047.336 tok/s** (median 1047.067); first-use results
