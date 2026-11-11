@@ -288705,7 +288705,7 @@
     }
   },
   "gu_compact_device_v4": {
-    "stage": "prepared",
+    "stage": "in_progress",
     "source_commit": "e28e07c68ded5d8228750b3518e550ee29e30ec0",
     "controller_sha256": "8e4e9a499f5fa1af7b0a518139b684a1d60254ad8a11e8d3a920d402316393bc",
     "fixture_build_key": "gu_compact_component_v5",
@@ -288788,11 +288788,51 @@
     },
     "limits": "Both actual production arms and outcomes included. Standalone patched-archive component,not a new engine or model. Excludes GGUF dequant,gather,PCIe and model handoff. No model PP/TG/TTFT,decode-preservation,physical262144/RESTORE or default adoption claim.",
     "retention": "Commit useful numeric summary and individual speed pairs,then retire successful API/build logs. Keep fixture only for this decision and imminent production-dispatch comparison;old native proof holds remain separate.",
-    "results": [],
+    "results": [
+      {
+        "mode": "smoke",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "correctness_cases": 2,
+        "max_half_ulp": 0,
+        "BF16_capture_exact": true,
+        "guards": true,
+        "inputs_immutable": true,
+        "validation": {
+          "pid": 1230852,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "stdout_sha256": "447d7ba4196685765edbb4a81243446fd051dcf7ef68b3985225a6863559eb89",
+        "stderr_sha256": "868ff6232d1a5ab1e58a296a926d1559613c0a6bfec509fbb013a0737efe0361",
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false
+    "GPU_executed": true
   }
 }
