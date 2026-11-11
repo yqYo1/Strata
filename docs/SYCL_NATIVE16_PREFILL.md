@@ -8,8 +8,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
-- Keep the **479a / engine 552b** generation as the validated fallback and
-  development base for prefill. Its clean 117489-token throughput-route result
+- The current native fallback is **dc645 / engine97fda**, with nine same-build
+  outputs, for the imminent compact-GU model relink and native gates. Keep
+  **611a / engine56cad9** for the matched32K/64Kprefill comparison and
+  **221e / enginea347** for independent sustained-decode preservation.
+  The qualified compact-GU v5 archive is the next candidate,not an adopted
+  model route. The obsolete9af and552b build roots are physically retired;
+  their exact source/recipe recovery and deletion evidence are recorded in
+  `retained_builds_review_20261103.latest_phase_transition` in the linked result.
+  Historical retention instructions below describe their original experiments;
+  they do not renew ended binary consumers.
+- The historical **479a / engine552b** clean117489-token throughput-route result
   is three independent processes, warmed subsequent-three medians
   **1044.845, 1047.067, 1047.336 tok/s** (median 1047.067); first-use results
   are separately **965.892, 968.399, 969.346 tok/s**, with client TTFT
@@ -1902,8 +1911,11 @@ pairs are retained through the CSV and pinned result.
 Next relink the model and required same-build fixtures using the verified
 baseline objects plus this one changed archive,qualify native/phase ownership,
 and measure32K/64K plus sustained independent decode. Preserve the fastest
-56cad9prefill reference and a347decode reference;retire obsolete9af/552bafter
-their exact source/recipe and current-consumer checks. Full-model262144/RESTORE
+56cad9prefill reference and a347decode reference. The obsolete9af/552b roots
+are now retired:867files/245903239bytes,with original9af Git inputs and all558
+552b composed inputs recovered from Git and the original recipe. The552b
+Git-only reconstruction descriptor is in the retained-build result;no private
+origin receipt is required. Full-model262144/RESTORE
 and task gates remain open. Dequant,gather,PCIe and handoff are excluded from
 these component intervals;no model PP/TG gain or default adoption is claimed.
 
@@ -1914,12 +1926,12 @@ snapshot gap and finds no ordered-exp/decode replacement;it does not identify
 a cause for the unmatched older/current throughput difference.
 The old two component ELFs remain a bounded proof-reader dependency until
 that consumer is updated to this qualified successor;retire them at the current
-model-entry/comparison boundary. The current9af candidate temporarily joins
-56cad9,552b and the independent a347decode reference;select candidate or56cad9
+model-entry/comparison boundary. The current97fda fallback temporarily joins
+56cad9 and the independent a347decode reference;select candidate or56cad9
 at matched phase closure rather than expanding the normal retention quota. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
-validated552b117Kreference or adopt a production resident/cache policy.
+historical552b117Kevidence or adopt a production resident/cache policy.
 For a future capacity screen,the pinned main-QSA state-arena formula gives
 an exact948699136-byte(904.75MiB)reduction from131072to65536configured cells
 under resident Mode0/K8V8. The12QSA layers have2KV heads of256elements,
@@ -3821,25 +3833,16 @@ fallback plus a named imminent candidate while that comparison is active; do
 not infer global cleanup from the current-build inventory. Keep unresolved
 legacy source/recipe recovery holds separate from these two comparison
 executables, with the missing inputs, consumer, next bounded recovery action
-and review point recorded in the retained-build result. The fallback currently
-retains nine ELF artifacts. The closed a1b0 generation,its disposable CMake
-probe binaries and the two schema2 host fixtures are retired after original-input
-recovery. The ended519e diagnostic and all its five component outputs are also
-retired after closed native-gate evidence and source recovery;the current
-comparison now retains the552b fallback's nine ELF outputs and the e1b011
-payload successor's six. The temporary third429b generation is physically
-retired after source/recipe recovery and actual successor preparation/frontend
-admission without its original paths. Its immutable metadata record remains
-consumed;no old compiled tree or quarantine is retained. This is the two-build
-window for the closed adaptive comparisons. The current DFlash2/v3.1 work
-retains90f for the immediate production-adapter profiling gate,alongside552b
-for prefill and e1b011 for decode. These three named generations remain a
-temporary qualification window,not a larger default quota. The superseded f633
-build,integrated child checkout/branch and closed cohort's private files are
-physically retired after exact source/recipe recovery and consumer migration.
-Both selected-native admission and profiler build-basis checks pass without
-those paths. Review the remaining three after collector qualification and
-matched phase preservation;the56legacy ELF provenance holds remain separate.
+and review point recorded in the retained-build result. The current97fda fallback
+retains nine ELF artifacts;56cad9 and a347 have the named imminent prefill and
+decode comparisons above. The obsolete9af/552b roots are physically deleted
+after exact original source/recipe recovery and current-consumer checks. The
+117K552b milestone remains in Git/CSV without retaining its unused executable.
+Closed a1b0,519e,429b and superseded f633 outputs are also retired. Earlier
+adaptive/DFlash2 records and the56legacy ELF provenance holds remain separate
+reconciliation work;their old retention instructions do not renew a consumer.
+Review actual remaining paths against those recorded holds before the next
+generation or collector/model boundary. This is not global cleanup.
 Other configured
 deployment outputs and qualified validation/profiling tools have separate named
 consumers. The standalone widening executable,IR and receipt are retired after
