@@ -1436,7 +1436,7 @@
       },
       "incremental_function_ports": {
         "plain_gpu_order": {
-          "stage": "prepared",
+          "stage": "failed",
           "source_commit": "a22f175bd628f1eb0d307eb04ccbe86419366423",
           "python": {
             "path": "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
@@ -1505,11 +1505,31 @@
             "license": "MIT;byte-identical project LICENSE",
             "scope": "Plain --gpu drops stale gpu_order and help clarifies Main selection. Explicit roles and no-selection retain semantics;no inference or excluded-model execution import. Main-authored regression tests."
           },
-          "results": [],
+          "results": [
+            {
+              "label": "gpu-list-replacement",
+              "tests": 4,
+              "passed": true,
+              "skipped": 0,
+              "native_exit_code": 0,
+              "ownership_closed": true
+            }
+          ],
           "active": false,
           "ownership_closed": true,
           "passed": false,
           "GPU_executed": false,
+          "preflight_attempts": [
+            {
+              "stage": "failed_before_owner_or_tests",
+              "error": "KeyError('prefixes')",
+              "tests_started": false,
+              "GPU_executed": false,
+              "reason": "Main launcher read prefixes from private source object,while preparation kept them only in committed public source_inputs. No source hash,command,criteria or dependency changed.",
+              "correction": "Copy the exact already committed prefix descriptor into the private source object and commit this prospective metadata correction before execution."
+            }
+          ],
+          "error": "AssertionError(('existing-gpu-roles', 1, 'test_gpu_roles (unittest.loader._FailedTest.test_gpu_roles) ... ERROR\\n\\n======================================================================\\nERROR: test_gpu_roles (unittest.loader._FailedTest.test_gpu_roles)\\n----------------------------------------------------------------------\\nImportError: Failed to import test module: test_gpu_roles\\nTraceback (most recent call last):\\n  File \"/usr/lib/python3.12/unittest/loader.py\", line 394, in _find_test_path\\n    module = self._get_module_from_name(name)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3.12/unittest/loader.py\", line 337, in _get_module_from_name\\n    __import__(name)\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tests/terminal/test_gpu_roles.py\", line 12, in <module>\\n    V = json.loads((ROOT / \"tests\" / \"data\" / \"gpu_roles_vectors.json\").read_text(encoding=\"utf-8\"))\\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3.12/pathlib.py\", line 1029, in read_text\\n    with self.open(mode=\\'r\\', encoding=encoding, errors=errors) as f:\\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\\n    return io.open(self, mode, buffering, encoding, errors, newline)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\nFileNotFoundError: [Errno 2] No such file or directory: \\'/home/yayoi/orca/workspaces/Strata/sycl/tests/data/gpu_roles_vectors.json\\'\\n\\n\\n----------------------------------------------------------------------\\nRan 1 test in 0.000s\\n\\nFAILED (errors=1)\\n'))",
           "source_inputs": {
             "prefixes": [
               "strata_cli",
@@ -1526,17 +1546,7 @@
             ],
             "files": 131,
             "sha256": "6b5d65b18b3e4949a247ff44d71c2791c2905b3484e4f48a3f1c90269f195b0c"
-          },
-          "preflight_attempts": [
-            {
-              "stage": "failed_before_owner_or_tests",
-              "error": "KeyError('prefixes')",
-              "tests_started": false,
-              "GPU_executed": false,
-              "reason": "Main launcher read prefixes from private source object,while preparation kept them only in committed public source_inputs. No source hash,command,criteria or dependency changed.",
-              "correction": "Copy the exact already committed prefix descriptor into the private source object and commit this prospective metadata correction before execution."
-            }
-          ]
+          }
         }
       }
     },
