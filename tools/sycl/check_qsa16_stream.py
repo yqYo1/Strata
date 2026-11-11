@@ -52,7 +52,7 @@ def compact(row):
     out['commands'] = [dict(label=c['label'],exit_code=c.get('exit_code'),
         ownership_closed=ownership.closed(c),errors=c.get('errors',[]),error=c.get('error'))
         for c in row['commands']]
-    if 'producer_component' in row and 'planned_compilation' in row:
+    if ('producer_component' in row or 'build_prerequisite' in row) and 'planned_compilation' in row:
         # The live private plan drives census verification. Its full parser
         # arrays need no second permanent copy in the public result.
         planned=out.pop('planned_compilation');out.pop('planned_translation_units')
@@ -145,8 +145,8 @@ def current(row, *, committed=True):
     require(probe_qualification()==(row['native_validation_probe'],row['validation_qualification']),
             'qualified pre-main/runtime probe changed')
     if MODEL_BUILD:
-        require(component_reference()==row['producer_component'],
-                'closed producer provenance changed')
+        field = 'build_prerequisite' if 'build_prerequisite' in row else 'producer_component'
+        require(component_reference()==row[field], 'recorded full-build prerequisite changed')
     for p,h in (row.get('configured_files',{})|row.get('generated_inputs',{})).items():
         require(sha(p)==h,'configured/generated component input changed')
     if 'binary' in row:

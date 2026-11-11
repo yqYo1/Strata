@@ -74,6 +74,10 @@ target_link_libraries(strata_prefill INTERFACE "${_strata_native_image}" "${_str
 message(STATUS "Strata: opt-in vLLM Xe2 native16; isolated BMG G21 AOT object; existing engine JIT; external TLA pinned; UNQUALIFIED")
 
 function(strata_add_vllm_native16_tests)
+  # Qualify the GU wrapper against the same freshly built engine archives.
+  add_executable(sycl_gu_policy_test EXCLUDE_FROM_ALL bench/sycl/gu_compact.cpp)
+  target_link_libraries(sycl_gu_policy_test PRIVATE strata_prefill)
+  target_compile_options(sycl_gu_policy_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_executable(sycl_moe_accum_test EXCLUDE_FROM_ALL tests/sycl/moe_accum.cpp)
   target_link_libraries(sycl_moe_accum_test PRIVATE strata_prefill)
   target_compile_options(sycl_moe_accum_test PRIVATE -fno-fast-math -ffp-contract=off)
