@@ -70,7 +70,11 @@ public:
                     int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
                     int64_t ldy = 0, float beta = 0.0f);
     /// Explicit long-prefill GU candidate. Returns false without submission
-    /// unless startup GU_SWIGLU=large selects a >=2334-row job. Fixed FP16
+    /// unless startup GU_SWIGLU=large selects a >=2334-row job. Experimental
+    /// GU_SWIGLU=auto also selects compact fusion for rows1..96, retaining the
+    /// existing large-job path; rows97..2333 keep separate GU/SwiGLU. Auto needs
+    /// VLLM_TILE=auto. It is opt-in pending production/model qualification.
+    /// Fixed FP16
     /// X[T,2560], W[1280,2560] -> FP16 hidden[T,640], BF16-rounded operands.
     bool try_gu_swiglu16(const uint16_t* X, const uint16_t* W, uint16_t* hidden, int64_t T);
     /// Opt-in long-prefill Down+accumulation, >=2334 expert rows only. False

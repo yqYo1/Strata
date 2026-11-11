@@ -39,7 +39,7 @@ enum class SplitDownKernel { original, row128, row64 };
 struct BackendConfig {
   Backend backend;
   VllmTile tile;
-  bool gu_fusion, down_fusion;
+  bool gu_fusion, gu_compact, down_fusion;
   SplitDownKernel split_down;
 };
 const BackendConfig &backend_config() {
@@ -64,11 +64,14 @@ const BackendConfig &backend_config() {
     // Existing mode parser is immutable and does not select a device/provider.
     const bool active = native16::requested();
     const char *gu = std::getenv("STRATA_SYCL_PREFILL_GU_SWIGLU");
-    const bool gu_fusion = gu && std::strcmp(gu, "large") == 0;
+    const bool gu_compact = gu && std::strcmp(gu, "auto") == 0;
+    const bool gu_fusion = gu && (std::strcmp(gu, "large") == 0 || gu_compact);
     if (gu && std::strcmp(gu, "0") != 0 && !gu_fusion)
-      throw std::invalid_argument("STRATA_SYCL_PREFILL_GU_SWIGLU must be 0 or large");
+      throw std::invalid_argument("STRATA_SYCL_PREFILL_GU_SWIGLU must be 0, large or auto");
     if (gu_fusion && (!active || !use_vllm || chosen == VllmTile::compact))
-      throw std::invalid_argument("GU_SWIGLU=large requires native16 bf16, vllm and auto/wide tile");
+      throw std::invalid_argument("GU_SWIGLU=large/auto requires native16 bf16, vllm and auto/wide tile");
+    if (gu_compact && chosen != VllmTile::automatic)
+      throw std::invalid_argument("GU_SWIGLU=auto requires VLLM_TILE=auto");
     const char *down = std::getenv("STRATA_SYCL_PREFILL_DOWN_SCATTER");
     const bool down_fusion = down && std::strcmp(down, "large") == 0;
     if (down && std::strcmp(down, "0") != 0 && !down_fusion)
@@ -95,10 +98,13 @@ const BackendConfig &backend_config() {
         use_vllm ? (chosen == VllmTile::automatic ? "auto(T<128:compact;else:wide)" :
                     chosen == VllmTile::compact ? "compact" : "wide") : "own",
         use_vllm ? " aot=bmg-g21-a0 isolated=1 experimental" : "");
-    std::fprintf(stderr, "[native16-gu] fusion=%s min_rows=2334\n", gu_fusion ? "large" : "0");
+    if (gu_compact)
+      std::fprintf(stderr, "[native16-gu] fusion=auto compact_rows=1..96 wide_min_rows=2334\n");
+    else
+      std::fprintf(stderr, "[native16-gu] fusion=%s min_rows=2334\n", gu_fusion ? "large" : "0");
     std::fprintf(stderr, "[native16-down] fusion=%s min_rows=2334 split_kernel=%s\n",
         down_fusion ? "large" : "0", split ? split : "original");
-    return BackendConfig{use_vllm ? Backend::vllm : Backend::own, chosen, gu_fusion, down_fusion, split_down};
+    return BackendConfig{use_vllm ? Backend::vllm : Backend::own, chosen, gu_fusion, gu_compact, down_fusion, split_down};
   }();
   return config;
 }
@@ -358,12 +364,18 @@ void Gemm::bf16_out16(const uint16_t *x, const uint16_t *w, uint16_t *y,
 }
 bool Gemm::try_gu_swiglu16(const uint16_t *x, const uint16_t *w, uint16_t *hidden, int64_t t) {
   if (!handle_) throw std::invalid_argument("uninitialized SYCL GEMM16");
-  if (!backend_config().gu_fusion || t < 2334) return false;
+  const auto &config = backend_config();
+  // Opt-in only. The production-auto comparison found consistent gains through
+  // M96, but not M127; M128+ already benefits from the existing wide baseline.
+  // Preserve the established >=2334 wide fusion independently of small jobs.
+  const bool compact = config.gu_compact && t > 0 && t <= 96;
+  if (!config.gu_fusion || (t < 2334 && !compact)) return false;
 #if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
   namespace vx = experimental::vllm_xe2_native16;
   auto &bound = vllm_state(out16_backend_, x, stream_);
   sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::gemm_submit);
-  const auto event = bound.adapter.gu_swiglu({x, w, hidden, t, nullptr}, vx::Tile::wide_128x128);
+  const auto event = bound.adapter.gu_swiglu({x, w, hidden, t, nullptr},
+      compact ? vx::Tile::compact_16x64 : vx::Tile::wide_128x128);
   submission.finish();
   auto profile_tag = sycl_backend::command_profile::fused_tag(
       sycl_backend::command_profile::Kind::gu, sycl_backend::command_profile::Kind::gu_swiglu);
