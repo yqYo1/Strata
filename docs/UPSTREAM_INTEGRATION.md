@@ -16,10 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check and fetch | 2026-11-09 19:52:50 UTC / November 10 04:52:50 JST |
-| Observed upstream | `504b143342a9fe1aa8320a7b31e11f5c0ac265c3`, `v0.2.13.1-1-g504b1433` |
-| Next check at the approximate 48-hour cadence | 2026-11-11 19:52:50 UTC / November 12 04:52:50 JST |
-| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. New `146df3c4..504b1433` changes are fetched only |
+| Last actual check and fetch | 2026-11-11 19:42:07 UTC / November 12 04:42:07 JST |
+| Observed upstream | `c1ff07f1a1817594811c960039571c6e268fe89a`, `v0.2.13.1-152-gc1ff07f1` |
+| Next check at the approximate 48-hour cadence | 2026-11-13 19:42:07 UTC / November 14 04:42:07 JST |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `c1ff07f1` are fetched, with the plain GPU-list ordering fix imported and tested |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
 | New inference adoption from this check | None |
@@ -33,14 +33,23 @@ own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
-The new observation adds220commits and816changed paths. A preliminary source-only
-inspection identifies the Control/App Intel Arc setup fix and expert-arena
-shortfall/warning changes as required-function candidates. Fixed-order skinny
-BF16 GEMMs and compiled model geometry need component-level decisions; upstream
-A750 timings and default-build checksum claims are not measurements or
-qualification on this B570. No source from this new interval is imported and
-no new inference component is adopted. Its immutable source and pending review
-are recorded under `new_interval`; older unfinished scopes remain open.
+The latest observation adds151commits and303changed paths beyond `504b1433`,
+or371commits and995changed paths beyond the partial `146df3c4` import. Bounded
+source reviews cover router, control/launch and server/reader changes; they do
+not complete the function ledger. The plain `--gpu` fix from Niko
+`2b9df3fe71cb24cef3052c332e032ea681729abe` now clears stale GPU ordering when
+replacing a saved selection, while preserving explicit roles and unchanged
+selections. Its four regression tests and14existing GPU-role tests pass with
+no skips; help text is updated. The source and evidence are recorded under
+`current_sync.functional_import.incremental_function_ports.plain_gpu_order`.
+
+The Control/App Intel Arc setup fix and expert-arena shortfall/warning changes
+remain required-function candidates. Fixed-order skinny BF16 GEMMs and compiled
+model geometry need component-level decisions; upstream A750 timings and
+default-build checksum claims are not measurements or qualification on this
+B570. No new inference component from the observed interval is adopted. The
+remaining source and pending review are recorded under `new_interval`; older
+unfinished scopes remain open.
 
 The follow-up [Arc setup source map](research/upstream-arc-control-setup.md)
 confirms an unfinished entrypoint: this fork's `setup.py` routes SYCL setup to
