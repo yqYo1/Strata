@@ -290986,7 +290986,7 @@
     }
   },
   "gu_small_model_device_v1": {
-    "stage": "prepared",
+    "stage": "in_progress",
     "source_commit": "766a1802edf81e667f3a1dd1a06c35ed39af2703",
     "native_source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
     "native_record": {
@@ -291249,7 +291249,43 @@
     },
     "limits": "Native prerequisite only. Eight fixtures are reused from the original build because they do not link the changed archive;the new model engine is freshly relinked after a byte-identical baseline control. Actual production compact-GU math has separate fresh component evidence. Full-model262144/RESTORE,task/agent quality,PP/TG/TTFT,phase preservation and adoption remain open.",
     "retention": "Keep compact gate outcomes for imminent model comparison;retire successful traces after closure. No extra fixture generation;97fda fallback and56cad9/a347 named comparisons remain separate.",
-    "results": [],
+    "results": [
+      {
+        "mode": "host",
+        "passed": true,
+        "GPU_executed": false,
+        "native_exit_code": 0,
+        "reader_cases": 54,
+        "native_cases": 11,
+        "policy_check": {
+          "passed": true,
+          "GPU_executed": false,
+          "native_exit_code": 0
+        },
+        "selected_head_IR": {
+          "sha256": "1abd10f1d7fd82842e060d83f848830c422e528264e38784170b1db6dfa9bde3",
+          "instructions": 2443,
+          "functions": 34,
+          "IDs": 1681,
+          "scope": "Exact selected linked-module structure,not final ISA or model speed.",
+          "same_as_current_reference": true,
+          "engine_fixture_identical": true
+        },
+        "diagnostics_controls": {
+          "valid_controls": 2,
+          "refused_controls": 6,
+          "passed": true
+        },
+        "host_census_controls": {
+          "passed": true,
+          "native_exit_code": 0,
+          "GPU_executed": false,
+          "source": "tests/sycl/moe_upload_census_host.cpp",
+          "scope": "Literal miss/hit/format/requested-byte bins,invalid rows,empty frame and512expert cap;not GPU/model correctness."
+        },
+        "ownership_closed": true
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
@@ -291262,6 +291298,105 @@
       "count": 316,
       "aggregate_sha256": "ee2bcef714d1a80ccb744c8010295aca6197b16c1654cf5a38062d80d73c0b92"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "census-host",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "reader-controls",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "empty",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "flag3",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "empty-flag",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "release0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "release-absent",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "packed-release0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "packed-release-absent",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "backing3",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "backing-empty",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "backing-release0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "backing-release-absent",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "phase-shape-policy",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
