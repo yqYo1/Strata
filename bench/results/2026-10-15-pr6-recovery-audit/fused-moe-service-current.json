@@ -290343,7 +290343,7 @@
     }
   },
   "gu_small_model_native_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "3e535fd9e39a4927fb029d4094ade9e482268c37",
     "source_files": {
       "tools/sycl/build_gu_small_model.py": "9e52c3f0d91fe29f3f65440fafe5ccc77523a842dee1ff3703c109a0850f4fa3",
@@ -290586,11 +290586,43 @@
     },
     "plan": "First relink the original objects/archives and require byte-identical original97fda ELF. Stop on any mismatch. Then replace only the qualified GUv5 prefill archive. Reuse eight exact original fixtures:their original link rules contain no changed prefill archive. Fresh native/phase checks and long/short/long model handoff precede clean matched32K/64K and independent sustained decode. No model result inherited.",
     "retention": "Temporary candidate alongside97fda native fallback,56cad9 imminent prefill and a347 independent decode references. Baseline relink is an identical proof copy,retire after committed hash evidence. Keep candidate only through fresh qualification/comparison;select the validated generation then retire superseded outputs. Old9af/552b already retired;legacy holds remain separate.",
-    "commands": [],
+    "commands": [
+      {
+        "label": "baseline",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "stdout_sha256": "43ab5193ac273db6177b2c51e26fd5fe2696298bacb1acac485b641f8fe53478",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-small-model-native-v1/baseline",
+          "sha256": "97fda7bab47b05fa0750609b7dfe82228d68dc87c6db8a3b51c5045dc36a5900",
+          "bytes": 26448560
+        }
+      },
+      {
+        "label": "candidate",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "stdout_sha256": "71a2eb05fb4a1bbd5ab8d49afa9ee2a6df960ce1d4530ef547523bdcb22a81d6",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-small-model-native-v1/strata",
+          "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+          "bytes": 26448640
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false
+    "GPU_executed": false,
+    "original_object_relink_proof": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-small-model-native-v1/baseline",
+      "sha256": "97fda7bab47b05fa0750609b7dfe82228d68dc87c6db8a3b51c5045dc36a5900",
+      "bytes": 26448560,
+      "byte_identical_qualified_engine": true
+    },
+    "error": "RuntimeError('commit exact relink plan/result')"
   }
 }
