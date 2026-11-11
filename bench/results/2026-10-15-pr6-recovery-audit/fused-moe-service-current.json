@@ -292155,7 +292155,7 @@
     ]
   },
   "gu_small_model_entry_v1": {
-    "stage": "host_passed",
+    "stage": "closed",
     "source_commit": "5886309405f28820be2bf2144010164ef3b4cb46",
     "native_source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
     "native_build": {
@@ -292512,12 +292512,303 @@
     "plan": "First literal host INFO/stage checks,then one fresh thinking-enabled32769/82/32769input process with32outputs each. Preserve original model/runtime/placement/MTP/head2/dense1/FAST9/bulk1/source-view/staging0/census1/profile0 inputs;change only the one-archive model and immutable GUlarge->auto. Require actual policy marker,full original upload/job/QSA/bulk/MTP restore/recapture route,normal0,quiet validation,closed owner,unchanged boot/driver,no fresh fault,15full model hashes before/after. No retries or pin refresh.",
     "limits": "Observed model route/handoff only;no per-job fused model telemetry,clean PP/TG/TTFT or engine speedup. Full-model physical262144/RESTORE,task/agent,numerical/task acceptance,independent sustained-decode preservation and adoption remain open. Eight unchanged native fixtures do not exercise the changed GU archive;the actual GU component has independent44-case evidence.",
     "retention": "Retain compact extents,dispatch/handoff and original identities for imminent32K/64Kcomparison. Retire normal UR/stage output after reduction;select candidate or fallback after matched evidence. Keep56cad9 and a347 for their named phase comparisons.",
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "passed": true,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 32769,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 27,
+            "output_ids_sha256": "853fe774d45ad2795d94f2e3d0ef5da55d6aa927a05aa0d6db20ce73f9f479a3",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 24,
+            "offered": 27,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 32769,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 27,
+            "output_ids_sha256": "853fe774d45ad2795d94f2e3d0ef5da55d6aa927a05aa0d6db20ce73f9f479a3",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "262144",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "942",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 1497082,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "179aec92f91a7bf44a2a4ed8fb995cf3ea626bff5c615f78d4129950cfc8e844",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "memory_at_READY": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "59241",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "2816 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "2816 KiB",
+              "drm-total-gtt": "4268072 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "4268072 KiB",
+              "drm-total-vram0": "8905288 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "8905288 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "53305386663977",
+              "drm-total-cycles-vcs": "53305386663977",
+              "drm-total-cycles-vecs": "53305386663977",
+              "drm-total-cycles-bcs": "53305386663977",
+              "drm-total-cycles-ccs": "53305386663977"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "memory_after_requests": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "59241",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "0",
+              "drm-shared-system": "0",
+              "drm-resident-system": "0",
+              "drm-total-gtt": "4954152 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "4954152 KiB",
+              "drm-total-vram0": "9678608 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "9678608 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "53307679978527",
+              "drm-total-cycles-vcs": "53307679978527",
+              "drm-total-cycles-vecs": "53307679978527",
+              "drm-total-cycles-bcs": "53307679978527",
+              "drm-total-cycles-ccs": "53307679978527"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "routes": {
+          "actual_mode": 1,
+          "logical_cells": 262144,
+          "resident_cells": 20480,
+          "long_prefill_rows": 32768,
+          "layer_major_entries": 2,
+          "layers_completed": 96,
+          "typed_QSA_entry": true,
+          "legacy_source_label": "The diagnostic source=resident-Mode0 text is stale;INFO and exact checked production source establish mode1. No extra kernel dispatch telemetry.",
+          "decode_routes": {
+            "head": {
+              "snapshots": 8,
+              "requests": [
+                1,
+                2,
+                3
+              ],
+              "decode_C4": [
+                {
+                  "request": 1,
+                  "capture_id": 2,
+                  "replay_completed": 9,
+                  "packed_calls": 1
+                },
+                {
+                  "request": 2,
+                  "capture_id": 2,
+                  "replay_completed": 18,
+                  "packed_calls": 1
+                },
+                {
+                  "request": 3,
+                  "capture_id": 6,
+                  "replay_completed": 9,
+                  "packed_calls": 1
+                }
+              ],
+              "actual_decode_C4_replays": 27,
+              "sole_packed_all_live_head_windows": true,
+              "scope": "Per-request live-capture snapshots;coalesce repeated capture identities before summing replays."
+            },
+            "dense_enabled": 1,
+            "selected_C4_calls": {
+              "6144x2560": 40,
+              "2560x6144": 14,
+              "2560x10240": 22,
+              "2560x12288": 5
+            },
+            "generic_small_C4_calls": 21,
+            "unchanged_routes_sha256": "4c621c022f382681754f2e4513f51f215879e0c7775d44610f4c93c792953e24",
+            "phase_widths": [
+              "decode/1",
+              "decode/4",
+              "prompt/1",
+              "prompt/4"
+            ],
+            "phase_width_sha256": {
+              "decode/1": "34136fb36571561fa01aa76c0fd618e4641a622e9cadcacfacf28173496893a6",
+              "decode/4": "b3d613c8c99bcfa3996d41f12ab54e17ed38bb9856cb4b818b486694fa232a6e",
+              "prompt/1": "718f857cf378c22c6cffe16ffc0f6903d4ea89d3cc63d3ae34d586310b0470e8",
+              "prompt/4": "e8594e2e945a20593f5f0539321e78d2dc62abedb6bbb67414eaaf748898fb9d"
+            },
+            "scope": "Static captured call counts;live replay extents are separate. Four selected decode-C4 cells excluded from isolation hash."
+          },
+          "head_handoffs": {
+            "transitions": 2,
+            "target_freed_per_transition": 521472000,
+            "target_D2H_per_transition": 521472000,
+            "target_H2D_per_transition": 521472000,
+            "permanent_host_weight_bytes": 0,
+            "extra_device_weight_bytes": 0,
+            "draft_freed_per_transition": 0,
+            "retained_map_bytes": 425196,
+            "scope": "Declared actual allocation/copy requests;not physical bus traffic or bandwidth."
+          },
+          "packed_layer_entries": 96,
+          "bank_slots_min": 384,
+          "bank_slots_max": 512,
+          "staged_bank_headers": 2,
+          "MTP_expert_restore_bytes": [
+            707788800,
+            707788800
+          ],
+          "MTP_round_recaptures": 4,
+          "actual_batched_ring_callbacks": 8,
+          "cache_binding_and_final_drains": true,
+          "precision": "Immutable MTP_BATCH_F16=1 plus actual batched mode2 callbacks selects the pinned FP16projection branch. No per-launch projector telemetry or task-quality claim.",
+          "actual_attention_math": "bf16-prefix-ordered-exp",
+          "moe_host_census": {
+            "actual_format_and_first_upload_counts": true,
+            "identical_detailed_reference": {
+              "evidence_commit": "46bb1a8313cd89563676dbc9c9742b5564f16b62",
+              "result_key": "moe_host_census_model_v1",
+              "field": "results[0].routes.moe_host_census",
+              "actual_complete_object_equal": true,
+              "sha256": "1691f22330fccfa7010ad837857b3f3ef834aafeefc84dc9ccf66b4785303a70"
+            },
+            "requests": [
+              {
+                "planned": {
+                  "read": 32769,
+                  "completed_window_coverage": 48,
+                  "planned_jobs": 22479,
+                  "planned_expert_row_assignments": 15728640,
+                  "nonempty_experts_across_layers": 22320,
+                  "split_experts_across_layers": 131,
+                  "maximum_job_rows": 8192,
+                  "requested_router_D2H_bytes": 62914560,
+                  "requested_map_H2D_bytes": 125829120
+                },
+                "accepted_uploads": 22320,
+                "cache_hits": 0,
+                "requested_upload_bytes": 45841868800
+              },
+              {
+                "planned": {
+                  "read": 32769,
+                  "completed_window_coverage": 48,
+                  "planned_jobs": 22479,
+                  "planned_expert_row_assignments": 15728640,
+                  "nonempty_experts_across_layers": 22320,
+                  "split_experts_across_layers": 131,
+                  "maximum_job_rows": 8192,
+                  "requested_router_D2H_bytes": 62914560,
+                  "requested_map_H2D_bytes": 125829120
+                },
+                "accepted_uploads": 22320,
+                "cache_hits": 0,
+                "requested_upload_bytes": 45841868800
+              }
+            ],
+            "limits": "Host accepted uploads/hits after checked existing drains. First-job rows are not all expert rows when split. Requested payload is not physical PCIe traffic,critical-path time,hardware saturation or speed.",
+            "retention": "Do not duplicate original identical per-format/row histograms. Original46bb evidence is reachable;the new compact groups and actual fused counts are retained in posthoc_dispatch_analysis. No physical traffic/saturation claim."
+          },
+          "actual_bulk_calls": 96,
+          "accepted_copy_commands": 384,
+          "requested_D2H_bytes": 830472192,
+          "bulk_route_observed": true,
+          "physical_bus_traffic_qualified": false,
+          "GU_startup_policy": "auto:compact1..96;wide>=2334;separate97..2333",
+          "actual_GU_per_job_outcomes_observed": false,
+          "GU_scope": "Actual production binding in component evidence;model startup policy and routed job/upload census here. Per-job fused decisions are not separately observed in the model;no clean timed-dispatch or model speed/adoption claim."
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "speed_eligible": false,
     "model_adoption_qualified": false,
     "host_controls": {
@@ -292526,6 +292817,111 @@
       "passed": true,
       "GPU_executed": false
     },
+    "posthoc_dispatch_analysis": {
+      "source": {
+        "src/prefill/moe_window.inc": {
+          "source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
+          "sha256": "be2937ca8f2b817f195da4aa944288837d59a0bc90fece269917186928cd0fa5"
+        },
+        "src/prefill/layer_major.inc": {
+          "source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
+          "sha256": "1fd34995c5255ed655b049596d795760c31b88055b5b572d13456162d507737e"
+        },
+        "src/prefill/sycl/gemm16.cpp": {
+          "source_commit": "213dd970f757460d15b13c994ff17a8f42c88d18",
+          "sha256": "4549995b96fbacc42d2640d31ad33767a25ec575d5c72ce822a0fd18038ed626"
+        }
+      },
+      "requests": [
+        {
+          "read_tokens": 32769,
+          "routed_token_rows": 32768,
+          "windows": 48,
+          "jobs": 22479,
+          "groups": {
+            "compact1_96": {
+              "jobs": 8530,
+              "rows": 246809
+            },
+            "separate97_2333": {
+              "jobs": 12255,
+              "rows": 8369351
+            },
+            "large2334_8192": {
+              "jobs": 1694,
+              "rows": 7112480
+            }
+          },
+          "actual_GU": {
+            "fused_jobs": 10224,
+            "fused_rows": 7359289,
+            "separate_jobs": 12255
+          },
+          "actual_Down": {
+            "fused_jobs": 1694,
+            "fused_rows": 7112480,
+            "separate_jobs": 20785
+          },
+          "matches_planned_histograms": true
+        },
+        {
+          "read_tokens": 32769,
+          "routed_token_rows": 32768,
+          "windows": 48,
+          "jobs": 22479,
+          "groups": {
+            "compact1_96": {
+              "jobs": 8530,
+              "rows": 246809
+            },
+            "separate97_2333": {
+              "jobs": 12255,
+              "rows": 8369351
+            },
+            "large2334_8192": {
+              "jobs": 1694,
+              "rows": 7112480
+            }
+          },
+          "actual_GU": {
+            "fused_jobs": 10224,
+            "fused_rows": 7359289,
+            "separate_jobs": 12255
+          },
+          "actual_Down": {
+            "fused_jobs": 1694,
+            "fused_rows": 7112480,
+            "separate_jobs": 20785
+          },
+          "matches_planned_histograms": true
+        }
+      ],
+      "ordinary_model_status_unchanged": true,
+      "analysis_not_an_original_performance_gate": true,
+      "new_GPU_observer_added": false,
+      "per_job_trace": false,
+      "legacy_summary_min_rows_field": "2334 is the old wide-path label;startup auto marker and compiled source establish compact1..96 too. Do not interpret it as the minimum of every fused job.",
+      "prospective_use": "Existing actual returned-boolean GU/Down aggregates permit a new frozen clean-comparison route gate without another engine instrumentation change. Keep current diagnosis non-speed-eligible;derive compact from GU-Down only after proving equal large eligibility in the exact compiled caller.",
+      "limits": "Completed logical dispatch counts,not physical traffic,occupancy,saturation or elapsed service. No clean speedup,task/agent,sustained decode,full-model262144/RESTORE or adoption."
+    },
+    "diagnostic_prefill_samples": [
+      {
+        "read_tokens": 32769,
+        "routed_token_rows": 32768,
+        "milliseconds": 57142,
+        "printed_tok_s": 573.4,
+        "scope": "first_request",
+        "speed_eligible": false
+      },
+      {
+        "read_tokens": 32769,
+        "routed_token_rows": 32768,
+        "milliseconds": 41344,
+        "printed_tok_s": 792.6,
+        "scope": "subsequent_after_short",
+        "speed_eligible": false
+      }
+    ],
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "5886309405f28820be2bf2144010164ef3b4cb46",
@@ -292553,6 +292949,14 @@
       "input_files": 34,
       "sha256": "3caaa997d821c22cc83f385028f23e707ff93179a7c572727621b46668e79768"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "model",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }

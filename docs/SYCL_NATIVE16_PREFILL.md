@@ -1921,9 +1921,27 @@ GU math;the separate44-case production-GU evidence remains its prerequisite.
 The first relink controller's post-link bookkeeping failure remains failed
 at`2985c1153`;its unused outputs are retired,not adopted retroactively.
 
-Next run the actual thinking-enabled32769/82/32769model handoff,then measure
-32K/64K plus sustained independent decode. Model per-job fused decisions still
-need their own bounded receipt before timed-dispatch/adoption claims. Preserve the fastest
+The actual thinking-enabled32769/82/32769model handoff now closes under
+`gu_small_model_entry_v1`at controller source`588630940`,with32outputs each,
+23/27,24/27and23/27accepted/offered drafts,normal0,quiet validation,closed
+ownership,no fresh fault and15final model hashes. The validation/census-charged
+native PP readings are573.4first and792.6after the short request;these single
+diagnostic readings are not clean speed or an improvement claim.
+
+A source-backed posthoc analysis finds existing actual returned-boolean
+aggregates in`moe_window.inc`and`layer_major.inc`;new GPU instrumentation is
+unnecessary for the next narrow GU comparison. In each long request,GU has
+10224fused jobs/7359289rows and12255separate jobs. These exactly match8530
+compact jobs/246809rows plus1694large jobs/7112480rows from the observed plan;
+Down's1694fused jobs match the large subset. Both complete planned/upload
+censuses equal the original46bb reference,so their duplicate histograms are
+replaced with a pinned reference and compact counts. This is aggregate dispatch
+evidence,not a per-job trace,time attribution or model adoption. The legacy
+GU summary's`min_rows=2334`label describes the old wide threshold and must not
+be interpreted as excluding the separately logged compact1..96policy.
+
+Next commit a fresh32K/64Kmatched bench plan using these existing aggregates
+and independently preserve sustained decode. Preserve the fastest
 56cad9prefill reference and a347decode reference. The obsolete9af/552b roots
 are now retired:867files/245903239bytes,with original9af Git inputs and all558
 552b composed inputs recovered from Git and the original recipe. The552b
