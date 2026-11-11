@@ -363,12 +363,16 @@ void Gemm::bf16_out16(const uint16_t *x, const uint16_t *w, uint16_t *y,
                    stream_, out16_support_);
 }
 bool Gemm::try_gu_swiglu16(const uint16_t *x, const uint16_t *w, uint16_t *hidden, int64_t t) {
+  return try_gu_swiglu16(x,w,hidden,t,true);
+}
+bool Gemm::try_gu_swiglu16(const uint16_t *x, const uint16_t *w, uint16_t *hidden,
+                          int64_t t, bool allow_compact) {
   if (!handle_) throw std::invalid_argument("uninitialized SYCL GEMM16");
   const auto &config = backend_config();
   // Opt-in only. The production-auto comparison found consistent gains through
   // M96, but not M127; M128+ already benefits from the existing wide baseline.
   // Preserve the established >=2334 wide fusion independently of small jobs.
-  const bool compact = config.gu_compact && t > 0 && t <= 96;
+  const bool compact = allow_compact && config.gu_compact && t > 0 && t <= 96;
   if (!config.gu_fusion || (t < 2334 && !compact)) return false;
 #if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
   namespace vx = experimental::vllm_xe2_native16;

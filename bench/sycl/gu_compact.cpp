@@ -1,5 +1,5 @@
-// Main-authored compact-GU component, reusing this repository's scalar/guard fixture.
-// Repository LICENSE (MIT) applies. Current public API;no GPU timing events.
+// Main-authored GU policy component, reusing this repository's scalar/guard fixture.
+// Repository LICENSE (MIT) applies. Actual production arms;no GPU timing events.
 #include "../../src/prefill/sycl/vllm_xe2/native16.hpp"
 #include "strata/prefill/native16.hpp"
 #include "strata/prefill/gemm.hpp"
@@ -116,15 +116,24 @@ struct Case {
     sb::finish(&q,event);
     return event;
   }
-  void separate([[maybe_unused]] xe::Tile tile) {
+  void separate(xe::Tile tile) {
     try {
-      // Actual production entry, including its immutable auto-tile selection,
-      // binding, preflight, profiling hooks and finish; all declared rows <2334.
-      need(!production.try_gu_swiglu16(x.data(),w.data(),reference.data(),rows),
-           "production baseline unexpectedly selected large GU fusion");
-      production.f16_out16(x.data(),w.data(),gu.data(),rows,N,K,true);
+      // Independent unfused adapter reference, outside production timing.
+      xe::Problem p; p.x=x.data(); p.w=w.data(); p.y=gu.data(); p.t=rows; p.n=N; p.k=K;
+      auto event=gemm.beta0(p,tile);sb::finish(&q,event);
       strata::prefill::native16::swiglu(gu.data(),reference.data(),rows,&q);
     } catch (...) { drain(q); throw; }
+  }
+  bool route(bool allow_compact,Buffer& output) {
+    try {
+      const bool selected=production.try_gu_swiglu16(x.data(),w.data(),output.data(),rows,allow_compact);
+      need(selected==(rows>=2334 || (allow_compact && rows<=96)),"actual production GU selection differs");
+      if (!selected) {
+        production.f16_out16(x.data(),w.data(),gu.data(),rows,N,K,true);
+        strata::prefill::native16::swiglu(gu.data(),output.data(),rows,&q);
+      }
+      return selected;
+    } catch (...) { drain(q);throw; }
   }
   int check(xe::Tile tile) {
     candidate.reset(); capture.reset();
@@ -144,20 +153,22 @@ struct Case {
     candidate.reset(); capture.reset(); wait(q,fused(tile));
     ulp=std::max(ulp,compare_hidden(reference,candidate));
     for (auto v:capture.get()) need(v==Sentinel,"null-capture wrote diagnostic");
+    (void)route(false,candidate);drain(q);ulp=std::max(ulp,compare_hidden(reference,candidate));
+    (void)route(true,candidate);drain(q);ulp=std::max(ulp,compare_hidden(reference,candidate));
+    (void)gu.get();
     need(x.get()==hx && w.get()==hw,"input changed");
     std::cout << "{\"kind\":\"correctness\",\"rows\":" << rows << ",\"tile\":" << int(tile)
       << ",\"edges\":" << edges << ",\"max_half_ulp\":" << ulp
-      << ",\"BF16_capture_exact\":true,\"guards\":true,\"inputs_immutable\":true,\"production_baseline\":true,\"status\":\"PASS\"}\n";
+      << ",\"BF16_capture_exact\":true,\"guards\":true,\"inputs_immutable\":true,\"production_baseline\":true,\"production_candidate\":true,\"status\":\"PASS\"}\n";
     return ulp;
   }
 };
 
-double batch(Case& c,bool fused,int repeat) {
+double batch(Case& c,bool allow_compact,int repeat) {
   drain(c.q);
   const auto start=std::chrono::steady_clock::now();
   for (int n=0;n<repeat;++n) {
-    if (fused) (void)c.fused(xe::Tile::compact_16x64);
-    else c.separate(xe::Tile::compact_16x64);
+    (void)c.route(allow_compact,allow_compact ? c.candidate : c.reference);
   }
   drain(c.q);
   return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
@@ -165,7 +176,7 @@ double batch(Case& c,bool fused,int repeat) {
 void bench(int process,sycl::queue& q) {
   need(process>=0 && process<3,"three declared process ordinals");
   int ordinal=0;
-  for (int rows:{1,16,32,64,65,96,127,128,129,256,640,1280}) {
+  for (int rows:{1,16,32,64,65,95,96,97,126,127,128,129,256,640,1280,2333,2334,8192}) {
     Case c(rows,false,q);c.check(xe::Tile::compact_16x64);
     (void)batch(c,false,8);(void)batch(c,true,8);
     int repeat=64;double first=0,second=0;
@@ -182,14 +193,14 @@ void bench(int process,sycl::queue& q) {
         const int arm=order^pass;const double ms=batch(c,arm!=0,repeat);
         need(std::isfinite(ms) && ms>=100,"sample below100ms declared eligibility floor");
         // Reset/reference/guard checks occur outside the timed batch.
-        if (arm) c.separate(xe::Tile::compact_16x64);
-        else (void)c.fused(xe::Tile::compact_16x64);
+        (void)c.route(arm==0,arm==0 ? c.candidate : c.reference);
         drain(q);const int ulp=compare_hidden(c.reference,c.candidate);
         need(c.x.get()==c.hx && c.w.get()==c.hw,"timed inputs changed");
         (void)c.gu.get();(void)c.capture.get();
         std::cout<<"{\"kind\":\"sample\",\"process\":"<<process<<",\"rows\":"<<rows
           <<",\"round\":"<<round<<",\"order\":"<<order<<",\"arm\":"<<arm
           <<",\"repeat\":"<<repeat<<",\"batch_wall_ms\":"<<ms
+          <<",\"production_fused\":"<<(rows>=2334 || (arm!=0 && rows<=96))
           <<",\"max_half_ulp\":"<<ulp<<",\"status\":\"PASS\"}\n";
       }
     }
@@ -210,7 +221,7 @@ int main(int argc,char** argv) {
       Case edge(3,true,q);edge.check(xe::Tile::compact_16x64);
     } else if (mode=="--numerics") {
       for (auto tile:{xe::Tile::compact_16x64,xe::Tile::wide_128x128}) {
-        for (int rows:{1,3,16,17,32,33,64,65,96,127,128,129,256,640,1280}) {Case c(rows,false,q);c.check(tile);}
+        for (int rows:{1,3,16,17,32,33,64,65,95,96,97,126,127,128,129,256,640,1280,2333,2334,8192}) {Case c(rows,false,q);c.check(tile);}
         Case edge(17,true,q);edge.check(tile);
       }
     } else bench(std::stoi(argv[2]),q);
