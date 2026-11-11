@@ -209,6 +209,14 @@ record; matching the engine alone does not qualify changed fixture bytes.
 A controller-only update does not establish a new native build or new GPU
 validation, and it does not reset the retained generation's consumer or quota.
 
+For partial object/archive reuse, keep class definitions and their preprocessing
+conditions consistent across every linked translation unit. Adding a member
+declaration requires rebuilding all affected callers and library objects even
+when the class size, layout and existing symbols are unchanged. Check the actual
+header dependency closure; use a coherent full build when that closure is not
+established. Preserve partial-relink timings as observations with an explicit
+qualification hold until the consistent build is tested.
+
 Before removing an old build, verify that its measured source and recipe can be
 retrieved from the recorded commits and that no current comparison needs the
 executable. Match the exact final binary and all required build inputs. A

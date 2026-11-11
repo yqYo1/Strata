@@ -79,8 +79,9 @@ def abi(n):
     before, after = normalize(old), normalize(new)
     overload = ('booltry_gu_swiglu16(constuint16_t*X,constuint16_t*W,'
         'uint16_t*hidden,int64_tT,boolallow_compact);')
-    require(after.count(overload) == 1 and after.replace(overload, '') == before,
-        'Gemm class layout and original declarations must remain exact')
+    require(after == before,
+        'Partial relink requires identical Gemm definitions across all translation units;'
+        'added declarations require a coherent rebuild,not only ABI/layout equality')
     return dict(original_header_commit=n['native_source_commit'],
         original_header_sha256=hashlib.sha256(old.encode()).hexdigest(),
         candidate_header_sha256=sha(P/component.HEADER),
