@@ -8,18 +8,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
-- The partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
+- The historical partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
   **class-definition coherence hold**. The archive combined the new `Gemm`
   member declaration from `213dd970` with eleven original archive members,
   including a translation unit using the old class definition. Layout and
-  existing-symbol equality did not establish C++ ODR coherence. Do not use
-  these binaries for further runtime qualification or target/adoption claims.
+  existing-symbol equality did not establish C++ ODR coherence. Keep those
+  partial-build artifacts out of further runtime qualification and target/adoption claims.
   Preserve the original numerical, normal-exit, fault and timing observations;
   this finding does not attribute any GPU hang or speed difference to the defect.
   Correcting evidence is `gu_class_definition_coherence_20261112` at
   `32bde1b0dba0b5c7f83529a0e182e8d83497afc6` in the linked result.
-  Next commit a coherent full-build recipe, including the existing physical
-  full-context diagnostic, and requalify native/model routes and repeated speed.
+  The fresh coherent full build from **14508acb** now closes normally with
+  137 compilation objects/134 unique sources,1470 compiler inputs and29 external
+  link inputs,with zero uncovered inputs. Its five actual `Gemm` includers use
+  the same header and SYCL class condition;no native object/archive was reused.
+  Evidence: `coherent_prefill_native_v1` at
+  `cca8ac8d9426769c995e99e4af0aa7d5b624ff11`. The new engine and GU fixture are
+  byte-identical to dcb8efd4/cd99a46e respectively;source/build provenance still
+  distinguishes them. This does not retroactively qualify the historical mixed
+  build. Next run fresh native/GU checks,model handoff and repeated speed using
+  the coherent build. The existing physical full-context diagnostic and its
+  host fixture are also built;actual model fill remains pending.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
