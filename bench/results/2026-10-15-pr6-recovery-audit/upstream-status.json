@@ -84,7 +84,7 @@
       },
       "reviewed_through": "504b143342a9fe1aa8320a7b31e11f5c0ac265c3"
     },
-    "latest_delta_review": "Scoped source review completed for router/control/server at c1ff;not the complete303-path delta ledger. Plain GPU ordering/help is source-ported with host validation pending;other functional and inference decisions remain open.",
+    "latest_delta_review": "Scoped router/control/server source review,not the complete303-path ledger. Plain --gpu ordering and help from2b9df3fe are ported and18host tests pass;other functional ports,native capability and per-component inference decisions remain open.",
     "license_changed_since_previous_check": false,
     "initial_all_tags_fetch": {
       "exit_code": 1,
@@ -1436,7 +1436,7 @@
       },
       "incremental_function_ports": {
         "plain_gpu_order": {
-          "stage": "prepared",
+          "stage": "passed",
           "source_commit": "724a5bdae6fc46b8532060115e0976168e851303",
           "python": {
             "path": "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
@@ -1513,10 +1513,27 @@
             "existing_role_tests_not_importable": 14,
             "reason": "Imported upstream test lacked its required tests/data/gpu_roles_vectors.json. V2adds the exact MIT fixture from146df3c4,keeps original failed status and repeats both unchanged test commands/criteria."
           },
-          "results": [],
+          "results": [
+            {
+              "label": "gpu-list-replacement",
+              "tests": 4,
+              "passed": true,
+              "skipped": 0,
+              "native_exit_code": 0,
+              "ownership_closed": true
+            },
+            {
+              "label": "existing-gpu-roles",
+              "tests": 14,
+              "passed": true,
+              "skipped": 0,
+              "native_exit_code": 0,
+              "ownership_closed": true
+            }
+          ],
           "active": false,
           "ownership_closed": true,
-          "passed": false,
+          "passed": true,
           "GPU_executed": false,
           "source_inputs": {
             "prefixes": [
