@@ -8,16 +8,37 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
-- The current native fallback is **dc645 / engine97fda**, with nine same-build
-  outputs, for the imminent compact-GU model relink and native gates. Keep
+- The current compact-GU candidate is **engine dcb8efd4**, relinked from the
+  original **dc645 / engine97fda** objects and the qualified GUv5 archive from
+  `213dd970`. The original-input baseline relink reproduced97fda byte-for-byte;
+  only the prefill archive changed. The44-case GU numerical check, nine native
+  gates and32K/short/32K model handoff passed. Eight unchanged native fixtures
+  establish their own contracts, not the changed GU arithmetic. The candidate
+  is not an adopted model route. The original97fda remains a live build-proof
+  reader dependency. Keep
   **611a / engine56cad9** for the matched32K/64Kprefill comparison and
   **221e / enginea347** for independent sustained-decode preservation.
-  The qualified compact-GU v5 archive is the next candidate,not an adopted
-  model route. The obsolete9af and552b build roots are physically retired;
+  The obsolete9af and552b build roots are physically retired;
   their exact source/recipe recovery and deletion evidence are recorded in
   `retained_builds_review_20261103.latest_phase_transition` in the linked result.
   Historical retention instructions below describe their original experiments;
   they do not renew ended binary consumers.
+- The active same-binary `gu_small_prefill_compare_v1` compares immutable
+  GUlarge/auto policies through `bench.sh`:12fresh processes across32K/64K,
+  three thinking-enabled requests with24outputs per process. First use and
+  subsequent-request medians stay separate. All18of the32K requests pass;
+  one of three paired warmed times is slightly slower with compact fusion,
+  so32Kdoes not meet the prospectively committed all-pairs-gain gate. Finish
+  the frozen64Kcohort without changing criteria. The first64Kbaseline process
+  passes with warmed PP **1008.4/1007.3** (median from times **1007.8336**),
+  prefill **65.0276s** and client TTFT **65.1955s**;first-use PP is864.3.
+  This is one process,not independent-process reproduction or a gain over56cad9.
+  The evidence at `22da0851e823587883f41b0090b506458b6964ff` and the CSV retain
+  that milestone. Parameter validation and the retained-reference preload are
+  charged;ordinary teardown,agent/task quality,sustained TG and physical262144/
+  RESTORE remain unqualified. Hardware saturation is still unknown. Next close
+  the planned comparison and final15asset hashes,then compare the selected
+  policy with56cad9 while preserving the independent a347decode path.
 - The historical **479a / engine552b** clean117489-token throughput-route result
   is three independent processes, warmed subsequent-three medians
   **1044.845, 1047.067, 1047.336 tok/s** (median 1047.067); first-use results
