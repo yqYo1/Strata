@@ -1436,8 +1436,8 @@
       },
       "incremental_function_ports": {
         "plain_gpu_order": {
-          "stage": "failed",
-          "source_commit": "a22f175bd628f1eb0d307eb04ccbe86419366423",
+          "stage": "prepared",
+          "source_commit": "724a5bdae6fc46b8532060115e0976168e851303",
           "python": {
             "path": "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
             "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
@@ -1449,7 +1449,7 @@
             "LANG": "C.UTF-8",
             "LC_ALL": "C.UTF-8",
             "PYTHONDONTWRITEBYTECODE": "1",
-            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-gpu-list-order-host-v1/tmp"
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-gpu-list-order-host-v2/tmp"
           },
           "commands": [
             {
@@ -1505,31 +1505,19 @@
             "license": "MIT;byte-identical project LICENSE",
             "scope": "Plain --gpu drops stale gpu_order and help clarifies Main selection. Explicit roles and no-selection retain semantics;no inference or excluded-model execution import. Main-authored regression tests."
           },
-          "results": [
-            {
-              "label": "gpu-list-replacement",
-              "tests": 4,
-              "passed": true,
-              "skipped": 0,
-              "native_exit_code": 0,
-              "ownership_closed": true
-            }
-          ],
+          "previous_failure": {
+            "root": "cli-gpu-list-order-host-v1",
+            "evidence_commit": "724a5bdae",
+            "stage": "failed",
+            "tests_passed": 4,
+            "existing_role_tests_not_importable": 14,
+            "reason": "Imported upstream test lacked its required tests/data/gpu_roles_vectors.json. V2adds the exact MIT fixture from146df3c4,keeps original failed status and repeats both unchanged test commands/criteria."
+          },
+          "results": [],
           "active": false,
           "ownership_closed": true,
           "passed": false,
           "GPU_executed": false,
-          "preflight_attempts": [
-            {
-              "stage": "failed_before_owner_or_tests",
-              "error": "KeyError('prefixes')",
-              "tests_started": false,
-              "GPU_executed": false,
-              "reason": "Main launcher read prefixes from private source object,while preparation kept them only in committed public source_inputs. No source hash,command,criteria or dependency changed.",
-              "correction": "Copy the exact already committed prefix descriptor into the private source object and commit this prospective metadata correction before execution."
-            }
-          ],
-          "error": "AssertionError(('existing-gpu-roles', 1, 'test_gpu_roles (unittest.loader._FailedTest.test_gpu_roles) ... ERROR\\n\\n======================================================================\\nERROR: test_gpu_roles (unittest.loader._FailedTest.test_gpu_roles)\\n----------------------------------------------------------------------\\nImportError: Failed to import test module: test_gpu_roles\\nTraceback (most recent call last):\\n  File \"/usr/lib/python3.12/unittest/loader.py\", line 394, in _find_test_path\\n    module = self._get_module_from_name(name)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3.12/unittest/loader.py\", line 337, in _get_module_from_name\\n    __import__(name)\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tests/terminal/test_gpu_roles.py\", line 12, in <module>\\n    V = json.loads((ROOT / \"tests\" / \"data\" / \"gpu_roles_vectors.json\").read_text(encoding=\"utf-8\"))\\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3.12/pathlib.py\", line 1029, in read_text\\n    with self.open(mode=\\'r\\', encoding=encoding, errors=errors) as f:\\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\\n    return io.open(self, mode, buffering, encoding, errors, newline)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\nFileNotFoundError: [Errno 2] No such file or directory: \\'/home/yayoi/orca/workspaces/Strata/sycl/tests/data/gpu_roles_vectors.json\\'\\n\\n\\n----------------------------------------------------------------------\\nRan 1 test in 0.000s\\n\\nFAILED (errors=1)\\n'))",
           "source_inputs": {
             "prefixes": [
               "strata_cli",
@@ -1544,9 +1532,29 @@
               "tools/sycl/measurement_owner.py",
               "requirements.txt"
             ],
-            "files": 131,
-            "sha256": "6b5d65b18b3e4949a247ff44d71c2791c2905b3484e4f48a3f1c90269f195b0c"
+            "files": 132,
+            "sha256": "4561c8e238e7d90e118a2222f60ec03ee82b32d73d2243710fd723ee2950c681"
           }
+        },
+        "plain_gpu_order_v1": {
+          "stage": "failed",
+          "source_commit": "a22f175bd628f1eb0d307eb04ccbe86419366423",
+          "evidence_commit": "724a5bdae6fc46b8532060115e0976168e851303",
+          "ownership_closed": true,
+          "GPU_executed": false,
+          "results": [
+            {
+              "label": "gpu-list-replacement",
+              "tests": 4,
+              "passed": true,
+              "skipped": 0,
+              "native_exit_code": 0,
+              "ownership_closed": true
+            }
+          ],
+          "error": "Existing14role tests could not import because tests/data/gpu_roles_vectors.json was absent. No existing role test was executed;the first4new tests passed.",
+          "original_preflight_failure_preserved_at": "ddb7a49ed9cf333f680a99ac8a7dab0a0ec89b6e",
+          "original_outcome_unchanged": true
         }
       }
     },
