@@ -1,0 +1,185 @@
+{
+  "schema": "compact-cache-numeric-admission-v4",
+  "admission_source_commit": "a8955fb1a0d7f82723504838f94dd54dab274b5b",
+  "controller_sha256": "b50086a04d3d5a47aec198b97faa971900b8630a9f377300b3426440bde7d6fa",
+  "original_source_commit": "aba1ba35c242829377183eba35148d609c8284e7",
+  "original_plan_commit": "90be125c32eb2d323e92b8051dd7b8152f57f33d",
+  "original_plan_sha256": "a0a88d6bbede022b574c43bc4fc360e6436a45b1227f7befd126c5a94fef039e",
+  "original_failed_evidence": {
+    "stage": "admission_failed_exported_unbuilt_targets",
+    "source_commit": "aba1ba35c242829377183eba35148d609c8284e7",
+    "plan_commit": "90be125c32eb2d323e92b8051dd7b8152f57f33d",
+    "plan_path": "bench/sycl/cpu_compact_hot/numeric-plan-v3.json",
+    "plan_sha256": "a0a88d6bbede022b574c43bc4fc360e6436a45b1227f7befd126c5a94fef039e",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "numeric_fixture_executed": false,
+    "numerical_qualified": false,
+    "performance_qualified": false,
+    "normal_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "unqualified_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/compact_cache_numeric",
+      "sha256": "557c8cd16068321e9c8e6c6d91c2a6cdf5f4661d90b641980cb2bf5a8b422633"
+    },
+    "failure": "RuntimeError('uncovered compile source')",
+    "diagnosis": "CMake exports37compile commands,including2unbuilt ggml registry/dynamic-loader objects. The native/GGML pinset covers the35actually compiled objects;requiring the2unused sources is a controller scope error. Original V3remains failed;no fixture ran.",
+    "next": "Commit a separate controller-only V4admission plan for the existing unchanged source-built output. Check original source/recipe/ELF,actual35object/dependency completeness and22links;require both unused registry objects absent. Keep failedV3immutable and run no fixture before new admission passes.",
+    "retention": "Keep this one unexecuted source-built candidate/root for the immediate V4provenance admission and numeric check,plus current99KB ownership fallback. Do not rebuild unchanged kernels or refresh failedV3hashes. Retire ended outputs after qualified successor evidence/source recovery."
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/compact_cache_numeric",
+    "sha256": "557c8cd16068321e9c8e6c6d91c2a6cdf5f4661d90b641980cb2bf5a8b422633"
+  },
+  "artifacts": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build.json": "5e5116a11d3dcd4af7617102f1d0fb1d6b7558e29f89468025bd95bbcd82849e",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/bench/sycl/cpu_compact_hot/numeric-plan-v3.json": "a0a88d6bbede022b574c43bc4fc360e6436a45b1227f7befd126c5a94fef039e",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/compile_commands.json": "3ef899ece55683053173487257190464e69b5e5c650a0b88b343a2e38eff1e26",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/owned/build-compile.stdout": "87889fbc22a65288a622beacd7a6e451bd73ad63597828f6fa7a46cd39d1e125",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/owned/build-compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/owned/build-dependencies.stdout": "ffdae9eb0c204855d44d460dea6bf7041ed09455164fe0fb5ea51665cad1050a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/owned/build-dependencies.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/compact_cache_numeric": "557c8cd16068321e9c8e6c6d91c2a6cdf5f4661d90b641980cb2bf5a8b422633",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/expert_layout.cpp.o": "c632779d9f09325d00a1d2db5c33651be4421f20434bc437c8c999534792c2d8",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/q2_avx2.cpp.o": "83216f70671ff4bbcff23e8e0d1e8c98d460dc41018eac96a4dff9be04fd247c",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/expert.cpp.o": "657ee3083592ed73ca9d0cc840b7af92ecaf4588aabf7abf87ed46e6523d3642",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/pool.cpp.o": "dac974d66ede1b623dada821d1bb8c83ad5798572ebb637e1fb6accf25adde34",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/native_expert.cpp.o": "353806c6c9df45ef8af0f4e38f6480f1b7a25566695699e15442ceedaefa21f2",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/iq_single_avx2.cpp.o": "3a8460290231cec4fb82845564a3d2522e67229634dbc01fcbe21b08372beefd",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/iq2_pair_avx2.cpp.o": "aa5eb1f935a6f7c249b6eb5cdc491d0dc613d91e6264e58953a8acb663090ea2",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/kq_avx2.cpp.o": "275d09f0cc065757a1cf741631ba9f338efbf2af39cf32bec38742efe34af9f7",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/iq_avx512.cpp.o": "d9945b6cf327fe8fe9adfdcd6b10c7a26521dbde61b41fd843d220788f7c9233",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_cache_numeric.dir/numeric.cpp.o": "f3f528fa7fdfc374f0b9dc958a416c9c6b5894ce82be2df9af849cdd70620b1c",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o": "b69efc349774e9daaea22f071c542df7e3284e05cda5072f1559d2ded7637924",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o": "a3b4edf90a8315c8d0109a632f21598c703bfc82217db1b4f3273425f56f2590",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o": "a2707108b059e260f54437ead69679a88e45c173eb8e14a572d02f0a92d03189",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o": "ba4828582a738ef4384475a1d01b59691bcf4f794bfddf3e355759d466b9fc19",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/CMakeFiles/compact_reference_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/experiment-cpu-compact-cache/src/kernels/cpu/iq_avx2.cpp.o": "055c758d8feaeb63d3abcd36f92246edc136c99f0559ca84bf02af19d8fb5010",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o": "7a3682bfc949afd7274c1ce1bb2b795db6e2c33f11e9977242f69ddb358a6692",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o": "659014e6b5e0cab6d8a81e7903d6993cd973b4d18622248402f059988ec54f69",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o": "40b1ad9e1b90aa1afd994e83d0ecfe5a234857a92b1d1fc4a3ef5b3d7b453bd1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o": "c710a7bf3d4f4e1d3941ffd336a0ad59857d5695268367f583e9ece447749a4d",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o": "ace69c0ae81253e96413652664a0ecd60aaa18dfc80986f59ca79677dfc8e04d",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o": "4c038ff59b1feea1f6a5c1ff7bd4a14b437a2a46391e73e6a8d52c06cb3eeea2",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqp.cpp.o": "3bd8b14565433efff3bd6aac8f0a785dc7ba84ff43e4db8815aee48cf1a825c1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o": "15aa7ba30b97e9516b34714332ac345d399db5b9314e5720095d4d651da2d2ea",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o": "ee83940aeb8d1b1d833db9a7113c8c74225ba5e5eb4f431fbc94e1d7c1ae3079",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o": "78de6b021da4c3c09c2eb377c7b2f71d375b1756975d832b165111fe2a56a8f2",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o": "f0883782c224bc29b9c92df69af9582544c45d7ea2ca71d3cf43d49169d875f6",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o": "95c12dad0f6568c4a6fd363802b3d1bdf8e861a7eda29ad064b7844fffc5c65c",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o": "b9a11bf47f27a8fb7f03f706eaa13d027a94ff10df69c059a661dd7c4636b9ce",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o": "b7c7858e2a0e350ad4d6c0b92384416288490ea2c9ee51505090b36a91c9840d",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/repack.cpp.o": "571a3750a8c1e9a26e0f392c1d643f1ab09c208d70743c359553fdfd1541bbc2",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o": "79c9d46f1659a78a0ea89771a0c51f6de73b3d61d51e9e3475a9e85cb36118c8",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o": "4e70cc7626a08f6c9483d729e2170fdcc01ec78ea8f13dbb20e41297c4a49259",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o": "b8942d84db7db78a72afeb43896206c0196a8e49e205601f860897106bd8a72e",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/repack.cpp.o": "f7f083b2cfc7428038fac13cc0721d41ae2d85269fe2bcf3a893b375b58cc6a1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ops.cpp.o": "505df023a8dcb6c932996ddf532fbdf4d82c9b5324cb7670bd6baef309ee0057",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/libcompact_reference_cpu.a": "2265e031083625b959d884dff58c8a113f63ec66b762b9ba368871fa6d73c965",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/libggml-cpu.a": "0ffc744b74c23a09a740296e71a6634176bb6ade555c9a23ffc81ea29ed55045",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-v3/build/ggml/src/libggml-base.a": "c5fccf0e93d5cc66b70a1e29dc4e9ae44a7f58cb3c7d12c08af23b8048ddbb83"
+  },
+  "actual_metadata_sha256": "878eb1e1298857f64962ded666e29d63005ace2a7d274257114d171c8db51d30",
+  "actual_counts": {
+    "objects": 35,
+    "compiler_inputs": 625,
+    "links": 22,
+    "unused_exports": 2
+  },
+  "formats": [
+    {
+      "layer": 0,
+      "gu": 18,
+      "down": 20,
+      "blob_bytes": 2176000,
+      "offsets": [
+        1386491904,
+        1711166464,
+        913711104
+      ],
+      "extents": [
+        627200,
+        627200,
+        921600
+      ],
+      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "identity": {
+        "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "dev": 40,
+        "ino": 2640848,
+        "bytes": 54817524224,
+        "mtime_ns": 1791009083688077826,
+        "ctime_ns": 1791009083692077878
+      },
+      "sha256": "d8c93fe5ed4483b4eee4a135055aac1b54a84acb25431d8487f5925f1a926119"
+    },
+    {
+      "layer": 12,
+      "gu": 18,
+      "down": 42,
+      "blob_bytes": 1715200,
+      "offsets": [
+        13701750144,
+        14026847104,
+        13464898944
+      ],
+      "extents": [
+        627200,
+        627200,
+        460800
+      ],
+      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "identity": {
+        "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "dev": 40,
+        "ino": 2640848,
+        "bytes": 54817524224,
+        "mtime_ns": 1791009083688077826,
+        "ctime_ns": 1791009083692077878
+      },
+      "sha256": "1bcb79b38e557b4bbf23449a28e020fae0fe7cba06de7df2d8f953994ebfce88"
+    }
+  ],
+  "environment": {
+    "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/usr/lib/x86_64-linux-gnu",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-admission-v4/tmp"
+  },
+  "native_environment": {
+    "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/usr/lib/x86_64-linux-gnu",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-numeric-admission-v4/tmp",
+    "STRATA_IQ3_PAIR": "1",
+    "STRATA_IQ3_PAIR_AUDIT": "1",
+    "STRATA_IQ2_PAIR": "0",
+    "STRATA_IQ2_PAIR_AUDIT": "0",
+    "STRATA_IQ_SINGLE_EXACT": "0",
+    "STRATA_IQ_MT_MIN": "2",
+    "STRATA_CPU_SERVICE": "0",
+    "STRATA_CPU_WORK_CENSUS": "0"
+  },
+  "environment_change": "Only TMPDIR moves to the new owned admission root;all inference settings remain immutable.",
+  "acceptance": "Original source/recipe/toolchain/ELF immutable;all35actual objects,625compiler inputs,22links and2absent unused exports checked. V3remains failed. New readelf admission then theunchanged two-format32expert/384serial/640threaded/392raw-call/181376NT1/181248paired numeric criteria. No speed,peakRSS,model qualification or new native build.",
+  "stopping": "Single-use actions;stop on any missing/changed evidence,owner,numeric,dispatch or budgetfailure. No hash refresh,source replacement,math/criteria change or retry.",
+  "budgets": {
+    "configure_wall": 90,
+    "build_wall": 240,
+    "check_wall": 60,
+    "rss": 3221225472,
+    "output": 2097152,
+    "total": 402653184,
+    "cpu": 900
+  },
+  "retention": "One existing V3CPUcandidate for immediate V4admission/numerics and next hot/cold timing,plus99KBownership fallback until successor qualification. No new build."
+}
