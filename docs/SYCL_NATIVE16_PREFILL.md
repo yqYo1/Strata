@@ -136,7 +136,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are removed. Detailed row histograms/process-memory snapshots stay in the
   original8a7283b8Git evidence,while current useful job/format/upload totals
   and individual request/copy results remain. All12coherent ELFs are unchanged.
-  The prospective `coherent_decode_pcie_speed_v1` controller at3a19121d now
+  The prospective `coherent_decode_pcie_speed_v2` controller,original3a19121d
+  with host-order correction2e2a7afa,now
   prepares six officialbench.sh processes R,C,C,R,R,C:finite0versus1/16
   missed-expert offload,EARLY0and static1256slots in both arms. Each process
   uses four warmups then32K-plus regular-code/varied-prose thinking-on long
