@@ -17,7 +17,7 @@ import check_qsa16_stream as base
 import check_expert_copy_runs as cpu
 
 P, B, RESULT = base.P, base.B, base.RESULT
-ROOT, KEY = B/'expert-copy-size-component-v1', 'expert_copy_size_component_v1'
+ROOT, KEY = B/'expert-copy-size-component-v2', 'expert_copy_size_component_v2'
 SEED, SEED_KEY = B/'coherent-prefill-native-v1/record.json', 'coherent_prefill_native_v1'
 TARGETS = ['sycl_expert_bank_test','prefill_expert_bank_plan_test']
 UNITS = {'tests/sycl/expert_bank.cpp','tests/expert_bank_plan.cpp','src/core/expert_cache.cpp',

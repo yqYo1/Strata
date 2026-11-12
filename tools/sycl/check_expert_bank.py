@@ -377,7 +377,7 @@ def copy_size_profile_rows(text,cap):
         if line.startswith('expert_bank_copy_host_profile ')]
     guards.require(len(timings)==len(profiles)==2,'two timing/accounting shapes required')
     result=[]
-    phases=('other_submit','upload_wrapper','reader_submit','final_drain')
+    phases=('other_submit','upload_wrapper','reader_submit_control','final_drain')
     for t,p,(payload,uploads,permanent) in zip(timings,profiles,[(2662400,641,383),(1510400,512,512)]):
         integers=dict(candidate=int(cap>1),payload=payload,logical_uploads=uploads,
             requested_H2D_bytes=payload*uploads,commands=copy_size_commands(permanent,uploads,cap),
@@ -386,8 +386,8 @@ def copy_size_profile_rows(text,cap):
         guards.require(set(t)==set(integers)|set(clocks)|{'eligible'} and
             all(int(t[k])==v for k,v in integers.items()),'wrong copy timing bytes/dispatch')
         timing={k:(float(v) if k in clocks else int(v)) for k,v in t.items()}
-        flags=dict(cap=cap,payload=payload,clock_switches=3073,intervals_disjoint=1,
-            coverage_conserved=1,exceptions=0,profiling_only=1)
+        flags=dict(cap=cap,payload=payload,clock_switches=2049,intervals_disjoint=1,
+            coverage_conserved=1,exceptions=0,profiling_only=1,reader_loop_control_included=1)
         floats=[phase+'_'+clock+'_ms' for phase in phases for clock in ('wall','thread')]+[
             'clock_change_ns','timer_estimate_ms']
         guards.require(set(p)==set(flags)|set(floats) and all(int(p[k])==v for k,v in flags.items()),
@@ -402,7 +402,7 @@ def copy_size_profile_rows(text,cap):
         guards.require(timing['eligible'] in (0,1) and bool(timing['eligible'])==eligible and
             timing['queue_ms']<=timing['wall_ms']+5 and timing['thread_ms']<=timing['wall_ms']+5,
             'eligibility/clock mismatch')
-        guards.require(abs(profile['timer_estimate_ms']-profile['clock_change_ns']*3073/1e6)<1e-8,
+        guards.require(abs(profile['timer_estimate_ms']-profile['clock_change_ns']*2049/1e6)<1e-8,
             'timer estimate/count mismatch')
         result.append(dict(timing=timing,host=profile,eligible=bool(eligible and
             profile['timer_estimate_ms']<=.01*timing['wall_ms'])))
@@ -418,10 +418,10 @@ def copy_size_controls():
                 wall_ms=200,queue_ms=180,thread_ms=100,empty_ms=1,eligible=1,
                 preparation_timed=0,guards_timed=0,actual_copy_read_drain_timed=1,model_qualified=0)
             p=dict(cap=cap,payload=payload,other_submit_wall_ms=1,other_submit_thread_ms=1,
-                upload_wrapper_wall_ms=98,upload_wrapper_thread_ms=48,reader_submit_wall_ms=99,
-                reader_submit_thread_ms=50,final_drain_wall_ms=2,final_drain_thread_ms=1,
-                clock_change_ns=100,clock_switches=3073,timer_estimate_ms=.3073,
-                intervals_disjoint=1,coverage_conserved=1,exceptions=0,profiling_only=1)
+                upload_wrapper_wall_ms=98,upload_wrapper_thread_ms=48,reader_submit_control_wall_ms=99,
+                reader_submit_control_thread_ms=50,final_drain_wall_ms=2,final_drain_thread_ms=1,
+                clock_change_ns=100,clock_switches=2049,timer_estimate_ms=.2049,
+                intervals_disjoint=1,coverage_conserved=1,exceptions=0,profiling_only=1,reader_loop_control_included=1)
             lines+=['expert_bank_copy_timing '+' '.join(f'{k}={v}' for k,v in t.items()),
                 'expert_bank_copy_host_profile '+' '.join(f'{k}={v}' for k,v in p.items())]
         return '\n'.join(lines)
@@ -429,8 +429,8 @@ def copy_size_controls():
         'valid profile control failed')
     valid=example(4)
     negatives=[valid.replace('upload_wrapper_wall_ms=98','upload_wrapper_wall_ms=99'),
-        valid.replace('reader_submit_thread_ms=50','reader_submit_thread_ms=nan'),
-        valid.replace('clock_switches=3073','clock_switches=3072'),
+        valid.replace('reader_submit_control_thread_ms=50','reader_submit_control_thread_ms=nan'),
+        valid.replace('clock_switches=2049','clock_switches=2048'),
         valid.replace('eligible=1','eligible=0'),valid.replace('exceptions=0','exceptions=1'),
         valid.replace('commands=354','commands=259'),valid.replace('cap=4','cap=4 cap=4')]
     for text in negatives:
@@ -444,7 +444,7 @@ def copy_size_controls():
 def copy_size_check(action):
     import build_expert_copy_runs as build
     import ur_validation as validation
-    root=B/'expert-copy-size-profile-v1';key='expert_copy_size_profile_v1'
+    root=B/'expert-copy-size-profile-v2';key='expert_copy_size_profile_v2'
     order=[dict(mode='cpu'),dict(mode='smoke')]+[dict(mode='profile',cap=cap,round=r)
         for r,caps in enumerate([(1,4,16,64,512),(512,64,16,4,1),(16,1,512,4,64)]) for cap in caps]
     def save(row):
@@ -473,6 +473,12 @@ def copy_size_check(action):
             guards.require(prior['complete'] and prior['ownership_closed'] and not prior['active']
                 and not prior['performance_qualified'] and all(not d['model_followup_permitted']
                     for d in prior['decisions']),'preserve original failed performance gates')
+            original_profile=validation.committed(build.RESULT,('expert_copy_size_profile_v1',))
+            guards.require(original_profile['stage']=='failed' and not original_profile['passed'] and
+                original_profile['ownership_closed'] and not original_profile['active'] and
+                len(original_profile['results'])==3 and original_profile['results'][-1]['native_exit_code']==0
+                and not original_profile['results'][-1]['samples'][1]['eligible'],
+                'preserve original1%clock-overhead refusal')
             env=dict(native['recipe']['environment'])
             guards.require({k:env[k] for k in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys',
                 'EnableDirectSubmission')}==dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',
@@ -483,6 +489,8 @@ def copy_size_check(action):
                 cpu_reference=json.loads((build.cpu.ROOT/'record.json').read_text())['checks'],
                 controls=controls,startup_controls=startup,active=False,ownership_closed=True,passed=False,complete=False,
                 performance_qualified=False,model_followup_permitted=False,
+                previous_attempt=dict(key='expert_copy_size_profile_v1',evidence_commit='00ac4489abf74027778dde87a2a44691989e62b6',
+                    decision='V1remains failed. V2reduces clock switches3073to2049;reader bucket explicitly includes loop/control. Original1%estimate limit,100msfloors and5%empty gate unchanged.'),
                 budgets=dict(wall=240,cpu=1200,rss_cap=12<<30,text_cap=64<<20,file_cap=64<<20,total_cap=256<<20),
                 plan='Commit fresh native/source/recipe and this plan before execution;commit each closed stage '
                     'before next. CPU:repeat513/8/22planner fixture. Smoke:trace all5caps at small/scratch/full-fit '
@@ -492,11 +500,13 @@ def copy_size_check(action):
                     'within each geometry. Require exact caps/cases/copy counts,source/map/guards/drain checks,'
                     'normal0,quiet validation,closed owners,no fresh fault,frozen source/runtime. Profiles need '
                     '100ms wall/queue,empty<=5%wall,disjoint conserved wall/thread accounting,zero exceptions '
-                    'and calibrated clock-change estimate<=1%wall. Stop first failure;no retry. Retain individual '
+                    'and calibrated clock-change estimate<=1%wall. Reader bucket includes loop/control;two '
+                    'per-expert clock pairs replace V1three,without loosening the original gates. Stop first failure;no retry. Retain individual '
                     'samples and per-cap ranges/medians. This is attribution/size-screening only;no performance '
                     'gate permits a model trial. Any subsequent clean speed comparison needs a new committed plan.',
                 limits='Host profile is current-thread CPU only. Upload wrapper may include internal waits;'
-                    'do not call it CPU model math. Queue interval includes copy/read/host gaps,not pure DMA. '
+                    'do not call it CPU model math. Reader submission includes loop/control;final drain includes '
+                    'end-marker submission and checked queue/runtime waits. Queue interval includes copy/read/host gaps,not pure DMA. '
                     'Calibration estimates clock bookkeeping,not full observer overhead. No clean gain,physical '
                     'bus traffic,saturation,model PP/TG,decode,physical262144/RESTORE or teardown qualification.',
                 retention='One temporary standalone fixture;coherent engine retained,no new engine generation. '

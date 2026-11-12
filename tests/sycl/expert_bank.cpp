@@ -270,7 +270,9 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
                     });
                     ++consumers;
                 }
-                accounting.enter(BankHostAccounting::other);
+                // Keep loop/control bookkeeping in the inclusive reader bucket.
+                // Two clock pairs per expert avoid charging a third pair for
+                // only these few instructions; the initial prefix is 'other'.
                 if (unwind && e==4) {
                     q.memcpy(&observed,status,4);
                     throw Stop{};
@@ -361,15 +363,15 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
             for (size_t i=0;i<4;++i) {sum_wall+=accounting.wall[i];sum_cpu+=accounting.cpu[i];switches+=accounting.entries[i];}
             need(!accounting.active && std::abs(sum_wall-wall_ms)<1e-5 && std::abs(sum_cpu-cpu_ms)<1e-5 &&
                 accounting.entries[1]==uint64_t(2*experts) && accounting.entries[2]==uint64_t(2*experts) &&
-                accounting.entries[0]==uint64_t(2*experts) && accounting.entries[3]==1,
+                accounting.entries[0]==0 && accounting.entries[3]==1,
                 "disjoint host accounting incomplete");
             std::cout<<"expert_bank_copy_host_profile cap="<<run_limit<<" payload="<<source_stride;
-            const std::array<const char*,4> names{"other_submit","upload_wrapper","reader_submit","final_drain"};
+            const std::array<const char*,4> names{"other_submit","upload_wrapper","reader_submit_control","final_drain"};
             for (size_t i=0;i<4;++i) std::cout<<" "<<names[i]<<"_wall_ms="<<accounting.wall[i]
                 <<" "<<names[i]<<"_thread_ms="<<accounting.cpu[i];
             std::cout<<" clock_change_ns="<<clock_change_ns<<" clock_switches="<<switches
                 <<" timer_estimate_ms="<<clock_change_ns*double(switches)/1e6
-                <<" intervals_disjoint=1 coverage_conserved=1 exceptions=0 profiling_only=1\n";
+                <<" intervals_disjoint=1 coverage_conserved=1 exceptions=0 profiling_only=1 reader_loop_control_included=1\n";
         }
     }
 }
