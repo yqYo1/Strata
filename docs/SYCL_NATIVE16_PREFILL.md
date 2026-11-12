@@ -111,7 +111,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   uncompiled generic-builder delta and named committed observers;old fallback
   ELF bytes are not inputs of this new reader. This is no new GPU/model result
   or permission to retire unresolved legacy generations. Use a fresh committed
-  plan for small decode-PCIe resource tradeoffs;source safety review is pending.
+  plan for small decode-PCIe resource tradeoffs. The first finite1/16/EARLY0
+  trial closes three no-fork copy fixtures and three thinking-on82input/32output
+  requests,normal0/quiet/closed/no freshfault. Each model request submits and
+  completes375ordinary-host-view copies/768896000requested bytes;these are not
+  physical traffic or bandwidth measurements. V1keeps an advancement hold:
+  native review finds missing strict host-view equality,request/footer pairing
+  and durable preflight failure/no-retry handling. Preserve its original
+  execution/counts;correct the controller and use a new committed32K/82/32K
+  plan before any performance comparison. No speed or adoption is established.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
