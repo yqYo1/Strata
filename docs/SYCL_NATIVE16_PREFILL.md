@@ -8,6 +8,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
+- The default-off exact selected-expert copy-run experiment is **not adopted**.
+  Main authored it from the existing Strata private bank under repository LICENSE;
+  no XeStrata implementation was used. GCC and fresh icpx CPU gates pass513
+  capacity/full-fit configurations,eight windows each and22negative cases. The
+  fresh six-TU fixture build uses native source98d0;small and maximum-span GPU
+  correctness,source/map/guard checks and enqueue-failure retirement pass.
+  The eight-process timing campaign at43d1a03e is closed:two traced diagnostics,
+  then six quiet independent processes ABBAAB,all normal0/eligible/owners closed
+  with no fresh fault. For ordinary384/payload2662400,wall medians are
+  371.933503ms reference versus517.427586ms candidate;all paired candidate/reference
+  ratios are1.398760/1.454521/1.382384. For full-fit512/payload1510400,medians are
+  175.042611 versus275.450563ms,ratios1.534542/1.744901/1.623707. Both prospective
+  performance gates fail;no model trial or adoption follows. Copy commands fall
+  641to259and512to1with identical requested H2D bytes,so fewer commands alone
+  did not shorten the dependency path. This is copy/helper/read/drain evidence,
+  not model PP/TG,physical bus traffic,saturation or a CPU-arithmetic diagnosis.
+  The existing faster coherent engine remains selected. The failed maximum-run
+  production selector/counters are removed;the current production prefill source
+  is restored exactly. Independent overflow checking and the run helper used by
+  the component fixture remain. Native max-copy modes
+  remain only for the imminent transfer-size/submission-versus-drain boundary
+  diagnostic;its source/plan/build must be separately committed before execution.
+  Resolve obsolete engine/fixture-reader holds before another engine build.
 - The historical partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
   **class-definition coherence hold**. The archive combined the new `Gemm`
   member declaration from `213dd970` with eleven original archive members,
@@ -56,25 +79,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The warmed adjacent slope is0.839074707ms/token;two lengths do not validate
   a fitted law or physical fixed cost. No cross-build gain,sustainedTG,task/agent,
   physical262144/RESTORE,ordinary teardown or model adoption is established.
-  Next validate Main's default-off exact expert-copy-run proposal isolated on
-  `feature/prefill-copy-runs`,then measure its whole upload path and model effect.
-  The child now passes513capacity/full-fit cases,eight windows each and22negative
-  controls in GCC and the fresh icpx CPU fixture. Its two-fixture build from98d0
-  has six fresh translation units,727compiler inputs/24links and zero uncovered
-  files. The first GPU envelope remains failed because it rejected the deliberate
-  before-main null-platform canary;native exit was0with no fresh fault. The
-  observer-only22b60fix preserves native inputs/ELFs,passes12startup controls and
-  a new traced small-device replay. Maximum-span device checks now pass at
-  6d3464e2:1,019,699,200/773,324,800-byte exact copy requests,checked readers,
-  scratch reuse and normal closure,without a fresh fault. These are API requests,
-  not measured physical bus transactions. Timing,model benefit,independent decode
-  and adoption remain unqualified. Native Luna-max review of the two closed
-  Orca audits finds no reachable production bounds/publication/lifetime defect.
-  Next commit the repeated-process timing controller,complete helper pins and
-  comparison/calibration plan;require eligibility fields even if native prints
-  PASS. The review predates the final device results;its smoke-live/large-unrun
-  wording is stale,not an unresolved live job. Migrate
-  obsolete97fda/old-fixture reader dependencies and retire ended generations before another engine build;
+  The exact-copy component campaign described above is now closed and rejected
+  for performance;its original source/evidence is retained through the merge.
+  No model trial or inference adoption follows. The failed production selector
+  is retired;the fixture helper remains for the imminent bounded transfer-size
+  and upload-submission/drain diagnostic. Migrate obsolete97fda/old-fixture
+  reader dependencies and retire ended generations before another engine build;
   preserve56cad9 and a347only for their still-named phase comparisons.
   Normal successful test/model logs and caches are retired:151files,20896310bytes;
   both current test/model roots retain only their records and model admission

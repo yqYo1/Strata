@@ -238,8 +238,8 @@ def build(stage):
                 require(len(planned)>=120 and {str(P/n) for n in required}<=units,
                         'complete selected engine/producer/Runtime compilation required')
             else:
-                require(units=={str(P/n) for n in UNITS} and len(planned)==5,
-                        'exact five-TU component build required')
+                require(units=={str(P/n) for n in UNITS} and len(planned)==len(UNITS),
+                        'exact declared component translation units required')
             row['planned_compilation']=planned;row['planned_translation_units']=sorted(v['file'] for v in planned)
             row['generated_inputs']={str(p.resolve()):sha(p) for p in (ROOT/'build').rglob('*')
                 if p.is_file() and p.suffix in ('.h','.hpp','.c','.cpp','.cxx','.inc')}
@@ -248,8 +248,8 @@ def build(stage):
             row['configured_files']={str(p.resolve()):sha(p) for p in paths};row['stage']='configured'
         else:
             row['actual_inputs']=ctx.census(row,outputs['dependencies'],outputs['compile'],
-                minimum_translation_units=120 if MODEL_BUILD else 5)
-            if MODEL_BUILD:
+                minimum_translation_units=120 if MODEL_BUILD else len(UNITS))
+            if MODEL_BUILD or len(TARGETS)>1:
                 row['binaries']={name:dict(path=str(ROOT/'build'/name),
                     sha256=sha(ROOT/'build'/name),bytes=(ROOT/'build'/name).stat().st_size,
                     origin_source_commit=row['native_source_commit']) for name in TARGETS}
