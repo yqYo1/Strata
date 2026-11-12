@@ -8,22 +8,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
-- The exact selected-expert copy-run experiment is **source only,not adopted**.
-  Main authored it independently from the existing Strata private bank and the
-  reviewed `physical_fill_expert_copy_source_review_20261112` contract;repository
-  LICENSE applies. It targets the measured upload-wrapper submission cost while
-  preserving selected bytes,per-expert slots and arithmetic order. The explicit
-  immutable `STRATA_SYCL_PREFILL_EXPERT_COPY_RUNS=1` uses only consecutive misses
-  in permanent packed slots;hits,gaps and scratch split runs. It requires the
-  immutable source view,same queue and staging0;unadmitted shapes retain their
-  existing route. Decode selection/placement is unchanged by construction,not
-  yet validated. Pending:finish the coherent32K/64K baseline;migrate obsolete
-  build-reader dependencies and retire ended generations;commit the full rebuild
-  recipe/plan;then Main serializes CPU slot/generation/byte equivalence,traced
-  small and maximum-span device guards/failure retirement,whole upload-path
-  timing and matched model/independent-decode gates. No benchmark is running in
-  this isolated child. The large pageable-copy runtime source question remains
-  conditional until current loaded-provider hashes/build identities are pinned.
+- The default-off exact selected-expert copy-run experiment is **not adopted**.
+  Main authored it from the existing Strata private bank under repository LICENSE;
+  no XeStrata implementation was used. GCC and fresh icpx CPU gates pass513
+  capacity/full-fit configurations,eight windows each and22negative cases. The
+  fresh six-TU fixture build uses native source98d0;small and maximum-span GPU
+  correctness,source/map/guard checks and enqueue-failure retirement pass.
+  The eight-process timing campaign at43d1a03e is closed:two traced diagnostics,
+  then six quiet independent processes ABBAAB,all normal0/eligible/owners closed
+  with no fresh fault. For ordinary384/payload2662400,wall medians are
+  371.933503ms reference versus517.427586ms candidate;all paired candidate/reference
+  ratios are1.398760/1.454521/1.382384. For full-fit512/payload1510400,medians are
+  175.042611 versus275.450563ms,ratios1.534542/1.744901/1.623707. Both prospective
+  performance gates fail;no model trial or adoption follows. Copy commands fall
+  641to259and512to1with identical requested H2D bytes,so fewer commands alone
+  did not shorten the dependency path. This is copy/helper/read/drain evidence,
+  not model PP/TG,physical bus traffic,saturation or a CPU-arithmetic diagnosis.
+  The existing faster coherent engine remains selected. Native max-copy modes
+  remain only for the imminent transfer-size/submission-versus-drain boundary
+  diagnostic;its source/plan/build must be separately committed before execution.
+  Resolve obsolete engine/fixture-reader holds before another engine build.
 - The historical partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
   **class-definition coherence hold**. The archive combined the new `Gemm`
   member declaration from `213dd970` with eleven original archive members,
