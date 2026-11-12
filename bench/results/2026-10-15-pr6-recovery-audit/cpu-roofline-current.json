@@ -1044,5 +1044,28 @@
       "ELF_and432dependencies_unchanged": true,
       "retained": "Current99KB CPUownership fixture,depfile/build/check records and committed recipe for the immediate real-block numeric preparation;review at its build boundary. No model/engine source or binary removed."
     }
+  },
+  "compact_cache_numeric_v1": {
+    "stage": "compile_failed_missing_fixture_include",
+    "source_commit": "39d5f5820f46551ec6c7918c3bdf124069fa9565",
+    "plan_commit": "828de3d019d9a4d981b6bb0719792c4f25680df1",
+    "plan_path": "bench/sycl/cpu_compact_hot/numeric-plan.json",
+    "plan_sha256": "fff19592e4b6746495176cb0b8cfa1830df84d9909be847f9f4c0140a0f75daf",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "numeric_fixture_executed": false,
+    "numerical_qualified": false,
+    "performance_qualified": false,
+    "normal_exit_codes": [
+      0,
+      1
+    ],
+    "failure": "compact_iq3xxs.hpp:14:10: fatal error: 'ggml-common.h' file not found",
+    "diagnosis": "Main fixture CMake gives its executable the GGML public include but omits the private ggml/src table-header path. Production reference compilation began;the numeric executable was never produced. No inference math or tolerance change is needed.",
+    "next": "Preserve this failed attempt;add the fixture private header path,commit a fresh V2source/plan/root,and repeat from a clean CPU-only build. No retry or hash refresh ofV1.",
+    "retention": "Original committed source/plan and compact failure suffice. Recover exact source/recipe,then retire ended partial objects/logs before another numeric build;retain current ownership fixture unchanged."
   }
 }
