@@ -306659,7 +306659,7 @@
     }
   },
   "expert_copy_size_profile_v2": {
-    "stage": "running",
+    "stage": "closed",
     "native_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1",
     "binaries": {
       "sycl_expert_bank_test": {
@@ -308556,6 +308556,126 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "profile",
+        "cap": 64,
+        "round": 2,
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "GPU_executed": true,
+        "native_pid": 2648630,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2648630,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "startup_errors": 0,
+        "case_checks": {
+          "count": 3,
+          "exact_geometry_counters": true,
+          "immutable_source_guards_private_map_and_checked_drain": true
+        },
+        "samples": [
+          {
+            "timing": {
+              "candidate": 1,
+              "payload": 2662400,
+              "logical_uploads": 641,
+              "requested_H2D_bytes": 1706598400,
+              "commands": 264,
+              "wall_ms": 369.823875,
+              "queue_ms": 344.893125,
+              "thread_ms": 339.0593279999998,
+              "empty_ms": 0.179057,
+              "eligible": 1,
+              "preparation_timed": 0,
+              "guards_timed": 0,
+              "actual_copy_read_drain_timed": 1,
+              "model_qualified": 0
+            },
+            "host": {
+              "cap": 64,
+              "payload": 2662400,
+              "other_submit_wall_ms": 0.00013,
+              "other_submit_thread_ms": 0.0009119999999640527,
+              "upload_wrapper_wall_ms": 188.5084889999996,
+              "upload_wrapper_thread_ms": 183.400485,
+              "reader_submit_control_wall_ms": 69.931345,
+              "reader_submit_control_thread_ms": 65.9113289999997,
+              "final_drain_wall_ms": 111.383911,
+              "final_drain_thread_ms": 89.74660199999995,
+              "clock_change_ns": 596.0400390625,
+              "clock_switches": 2049,
+              "timer_estimate_ms": 1.2212860400390626,
+              "intervals_disjoint": 1,
+              "coverage_conserved": 1,
+              "exceptions": 0,
+              "profiling_only": 1,
+              "reader_loop_control_included": 1
+            },
+            "eligible": true
+          },
+          {
+            "timing": {
+              "candidate": 1,
+              "payload": 1510400,
+              "logical_uploads": 512,
+              "requested_H2D_bytes": 773324800,
+              "commands": 8,
+              "wall_ms": 164.062174,
+              "queue_ms": 163.940105,
+              "thread_ms": 159.73362800000012,
+              "empty_ms": 0.158939,
+              "eligible": 1,
+              "preparation_timed": 0,
+              "guards_timed": 0,
+              "actual_copy_read_drain_timed": 1,
+              "model_qualified": 0
+            },
+            "host": {
+              "cap": 64,
+              "payload": 1510400,
+              "other_submit_wall_ms": 9.999999999999999e-05,
+              "other_submit_thread_ms": 0.000771000000288069,
+              "upload_wrapper_wall_ms": 79.0148179999999,
+              "upload_wrapper_thread_ms": 78.11832700000653,
+              "reader_submit_control_wall_ms": 77.75355399999995,
+              "reader_submit_control_thread_ms": 74.32227599999308,
+              "final_drain_wall_ms": 7.293702,
+              "final_drain_thread_ms": 7.29225400000022,
+              "clock_change_ns": 566.6904296875,
+              "clock_switches": 2049,
+              "timer_estimate_ms": 1.1611486904296875,
+              "intervals_disjoint": 1,
+              "coverage_conserved": 1,
+              "exceptions": 0,
+              "profiling_only": 1,
+              "reader_loop_control_included": 1
+            },
+            "eligible": true
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "cpu_reference": {
@@ -308582,8 +308702,8 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "performance_qualified": false,
     "model_followup_permitted": false,
     "previous_attempt": {
