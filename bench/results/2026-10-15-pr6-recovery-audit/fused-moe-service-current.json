@@ -309671,7 +309671,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "host_passed",
+    "stage": "closed",
     "source_commit": "1d1275816425f87c360bac78632a6fe684594164",
     "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "native_build": {
@@ -310192,12 +310192,206 @@
         }
       }
     ],
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "passed": true,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "262144",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "942",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.06",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 2869387,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "a04829a7223da71d2f2862a771b7ab956a16d0f8811066384e9628f5f9c155c2",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "memory_at_READY": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "59525",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "2816 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "2816 KiB",
+              "drm-total-gtt": "4263976 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "4263976 KiB",
+              "drm-total-vram0": "8905284 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "8905284 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "54048254440679",
+              "drm-total-cycles-vcs": "54048254440679",
+              "drm-total-cycles-vecs": "54048254440679",
+              "drm-total-cycles-bcs": "54048254440679",
+              "drm-total-cycles-ccs": "54048254440679"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "memory_after_requests": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "59525",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "0",
+              "drm-shared-system": "0",
+              "drm-resident-system": "0",
+              "drm-total-gtt": "4263976 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "4263976 KiB",
+              "drm-total-vram0": "9504132 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "9504132 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "54048861898098",
+              "drm-total-cycles-vcs": "54048861898098",
+              "drm-total-cycles-vecs": "54048861898098",
+              "drm-total-cycles-bcs": "54048861898098",
+              "drm-total-cycles-ccs": "54048861898098"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "routes": {
+          "actual_requests": 3,
+          "actual_pcie_fraction_display": "0.06",
+          "frozen_fraction": "1/16",
+          "frozen_pcie_num": 16,
+          "mode": 0,
+          "early_dispatch": false,
+          "copy_records": [
+            {
+              "submitted_blobs": 375,
+              "requested_bytes": 768896000,
+              "completed_blobs": 375,
+              "completed_bytes": 768896000,
+              "resident_host_view_groups": 375,
+              "other_registered_source_groups": 0,
+              "GPU_miss_groups": 375,
+              "CPU_unique_misses": 8909,
+              "CPU_entries": 12266
+            },
+            {
+              "submitted_blobs": 375,
+              "requested_bytes": 768896000,
+              "completed_blobs": 375,
+              "completed_bytes": 768896000,
+              "resident_host_view_groups": 375,
+              "other_registered_source_groups": 0,
+              "GPU_miss_groups": 375,
+              "CPU_unique_misses": 8909,
+              "CPU_entries": 12266
+            },
+            {
+              "submitted_blobs": 375,
+              "requested_bytes": 768896000,
+              "completed_blobs": 375,
+              "completed_bytes": 768896000,
+              "resident_host_view_groups": 375,
+              "other_registered_source_groups": 0,
+              "GPU_miss_groups": 375,
+              "CPU_unique_misses": 8909,
+              "CPU_entries": 12266
+            }
+          ],
+          "per_window_copy_bins_unavailable": true,
+          "physical_bus_traffic_or_saturation_qualified": false,
+          "numerical_task_or_speed_qualified": false
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "host_controls": {
       "positive": 2,
       "negative": 9,
@@ -310249,6 +310443,13 @@
       },
       {
         "label": "bounds",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "model",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
