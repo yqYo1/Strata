@@ -65,6 +65,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   both current test/model roots retain only their records and model admission
   still passes. The compact decision is under
   `retained_builds_review_20261103.coherent_closed_raw_retirement_20261112`.
+  The closed speed cohort separately retires354successful raw/cache files
+  (62679346bytes)and two consumed review transactions(7660bytes),after original
+  source/recipe recovery and owner closure. Configs/plans/receipts/runtime inputs,
+  compact samples and native builds remain;see its`artifact_retirement`field.
   Old partial-build and legacy provenance cleanup remains open;no global
   retirement is claimed.
   The existing physical full-context diagnostic and its host fixture are also
