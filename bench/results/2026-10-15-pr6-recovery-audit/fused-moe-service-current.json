@@ -298845,7 +298845,7 @@
     "next": "Preserve this refusal. Commit V2with explicit qualified model Python,caller/dependency identity and unchanged workload/route/closure criteria before preparation;do not retry V1or alter native qualification."
   },
   "coherent_prefill_model_v2": {
-    "stage": "host_passed",
+    "stage": "failed",
     "source_commit": "a2b462368b93dba6f2a7c2938b3b695e08f6b662",
     "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "native_build": {
@@ -299204,6 +299204,16 @@
       "negative": 13,
       "passed": true,
       "GPU_executed": false
+    },
+    "control_failure": {
+      "source_commit": "a2b462368b93dba6f2a7c2938b3b695e08f6b662",
+      "requested_stage": "device",
+      "required_stage": "run",
+      "exit_code": 1,
+      "native_execution_attempted": false,
+      "error": "one native process;no retry",
+      "finding": "The wrapper admitted device but its called production controller only accepts run. Its guard refused before Owner/native launch;the previous host admission stays preserved.",
+      "next": "Commit V3with matching prepare/host/run actions and exact launcher before fresh preparation;no V2retry."
     },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
