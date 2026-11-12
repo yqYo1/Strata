@@ -20,111 +20,6 @@ ExpertBankPlan plan(int slots, uint64_t free = Free, int64_t rows = 117488,
         max_alloc, requested, LayerMajorResidualDtype::bf16, slots, supported);
 }
 
-void upload_run_contract() {
-    uint64_t logical_uploads = 0, commands = 0, run_experts = 0, run_count = 0;
-    unsigned configurations = 0;
-    auto same = [](const ExpertBankSlots::Ticket& a, const ExpertBankSlots::Ticket& b) {
-        need(a.expert == b.expert && a.slot == b.slot && a.generation == b.generation &&
-            a.upload == b.upload && a.permanent == b.permanent);
-    };
-    for (int capacity = 1; capacity <= 512; ++capacity)
-        for (int full = 0; full <= int(capacity == 512); ++full) {
-            ExpertBankSlots reference(capacity, full), candidate(capacity, full);
-            std::array<int32_t,512> reference_data{}, candidate_data{};
-            reference_data.fill(-1); candidate_data.fill(-1);
-            ++configurations;
-            for (int window = 0; window < 8; ++window) {
-                if (window == 0 || window == 4) {
-                    reference.reset(); candidate.reset();
-                    // Nonascending first demands create hits inside later runs.
-                    for (int e : {511,7,256}) {
-                        auto a = reference.begin(e), b = candidate.begin(e); same(a,b);
-                        if (a.upload) {
-                            reference_data[size_t(a.slot)] = candidate_data[size_t(b.slot)] = e;
-                            reference.queued(a); candidate.queued(b);
-                        }
-                    }
-                }
-                std::array<bool,512> selected{};
-                for (int e = 0; e < 512; ++e)
-                    selected[size_t(e)] = window % 4 == 0 || window % 4 == 1 ||
-                        (window % 4 == 2 ? e % 7 != 0 : e >= 61 && e <= 129);
-                ExpertBankSlots::UploadRun accepted;
-                for (int e = 0; e < 512; ++e) if (selected[size_t(e)]) {
-                    auto a = reference.begin(e);
-                    if (a.upload) { reference_data[size_t(a.slot)] = e; reference.queued(a); }
-                    ExpertBankSlots::Ticket b;
-                    if (accepted.contains(e)) b = accepted.ticket(e);
-                    else {
-                        int count = candidate.permanent_run_length(e,512-e);
-                        for (int at = 1; at < count; ++at)
-                            if (!selected[size_t(e+at)]) { count = at; break; }
-                        if (count > 1) {
-                            const int used = candidate.permanent_used();
-                            accepted = candidate.begin_run(e,count);
-                            need(candidate.permanent_used() == used);
-                            for (int at = 0; at < count; ++at) {
-                                need(selected[size_t(e+at)]);
-                                const auto t = accepted.ticket(e+at);
-                                candidate_data[size_t(t.slot)] = e+at;
-                                need(uint64_t(t.slot)*Stride+Stride <= uint64_t(capacity)*Stride);
-                            }
-                            candidate.queued(accepted); b = accepted.ticket(e);
-                            ++commands; ++run_count; run_experts += uint64_t(count);
-                        } else {
-                            b = candidate.begin(e);
-                            if (b.upload) {
-                                candidate_data[size_t(b.slot)] = e; candidate.queued(b); ++commands;
-                            }
-                        }
-                    }
-                    same(a,b); logical_uploads += a.upload;
-                    // Each expert may have multiple GEMM jobs; none may see
-                    // another expert's bytes, including scratch consumers.
-                    for (int job = 0; job < 3; ++job)
-                        need(reference_data[size_t(a.slot)] == e && candidate_data[size_t(b.slot)] == e);
-                }
-                need(reference.permanent_used() == candidate.permanent_used());
-                for (int slot = 0; slot < capacity; ++slot)
-                    need(reference_data[size_t(slot)] == candidate_data[size_t(slot)]);
-            }
-        }
-    need(configurations == 513 && run_count > 0 && run_experts > run_count &&
-        commands == logical_uploads-run_experts+run_count);
-    const size_t before = negative;
-    ExpertBankSlots slots(4);
-    rejects([&] { (void)slots.begin_run(-1,2); });
-    rejects([&] { (void)slots.begin_run(511,2); });
-    rejects([&] { (void)slots.begin_run(0,0); });
-    rejects([&] { (void)slots.begin_run(0,4); });
-    auto run = slots.begin_run(0,3);
-    rejects([&] { slots.queued(run.first); });
-    rejects([&] { (void)slots.begin(0); });
-    rejects([&] { (void)slots.permanent_run_length(4,1); });
-    rejects([&] { slots.reset(); });
-    auto bad = run; --bad.count; rejects([&] { slots.queued(bad); });
-    bad = run; ++bad.first.generation; rejects([&] { slots.queued(bad); });
-    bad = run; ++bad.first.slot; rejects([&] { slots.queued(bad); });
-    bad = run; ++bad.first.expert; rejects([&] { slots.queued(bad); });
-    bad = run; bad.first.permanent = false; rejects([&] { slots.queued(bad); });
-    need(slots.permanent_used() == 0);
-    slots.queued(run); need(slots.permanent_used() == 3);
-    rejects([&] { slots.queued(run); });
-    rejects([&] { (void)slots.begin_run(0,1); }); // existing hit
-    rejects([&] { (void)slots.begin_run(3,1); }); // scratch is not a run
-    rejects([&] { (void)run.ticket(3); });
-    slots.reset(); rejects([&] { slots.queued(run); });
-    need(expert_bank_advance_generation(UINT64_MAX-512,512) == UINT64_MAX);
-    rejects<std::overflow_error>([] { (void)expert_bank_advance_generation(UINT64_MAX-511,512); });
-    rejects<std::overflow_error>([] { (void)expert_bank_advance_generation(UINT64_MAX,1); });
-    rejects([] { (void)expert_bank_advance_generation(0,0); });
-    rejects([] { (void)expert_bank_advance_generation(0,513); });
-    std::printf("expert_bank_upload_runs configurations=%u windows_each=8 logical_uploads=%llu "
-        "commands=%llu runs=%llu run_experts=%llu negative_checks=%zu PASS\n", configurations,
-        (unsigned long long)logical_uploads,(unsigned long long)commands,
-        (unsigned long long)run_count,(unsigned long long)run_experts,negative-before);
-}
-
 int main() try {
     std::array<uint8_t, 128> source{};
     using View = strata::core::ResidentExpertLayer;
@@ -272,7 +167,6 @@ int main() try {
     rejects([] { ExpertBankSlots invalid(511,true); });
     std::printf("expert_bank_packed formats=7 layers_each=2 full_fit512=PASS boundary=PASS negative_checks=%zu PASS\n",
         negative - packed_negative_begin);
-    upload_run_contract();
     std::puts("expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED");
     return 0;
 } catch (const std::exception& e) {

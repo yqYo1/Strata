@@ -8,55 +8,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
-- The default-off exact selected-expert copy-run experiment is **not adopted**.
-  Main authored it from the existing Strata private bank under repository LICENSE;
-  no XeStrata implementation was used. GCC and fresh icpx CPU gates pass513
-  capacity/full-fit configurations,eight windows each and22negative cases. The
-  fresh six-TU fixture build uses native source98d0;small and maximum-span GPU
-  correctness,source/map/guard checks and enqueue-failure retirement pass.
-  The eight-process timing campaign at43d1a03e is closed:two traced diagnostics,
-  then six quiet independent processes ABBAAB,all normal0/eligible/owners closed
-  with no fresh fault. For ordinary384/payload2662400,wall medians are
-  371.933503ms reference versus517.427586ms candidate;all paired candidate/reference
-  ratios are1.398760/1.454521/1.382384. For full-fit512/payload1510400,medians are
-  175.042611 versus275.450563ms,ratios1.534542/1.744901/1.623707. Both prospective
-  performance gates fail;no model trial or adoption follows. Copy commands fall
-  641to259and512to1with identical requested H2D bytes,so fewer commands alone
-  did not shorten the dependency path. This is copy/helper/read/drain evidence,
-  not model PP/TG,physical bus traffic,saturation or a CPU-arithmetic diagnosis.
-  The existing faster coherent engine remains selected. The failed maximum-run
-  production selector/counters are removed;the current production prefill source
-  is restored exactly. Independent overflow checking and the run helper used by
-  the component fixture remain. Native max-copy modes
-  remain in source for bounded transfer-size/submission/drain diagnostics.
-  The fresh23bb44b5V1fixture passes CPU513/8/22and17traced small cases across
-  caps1/4/16/64/512,scratch,cancellation and failed enqueues. Its first cap1
-  profile exits normally0with byte/guard/conservation checks and no fault,but
-  full-fit clock estimate1.722516ms exceeds the original1%limit1.575341ms.
-  The campaign remains failed at00ac4489;the remaining14profiles did not run.
-  This is not qualified attribution or clean speed. V2reduces clock switches
-  3073to2049,includes loop/control explicitly in the renamed reader bucket,and
-  keeps the same1%estimate,100mswall/queue and5%empty gates. Sourcef98dd238now
-  passes fresh six-TU/727compiler/24link-input census and all17CPU/smoke/profile
-  stages at316a03df,with15independent profile processes,quiet validation,normal0,
-  closed owners and no fresh fault. Packed512cap1/4/16/64/512wall medians are
-  182.559/163.365/150.087/160.561/276.343ms;ordinary384is373.391/378.244/
-  401.888/372.722/541.131ms. Each setting has3processes;individual spreads and
-  conserved current-thread/wall buckets remain in the result. Cost at packed512
-  cap512moves into later reader-submission calls;the buckets can include runtime
-  waits and do not establish CPU arithmetic or physical-resource saturation.
-  Cap16is selected for a separately committed clean comparison,with geometry-
-  specific decisions. No model follow-up follows from these profile samples.
-  Native Luna-max review corrects the report's false payload mismatch and byte
-  arithmetic;no other reachable code defect was found. Source review is not
-  hardware/runtime qualification. Physical resource saturation remains unknown.
-  Closed max-copy artifacts were retired after2366Git source/dependency and
-  727compiler/24link-input recovery checks. The later V1size fixture/raw output
-  is also retired:63files,45650129regular content bytes;records and original
-  failed outcomes remain. The coherent engine is unchanged. The earlier GCC V1
-  provenance failure(nine uncaptured headers)remains explicit and unqualified.
-  Retire consumed research transactions at the next decision;resolve obsolete
-  engine/fixture-reader holds before another engine build.
+- The Main-authored exact selected-expert copy-run experiment is **closed and
+  not adopted**. Correctness/byte/lifetime checks pass,but both prospective
+  performance gates fail in each clean campaign. Maximum-run evidence43d1a03e
+  records ordinary384 wall371.933503->517.427586ms and packed512
+  175.042611->275.450563ms. The separately planned cap16 campaign at7ba50b1f
+  closes six quiet independent processes ABBAAB with per-expert clocks off:
+  ordinary384 medians371.899923->380.143548ms,paired candidate/reference ratios
+  1.026201/0.991949/1.107934;packed512 155.988031->152.884204ms,ratios
+  1.057468/0.956912/0.980102. The lower packed median does not satisfy its
+  all-three-pairs gate. All samples are eligible,normal0,owners closed,no fresh
+  fault;neither campaign permits a model trial. Four component rows are in the
+  CSV,with original individual samples/decisions in the linked result.
+  The V1clock-calibration failure00ac4489 remains failed. V2at316a03df
+  completes15profile processes with conserved disjoint wall/current-thread
+  buckets;later reader submission can include runtime waits. Requested bytes,
+  API counts and these timings do not establish physical bus traffic,CPU math
+  or hardware saturation. The native review corrects the earlier report's false
+  payload mismatch and arithmetic;no other reachable defect was found there.
+  The failed prototype-only run APIs,modes,tests and controllers are retired to
+  original sourcef98dd238/controller0a029517. The original single-ticket overflow
+  check and independent generic-builder fixes remain;production prefill is
+  unchanged. After2366Git source/dependency and727compiler/24link-input recovery,
+  the final fixture/raw products are retired:143files,45865160regular content
+  bytes. No symlink-target bytes are counted. The coherent engine is unchanged.
+  Native review of the last controller and consumed research cleanup remain
+  pending. The earlier GCC V1provenance failure remains unqualified.
 - The historical partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
   **class-definition coherence hold**. The archive combined the new `Gemm`
   member declaration from `213dd970` with eleven original archive members,
@@ -107,9 +84,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   physical262144/RESTORE,ordinary teardown or model adoption is established.
   The exact-copy component campaign described above is now closed and rejected
   for performance;its original source/evidence is retained through the merge.
-  No model trial or inference adoption follows. The failed production selector
-  is retired;the fixture helper remains for the imminent bounded transfer-size
-  and upload-submission/drain diagnostic. Migrate obsolete97fda/old-fixture
+  No model trial or inference adoption follows. The failed production selector,
+  prototype fixture helpers/modes and ended standalone build are retired.
+  Migrate obsolete97fda/old-fixture
   reader dependencies and retire ended generations before another engine build;
   preserve56cad9 and a347only for their still-named phase comparisons.
   Normal successful test/model logs and caches are retired:151files,20896310bytes;
