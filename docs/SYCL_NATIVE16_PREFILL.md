@@ -259,9 +259,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its prospectively declared combined component gate requires all4fresh cells
   to improve in all3pairs plus the original23passing cells,with the same CPU
   archives. V1remains failed. Commit the new plan before execution;no model
-  qualification follows from these component checks. The old plan/source
-  are recoverable from`3cbf1c597`/`cd156b4ba`. The old fixture has an exact
-  source/recipe retirement proof pending the committed new consumer.
+  qualification follows from these component checks. Source`b3032cc18`and
+  plan`7f8b40ae4`build timing ELF`7d67f886`;its506compiler/26link inputs,
+  all35archive members and ELFheader/interpreter admission pass. Both fresh
+  120case nonperiodic checks pass,normal0and closed;the RCCRRCspeed cohort is
+  in progress under`cpu-compact-production-pool-timing-v2`. The actual
+  generate/core wiring and12eallocation repair remain unbuilt.
+  The old plan/source are recoverable from`3cbf1c597`/`cd156b4ba`. After42project
+  and291GGMLsource-pin recovery,the new committed consumer retires the old
+  V1fixture's13files/3728035bytes;V2admission passes after deletion. Keep current
+  CPUarchives/numeric8c2e and the new timing fixture;no V1timing byte is consumed.
   Actual limiting hardware resource remains unknown.
   The native review finds two conditional allocation-fallback gaps in generate:
   collecting resident views and sizing dispatch metadata can throw outside the
