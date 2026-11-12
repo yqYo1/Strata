@@ -335,8 +335,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   short-span refusal and real Cache-owner retirement. Speed uses20cells per
   layer:1or5workers,1/3/6/7/32jobs,reuse/stream32,in RCCRRCorder. Each cached
   shape is decided independently;blocked shapes must select native math and
-  retain separate nonregression samples. This source is not built or measured
-  yet. Core/generate and allocation-fallback qualification remain separate.
+  retain separate nonregression samples. Source81914a76e and plan0de6e20a8
+  now pass the fresh37-object build,637compiler-input/22external-link census
+  and both CPU-only ELFchecks. Both layers pass240regular/60forced pool cases,
+  independent phase/NToracles and384GUcases;all four native check children
+  exit0and close normally. Speed is in the original frozen RCCRRCcohort,with
+  no gain or model conclusion yet. Core/generate and allocation-fallback
+  qualification remain separate. See`compact_small_batch_pool_v1`in the
+  CPUresult. The metadata contains17eligible layers/8704experts:encoded block
+  payload alone would add13.906GiB while retaining raw weights. This arithmetic
+  excludes index/Entry/allocator overhead and does not prove model RAMadmission.
   The superseded pool.cpp,old timing controller and two ended plans are removed
   from the active tree:four files,91353bytes,recoverable respectively from
   c61ee3e7b,b3032cc18,e2fd9e722 and7f8b40ae4. Their original pins are verified
