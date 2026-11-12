@@ -583,7 +583,181 @@ def copy_size_check(action):
         guards.require(outcome['passed'],'copy-size profile failed')
 
 
+def copy_size_clean_rows(text,cap):
+    import math
+    rows=[]
+    lines=[s for s in text.splitlines() if s.startswith('expert_bank_copy_timing candidate=')]
+    guards.require(len(lines)==2 and 'expert_bank_copy_host_profile ' not in text,
+        'clean comparison must disable per-expert clocks')
+    for line,(payload,uploads,permanent) in zip(lines,[(2662400,641,383),(1510400,512,512)]):
+        tokens=[v.split('=',1) for v in line.split()[1:]]
+        guards.require(all(len(v)==2 for v in tokens) and len(set(v[0] for v in tokens))==len(tokens),
+            'malformed/duplicate clean fields')
+        values=dict(tokens);clocks=('wall_ms','queue_ms','thread_ms','empty_ms')
+        fixed=dict(candidate=int(cap>1),payload=payload,logical_uploads=uploads,
+            requested_H2D_bytes=uploads*payload,commands=copy_size_commands(permanent,uploads,cap),
+            preparation_timed=0,guards_timed=0,actual_copy_read_drain_timed=1,model_qualified=0)
+        guards.require(set(values)==set(fixed)|set(clocks)|{'eligible'} and
+            all(int(values[k])==v for k,v in fixed.items()),'clean bytes/dispatch differs')
+        row={k:float(v) if k in clocks else int(v) for k,v in values.items()}
+        guards.require(all(math.isfinite(row[k]) and row[k]>=0 for k in clocks) and
+            row['queue_ms']<=row['wall_ms']+5 and row['thread_ms']<=row['wall_ms']+5,
+            'invalid clean clocks')
+        eligible=row['wall_ms']>=100 and row['queue_ms']>=100 and row['empty_ms']<=.05*row['wall_ms']
+        guards.require(row['eligible'] in (0,1) and bool(row['eligible'])==eligible,'clean eligibility mismatch')
+        rows.append(row)
+    return rows
+
+
+def copy_size_clean_check(action):
+    import ast
+    import statistics
+    import build_expert_copy_runs as build
+    import ur_validation as validation
+    root=B/'expert-copy-size-clean-v1';key='expert_copy_size_clean_v1'
+    def save(row):
+        (root/'record.json').write_text(json.dumps(row,indent=2)+'\n')
+        public=json.loads(build.RESULT.read_text());public[key]=row
+        build.RESULT.write_text(json.dumps(public,indent=2)+'\n')
+    def prerequisite(native):
+        profile=validation.committed(build.RESULT,('expert_copy_size_profile_v2',))
+        guards.require(profile==json.loads((B/'expert-copy-size-profile-v2/record.json').read_text()) and
+            profile['stage']=='closed' and profile['passed'] and profile['complete'] and
+            profile['ownership_closed'] and not profile['active'] and len(profile['results'])==17 and
+            profile['binaries']==native['binaries'] and profile['native_source_commit']==native['native_source_commit']
+            and all(v['passed'] and v['complete'] and v['ownership_closed'] and v['fresh_faults']==[]
+                for v in profile['results']) and all(s['eligible'] for v in profile['results'][2:]
+                    for s in v['samples']),'closed complete cap/host-accounting gate required')
+        old=ast.parse(subprocess.check_output(['git','show',native['native_source_commit']+':tools/sycl/check_expert_bank.py'],cwd=P))
+        current=ast.parse(Path(__file__).read_text());names={'copy_size_check','copy_size_cases',
+            'copy_size_profile_rows','copy_run_startup_errors','copy_run_startup_controls'}
+        functions=lambda tree:{n.name:ast.dump(n,include_attributes=False) for n in tree.body
+            if isinstance(n,ast.FunctionDef) and n.name in names}
+        guards.require(functions(old)==functions(current) and set(functions(old))==names,
+            'original profile qualification functions changed')
+        return dict(key='expert_copy_size_profile_v2',record_sha256=digest(B/'expert-copy-size-profile-v2/record.json'),
+            native_source_commit=profile['native_source_commit'],all17stages_passed=True,original_gate_AST_unchanged=True)
+    def current(row,committed=True):
+        if committed:guards.require(validation.committed(build.RESULT,(key,))==row,'commit clean stage before next')
+        native,_=build.observer_native(row['observer_admission'])
+        guards.require(prerequisite(native)==row['profile_prerequisite'],'profile/native evidence changed')
+        p=Path(row['runtime_manifest']['path'])
+        guards.require(digest(p)==row['runtime_manifest']['sha256'] and all(digest(p)==h
+            for p,h in json.loads(p.read_text()).items()),'clean runtime providers changed')
+        guards.require(row['boot']==Path('/proc/sys/kernel/random/boot_id').read_text().strip() and
+            row['driver']==guards.driver_guard(),'clean boot/driver changed')
+    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB);guards.no_model_owners([])
+        if action=='prepare':
+            guards.require(not root.exists() and key not in json.loads(build.RESULT.read_text()),'fresh clean plan required')
+            native,proof=build.observer_native();gate=prerequisite(native)
+            profile=validation.committed(build.RESULT,('expert_copy_size_profile_v2',))
+            # Verify the new parser against original native sample fields,then
+            # refuse malformed/false eligibility and accidental observer output.
+            controls=0
+            for v in profile['results'][2:]:
+                text='\n'.join('expert_bank_copy_timing '+' '.join(f'{k}={x}' for k,x in s['timing'].items())
+                    for s in v['samples'])
+                guards.require(all(r['eligible'] for r in copy_size_clean_rows(text,v['cap'])),'clean parser replay failed')
+                for changed in [text.replace('wall_ms=','wall_ms=nan invalid='),text+'\nexpert_bank_copy_host_profile bogus=1',
+                    text.replace('eligible=1','eligible=0')]:
+                    refused=False
+                    try:copy_size_clean_rows(changed,v['cap'])
+                    except (RuntimeError,ValueError):refused=True
+                    guards.require(refused,'clean parser invalid control accepted');controls+=1
+            row=dict(stage='ready',source_commit=proof['observer_source_commit'],
+                native_source_commit=native['native_source_commit'],observer_admission=proof,
+                profile_prerequisite=gate,binary=native['binaries']['sycl_expert_bank_test'],
+                native_validation_probe=native['native_validation_probe'],environment=profile['environment'],
+                runtime_manifest=profile['runtime_manifest'],boot=profile['boot'],driver=profile['driver'],
+                parser_replay_samples=30,negative_controls=controls,order=[1,16,16,1,1,16],results=[],
+                active=False,ownership_closed=True,passed=False,complete=False,performance_qualified=False,
+                budgets=dict(wall=240,cpu=1200,rss_cap=12<<30,text_cap=64<<20,file_cap=64<<20,total_cap=256<<20),
+                plan='Commit source and this prospective plan before six quiet independent native processes '
+                    'ABBAAB(cap1/16),three opposite-order pairs. Same fixed warmup/ordinary384then packed512 '
+                    'geometries,bytes/readers and checked final drain;per-expert clocks must be off. Record all '
+                    'wall/queue/thread/empty values and actual copy commands. Each geometry judged independently: '
+                    'all three paired candidate/reference wall ratios<1 and candidate median<reference median '
+                    'permit only that geometry to advance to a separately committed production/model plan. '
+                    'No arbitrary minimum percentage;mixed outcomes remain failed,with a new plan needed for '
+                    'more evidence. All samples need100mswall/queue and empty<=5%wall;also maximum empty over '
+                    'six<=5%minimum wall per geometry. Require exact source/ELF/provider/startup/cap/flags/counts,'
+                    'byte/source/guard/private-map/drain checks,normal0,quiet validation,no fresh fault and closed '
+                    'ownership. Stop first such failure;no retries. Stop after six samples either performance outcome.',
+                selection='Cap16selected from completed profiling screen:packed512 median150.087ms versus '
+                    'cap1 182.559ms. Ordinary384median401.888versus373.391is not a positive profile result;'
+                    'do not apply a packed-geometry win to ordinary placement. Profiling is not clean gain evidence.',
+                limits='Synthetic production copy helper/readers only. First large allocation/use per process;'
+                    'no warmed-model,physical bus traffic,saturation,model PP/TG,decode,full262144/RESTORE or '
+                    'ordinary teardown qualification. Parameter validation and retained-reference preload charged.',
+                retention='Reuse exact f98dd238native fixtures;no recompile or new generation. Keep individual '
+                    'clean samples and decision;retire normal profiling/clean traces/cache after source/evidence '
+                    'review. Legacy engine reader/provenance holds remain before another engine build.')
+            root.mkdir(mode=0o700);current(row,False);save(row)
+            print('Prepared six-process clean cap1/16 comparison;commit before run.',flush=True);return
+        row=json.loads((root/'record.json').read_text());current(row);index=len(row['results'])
+        guards.require(row['stage'] in ('ready','running') and index<6 and all(v['passed'] for v in row['results']),
+            'inspect existing clean owner/outcome;no retry')
+        cap=row['order'][index];case=root/f'process-{index}';guards.require(not case.exists(),'existing clean process')
+        case.mkdir(mode=0o700)
+        for name in ('tmp','cache'):(case/name).mkdir(mode=0o700)
+        probe=row['native_validation_probe'];env=dict(row['environment'],TMPDIR=str(case/'tmp'),
+            XDG_CACHE_HOME=str(case/'cache'),NEO_CACHE_DIR=str(case/'cache/neo'),SYCL_CACHE_DIR=str(case/'cache/sycl'),
+            LD_PRELOAD=probe['library']['path'],STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
+            UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
+            UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(case/'validation.log'))
+        env.pop('UR_LOG_TRACING',None)
+        cursor=next(s.split(': ',1)[1] for s in subprocess.check_output(['journalctl','-k','-b','-n','0',
+            '--show-cursor','--no-pager'],text=True,timeout=15).splitlines() if s.startswith('-- cursor: '))
+        outcome=dict(cap=cap,passed=False,complete=False,host_probe_accepted=False);scope=None
+        def persist():
+            (case/'execution.json').write_text(json.dumps(dict(outcome,active=bool(scope and scope.active),
+                commands=scope.commands if scope else []),indent=2)+'\n')
+        scope=supervision.Owner(case/'owned',persist)
+        try:
+            event,out,err=scope.run('clean',[row['binary']['path'],'--copy-runs-size',str(cap)],env,P,**row['budgets'])
+            text,errors=out.read_text(),err.read_text();outcome.update(native_pid=event['pid'],native_exit_code=event['exit_code'])
+            guards.require(supervision.closed(event) and event['exit_code']==0 and not re.search(
+                'terminate called|cleanup failed|teardown uncertain',errors),'clean native child failed')
+            outcome['validation'],outcome['startup_errors']=copy_run_startup_errors(errors,event['pid'],False)
+            guards.require(outcome['validation']['loader']==probe['loader']['path'] and
+                f'expert_bank_copy_size cap={cap} profiling=0' in text and 'expert_bank_copy_size PASS model=UNRUN' in text,
+                'actual clean startup/dispatch differs')
+            log=case/'validation.log';guards.require(not log.exists() or not log.stat().st_size,'clean validation error')
+            cases=copy_size_cases(text,cap);outcome['case_checks']=dict(count=len(cases),passed=True)
+            outcome['samples']=copy_size_clean_rows(text,cap)
+            guards.require(all(v['eligible'] for v in outcome['samples']),'clean interval ineligible')
+            current(row);outcome.update(complete=True,host_probe_accepted=True)
+        except BaseException as error:outcome['error']=repr(error)
+        finally:
+            validation.finish(outcome,scope,cursor,row['boot']);outcome['passed']=bool(outcome['passed'] and
+                outcome['complete'] and outcome.get('driver_after')==row['driver']);persist();row['results'].append(outcome)
+            row.update(stage='running' if outcome['passed'] else 'failed',active=bool(scope.active),
+                ownership_closed=outcome['ownership_closed'])
+            if outcome['passed'] and len(row['results'])==6:
+                decisions=[]
+                for i in range(2):
+                    values=[v['samples'][i] for v in row['results']]
+                    a=[v for v in values if not v['candidate']];b=[v for v in values if v['candidate']]
+                    ratios=[next(v['wall_ms'] for v in values[j:j+2] if v['candidate'])/
+                        next(v['wall_ms'] for v in values[j:j+2] if not v['candidate']) for j in (0,2,4)]
+                    calibration=max(v['empty_ms'] for v in values)<=.05*min(v['wall_ms'] for v in values)
+                    ma=statistics.median(v['wall_ms'] for v in a);mb=statistics.median(v['wall_ms'] for v in b)
+                    gain=calibration and all(v<1 for v in ratios) and mb<ma
+                    decisions.append(dict(payload=values[0]['payload'],reference_median_wall_ms=ma,
+                        candidate_median_wall_ms=mb,paired_candidate_over_reference=ratios,
+                        calibration_passed=calibration,mechanism_gain_gate_passed=gain,
+                        model_followup_permitted=gain,model_qualified=False))
+                row.update(stage='closed',passed=True,complete=True,decisions=decisions,
+                    performance_qualified=all(v['mechanism_gain_gate_passed'] for v in decisions))
+            save(row)
+        print(json.dumps({k:outcome.get(k) for k in ('cap','passed','complete','ownership_closed','samples','error')}),flush=True)
+        guards.require(outcome['passed'],'clean copy-size stage failed')
+
+
 def main():
+    if sys.argv[1:] in (['copy-size-clean-prepare'],['copy-size-clean-next']):
+        copy_size_clean_check(sys.argv[1].rsplit('-',1)[1]);return 0
     if sys.argv[1:] in (['copy-size-prepare'],['copy-size-next']):
         copy_size_check(sys.argv[1].rsplit('-',1)[1]);return 0
     if sys.argv[1:] in (['smoke'],['validate'],['packed-smoke'],['packed-validate']):

@@ -88,6 +88,65 @@ def context():
 
 
 
+def observer_native(expected=None):
+    """A new committed observer policy never refreshes the original build pins.
+
+    Recover the full original snapshot and require every native/generated/SDK/
+    link input and both ELFs unchanged. Only the two reviewed,uncompiled Python
+    observers may differ; a new plan freezes their exact new source revision.
+    """
+    row=json.loads((ROOT/'record.json').read_text())
+    require(base.validation.committed(RESULT,(KEY,))==base.compact(row) and
+        row['stage']=='built' and row['passed'] and row['complete'] and
+        row['ownership_closed'] and not row['active'],'closed original component required')
+    before=row['project']['source_sha256']
+    recovered={p:hashlib.sha256(raw).hexdigest() for p,raw in base.common.source.blobs(
+        P,row['project']['revision'],before)}
+    after=base.common.source.pin(P,base.common.PREFIXES)['source_sha256']
+    allowed={'tools/sycl/build_expert_copy_runs.py','tools/sycl/check_expert_bank.py'}
+    changed={p:dict(original=before[p],observer=after[p]) for p in before
+        if p in after and before[p]!=after[p]}
+    require(recovered==before and set(before)==set(after) and set(changed)==allowed,
+        'only the two prospectively reviewed uncompiled observers may change')
+    revision=expected['observer_source_commit'] if expected else base.common.source.git(
+        P,'rev-parse','HEAD').decode().strip()
+    for p in allowed:
+        require(hashlib.sha256(base.common.source.git(P,'show',revision+':'+p)).hexdigest()==after[p],
+            'commit exact new observer source before admission')
+    require(prerequisite()==row['build_prerequisite'],'original CPU source/evidence changed')
+    for pin in row['dependencies']:
+        source={p:hashlib.sha256(raw).hexdigest() for p,raw in base.common.source.blobs(
+            Path(pin['root']),pin['revision'],pin['source_sha256'])}
+        require(source==pin['source_sha256'] and all(sha(Path(pin['root'])/p)==h for p,h in source.items()),
+            'original dependency inputs changed')
+    require(sha(SEED)==row['recipe_seed']['sha256'] and
+        sha(row['external_inputs']['path'])==row['external_inputs']['sha256'] and
+        all(sha(p)==h for p,h in row['toolchain'].items()) and all(sha(p)==h for p,h in
+            json.loads(Path(row['external_inputs']['path']).read_text()).items()),
+        'original recipe/compiler/SDK changed')
+    require(all(sha(p)==h for p,h in (row['configured_files']|row['generated_inputs']).items())
+        and sha(row['actual_inputs']['path'])==row['actual_inputs']['sha256'],
+        'actual generated/build/census inputs changed')
+    actual=json.loads(Path(row['actual_inputs']['path']).read_text())
+    require(all(sha(p)==h for family in ('compiled','generated','links') for p,h in actual[family].items())
+        and row['actual_inputs']['translation_units']==6 and row['actual_inputs']['uncovered']==0
+        and row['actual_inputs']['class_definition_coherence']['header_sha256']==sha(HEADER),
+        'original complete native/header/link inputs changed')
+    require(set(row['binaries'])==set(TARGETS) and all(Path(v['path']).stat().st_size==v['bytes']
+        and sha(v['path'])==v['sha256'] for v in [*row['binaries'].values(),*row['preserved_binaries']]),
+        'fixture or preserved engine changed')
+    require(context().probe_qualification()==(row['native_validation_probe'],row['validation_qualification']),
+        'qualified startup probe changed')
+    proof=dict(original_native_source=row['native_source_commit'],observer_source_commit=revision,
+        exact_observer_deltas=changed,original_source_recovered_files=len(before),
+        actual_native_compiler_files=row['actual_inputs']['compiler_files'],
+        actual_external_link_files=row['actual_inputs']['external_link_files'],
+        native_and_fixture_inputs_unchanged=True,native_recompiled=False,GPU_result_inherited=False)
+    require(expected is None or proof==expected,'frozen observer admission changed')
+    return row,proof
+
+
+
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'fresh fixture build required')
     gate=prerequisite();seed=json.loads(SEED.read_text())
