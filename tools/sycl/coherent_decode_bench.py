@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import socket
 import sys
+from types import SimpleNamespace
 
 sys.dont_write_bytecode = True
 import coherent_native_reuse as reuse
@@ -20,7 +21,7 @@ import coherent_prefill_bench as prefill
 import pool_spin as runner
 
 P, B, RESULT = reuse.P, reuse.B, reuse.RESULT
-ROOT, KEY = B / 'coherent-decode-pcie-speed-v2', 'coherent_decode_pcie_speed_v2'
+ROOT, KEY = B / 'coherent-decode-pcie-speed-v3', 'coherent_decode_pcie_speed_v3'
 THIS = 'tools/sycl/coherent_decode_bench.py'
 PYTHON = prefill.model.PYTHON
 ARMS = ('reference', 'candidate', 'candidate', 'reference', 'reference', 'candidate')
@@ -86,7 +87,8 @@ def environment(row, plan):
     env = prefill.context().environment(row, plan)
     env.update(STRATA_SYCL_VERIFY_ARENA_COPY='1', STRATA_SYCL_VERIFY_PCIE_EARLY='0',
         STRATA_SYCL_VERIFY_OVERLAP='1', STRATA_IQ3_PAIR_AUDIT='0',
-        STRATA_SYCL_Q6_ROUTE_AUDIT='0', STRATA_CPU_SERVICE='0', STRATA_CPU_WORK_CENSUS='0')
+        STRATA_SYCL_Q6_ROUTE_AUDIT='0', STRATA_CPU_SERVICE='0', STRATA_CPU_WORK_CENSUS='0',
+        STRATA_SNAPSHOT_VERIFY='1')
     require(not any(k in env for k in runner.OBSERVERS)
         and all(v == '0' for k, v in env.items() if '_PROFILE' in k or '_AUDIT' in k)
         and env['STRATA_SYCL_PREFILL_MOE_CENSUS'] == '0'
@@ -205,6 +207,55 @@ def copy_controls():
     return dict(passed=True, positive=2, rejected=len(cases), GPU_executed=False)
 
 
+def request_evidence(text, samples):
+    """Keep short warmup routing separate from the timed long-prefill contract."""
+    headers = list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read'
+        r'[^\n]*, (\d+) generated[^\n]*$', text, re.M))
+    require(len(headers) == len(samples), 'actual request/footer coverage differs')
+    previous, retained = 0, []
+    for i, (header, sample) in enumerate(zip(headers, samples)):
+        require(tuple(map(int, header.groups())) == tuple(sample[k] for k in
+            ('prompt_tokens', 'reused_tokens', 'read_tokens', 'generated_tokens'))
+            and sample['reused_tokens'] == 0, 'actual MTP request extent differs')
+        rows = shared.gen.draft_rows(text[previous:header.start()]); cells = sample['read_tokens']-1
+        require(all(r['mode'] == 2 and r['path'] in ('batched', 'token') and 0 < r['cells'] <= 8192 for r in rows),
+            'invalid observed draft callback')
+        if i >= 4:
+            expected = [8192]*(cells//8192)+([cells%8192] if cells%8192 else [])
+            require(sample['read_tokens'] >= 32768 and rows
+                and all(r['path'] == 'batched' for r in rows)
+                and [r['cells'] for r in rows] == expected, 'timed long draft chunks do not conserve')
+        else:
+            require(sample['read_tokens'] < 32768 and sum(r['cells'] for r in rows) <= cells,
+                'short warmup callback bounds differ')
+        retained.append(dict(read_tokens=sample['read_tokens'], draft_cells=sum(r['cells'] for r in rows),
+            batch_count=len(rows), scope='long_batched8192_qualified' if i >= 4 else 'warmup_observation_only'))
+        previous = header.end()
+    require(not shared.gen.draft_rows(text[previous:]), 'unbound trailing draft callback')
+    return retained
+
+
+def draft_controls():
+    samples = [dict(prompt_tokens=n, read_tokens=n, reused_tokens=0, generated_tokens=g)
+        for n, g in ((74,24),(263,1),(909,1),(1068,8),(32769,1024))]
+    chunks = [[], [262], [512,396], [512,512,43], [8192]*4]
+    text = ''
+    for s, parts in zip(samples, chunks):
+        text += ''.join(f'strata serve: DRAFT_PREFILL path=batched mode=2 cells={n}\n' for n in parts)
+        text += f'strata serve: prompt {s["read_tokens"]} tokens = 0 reused + {s["read_tokens"]} read, {s["generated_tokens"]} generated\n'
+    out = request_evidence(text, samples)
+    require(out[0]['draft_cells'] == 0 and out[-1]['draft_cells'] == 32768, 'short/long literal callback controls')
+    bad = [text.replace('cells=8192', 'cells=8191'), text.replace('path=batched mode=2 cells=8192',
+        'path=token mode=2 cells=8192'), text.replace('mode=2', 'mode=1'),
+        text+'strata serve: DRAFT_PREFILL path=batched mode=2 cells=1\n']
+    for value in bad:
+        try: request_evidence(value, samples)
+        except RuntimeError: pass
+        else: raise RuntimeError('invalid timed-long draft coverage accepted')
+    return dict(passed=True, positive=1, rejected=len(bad), GPU_executed=False,
+        scope='Warmup zero/smaller callbacks and strict long8192coverage;not model execution.')
+
+
 def route(text, read):
     require(32768 <= read <= 65537, 'unplanned ordinary long input')
     out = prefill.context().request_route(text, dict(read=read, heads=1))
@@ -266,6 +317,11 @@ def runner_context():
     ctx.select_mode('cohort'); ctx.ROOT, ctx.KEY, ctx.WORKLOAD_ID = ROOT, KEY, WORKLOAD_ID
     ctx.ARMS = tuple((a, 0) for a in ARMS)
     ctx.original_decision = ctx.decision
+    # Override only this private context's called reader; keep the historical
+    # campaign and its original all-request8192 contract unchanged.
+    ctx.shared = SimpleNamespace(**vars(shared))
+    ctx.shared.gen = SimpleNamespace(**vars(shared.gen))
+    ctx.shared.gen.request_evidence = request_evidence
     ctx.current, ctx.environment, ctx.save, ctx.compact = current, environment, save, compact
     ctx.route, ctx.official, ctx.decision, ctx.clean_observers = route, official, decision, clean_observers
     return ctx
@@ -277,6 +333,13 @@ def prepare():
     require(failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
         and failed['ownership_closed'] and not failed['active'] and failed['processes'] == []
         and failed['failed_action'] == 'host', 'preserve original V1 host prelaunch failure')
+    stopped = reuse.build.validation.committed(RESULT, ('coherent_decode_pcie_speed_v2',))
+    require(stopped['stage'] == 'failed' and not stopped['passed'] and not stopped['complete']
+        and not stopped['active'] and len(stopped['processes']) == 1
+        and stopped['post_failure_closure']['closed_after_failure']
+        and stopped['failure_diagnosis']['actual_native_executed']
+        and not stopped['failure_diagnosis']['actual_long_request_started'],
+        'preserve failed V2marker admission and require actual owned failure closure')
     n, proof, prior, providers = basis()
     contract, manifest = runner.model.python_manifest()
     assets = shared.models.model_pins(prior['configuration'], prior['model_assets'], full=True)
@@ -293,6 +356,13 @@ def prepare():
             stage='failed', GPU_executed=False,
             correction='V1saved successful copy controls before the inherited host gate rechecked committed state. '
                 'V2keeps controls local until host closure;native/configuration/workload/performance criteria unchanged.'),
+        previous_marker_attempt=dict(key='coherent_decode_pcie_speed_v2', source_commit=stopped['source_commit'],
+            stage='failed', actual_native_executed=True, long_request_started=False,
+            correction='V2omitted the presence-enabled STRATA_SNAPSHOT_VERIFY callback marker required by '
+                'generation_engine.request_evidence. V3enables this nominal marker in both arms beforeexec. '
+                'Warmup normal-request admission is separate from strict timed-long8192MTPcoverage:the '
+                'existing short strategy can omit callbacks or use smaller chunks. No trace/timer/census,'
+                'native math/placement/workload/long-performance criteria change.'),
         plan=dict(question='Does assigning1/16of distinct decode misses to existing GPU copies improve sustained generation?',
             evidence='Corrected finite1/16/EARLY0 same-build32769/82/32769handoff passes. Existing caller/pool/wait '
                 'observations do not establish saturation. This changes CPU/GPU/PCIe work distribution,not native math.',
@@ -302,7 +372,10 @@ def prepare():
                 '8192throughput BF16/vLLM ordered-exp/bulk1/staging0,largeGU/head2/dense1. ARENA_COPY1,'
                 'VERIFY_OVERLAP1,EARLY0 and qualified runtime safety/preload in both arms. Only finite '
                 '--pcie-frac0/0.0625 differs. No native build or process environment mutation.',
-            observers='Keep quiet parameter validation and the retained-reference preload. No trace,per-job census,'
+            observers='Keep quiet parameter validation,the retained-reference preload and nominal DRAFT_PREFILL '
+                'callbacks via presence-enabled STRATA_SNAPSHOT_VERIFY1 in both arms. Native source has only '
+                'this callback print and a parked-session verification branch;conversation cache0 and no RESTORE '
+                'leave the latter unexecuted. No trace,per-job census,'
                 'CPU service/work,timing,query or caller observers. Ordinary native request/copy/cache footers remain. '
                 'Read counters/providers at paused gates outside request clocks. Requested bytes are not physical traffic.',
             acceptance='All6processes/12long requests must have>=32768fresh input,>=1024generated including thinking,'
@@ -311,6 +384,11 @@ def prepare():
                 'draft and rounded-time joins,exact private host-view/retirement conservation. Baseline copies0;'
                 'candidate long copies positive with positive CPU remainder. Source/build/12ELFs/provider/model/owner '
                 'identities exact,normal0,quiet validation,no freshfault;all15full asset hashes before/after cohort.',
+            warmup_contract='All4official warmups require normal SSE/journal and exact native prompt/copy '
+                'count/draft/clock binding. Their short-prefill route may have no draft callback or smaller '
+                'chunks;record observed valid mode2cells<=read-1 without claiming full batched warmup coverage. '
+                'Timed long requests alone require full read-1cells in exact8192chunks through batched mode2. '
+                'This is a prospective source-appropriate contract,not a pass or retry of failed V2.',
             decision='Keep individual samples and all3adjacent paired TG,prompt and TTFT ratios per workload. '
                 'Reproducible TG gain requires all3candidate/referenceTG>1,without a minimum floor. Strong code '
                 'requires every acceptance>=.60;weak prose every<=.40. Class failure does not stop collection. '
@@ -352,10 +430,10 @@ def execute(action):
     try:
         if INDEX is None:
             current(row)
-            controls = copy_controls()
+            controls = copy_controls(); drafts = draft_controls()
             runner.comparison.host(runner_context())
             row = json.loads((ROOT / 'record.json').read_text())
-            row['copy_controls'] = controls; save(row)
+            row['copy_controls'] = controls; row['draft_controls'] = drafts; save(row)
         else:
             runner_context().run(INDEX)
     except BaseException as error:

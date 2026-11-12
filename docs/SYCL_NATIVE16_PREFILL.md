@@ -136,7 +136,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are removed. Detailed row histograms/process-memory snapshots stay in the
   original8a7283b8Git evidence,while current useful job/format/upload totals
   and individual request/copy results remain. All12coherent ELFs are unchanged.
-  The prospective `coherent_decode_pcie_speed_v2` controller,original3a19121d
+  The prospective `coherent_decode_pcie_speed_v3` controller,original3a19121d
   with host-order correction2e2a7afa,now
   prepares six officialbench.sh processes R,C,C,R,R,C:finite0versus1/16
   missed-expert offload,EARLY0and static1256slots in both arms. Each process
@@ -148,7 +148,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   refuses that mutation. Preserve the failure;the separately plannedV2keeps
   controls local until host closure,with native/settings/workload/criteria
   unchanged. V2passes both current-source frontend probes and2positive/9negative
-  copy/API binding controls,with normal closed host owners. Actual long runs
+  copy/API binding controls,with normal closed host owners. Its first reference
+  native process completes74/263/909/1068-input warmups then fails before the
+  first long request:the clean environment omitted presence-enabled
+  STRATA_SNAPSHOT_VERIFY,so the inherited request reader cannot find nominal
+  DRAFT_PREFILL callbacks. Preserve V2failed;the owned failure termination and
+  all original identities/session are closed,with no fresh fault. Original
+  incomplete observation/ownership fields remain unchanged;the subsequent
+  actual closure is recorded separately. V3adds only those common nominal
+  callbacks,without timers/trace/census or math changes. Its prospective reader
+  also separates normal short-warmup admission from the timed-long8192MTP
+  contract:short inputs retain their existing route and can omit callbacks or
+  use smaller chunks. Warmup API/prompt/copy counts and clocks still bind;
+  timed long requests must cover read-1cells exactly in batched mode2/8192
+  chunks. V2remains failed under its original all-request contract. New host/long checks
   remain unexecuted. Strict API/prompt/copy counts,drafts and
   rounded clocks are joined;zero baseline and positive long-candidate private
   host-view counts must conserve. Commit each closure before the next process.

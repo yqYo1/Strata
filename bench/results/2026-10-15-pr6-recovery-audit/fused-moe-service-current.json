@@ -312097,7 +312097,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "native_observer_admission": {
       "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
@@ -312439,12 +312439,34 @@
         "environment_sha256": "3777aa4011fc98e1a1f289d095ac41bae86470e1000138c6ba20def84ca72337"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": false,
+        "error": "RuntimeError(\"owned benchmark failed: RuntimeError('draft-KV marker route/chunks do not conserve request')\")",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "whole_bytes": 469762048,
     "budgets": {
       "wall": 2700,
@@ -312488,6 +312510,38 @@
       "positive": 2,
       "rejected": 9,
       "GPU_executed": false
+    },
+    "failure_diagnosis": {
+      "actual_native_executed": true,
+      "actual_long_request_started": false,
+      "actual_completed_warmup_inputs": [
+        74,
+        263,
+        909,
+        1068
+      ],
+      "actual_completed_warmup_outputs": [
+        24,
+        1,
+        1,
+        8
+      ],
+      "original_model_executed_field": "Legacy gate flag stayedfalse before the first long-request gate,not proof of no native execution.",
+      "cause": "Clean coherent environment omitted STRATA_SNAPSHOT_VERIFY. The native callback marker at generate.cpp:5708 is presence-enabled;the inherited generation_engine.request_evidence requires that marker even for all4warmups. No long generation was released.",
+      "source_guard_sha256": "f59cfe1d32016e2b46300a31fc10bad51a5d83b4dd53617e560fbd16b6071617",
+      "next": "New V3plan adds only common pre-exec STRATA_SNAPSHOT_VERIFY=1 nominal draft callback markers. All performance,route,thinking,source,owner and workload gates remain;preserve V2failed,no retry or speed claim."
+    },
+    "post_failure_closure": {
+      "checked_utc": "2026-11-12T08:49:15.011968+00:00",
+      "original_owned_identities_checked": 4,
+      "same_identity_processes_remaining": 0,
+      "original_session_members_remaining": 0,
+      "direct_child_reaped": true,
+      "original_session_empty": true,
+      "original_outcome_ownership_closed_unchanged": false,
+      "command_sha256": "ca0bc8057a529d372b7ee2d1c4c8721d565ba4e646980ca45a07d2fd15ea513d",
+      "closed_after_failure": true,
+      "meaning": "Main rechecked original PID/start identities and complete original SID after the failed owned termination. Original incomplete observation and failure remain intact;no normal native exit is claimed."
     },
     "source_inputs": {
       "files": 721,
