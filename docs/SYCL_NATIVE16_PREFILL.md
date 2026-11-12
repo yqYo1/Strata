@@ -235,16 +235,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controller pins and rechecks topology. Old raw samples/gain gates remain a CPU
   screen,not cold-DRAM or model evidence. The original V1missing-header refusal
   remains failed. The retained engine ELF and its prefill/decode paths are
-  unchanged;new source is opt-in and model/performance validation is pending. The ended
-  ownership ELF/build and routine V4output are retired after source recovery:
-  9files/192066bytes;the numeric reader still passes. Preserve the consumed
-  ownership check receipt and V3archive/input proofs until their old reader is
-  migrated/retired at the next timing-build boundary;new pool timing uses the
-  fresh qualified archives instead of old CPUobjects.
-  Closed timing output and consumed numeric-research payloads are now retired;
-  individual samples and compact provenance remain in Git. The CPUchild remains
-  for migration/retirement of its path-bound source
-  readers. Legacy GPUfixture/IR/deployment holds remain separate.
+  unchanged;new source is opt-in and model/performance validation is pending.
+  The next whole-pool timing source`cd156b4ba`and plan`3cbf1c597`include
+  lookup/lease handoff,GU,host hidden quantization,Down and synchronous waits.
+  They select12synthetic cells per format:1worker or5workers+host,1/6/32jobs,
+  reuse or stream32. Separate R,C,C,R,R,Cprocesses and three eligible batches
+  per cell decide each gain. The controller verifies all35reused archive members
+  against the original compiled objects;no old CPUgeneration is consumed.
+  Build/numerical/performance execution remains pending at this source boundary.
+  Closed old lifetime/numeric/admission/leaf roots are now physically retired:
+  92files,17763285regular content bytes,after42project revision/path pins,
+  291GGMLpins,625compiler/22link inputs and34old archive members are recovered
+  and checked. Original individual samples and failures remain in Git. The new
+  timing admission passes after deletion. The integrated CPUchild at`762d2ff47`
+  is retired remotely,locally and as a worktree;all original revisions remain
+  ancestors of the pushed permanent primary. Current fresh pool archives and
+  the coherent GPUengine remain. Legacy GPUfixture/IR/deployment holds stay separate.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
