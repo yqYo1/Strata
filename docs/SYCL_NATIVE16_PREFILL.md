@@ -181,8 +181,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   one pair does not establish reproducible gain or a hardware bottleneck.
   Candidate2also closes normally0/quiet/owned/no freshfault:the same3602/8911
   generated counts and draft acceptance give14.409354/9.383257TG,with
-  50.893/39.551sTTFT. Three of six processes are closed;the remaining matched
-  references and final pair decisions stay pending.
+  50.893/39.551sTTFT. Reference3also closes normally0/quiet/owned/no freshfault,
+  with2815/6823outputs and15.086125/9.104069TG. Four of six processes are closed;
+  second-pair candidate/reference TG ratios are0.955140/1.030666. Remaining
+  samples and final pair decisions stay pending;length/acceptance differences
+  still prevent a causal hardware attribution.
   Its69routine output/cache files/links(13086031regular content bytes)are now
   retired after committed samples and original-source checks. A Main cleanup
   module-name error stopped the first postcheck;the preserved inventory then
@@ -217,8 +220,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   grouped numeric evidence remain unqualified. No source bounds/lifetime
   defect was confirmed. Leave EARLY0through cohort closure;new fixture and
   runtime admission must precede any early model/speed trial. The shared
-  immutable snapshot is retained for three new CPU-representation,cache-policy
-  and bounded-GPU-worklist reports and their native reviews. See
+  immutable snapshot and three CPU-representation,cache-policy and bounded-GPU-
+  worklist reports now have completed native reviews. Main read only short
+  digests;compact corrected facts are in the index. Their closed duplicate
+  payloads await pushed facts/source recovery and retirement before process4. See
   `coherent_decode_pcie_speed_v3.pre_repeat_raw_retirement`;review new raw output
   after each subsequent process closure. The legacy19reader/source holds,
   final full asset hashes and adoption gates remain open;no global artifact
@@ -1822,6 +1827,17 @@ and0.354..0.481s allocation/encoding costs remain charged in its original
 [comparison](https://github.com/yqYo1/Strata/blob/286b4a132b960a3a633511173846b57ebef32cee/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
 This component result does not establish production critical-path benefit,
 physical RAM traffic or model adoption. Its original source is313e5c4bc.
+
+The source-only child`experiment/cpu-compact-cache`now pins Main's bounded,
+frozen compact-GU ownership component at`09ca4f1613d5e4f0ca5be80fb5dc0e8f691e34c3`.
+It restores only the original owned kernel and adds known-byte admission,
+independent leases and explicit decode/NT1guards. Primary measurement inputs
+are unchanged. No build,numeric/performance pass or production integration
+is claimed. Its maintained plan is`bench/sycl/cpu_compact_hot/README.md`on that
+child;after the active cohort closes,commit its exact CPU-only recipe and
+qualify ownership,real-block dispatch and hot/cold timing. Keep the child only
+for that concrete validation,then merge useful original commits into
+`feature/sycl`or retire rejected source. Legacy reader/build holds remain open.
 
 The block-local activation-LUT screen is also closed and **rejected**.
 Source3406abc97 and ELF6144036d passed nine controller tests,633actual compiler
