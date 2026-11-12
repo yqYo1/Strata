@@ -182,11 +182,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Candidate2also closes normally0/quiet/owned/no freshfault:the same3602/8911
   generated counts and draft acceptance give14.409354/9.383257TG,with
   50.893/39.551sTTFT. Reference3also closes normally0/quiet/owned/no freshfault,
-  with2815/6823outputs and15.086125/9.104069TG. Four of six processes are closed;
-  second-pair candidate/reference TG ratios are0.955140/1.030666. Remaining
+  with2815/6823outputs and15.086125/9.104069TG. Reference4also closes normally0/
+  quiet/owned/no freshfault,with the same2815/6823outputs and15.037120/9.073271TG.
+  Five of six processes are closed;the final candidate remains unexecuted.
+  The second pair's candidate/reference TG ratios are0.955140/1.030666. Remaining
   samples and final pair decisions stay pending;length/acceptance differences
   still prevent a causal hardware attribution.
-  Its69routine output/cache files/links(13086031regular content bytes)are now
+  Candidate2's69routine output/cache files/links(13086031regular content bytes)are now
   retired after committed samples and original-source checks. A Main cleanup
   module-name error stopped the first postcheck;the preserved inventory then
   reconciles all12unchangedELFs and generated inputs before advancement.
@@ -1844,6 +1846,19 @@ child;after the active cohort closes,commit its exact CPU-only recipe and
 qualify ownership,real-block dispatch and hot/cold timing. Keep the child only
 for that concrete validation,then merge useful original commits into
 `feature/sycl`or retire rejected source. Legacy reader/build holds remain open.
+The completed source audit at09ca4f16confirms no source index/encode-publication
+rollback defect,but retains serialized publication/model-role preconditions,
+known-payload versus peak-RSS limits,and actual paired-versus-GGML numeric
+admission. Its12project/2GGMLpins match;the IQ3paired implementation itself
+was outside that audit's pins. Main has committed the ownership-only controller
+at`ca8f8cb8e275b5e0554f0a12a8b0b34963cc3d96`and generated recipe/budgets at
+`d65bb75bca80dad90931bb33a5697214637e0911`. The CPU-only source remains unbuilt;
+after cohort closure,run its locked build/check before preparing independent
+real-block dispatch and speed gates. No Source audit or ownership marker
+qualifies arithmetic,physical RAM or model performance. The next numeric plan
+must pin the actual paired helper in`src/kernels/cpu/iq_single_avx2.cpp`and its
+`iq_avx2.hpp`declaration,then exercise production dispatch with explicit startup
+flags rather than assuming that the paired reference was selected.
 
 The block-local activation-LUT screen is also closed and **rejected**.
 Source3406abc97 and ELF6144036d passed nine controller tests,633actual compiler
