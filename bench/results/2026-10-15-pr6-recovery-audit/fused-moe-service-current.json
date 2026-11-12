@@ -110832,6 +110832,36 @@
         ],
         "report_and_review_hashes_in_index": true
       }
+    },
+    "coherent_decode_copy_boundary_20261112": {
+      "files": 2984,
+      "regular_content_bytes": 591846816,
+      "symlinks": 15,
+      "symlink_targets_not_counted": true,
+      "physical_reclaimed_bytes_unknown": true,
+      "manifest_sha256": "85ba04ada120ed30cdda0e9d63591537011186a1038d70a1921002afd48ff207",
+      "temporary_inventory_retired_after_verified_deletion": true,
+      "native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "native_source_dependency_files": 2361,
+      "actual_compiler_inputs": 1470,
+      "external_link_inputs": 29,
+      "current12ELFs_unchanged": true,
+      "retired_research_roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-generation-reader-census-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-generation-reader-review-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-pcie-share-admission-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-pcie-share-review-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-adaptive-phase-boundary-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-adaptive-phase-review-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-decode-copy-controller-audit-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-decode-copy-controller-review-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-decode-copy-controller-v2-audit-20261112",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-decode-copy-controller-v2-review-20261112"
+      ],
+      "retired_old_model_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-decode-transfer-smoke-v1",
+      "retained_current_record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-decode-transfer-long-v2/record.json",
+      "evidence_before_compaction": "8a7283b899430f4dfd297c685bc83eff516e537a",
+      "older_engine_reader_and_provenance_holds_remain": true
     }
   },
   "cache_map_cpu_census_entry_v1": {
@@ -310268,64 +310298,6 @@
           },
           "full_executable_address_space_qualified": false
         },
-        "memory_at_READY": {
-          "status": "observed",
-          "clients": [
-            {
-              "drm-driver": "xe",
-              "drm-client-id": "59525",
-              "drm-pdev": "0000:05:00.0",
-              "drm-total-system": "2816 KiB",
-              "drm-shared-system": "0",
-              "drm-resident-system": "2816 KiB",
-              "drm-total-gtt": "4263976 KiB",
-              "drm-shared-gtt": "0",
-              "drm-resident-gtt": "4263976 KiB",
-              "drm-total-vram0": "8905284 KiB",
-              "drm-shared-vram0": "0",
-              "drm-resident-vram0": "8905284 KiB",
-              "drm-total-stolen": "0",
-              "drm-shared-stolen": "0",
-              "drm-resident-stolen": "0",
-              "drm-total-cycles-rcs": "54048254440679",
-              "drm-total-cycles-vcs": "54048254440679",
-              "drm-total-cycles-vecs": "54048254440679",
-              "drm-total-cycles-bcs": "54048254440679",
-              "drm-total-cycles-ccs": "54048254440679"
-            }
-          ],
-          "skipped_oversized": 0,
-          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
-        },
-        "memory_after_requests": {
-          "status": "observed",
-          "clients": [
-            {
-              "drm-driver": "xe",
-              "drm-client-id": "59525",
-              "drm-pdev": "0000:05:00.0",
-              "drm-total-system": "0",
-              "drm-shared-system": "0",
-              "drm-resident-system": "0",
-              "drm-total-gtt": "4263976 KiB",
-              "drm-shared-gtt": "0",
-              "drm-resident-gtt": "4263976 KiB",
-              "drm-total-vram0": "9504132 KiB",
-              "drm-shared-vram0": "0",
-              "drm-resident-vram0": "9504132 KiB",
-              "drm-total-stolen": "0",
-              "drm-shared-stolen": "0",
-              "drm-resident-stolen": "0",
-              "drm-total-cycles-rcs": "54048861898098",
-              "drm-total-cycles-vcs": "54048861898098",
-              "drm-total-cycles-vecs": "54048861898098",
-              "drm-total-cycles-bcs": "54048861898098",
-              "drm-total-cycles-ccs": "54048861898098"
-            }
-          ],
-          "skipped_oversized": 0,
-          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
-        },
         "routes": {
           "actual_requests": 3,
           "actual_pcie_fraction_display": "0.06",
@@ -310410,6 +310382,14 @@
         "Durably claim/close host/device/model preflight attempts before cursor/probe work."
       ],
       "next": "New committed V2controller/plan with adversarial host controls and live32K/82/32Khandoff. Do not advance V1as a qualified route or speed result."
+    },
+    "artifact_retirement": {
+      "boundary": "coherent_decode_copy_boundary_20261112",
+      "controller_source_recovered_files": 327,
+      "raw_products_retired": true,
+      "private_record_retained": false,
+      "meaningful_counts_and_original_outcomes_preserved": true,
+      "older_engine_generations_not_retired_here": true
     },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -311091,64 +311071,6 @@
           },
           "full_executable_address_space_qualified": false
         },
-        "memory_at_READY": {
-          "status": "observed",
-          "clients": [
-            {
-              "drm-driver": "xe",
-              "drm-client-id": "59541",
-              "drm-pdev": "0000:05:00.0",
-              "drm-total-system": "2816 KiB",
-              "drm-shared-system": "0",
-              "drm-resident-system": "2816 KiB",
-              "drm-total-gtt": "4263976 KiB",
-              "drm-shared-gtt": "0",
-              "drm-resident-gtt": "4263976 KiB",
-              "drm-total-vram0": "8905284 KiB",
-              "drm-shared-vram0": "0",
-              "drm-resident-vram0": "8905284 KiB",
-              "drm-total-stolen": "0",
-              "drm-shared-stolen": "0",
-              "drm-resident-stolen": "0",
-              "drm-total-cycles-rcs": "54097499412241",
-              "drm-total-cycles-vcs": "54097499412241",
-              "drm-total-cycles-vecs": "54097499412241",
-              "drm-total-cycles-bcs": "54097499412241",
-              "drm-total-cycles-ccs": "54097499412241"
-            }
-          ],
-          "skipped_oversized": 0,
-          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
-        },
-        "memory_after_requests": {
-          "status": "observed",
-          "clients": [
-            {
-              "drm-driver": "xe",
-              "drm-client-id": "59541",
-              "drm-pdev": "0000:05:00.0",
-              "drm-total-system": "0",
-              "drm-shared-system": "0",
-              "drm-resident-system": "0",
-              "drm-total-gtt": "4896808 KiB",
-              "drm-shared-gtt": "0",
-              "drm-resident-gtt": "4896808 KiB",
-              "drm-total-vram0": "9680912 KiB",
-              "drm-shared-vram0": "0",
-              "drm-resident-vram0": "9680912 KiB",
-              "drm-total-stolen": "0",
-              "drm-shared-stolen": "0",
-              "drm-resident-stolen": "0",
-              "drm-total-cycles-rcs": "54099666608906",
-              "drm-total-cycles-vcs": "54099666608906",
-              "drm-total-cycles-vecs": "54099666608906",
-              "drm-total-cycles-bcs": "54099666608906",
-              "drm-total-cycles-ccs": "54099666608906"
-            }
-          ],
-          "skipped_oversized": 0,
-          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
-        },
         "routes": {
           "actual_requests": 3,
           "actual_pcie_fraction_display": "0.06",
@@ -311307,104 +311229,6 @@
                     "nonempty_experts_across_layers": 22320,
                     "split_experts_across_layers": 131,
                     "maximum_job_rows": 8192,
-                    "row_bins": [
-                      {
-                        "lower_inclusive": 1,
-                        "upper_exclusive": 16,
-                        "jobs": 3800,
-                        "expert_rows": 22636
-                      },
-                      {
-                        "lower_inclusive": 16,
-                        "upper_exclusive": 32,
-                        "jobs": 1567,
-                        "expert_rows": 35891
-                      },
-                      {
-                        "lower_inclusive": 32,
-                        "upper_exclusive": 64,
-                        "jobs": 1876,
-                        "expert_rows": 86556
-                      },
-                      {
-                        "lower_inclusive": 64,
-                        "upper_exclusive": 128,
-                        "jobs": 2241,
-                        "expert_rows": 208632
-                      },
-                      {
-                        "lower_inclusive": 128,
-                        "upper_exclusive": 256,
-                        "jobs": 2703,
-                        "expert_rows": 503939
-                      },
-                      {
-                        "lower_inclusive": 256,
-                        "upper_exclusive": 384,
-                        "jobs": 1599,
-                        "expert_rows": 505075
-                      },
-                      {
-                        "lower_inclusive": 384,
-                        "upper_exclusive": 512,
-                        "jobs": 1164,
-                        "expert_rows": 518049
-                      },
-                      {
-                        "lower_inclusive": 512,
-                        "upper_exclusive": 640,
-                        "jobs": 915,
-                        "expert_rows": 524028
-                      },
-                      {
-                        "lower_inclusive": 640,
-                        "upper_exclusive": 768,
-                        "jobs": 763,
-                        "expert_rows": 535603
-                      },
-                      {
-                        "lower_inclusive": 768,
-                        "upper_exclusive": 1024,
-                        "jobs": 1135,
-                        "expert_rows": 1011325
-                      },
-                      {
-                        "lower_inclusive": 1024,
-                        "upper_exclusive": 1280,
-                        "jobs": 877,
-                        "expert_rows": 1005191
-                      },
-                      {
-                        "lower_inclusive": 1280,
-                        "upper_exclusive": 1536,
-                        "jobs": 665,
-                        "expert_rows": 933271
-                      },
-                      {
-                        "lower_inclusive": 1536,
-                        "upper_exclusive": 2048,
-                        "jobs": 1136,
-                        "expert_rows": 1977243
-                      },
-                      {
-                        "lower_inclusive": 2048,
-                        "upper_exclusive": 2334,
-                        "jobs": 344,
-                        "expert_rows": 748721
-                      },
-                      {
-                        "lower_inclusive": 2334,
-                        "upper_exclusive": 4096,
-                        "jobs": 1061,
-                        "expert_rows": 3217473
-                      },
-                      {
-                        "lower_inclusive": 4096,
-                        "upper_exclusive": 8193,
-                        "jobs": 633,
-                        "expert_rows": 3895007
-                      }
-                    ],
                     "requested_router_D2H_bytes": 62914560,
                     "requested_map_H2D_bytes": 125829120,
                     "first_job_histogram_equals_job_histogram": false,
@@ -311417,736 +311241,43 @@
                       "layers": 14,
                       "accepted_uploads": 6605,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 14372480000,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 1083,
-                          "rows": 6551
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 499,
-                          "rows": 11403
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 587,
-                          "rows": 26848
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 678,
-                          "rows": 62535
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 827,
-                          "rows": 156106
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 483,
-                          "rows": 153953
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 360,
-                          "rows": 160465
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 255,
-                          "rows": 146275
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 224,
-                          "rows": 156765
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 313,
-                          "rows": 279008
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 237,
-                          "rows": 271593
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 176,
-                          "rows": 247950
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 348,
-                          "rows": 606426
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 88,
-                          "rows": 190705
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 276,
-                          "rows": 828208
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 171,
-                          "rows": 1061246
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 14372480000
                     },
                     "22/42/1510400": {
                       "layers": 5,
                       "accepted_uploads": 2172,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 3280588800,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 496,
-                          "rows": 2837
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 163,
-                          "rows": 3634
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 158,
-                          "rows": 7247
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 177,
-                          "rows": 16827
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 213,
-                          "rows": 38153
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 129,
-                          "rows": 40735
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 94,
-                          "rows": 42583
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 81,
-                          "rows": 46467
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 64,
-                          "rows": 45385
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 108,
-                          "rows": 97322
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 81,
-                          "rows": 93085
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 55,
-                          "rows": 76844
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 130,
-                          "rows": 225358
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 35,
-                          "rows": 76148
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 120,
-                          "rows": 372741
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 68,
-                          "rows": 417424
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 3280588800
                     },
                     "22/20/1971200": {
                       "layers": 15,
                       "accepted_uploads": 6663,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 13134105600,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 1237,
-                          "rows": 6808
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 435,
-                          "rows": 10086
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 518,
-                          "rows": 23833
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 636,
-                          "rows": 59044
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 731,
-                          "rows": 135667
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 426,
-                          "rows": 133993
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 312,
-                          "rows": 137496
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 264,
-                          "rows": 151695
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 218,
-                          "rows": 153819
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 325,
-                          "rows": 288339
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 285,
-                          "rows": 325941
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 220,
-                          "rows": 308194
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 392,
-                          "rows": 680241
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 106,
-                          "rows": 231436
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 374,
-                          "rows": 1125165
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 184,
-                          "rows": 1071071
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 13134105600
                     },
                     "18/42/1715200": {
                       "layers": 3,
                       "accepted_uploads": 1464,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 2511052800,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 199,
-                          "rows": 1191
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 67,
-                          "rows": 1511
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 120,
-                          "rows": 5665
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 154,
-                          "rows": 14980
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 174,
-                          "rows": 32974
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 105,
-                          "rows": 33213
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 93,
-                          "rows": 41598
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 83,
-                          "rows": 47460
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 69,
-                          "rows": 48325
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 90,
-                          "rows": 80211
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 76,
-                          "rows": 88261
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 61,
-                          "rows": 86087
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 62,
-                          "rows": 107539
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 18,
-                          "rows": 38605
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 71,
-                          "rows": 216740
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 22,
-                          "rows": 131157
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 2511052800
                     },
                     "21/20/2329600": {
                       "layers": 9,
                       "accepted_uploads": 4485,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 10448256000,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 579,
-                          "rows": 3956
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 297,
-                          "rows": 6867
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 408,
-                          "rows": 18941
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 507,
-                          "rows": 47009
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 639,
-                          "rows": 119542
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 387,
-                          "rows": 121201
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 264,
-                          "rows": 117535
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 199,
-                          "rows": 113796
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 157,
-                          "rows": 110020
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 253,
-                          "rows": 224974
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 163,
-                          "rows": 185793
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 124,
-                          "rows": 173597
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 167,
-                          "rows": 294248
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 72,
-                          "rows": 157429
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 173,
-                          "rows": 524464
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 96,
-                          "rows": 594338
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 10448256000
                     },
                     "21/42/1868800": {
                       "layers": 1,
                       "accepted_uploads": 483,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 902630400,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 80,
-                          "rows": 517
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 55,
-                          "rows": 1272
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 35,
-                          "rows": 1621
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 35,
-                          "rows": 3153
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 62,
-                          "rows": 11297
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 42,
-                          "rows": 13270
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 21,
-                          "rows": 9502
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 19,
-                          "rows": 10539
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 19,
-                          "rows": 12996
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 24,
-                          "rows": 21698
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 21,
-                          "rows": 24075
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 10,
-                          "rows": 13992
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 15,
-                          "rows": 26930
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 10,
-                          "rows": 21915
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 15,
-                          "rows": 47634
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 20,
-                          "rows": 107269
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 902630400
                     },
                     "23/20/2662400": {
                       "layers": 1,
                       "accepted_uploads": 448,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 1192755200,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 125,
-                          "rows": 763
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 49,
-                          "rows": 1084
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 48,
-                          "rows": 2296
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 49,
-                          "rows": 4661
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 54,
-                          "rows": 9607
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 21,
-                          "rows": 6704
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 13,
-                          "rows": 5870
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 10,
-                          "rows": 5565
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 7,
-                          "rows": 4875
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 12,
-                          "rows": 10679
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 6,
-                          "rows": 6948
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 13,
-                          "rows": 18282
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 13,
-                          "rows": 21342
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 5,
-                          "rows": 10649
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 10,
-                          "rows": 32499
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 13,
-                          "rows": 102719
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 1192755200
                     }
                   },
                   "accepted_uploads": 22320,
@@ -312165,104 +311296,6 @@
                     "nonempty_experts_across_layers": 22320,
                     "split_experts_across_layers": 131,
                     "maximum_job_rows": 8192,
-                    "row_bins": [
-                      {
-                        "lower_inclusive": 1,
-                        "upper_exclusive": 16,
-                        "jobs": 3800,
-                        "expert_rows": 22636
-                      },
-                      {
-                        "lower_inclusive": 16,
-                        "upper_exclusive": 32,
-                        "jobs": 1567,
-                        "expert_rows": 35891
-                      },
-                      {
-                        "lower_inclusive": 32,
-                        "upper_exclusive": 64,
-                        "jobs": 1876,
-                        "expert_rows": 86556
-                      },
-                      {
-                        "lower_inclusive": 64,
-                        "upper_exclusive": 128,
-                        "jobs": 2241,
-                        "expert_rows": 208632
-                      },
-                      {
-                        "lower_inclusive": 128,
-                        "upper_exclusive": 256,
-                        "jobs": 2703,
-                        "expert_rows": 503939
-                      },
-                      {
-                        "lower_inclusive": 256,
-                        "upper_exclusive": 384,
-                        "jobs": 1599,
-                        "expert_rows": 505075
-                      },
-                      {
-                        "lower_inclusive": 384,
-                        "upper_exclusive": 512,
-                        "jobs": 1164,
-                        "expert_rows": 518049
-                      },
-                      {
-                        "lower_inclusive": 512,
-                        "upper_exclusive": 640,
-                        "jobs": 915,
-                        "expert_rows": 524028
-                      },
-                      {
-                        "lower_inclusive": 640,
-                        "upper_exclusive": 768,
-                        "jobs": 763,
-                        "expert_rows": 535603
-                      },
-                      {
-                        "lower_inclusive": 768,
-                        "upper_exclusive": 1024,
-                        "jobs": 1135,
-                        "expert_rows": 1011325
-                      },
-                      {
-                        "lower_inclusive": 1024,
-                        "upper_exclusive": 1280,
-                        "jobs": 877,
-                        "expert_rows": 1005191
-                      },
-                      {
-                        "lower_inclusive": 1280,
-                        "upper_exclusive": 1536,
-                        "jobs": 665,
-                        "expert_rows": 933271
-                      },
-                      {
-                        "lower_inclusive": 1536,
-                        "upper_exclusive": 2048,
-                        "jobs": 1136,
-                        "expert_rows": 1977243
-                      },
-                      {
-                        "lower_inclusive": 2048,
-                        "upper_exclusive": 2334,
-                        "jobs": 344,
-                        "expert_rows": 748721
-                      },
-                      {
-                        "lower_inclusive": 2334,
-                        "upper_exclusive": 4096,
-                        "jobs": 1061,
-                        "expert_rows": 3217473
-                      },
-                      {
-                        "lower_inclusive": 4096,
-                        "upper_exclusive": 8193,
-                        "jobs": 633,
-                        "expert_rows": 3895007
-                      }
-                    ],
                     "requested_router_D2H_bytes": 62914560,
                     "requested_map_H2D_bytes": 125829120,
                     "first_job_histogram_equals_job_histogram": false,
@@ -312275,736 +311308,43 @@
                       "layers": 14,
                       "accepted_uploads": 6605,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 14372480000,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 1083,
-                          "rows": 6551
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 499,
-                          "rows": 11403
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 587,
-                          "rows": 26848
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 678,
-                          "rows": 62535
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 827,
-                          "rows": 156106
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 483,
-                          "rows": 153953
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 360,
-                          "rows": 160465
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 255,
-                          "rows": 146275
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 224,
-                          "rows": 156765
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 313,
-                          "rows": 279008
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 237,
-                          "rows": 271593
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 176,
-                          "rows": 247950
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 348,
-                          "rows": 606426
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 88,
-                          "rows": 190705
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 276,
-                          "rows": 828208
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 171,
-                          "rows": 1061246
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 14372480000
                     },
                     "22/42/1510400": {
                       "layers": 5,
                       "accepted_uploads": 2172,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 3280588800,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 496,
-                          "rows": 2837
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 163,
-                          "rows": 3634
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 158,
-                          "rows": 7247
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 177,
-                          "rows": 16827
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 213,
-                          "rows": 38153
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 129,
-                          "rows": 40735
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 94,
-                          "rows": 42583
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 81,
-                          "rows": 46467
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 64,
-                          "rows": 45385
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 108,
-                          "rows": 97322
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 81,
-                          "rows": 93085
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 55,
-                          "rows": 76844
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 130,
-                          "rows": 225358
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 35,
-                          "rows": 76148
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 120,
-                          "rows": 372741
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 68,
-                          "rows": 417424
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 3280588800
                     },
                     "22/20/1971200": {
                       "layers": 15,
                       "accepted_uploads": 6663,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 13134105600,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 1237,
-                          "rows": 6808
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 435,
-                          "rows": 10086
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 518,
-                          "rows": 23833
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 636,
-                          "rows": 59044
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 731,
-                          "rows": 135667
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 426,
-                          "rows": 133993
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 312,
-                          "rows": 137496
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 264,
-                          "rows": 151695
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 218,
-                          "rows": 153819
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 325,
-                          "rows": 288339
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 285,
-                          "rows": 325941
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 220,
-                          "rows": 308194
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 392,
-                          "rows": 680241
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 106,
-                          "rows": 231436
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 374,
-                          "rows": 1125165
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 184,
-                          "rows": 1071071
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 13134105600
                     },
                     "18/42/1715200": {
                       "layers": 3,
                       "accepted_uploads": 1464,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 2511052800,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 199,
-                          "rows": 1191
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 67,
-                          "rows": 1511
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 120,
-                          "rows": 5665
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 154,
-                          "rows": 14980
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 174,
-                          "rows": 32974
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 105,
-                          "rows": 33213
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 93,
-                          "rows": 41598
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 83,
-                          "rows": 47460
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 69,
-                          "rows": 48325
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 90,
-                          "rows": 80211
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 76,
-                          "rows": 88261
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 61,
-                          "rows": 86087
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 62,
-                          "rows": 107539
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 18,
-                          "rows": 38605
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 71,
-                          "rows": 216740
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 22,
-                          "rows": 131157
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 2511052800
                     },
                     "21/20/2329600": {
                       "layers": 9,
                       "accepted_uploads": 4485,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 10448256000,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 579,
-                          "rows": 3956
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 297,
-                          "rows": 6867
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 408,
-                          "rows": 18941
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 507,
-                          "rows": 47009
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 639,
-                          "rows": 119542
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 387,
-                          "rows": 121201
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 264,
-                          "rows": 117535
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 199,
-                          "rows": 113796
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 157,
-                          "rows": 110020
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 253,
-                          "rows": 224974
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 163,
-                          "rows": 185793
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 124,
-                          "rows": 173597
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 167,
-                          "rows": 294248
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 72,
-                          "rows": 157429
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 173,
-                          "rows": 524464
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 96,
-                          "rows": 594338
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 10448256000
                     },
                     "21/42/1868800": {
                       "layers": 1,
                       "accepted_uploads": 483,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 902630400,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 80,
-                          "rows": 517
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 55,
-                          "rows": 1272
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 35,
-                          "rows": 1621
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 35,
-                          "rows": 3153
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 62,
-                          "rows": 11297
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 42,
-                          "rows": 13270
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 21,
-                          "rows": 9502
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 19,
-                          "rows": 10539
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 19,
-                          "rows": 12996
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 24,
-                          "rows": 21698
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 21,
-                          "rows": 24075
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 10,
-                          "rows": 13992
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 15,
-                          "rows": 26930
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 10,
-                          "rows": 21915
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 15,
-                          "rows": 47634
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 20,
-                          "rows": 107269
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 902630400
                     },
                     "23/20/2662400": {
                       "layers": 1,
                       "accepted_uploads": 448,
                       "cache_hits": 0,
-                      "requested_upload_bytes": 1192755200,
-                      "accepted_first_job_rows": [
-                        {
-                          "lower": 1,
-                          "upper": 16,
-                          "count": 125,
-                          "rows": 763
-                        },
-                        {
-                          "lower": 16,
-                          "upper": 32,
-                          "count": 49,
-                          "rows": 1084
-                        },
-                        {
-                          "lower": 32,
-                          "upper": 64,
-                          "count": 48,
-                          "rows": 2296
-                        },
-                        {
-                          "lower": 64,
-                          "upper": 128,
-                          "count": 49,
-                          "rows": 4661
-                        },
-                        {
-                          "lower": 128,
-                          "upper": 256,
-                          "count": 54,
-                          "rows": 9607
-                        },
-                        {
-                          "lower": 256,
-                          "upper": 384,
-                          "count": 21,
-                          "rows": 6704
-                        },
-                        {
-                          "lower": 384,
-                          "upper": 512,
-                          "count": 13,
-                          "rows": 5870
-                        },
-                        {
-                          "lower": 512,
-                          "upper": 640,
-                          "count": 10,
-                          "rows": 5565
-                        },
-                        {
-                          "lower": 640,
-                          "upper": 768,
-                          "count": 7,
-                          "rows": 4875
-                        },
-                        {
-                          "lower": 768,
-                          "upper": 1024,
-                          "count": 12,
-                          "rows": 10679
-                        },
-                        {
-                          "lower": 1024,
-                          "upper": 1280,
-                          "count": 6,
-                          "rows": 6948
-                        },
-                        {
-                          "lower": 1280,
-                          "upper": 1536,
-                          "count": 13,
-                          "rows": 18282
-                        },
-                        {
-                          "lower": 1536,
-                          "upper": 2048,
-                          "count": 13,
-                          "rows": 21342
-                        },
-                        {
-                          "lower": 2048,
-                          "upper": 2334,
-                          "count": 5,
-                          "rows": 10649
-                        },
-                        {
-                          "lower": 2334,
-                          "upper": 4096,
-                          "count": 10,
-                          "rows": 32499
-                        },
-                        {
-                          "lower": 4096,
-                          "upper": 8193,
-                          "count": 13,
-                          "rows": 102719
-                        }
-                      ],
-                      "hit_first_job_rows": []
+                      "requested_upload_bytes": 1192755200
                     }
                   },
                   "accepted_uploads": 22320,
@@ -313084,6 +311424,12 @@
           "device": "0xe20c",
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
+        },
+        "route_detail_archive": {
+          "commit": "8a7283b899430f4dfd297c685bc83eff516e537a",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+          "key": "coherent_decode_transfer_long_v2.results[0]",
+          "reason": "Detailed planned/first-job row histograms and process memory snapshots have no current decision consumer. Keep useful job/format/upload totals and checked dispatch/handoff fields;recover detailed evidence from Git for a concrete later question."
         }
       }
     ],
@@ -313104,6 +311450,14 @@
       "GPU_executed": false
     },
     "device_checks_complete": true,
+    "artifact_retirement": {
+      "boundary": "coherent_decode_copy_boundary_20261112",
+      "controller_source_recovered_files": 327,
+      "raw_products_retired": true,
+      "private_record_retained": true,
+      "meaningful_counts_and_original_outcomes_preserved": true,
+      "older_engine_generations_not_retired_here": true
+    },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "43a4b2bccaa5e76a0ba5df99ae5e9f9f0a8341cd",

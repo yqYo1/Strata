@@ -118,8 +118,33 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   physical traffic or bandwidth measurements. V1keeps an advancement hold:
   native review finds missing strict host-view equality,request/footer pairing
   and durable preflight failure/no-retry handling. Preserve its original
-  execution/counts;correct the controller and use a new committed32K/82/32K
-  plan before any performance comparison. No speed or adoption is established.
+  execution/counts;the corrected43a4controller now passes its separate live
+  32769/82/32769-input handoff at8a7283b8,with32thinking outputs each,all15final
+  asset hashes,normal0/quiet/closed/no freshfault. Each long request has400
+  submitted/completed/private-host-view/GPU-miss groups and819404800requested
+  bytes;the short request has375/768896000. All3prompt/copy/stdout joins pass,
+  with exact extents,drafts and rounded clocks. Host corrupt-stream controls
+  used82-token geometry;the actual long run establishes long-geometry binding.
+  Native Luna-max review confirms the3controller corrections;the oldV1hold
+  stays intact. This is route/state execution evidence,not clean speed,
+  numerical/task quality,physical262144/RESTORE or adoption.
+  At this boundary,2984ended raw/cache/research files/links are retired after
+  original controller/native-source recovery and actual owned-process closure;
+  regular content bytes are591846816,with symlink targets and physical disk
+  reclamation not inferred. The long-V2record remains for its named imminent
+  comparison;oldV1duplicate private state and consumed research transactions
+  are removed. Detailed row histograms/process-memory snapshots stay in the
+  original8a7283b8Git evidence,while current useful job/format/upload totals
+  and individual request/copy results remain. All12coherent ELFs are unchanged.
+  Next implement a prospective officialbench.sh comparison of0versus1/16
+  missed-expert offload,EARLY0and static1256slots in both arms. Keep hardware/
+  provider/source/workload/phase checks;use32K-plus inputs and thinking-on
+  long generation with observed strong/weakMTP classes,then required agent/
+  dedicated-prefill preservation gates. Report each workload/sample separately,
+  not a32-output TGclaim. Physical CPU/RAM/PCIe/GPU saturation remains unknown;
+  the new test changes work distribution rather than assuming a stage is
+  saturated. Resolve legacy engine/fixture-reader holds before a new engine
+  build;none was introduced here.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
