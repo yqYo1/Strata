@@ -355,19 +355,31 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   3/6jobs pass both formats/patterns at5workers+host;1job cannot be selected
   globally and2/4/5lack clean speed samples. Prioritize a coherent actual engine
   build and model distribution/RAM/TTFT/long-generation gates rather than
-  repeating this CPUcohort. See`compact_small_batch_pool_v1`in the
+  repeating this CPUcohort. The real dispatcher source now offers cache leases
+  only for3/6jobs in the5worker+host pool;other shapes keep native GU. The pool's
+  <=6bound remains independent. This narrower source is unbuilt and has no
+  actual-model qualification;the CPUtiming source remains81914a76e.
+  See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
   excludes index/Entry/allocator overhead and does not prove model RAMadmission.
   The superseded pool.cpp,old timing controller and two ended plans are removed
   from the active tree:four files,91353bytes,recoverable respectively from
   c61ee3e7b,b3032cc18,e2fd9e722 and7f8b40ae4. Their original pins are verified
-  against pushed permanent history;the old qualified CPUbinary/receipts stay
-  until the fresh successor is validated and their source recovery is closed.
+  against pushed permanent history. The fresh successor is now selected for
+  CPUauxiliary numerics. Originalc61source/recipe recovery checks38project,
+  291GGML,627compiler,36object and22external-link inputs. Its old CPUroot,
+  closed speed receipts/output and both consumed research/review transactions
+  are deleted:1256files/links,248238592regular bytes. Current source/build/
+  executable/numeric admission still passes after deletion. Keep the fresh CPU
+  pair and dependency proof for the named coherent engine/model qualification.
+  Corrected research facts remain indexed;legacy GPU/IR/deployment and Nov11
+  ownership holds are separate. This is not global cleanup.
   The old plan/source are recoverable from`3cbf1c597`/`cd156b4ba`. After42project
   and291GGMLsource-pin recovery,the new committed consumer retires the old
   V1fixture's13files/3728035bytes;V2admission passes after deletion. Keep current
-  CPUarchives/numeric8c2e and the new timing fixture;no V1timing byte is consumed.
+  history references for the original CPUarchives/numeric8c2e;their bytes are
+  retired above. No V1timing byte is consumed.
   Actual limiting hardware resource remains unknown.
   The native review finds two conditional allocation-fallback gaps in generate:
   collecting resident views and sizing dispatch metadata can throw outside the

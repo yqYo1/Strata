@@ -2123,7 +2123,14 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         }
     std::span<const strata::kernels::cpu::compact_gu::Lease> views;
 #ifdef STRATA_NATIVE_EXPERTS
-    if (compact_gu && strata::kernels::cpu::compact_gu::batch_eligible(d.native_gu_phase, njobs)) {
+    // Offer only the production shapes with repeated whole-pool gains. The
+    // pool's <=6 admission remains an independent bound, not this selection.
+    // One-job stream32 failed a pair; 2/4/5 have no clean speed samples yet.
+    const bool measured_pool = compact_gu && d.pool &&
+        d.pool->workers() == 5 && d.pool->host_works();
+    const bool measured_jobs = njobs == 3 || njobs == 6;
+    if (compact_gu && measured_pool && measured_jobs &&
+        strata::kernels::cpu::compact_gu::batch_eligible(d.native_gu_phase, njobs)) {
         for (int j = 0; j < njobs; ++j)
             d.compact_gu_views[size_t(j)] = d.compact_gu_cache->lookup(
                 {size_t(d.layers), d.compact_gu_experts[size_t(j)]}, lay.fmt[size_t(d.layers)],
