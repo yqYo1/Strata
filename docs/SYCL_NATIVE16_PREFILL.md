@@ -136,12 +136,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are removed. Detailed row histograms/process-memory snapshots stay in the
   original8a7283b8Git evidence,while current useful job/format/upload totals
   and individual request/copy results remain. All12coherent ELFs are unchanged.
-  Next implement a prospective officialbench.sh comparison of0versus1/16
-  missed-expert offload,EARLY0and static1256slots in both arms. Keep hardware/
-  provider/source/workload/phase checks;use32K-plus inputs and thinking-on
-  long generation with observed strong/weakMTP classes,then required agent/
-  dedicated-prefill preservation gates. Report each workload/sample separately,
-  not a32-output TGclaim. Physical CPU/RAM/PCIe/GPU saturation remains unknown;
+  The prospective `coherent_decode_pcie_speed_v1` controller at3a19121d now
+  prepares six officialbench.sh processes R,C,C,R,R,C:finite0versus1/16
+  missed-expert offload,EARLY0and static1256slots in both arms. Each process
+  uses four warmups then32K-plus regular-code/varied-prose thinking-on long
+  generation,with at least1Kactual output and observed strong/weakMTP classes.
+  Source/build/12ELF/provider/15asset checks pass preparation;host probes and
+  actual long runs remain unexecuted. Strict API/prompt/copy counts,drafts and
+  rounded clocks are joined;zero baseline and positive long-candidate private
+  host-view counts must conserve. Commit each closure before the next process.
+  This changes work distribution only;dedicated-prefill,agent,task,full-context
+  and arbitrary-client nonfinite-parser qualification remain separate gates.
+  Report each workload/sample separately,not a32-output TGclaim.
+  Physical CPU/RAM/PCIe/GPU saturation remains unknown;
   the new test changes work distribution rather than assuming a stage is
   saturated. Resolve legacy engine/fixture-reader holds before a new engine
   build;none was introduced here.
