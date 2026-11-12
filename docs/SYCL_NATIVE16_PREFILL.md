@@ -32,7 +32,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and262144-cell boundaries,and GU smoke/44numerical cases. All native children
   close normally0with quiet parameter validation and no fresh fault;GU hidden
   outputs have0FP16ULP difference. No model or speed qualification follows.
-  Next run the coherent actual-model long/short/long handoff and repeated speed.
+  The coherent actual-model `coherent_prefill_model_v3` now passes the thinking-on
+  32769/82/32769-input handoff with32outputs per request,evidence at
+  `9c678595231882266623373cb84e4b65071c53dd`. All three requests close normally0;
+  both long entries verify actual wide GU/Down selection,typed QSA/bulk ranges,
+  cache bindings,MTP expert restoration and decode recapture. All15full asset
+  hashes match,with quiet validation,closed ownership and no fresh fault.
+  V1's wrong Python and V2's wrong action name remain recorded prelaunch failures;
+  neither started a model. V3uses the qualified model venv and `run` interface.
+  This is observed route/state evidence,not a clean-speed or sustained-TG result.
+  Next commit the coherent `bench.sh`32K/64K repeated-speed plan and a scoped
+  admission reader. Migrate its obsolete97fda/old-fixture dependencies before
+  another engine build;preserve56cad9 and a347for their named phase comparisons.
+  Normal successful test/model logs and caches are retired:151files,20896310bytes;
+  both current test/model roots retain only their records and model admission
+  still passes. The compact decision is under
+  `retained_builds_review_20261103.coherent_closed_raw_retirement_20261112`.
+  Old partial-build and legacy provenance cleanup remains open;no global
+  retirement is claimed.
   The existing physical full-context diagnostic and its host fixture are also
   built;actual model fill and ordinary provider teardown remain pending.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
