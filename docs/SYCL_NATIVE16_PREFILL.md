@@ -236,13 +236,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   screen,not cold-DRAM or model evidence. The original V1missing-header refusal
   remains failed. The retained engine ELF and its prefill/decode paths are
   unchanged;new source is opt-in and model/performance validation is pending.
-  The next whole-pool timing source`cd156b4ba`and plan`3cbf1c597`include
+  The whole-pool timing source`cd156b4ba`and plan`3cbf1c597`include
   lookup/lease handoff,GU,host hidden quantization,Down and synchronous waits.
-  They select12synthetic cells per format:1worker or5workers+host,1/6/32jobs,
-  reuse or stream32. Separate R,C,C,R,R,Cprocesses and three eligible batches
-  per cell decide each gain. The controller verifies all35reused archive members
+  They close12synthetic cells per format:1worker or5workers+host,1/6/32jobs,
+  reuse or stream32. All12native processes close normally0with quiet output;
+  432batches are eligible,min139.603578ms. The new240nonperiodic numeric cases
+  pass exact bits/counters and detect deliberate wrong96job-offset leases in
+  both worker geometries. The controller verifies all35reused archive members
   against the original compiled objects;no old CPUgeneration is consumed.
-  Build/numerical/performance execution remains pending at this source boundary.
+  Its measure-index interface does not enforce order;the original12start/end
+  receipts establish R,C,C,R,R,Cand no overlap. Existing hash/link/library-name
+  admission is not full ELFheader/interpreter qualification. See the CPUresult's
+  `compact_production_pool_timing_v1`for individual samples and original gates.
+  Twenty-three of24cells gain in all3pairs. The passing five-workers+host cells
+  show1.206..2.083xgeometric-mean speedup. Down42/32jobs/reuse has ratios
+  0.959739/1.295959/1.067272and mean1.099022;the slower first pair fails its
+  prospective repeated-gain gate. The global model-trial gate stays failed:
+  no cache-enabled model trial or adoption underV1. Commit a new focused,
+  longer-batch comparison before collecting follow-up evidence;do not rewrite
+  this failed gate. Actual limiting hardware resource remains unknown.
+  The native review also finds two conditional allocation-fallback gaps in
+  generate:collecting resident views and sizing dispatch metadata can throw
+  outside the helper's catch. Repair before model use;normal math has no
+  observed defect. Fault injection,RAM/TTFT,prefill preservation and model/
+  physical262144qualification remain pending. The old leaf loop's individual
+  samples are retired from this current result to original`762d2ff47`Git;
+  its eight summaries/CSV and current whole-pool samples remain.
   Closed old lifetime/numeric/admission/leaf roots are now physically retired:
   92files,17763285regular content bytes,after42project revision/path pins,
   291GGMLpins,625compiler/22link inputs and34old archive members are recovered
