@@ -2123,7 +2123,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         }
     std::span<const strata::kernels::cpu::compact_gu::Lease> views;
 #ifdef STRATA_NATIVE_EXPERTS
-    if (compact_gu) {
+    if (compact_gu && strata::kernels::cpu::compact_gu::batch_eligible(d.native_gu_phase, njobs)) {
         for (int j = 0; j < njobs; ++j)
             d.compact_gu_views[size_t(j)] = d.compact_gu_cache->lookup(
                 {size_t(d.layers), d.compact_gu_experts[size_t(j)]}, lay.fmt[size_t(d.layers)],

@@ -293,6 +293,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Down42raw blob versus460800BDown accounting and the claim of saving bytes by
   splitting already packed nibbles. Startup interposition is not GPU-free;
   allocation-fault qualification remains conditional on its admitted setup.
+  Separately,the optional production selection now has an unbuilt source
+  candidate capped at6jobs per complete Decode batch. Both the real dispatcher
+  and pool entry use the same policy;larger batches retain native GU and per-job
+  NT1/format guards remain. This starts from the original repeated small-job
+  gains rather than adopting the unstable32-job result. It does not enable the
+  cache by default or change the134-byte codec. Rebuild all affected CPU/core
+  units and commit fresh numerical/timing criteria before evaluating it. The
+  old97/193-job cached-offset negative control becomes unreachable under this
+  policy;replace it with an eligible-batch wrong-expert control while retaining
+  large-batch native-fallback,phase,NTand span-bound checks. No speed/model
+  qualification or reinterpretation of the old failed campaigns follows.
   The old plan/source are recoverable from`3cbf1c597`/`cd156b4ba`. After42project
   and291GGMLsource-pin recovery,the new committed consumer retires the old
   V1fixture's13files/3728035bytes;V2admission passes after deletion. Keep current

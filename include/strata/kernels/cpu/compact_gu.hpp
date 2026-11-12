@@ -12,6 +12,15 @@ struct Key { size_t layer, expert; };
 inline constexpr size_t projection_blocks = 6400;
 inline constexpr size_t raw_projection_bytes = projection_blocks * 98;
 
+// Experimental production selection: repeated gains are established for small
+// batches; large batches retain native GU. This is independent of the kernel
+// representation. Per-job NT=1/format checks remain in lookup and Lease;
+// prefill is never eligible here.
+inline constexpr int max_cached_jobs = 6;
+inline bool batch_eligible(NativeGuPhase phase, int jobs) noexcept {
+    return phase == NativeGuPhase::Decode && jobs > 0 && jobs <= max_cached_jobs;
+}
+
 bool available() noexcept;
 bool supported(const NativeFmt& format) noexcept;
 // Unset/empty/0 disables the optional cache. Reject signs, whitespace and

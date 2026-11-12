@@ -4201,7 +4201,8 @@ int main(int argc, char** argv) {
             drive.d.compact_gu_views.swap(views);
             drive.d.compact_gu_source = srcp;
             drive.d.compact_gu_cache = cpu_compact_gu_cache;
-            std::fprintf(stderr, "CPU_COMPACT_GU_READY phase=decode nt=1 entries=%zu known_bytes=%zu\n",
+            std::fprintf(stderr, "CPU_COMPACT_GU_READY phase=decode nt=1 max_jobs=%d entries=%zu known_bytes=%zu\n",
+                strata::kernels::cpu::compact_gu::max_cached_jobs,
                 cpu_compact_gu_cache->prepared_entries(), cpu_compact_gu_cache->known_bytes());
         } catch (const std::bad_alloc&) {
             cpu_compact_gu_cache.reset();

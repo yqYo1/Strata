@@ -685,12 +685,13 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
     if (n <= 0) return;
     if (!gu_views.empty() && gu_views.size() < size_t(n))
         throw std::invalid_argument("compact GU lease span is shorter than the expert batch");
+    const bool use_compact = !gu_views.empty() && compact_gu::batch_eligible(phase, n);
     const auto t0 = std::chrono::steady_clock::now();
     // more distinct experts than buffers: run them in batches
     for (int b0 = 0; b0 < n; b0 += kMaxSplitMulti) {
         const int nb = (std::min)(kMaxSplitMulti, n - b0);
         mjobs_ = jobs + b0;
-        compact_gu_views_ = gu_views.empty() ? nullptr : gu_views.data() + b0;
+        compact_gu_views_ = use_compact ? gu_views.data() + b0 : nullptr;
         nfmt_ = &f;
         // Published by the same run_phase release/acquire protocol as mjobs_
         // and nfmt_; unchanged until every worker has parked on return.
