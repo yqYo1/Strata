@@ -183,6 +183,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   generated counts and draft acceptance give14.409354/9.383257TG,with
   50.893/39.551sTTFT. Three of six processes are closed;the remaining matched
   references and final pair decisions stay pending.
+  Its69routine output/cache files/links(13086031regular content bytes)are now
+  retired after committed samples and original-source checks. A Main cleanup
+  module-name error stopped the first postcheck;the preserved inventory then
+  reconciles all12unchangedELFs and generated inputs before advancement.
   Candidate code/prose requested copies are129390259200/404578022400bytes,
   with63486/198497submitted/completed/private-view/GPU-miss groups. These
   counters are requested payloads,not physical bus traffic or saturation.
@@ -208,7 +212,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   plans,attempt intent,compact samples and all12coherentELFs remain. The fresh
   EARLY source snapshot is outside this retirement. Its native review now
   confirms the current finite-DMA gate,not a controlled deterministic hold;
-  the previous completed-before-admission failure stays failed. F-Kuse
+  the previous completed-before-admission failure stays failed. F-K use
   synthetic/manual early state;constructor/production capture and same-build
   grouped numeric evidence remain unqualified. No source bounds/lifetime
   defect was confirmed. Leave EARLY0through cohort closure;new fixture and
