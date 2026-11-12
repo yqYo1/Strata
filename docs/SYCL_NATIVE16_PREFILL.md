@@ -136,111 +136,60 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are removed. Detailed row histograms/process-memory snapshots stay in the
   original8a7283b8Git evidence,while current useful job/format/upload totals
   and individual request/copy results remain. All12coherent ELFs are unchanged.
-  The prospective `coherent_decode_pcie_speed_v3` controller,original3a19121d
-  with host-order correction2e2a7afa,now
-  prepares six officialbench.sh processes R,C,C,R,R,C:finite0versus1/16
-  missed-expert offload,EARLY0and static1256slots in both arms. Each process
-  uses four warmups then32K-plus regular-code/varied-prose thinking-on long
-  generation,with at least1Kactual output and observed strong/weakMTP classes.
-  Source/build/12ELF/provider/15asset checks pass preparation. V1host admission
-  stops before Owner/host/native launch:Main saved passing copy controls before
-  the inherited host reader rechecked the committed result. The gate correctly
-  refuses that mutation. Preserve the failure;the separately plannedV2keeps
-  controls local until host closure,with native/settings/workload/criteria
-  unchanged. V2passes both current-source frontend probes and2positive/9negative
-  copy/API binding controls,with normal closed host owners. Its first reference
-  native process completes74/263/909/1068-input warmups then fails before the
-  first long request:the clean environment omitted presence-enabled
-  STRATA_SNAPSHOT_VERIFY,so the inherited request reader cannot find nominal
-  DRAFT_PREFILL callbacks. Preserve V2failed;the owned failure termination and
-  all original identities/session are closed,with no fresh fault. Original
-  incomplete observation/ownership fields remain unchanged;the subsequent
-  actual closure is recorded separately. V3adds only those common nominal
-  callbacks,without timers/trace/census or math changes. Its prospective reader
-  also separates normal short-warmup admission from the timed-long8192MTP
-  contract:short inputs retain their existing route and can omit callbacks or
-  use smaller chunks. Warmup API/prompt/copy counts and clocks still bind;
-  timed long requests must cover read-1cells exactly in batched mode2/8192
-  chunks. V2remains failed under its original all-request contract. V3host
-  admission passes both frontend probes,2positive/9negative copy bindings and
-  1positive/4negative short/long draft controls,with normal closed owners.
-  V3reference process0now closes normally0with quiet validation,unchanged
-  source/providers/boot/driver,closed ownership and no fresh fault. Code uses
-  33211fresh inputs/2815outputs,49144.7ms prompt/187571.7ms decode,50.609s
-  clientTTFT and2036/2340draft acceptance;prose uses33281/6823,
-  39239.5/754352.5ms,39.401s and3442/10143. Exact TG is about15.008/9.045.
-  Both long routes and all6warmup/long prompt/copy/API joins pass;baseline
-  submitted/completed/private-view/GPU-miss copies are0. The code/prose MTP
-  bands are observed in one sample each,not a confirmed repeated pair or gain.
-  Candidate1also closes normally0/quiet/owned/no freshfault. Its matched code
-  request has3602outputs/250052.2ms decode(14.405TG),50451.7ms prompt,
-  51.785sTTFT and2605/2994drafts;prose has8911/945592.2ms(9.424TG),
-  39433.2ms prompt,39.594sTTFT and4813/12294drafts. The first paired TG
-  ratios are0.959847code/1.041889prose;prose acceptance also changes from
-  0.339347to0.391492. Keep lengths/context dependence and separate workloads;
-  one pair does not establish reproducible gain or a hardware bottleneck.
-  Candidate2also closes normally0/quiet/owned/no freshfault:the same3602/8911
-  generated counts and draft acceptance give14.409354/9.383257TG,with
-  50.893/39.551sTTFT. Reference3also closes normally0/quiet/owned/no freshfault,
-  with2815/6823outputs and15.086125/9.104069TG. Reference4also closes normally0/
-  quiet/owned/no freshfault,with the same2815/6823outputs and15.037120/9.073271TG.
-  Five of six processes are closed;the final candidate remains pending closure.
-  Process4routine output and the completed compact-cache source audit/review
-  payloads are retired:529files/links,125011282regular content bytes,after
-  pushed samples/facts and original project/GGML source recovery. All12ELFs
-  and generated inputs remain unchanged;see
-  `coherent_decode_pcie_speed_v3.process4_and_cacheaudit_raw_retirement`.
-  The second pair's candidate/reference TG ratios are0.955140/1.030666. Remaining
-  samples and final pair decisions stay pending;length/acceptance differences
-  still prevent a causal hardware attribution.
-  Candidate2's69routine output/cache files/links(13086031regular content bytes)are now
-  retired after committed samples and original-source checks. A Main cleanup
-  module-name error stopped the first postcheck;the preserved inventory then
-  reconciles all12unchangedELFs and generated inputs before advancement.
-  Candidate code/prose requested copies are129390259200/404578022400bytes,
-  with63486/198497submitted/completed/private-view/GPU-miss groups. These
-  counters are requested payloads,not physical bus traffic or saturation.
-  Before process2,the verified closed output and consumed research
-  transactions are retired. All6processes,paired decisions,final full model hashes and
-  remaining adoption gates stay open. Strict API/prompt/copy counts,drafts and
-  rounded clocks are joined;zero baseline and positive long-candidate private
-  host-view counts must conserve. Commit each closure before the next process.
-  This changes work distribution only;dedicated-prefill,agent,task,full-context
-  and arbitrary-client nonfinite-parser qualification remain separate gates.
-  Report each workload/sample separately,not a32-output TGclaim.
-  Physical CPU/RAM/PCIe/GPU saturation remains unknown;
-  the new test changes work distribution rather than assuming a stage is
-  saturated. Resolve legacy engine/fixture-reader holds before a new engine
-  build;none was introduced here.
-  The pre-repeat retirement closes10633files/links,with1003608943regular
-  content bytes and21symlinks;physical disk reclamation is not measured. It
-  covers the closed0/1routine output,failedV1/V2controller products and seven
-  consumed report/review transactions,after original source recovery and exact
-  terminal closure. One provisional Task remains failed without an accepted
-  worker_done;its original outcome is unchanged. All seven native reviews are
-  closed,with corrected facts retained in the index. Current cohort configs,
-  plans,attempt intent,compact samples and all12coherentELFs remain. The fresh
-  EARLY source snapshot is outside this retirement. Its native review now
-  confirms the current finite-DMA gate,not a controlled deterministic hold;
-  the previous completed-before-admission failure stays failed. F-K use
-  synthetic/manual early state;constructor/production capture and same-build
-  grouped numeric evidence remain unqualified. No source bounds/lifetime
-  defect was confirmed. Leave EARLY0through cohort closure;new fixture and
-  runtime admission must precede any early model/speed trial. The shared
-  immutable snapshot and three CPU-representation,cache-policy and bounded-GPU-
-  worklist reports now have completed native reviews. Main read only short
-  digests;compact corrected facts are in the index. The four consumed report/
-  review roots,shared1127-file snapshot and process3routine output are retired:
-  2977files/links,489826635regular content bytes,after pushed facts and original
-  source recovery. All12ELFs and generated inputs remain unchanged. The Nov11
-  dispatch-template root remains a separate hold for reusable lifecycle/spec
-  staging;inspect its actual ownership/dependencies and prune ended payload
-  at the next source-audit dispatch. Legacy reader/deployment holds remain. See
-  `coherent_decode_pcie_speed_v3.process3_and_research_raw_retirement`and its
-  earlier retirement fields;review new raw output
-  after each subsequent process closure. The legacy19reader/source holds,
-  final full asset hashes and adoption gates remain open;no global artifact
-  cleanup or extra native generation is claimed.
+  The `coherent_decode_pcie_speed_v3` comparison is now **closed** at controller
+  `e2ce32a8`,using unchanged coherent14508/dcb8. Six independent official
+  bench.sh processes run R,C,C,R,R,C:finite0versus1/16missed-expert offload,
+  EARLY0,static1256slots,5workers,spec4,8192throughput BF16/vLLM and the same
+  nominal MTP callbacks/quiet validation. Each has four warmups followed by
+  thinking-enabled code/prose long generation. All12long requests have
+  33211/33281fresh input tokens and at least2815output tokens. All six native
+  and benchmark processes close normally0,owners close,validation stays quiet,
+  boot/driver remain unchanged,no fresh fault occurs,and all15final full model
+  hashes match. Individual samples and the original decision remain in the
+  linked result under that key;`final_summary`holds the three-process aggregates.
+
+  | Workload / arm | Generated | PP tok/s | Client TTFT s | TG tok/s (range) | Draft acceptance |
+  | --- | --- | --- | --- | --- | --- |
+  | Code / reference0 | 2815 | 675.780 | 50.609 | 15.037 (15.008..15.086) | 87.009% |
+  | Code / candidate1/16 | 3602 | 669.976 | 50.893 | 14.409 (14.405..14.586) | 87.007% |
+  | Prose / reference0 | 6823 | 848.150 | 39.401 | 9.073 (9.045..9.104) | 33.935% |
+  | Prose / candidate1/16 | 8911 | 844.758 | 39.551 | 9.424 (9.383..9.485) | 39.149% |
+
+  Code is the first long request after warmups;prose is the subsequent long
+  request with a different task. Request order/content are confounded. The
+  candidate/reference TG ratios are0.959847/0.955140/0.970032for code
+  (geometric mean0.961653)and1.041889/1.030666/1.045350for prose(1.039283).
+  Thus code fails the repeated-gain gate and prose passes it. Both observed
+  strong-code/weak-prose classes pass in every process. This is a repeatable
+  observed-route prose gain,not a global adoption or fixed-work attribution:
+  generated lengths differ,and prose draft acceptance changes. Keep the0
+  code reference;dedicated-prefill preservation,agent/task,physical262144/tails/
+  RESTORE,ordinary-provider teardown and arbitrary-client nonfinite-parser
+  repair remain open before adoption. The actual limiting hardware resource
+  remains unknown. Candidate code/prose requested copies are129390259200/
+  404578022400bytes per process,not measured bus traffic or saturation.
+
+  V1's host-state mutation refusal and V2's missing presence-enabled callback
+  failure remain failed in their original evidence. V3prospectively separates
+  short warmup observations from the strict long read-1cells/8192chunk contract;
+  all6request/footer/API/copy joins pass per process. Original Main launch/
+  cleanup wrapper errors and their verified reconciliations also remain in the
+  compact result. The current final routine output awaits retirement after
+  pushed samples and original-source recovery;prior closed raw/research
+  retirements are recorded in that same result,without renewing their consumers.
+
+  The completed EARLY audit establishes a finite-DMA gate,not a controlled
+  deterministic hold. Its earlier completed-before-admission failure stays
+  failed;synthetic F-K state does not qualify production capture or same-build
+  grouped numerics. Keep EARLY0until a new bounded fixture/runtime admission.
+  Corrected CPU-representation/cache/worklist/source-audit findings remain in
+  the research index;their consumed report/snapshot/review payloads are retired.
+  The Nov11template root has a separate ownership/helper-consumer hold;reconcile
+  its original Task before pruning ended payload. Legacy19reader/deployment
+  and source-recovery holds remain open. No new engine generation was created.
+  Next run the committed d65bb75bCPUcompact ownership build/check,then independent
+  real-block production-dispatch numerics and hot/cold timing;the candidate is
+  still source-only and has no numeric/performance/model qualification.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
