@@ -182,8 +182,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Candidate code/prose requested copies are129390259200/404578022400bytes,
   with63486/198497submitted/completed/private-view/GPU-miss groups. These
   counters are requested payloads,not physical bus traffic or saturation.
-  Before process2,retire verified closed output and consumed research
-  transactions. All6processes,paired decisions,final full model hashes and
+  Before process2,the verified closed output and consumed research
+  transactions are retired. All6processes,paired decisions,final full model hashes and
   remaining adoption gates stay open. Strict API/prompt/copy counts,drafts and
   rounded clocks are joined;zero baseline and positive long-candidate private
   host-view counts must conserve. Commit each closure before the next process.
@@ -194,15 +194,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the new test changes work distribution rather than assuming a stage is
   saturated. Resolve legacy engine/fixture-reader holds before a new engine
   build;none was introduced here.
-  The completed reference's routine raw logs/caches and the closedV1/V2
-  controller products still need retirement after source/recipe recovery;the
-  next serialized review is after candidate1closes,before process2. Keep only
-  generated configs/plans/attempt intent required by the active cohort. The
-  consumed first research round's duplicate snapshots/transactions also await
-  exact terminal/Task closure reconciliation;one provisional report has no
-  accepted worker_done. The fresh V3and19legacy-fixture consumer reports are
-  now with native Luna-max reviewers. Carry these concrete holds forward;
-  no global artifact cleanup or extra native generation is claimed.
+  The pre-repeat retirement closes10633files/links,with1003608943regular
+  content bytes and21symlinks;physical disk reclamation is not measured. It
+  covers the closed0/1routine output,failedV1/V2controller products and seven
+  consumed report/review transactions,after original source recovery and exact
+  terminal closure. One provisional Task remains failed without an accepted
+  worker_done;its original outcome is unchanged. All seven native reviews are
+  closed,with corrected facts retained in the index. Current cohort configs,
+  plans,attempt intent,compact samples and all12coherentELFs remain. The fresh
+  EARLY admission audit is outside this retirement. See
+  `coherent_decode_pcie_speed_v3.pre_repeat_raw_retirement`;review new raw output
+  after each subsequent process closure. The legacy19reader/source holds,
+  final full asset hashes and adoption gates remain open;no global artifact
+  cleanup or extra native generation is claimed.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
