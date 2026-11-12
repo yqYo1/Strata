@@ -303405,7 +303405,7 @@
     "retention": "Keep compact per-case geometry/counters and failure outcome,then retire normal traces/logs/cache after extraction. Temporary fixture generation serves imminent whole copy-path timing only;before another engine build resolve legacy engine/reader holds."
   },
   "expert_copy_runs_timing_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "b345f626aad4623abb15ee8d6ea324ed9d0b6ecc",
     "native_source_commit": "98d0df9efbce6cbbd8a558714b885628d52ff847",
     "observer_admission": {
@@ -304053,12 +304053,83 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "label": "speed-5",
+        "candidate": true,
+        "traced": false,
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "execution_success": true,
+        "timing_eligible": true,
+        "GPU_executed": true,
+        "native_pid": 2492127,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2492127,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "expected_startup_API_errors": 0,
+        "timings": [
+          {
+            "candidate": 1,
+            "payload": 2662400,
+            "logical_uploads": 641,
+            "requested_H2D_bytes": 1706598400,
+            "commands": 259,
+            "wall_ms": 516.337685,
+            "queue_ms": 487.04781299999996,
+            "thread_ms": 489.412042,
+            "empty_ms": 0.168739,
+            "eligible": 1,
+            "preparation_timed": 0,
+            "guards_timed": 0,
+            "actual_copy_read_drain_timed": 1,
+            "model_qualified": 0
+          },
+          {
+            "candidate": 1,
+            "payload": 1510400,
+            "logical_uploads": 512,
+            "requested_H2D_bytes": 773324800,
+            "commands": 1,
+            "wall_ms": 284.217855,
+            "queue_ms": 280.899687,
+            "thread_ms": 280.74416800000023,
+            "empty_ms": 0.14088499999999998,
+            "eligible": 1,
+            "preparation_timed": 0,
+            "guards_timed": 0,
+            "actual_copy_read_drain_timed": 1,
+            "model_qualified": 0
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "performance_qualified": false,
     "budgets": {
       "wall": 240,
@@ -304070,6 +304141,78 @@
     },
     "plan": "Commit source and this plan before execution,and each closed process before the next. Two traced timing-branch diagnostics,then six fresh quiet processes ABBAAB,three per arm;adjacent opposite-order pairs(0,1),(2,3),(4,5). Each native process warms the small helper and marker,then measures ordinary384/max2662400 and full-fit512/1510400 in fixed order. Same bytes,hits,readers,source/slot order;only copy-run batching differs. Each shape has one empty marker/drain pair per process,six independent clean controls;require each native wall/queue>=100ms and empty<=5%wall,and per-shape maximum empty across six<=5%minimum wall. Require normal0,all byte/source/map/guard/drain/counter checks,exact actual dispatch,quiet validation,no fresh faults,closed ownership and frozen inputs. Stop first such failure;no retry. Record all individual samples,medians/ranges and paired wall/queue/thread ratios. Each geometry independently permits model follow-up only when all three candidate/reference wall ratios<1 and candidate median<reference median,with timing eligibility/calibration gates passing. No arbitrary minimum percentage. Mixed/small results remain candidates for a separately committed narrower plan,not a passed gate. Stop after six clean processes either outcome.",
     "timing_scope": "Copy helper,all GPU byte readers,submission gaps and checked final drain;source fill,allocations,memset/reset and post-timing guards excluded. Large spans are first use in each fresh process;not warmed-model/request throughput. Queue interval is not pure DMA time;thread CPU includes polling. Per-process private NEO/SYCL/XDG caches;SYCL persistent cache remains0. Parameter validation and retained-reference preload charged in both arms. No bus-traffic,saturation,GEMM,model PP/TG,decode,ordinary teardown or262144/RESTORE qualification.",
-    "retention": "Keep compact individual timing/counter/eligibility samples and source/build/environment identities;retire successful traces/cache/logs after decision. No new engine generation. Existing engine/provenance reader holds remain for before the next engine build."
+    "retention": "Keep compact individual timing/counter/eligibility samples and source/build/environment identities;retire successful traces/cache/logs after decision. No new engine generation. Existing engine/provenance reader holds remain for before the next engine build.",
+    "decisions": [
+      {
+        "payload": 2662400,
+        "paired_candidate_over_reference": {
+          "wall_ms": [
+            1.3987595772583519,
+            1.4545206243493478,
+            1.3823841791314055
+          ],
+          "queue_ms": [
+            1.4144408426995814,
+            1.474228323489908,
+            1.4000039558445652
+          ],
+          "thread_ms": [
+            1.4527358025548132,
+            1.5042812974739674,
+            1.431275726138732
+          ]
+        },
+        "reference_medians": {
+          "wall_ms": 371.933503,
+          "queue_ms": 346.977291,
+          "thread_ms": 341.12906399999997
+        },
+        "candidate_medians": {
+          "wall_ms": 517.427586,
+          "queue_ms": 487.8875,
+          "thread_ms": 489.412042
+        },
+        "repeated_empty_control_max_ms": 0.32926099999999997,
+        "cross_process_calibration_passed": true,
+        "mechanism_gain_gate_passed": false,
+        "model_followup_permitted": false,
+        "model_qualified": false
+      },
+      {
+        "payload": 1510400,
+        "paired_candidate_over_reference": {
+          "wall_ms": [
+            1.5345422697620408,
+            1.7449010895170787,
+            1.62370666991479
+          ],
+          "queue_ms": [
+            1.5172884196804002,
+            1.7253470597374694,
+            1.6058474487471832
+          ],
+          "thread_ms": [
+            1.5526831732195565,
+            1.7785582840638114,
+            1.6479250194330084
+          ]
+        },
+        "reference_medians": {
+          "wall_ms": 175.042611,
+          "queue_ms": 174.923021,
+          "thread_ms": 170.36222199999983
+        },
+        "candidate_medians": {
+          "wall_ms": 275.450563,
+          "queue_ms": 272.13010399999996,
+          "thread_ms": 271.585787
+        },
+        "repeated_empty_control_max_ms": 0.15284799999999998,
+        "cross_process_calibration_passed": true,
+        "mechanism_gain_gate_passed": false,
+        "model_followup_permitted": false,
+        "model_qualified": false
+      }
+    ]
   }
 }
