@@ -330,342 +330,236 @@ def copy_run_startup_controls():
     return dict(valid_traced=1,valid_quiet=1,negative_cases=len(cases),GPU_executed=False)
 
 
-def copy_run_device(action):
-    """Fresh exact-copy fixture gates; no model,teardown or speed claim."""
-    import build_expert_copy_runs as build
-    import ur_validation as validation
-    root = B/'expert-copy-runs-device-v2';key='expert_copy_runs_device_v2'
-    order=('cpu','smoke','large')
-    def save(row):
-        (root/'record.json').write_text(json.dumps(row,indent=2)+'\n')
-        public=json.loads(build.RESULT.read_text());public[key]=row
-        build.RESULT.write_text(json.dumps(public,indent=2)+'\n')
-    def current(row):
-        guards.require(validation.committed(build.RESULT,(key,))==row,'commit exact device stage first')
-        native,_=build.observer_native(row['observer_admission'])
-        guards.require(native['binaries']==row['binaries'] and native['passed'] and native['complete']
-            and native['ownership_closed'] and not native['active'],'closed two-fixture build required')
-        path=Path(row['runtime_manifest']['path'])
-        guards.require(digest(path)==row['runtime_manifest']['sha256'] and all(
-            digest(p)==h for p,h in json.loads(path.read_text()).items()),'runtime providers changed')
-        guards.require(Path('/proc/sys/kernel/random/boot_id').read_text().strip()==row['boot']
-            and guards.driver_guard()==row['driver'],'boot/driver changed')
-        return native
-    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB);guards.no_model_owners([])
-        if action=='prepare':
-            guards.require(not root.exists() and key not in json.loads(build.RESULT.read_text()),'fresh device plan required')
-            native,admission=build.observer_native()
-            guards.require(native['passed'] and native['complete'] and native['ownership_closed']
-                and not native['active'],'build both fresh fixtures first')
-            providers=B/'coherent-prefill-speed-v1/runtime-inputs.json'
-            guards.require(digest(providers)=='43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21',
-                'current coherent runtime receipt required')
-            env=dict(native['recipe']['environment'])
-            previous=validation.committed(build.RESULT,('expert_copy_runs_device_v1',))
-            guards.require(previous['stage']=='failed' and not previous['passed']
-                and previous['ownership_closed'],'preserve original observer refusal')
-            controls=copy_run_startup_controls()
-            guards.require({k:env[k] for k in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys',
-                'EnableDirectSubmission')}==dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',
-                NEOReadDebugKeys='1',EnableDirectSubmission='0'),'preserve safety settings')
-            root.mkdir(mode=0o700)
-            row=dict(stage='ready',source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
-                native_source_commit=native['native_source_commit'],build_key=build.KEY,binaries=native['binaries'],
-                observer_admission=admission,startup_trace_controls=controls,
-                previous_attempt=dict(key='expert_copy_runs_device_v1',
-                    evidence_commit='ddb3c33a1dc99e4df51905ac2e1ad8ec15fa5511',
-                    decision='Original envelope remains failed;fresh ordered processes with unchanged native inputs.'),
-                native_validation_probe=native['native_validation_probe'],environment=env,
-                runtime_manifest=dict(path=str(providers),sha256=digest(providers)),
-                boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver=guards.driver_guard(),
-                cpu_reference=json.loads((build.cpu.ROOT/'record.json').read_text())['checks'],
-                order=list(order),results=[],passed=False,complete=False,active=False,ownership_closed=True,
-                plan='Commit each closed stage before next. CPU:repeat513/8/22oracle with same-build icpx '
-                    'fixture. Smoke:traced/parameter-validated exact runs on one/four/eight-slot and full-fit512 '
-                    'banks,checked error unwind,three false/throw/ambiguous-enqueue cases and ten pre-enqueue '
-                    'refusals. A traced startup admits exactly one null urPlatformGetApiVersion error '
-                    'between same-PID begin/postinit/before-main proofs;all other API errors fail. '
-                    'Quiet startup admits no printed API errors. Large:only after smoke,real383*2662400=1019699200byte single copy and '
-                    'full-fit512*1510400=773324800bytes,all readbacks/guards/immutable sources/private maps '
-                    'and final drains. Stop first source/provider/owner/validation/case/fault/budget failure;no retry.',
-                limits='Same production upload helper and queue ownership on synthetic bytes;no dequant/GEMM '
-                    'speed,physical wire traffic,saturation,task/model,decode,full262144/RESTORE or ordinary '
-                    'runtime teardown qualification. Retained-reference validation charged;separate timing plan needed.',
-                retention='Keep compact per-case geometry/counters and failure outcome,then retire normal '
-                    'traces/logs/cache after extraction. Temporary fixture generation serves imminent whole '
-                    'copy-path timing only;before another engine build resolve legacy engine/reader holds.')
-            save(row);print('Prepared CPU,small traced,then maximum-span device gates;commit before run.',flush=True);return
-        row=json.loads((root/'record.json').read_text());native=current(row)
-        index=order.index(action)
-        guards.require(len(row['results'])==index and all(v['passed'] for v in row['results'])
-            and row['stage'] in ('ready','running'),'fresh ordered device gate only')
-        case=root/action;guards.require(not case.exists(),'inspect prior owned gate;no rerun');case.mkdir(mode=0o700)
-        for name in ('tmp','cache'):(case/name).mkdir(mode=0o700)
-        env=dict(row['environment'],TMPDIR=str(case/'tmp'),XDG_CACHE_HOME=str(case/'cache'))
-        gpu=action!='cpu'
-        if gpu:
-            probe=row['native_validation_probe'];env.update(LD_PRELOAD=probe['library']['path'],
-                STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
-                UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(case/'validation.log'))
-            for item in probe.values():guards.require(digest(item['path'])==item['sha256'],'validation provider changed')
-            if action=='large':env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
-        else:
-            env.pop('LD_PRELOAD',None)
-        cursor=next(s.split(': ',1)[1] for s in subprocess.check_output(
-            ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
-            if s.startswith('-- cursor: '))
-        outcome=dict(mode=action,passed=False,complete=False,host_probe_accepted=False,GPU_executed=gpu)
-        scope=None
-        def persist():
-            (case/'execution.json').write_text(json.dumps(dict(outcome,active=bool(scope and scope.active),
-                commands=scope.commands if scope else []),indent=2)+'\n')
-        scope=supervision.Owner(case/'owned',persist)
-        try:
-            binary=row['binaries']['sycl_expert_bank_test' if gpu else 'prefill_expert_bank_plan_test']
-            argv=[binary['path']]+(['--copy-runs-smoke' if action=='smoke' else '--copy-runs-validate'] if gpu else [])
-            event,out,err=scope.run(action,argv,env,P,wall=240,cpu=1200,rss_cap=12<<30,
-                text_cap=64<<20,file_cap=64<<20,total_cap=256<<20)
-            outcome.update(native_pid=event['pid'],native_exit_code=event['exit_code'])
-            text,errors=out.read_text(),err.read_text()
-            guards.require(supervision.closed(event) and event['exit_code']==0 and not re.search(
-                'terminate called|cleanup failed|teardown uncertain',errors),
-                'copy-run fixture failed: '+(errors+text)[-4000:])
-            if gpu:
-                outcome['validation'],outcome['expected_startup_API_errors']=copy_run_startup_errors(
-                    errors,event['pid'],action=='smoke')
-                guards.require(outcome['validation']['loader']==row['native_validation_probe']['loader']['path'],
-                    'actual pre-main loader differs')
-                cases=[dict(re.findall(r'(\w+)=([^ ]+)',line)) for line in text.splitlines()
-                    if line.startswith('expert_bank_private_case ')]
-                guards.require(len(cases)==(4 if action=='smoke' else 2) and all(
-                    c['copy_runs']=='1' and c['staged']=='0' and c['custom_queue']=='1' and c['status']=='0'
-                    and all(c[q]=='PASS' for q in ('immutable_slab','guards','private_map','checked_drain'))
-                    for c in cases),'copy-run case/guard coverage differs')
-                guards.require('expert_bank_run_enqueue_failure modes=3 published=0 no_retry=PASS checked_drain=PASS' in text
-                    and 'expert_bank_run_admissions rejections=10 enqueues=0 mapping_unchanged=PASS' in text
-                    and 'expert_bank_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED' in text,
-                    'missing failed-enqueue/refusal/final controls')
-                if action=='smoke':
-                    guards.require('urEnqueueUSMMemcpy' in errors and 'urEnqueueKernelLaunch' in errors,
-                        'small gate must trace actual copies and GPU readers')
-                else:
-                    expected=[('2662400','641','383','259','383'),('1510400','512','512','1','512')]
-                    guards.require([(c['source_stride'],c['uploads'],c['hits'],c['copy_commands'],c['run_experts'])
-                        for c in cases]==expected,'largest383/scratch or full-fit512 dispatch differs')
-                outcome['cases']=cases
-            else:
-                guards.require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_',errors),'unexpected CPU API error')
-                match=re.search(r'expert_bank_upload_runs configurations=513 windows_each=8 logical_uploads=(\d+) '
-                    r'commands=(\d+) runs=(\d+) run_experts=(\d+) negative_checks=22 PASS',text)
-                ref=row['cpu_reference'];guards.require(match and tuple(map(int,match.groups()))==tuple(
-                    ref[k] for k in ('logical_uploads','copy_commands','runs','run_experts')) and not errors,
-                    'same-build CPU oracle differs')
-                outcome['checks']=ref
-            if gpu:
-                log=case/'validation.log';guards.require(not log.exists() or not log.stat().st_size,
-                    'parameter validation reported a diagnostic')
-            current(row);outcome.update(complete=True,host_probe_accepted=True)
-        except BaseException as error:outcome['error']=repr(error)
-        finally:
-            validation.finish(outcome,scope,cursor,row['boot'])
-            outcome['passed']=bool(outcome['passed'] and outcome['complete'] and outcome.get('driver_after')==row['driver'])
-            persist();row['results'].append(outcome);row.update(stage='running' if outcome['passed'] else 'failed',
-                passed=False,complete=False,active=bool(scope.active),ownership_closed=outcome['ownership_closed'])
-            if outcome['passed'] and len(row['results'])==len(order):row.update(stage='closed',passed=True,complete=True)
-            save(row)
-        print(json.dumps({k:outcome.get(k) for k in ('mode','passed','complete','ownership_closed','error')}),flush=True)
-        guards.require(outcome['passed'],'exact copy-run device gate failed')
 
 
-def copy_run_timing_rows(text,candidate):
-    """The native PASS banner does not establish timing eligibility."""
+
+
+
+
+
+
+def copy_size_commands(permanent,uploads,cap):
+    return uploads-permanent+(permanent+cap-1)//cap
+
+
+def copy_size_cases(text,cap,smoke=False):
+    cases=[dict(re.findall(r'(\w+)=([^ ]+)',s)) for s in text.splitlines()
+        if s.startswith('expert_bank_private_case ')]
+    # cap,backing slots,stride,source stride,experts,layers,permanent,unwind
+    shapes=([(c,s,256,256,e,1,p,0) for c in (1,4,16,64,512)
+        for s,e,p in [(4,10,3),(384,512,383),(512,512,512)]]+
+        [(4,1,256,256,10,1,0,0),(4,8,256,256,10,2,7,1)] if smoke else
+        [(cap,4,256,256,10,1,3,0),(cap,384,2662400,2662400,512,1,383,0),
+         (cap,384,2662400,1510400,512,1,512,0)])
+    guards.require(len(cases)==len(shapes),'incomplete bounded-copy shapes')
+    for case,(c,slots,stride,source,experts,layers,permanent,unwind) in zip(cases,shapes):
+        uploads,hits,consumers=(5,0,10) if unwind else (2*experts-permanent,permanent,4*experts)
+        commands=2 if unwind else copy_size_commands(permanent,uploads,c)
+        expected=dict(backing_slots=slots,backing_stride=stride,source_stride=source,experts=experts,
+            layers=layers,uploads=uploads*layers,hits=hits*layers,consumers=consumers*layers,
+            unwind=layers if unwind else 0,admission_rejections=11,status=0,full_copy=1,
+            staged=0,custom_queue=1,copy_runs=int(c>1),copy_commands=commands*layers)
+        guards.require(all(int(case[k])==v for k,v in expected.items()) and all(case[k]=='PASS'
+            for k in ('immutable_slab','guards','private_map','checked_drain')),'bounded-copy case differs')
+    return cases
+
+
+def copy_size_profile_rows(text,cap):
     import math
-    lines=[s for s in text.splitlines() if s.startswith('expert_bank_copy_timing candidate=')]
-    guards.require(len(lines)==2,'exactly two copy-path timing shapes required')
-    rows=[]
-    for line,(payload,uploads,commands) in zip(lines,[(2662400,641,259 if candidate else 641),
-                                                   (1510400,512,1 if candidate else 512)]):
+    def fields(line):
         tokens=[s.split('=',1) for s in line.split()[1:]]
         guards.require(all(len(s)==2 for s in tokens) and len({s[0] for s in tokens})==len(tokens),
-            'malformed/duplicate timing fields')
-        row=dict(tokens)
-        ints=dict(candidate=int(candidate),payload=payload,logical_uploads=uploads,
-            requested_H2D_bytes=payload*uploads,commands=commands,preparation_timed=0,
-            guards_timed=0,actual_copy_read_drain_timed=1,model_qualified=0)
-        floats=('wall_ms','queue_ms','thread_ms','empty_ms')
-        guards.require(set(row)==set(ints)|set(floats)|{'eligible'} and
-            all(int(row[k])==v for k,v in ints.items()),'timed bytes/dispatch/geometry differs')
-        row={k:(float(v) if k in floats else int(v)) for k,v in row.items()}
-        guards.require(all(math.isfinite(row[k]) and row[k]>=0 for k in floats) and
-            0<row['queue_ms']<=row['wall_ms']+5 and row['thread_ms']<=row['wall_ms']+5,
-            'nonfinite,negative or inconsistent timing clocks')
-        eligible=row['wall_ms']>=100 and row['queue_ms']>=100 and row['empty_ms']<=.05*row['wall_ms']
-        guards.require(row['eligible'] in (0,1) and bool(row['eligible'])==eligible,
-            'printed eligibility contradicts measured clocks')
-        rows.append(row)
-    return rows
+            'malformed/duplicate profile fields')
+        return dict(tokens)
+    timings=[fields(line) for line in text.splitlines()
+        if line.startswith('expert_bank_copy_timing candidate=')]
+    profiles=[fields(line) for line in text.splitlines()
+        if line.startswith('expert_bank_copy_host_profile ')]
+    guards.require(len(timings)==len(profiles)==2,'two timing/accounting shapes required')
+    result=[]
+    phases=('other_submit','upload_wrapper','reader_submit','final_drain')
+    for t,p,(payload,uploads,permanent) in zip(timings,profiles,[(2662400,641,383),(1510400,512,512)]):
+        integers=dict(candidate=int(cap>1),payload=payload,logical_uploads=uploads,
+            requested_H2D_bytes=payload*uploads,commands=copy_size_commands(permanent,uploads,cap),
+            preparation_timed=0,guards_timed=0,actual_copy_read_drain_timed=1,model_qualified=0)
+        clocks=('wall_ms','queue_ms','thread_ms','empty_ms')
+        guards.require(set(t)==set(integers)|set(clocks)|{'eligible'} and
+            all(int(t[k])==v for k,v in integers.items()),'wrong copy timing bytes/dispatch')
+        timing={k:(float(v) if k in clocks else int(v)) for k,v in t.items()}
+        flags=dict(cap=cap,payload=payload,clock_switches=3073,intervals_disjoint=1,
+            coverage_conserved=1,exceptions=0,profiling_only=1)
+        floats=[phase+'_'+clock+'_ms' for phase in phases for clock in ('wall','thread')]+[
+            'clock_change_ns','timer_estimate_ms']
+        guards.require(set(p)==set(flags)|set(floats) and all(int(p[k])==v for k,v in flags.items()),
+            'wrong host accounting fields/counts')
+        profile={k:(float(v) if k in floats else int(v)) for k,v in p.items()}
+        guards.require(all(math.isfinite(timing[k]) and timing[k]>=0 for k in clocks) and
+            all(math.isfinite(profile[k]) and profile[k]>=0 for k in floats),'invalid timing/accounting number')
+        guards.require(abs(sum(profile[phase+'_wall_ms'] for phase in phases)-timing['wall_ms'])<1e-5 and
+            abs(sum(profile[phase+'_thread_ms'] for phase in phases)-timing['thread_ms'])<1e-5,
+            'disjoint host accounting does not conserve whole interval')
+        eligible=timing['wall_ms']>=100 and timing['queue_ms']>=100 and timing['empty_ms']<=.05*timing['wall_ms']
+        guards.require(timing['eligible'] in (0,1) and bool(timing['eligible'])==eligible and
+            timing['queue_ms']<=timing['wall_ms']+5 and timing['thread_ms']<=timing['wall_ms']+5,
+            'eligibility/clock mismatch')
+        guards.require(abs(profile['timer_estimate_ms']-profile['clock_change_ns']*3073/1e6)<1e-8,
+            'timer estimate/count mismatch')
+        result.append(dict(timing=timing,host=profile,eligible=bool(eligible and
+            profile['timer_estimate_ms']<=.01*timing['wall_ms'])))
+    return result
 
 
-def copy_run_timing_controls():
-    def example(candidate):
-        return '\n'.join('expert_bank_copy_timing '+ ' '.join(f'{k}={v}' for k,v in dict(
-            candidate=int(candidate),payload=p,logical_uploads=u,requested_H2D_bytes=p*u,
-            commands=c if candidate else u,wall_ms=200,queue_ms=180,thread_ms=100,empty_ms=1,
-            eligible=1,preparation_timed=0,guards_timed=0,actual_copy_read_drain_timed=1,
-            model_qualified=0).items()) for p,u,c in [(2662400,641,259),(1510400,512,1)])
-    valid=example(True)
-    guards.require(len(copy_run_timing_rows(valid,True))==2 and
-        len(copy_run_timing_rows(example(False),False))==2,'valid timing controls failed')
-    ineligible=valid.replace('wall_ms=200','wall_ms=90').replace('queue_ms=180','queue_ms=80').replace(
-        'thread_ms=100','thread_ms=60').replace('eligible=1','eligible=0')
-    guards.require(not any(r['eligible'] for r in copy_run_timing_rows(ineligible,True)),
-        'ineligible native success was accepted as timing evidence')
-    cases=[valid.replace('wall_ms=200','wall_ms=nan'),valid.replace('empty_ms=1','empty_ms=-1'),
-        valid.replace('queue_ms=180','queue_ms=500'),valid.replace('commands=259','commands=641'),
-        valid.replace('eligible=1','eligible=0'),valid+'\n'+valid,
-        valid.replace('candidate=1','candidate=1 candidate=1'),valid.replace('model_qualified=0','model_qualified=1')]
-    for text in cases:
+def copy_size_controls():
+    def example(cap):
+        lines=[]
+        for payload,uploads,permanent in [(2662400,641,383),(1510400,512,512)]:
+            t=dict(candidate=int(cap>1),payload=payload,logical_uploads=uploads,
+                requested_H2D_bytes=payload*uploads,commands=copy_size_commands(permanent,uploads,cap),
+                wall_ms=200,queue_ms=180,thread_ms=100,empty_ms=1,eligible=1,
+                preparation_timed=0,guards_timed=0,actual_copy_read_drain_timed=1,model_qualified=0)
+            p=dict(cap=cap,payload=payload,other_submit_wall_ms=1,other_submit_thread_ms=1,
+                upload_wrapper_wall_ms=98,upload_wrapper_thread_ms=48,reader_submit_wall_ms=99,
+                reader_submit_thread_ms=50,final_drain_wall_ms=2,final_drain_thread_ms=1,
+                clock_change_ns=100,clock_switches=3073,timer_estimate_ms=.3073,
+                intervals_disjoint=1,coverage_conserved=1,exceptions=0,profiling_only=1)
+            lines+=['expert_bank_copy_timing '+' '.join(f'{k}={v}' for k,v in t.items()),
+                'expert_bank_copy_host_profile '+' '.join(f'{k}={v}' for k,v in p.items())]
+        return '\n'.join(lines)
+    for cap in (1,4,16,64,512):guards.require(all(v['eligible'] for v in copy_size_profile_rows(example(cap),cap)),
+        'valid profile control failed')
+    valid=example(4)
+    negatives=[valid.replace('upload_wrapper_wall_ms=98','upload_wrapper_wall_ms=99'),
+        valid.replace('reader_submit_thread_ms=50','reader_submit_thread_ms=nan'),
+        valid.replace('clock_switches=3073','clock_switches=3072'),
+        valid.replace('eligible=1','eligible=0'),valid.replace('exceptions=0','exceptions=1'),
+        valid.replace('commands=354','commands=259'),valid.replace('cap=4','cap=4 cap=4')]
+    for text in negatives:
         refused=False
-        try:copy_run_timing_rows(text,True)
+        try:copy_size_profile_rows(text,4)
         except (RuntimeError,ValueError):refused=True
-        guards.require(refused,'invalid timing control admitted')
-    return dict(valid_arms=2,ineligible_success_recognized=True,negative_cases=len(cases),GPU_executed=False)
+        guards.require(refused,'invalid accounting/dispatch control admitted')
+    return dict(valid_caps=5,negative_cases=len(negatives),GPU_executed=False)
 
 
-def copy_run_timing(action):
-    """Prospective matched helper-path comparison; no model/saturation claim."""
-    import ast
-    import statistics
+def copy_size_check(action):
     import build_expert_copy_runs as build
     import ur_validation as validation
-    root=B/'expert-copy-runs-timing-v1';key='expert_copy_runs_timing_v1'
-    device_key='expert_copy_runs_device_v2'
-    order=[('diagnostic-reference',False,True),('diagnostic-candidate',True,True)]+[
-        ('speed-'+str(i),arm,False) for i,arm in enumerate([False,True,True,False,False,True])]
+    root=B/'expert-copy-size-profile-v1';key='expert_copy_size_profile_v1'
+    order=[dict(mode='cpu'),dict(mode='smoke')]+[dict(mode='profile',cap=cap,round=r)
+        for r,caps in enumerate([(1,4,16,64,512),(512,64,16,4,1),(16,1,512,4,64)]) for cap in caps]
     def save(row):
         (root/'record.json').write_text(json.dumps(row,indent=2)+'\n')
         public=json.loads(build.RESULT.read_text());public[key]=row
         build.RESULT.write_text(json.dumps(public,indent=2)+'\n')
-    def device_gate(native):
-        gate=validation.committed(build.RESULT,(device_key,))
-        guards.require(gate==json.loads((B/'expert-copy-runs-device-v2/record.json').read_text()) and
-            gate['stage']=='closed' and gate['passed'] and gate['complete'] and
-            gate['ownership_closed'] and not gate['active'] and gate['binaries']==native['binaries'] and
-            gate['native_source_commit']==native['native_source_commit'] and
-            [v['mode'] for v in gate['results']]==['cpu','smoke','large'] and
-            all(v['passed'] and v['complete'] and v['ownership_closed'] and v['fresh_faults']==[]
-                for v in gate['results']),'closed exact native CPU/small/maximum-span gates required')
-        old=ast.parse(subprocess.check_output(['git','show',gate['source_commit']+':tools/sycl/check_expert_bank.py'],cwd=P))
-        now=ast.parse(Path(__file__).read_text())
-        names={'copy_run_device','copy_run_startup_errors','copy_run_startup_controls'}
-        functions=lambda tree:{n.name:ast.dump(n,include_attributes=False) for n in tree.body
-            if isinstance(n,ast.FunctionDef) and n.name in names}
-        guards.require(functions(old)==functions(now) and set(functions(old))==names,
-            'old qualification functions changed;no inherited gate')
-        return dict(key=device_key,source_commit=gate['source_commit'],native_source_commit=gate['native_source_commit'],
-            record_sha256=digest(B/'expert-copy-runs-device-v2/record.json'),
-            existing_device_functions_AST_unchanged=True,maximum_span_passed=True)
     def current(row,committed=True):
-        if committed:guards.require(validation.committed(build.RESULT,(key,))==row,'commit exact timing stage first')
-        native,_=build.observer_native(row['observer_admission'])
-        guards.require(device_gate(native)==row['device_prerequisite'],'original device qualification changed')
-        runtime_path=Path(row['runtime_manifest']['path'])
-        guards.require(digest(runtime_path)==row['runtime_manifest']['sha256'] and all(
-            digest(p)==h for p,h in json.loads(runtime_path.read_text()).items()),'runtime providers changed')
-        guards.require(row['boot']==Path('/proc/sys/kernel/random/boot_id').read_text().strip() and
-            guards.driver_guard()==row['driver'],'boot/driver changed')
+        if committed:guards.require(validation.committed(build.RESULT,(key,))==row,'commit profile stage before run')
+        native=json.loads((build.ROOT/'record.json').read_text());build.context().current(native)
+        guards.require(native['stage']=='built' and native['passed'] and native['complete'] and
+            native['ownership_closed'] and not native['active'] and native['binaries']==row['binaries']
+            and native['native_source_commit']==row['native_source_commit'],'same fresh closed fixture build required')
+        p=Path(row['runtime_manifest']['path'])
+        guards.require(digest(p)==row['runtime_manifest']['sha256'] and all(digest(p)==h
+            for p,h in json.loads(p.read_text()).items()),'runtime provider changed')
+        guards.require(row['boot']==Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+            and row['driver']==guards.driver_guard(),'boot/driver changed')
         return native
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB);guards.no_model_owners([])
         if action=='prepare':
-            guards.require(not root.exists() and key not in json.loads(build.RESULT.read_text()),'fresh timing plan only')
-            native,proof=build.observer_native();gate=device_gate(native)
-            controls=copy_run_timing_controls();startup=copy_run_startup_controls()
+            guards.require(not root.exists() and key not in json.loads(build.RESULT.read_text()),'fresh profile plan only')
+            native=json.loads((build.ROOT/'record.json').read_text());build.context().current(native)
+            controls=copy_size_controls();startup=copy_run_startup_controls()
+            prior=validation.committed(build.RESULT,('expert_copy_runs_timing_v1',))
+            guards.require(prior['complete'] and prior['ownership_closed'] and not prior['active']
+                and not prior['performance_qualified'] and all(not d['model_followup_permitted']
+                    for d in prior['decisions']),'preserve original failed performance gates')
             env=dict(native['recipe']['environment'])
             guards.require({k:env[k] for k in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys',
-                'EnableDirectSubmission','SYCL_CACHE_PERSISTENT')}==dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',
-                NEOReadDebugKeys='1',EnableDirectSubmission='0',SYCL_CACHE_PERSISTENT='0'),'preserve safety/cache policy')
-            prior=validation.committed(build.RESULT,(device_key,))
-            row=dict(stage='ready',source_commit=proof['observer_source_commit'],
-                native_source_commit=native['native_source_commit'],observer_admission=proof,
-                device_prerequisite=gate,native_validation_probe=native['native_validation_probe'],
-                runtime_manifest=prior['runtime_manifest'],environment=env,binary=native['binaries']['sycl_expert_bank_test'],
-                boot=prior['boot'],driver=prior['driver'],parser_controls=controls,startup_controls=startup,
-                order=[dict(label=n,candidate=c,traced=t) for n,c,t in order],results=[],active=False,
-                ownership_closed=True,passed=False,complete=False,performance_qualified=False,
+                'EnableDirectSubmission')}==dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',
+                EnableDirectSubmission='0'),'preserve qualified safety settings')
+            row=dict(stage='ready',native_source_commit=native['native_source_commit'],binaries=native['binaries'],
+                native_validation_probe=native['native_validation_probe'],runtime_manifest=prior['runtime_manifest'],
+                environment=env,boot=prior['boot'],driver=prior['driver'],order=order,results=[],
+                cpu_reference=json.loads((build.cpu.ROOT/'record.json').read_text())['checks'],
+                controls=controls,startup_controls=startup,active=False,ownership_closed=True,passed=False,complete=False,
+                performance_qualified=False,model_followup_permitted=False,
                 budgets=dict(wall=240,cpu=1200,rss_cap=12<<30,text_cap=64<<20,file_cap=64<<20,total_cap=256<<20),
-                plan='Commit source and this plan before execution,and each closed process before the next. '
-                    'Two traced timing-branch diagnostics,then six fresh quiet processes ABBAAB,three per arm;'
-                    'adjacent opposite-order pairs(0,1),(2,3),(4,5). Each native process warms the small helper '
-                    'and marker,then measures ordinary384/max2662400 and full-fit512/1510400 in fixed order. '
-                    'Same bytes,hits,readers,source/slot order;only copy-run batching differs. Each shape has '
-                    'one empty marker/drain pair per process,six independent clean controls;require each native '
-                    'wall/queue>=100ms and empty<=5%wall,and per-shape maximum empty across six<=5%minimum wall. '
-                    'Require normal0,all byte/source/map/guard/drain/counter checks,exact actual dispatch,quiet '
-                    'validation,no fresh faults,closed ownership and frozen inputs. Stop first such failure;no retry. '
-                    'Record all individual samples,medians/ranges and paired wall/queue/thread ratios. Each geometry '
-                    'independently permits model follow-up only when all three candidate/reference wall ratios<1 '
-                    'and candidate median<reference median,with timing eligibility/calibration gates passing. '
-                    'No arbitrary minimum percentage. Mixed/small results remain candidates for a separately '
-                    'committed narrower plan,not a passed gate. Stop after six clean processes either outcome.',
-                timing_scope='Copy helper,all GPU byte readers,submission gaps and checked final drain;source fill,'
-                    'allocations,memset/reset and post-timing guards excluded. Large spans are first use in each '
-                    'fresh process;not warmed-model/request throughput. Queue interval is not pure DMA time;thread '
-                    'CPU includes polling. Per-process private NEO/SYCL/XDG caches;SYCL persistent cache remains0. '
-                    'Parameter validation and retained-reference preload charged in both arms. No bus-traffic,'
-                    'saturation,GEMM,model PP/TG,decode,ordinary teardown or262144/RESTORE qualification.',
-                retention='Keep compact individual timing/counter/eligibility samples and source/build/environment '
-                    'identities;retire successful traces/cache/logs after decision. No new engine generation. '
-                    'Existing engine/provenance reader holds remain for before the next engine build.')
+                plan='Commit fresh native/source/recipe and this plan before execution;commit each closed stage '
+                    'before next. CPU:repeat513/8/22planner fixture. Smoke:trace all5caps at small/scratch/full-fit '
+                    'shapes,one-slot and cancellation,failed-enqueue/refusal controls. Then15quiet independent '
+                    'profile processes,three per cap in pinned rotated/reversed orders;each process warms small '
+                    'helper/marker then ordinary384and packed-full-fit512. Same requested bytes/readers/order '
+                    'within each geometry. Require exact caps/cases/copy counts,source/map/guards/drain checks,'
+                    'normal0,quiet validation,closed owners,no fresh fault,frozen source/runtime. Profiles need '
+                    '100ms wall/queue,empty<=5%wall,disjoint conserved wall/thread accounting,zero exceptions '
+                    'and calibrated clock-change estimate<=1%wall. Stop first failure;no retry. Retain individual '
+                    'samples and per-cap ranges/medians. This is attribution/size-screening only;no performance '
+                    'gate permits a model trial. Any subsequent clean speed comparison needs a new committed plan.',
+                limits='Host profile is current-thread CPU only. Upload wrapper may include internal waits;'
+                    'do not call it CPU model math. Queue interval includes copy/read/host gaps,not pure DMA. '
+                    'Calibration estimates clock bookkeeping,not full observer overhead. No clean gain,physical '
+                    'bus traffic,saturation,model PP/TG,decode,physical262144/RESTORE or teardown qualification.',
+                retention='One temporary standalone fixture;coherent engine retained,no new engine generation. '
+                    'Keep compact per-process accounting/size/counter values and source/recipe identity;retire '
+                    'normal traces/cache after screen and before unrelated work. Review fixture need at clean '
+                    'comparison closure. Legacy engine reader/provenance holds remain before another engine build.')
             root.mkdir(mode=0o700);current(row,False);save(row)
-            print('Prepared pinned eight-process comparison;commit before timing.',flush=True);return
+            print('Prepared CPU/traced-size/15process profile plan;commit before run.',flush=True);return
         row=json.loads((root/'record.json').read_text());current(row)
         index=len(row['results']);guards.require(row['stage'] in ('ready','running') and index<len(order) and
-            all(v['passed'] for v in row['results']),'inspect existing timing owner/outcome;no restart')
-        label,candidate,traced=order[index];case=root/label
-        guards.require(not case.exists(),'existing owned process cannot be repeated');case.mkdir(mode=0o700)
+            all(v['passed'] for v in row['results']),'inspect existing owned profile;no retry')
+        item=order[index];mode=item['mode'];case=root/(f'{index:02d}-'+mode)
+        guards.require(not case.exists(),'existing profile handle must be inspected');case.mkdir(mode=0o700)
         for name in ('tmp','cache'):(case/name).mkdir(mode=0o700)
         env=dict(row['environment'],TMPDIR=str(case/'tmp'),XDG_CACHE_HOME=str(case/'cache'),
             NEO_CACHE_DIR=str(case/'cache/neo'),SYCL_CACHE_DIR=str(case/'cache/sycl'))
-        probe=row['native_validation_probe'];env.update(LD_PRELOAD=probe['library']['path'],
-            STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
-            UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(case/'validation.log'))
-        if not traced:env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
+        gpu=mode!='cpu';probe=row['native_validation_probe']
+        if gpu:
+            env.update(LD_PRELOAD=probe['library']['path'],STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
+                UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(case/'validation.log'))
+            if mode=='profile':env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
+        else:env.pop('LD_PRELOAD',None)
         cursor=next(s.split(': ',1)[1] for s in subprocess.check_output(
             ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
             if s.startswith('-- cursor: '))
-        outcome=dict(label=label,candidate=candidate,traced=traced,passed=False,complete=False,
-            host_probe_accepted=False,execution_success=False,timing_eligible=False,GPU_executed=True)
+        outcome=dict(**item,passed=False,complete=False,host_probe_accepted=False,GPU_executed=gpu)
         scope=None
         def persist():
             (case/'execution.json').write_text(json.dumps(dict(outcome,active=bool(scope and scope.active),
                 commands=scope.commands if scope else []),indent=2)+'\n')
         scope=supervision.Owner(case/'owned',persist)
         try:
-            argv=[row['binary']['path'],'--copy-runs-timing-'+('candidate' if candidate else 'reference')]
-            event,out,err=scope.run(label,argv,env,P,**row['budgets'])
+            argv=([row['binaries']['prefill_expert_bank_plan_test']['path']] if not gpu else
+                [row['binaries']['sycl_expert_bank_test']['path']]+(['--copy-runs-size-smoke'] if mode=='smoke'
+                    else ['--copy-runs-size-profile',str(item['cap'])]))
+            event,out,err=scope.run(mode,argv,env,P,**row['budgets']);text,errors=out.read_text(),err.read_text()
             outcome.update(native_pid=event['pid'],native_exit_code=event['exit_code'])
-            text,errors=out.read_text(),err.read_text()
             guards.require(supervision.closed(event) and event['exit_code']==0 and not re.search(
-                'terminate called|cleanup failed|teardown uncertain',errors),'copy timing child failed')
-            outcome['validation'],outcome['expected_startup_API_errors']=copy_run_startup_errors(errors,event['pid'],traced)
-            guards.require(outcome['validation']['loader']==probe['loader']['path'],'actual validation loader differs')
-            if traced:guards.require('urEnqueueUSMMemcpy' in errors and 'urEnqueueKernelLaunch' in errors,
-                'timing diagnostics require copies and readers traced')
-            cases=[dict(re.findall(r'(\w+)=([^ ]+)',line)) for line in text.splitlines()
-                if line.startswith('expert_bank_private_case ')]
-            expected=[(256,17,3,40),(2662400,641,383,2048),(1510400,512,512,2048)]
-            guards.require(len(cases)==3 and [(int(c['source_stride']),int(c['uploads']),int(c['hits']),
-                int(c['consumers'])) for c in cases]==expected and all(c['copy_runs']==str(int(candidate)) and
-                c['staged']=='0' and c['custom_queue']=='1' and c['status']=='0' and c['unwind']=='0' and
-                all(c[q]=='PASS' for q in ('immutable_slab','guards','private_map','checked_drain'))
-                for c in cases) and 'expert_bank_copy_timing PASS model=UNRUN' in text,'copy/read/guard checks differ')
-            outcome['timings']=copy_run_timing_rows(text,candidate)
-            outcome['execution_success']=True
-            outcome['timing_eligible']=all(v['eligible'] for v in outcome['timings'])
-            log=case/'validation.log';guards.require(not log.exists() or not log.stat().st_size,'validation diagnostic')
-            guards.require(outcome['timing_eligible'],'normal success is ineligible timing;stop without advancement')
+                'terminate called|cleanup failed|teardown uncertain',errors),'copy-size child failed')
+            if not gpu:
+                match=re.search(r'expert_bank_upload_runs configurations=513 windows_each=8 logical_uploads=(\d+) '
+                    r'commands=(\d+) runs=(\d+) run_experts=(\d+) negative_checks=22 PASS',text)
+                guards.require(not errors and match and tuple(map(int,match.groups()))==tuple(
+                    row['cpu_reference'][k] for k in ('logical_uploads','copy_commands','runs','run_experts'))
+                    and 'expert_bank_plan PASS' in text,'CPU gate incomplete')
+            else:
+                outcome['validation'],outcome['startup_errors']=copy_run_startup_errors(errors,event['pid'],mode=='smoke')
+                guards.require(outcome['validation']['loader']==probe['loader']['path'],'actual loader differs')
+                log=case/'validation.log';guards.require(not log.exists() or not log.stat().st_size,'validation diagnostic')
+                cases=copy_size_cases(text,item.get('cap'),mode=='smoke')
+                outcome['case_checks']=dict(count=len(cases),exact_geometry_counters=True,
+                    immutable_source_guards_private_map_and_checked_drain=True)
+                if mode=='smoke':
+                    guards.require('urEnqueueUSMMemcpy' in errors and 'urEnqueueKernelLaunch' in errors and
+                        'expert_bank_copy_size_smoke PASS model=UNRUN' in text and
+                        'expert_bank_run_enqueue_failure modes=3 published=0 no_retry=PASS checked_drain=PASS' in text and
+                        'expert_bank_run_admissions rejections=10 enqueues=0 mapping_unchanged=PASS' in text,
+                        'missing traced size/enqueue/refusal controls')
+                else:
+                    guards.require(f"expert_bank_copy_size cap={item['cap']} profiling=1" in text and
+                        'expert_bank_copy_size PASS model=UNRUN' in text,'actual profile mode differs')
+                    outcome['samples']=copy_size_profile_rows(text,item['cap'])
+                    guards.require(all(v['eligible'] for v in outcome['samples']),'profile timing/accounting ineligible')
             current(row);outcome.update(complete=True,host_probe_accepted=True)
         except BaseException as error:outcome['error']=repr(error)
         finally:
@@ -673,37 +567,15 @@ def copy_run_timing(action):
             outcome['passed']=bool(outcome['passed'] and outcome['complete'] and outcome.get('driver_after')==row['driver'])
             persist();row['results'].append(outcome);row.update(stage='running' if outcome['passed'] else 'failed',
                 active=bool(scope.active),ownership_closed=outcome['ownership_closed'])
-            if outcome['passed'] and len(row['results'])==len(order):
-                clean=row['results'][2:];decisions=[]
-                for i in range(2):
-                    samples=[v['timings'][i] for v in clean]
-                    a=[v for v in samples if not v['candidate']];b=[v for v in samples if v['candidate']]
-                    ratios={k:[next(v[k] for v in samples[j:j+2] if v['candidate'])/
-                        next(v[k] for v in samples[j:j+2] if not v['candidate']) for j in (0,2,4)]
-                        for k in ('wall_ms','queue_ms','thread_ms')}
-                    calibration=max(v['empty_ms'] for v in samples)<=.05*min(v['wall_ms'] for v in samples)
-                    median=lambda group,k:statistics.median(v[k] for v in group)
-                    gain=calibration and all(v<1 for v in ratios['wall_ms']) and median(b,'wall_ms')<median(a,'wall_ms')
-                    decisions.append(dict(payload=samples[0]['payload'],paired_candidate_over_reference=ratios,
-                        reference_medians={k:median(a,k) for k in ('wall_ms','queue_ms','thread_ms')},
-                        candidate_medians={k:median(b,k) for k in ('wall_ms','queue_ms','thread_ms')},
-                        repeated_empty_control_max_ms=max(v['empty_ms'] for v in samples),
-                        cross_process_calibration_passed=calibration,mechanism_gain_gate_passed=gain,
-                        model_followup_permitted=gain,model_qualified=False))
-                row.update(stage='closed',passed=True,complete=True,decisions=decisions,
-                    performance_qualified=all(v['mechanism_gain_gate_passed'] for v in decisions))
+            if outcome['passed'] and len(row['results'])==len(order):row.update(stage='closed',passed=True,complete=True)
             save(row)
-        print(json.dumps({k:outcome.get(k) for k in ('label','passed','complete','ownership_closed','timings','error')}),flush=True)
-        guards.require(outcome['passed'],'copy-path timing process failed')
+        print(json.dumps({k:outcome.get(k) for k in ('mode','cap','passed','complete','ownership_closed','samples','error')}),flush=True)
+        guards.require(outcome['passed'],'copy-size profile failed')
 
 
 def main():
-    if sys.argv[1:] in (['copy-runs-timing-prepare'],['copy-runs-timing-next']):
-        copy_run_timing(sys.argv[1].rsplit('-',1)[1]);return 0
-    if len(sys.argv)==2 and sys.argv[1].startswith('copy-runs-'):
-        action=sys.argv[1][len('copy-runs-'):]
-        guards.require(action in ('prepare','cpu','smoke','large'),'copy-runs-prepare|cpu|smoke|large')
-        copy_run_device(action);return 0
+    if sys.argv[1:] in (['copy-size-prepare'],['copy-size-next']):
+        copy_size_check(sys.argv[1].rsplit('-',1)[1]);return 0
     if sys.argv[1:] in (['smoke'],['validate'],['packed-smoke'],['packed-validate']):
         return gpu_check(sys.argv[1])
     if sys.argv[1:] == ['limits']:

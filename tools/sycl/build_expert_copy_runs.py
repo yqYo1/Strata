@@ -17,7 +17,7 @@ import check_qsa16_stream as base
 import check_expert_copy_runs as cpu
 
 P, B, RESULT = base.P, base.B, base.RESULT
-ROOT, KEY = B/'expert-copy-runs-component-v1', 'expert_copy_runs_component_v1'
+ROOT, KEY = B/'expert-copy-size-component-v1', 'expert_copy_size_component_v1'
 SEED, SEED_KEY = B/'coherent-prefill-native-v1/record.json', 'coherent_prefill_native_v1'
 TARGETS = ['sycl_expert_bank_test','prefill_expert_bank_plan_test']
 UNITS = {'tests/sycl/expert_bank.cpp','tests/expert_bank_plan.cpp','src/core/expert_cache.cpp',
@@ -86,62 +86,6 @@ def context():
     return ctx
 
 
-def observer_native(expected=None):
-    """A new committed observer policy never refreshes the original build pins.
-
-    Recover the full original snapshot and require every native/generated/SDK/
-    link input and both ELFs unchanged. Only the two reviewed,uncompiled Python
-    observers may differ; a new plan freezes their exact new source revision.
-    """
-    row=json.loads((ROOT/'record.json').read_text())
-    require(base.validation.committed(RESULT,(KEY,))==base.compact(row) and
-        row['stage']=='built' and row['passed'] and row['complete'] and
-        row['ownership_closed'] and not row['active'],'closed original component required')
-    before=row['project']['source_sha256']
-    recovered={p:hashlib.sha256(raw).hexdigest() for p,raw in base.common.source.blobs(
-        P,row['project']['revision'],before)}
-    after=base.common.source.pin(P,base.common.PREFIXES)['source_sha256']
-    allowed={'tools/sycl/build_expert_copy_runs.py','tools/sycl/check_expert_bank.py'}
-    changed={p:dict(original=before[p],observer=after[p]) for p in before
-        if p in after and before[p]!=after[p]}
-    require(recovered==before and set(before)==set(after) and set(changed)==allowed,
-        'only the two prospectively reviewed uncompiled observers may change')
-    revision=expected['observer_source_commit'] if expected else base.common.source.git(
-        P,'rev-parse','HEAD').decode().strip()
-    for p in allowed:
-        require(hashlib.sha256(base.common.source.git(P,'show',revision+':'+p)).hexdigest()==after[p],
-            'commit exact new observer source before admission')
-    require(prerequisite()==row['build_prerequisite'],'original CPU source/evidence changed')
-    for pin in row['dependencies']:
-        source={p:hashlib.sha256(raw).hexdigest() for p,raw in base.common.source.blobs(
-            Path(pin['root']),pin['revision'],pin['source_sha256'])}
-        require(source==pin['source_sha256'] and all(sha(Path(pin['root'])/p)==h for p,h in source.items()),
-            'original dependency inputs changed')
-    require(sha(SEED)==row['recipe_seed']['sha256'] and
-        sha(row['external_inputs']['path'])==row['external_inputs']['sha256'] and
-        all(sha(p)==h for p,h in row['toolchain'].items()) and all(sha(p)==h for p,h in
-            json.loads(Path(row['external_inputs']['path']).read_text()).items()),
-        'original recipe/compiler/SDK changed')
-    require(all(sha(p)==h for p,h in (row['configured_files']|row['generated_inputs']).items())
-        and sha(row['actual_inputs']['path'])==row['actual_inputs']['sha256'],
-        'actual generated/build/census inputs changed')
-    actual=json.loads(Path(row['actual_inputs']['path']).read_text())
-    require(all(sha(p)==h for family in ('compiled','generated','links') for p,h in actual[family].items())
-        and row['actual_inputs']['translation_units']==6 and row['actual_inputs']['uncovered']==0
-        and row['actual_inputs']['class_definition_coherence']['header_sha256']==sha(HEADER),
-        'original complete native/header/link inputs changed')
-    require(set(row['binaries'])==set(TARGETS) and all(Path(v['path']).stat().st_size==v['bytes']
-        and sha(v['path'])==v['sha256'] for v in [*row['binaries'].values(),*row['preserved_binaries']]),
-        'fixture or preserved engine changed')
-    require(context().probe_qualification()==(row['native_validation_probe'],row['validation_qualification']),
-        'qualified startup probe changed')
-    proof=dict(original_native_source=row['native_source_commit'],observer_source_commit=revision,
-        exact_observer_deltas=changed,original_source_recovered_files=len(before),
-        actual_native_compiler_files=row['actual_inputs']['compiler_files'],
-        actual_external_link_files=row['actual_inputs']['external_link_files'],
-        native_and_fixture_inputs_unchanged=True,native_recompiled=False,GPU_result_inherited=False)
-    require(expected is None or proof==expected,'frozen observer admission changed')
-    return row,proof
 
 
 def prepare():
@@ -168,15 +112,18 @@ def prepare():
         recipe_seed=dict(path=str(SEED),sha256=sha(SEED)),toolchain=seed['toolchain'],
         external_inputs=seed['external_inputs'],preserved_binaries=[seed['binaries']['strata']],
         build_prerequisite=gate,native_validation_probe=probe,validation_qualification=proof,
-        plan='Compile only CPU planner and actual production bank-upload GPU fixture,including all '
+        plan='Compile only CPU planner and actual production bank-upload GPU fixture with bounded '
+            'copy sizes and disjoint host accounting,including all '
             'six fresh translation units. Preserve qualified compiler/SDK and strict-FP recipe. '
             'Require source/compiler/generated/link census with zero uncovered files and both '
             'unconditional planner-class includers freshly built. Commit each stage before execution. '
-            'Then commit a separate traced small/maximum-span/failed-enqueue and copy-path timing plan. '
+            'Then commit a separate CPU/traced bounded-size correctness gate and attribution/clean '
+            'comparison plan. No previous fixture GPU or performance qualification is inherited. '
             'No engine,weights,GPU execution,decode or model speed in this build.',
-        retention='One temporary fixture generation for the imminent exact-copy test. Existing coherent '
-            'engine remains the fallback. Retire the standalone GCC host binary when this same-source '
-            'CMake CPU fixture passes. Old engine-generation/provenance/reader holds remain open; '
+        retention='One temporary fixture generation for the imminent transfer-size/host-accounting '
+            'diagnostic. The previous exact-copy fixture generation is already retired after source '
+            'recovery;its failed outcome stays in Git. Existing coherent engine remains the fallback. '
+            'Old engine-generation/provenance/reader holds remain open; '
             'resolve them before another engine build. Retire rejected candidate exports/fixture modes '
             'after the decision;keep original measured commits reachable.',
         budgets=dict(build=dict(wall=2400,cpu=7200,rss_cap=12<<30,text_cap=32<<20,

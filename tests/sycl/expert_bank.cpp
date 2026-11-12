@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cmath>
 #include <iomanip>
 #include <sys/mman.h>
 #include <time.h>
@@ -133,11 +134,45 @@ class BankTimingMarker;
 sycl::event bank_marker(sycl::queue& q);
 double thread_seconds();
 
+// Disjoint host intervals. Wrapper buckets can contain internal runtime waits;
+// neither wrapper CPU time nor final-drain CPU time means CPU model arithmetic.
+struct BankHostAccounting {
+    using Clock = std::chrono::steady_clock;
+    enum Phase {other, upload, readers, drain};
+    bool enabled, active = false;
+    Phase phase = other;
+    Clock::time_point previous;
+    double previous_cpu = 0;
+    std::array<double,4> wall{}, cpu{};
+    std::array<uint64_t,4> entries{};
+    explicit BankHostAccounting(bool on) : enabled(on) {}
+    void begin(Clock::time_point w, double c) {
+        if (!enabled) return;
+        need(!active,"nested host accounting");active=true;previous=w;previous_cpu=c;
+    }
+    void record(Clock::time_point w,double c) {
+        need(active && w>=previous && c>=previous_cpu,"host accounting clock/state");
+        wall[phase]+=std::chrono::duration<double,std::milli>(w-previous).count();
+        cpu[phase]+=(c-previous_cpu)*1000;previous=w;previous_cpu=c;
+    }
+    void enter(Phase next) {
+        if (!enabled) return;
+        const auto w=Clock::now();const auto c=thread_seconds();record(w,c);
+        phase=next;++entries[next];
+    }
+    void finish(Clock::time_point w,double c) {
+        if (!enabled) return;
+        record(w,c);active=false;
+    }
+};
+
 // Exercise the production private view through checked transitions in ONE
 // allocation. The source stride and destination stride deliberately differ.
 void run_private(int backing_slots, uint64_t backing_stride, int experts,
                  const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false,
-                 bool staged=false, bool custom_queue=false, bool copy_runs=false, bool timing=false) {
+                 bool staged=false, bool custom_queue=false, bool copy_runs=false, bool timing=false,
+                 int run_limit=512, bool host_profile=false) {
+    need(run_limit>=1 && run_limit<=512 && (!host_profile || timing),"copy-size/profile contract");
     if (copy_runs) need(full_copy && !staged &&
         std::all_of(strides.begin(),strides.end(),[&](uint64_t s) {return s==source_stride;}),
         "copy runs require exact packed payloads without staging");
@@ -160,6 +195,8 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
     uint64_t uploads=0,hits=0,consumers=0,expected_uploads=0,expected_hits=0;
     uint64_t copy_commands=0,runs=0,run_experts=0;
     double wall_ms=0,queue_ms=0,cpu_ms=0,empty_ms=0;
+    double clock_change_ns=0;
+    BankHostAccounting accounting(host_profile);
     unsigned drains=0,cancellations=0;
     for (size_t layer=0;layer<strides.size();++layer) {
         // The previous iteration's lease drained before rebinding these views
@@ -189,15 +226,24 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
                 drain(); // allocation/source preparation and reset are not timed
                 auto start=Wall::now();bank_marker(q);bank_marker(q);drain();
                 empty_ms=std::chrono::duration<double,std::milli>(Wall::now()-start).count();
+                if (host_profile) {
+                    BankHostAccounting calibration(true);
+                    const auto c=thread_seconds();const auto w=Wall::now();calibration.begin(w,c);
+                    for (int i=0;i<4096;++i) calibration.enter(BankHostAccounting::Phase(i%3));
+                    const auto end=Wall::now();calibration.finish(end,thread_seconds());
+                    clock_change_ns=std::chrono::duration<double,std::nano>(end-w).count()/4096;
+                }
                 begin_marker=std::make_unique<sycl::event>(bank_marker(q));
                 cpu_start=thread_seconds();timed_start=Wall::now();
+                accounting.begin(timed_start,cpu_start);
             }
             for (int round=0;round<2;++round) {
               pd::ExpertBankSlots::UploadRun accepted;
               for (int e=0;e<experts;++e) {
+                accounting.enter(BankHostAccounting::upload);
                 pd::ExpertBankSlots::Ticket ticket;
                 const int count=copy_runs && !accepted.contains(e) ?
-                    slots.permanent_run_length(e,experts-e) : 0;
+                    slots.permanent_run_length(e,std::min(run_limit,experts-e)) : 0;
                 if (copy_runs && accepted.contains(e)) ticket=accepted.ticket(e);
                 else if (count>1) {
                     accepted=pd::stage_private_expert_bank_run(slots,bank,slab,slab_bytes,
@@ -211,6 +257,7 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
                 uploads+=ticket.upload;hits+=!ticket.upload;
                 need(cache.slot_of(0,e)<0,"private map leaked into general cache");
                 const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
+                accounting.enter(BankHostAccounting::readers);
                 for (int job=0;job<2;++job) {
                     const size_t global=(words+255)/256*256;
                     q.parallel_for(sycl::nd_range<1>(global,256),[=](sycl::nd_item<1> item) {
@@ -223,6 +270,7 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
                     });
                     ++consumers;
                 }
+                accounting.enter(BankHostAccounting::other);
                 if (unwind && e==4) {
                     q.memcpy(&observed,status,4);
                     throw Stop{};
@@ -230,9 +278,12 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
               }
             }
             if (timing) {
+                accounting.enter(BankHostAccounting::drain);
                 auto end_marker=bank_marker(q);drain();
-                wall_ms=std::chrono::duration<double,std::milli>(Wall::now()-timed_start).count();
-                cpu_ms=(thread_seconds()-cpu_start)*1000;
+                const auto wall_end=Wall::now();const auto cpu_end=thread_seconds();
+                wall_ms=std::chrono::duration<double,std::milli>(wall_end-timed_start).count();
+                cpu_ms=(cpu_end-cpu_start)*1000;
+                accounting.finish(wall_end,cpu_end);
                 const auto start=begin_marker->get_profiling_info<sycl::info::event_profiling::command_end>();
                 const auto end=end_marker.get_profiling_info<sycl::info::event_profiling::command_start>();
                 need(end>start && wall_ms>0 && cpu_ms>=0,"copy-run timing clock/order invalid");
@@ -305,6 +356,21 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
             <<" commands="<<copy_commands<<" wall_ms="<<wall_ms<<" queue_ms="<<queue_ms
             <<" thread_ms="<<cpu_ms<<" empty_ms="<<empty_ms<<" eligible="<<eligible
             <<" preparation_timed=0 guards_timed=0 actual_copy_read_drain_timed=1 model_qualified=0\n";
+        if (host_profile) {
+            double sum_wall=0,sum_cpu=0;uint64_t switches=0;
+            for (size_t i=0;i<4;++i) {sum_wall+=accounting.wall[i];sum_cpu+=accounting.cpu[i];switches+=accounting.entries[i];}
+            need(!accounting.active && std::abs(sum_wall-wall_ms)<1e-5 && std::abs(sum_cpu-cpu_ms)<1e-5 &&
+                accounting.entries[1]==uint64_t(2*experts) && accounting.entries[2]==uint64_t(2*experts) &&
+                accounting.entries[0]==uint64_t(2*experts) && accounting.entries[3]==1,
+                "disjoint host accounting incomplete");
+            std::cout<<"expert_bank_copy_host_profile cap="<<run_limit<<" payload="<<source_stride;
+            const std::array<const char*,4> names{"other_submit","upload_wrapper","reader_submit","final_drain"};
+            for (size_t i=0;i<4;++i) std::cout<<" "<<names[i]<<"_wall_ms="<<accounting.wall[i]
+                <<" "<<names[i]<<"_thread_ms="<<accounting.cpu[i];
+            std::cout<<" clock_change_ns="<<clock_change_ns<<" clock_switches="<<switches
+                <<" timer_estimate_ms="<<clock_change_ns*double(switches)/1e6
+                <<" intervals_disjoint=1 coverage_conserved=1 exceptions=0 profiling_only=1\n";
+        }
     }
 }
 
@@ -665,14 +731,29 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
 }
 
 int main(int argc, char** argv) try {
-    if (argc==2 && (std::string(argv[1])=="--copy-runs-timing-reference" ||
-                   std::string(argv[1])=="--copy-runs-timing-candidate")) {
-        const bool candidate=std::string(argv[1])=="--copy-runs-timing-candidate";
-        run_private(4,256,10,{256},256,false,true,false,true,candidate);
+    if (argc==2 && std::string(argv[1])=="--copy-runs-size-smoke") {
+        for (int cap : {1,4,16,64,512}) {
+            std::cout<<"expert_bank_copy_size cap="<<cap<<" profiling=0\n";
+            run_private(4,256,10,{256},256,false,true,false,true,cap>1,false,cap);
+            run_private(384,256,512,{256},256,false,true,false,true,cap>1,false,cap);
+            run_private(512,256,512,{256},256,false,true,false,true,cap>1,false,cap);
+        }
+        run_private(1,256,10,{256},256,false,true,false,true,true,false,4);
+        run_private(8,256,10,{256,256},256,true,true,false,true,true,false,4);
+        run_private_run_enqueue_failure();run_private_run_admissions();
+        std::cout<<"expert_bank_copy_size_smoke PASS model=UNRUN\n";return 0;
+    }
+    if (argc==3 && (std::string(argv[1])=="--copy-runs-size" ||
+                   std::string(argv[1])=="--copy-runs-size-profile")) {
+        const std::string arg=argv[2];
+        need(arg=="1" || arg=="4" || arg=="16" || arg=="64" || arg=="512","copy-size cap must be1,4,16,64or512");
+        const int cap=std::stoi(arg);const bool profile=std::string(argv[1])=="--copy-runs-size-profile";
+        std::cout<<"expert_bank_copy_size cap="<<cap<<" profiling="<<profile<<"\n";
+        run_private(4,256,10,{256},256,false,true,false,true,cap>1,false,cap);
         auto runtime=sb::runtime_for();bank_marker(runtime->compute());runtime->wait();
-        run_private(384,2662400,512,{2662400},2662400,false,true,false,true,candidate,true);
-        run_private(384,2662400,512,{1510400},1510400,false,true,false,true,candidate,true);
-        std::cout<<"expert_bank_copy_timing PASS model=UNRUN\n";return 0;
+        run_private(384,2662400,512,{2662400},2662400,false,true,false,true,cap>1,true,cap,profile);
+        run_private(384,2662400,512,{1510400},1510400,false,true,false,true,cap>1,true,cap,profile);
+        std::cout<<"expert_bank_copy_size PASS model=UNRUN\n";return 0;
     }
 #if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
     if(argc==2 && std::string(argv[1])=="--padding-guard-smoke") {
@@ -703,20 +784,9 @@ int main(int argc, char** argv) try {
         std::string(argv[1]) == "--packed-smoke" || std::string(argv[1]) == "--packed-validate" ||
         std::string(argv[1]) == "--staging-smoke" || std::string(argv[1]) == "--staging-validate" ||
         std::string(argv[1]) == "--packed-custom-smoke" || std::string(argv[1]) == "--staging-custom-smoke" ||
-        std::string(argv[1]) == "--staging-custom-validate" ||
-        std::string(argv[1]) == "--copy-runs-smoke" || std::string(argv[1]) == "--copy-runs-validate"),
+        std::string(argv[1]) == "--staging-custom-validate"),
         "use --smoke|--validate|--packed-smoke|--packed-validate");
-    if (std::string(argv[1]) == "--copy-runs-smoke") {
-        run_private(4,256,10,{256,256},256,false,true,false,true,true);
-        run_private(1,256,10,{256},256,false,true,false,true,true);
-        run_private(512,256,512,{256},256,false,true,false,true,true);
-        run_private(8,256,10,{256,256},256,true,true,false,true,true);
-        run_private_run_enqueue_failure();run_private_run_admissions();
-    } else if (std::string(argv[1]) == "--copy-runs-validate") {
-        run_private(384,2662400,512,{2662400},2662400,false,true,false,true,true);
-        run_private(384,2662400,512,{1510400},1510400,false,true,false,true,true);
-        run_private_run_enqueue_failure();run_private_run_admissions();
-    } else if (std::string(argv[1]) == "--packed-custom-smoke") {
+    if (std::string(argv[1]) == "--packed-custom-smoke") {
         run_private(4,512,10,{256,512,256},256,false,true,false,true);
         run_private(4,512,10,{256,512},256,true,false,false,true);
     } else if (std::string(argv[1]) == "--staging-custom-smoke") {
