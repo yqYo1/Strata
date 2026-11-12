@@ -190,10 +190,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The Nov11template root has a separate ownership/helper-consumer hold;reconcile
   its original Task before pruning ended payload. Legacy19reader/deployment
   and source-recovery holds remain open. No new engine generation was created.
-  The CPUcompact ownership build/check now pass at pushed child`8a05b016c`;
-  next prepare independent real-block production-dispatch numerics and hot/cold
-  timing. This component is not integrated into the engine and has no
-  independent numeric/performance/model qualification.
+  The CPUcompact ownership and actual-production-dispatch numerical component
+  now pass,with original source/results merged through`938829829`. V4at`9071db9a6`
+  checks768real-weight serial cases across Down20/42,1280disjoint threaded rows,
+  phase/NT/alias guards and exact IQ3paired/Q8_K output bits. This is component
+  parity,not model/task/RSS or performance qualification. The fresh hot/streaming
+  fixture at`20a202d28`reuses the source-qualified CPUarchives;its separate128case
+  admission per format also passes. The committed V2plan`d27a245f0`charges lookup+
+  GU,encoding/publication,RSS and synthetic reuse/stream32 at1/6cores in three
+  matched R/Cpairs. That comparison is in progress;the original V1missing-header
+  refusal remains failed. No engine route,including prefill,has changed. The ended
+  ownership ELF/build and routine V4output are retired after source recovery:
+  9files/192066bytes;the numeric reader still passes. Preserve the consumed
+  ownership check receipt and V3archive/input proofs for this immediate timing.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
