@@ -283,9 +283,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ELF`c92a494b`:442compiler/23link inputs and full ELFadmission pass.
   All768real-layer/synthetic-Q8_K full/partial/empty-row cases match bits,
   and both wrong-scale controls are detected,normal0quietclosed. The frozen
-  six-arm single-core comparison is active under`compact_expanded_scale_kernel_v1`.
-  Shape-specific kernel gains permit only a new corresponding whole-pool test,
-  not model execution or adoption. The unprivileged perf counter probe exits1
+  six-arm single-core comparison is now closed under`compact_expanded_scale_kernel_v1`:
+  12native processes,108eligible batches,min1.806970283s,normal0quietclosed.
+  None of6cells improves in all3pairs;all lose in the second pair. Geometric
+  mean speedups are0.989345..1.023826,so the prototype is not adopted and does
+  not permit a production-pool follow-up. Static pair-dot instructions fall
+  295to258with no YMMstack operands,but unchanged vector arithmetic and changed
+  block stride/alignment do not establish a cycle,IPC or resource improvement.
+  Preserve all individual samples and failed gates;do not repeat until lucky.
+  Prioritize the original small-job134-byte gains. The unprivileged perf counter probe exits1
   at paranoid4;no counters or privilege changes. The host is5600X,
   family25/model33/stepping0 with32MiBL3;1/6/32-expert kernel working sets
   do not establish physical cache/DRAMtraffic. The actual generate/core wiring
@@ -293,7 +299,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Down42raw blob versus460800BDown accounting and the claim of saving bytes by
   splitting already packed nibbles. Startup interposition is not GPU-free;
   allocation-fault qualification remains conditional on its admitted setup.
-  Separately,the optional production selection now has an unbuilt source
+  Separately,source`a4430656fe54b289f85301f53c3b7a6f166a330e`implements
+  the optional production selection as an unbuilt
   candidate capped at6jobs per complete Decode batch. Both the real dispatcher
   and pool entry use the same policy;larger batches retain native GU and per-job
   NT1/format guards remain. This starts from the original repeated small-job
