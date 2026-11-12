@@ -50,6 +50,22 @@ residency and total RSS still need measurement. AVX2/FMA/F16C and the exact
 planned. `lifetime.cpp` checks ownership/admission only; comparing calls before
 and after retirement is not an independent numeric oracle.
 
+The index's actual vector capacity is checked after construction; the known
+byte budget is not a strict peak-allocation limit. Construction, freeze and
+publication must be serialized. Native paired-versus-GGML selection and model/
+role identity remain caller/bridge obligations, with actual-dispatch numeric
+tests required before integration.
+
+`tools/sycl/cpu_compact_hot.py` prepares a CPU-only icpx2026.2 recipe and checks
+committed source/plan/tool identities before build/check. It reuses the exact
+GGML3cf headers and the coherent build's actual dependency census, rejects
+uncovered compile inputs and GPU libraries, and verifies the final executable
+before the ownership test. Its shared measurement lock prevents overlap with
+Main's GPU work. Build/check are finite, supervised by the existing pidfd
+owner, with an8GiB virtual-address cap;the ownership check has a128MiB RSS cap.
+Prepare the plan,commit it,then build/check only at a serialized boundary.
+No invocation or pass is implied by this recipe's source preparation.
+
 ## Pending Main gates
 
 1. Commit the exact CPU-only build recipe, compiler/dependency inputs and
