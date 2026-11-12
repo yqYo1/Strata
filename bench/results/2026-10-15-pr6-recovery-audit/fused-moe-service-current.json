@@ -308851,7 +308851,7 @@
     }
   },
   "expert_copy_size_clean_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "8bb1150d7494ed6ae22d632229dd82aaf3223ec2",
     "native_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1",
     "observer_admission": {
@@ -309307,12 +309307,82 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "cap": 16,
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_pid": 2685752,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2685752,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "startup_errors": 0,
+        "case_checks": {
+          "count": 3,
+          "passed": true
+        },
+        "samples": [
+          {
+            "candidate": 1,
+            "payload": 2662400,
+            "logical_uploads": 641,
+            "requested_H2D_bytes": 1706598400,
+            "commands": 282,
+            "wall_ms": 412.04047599999996,
+            "queue_ms": 386.977605,
+            "thread_ms": 380.086766,
+            "empty_ms": 0.189988,
+            "eligible": 1,
+            "preparation_timed": 0,
+            "guards_timed": 0,
+            "actual_copy_read_drain_timed": 1,
+            "model_qualified": 0
+          },
+          {
+            "candidate": 1,
+            "payload": 1510400,
+            "logical_uploads": 512,
+            "requested_H2D_bytes": 773324800,
+            "commands": 32,
+            "wall_ms": 152.88420399999998,
+            "queue_ms": 152.76073,
+            "thread_ms": 148.54841799999986,
+            "empty_ms": 0.15984099999999998,
+            "eligible": 1,
+            "preparation_timed": 0,
+            "guards_timed": 0,
+            "actual_copy_read_drain_timed": 1,
+            "model_qualified": 0
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "performance_qualified": false,
     "budgets": {
       "wall": 240,
@@ -309325,6 +309395,36 @@
     "plan": "Commit source and this prospective plan before six quiet independent native processes ABBAAB(cap1/16),three opposite-order pairs. Same fixed warmup/ordinary384then packed512 geometries,bytes/readers and checked final drain;per-expert clocks must be off. Record all wall/queue/thread/empty values and actual copy commands. Each geometry judged independently: all three paired candidate/reference wall ratios<1 and candidate median<reference median permit only that geometry to advance to a separately committed production/model plan. No arbitrary minimum percentage;mixed outcomes remain failed,with a new plan needed for more evidence. All samples need100mswall/queue and empty<=5%wall;also maximum empty over six<=5%minimum wall per geometry. Require exact source/ELF/provider/startup/cap/flags/counts,byte/source/guard/private-map/drain checks,normal0,quiet validation,no fresh fault and closed ownership. Stop first such failure;no retries. Stop after six samples either performance outcome.",
     "selection": "Cap16selected from completed profiling screen:packed512 median150.087ms versus cap1 182.559ms. Ordinary384median401.888versus373.391is not a positive profile result;do not apply a packed-geometry win to ordinary placement. Profiling is not clean gain evidence.",
     "limits": "Synthetic production copy helper/readers only. First large allocation/use per process;no warmed-model,physical bus traffic,saturation,model PP/TG,decode,full262144/RESTORE or ordinary teardown qualification. Parameter validation and retained-reference preload charged.",
-    "retention": "Reuse exact f98dd238native fixtures;no recompile or new generation. Keep individual clean samples and decision;retire normal profiling/clean traces/cache after source/evidence review. Legacy engine reader/provenance holds remain before another engine build."
+    "retention": "Reuse exact f98dd238native fixtures;no recompile or new generation. Keep individual clean samples and decision;retire normal profiling/clean traces/cache after source/evidence review. Legacy engine reader/provenance holds remain before another engine build.",
+    "decisions": [
+      {
+        "payload": 2662400,
+        "reference_median_wall_ms": 371.899923,
+        "candidate_median_wall_ms": 380.143548,
+        "paired_candidate_over_reference": [
+          1.0262014642133652,
+          0.9919491316802257,
+          1.1079337491554144
+        ],
+        "calibration_passed": true,
+        "mechanism_gain_gate_passed": false,
+        "model_followup_permitted": false,
+        "model_qualified": false
+      },
+      {
+        "payload": 1510400,
+        "reference_median_wall_ms": 155.988031,
+        "candidate_median_wall_ms": 152.88420399999998,
+        "paired_candidate_over_reference": [
+          1.0574675054619505,
+          0.9569124866643557,
+          0.9801021464268626
+        ],
+        "calibration_passed": true,
+        "mechanism_gain_gate_passed": false,
+        "model_followup_permitted": false,
+        "model_qualified": false
+      }
+    ]
   }
 }
