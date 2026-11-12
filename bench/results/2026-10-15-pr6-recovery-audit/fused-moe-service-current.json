@@ -302418,5 +302418,70 @@
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "expert_copy_runs_host_v1": {
+    "stage": "prepared",
+    "source_commit": "6f7a089cc598791c02d47051bff40d1d466bc0d3",
+    "source_sha256": {
+      "include/strata/prefill/expert_bank_plan.hpp": "f726ef37daad7df61c41d279329e82c49b5eebb59cf975dfb6cde0cc0a9fff5a",
+      "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+      "include/strata/core/expert_layer_view.hpp": "5b8c4a6c7a1a1d074fe35ed09c933c10b52e56e609eb86e5a4e7b506d0dc8c8f",
+      "tests/expert_bank_plan.cpp": "64b59e0ee1c8a13d5a6e1ad836d9d7f87715812cc0cda4d6596aa1e25a9dbbb9",
+      "tools/sycl/check_expert_copy_runs.py": "36fc3958ddc65695c166a69cf992d5a0b0065e488f1784ce7c59ebfeac209d1a",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+    },
+    "compiler": {
+      "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-host-v1/compiler-inputs.json",
+      "sha256": "ef7033ed9d8d834945a1fd1292189e4b84ae8eb162330363a0eff3220a62ee79",
+      "files": 1674
+    },
+    "fallback": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+      "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+      "bytes": 26448640,
+      "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+    },
+    "recipe": {
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "compile": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-O2",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-host-v1/deps.d",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/prefill-copy-runs/include",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/prefill-copy-runs/tests/expert_bank_plan.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-host-v1/plan-test"
+      ],
+      "test": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-host-v1/plan-test"
+      ]
+    },
+    "plan": "Compile and run committed production slot planner plus independent sequential-slot oracle. Require513capacity/full-fit configurations,eight windows each,hits/gaps/resets,scratch read equivalence,exact ticket generations and copy-byte/command conservation,22negative pending/stale/range/overflow cases,and all existing planner/source-view checks. Stop first source/compiler/dependency/owner/output/check failure;no retry or pin refresh.",
+    "retention": "Temporary CPU fixture for the imminent copy-run device plan;no extra engine generation. Retire this executable/logs after the same-source CMake fixture supersedes it or candidate closes.",
+    "limits": "CPU metadata/slot/generation logic only;no accepted provider copy,GPU bytes/lifetime,speed, numerical model,decode,physical262144/RESTORE or adoption qualification.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false
   }
 }
