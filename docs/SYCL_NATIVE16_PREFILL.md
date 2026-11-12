@@ -357,8 +357,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   build and model distribution/RAM/TTFT/long-generation gates rather than
   repeating this CPUcohort. The real dispatcher source now offers cache leases
   only for3/6jobs in the5worker+host pool;other shapes keep native GU. The pool's
-  <=6bound remains independent. This narrower source is unbuilt and has no
-  actual-model qualification;the CPUtiming source remains81914a76e.
+  <=6bound remains independent. This narrower source is now compiled in the
+  fresh engine below,but has no actual-model qualification;the CPUtiming
+  source remains81914a76e.
   The new full-engine controller source89be7ce36 now prepares
   `compact_cpu_model_native_v1`in the linked fused-service result. Its recipe
   starts from the validated14508full build,recompiles all affected units and
@@ -369,7 +370,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Configure/host-control/planning children now close normally0. The fresh
   configuration plans138object compilations,including compact_gu.cpp and
   both actual generate entrypoints. Commit this configured stage before
-  compilation;the final build census and executable checks are still pending.
+  compilation. The full build now passes:138planned compiler objects from
+  135unique sources,1473actual compiler inputs,29external links,no uncovered
+  inputs and all12ELFidentities. Five Gemm header consumers share the same
+  SYCLdefinition;all are fresh,without reused native objects. Engine source
+  89be7ce36 has SHAe7431db9;ten fixtures match the14508reference bytes,but no
+  GPU/model result is inherited by that fact alone. All five build children
+  close normally0. The new explicit native observer retains the bounded
+  eleven-stage checks before actual-model handoff;GPUexecution is still pending.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
