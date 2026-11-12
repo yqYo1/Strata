@@ -32,8 +32,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   unchanged. After2366Git source/dependency and727compiler/24link-input recovery,
   the final fixture/raw products are retired:143files,45865160regular content
   bytes. No symlink-target bytes are counted. The coherent engine is unchanged.
-  Native review of the last controller and consumed research cleanup remain
-  pending. The earlier GCC V1provenance failure remains unqualified.
+  Native Luna-max review finds no reachable clean-controller/admission defect.
+  The consumed research transactions and duplicate copy-only private receipts
+  are retired;compact provenance/corrections remain in the research index.
+  The earlier GCC V1provenance failure remains unqualified.
 - The historical partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
   **class-definition coherence hold**. The archive combined the new `Gemm`
   member declaration from `213dd970` with eleven original archive members,
