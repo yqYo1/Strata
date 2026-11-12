@@ -308851,7 +308851,7 @@
     }
   },
   "expert_copy_size_clean_v1": {
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "8bb1150d7494ed6ae22d632229dd82aaf3223ec2",
     "native_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1",
     "observer_admission": {
@@ -308957,7 +308957,78 @@
       1,
       16
     ],
-    "results": [],
+    "results": [
+      {
+        "cap": 1,
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_pid": 2673345,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2673345,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "startup_errors": 0,
+        "case_checks": {
+          "count": 3,
+          "passed": true
+        },
+        "samples": [
+          {
+            "candidate": 0,
+            "payload": 2662400,
+            "logical_uploads": 641,
+            "requested_H2D_bytes": 1706598400,
+            "commands": 641,
+            "wall_ms": 370.437542,
+            "queue_ms": 345.45687499999997,
+            "thread_ms": 338.904023,
+            "empty_ms": 0.167245,
+            "eligible": 1,
+            "preparation_timed": 0,
+            "guards_timed": 0,
+            "actual_copy_read_drain_timed": 1,
+            "model_qualified": 0
+          },
+          {
+            "candidate": 0,
+            "payload": 1510400,
+            "logical_uploads": 512,
+            "requested_H2D_bytes": 773324800,
+            "commands": 512,
+            "wall_ms": 154.645759,
+            "queue_ms": 154.51177099999998,
+            "thread_ms": 150.16347399999975,
+            "empty_ms": 0.157236,
+            "eligible": 1,
+            "preparation_timed": 0,
+            "guards_timed": 0,
+            "actual_copy_read_drain_timed": 1,
+            "model_qualified": 0
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "passed": false,
