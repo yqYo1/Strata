@@ -378,9 +378,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   GPU/model result is inherited by that fact alone. All five build children
   close normally0. The new explicit native observer retains the bounded
   eleven-stage checks before actual-model handoff. Fresh host and submission
-  stages now pass,normal0and closed owners. The first traced/parameter-validated
-  GPUchild has no validation warning or fresh driver fault. Nine native stages,
-  then actual cache-dispatch/model/RAM/TTFT/long-generation checks remain.
+  stages now pass,normal0and closed owners. All eleven fresh native stages now
+  close successfully,with no fresh driver fault. GU has44correctness cases,
+  maxFP16ULP0,exactBF16capture,intact guards and immutable inputs. Attention
+  and producer exercise262144cells as components,not a full model fill.
+  The new candidate-only model observer keeps32769/82/32769thinking inputs
+  and32outputs each,with16GiB CPUcache budget,5workers+host and unchanged
+  spec4/8192/static1256placement. It requires8704prepared entries and actual
+  supported-layer3/6pool exposure,with80GiB RSS cap and77GiB available-memory
+  admission(old model peak52.016GiB). This is allocation/state/route diagnosis;
+  per-job cached-math coverage,clean speed,task and whole262144model/RESTORE
+  qualification remain separate. Commit its plan before actual model execution.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
