@@ -291,6 +291,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   295to258with no YMMstack operands,but unchanged vector arithmetic and changed
   block stride/alignment do not establish a cycle,IPC or resource improvement.
   Preserve all individual samples and failed gates;do not repeat until lucky.
+  Pushed evidence`78cdb8bb5`and source/recipe recovery at`81361126d`allow
+  retirement of its standalone ELF/object/raw root:57files,1101251regular
+  bytes. Ten original project pins,291GGMLpins and442compiler/23link inputs
+  match. Three consumed temporary retirement inventories are also removed.
+  Both native reviews now close with no candidate-specific valid-Q8_K defect.
+  The117project/7GGMLpins match their immutable snapshot. Synthetic-128tests
+  establish common PSIGNBwrap parity,not mathematical signed-dot correctness;
+  production Q8_K quantization uses[-127,127]. The standalone prototype,
+  controller and plan are retired to originala2afd41f8/bad6016c4Git. The next
+  small-batch pool build consumes none of their bytes. A compact conditional
+  [Zen3 instruction reference](research/zen3-iq3-gu-instructions.json)retains
+  reviewed constraints/sources for later retrieval,without adopting its methods.
   Prioritize the original small-job134-byte gains. The unprivileged perf counter probe exits1
   at paranoid4;no counters or privilege changes. The host is5600X,
   family25/model33/stepping0 with32MiBL3;1/6/32-expert kernel working sets

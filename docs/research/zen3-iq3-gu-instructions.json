@@ -1,0 +1,158 @@
+{
+  "schema": "strata-zen3-iq3-instruction-reference-v1",
+  "classification": "conditional_knowledge_reference",
+  "source_snapshot": "fd917d14d858bff7666d8563dd9ebc6df56e1c7c",
+  "review_sha256": "d6dcee5cc515ecf397a5cbb62c7e777e823d964152120248393c7b611cba1e34",
+  "report_sha256": "8d64412480a70d220700ef7cddf0605853cb0d65c728ef947de1c5c338d58c54",
+  "consumer": "Future CPU DecodeNT1GU instruction-resource question after small-batch production timing identifies a live dependency;not a current optimization/adoption recommendation.",
+  "review_point": "Revisit after production small-batch timing or retirement of the134-byte codec;prune if those questions end.",
+  "target": {
+    "cpu": "Main-observed Ryzen 5 5600X, family 25 decimal (19h), model 33 decimal (21h), stepping 0; AVX2/FMA/F16C, no AVX-512; 6 cores/12 threads/32 MiB L3.",
+    "amd_fact_limit": "Official product specs confirm Vermeer, core/thread and L3 facts. Family/model/stepping are local observations. AMD guide 56665 is EPYC 7003-branded Family 19h guidance, not Model 21h timings/PMU. Do not apply PPR 55898 (Models 00h-0Fh) to Model 21h.",
+    "compiler": "Packet native-build context: oneAPI icpx/icx 2026.2, SHA256 59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213. A future comparison must pin the actual frozen compiler, flags and target. llvm-mca's znver3 model/version is a separate input.",
+    "pmu": "Main probe exits 1 at perf_event_paranoid=4. No PMU/IBS, port saturation or physical traffic evidence. Kernel docs say unprivileged CPU event access is denied at paranoid >=1 without CAP_PERFMON.",
+    "evidence_limit": "Disassembly and llvm-mca are static discriminators, not throughput, cache, frequency, saturation or model qualification. Keep clean repeated wall-time comparison separate."
+  },
+  "novelty": {
+    "summary": "Useful narrow instruction map for the newly pinned compact IQ3_XXS/Q8_K pair-dot; hypotheses only, no new algorithm or proven speedup.",
+    "incremental": [
+      "Maps the 134-byte block and 138-byte odd-scale variant to PSHUFB/PSIGNB/VPMADDUBSW/VPMADDWD work and storage tradeoffs.",
+      "Uses Main's 295-instruction, balanced, no-YMM-stack baseline to reject another generic accumulator split.",
+      "States lane bounds and FP order constraints."
+    ],
+    "overlap": [
+      "Ten packet rows already cover representation/storage, cache/pool, timing, numerical contract, PMU limits and scale context.",
+      "Canonical zen3_avx2_expert_instruction_collection_scope and cpu_lowbit_lut_methods_collection_scope cover general AVX2 and LUT/representation methods.",
+      "cpu_compact_pool_resource_methods_20261113 already records the 134/128-byte capacity, host identity, PMU refusal and unknown saturation; do not relist these as new."
+    ]
+  },
+  "corrections": [
+    {
+      "claim": "Block storage",
+      "fact": "2-byte half + 4-byte eight-nibble scale + 128-byte combined index/sign storage for 256 weights = 134 bytes; sign/index separation does not save the existing 128 bytes.",
+      "status": "verified from pinned compact_iq3xxs.hpp"
+    },
+    {
+      "claim": "VPMADDUBSW bound",
+      "fact": "2*62*128=15872 per adjacent pair, below signed-int16 saturation.",
+      "status": "verified"
+    },
+    {
+      "claim": "Int32 bound",
+      "fact": "8*4*62*128*31=7872512 is the max absolute sum per int32 lane across eight chunks, not across all vector lanes.",
+      "status": "clarify wording; source comment calls it a lane bound"
+    },
+    {
+      "claim": "PSIGNB(-128)",
+      "fact": "Negative sign applies byte two's-complement negation; -128 wraps to 0x80, not mathematical +128. Native parity is not mathematical signed-dot exactness.",
+      "status": "state caveat and retain corner case in parity checks"
+    },
+    {
+      "claim": "Scheduling",
+      "fact": "Source already visits gate then up per chunk. Reorder/staging or nibble scheduling matters only if exact emitted code exposes a removable dependency. 295 instructions/no YMM stack is static, not proof of an unbound resource.",
+      "status": "conditional method only"
+    },
+    {
+      "claim": "Expanded scales",
+      "fact": "+4 bytes/block: 134 to 138, +2.99%; trades scale nibble decoding for loads/cache footprint. Main-supplied screen: 0/6 improving cells over 12 processes/108 batches.",
+      "status": "not adopted; no repeat without new evidence"
+    },
+    {
+      "claim": "FP",
+      "fact": "Keep per-block FP32 FMA order, final horizontal reduction and factor 0.25.",
+      "status": "matches pinned source contract"
+    }
+  ],
+  "sources": [
+    {
+      "title": "AMD Ryzen 5 5600X specifications",
+      "revision": "official product page, checked 2026-11-13",
+      "url": "https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html",
+      "supports": "Vermeer, 6 cores, 12 threads, 32 MB L3"
+    },
+    {
+      "title": "AMD Software Optimization Guide for AMD EPYC 7003, doc 56665",
+      "revision": "Rev. 3.00, 2020-11-30",
+      "url": "https://docs.amd.com/v/u/en-US/56665",
+      "download": "https://www.amd.com/system/files/TechDocs/56665.zip",
+      "supports": "Family 19h guidance; not exact Model 21h performance"
+    },
+    {
+      "title": "AMD64 APM Vol. 4, doc 26568",
+      "revision": "Rev. 3.26, 2026-01-14",
+      "url": "https://docs.amd.com/v/u/en-US/26568_3.26_APM_Vol4",
+      "supports": "SIMD instruction semantics"
+    },
+    {
+      "title": "LLVM llvm-mca guide",
+      "revision": "documentation checked 2026-11-13; use installed version",
+      "url": "https://llvm.org/docs/CommandGuide/llvm-mca.html",
+      "supports": "Static resource/throughput estimates; quality depends on scheduling model"
+    },
+    {
+      "title": "LLVM znver3 schedule model",
+      "revision": "llvmorg-21.1.0",
+      "url": "https://github.com/llvm/llvm-project/blob/llvmorg-21.1.0/llvm/lib/Target/X86/X86ScheduleZnver3.td",
+      "license": "Apache-2.0 WITH LLVM-exception; cited, not copied"
+    },
+    {
+      "title": "Linux perf_event_paranoid docs",
+      "revision": "checked 2026-11-13",
+      "url": "https://docs.kernel.org/admin-guide/sysctl/kernel.html#perf_event_paranoid",
+      "supports": "Unprivileged CPU-event access rules"
+    },
+    {
+      "title": "Agner Fog instruction tables",
+      "revision": "report says accessed 2026-11-13",
+      "url": "https://www.agner.org/optimize/instruction_tables.pdf",
+      "supports": "Supplementary empirical data, not AMD specification; no reuse rights assessed"
+    }
+  ],
+  "retrieval": {
+    "tags": [
+      "zen3",
+      "ryzen-5600x",
+      "avx2",
+      "iq3-xxs",
+      "q8-k",
+      "pshufb",
+      "psignb-128",
+      "maddubs",
+      "maddwd",
+      "odd-scales",
+      "znver3",
+      "llvm-mca",
+      "instruction-scheduling"
+    ],
+    "use_when": "Qualified production CPU critical path and exact emitted pair-dot assembly create a concrete scheduling/layout comparison."
+  },
+  "provenance": {
+    "project_license": "MIT at pinned project revision.",
+    "ggml_license": "MIT at pinned GGML revision.",
+    "external_use": "AMD manuals, LLVM/Linux docs and Agner tables are citations only; no external code/design copied. Replace report's third-party 56665 mirror with AMD official link. No XeStrata."
+  },
+  "scope_eligibility": {
+    "schedulable_now": false,
+    "reason": "No automatic repeat: scale screen has no improvement cells; CPU critical-path attribution and a committed new plan are prerequisites.",
+    "next_scopes": [
+      {
+        "scope": "Exact compiler-pinned assembly comparison of gate/up and nibble lookup schedules, preserving PSIGNB(-128) and FP order.",
+        "schedulable_now": false,
+        "prerequisites": [
+          "Current frozen scale cohort closed.",
+          "Production CPU call path qualified and an instruction dependency identified rather than pool/cache/DRAM uncertainty.",
+          "Exact baseline/candidate assembly, compiler, flags and target pinned.",
+          "Bounded plan and numerical edge checks committed before any run."
+        ],
+        "limit": "Static assembly/llvm-mca does not qualify speed; repeated matched timing is separate."
+      }
+    ]
+  },
+  "adoption": {
+    "implementation": "none",
+    "numeric_qualification": "none",
+    "performance_qualification": "none",
+    "model_route_qualification": "none",
+    "scale_prototype": "not adopted; Main-supplied status 0/6 improving cells, 12 processes/108 batches"
+  }
+}
