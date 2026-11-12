@@ -179,6 +179,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ratios are0.959847code/1.041889prose;prose acceptance also changes from
   0.339347to0.391492. Keep lengths/context dependence and separate workloads;
   one pair does not establish reproducible gain or a hardware bottleneck.
+  Candidate2also closes normally0/quiet/owned/no freshfault:the same3602/8911
+  generated counts and draft acceptance give14.409354/9.383257TG,with
+  50.893/39.551sTTFT. Three of six processes are closed;the remaining matched
+  references and final pair decisions stay pending.
   Candidate code/prose requested copies are129390259200/404578022400bytes,
   with63486/198497submitted/completed/private-view/GPU-miss groups. These
   counters are requested payloads,not physical bus traffic or saturation.
@@ -202,7 +206,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   worker_done;its original outcome is unchanged. All seven native reviews are
   closed,with corrected facts retained in the index. Current cohort configs,
   plans,attempt intent,compact samples and all12coherentELFs remain. The fresh
-  EARLY admission audit is outside this retirement. See
+  EARLY source snapshot is outside this retirement. Its native review now
+  confirms the current finite-DMA gate,not a controlled deterministic hold;
+  the previous completed-before-admission failure stays failed. F-Kuse
+  synthetic/manual early state;constructor/production capture and same-build
+  grouped numeric evidence remain unqualified. No source bounds/lifetime
+  defect was confirmed. Leave EARLY0through cohort closure;new fixture and
+  runtime admission must precede any early model/speed trial. The shared
+  immutable snapshot is retained for three new CPU-representation,cache-policy
+  and bounded-GPU-worklist reports and their native reviews. See
   `coherent_decode_pcie_speed_v3.pre_repeat_raw_retirement`;review new raw output
   after each subsequent process closure. The legacy19reader/source holds,
   final full asset hashes and adoption gates remain open;no global artifact
