@@ -1066,6 +1066,19 @@
     "failure": "compact_iq3xxs.hpp:14:10: fatal error: 'ggml-common.h' file not found",
     "diagnosis": "Main fixture CMake gives its executable the GGML public include but omits the private ggml/src table-header path. Production reference compilation began;the numeric executable was never produced. No inference math or tolerance change is needed.",
     "next": "Preserve this failed attempt;add the fixture private header path,commit a fresh V2source/plan/root,and repeat from a clean CPU-only build. No retry or hash refresh ofV1.",
-    "retention": "Original committed source/plan and compact failure suffice. Recover exact source/recipe,then retire ended partial objects/logs before another numeric build;retain current ownership fixture unchanged."
+    "retention": "Original committed source/plan and compact failure suffice. Recover exact source/recipe,then retire ended partial objects/logs before another numeric build;retain current ownership fixture unchanged.",
+    "partial_build_retirement": {
+      "completed": true,
+      "original_failure_commit": "d8e0afc173c0d027063aae3cbe0885b341b57a68",
+      "files_and_links": 43,
+      "regular_content_bytes": 1797988,
+      "inventory_sha256": "12365636c400885233d3a496ffc61358d795fe1fa7c821f998e9924045f830c6",
+      "recovered_project_inputs": 38,
+      "recovered_GGML_inputs": 291,
+      "verified_CMake_inputs": 1265,
+      "no_numeric_ELF_produced": true,
+      "ownership_fixture_unchanged": true,
+      "retained": "Original failure/source39d5/plan828de remain in reachable Git;current99KB ownership fixture remains. The ended partial V1build/logs had no remaining consumer;freshV2must use a new root/plan."
+    }
   }
 }

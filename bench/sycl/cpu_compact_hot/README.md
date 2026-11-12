@@ -79,6 +79,10 @@ pins project/GGML/tool/CMake inputs, both real Down-format slices and the
 consumed ownership fields before launch. It then requires actual raw dispatch
 counts, exact GU bits, guarded partial/threaded rows and alias refusal. This
 source preparation is not a numeric pass and permits no speed/model trial.
+The original V1 build failed before producing the fixture because its CMake
+target omitted the private GGML table-header include path. Its failed status,
+source and plan remain in Git;the ended partial build is retired. V2 adds that
+path with a fresh plan/root, preserving numerical code and all criteria.
 
 ## Pending Main gates
 

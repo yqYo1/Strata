@@ -16,8 +16,8 @@ sys.dont_write_bytecode = True
 import cpu_compact_hot as hot
 
 P, B = hot.P, hot.B
-ROOT = B / 'cpu-compact-hot-numeric-v1'
-PLAN = P / 'bench/sycl/cpu_compact_hot/numeric-plan.json'
+ROOT = B / 'cpu-compact-hot-numeric-v2'
+PLAN = P / 'bench/sycl/cpu_compact_hot/numeric-plan-v2.json'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json'
 METADATA = Path('/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt')
 MODEL = Path('/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S')
@@ -103,6 +103,10 @@ def model_rows():
 
 def prepare():
     need(not ROOT.exists() and not PLAN.exists(), 'fresh plan/root required')
+    failed = json.loads(RESULT.read_text())['compact_cache_numeric_v1']
+    need(not failed['passed'] and not failed['complete'] and not failed['active']
+         and failed['ownership_closed'] and not failed['numeric_fixture_executed']
+         and failed['partial_build_retirement']['completed'], 'preserve closed original compile failure')
     lifetime = json.loads((hot.ROOT / 'check.json').read_text())
     public = json.loads(RESULT.read_text())['compact_cache_lifetime_v1']
     need(lifetime['passed'] and lifetime['complete'] and lifetime['ownership_closed']
@@ -123,7 +127,11 @@ def prepare():
     need(sha(external['path']) == external['sha256'], 'external census changed')
     flags, = [s.split('=', 1)[1] for s in native['recipe']['configure'] if s.startswith('-DCMAKE_CXX_FLAGS=')]
     env = dict(old_plan['environment']); env['TMPDIR'] = str(ROOT / 'tmp')
-    plan = dict(schema='compact-cache-numeric-v1', source_commit=revision, sources=pins,
+    plan = dict(schema='compact-cache-numeric-v2', source_commit=revision, sources=pins,
+        previous_failure=dict(key='compact_cache_numeric_v1', source_commit=failed['source_commit'],
+            plan_commit=failed['plan_commit'], passed=False,
+            correction='Add the fixture private GGML table-header include path;fresh build/root. '
+                       'No numeric code,workload,dispatch,counts,tolerance or acceptance changes.'),
         ownership_plan_sha256=sha(hot.PLAN), tools=tools, native_recipe=old_plan['native_recipe'],
         ownership_evidence={k: public[k] for k in OWNERSHIP_FIELDS},
         compiler_inputs=old_plan['compiler_inputs'], external_inputs=external,

@@ -36,5 +36,6 @@ set_source_files_properties(${CPU}/q2_avx2.cpp ${CPU}/iq_avx2.cpp
 find_package(Threads REQUIRED)
 target_link_libraries(compact_reference_cpu PUBLIC ggml-cpu ggml-base Threads::Threads)
 add_executable(compact_cache_numeric numeric.cpp)
+target_include_directories(compact_cache_numeric PRIVATE "${STRATA_GGML_DIR}/ggml/src")
 target_compile_options(compact_cache_numeric PRIVATE -march=znver3 -mtune=znver3)
 target_link_libraries(compact_cache_numeric PRIVATE compact_reference_cpu)
