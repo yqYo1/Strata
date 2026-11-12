@@ -303,6 +303,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   small-batch pool build consumes none of their bytes. A compact conditional
   [Zen3 instruction reference](research/zen3-iq3-gu-instructions.json)retains
   reviewed constraints/sources for later retrieval,without adopting its methods.
+  After462original project revision/path and28GGMLpin checks,the four ended
+  Orca source/report scopes and four completed native review transactions are
+  retired:2267files/links,460966525regular content bytes. Corrected facts and
+  the8473-byte conditional reference remain;Main did not load collection bodies.
+  Legacy GPU/IR/deployment and Nov11template ownership holds remain separate.
   Prioritize the original small-job134-byte gains. The unprivileged perf counter probe exits1
   at paranoid4;no counters or privilege changes. The host is5600X,
   family25/model33/stepping0 with32MiBL3;1/6/32-expert kernel working sets
