@@ -20,9 +20,10 @@ import qsa16_stream_model_entry as original
 import gu_small_bench as dispatch_reader
 
 P, B, RESULT = device.P, device.B, device.RESULT
-ROOT, KEY = B/'coherent-prefill-model-v2', 'coherent_prefill_model_v2'
+ROOT, KEY = B/'coherent-prefill-model-v3', 'coherent_prefill_model_v3'
 THIS = 'tools/sycl/coherent_prefill_model.py'
 PYTHON = '/home/yayoi/.local/share/strata-sycl/venv/bin/python3'
+ACTIONS = ('prepare', 'host', 'run')
 require, sha = device.require, device.sha
 
 
@@ -128,6 +129,10 @@ def prepare():
         previous_preparation=dict(evidence_commit='3a977d13fe9c3d602b6ca2d81589506445d66749',
             key='coherent_prefill_model_v1', stage='preparation_failed', GPU_executed=False,
             correction='Use the qualified model venv,not system Python;native/workload/route criteria unchanged.'),
+        previous_control_failure=dict(evidence_commit='ead8b7391aef34d1f0f193e78afb5e657911a5d8',
+            key='coherent_prefill_model_v2', native_execution_attempted=False,
+            correction='Match the actual controller prepare/host/run interface;no model criteria changed.'),
+        controller_commands=[[PYTHON, '-B', THIS, action] for action in ACTIONS],
         runtime_manifest=prior['runtime_manifest'], runtime_files=old['runtime_files'],
         probe=prior['native_validation_probe'], generator_runtime=ctx.previous.prompts.generator_runtime(),
         tokenizer=old['tokenizer'], requests=copy.deepcopy(old['requests']), environment=env, argv=argv,
@@ -157,7 +162,7 @@ def prepare():
 if __name__ == '__main__':
     require(Path(sys.prefix) == Path(PYTHON).parent.parent,
         'Run this model controller with '+PYTHON+';its tokenizer requires the qualified regex environment')
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'host', 'device'), 'prepare|host|device')
+    require(len(sys.argv) == 2 and sys.argv[1] in ACTIONS, '|'.join(ACTIONS))
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); original.guards.no_model_owners([])
         if sys.argv[1] == 'prepare':
