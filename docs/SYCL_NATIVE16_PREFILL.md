@@ -183,6 +183,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the new test changes work distribution rather than assuming a stage is
   saturated. Resolve legacy engine/fixture-reader holds before a new engine
   build;none was introduced here.
+  The completed reference's routine raw logs/caches and the closedV1/V2
+  controller products still need retirement after source/recipe recovery;the
+  next serialized review is after candidate1closes,before process2. Keep only
+  generated configs/plans/attempt intent required by the active cohort. The
+  consumed first research round's duplicate snapshots/transactions also await
+  exact terminal/Task closure reconciliation;one provisional report has no
+  accepted worker_done. The fresh V3and19legacy-fixture consumer reports are
+  now with native Luna-max reviewers. Carry these concrete holds forward;
+  no global artifact cleanup or extra native generation is claimed.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
