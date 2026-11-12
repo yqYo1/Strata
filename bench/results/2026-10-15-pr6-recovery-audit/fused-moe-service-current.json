@@ -302857,7 +302857,7 @@
     }
   },
   "expert_copy_runs_device_v1": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "93b53b65a99837707288cbb71554b265f9b52908",
     "native_source_commit": "98d0df9efbce6cbbd8a558714b885628d52ff847",
     "build_key": "expert_copy_runs_component_v1",
@@ -302982,6 +302982,27 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "smoke",
+        "passed": false,
+        "complete": false,
+        "host_probe_accepted": false,
+        "GPU_executed": true,
+        "native_pid": 2355657,
+        "native_exit_code": 0,
+        "error": "RuntimeError('copy-run fixture failed: eFinish(.hQueue = 0x1e92c680) -> UR_RESULT_SUCCESS;\\n   ---> urQueueRelease\\n   <--- urQueueRelease(.hQueue = 0x1e935310) -> UR_RESULT_SUCCESS;\\n   ---> urContextRelease\\n   <--- urContextRelease(.hContext = 0x1eaf1f20) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e91e250) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e92c680) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e91e250) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e92c680) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e91e250) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e92c680) -> UR_RESULT_SUCCESS;\\n   ---> urUSMFree\\n   <--- urUSMFree(.hContext = 0x1e91a620, .pMem = 0x717be6600000) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e91e250) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e92c680) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e91e250) -> UR_RESULT_SUCCESS;\\n   ---> urQueueFinish\\n   <--- urQueueFinish(.hQueue = 0x1e92c680) -> UR_RESULT_SUCCESS;\\n   ---> urUSMFree\\n   <--- urUSMFree(.hContext = 0x1e91a620, .pMem = 0xffffffffff600000) -> UR_RESULT_SUCCESS;\\n   ---> urQueueRelease\\n   <--- urQueueRelease(.hQueue = 0x1e92c680) -> UR_RESULT_SUCCESS;\\n   ---> urQueueRelease\\n   <--- urQueueRelease(.hQueue = 0x1e91e250) -> UR_RESULT_SUCCESS;\\n   ---> urContextRelease\\n   <--- urContextRelease(.hContext = 0x1e91a620) -> UR_RESULT_SUCCESS;\\n   ---> urProgramRelease\\n   <--- urProgramRelease(.hProgram = 0x1e94afc0) -> UR_RESULT_SUCCESS;\\n   ---> urKernelRelease\\n   <--- urKernelRelease(.hKernel = 0x1ee0dcb0) -> UR_RESULT_SUCCESS;\\n   ---> urProgramRelease\\n   <--- urProgramRelease(.hProgram = 0x1e94afc0) -> UR_RESULT_SUCCESS;\\n   ---> urKernelRelease\\n   <--- urKernelRelease(.hKernel = 0x1ebba5a0) -> UR_RESULT_SUCCESS;\\n   ---> urKernelRelease\\n   <--- urKernelRelease(.hKernel = 0x1ee0dcb0) -> UR_RESULT_SUCCESS;\\n   ---> urKernelRelease\\n   <--- urKernelRelease(.hKernel = 0x1ebba5a0) -> UR_RESULT_SUCCESS;\\n   ---> urProgramRelease\\n   <--- urProgramRelease(.hProgram = 0x1e94afc0) -> UR_RESULT_SUCCESS;\\n   ---> urDeviceRelease\\n   <--- urDeviceRelease(.hDevice = 0x1e916b20) -> UR_RESULT_SUCCESS;\\n   ---> urAdapterRelease\\n   <--- urAdapterRelease(.hAdapter = 0x1e770050) -> UR_RESULT_SUCCESS;\\nexpert_bank_private_case backing_slots=4 backing_stride=256 source_stride=256 experts=10 layers=2 uploads=34 hits=6 consumers=80 unwind=0 admission_rejections=11 status=0 full_copy=1 staged=0 custom_queue=1 copy_runs=1 copy_commands=30 runs=2 run_experts=6 immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\\nexpert_bank_private_case backing_slots=1 backing_stride=256 source_stride=256 experts=10 layers=1 uploads=20 hits=0 consumers=40 unwind=0 admission_rejections=11 status=0 full_copy=1 staged=0 custom_queue=1 copy_runs=1 copy_commands=20 runs=0 run_experts=0 immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\\nexpert_bank_private_case backing_slots=512 backing_stride=256 source_stride=256 experts=512 layers=1 uploads=512 hits=512 consumers=2048 unwind=0 admission_rejections=11 status=0 full_copy=1 staged=0 custom_queue=1 copy_runs=1 copy_commands=1 runs=1 run_experts=512 immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\\nexpert_bank_private_case backing_slots=8 backing_stride=256 source_stride=256 experts=10 layers=2 uploads=10 hits=0 consumers=20 unwind=2 admission_rejections=11 status=0 full_copy=1 staged=0 custom_queue=1 copy_runs=1 copy_commands=2 runs=2 run_experts=14 immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\\nexpert_bank_run_enqueue_failure modes=3 published=0 no_retry=PASS checked_drain=PASS\\nexpert_bank_run_admissions rejections=10 enqueues=0 mapping_unchanged=PASS\\nexpert_bank_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED\\n')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "passed": false,
@@ -302990,6 +303011,16 @@
     "ownership_closed": true,
     "plan": "Commit each closed stage before next. CPU:repeat513/8/22oracle with same-build icpx fixture. Smoke:traced/parameter-validated exact runs on one/four/eight-slot and full-fit512 banks,checked error unwind,three false/throw/ambiguous-enqueue cases and ten pre-enqueue refusals. Large:only after smoke,real383*2662400=1019699200byte single copy and full-fit512*1510400=773324800bytes,all readbacks/guards/immutable sources/private maps and final drains. Stop first source/provider/owner/validation/case/fault/budget failure;no retry.",
     "limits": "Same production upload helper and queue ownership on synthetic bytes;no dequant/GEMM speed,physical wire traffic,saturation,task/model,decode,full262144/RESTORE or ordinary runtime teardown qualification. Retained-reference validation charged;separate timing plan needed.",
-    "retention": "Keep compact per-case geometry/counters and failure outcome,then retire normal traces/logs/cache after extraction. Temporary fixture generation serves imminent whole copy-path timing only;before another engine build resolve legacy engine/reader holds."
+    "retention": "Keep compact per-case geometry/counters and failure outcome,then retire normal traces/logs/cache after extraction. Temporary fixture generation serves imminent whole copy-path timing only;before another engine build resolve legacy engine/reader holds.",
+    "failure_analysis": {
+      "kind": "observer_false_positive_on_deliberate_pre_main_null_platform_probe",
+      "actual_native_exit_code": 0,
+      "parameter_validation_log_bytes": 0,
+      "unexpected_error_matches": 1,
+      "matching_line": "   <--- urPlatformGetApiVersion(.hPlatform = nullptr, .pVersion = 0x7ffd6387085c (-1.65535)) -> UR_RESULT_ERROR_INVALID_NULL_HANDLE;",
+      "match_before_main": true,
+      "all_four_native_cases_self_checked_and_final_PASS": true,
+      "qualification": "Original envelope remains failed;no large-copy gate or result inherited. Commit a new controller-only admission/plan and fresh processes before qualification."
+    }
   }
 }
