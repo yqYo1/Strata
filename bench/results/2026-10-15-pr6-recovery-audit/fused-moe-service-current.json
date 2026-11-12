@@ -306657,5 +306657,211 @@
       "translation_units": 6,
       "canonical_json_sha256": "c5a0f254d967755c796bfcf43099e8880a2eb738a3d68a8548da8e7062852c82"
     }
+  },
+  "expert_copy_size_profile_v2": {
+    "stage": "ready",
+    "native_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1",
+    "binaries": {
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-size-component-v2/build/sycl_expert_bank_test",
+        "sha256": "61f20c024c86d4608eca3db471acc4880266fa5279958eacacdb70fb0a0702d4",
+        "bytes": 575056,
+        "origin_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1"
+      },
+      "prefill_expert_bank_plan_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-size-component-v2/build/prefill_expert_bank_plan_test",
+        "sha256": "28e5e6c38c56be7dce36b93f696489ef7ea1b77f121301191aa2226c311e0758",
+        "bytes": 75832,
+        "origin_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1"
+      }
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-size-component-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-size-component-v2/cache",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+      "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+      "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+      "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+      "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+      "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "order": [
+      {
+        "mode": "cpu"
+      },
+      {
+        "mode": "smoke"
+      },
+      {
+        "mode": "profile",
+        "cap": 1,
+        "round": 0
+      },
+      {
+        "mode": "profile",
+        "cap": 4,
+        "round": 0
+      },
+      {
+        "mode": "profile",
+        "cap": 16,
+        "round": 0
+      },
+      {
+        "mode": "profile",
+        "cap": 64,
+        "round": 0
+      },
+      {
+        "mode": "profile",
+        "cap": 512,
+        "round": 0
+      },
+      {
+        "mode": "profile",
+        "cap": 512,
+        "round": 1
+      },
+      {
+        "mode": "profile",
+        "cap": 64,
+        "round": 1
+      },
+      {
+        "mode": "profile",
+        "cap": 16,
+        "round": 1
+      },
+      {
+        "mode": "profile",
+        "cap": 4,
+        "round": 1
+      },
+      {
+        "mode": "profile",
+        "cap": 1,
+        "round": 1
+      },
+      {
+        "mode": "profile",
+        "cap": 16,
+        "round": 2
+      },
+      {
+        "mode": "profile",
+        "cap": 1,
+        "round": 2
+      },
+      {
+        "mode": "profile",
+        "cap": 512,
+        "round": 2
+      },
+      {
+        "mode": "profile",
+        "cap": 4,
+        "round": 2
+      },
+      {
+        "mode": "profile",
+        "cap": 64,
+        "round": 2
+      }
+    ],
+    "results": [],
+    "cpu_reference": {
+      "configurations": 513,
+      "windows_each": 8,
+      "negative_cases": 22,
+      "logical_uploads": 1023936,
+      "copy_commands": 766876,
+      "runs": 2524,
+      "run_experts": 259584,
+      "sequential_ticket_slot_generation_and_bytes_equal": true,
+      "existing_planner_checks": true
+    },
+    "controls": {
+      "valid_caps": 5,
+      "negative_cases": 7,
+      "GPU_executed": false
+    },
+    "startup_controls": {
+      "valid_traced": 1,
+      "valid_quiet": 1,
+      "negative_cases": 10,
+      "GPU_executed": false
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "performance_qualified": false,
+    "model_followup_permitted": false,
+    "previous_attempt": {
+      "key": "expert_copy_size_profile_v1",
+      "evidence_commit": "00ac4489abf74027778dde87a2a44691989e62b6",
+      "decision": "V1remains failed. V2reduces clock switches3073to2049;reader bucket explicitly includes loop/control. Original1%estimate limit,100msfloors and5%empty gate unchanged."
+    },
+    "budgets": {
+      "wall": 240,
+      "cpu": 1200,
+      "rss_cap": 12884901888,
+      "text_cap": 67108864,
+      "file_cap": 67108864,
+      "total_cap": 268435456
+    },
+    "plan": "Commit fresh native/source/recipe and this plan before execution;commit each closed stage before next. CPU:repeat513/8/22planner fixture. Smoke:trace all5caps at small/scratch/full-fit shapes,one-slot and cancellation,failed-enqueue/refusal controls. Then15quiet independent profile processes,three per cap in pinned rotated/reversed orders;each process warms small helper/marker then ordinary384and packed-full-fit512. Same requested bytes/readers/order within each geometry. Require exact caps/cases/copy counts,source/map/guards/drain checks,normal0,quiet validation,closed owners,no fresh fault,frozen source/runtime. Profiles need 100ms wall/queue,empty<=5%wall,disjoint conserved wall/thread accounting,zero exceptions and calibrated clock-change estimate<=1%wall. Reader bucket includes loop/control;two per-expert clock pairs replace V1three,without loosening the original gates. Stop first failure;no retry. Retain individual samples and per-cap ranges/medians. This is attribution/size-screening only;no performance gate permits a model trial. Any subsequent clean speed comparison needs a new committed plan.",
+    "limits": "Host profile is current-thread CPU only. Upload wrapper may include internal waits;do not call it CPU model math. Reader submission includes loop/control;final drain includes end-marker submission and checked queue/runtime waits. Queue interval includes copy/read/host gaps,not pure DMA. Calibration estimates clock bookkeeping,not full observer overhead. No clean gain,physical bus traffic,saturation,model PP/TG,decode,physical262144/RESTORE or teardown qualification.",
+    "retention": "One temporary standalone fixture;coherent engine retained,no new engine generation. Keep compact per-process accounting/size/counter values and source/recipe identity;retire normal traces/cache after screen and before unrelated work. Review fixture need at clean comparison closure. Legacy engine reader/provenance holds remain before another engine build."
   }
 }
