@@ -298831,5 +298831,17 @@
         "errors": []
       }
     ]
+  },
+  "coherent_prefill_model_v1": {
+    "stage": "preparation_failed",
+    "source_commit": "ca13cea43149e6dc98de5320012eb6988840c2d9",
+    "launcher": "/usr/bin/python3",
+    "exit_code": 1,
+    "campaign_root_created": false,
+    "native_execution_attempted": false,
+    "passed": false,
+    "error": "ModuleNotFoundError: No module named 'regex'",
+    "finding": "Main launched model-workload preparation with system Python instead of the existing model venv. Native/source/eleven-stage qualification checks passed before tokenization failed. No model plan/root or GPU child was created.",
+    "next": "Preserve this refusal. Commit V2with explicit qualified model Python,caller/dependency identity and unchanged workload/route/closure criteria before preparation;do not retry V1or alter native qualification."
   }
 }
