@@ -1,5 +1,6 @@
 // Main-authored production-pool comparison; repository LICENSE applies.
-// CPU-only. Includes coordinate/lease handoff, GU, hidden quantization and Down.
+// CPU-only. V2focus:32jobs,5workers+host,2s calibration/1s eligibility floor.
+// Includes coordinate/lease handoff, GU, hidden quantization and Down.
 #include "cache.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/pool.hpp"
@@ -285,14 +286,14 @@ int main(int argc, char** argv) {
             const auto value = Clock::now().time_since_epoch().count(); asm volatile("" : : "g"(value) : "memory");
         }
         const double timer_pair = 2 * seconds(start) / 10000; need(timer_pair < 1e-4, "timer overhead");
-        std::cout << "{\"arm\":\"" << arm << "\",\"down\":" << f.format.d_type << ",\"read_s\":" << f.read_s
+        std::cout << "{\"timing_envelope\":\"focus32_2s_1s\",\"arm\":\"" << arm << "\",\"down\":" << f.format.d_type << ",\"read_s\":" << f.read_s
                   << ",\"encode_publish_s\":" << f.encode_s << ",\"raw_peak_kib\":" << f.raw_peak
                   << ",\"encoded_peak_kib\":" << f.encoded_peak << ",\"known_view_bytes\":" << (f.cache ? f.cache->known_bytes() : 0)
                   << ",\"raw_bytes_per_job\":" << f.format.bytes << ",\"timer_pair_s\":" << timer_pair << ",\"cells\":[";
         bool comma = false;
-        for (int workers : {1, 5}) {
+        for (int workers : {5}) {
             Pool pool(workers);
-            for (int n : {1, 6, 32}) for (bool stream : {false, true}) {
+            for (int n : {32}) for (bool stream : {false, true}) {
                 if (comma) std::cout << ','; comma = true; Case work(f, n);
                 std::cout << "{\"workers\":" << workers << ",\"host_works\":" << (workers == 5 ? "true" : "false")
                           << ",\"host_cpu\":0,\"worker_cpus\":[";
@@ -304,13 +305,13 @@ int main(int argc, char** argv) {
                     const auto s = batch(work, pool, arm == "compact", stream, rounds);
                     if (calibrating) std::cout << ','; calibrating = true;
                     std::cout << "{\"rounds\":" << rounds << ",\"wall_s\":" << s.wall << '}';
-                    if (s.wall >= .2) break;
+                    if (s.wall >= 2.) break;
                     need(rounds < 65536, "calibration duration floor"); rounds *= 2;
                 }
                 std::cout << "],\"rounds\":" << rounds << ",\"samples\":[";
                 for (int i = 0; i < 3; ++i) {
                     const auto s = batch(work, pool, arm == "compact", stream, rounds);
-                    need(s.wall >= .1 && timer_pair / s.wall < .001, "ineligible batch");
+                    need(s.wall >= 1. && timer_pair / s.wall < .001, "ineligible batch");
                     if (i) std::cout << ',';
                     std::cout << "{\"wall_s\":" << s.wall << ",\"process_cpu_s\":" << s.cpu
                               << ",\"calls\":" << s.calls << ",\"jobs\":" << s.jobs << ",\"pool_gu_s\":" << s.gu

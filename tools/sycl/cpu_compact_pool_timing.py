@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pinned whole-pool CPU comparison using the coherently built pool archives.
+"""Focused long-batch follow-up of the closed V1whole-pool CPU comparison.
 
 Main-authored; repository LICENSE. No old CPU generation, GPU work or model
 adoption. Each action is single-use under Main's shared measurement lock.
@@ -19,18 +19,36 @@ import cpu_compact_pool as pool
 
 hot, inputs = pool.hot, pool.inputs
 P, B = pool.P, pool.B
-ROOT = B / 'cpu-compact-production-pool-timing-v1'
-PLAN = P / 'bench/sycl/cpu_compact_hot/pool-timing-plan-v1.json'
+ROOT = B / 'cpu-compact-production-pool-timing-v2'
+PLAN = P / 'bench/sycl/cpu_compact_hot/pool-timing-plan-v2.json'
 THIS = 'tools/sycl/cpu_compact_pool_timing.py'
 SOURCE = 'bench/sycl/cpu_compact_hot/pool_timing.cpp'
 RESULT = 'bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json'
 KEY = 'compact_production_pool_v1'
 ORDER = ['reference', 'compact', 'compact', 'reference', 'reference', 'compact']
 AR = '/usr/bin/ar'
+V1_REV = '9843c0efd36234d33abdb66bef3cc579eaa51842'
+V1_KEY = 'compact_production_pool_timing_v1'
 LIBC_HEADERS = ('/usr/include/x86_64-linux-gnu/sys/resource.h',
     '/usr/include/x86_64-linux-gnu/bits/resource.h',
     '/usr/include/x86_64-linux-gnu/bits/types/struct_rusage.h')
 need, sha, write = hot.need, hot.sha, hot.write
+
+
+def earlier_comparison():
+    """Only qualification data is frozen;retention/follow-up rows stay editable."""
+    original = json.loads(hot.git('show', V1_REV + ':' + RESULT))[V1_KEY]
+    current = json.loads((P / RESULT).read_text())[V1_KEY]
+    keys = ('fixture_source_commit', 'production_archive_source_commit', 'plan_commit', 'plan_sha256',
+            'binary', 'numerical', 'order', 'pairs', 'original_receipt_order', 'samples', 'summary',
+            'gates', 'batch_sample_fields', 'batch_sample_counts', 'model_trial_gate_passed')
+    old = {k: original[k] for k in keys}
+    need({k: current[k] for k in keys} == old and not old['model_trial_gate_passed'], 'preserve failed V1evidence')
+    failed = [s for s in old['summary'] if not s['component_gain_gate_passed']]
+    need(len(old['summary']) == 24 and len(failed) == 1 and
+         (failed[0]['down'], failed[0]['workers'], failed[0]['jobs_per_call'], failed[0]['pattern']) ==
+         (42, 5, 32, 'reuse'), 'unexpected prior failure scope')
+    return old
 
 
 def archive_proof(build):
@@ -123,10 +141,14 @@ def prepare():
     includes = ['-I' + str(p) for p in (P / 'include', ggml / 'ggml/src', ggml / 'ggml/include')]
     environment = dict(old['environment'], TMPDIR=str(ROOT / 'tmp'))
     native = dict(old['native_environment'], TMPDIR=str(ROOT / 'tmp'), STRATA_IQ3_PAIR_AUDIT='0')
-    plan = dict(schema='compact-production-pool-timing-v1', source_commit=revision, sources=sources,
+    earlier = earlier_comparison()
+    need(earlier['production_archive_source_commit'] == old['source_commit'], 'same native CPUlibrary source required')
+    plan = dict(schema='compact-production-pool-timing-v2', source_commit=revision, sources=sources,
         numeric_plan=dict(path=str(pool.PLAN), sha256=sha(pool.PLAN)),
         numeric_records={str(pool.ROOT / (name + '.json')): sha(pool.ROOT / (name + '.json')) for name in ('build', 'check')},
         numeric_evidence=dict(commit=revision, path=RESULT, key=KEY, canonical_sha256=evidence(revision)),
+        prior_comparison=dict(commit=V1_REV, path=RESULT, key=V1_KEY,
+                              canonical_consumed_fields_sha256=pool.signature(earlier)),
         archives=archives, archive_source_proof=proof,
         operating_system_headers={p: sha(p) for p in LIBC_HEADERS},
         compile=[hot.CXX, *flags, *includes, '-MD', '-MF', str(ROOT / 'timing.d'), '-c', str(P / SOURCE),
@@ -136,29 +158,34 @@ def prepare():
         environment=environment, native_environment=native,
         check_environment=dict(native, STRATA_IQ3_PAIR_AUDIT='1'), formats=old['formats'], order=ORDER,
         expected_numeric=expected_numeric(), topology=old['topology'],
+        expected_ELF=dict(elf_class='ELF64', data="2\u0027s complement, little endian", machine='Advanced Micro Devices X86-64',
+                          elf_type='EXEC (Executable file)', interpreter='/lib64/ld-linux-x86-64.so.2'),
         scope='Actual unchanged ExpertPool::run_split_multi_native DecodeNT1entry;both arms prepare job'
           'coordinates/activations,compact additionally performs Cache.lookup/Lease assignment every job/call.'
           'All GU,row scheduling,host hidden quantization,Down,publication/waits and normal stage clocks are timed.'
-          '1worker onCPU1 with host CPU0not draining;or5workers onCPU1..5 plus host CPU0draining.'
+          'Focus on5workers onCPU1..5 plus host CPU0draining.'
           'Controller admits six unique physical cores;child checks actual worker TIDs/singleton affinities'
           'before/after each batch. Full allowed affinity is restored between pool constructions.',
         workloads='Both actual Down20/42 slices;32encoded experts plus retained raw weights,4native Q8_K activations.'
-          'Timed jobs/call1,6,32;reuse fixes keys per call shape,stream32 rotates a permutation of the32experts.'
+          'Timed jobs/call32;reuse fixes keys,stream32 rotates a permutation of the32experts.'
           'Both synthetic patterns can reuse CPUcache;neither is controlled cold DRAM or observed model reuse.'
           'NT1all-hit timing only. Untimed numeric checks include NT1/2/mixed,Prefill,misses and97/193jobs.'
           'key(j)=13*j+7*floor(j/32)+13*round+3 mod32;misses use(j+floor(j/17)+round)mod5.'
           'Deliberately wrong96job-offset leases must produce a guarded output difference in both pool geometries.',
-        timing='Separate native process per format/arm,in R,C,C,R,R,C order. For each of12cells,calibrate'
-          '1..65536calls by powers of2until>=200ms;then3batches each>=100ms and timer overhead<0.1%wall.'
+        timing='Separate native process per format/arm,in enforced R,C,C,R,R,C order. For each of2cells,calibrate'
+          '1..65536calls by powers of2until>=2s;then3batches each>=1s and timer overhead<0.1%wall.'
           'Compare wall seconds/expert job despite independent calibrated call counts. Preparation,oracle,'
           'pool construction,affinity checks,output/guard checks and resets are outside timed region.'
           'Coordinates/lookup,normal pool clocks and synchronous waits remain inside.',
         acceptance='New nonperiodic120case checks per format must exactly match expected counters/bits and'
-          'detect the wrong-offset control;all owners normal0,quiet and closed. All12timing cells need3'
+          'detect the wrong-offset control;all owners normal0,quiet and closed. All2timing cells need3'
           'eligible finite samples per process. Judge each format/worker/jobs/pattern over3adjacent R/Cpairs:'
-          'all3positive gains qualify only that synthetic cell. An actual-model trial requires all6tested'
-          'five-workers+host cells to win in both formats and all3pairs,plus separate source/safety admission.'
-          'One-worker cells remain independent. No minimum percentage. No model/adoption/70TGclaim.',
+          'all3positive gains qualify only that synthetic cell. OriginalV1stays failed. New combined'
+          'component admission requires the original23passing cells with unchanged CPUlibrary/source'
+          'and all4fresh32job cells(2formats x2patterns)positive in every pair. This prospectively'
+          'rechecks the disputed cell and its controls,not a relabelling ofV1or selection of a single'
+          'favorable sample. Native engine build,allocation faults,RAM/TTFT,prefill and context gates'
+          'are still required before model adoption. No minimum percentage. No model/70TGclaim.',
         accounting='Existing stage clocks partition GU,quantization and Down critical-path wall within each'
           'pool call;their sum must not exceed outer batch wall. They are not pure arithmetic or resource'
           'saturation. Process CPU time includes work,polling and submission. Setup RSS precedes oracle/workers;'
@@ -168,6 +195,7 @@ def prepare():
         budgets=dict(build_wall=120, check_wall=120, measure_wall=180, rss=3 << 30,
                      output=256 << 10, total=192 << 20, cpu=900),
         retention='Reuse fresh qualified CPU/GGMLarchives and preserve coherent GPUfallback unchanged.'
+          'No V1ELF/object or old timing-root bytes are consumed:its useful data is read from committed9843.'
           'Keep this new timing ELF only for imminent pool comparison/model-bridge admission;compact samples'
           'and source/recipe go to Git. Retire ended old CPUgeneration/child after exact source recovery and'
           'removing path-bound readers;old GPUfixture/deployment provenance holds stay independent.')
@@ -188,6 +216,8 @@ def verify(plan):
     need(all(sha(p) == h for p, h in plan['archives'].items()) and
          all(sha(p) == h for p, h in plan['operating_system_headers'].items()), 'archive/header drift')
     need(pool.topology() == plan['topology'], 'physical topology drift')
+    need(plan['order'] == ORDER and pool.signature(earlier_comparison()) ==
+         plan['prior_comparison']['canonical_consumed_fields_sha256'], 'V1qualification/order drift')
 
 
 def dependencies(plan):
@@ -213,7 +243,8 @@ def built(plan):
     need(value['passed'] and value['complete'] and value['ownership_closed'] and not value['active']
          and value['plan_sha256'] == sha(PLAN) and value['dependencies'] == dependencies(plan)
          and all(sha(p) == h for p, h in value['links'].items())
-         and sha(value['binary']['path']) == value['binary']['sha256'], 'exact built timing ELF required')
+         and sha(value['binary']['path']) == value['binary']['sha256'] and value['ELF'] == plan['expected_ELF'],
+         'exact built timing ELF required')
     return value
 
 
@@ -247,11 +278,20 @@ def execute(action):
                 name = str(path.resolve()); need(name in allowed and sha(path) == allowed[name], 'uncovered link input: ' + name)
                 links[name] = allowed[name]
             need(set(plan['archives']) <= set(links) and len(links) >= 20, 'incomplete archive/link census')
-            text, error = run('libraries', [hot.READELF, '--dynamic', str(ROOT / 'timing')], 10, plan['environment'])
+            text, error = run('libraries', [hot.READELF, '--file-header', '--program-headers', '--dynamic',
+                                          str(ROOT / 'timing')], 10, plan['environment'])
             libraries = re.findall(r'Shared library: \[([^\]]+)\]', text)
             need(not error and set(libraries) == {'libm.so.6', 'libstdc++.so.6', 'libgcc_s.so.1', 'libc.so.6'}, 'CPU-only library census')
+            def field(name):
+                values = re.findall(r'^\s*' + re.escape(name) + r':\s*(.+)$', text, re.MULTILINE)
+                need(len(values) == 1, 'ELF header field: ' + name); return values[0].strip()
+            interpreter = re.findall(r'\[Requesting program interpreter: ([^\]]+)\]', text)
+            need(len(interpreter) == 1, 'ELF interpreter')
+            elf = dict(elf_class=field('Class'), data=field('Data'), machine=field('Machine'),
+                       elf_type=field('Type'), interpreter=interpreter[0])
+            need(elf == plan['expected_ELF'], 'ELF architecture/type/interpreter admission')
             state.update(binary=dict(path=str(ROOT / 'timing'), sha256=sha(ROOT / 'timing')),
-                         dependencies=deps, links=links, libraries=libraries)
+                         dependencies=deps, links=links, libraries=libraries, ELF=elf)
         else:
             build = built(plan); results = []
             arm = 'check' if action == 'check' else plan['order'][int(action.split('-')[1])]
@@ -260,6 +300,16 @@ def execute(action):
                 need(checked['passed'] and checked['complete'] and checked['ownership_closed'] and not checked['active']
                     and checked['binary'] == build['binary'] and checked['plan_sha256'] == sha(PLAN)
                     and all(hot.owner.closed(c) for c in checked['commands']), 'exact numerical pass first')
+                index = int(action.split('-')[1])
+                for j in range(6):
+                    if j < index:
+                        previous = json.loads((ROOT / ('measure-' + str(j) + '.json')).read_text())
+                        need(previous['passed'] and previous['complete'] and previous['ownership_closed'] and
+                             not previous['active'] and previous['binary'] == build['binary'] and
+                             previous['plan_sha256'] == sha(PLAN) and previous['source_commit'] == plan['source_commit']
+                             and all(hot.owner.closed(c) for c in previous['commands']), 'previous arm unclosed or failed')
+                    elif j > index:
+                        need(not (ROOT / ('measure-' + str(j) + '-attempt.json')).exists(), 'later arm was invoked out of order')
             for row in plan['formats']:
                 text, error = run('down' + str(row['down']), [build['binary']['path'], row['shard'], str(row['down']),
                     *map(str, row['offsets']), str(row['blob_bytes']), arm],
@@ -268,18 +318,21 @@ def execute(action):
                 need(not error, 'native stderr'); result = json.loads(text); need(result['passed'], 'native check')
                 if action == 'check': need(result == plan['expected_numeric'], 'numerical output/dispatch/control differs')
                 else:
-                    need(result['arm'] == arm and result['down'] == row['down'] and len(result['cells']) == 12, 'arm/shape')
+                    need(result['arm'] == arm and result['down'] == row['down'] and len(result['cells']) == 2
+                         and result['timing_envelope'] == 'focus32_2s_1s', 'arm/shape/envelope')
                     seen = set()
                     for cell in result['cells']:
                         k = (cell['workers'], cell['jobs_per_call'], cell['pattern']); need(k not in seen, 'duplicate cell'); seen.add(k)
                         need(cell['host_cpu'] == 0 and cell['host_works'] == (cell['workers'] == 5) and
                              cell['worker_cpus'] == list(range(1, cell['workers'] + 1)), 'actual thread affinity')
-                        need(len(cell['samples']) == 3 and all(s['wall_s'] >= .1 and s['calls'] == cell['rounds']
+                        need(cell['calibration'][-1]['wall_s'] >= 2. and
+                             cell['calibration'][-1]['rounds'] == cell['rounds'], 'calibration floor/count')
+                        need(len(cell['samples']) == 3 and all(s['wall_s'] >= 1. and s['calls'] == cell['rounds']
                             and s['jobs'] == cell['rounds'] * cell['jobs_per_call'] and
                             0 <= s['pool_gu_s'] + s['pool_quant_s'] + s['pool_down_s'] <= s['wall_s'] + 1e-6
                             and result['timer_pair_s'] / s['wall_s'] < .001 for s in cell['samples']), 'batch eligibility')
                         cell['median_seconds_per_job'] = statistics.median(s['wall_s'] / s['jobs'] for s in cell['samples'])
-                    need(seen == {(w, n, p) for w in (1, 5) for n in (1, 6, 32) for p in ('reuse', 'stream32')}, 'cell coverage')
+                    need(seen == {(5, 32, p) for p in ('reuse', 'stream32')}, 'focus cell coverage')
                 results.append(result)
             state.update(binary=build['binary'], results=results)
         verify(plan); state.update(passed=True, complete=True, ownership_closed=True)

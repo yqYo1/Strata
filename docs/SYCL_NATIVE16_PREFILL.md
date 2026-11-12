@@ -252,9 +252,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   show1.206..2.083xgeometric-mean speedup. Down42/32jobs/reuse has ratios
   0.959739/1.295959/1.067272and mean1.099022;the slower first pair fails its
   prospective repeated-gain gate. The global model-trial gate stays failed:
-  no cache-enabled model trial or adoption underV1. Commit a new focused,
-  longer-batch comparison before collecting follow-up evidence;do not rewrite
-  this failed gate. Actual limiting hardware resource remains unknown.
+  no cache-enabled model trial or adoption underV1. The newV2source focuses on
+  four32job cells:Down20/42,reuse/stream32,5workers+host. Calibration now reaches
+  2s and each of3batches must reach1s. It enforces closed previous-arm receipts
+  before RCCRRCadvancement and checks ELFclass/machine/type/interpreter.
+  Its prospectively declared combined component gate requires all4fresh cells
+  to improve in all3pairs plus the original23passing cells,with the same CPU
+  archives. V1remains failed. Commit the new plan before execution;no model
+  qualification follows from these component checks. The old plan/source
+  are recoverable from`3cbf1c597`/`cd156b4ba`. The old fixture has an exact
+  source/recipe retirement proof pending the committed new consumer.
+  Actual limiting hardware resource remains unknown.
   The native review finds two conditional allocation-fallback gaps in generate:
   collecting resident views and sizing dispatch metadata can throw outside the
   helper's catch. The source now catches preparation allocation failure and
