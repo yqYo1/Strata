@@ -303405,7 +303405,7 @@
     "retention": "Keep compact per-case geometry/counters and failure outcome,then retire normal traces/logs/cache after extraction. Temporary fixture generation serves imminent whole copy-path timing only;before another engine build resolve legacy engine/reader holds."
   },
   "expert_copy_runs_timing_v1": {
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "b345f626aad4623abb15ee8d6ea324ed9d0b6ecc",
     "native_source_commit": "98d0df9efbce6cbbd8a558714b885628d52ff847",
     "observer_admission": {
@@ -303556,7 +303556,79 @@
         "traced": false
       }
     ],
-    "results": [],
+    "results": [
+      {
+        "label": "diagnostic-reference",
+        "candidate": false,
+        "traced": true,
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "execution_success": true,
+        "timing_eligible": true,
+        "GPU_executed": true,
+        "native_pid": 2473805,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2473805,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "expected_startup_API_errors": 1,
+        "timings": [
+          {
+            "candidate": 0,
+            "payload": 2662400,
+            "logical_uploads": 641,
+            "requested_H2D_bytes": 1706598400,
+            "commands": 641,
+            "wall_ms": 450.840699,
+            "queue_ms": 425.40125,
+            "thread_ms": 390.478901,
+            "empty_ms": 0.359017,
+            "eligible": 1,
+            "preparation_timed": 0,
+            "guards_timed": 0,
+            "actual_copy_read_drain_timed": 1,
+            "model_qualified": 0
+          },
+          {
+            "candidate": 0,
+            "payload": 1510400,
+            "logical_uploads": 512,
+            "requested_H2D_bytes": 773324800,
+            "commands": 512,
+            "wall_ms": 300.04882499999997,
+            "queue_ms": 299.841562,
+            "thread_ms": 293.731871,
+            "empty_ms": 0.287753,
+            "eligible": 1,
+            "preparation_timed": 0,
+            "guards_timed": 0,
+            "actual_copy_read_drain_timed": 1,
+            "model_qualified": 0
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "passed": false,
