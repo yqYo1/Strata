@@ -26,9 +26,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `cca8ac8d9426769c995e99e4af0aa7d5b624ff11`. The new engine and GU fixture are
   byte-identical to dcb8efd4/cd99a46e respectively;source/build provenance still
   distinguishes them. This does not retroactively qualify the historical mixed
-  build. Next run fresh native/GU checks,model handoff and repeated speed using
-  the coherent build. The existing physical full-context diagnostic and its
-  host fixture are also built;actual model fill remains pending.
+  build. Fresh `coherent_prefill_device_v1` now closes all11stages at
+  `5788e16a61278e3d42117313041b1be9beb1a777`:host/policy/decode-module checks,
+  traced submission,phase and real canonical/packed heads,QSA/producer small
+  and262144-cell boundaries,and GU smoke/44numerical cases. All native children
+  close normally0with quiet parameter validation and no fresh fault;GU hidden
+  outputs have0FP16ULP difference. No model or speed qualification follows.
+  Next run the coherent actual-model long/short/long handoff and repeated speed.
+  The existing physical full-context diagnostic and its host fixture are also
+  built;actual model fill and ordinary provider teardown remain pending.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
