@@ -339,9 +339,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   now pass the fresh37-object build,637compiler-input/22external-link census
   and both CPU-only ELFchecks. Both layers pass240regular/60forced pool cases,
   independent phase/NToracles and384GUcases;all four native check children
-  exit0and close normally. Speed is in the original frozen RCCRRCcohort,with
-  no gain or model conclusion yet. Core/generate and allocation-fallback
-  qualification remain separate. See`compact_small_batch_pool_v1`in the
+  exit0and close normally. The original frozen RCCRRCcohort now closes12native
+  processes/720eligible batches,min0.463212660s. Twenty-three of24cached cells
+  improve in all3pairs,with geometric-mean gains1.340898..1.842588x. Down20,
+  5workers+host,1job,stream32fails:R/C1.471468,0.842961,1.100006(mean1.109135).
+  Preserve that failure;no blanket<=6policy or model adoption follows. The16
+  blocked7/32cells remain native-fallback diagnostics,with geometric means
+  0.944585..1.041501;their slower samples also remain. Main evaluates the
+  declared paired gates;the controller's successful receipt alone does not.
+  Both native reviews verify113project+7GGMLpins,find no reachable new policy/
+  lifetime defect,and correct the report's cached-cell count and negative-n
+  claim:the helper checks negative n,but the pool runtime case uses0only.
+  Core/generate and allocation-fallback qualification remain separate.
+  Start the next prospective model policy from passing production shapes:
+  3/6jobs pass both formats/patterns at5workers+host;1job cannot be selected
+  globally and2/4/5lack clean speed samples. Prioritize a coherent actual engine
+  build and model distribution/RAM/TTFT/long-generation gates rather than
+  repeating this CPUcohort. See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
   excludes index/Entry/allocator overhead and does not prove model RAMadmission.
