@@ -30402,7 +30402,7 @@
   },
   "coherent_decode_pcie_benchmark_audit_20261112": {
     "classification": "decision_support",
-    "stage": "running_report_pending",
+    "stage": "reviewed_retention_pending",
     "source_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "policy_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "model": "gpt-6-luna",
@@ -30429,11 +30429,32 @@
     },
     "scope": "Coherent decode PCIe benchmark contract audit",
     "review": "Native Codex gpt-6-luna max;Main reads only short digest,not collection bodies.",
-    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions."
+    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions.",
+    "report_identity": {
+      "bytes": 11694,
+      "sha256": "a969d6ff0ce718ad9b6d95f33a973ca7081954f554be5511dce02319022bbb8a"
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "digest_sha256": "1ac917177912030bf480ac18bcb344b050197aeb0916f5915852e0aa48e57fca",
+      "curated_sha256": "3e2223c49538e6af7317c8e49595be367aab52e9e8943bf9268716115e1bb9f0",
+      "all1038source_pins_match": true,
+      "policy_hashes_match": true
+    },
+    "corrected_digest": "Report missed the reachable missing STRATA_SNAPSHOT_VERIFY marker after the environment override. Native review confirms V2pre-long refusal. Per-window/final copy pairing has no established reachable misbinding;keep the question as a proof gap,not another demonstrated bug. V2failed,prospectiveV3corrects marker/startup and short-warmup versus strict-long contracts.",
+    "retention_decision": "compact_decision_only",
+    "closure": {
+      "worker_done_accepted": true,
+      "all_recorded_owned_PID_start_identities_absent": true,
+      "Orca_worker_show_liveness": "unverifiable",
+      "terminal_closure_check_pending": true
+    },
+    "next": "Keep compact corrected facts/provenance in this index;verify exact owned terminal closure and retire duplicate reports/source snapshots/transactions at the next serialized boundary. No new implementation or runtime qualification."
   },
   "native_numeric_request_admission_20261112": {
     "classification": "decision_support",
-    "stage": "running_report_pending",
+    "stage": "reviewed_retention_pending",
     "source_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "policy_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "model": "gpt-6-luna",
@@ -30460,11 +30481,32 @@
     },
     "scope": "Finite numeric request admission and phase controls",
     "review": "Native Codex gpt-6-luna max;Main reads only short digest,not collection bodies.",
-    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions."
+    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions.",
+    "report_identity": {
+      "bytes": 8765,
+      "sha256": "fbe060c808b3bcc0c7b56f129771be0f384c5d9203d089fa6e5c8a025661e404"
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "digest_sha256": "68c76d6cba752a64ec42e7221137e61f18da39566ae3746a5a4d01277ede8760",
+      "curated_sha256": "c428a002d7e6557bc48a61e0b3a6f728214e731737872ce4c9d10e921c459ed0",
+      "all1038source_pins_match": true,
+      "policy_hashes_match": true
+    },
+    "corrected_digest": "Startup atof PCIe values are unclamped;request strtof/clamp differs and does not sanitizeNaN. Raw native GEN strtoll ignoresERANGE and n+max_new+8can overflow before context check. Python huge-int float conversions/error mapping and other sizing controls remain incompletely traced. Owned finite0/1/16and bounded generation do not exercise these arbitrary-client hazards. Fix/test before adoption;physical262144fill remains separate.",
+    "retention_decision": "compact_pending_fix_contract",
+    "closure": {
+      "worker_done_accepted": true,
+      "all_recorded_owned_PID_start_identities_absent": true,
+      "Orca_worker_show_liveness": "unverifiable",
+      "terminal_closure_check_pending": true
+    },
+    "next": "Keep compact corrected facts/provenance in this index;verify exact owned terminal closure and retire duplicate reports/source snapshots/transactions at the next serialized boundary. No new implementation or runtime qualification."
   },
   "mtp_decode_expert_reuse_methods_20261112": {
     "classification": "knowledge_collection",
-    "stage": "running_report_pending",
+    "stage": "reviewed_retention_pending",
     "source_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "policy_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "model": "gpt-6-luna",
@@ -30491,11 +30533,32 @@
     },
     "scope": "MTP verification expert work reuse and batching",
     "review": "Native Codex gpt-6-luna max;Main reads only short digest,not collection bodies.",
-    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions."
+    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions.",
+    "report_identity": {
+      "bytes": 8552,
+      "sha256": "09e93623f48a71d571d969304e54d343a07d45fef5a23e23294229826ec60daf"
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "digest_sha256": "689c8fe29bb22b454393fe4b9e8465d7fc245c253e3ea0e537bee02a931d3ac7",
+      "curated_sha256": "d1e58a6a0b305eb2490404d1e5b7e41bb7737a695cf6a4d3ce6748394616992a",
+      "all1038source_pins_match": true,
+      "policy_hashes_match": true
+    },
+    "corrected_digest": "Low novelty versus prior speculative-MoE/verifier audits. Grouping is per dispatch group,not entire T-window;split can create2groups. SYCLS2weight reuse is per entry tile(normal8,older1),not one physical weight read per group. Rejected suffix boundaries includePLE,GDN,indexer tail and KVoverwrite. Actual model descriptors/provider tile selection were not supplied;Qwen3.5vLLM state flow is context only,not target expert-reuse evidence.",
+    "retention_decision": "compact_existing_verifier_delta_only",
+    "closure": {
+      "worker_done_accepted": true,
+      "all_recorded_owned_PID_start_identities_absent": true,
+      "Orca_worker_show_liveness": "unverifiable",
+      "terminal_closure_check_pending": true
+    },
+    "next": "Keep compact corrected facts/provenance in this index;verify exact owned terminal closure and retire duplicate reports/source snapshots/transactions at the next serialized boundary. No new implementation or runtime qualification."
   },
   "cpu_decode_lowbit_layout_methods_20261112": {
     "classification": "knowledge_collection",
-    "stage": "running_report_pending",
+    "stage": "reviewed_retention_pending",
     "source_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "policy_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "model": "gpt-6-luna",
@@ -30522,11 +30585,32 @@
     },
     "scope": "Low-bit CPU expert dot product layouts on Zen3",
     "review": "Native Codex gpt-6-luna max;Main reads only short digest,not collection bodies.",
-    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions."
+    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions.",
+    "report_identity": {
+      "bytes": 8377,
+      "sha256": "c2c57e6708ee34901b049ab2fdae87db97e1c9e2d5c9c958d179c9ff74562e9b"
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "digest_sha256": "0957b83f46d89713a7cba6d92415b1d0ac2d9ce48be19778afd828cd8cc28ddf",
+      "curated_sha256": "61d6e15602330ef6654e7fbf63ebd362f51a095a6b748400ff4caeec3f6734e9",
+      "all1038source_pins_match": true,
+      "policy_hashes_match": true
+    },
+    "corrected_digest": "Low method novelty versus prior LUT/pair/layout/pool work. GU pair paths do not establish live model invocation. Down is separate:KQ256types7/8atNT>=2,IQ4_NLtype20multi-token threshold,otherwiseGGMLtraits. avx2selector is an opt-out flag,not a runtime CPU probe;helper compile gate is Clang+znver3. ffbuffer640FP32values/token is2560bytes,not FP16weights. Four report control-byte corruptions and mutable license links preclude retaining it as polished source.",
+    "retention_decision": "compact_dispatch_refresh_only",
+    "closure": {
+      "worker_done_accepted": true,
+      "all_recorded_owned_PID_start_identities_absent": true,
+      "Orca_worker_show_liveness": "unverifiable",
+      "terminal_closure_check_pending": true
+    },
+    "next": "Keep compact corrected facts/provenance in this index;verify exact owned terminal closure and retire duplicate reports/source snapshots/transactions at the next serialized boundary. No new implementation or runtime qualification."
   },
   "gpu_decode_ragged_group_methods_20261112": {
     "classification": "knowledge_collection",
-    "stage": "running_report_pending",
+    "stage": "provisional_report_no_worker_done",
     "source_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "policy_commit": "2e2a7afa3775eb6810fab509d3a559215c8169e0",
     "model": "gpt-6-luna",
@@ -30553,6 +30637,17 @@
     },
     "scope": "Small ragged decode expert groups on Intel GPU",
     "review": "Native Codex gpt-6-luna max;Main reads only short digest,not collection bodies.",
-    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions."
+    "retention": "Private snapshot/transactions until report review and actual worker closure;retain only novel reusable findings or compact decision support,then retire raw source/transactions.",
+    "report_identity": {
+      "bytes": 9976,
+      "sha256": "f8ad147ae4d6194b1c36b0044dbdc5391ac137a95a62a3299821edab38bfd8a5"
+    },
+    "closure": {
+      "worker_done_accepted": false,
+      "all_recorded_owned_PID_start_identities_absent": true,
+      "Orca_worker_show_liveness": "unverifiable",
+      "terminal_closure_check_pending": true
+    },
+    "next": "Native Luna-max reviews the provisional body with the missing completion receipt explicit. Main verifies exact terminal/Task closure;do not forge worker_done,claim successful Task completion or retry from file presence."
   }
 }
