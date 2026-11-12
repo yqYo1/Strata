@@ -359,6 +359,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   only for3/6jobs in the5worker+host pool;other shapes keep native GU. The pool's
   <=6bound remains independent. This narrower source is unbuilt and has no
   actual-model qualification;the CPUtiming source remains81914a76e.
+  The new full-engine controller source89be7ce36 now prepares
+  `compact_cpu_model_native_v1`in the linked fused-service result. Its recipe
+  starts from the validated14508full build,recompiles all affected units and
+  rechecks all eight passing3/6job production shapes from original07ea14c4c
+  evidence. Keep the14508GPUfallback and current CPUfixtures;legacy reader/IR/
+  deployment holds remain separate. CPUresult and native build result are
+  frozen during this build. No GPUexecution or model qualification yet.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
