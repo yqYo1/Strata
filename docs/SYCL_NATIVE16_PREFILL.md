@@ -222,9 +222,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   runtime admission must precede any early model/speed trial. The shared
   immutable snapshot and three CPU-representation,cache-policy and bounded-GPU-
   worklist reports now have completed native reviews. Main read only short
-  digests;compact corrected facts are in the index. Their closed duplicate
-  payloads await pushed facts/source recovery and retirement before process4. See
-  `coherent_decode_pcie_speed_v3.pre_repeat_raw_retirement`;review new raw output
+  digests;compact corrected facts are in the index. The four consumed report/
+  review roots,shared1127-file snapshot and process3routine output are retired:
+  2977files/links,489826635regular content bytes,after pushed facts and original
+  source recovery. All12ELFs and generated inputs remain unchanged. The Nov11
+  dispatch-template root remains a separate hold for reusable lifecycle/spec
+  staging;inspect its actual ownership/dependencies and prune ended payload
+  at the next source-audit dispatch. Legacy reader/deployment holds remain. See
+  `coherent_decode_pcie_speed_v3.process3_and_research_raw_retirement`and its
+  earlier retirement fields;review new raw output
   after each subsequent process closure. The legacy19reader/source holds,
   final full asset hashes and adoption gates remain open;no global artifact
   cleanup or extra native generation is claimed.
