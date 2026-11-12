@@ -215,6 +215,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ownership ELF/build and routine V4output are retired after source recovery:
   9files/192066bytes;the numeric reader still passes. Preserve the consumed
   ownership check receipt and V3archive/input proofs for this immediate timing.
+  Closed timing output and consumed numeric-research payloads are now retired;
+  individual samples and compact provenance remain in Git. The CPUchild remains
+  for the imminent production-pool bridge and migration of its path-bound source
+  readers. Legacy GPUfixture/IR/deployment holds remain separate.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
