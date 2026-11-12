@@ -58,8 +58,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   physical262144/RESTORE,ordinary teardown or model adoption is established.
   Next validate Main's default-off exact expert-copy-run proposal isolated on
   `feature/prefill-copy-runs`,then measure its whole upload path and model effect.
-  No candidate build/test has run. Migrate obsolete97fda/old-fixture reader
-  dependencies and retire ended generations before another engine build;
+  The child now passes513capacity/full-fit cases,eight windows each and22negative
+  controls in GCC and the fresh icpx CPU fixture. Its two-fixture build from98d0
+  has six fresh translation units,727compiler inputs/24links and zero uncovered
+  files. The first GPU envelope remains failed because it rejected the deliberate
+  before-main null-platform canary;native exit was0with no fresh fault. The
+  observer-only22b60fix preserves native inputs/ELFs,passes12startup controls and
+  a new traced small-device replay. Maximum-span device checks now pass at
+  6d3464e2:1,019,699,200/773,324,800-byte exact copy requests,checked readers,
+  scratch reuse and normal closure,without a fresh fault. These are API requests,
+  not measured physical bus transactions. Timing,model benefit,independent decode
+  and adoption remain unqualified. Native Luna-max review of the two closed
+  Orca audits finds no reachable production bounds/publication/lifetime defect.
+  Next commit the repeated-process timing controller,complete helper pins and
+  comparison/calibration plan;require eligibility fields even if native prints
+  PASS. The review predates the final device results;its smoke-live/large-unrun
+  wording is stale,not an unresolved live job. Migrate
+  obsolete97fda/old-fixture reader dependencies and retire ended generations before another engine build;
   preserve56cad9 and a347only for their still-named phase comparisons.
   Normal successful test/model logs and caches are retired:151files,20896310bytes;
   both current test/model roots retain only their records and model admission
