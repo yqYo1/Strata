@@ -302577,7 +302577,7 @@
     }
   },
   "expert_copy_runs_component_v1": {
-    "stage": "configured",
+    "stage": "built",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -302729,8 +302729,8 @@
       }
     },
     "outcomes": {},
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -302753,6 +302753,46 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-component-v1/build/compile_commands.json": "a45db5f0822962e43e324a8df3f03329e6cfc0d94317d639aad1be57a9d8cdaa",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-component-v1/build/CMakeFiles/rules.ninja": "df6f22fdbeb4291fbce8532a10757429e07059d302ed98e644b3fe0150e5dbba",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-component-v1/configure/owned/planned.stdout": "656a61812537b81c192cc1a8781b6d0320b630c653aeedae865edb742e0ad32b"
+    },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-component-v1/actual-inputs.json",
+      "sha256": "0e62904e3665f796d3e34020fe0833e6adf7be03073daf3f0bd103e617778a99",
+      "compiler_files": 727,
+      "generated_files": 0,
+      "external_link_files": 24,
+      "uncovered": 0,
+      "translation_units": 6,
+      "source_commit": "98d0df9efbce6cbbd8a558714b885628d52ff847",
+      "class_definition_coherence": {
+        "header_sha256": "f726ef37daad7df61c41d279329e82c49b5eebb59cf975dfb6cde0cc0a9fff5a",
+        "includer_objects": [
+          "CMakeFiles/prefill_expert_bank_plan_test.dir/tests/expert_bank_plan.cpp.o",
+          "CMakeFiles/sycl_expert_bank_test.dir/tests/sycl/expert_bank.cpp.o"
+        ],
+        "all_six_objects_fresh": true,
+        "partial_archive_reuse": false,
+        "class_has_no_backend_conditional_members": true
+      }
+    },
+    "binaries": {
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-component-v1/build/sycl_expert_bank_test",
+        "sha256": "93c9dc2062de2050d1e859711b4a78d1b417432a09b877142484ae41fc4e9c32",
+        "bytes": 574832,
+        "origin_source_commit": "98d0df9efbce6cbbd8a558714b885628d52ff847"
+      },
+      "prefill_expert_bank_plan_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-component-v1/build/prefill_expert_bank_plan_test",
+        "sha256": "28e5e6c38c56be7dce36b93f696489ef7ea1b77f121301191aa2226c311e0758",
+        "bytes": 75832,
+        "origin_source_commit": "98d0df9efbce6cbbd8a558714b885628d52ff847"
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-runs-component-v1/build/sycl_expert_bank_test",
+      "sha256": "93c9dc2062de2050d1e859711b4a78d1b417432a09b877142484ae41fc4e9c32",
+      "bytes": 574832,
+      "origin_source_commit": "98d0df9efbce6cbbd8a558714b885628d52ff847"
     },
     "project": {
       "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/prefill-copy-runs",
@@ -302791,6 +302831,20 @@
       },
       {
         "label": "planned",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "dependencies",
         "exit_code": 0,
         "ownership_closed": true,
         "errors": [],
