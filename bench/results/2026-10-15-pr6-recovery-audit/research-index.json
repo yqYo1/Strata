@@ -30019,5 +30019,43 @@
       "physical_disk_reclaimed_bytes": null,
       "size_limit": "Inventory used stat/content hashes and may count link targets repeatedly;this is not measured unique allocation or disk space reclaimed."
     }
+  },
+  "copy_size_accounting_source_audit_20261112": {
+    "classification": "decision_support",
+    "stage": "reviewed_closed_v1_profile_calibration_failed_v2_source_pending",
+    "source_commit": "23bb44b5338356e94390dd19e0ae6882e1c207fb",
+    "source_files": 16,
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "ownership_closed": true,
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/copy-size-accounting-source-audit-20261112/report.md",
+      "sha256": "44e291f5822f75ceabccf274a86a492e92308786228941cb740570664e2fe4a2",
+      "bytes": 10309
+    },
+    "native_review": {
+      "digest.md": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/copy-size-accounting-review-20261112/digest.md",
+        "sha256": "6284f85458348624ee2053adef9c141cf09b996f3c3885f617af8761bb733cef",
+        "bytes": 3331
+      },
+      "curated.json": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/copy-size-accounting-review-20261112/curated.json",
+        "sha256": "bcdcff9b508d76ad93c0bb6f015cab4ec8807d11e7b02f2301bfdeffe854de33",
+        "bytes": 3222
+      }
+    },
+    "findings": [
+      "The report headline payload/parser defect is false:the second run_private call explicitly uses source_stride1510400. Correct requested bytes are1706598400and773324800;these are not bus traffic.",
+      "Report also miscomputed512*2662400;correct1363148800. No other reachable source/controller defect found in native Luna-max review.",
+      "CPU and17traced small cases pass. First cap1profile normal0/guards/conservation pass but full-fit clock estimate1.722516ms exceeds original1%limit1.575341ms. V1campaign remains failed;later14profiles unrun.",
+      "Main verified original worker/process closure after the review snapshot. V2reduces per-expert clock pairs3to2and includes loop/control in the renamed reader bucket. It requires fresh source/build/gates;old review is not new GPU qualification."
+    ],
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "V2source/build/plan and its CPU/smoke/profile outcomes pending;do not repeat the old source audit or rerun V1."
+    },
+    "future_scope_adjustment": "Any claimed shape mismatch must map positional arguments to declared parameter names;cross-check integer byte totals before declaring a defect.",
+    "retention": "Keep only through the imminent V2gate/clean-plan decision,then retire report/source/dispatch/review transactions after retaining necessary corrections. Main did not read original body."
   }
 }

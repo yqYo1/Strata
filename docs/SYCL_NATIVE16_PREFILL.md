@@ -28,18 +28,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   production selector/counters are removed;the current production prefill source
   is restored exactly. Independent overflow checking and the run helper used by
   the component fixture remain. Native max-copy modes
-  remain in source only for the imminent transfer-size/submission-versus-drain
-  diagnostic;its source/plan/fresh fixtures must be separately committed before
-  execution. Copy-size dependence is observed;the limiting physical resource
-  remains unproven. The closed exact-copy binaries,build output and raw traces
-  are retired:122paths(30215438summed content bytes),after2366Git recoveries and
-  the original727compiler/24link-input checks. Private source/recipe records stay
-  for the imminent fresh-fixture setup;the coherent engine is unchanged. The
-  failed GCC V1binary had nine uncaptured original headers;its provenance failure
-  remains explicit,and it is retired without retroactive qualification. Consumed
-  Orca reports and native review transactions are reduced to corrected findings
-  and identities in the index. Resolve obsolete engine/fixture-reader holds
-  before another engine build.
+  remain in source for bounded transfer-size/submission/drain diagnostics.
+  The fresh23bb44b5V1fixture passes CPU513/8/22and17traced small cases across
+  caps1/4/16/64/512,scratch,cancellation and failed enqueues. Its first cap1
+  profile exits normally0with byte/guard/conservation checks and no fault,but
+  full-fit clock estimate1.722516ms exceeds the original1%limit1.575341ms.
+  The campaign remains failed at00ac4489;the remaining14profiles did not run.
+  This is not qualified attribution or clean speed. V2reduces clock switches
+  3073to2049,includes loop/control explicitly in the renamed reader bucket,and
+  keeps the same1%estimate,100mswall/queue and5%empty gates. Fresh source/build/
+  CPU/smoke/profile gates are required;any clean comparison needs a new plan.
+  Native Luna-max review corrects the report's false payload mismatch and byte
+  arithmetic;no other reachable code defect was found. Source review is not
+  hardware/runtime qualification. Physical resource saturation remains unknown.
+  Closed max-copy artifacts were retired after2366Git source/dependency and
+  727compiler/24link-input recovery checks. The later V1size fixture/raw output
+  is also retired:63files,45650129regular content bytes;records and original
+  failed outcomes remain. The coherent engine is unchanged. The earlier GCC V1
+  provenance failure(nine uncaptured headers)remains explicit and unqualified.
+  Retire consumed research transactions at the next decision;resolve obsolete
+  engine/fixture-reader holds before another engine build.
 - The historical partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
   **class-definition coherence hold**. The archive combined the new `Gemm`
   member declaration from `213dd970` with eleven original archive members,
