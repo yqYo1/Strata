@@ -103,6 +103,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retirement is claimed.
   The existing physical full-context diagnostic and its host fixture are also
   built;actual model fill and ordinary provider teardown remain pending.
+  The prospective [coherent_native_reuse.py](../tools/sycl/coherent_native_reuse.py)
+  now verifies2361original source/dependency files,all1470actual compiler and29
+  external link inputs,the consistent137-object/134-source build and all12ELFs,
+  plus unchanged probe and closed qualification evidence. Its source-only V2
+  passes;V1's host/GPU-schema refusal remains failed. It permits only the exact
+  uncompiled generic-builder delta and named committed observers;old fallback
+  ELF bytes are not inputs of this new reader. This is no new GPU/model result
+  or permission to retire unresolved legacy generations. Use a fresh committed
+  plan for small decode-PCIe resource tradeoffs;source safety review is pending.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.

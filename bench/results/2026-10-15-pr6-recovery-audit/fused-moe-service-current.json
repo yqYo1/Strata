@@ -309513,5 +309513,136 @@
     "native_recompiled": false,
     "qualification_advanced": false,
     "next": "V2checks all11normal closures,then host GPU=false and GPU-only fault/boot/driver fields for stages1..10. Keep V1failure;commit corrected reader before a fresh source-only check."
+  },
+  "coherent_native_reuse_source_v2": {
+    "stage": "source_verified",
+    "source_commit": "298d9679698dacb25a80cb7e721c09b4c236af65",
+    "proof": {
+      "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "original_record_sha256": "499acb67205a74aa206d7850805c69450200c15898303e4f3df7db19c2030ca7",
+      "current_observer_source": "298d9679698dacb25a80cb7e721c09b4c236af65",
+      "current_source_sha256": "57eecf489865ed4e816f973f475cd32d3d9c7e2bb1add5bd4cf537ceca26a852",
+      "original_source_dependency_files": 2361,
+      "exact_uncompiled_builder_delta": {
+        "tools/sycl/check_qsa16_stream.py": {
+          "original": "eb0d4d00869b2d1838c767c59386d56caa2ef103790d000d8c32f8751ddc32c7",
+          "observer": "2203d0b5a02afa73a497df674c2a84ffa60a740e69c959798e11deefb1c5ef88"
+        }
+      },
+      "declared_observers": {
+        "tools/sycl/check_coherent_prefill.py": "af9817ed2c7b33d27b0aec7cabfb13a37e676b3baceb4444ea8310d5232e1486",
+        "tools/sycl/coherent_native_reuse.py": "d131d0365c8b8a7bdc599b63aa2e5a7dda9075146482aaac05737ebe62586c44",
+        "tools/sycl/coherent_prefill_bench.py": "f072fb651107660a7b7b7319bf13a40833b03c878464bfa89bf9f54951b0a38f",
+        "tools/sycl/coherent_prefill_model.py": "f6ddee6713957509eebaf1af0c0dd3d34fed33147372ea6c10ab1774393032d3"
+      },
+      "actual_compiler_inputs": 1470,
+      "external_link_inputs": 29,
+      "coherent_translation_units": 134,
+      "actual_objects": 137,
+      "same_build_executables": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+          "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+          "bytes": 26448640,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_q6_head_owner_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_q6_head_owner_test",
+          "sha256": "b13f489feee5d8d038d5d7ad9ef6d0011fdaf15c8b8cb8839b6cbc48e44c5657",
+          "bytes": 11734112,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_submission_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_submission_test",
+          "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+          "bytes": 352152,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_verifier_retirement_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_verifier_retirement_test",
+          "sha256": "fb5e421c89bdcf6a8d1e19270ee6c52d76150d311bc26fceb9ba0fa124e502e4",
+          "bytes": 19733696,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_verify_window_policy_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_verify_window_policy_test",
+          "sha256": "3c78d87eed186c47eb5ee893568a07f90573923ddd431b2393a682c29138b4fd",
+          "bytes": 114968,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_qsa_bf16_prefix_cached_subgroup_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_test",
+          "sha256": "b03178375e5ade2bfc39e496520f6b89368b2ae1d5441b959d3b66d2bc8c31f1",
+          "bytes": 1577968,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_qsa_bf16_prefix_cached_subgroup_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_bench",
+          "sha256": "4f2ac632ba10ff01cab43fb0d5dd5e90123d8667cc64dce691702bdff21eb24a",
+          "bytes": 1547096,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_native16_qsa_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_native16_qsa_test",
+          "sha256": "85866bb1827cea081aac5ccfef8ac634ca70e1e36e534ed70c350844287c501f",
+          "bytes": 442664,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_moe_upload_census_host_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_moe_upload_census_host_test",
+          "sha256": "f274461c3b915becf16f611f7447681ca1e2bad2860b51a1b2288f3a09571269",
+          "bytes": 96456,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "strata_full_context_diagnostic": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata_full_context_diagnostic",
+          "sha256": "05846c9d0a689c341c8f6596e8a5a40084a91ee1931fe8919a1fee4baf7405c1",
+          "bytes": 26456976,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "full_context_diagnostic_host_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/full_context_diagnostic_host_test",
+          "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+          "bytes": 91448,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "sycl_gu_policy_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_gu_policy_test",
+          "sha256": "cd99a46ea8a34a2dd03cfe9d65908a4b24242608e97c7e003fa1dcc1b5aef013",
+          "bytes": 14155160,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        }
+      },
+      "class_coherence": {
+        "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+        "includer_count": 5,
+        "includer_objects": [
+          "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm16.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/qsa_score_gemm.cpp.o",
+          "CMakeFiles/sycl_gu_policy_test.dir/bench/sycl/gu_compact.cpp.o"
+        ],
+        "same_SYCL_class_condition": true,
+        "all_objects_from_fresh_build": true,
+        "partial_archive_reuse": false
+      },
+      "original_recipe_sha256": "3c8a6e4b6b5c5ca978fbdd9789c551accce7c129056cea07e6192860b86eb08a",
+      "closed_evidence_sha256": {
+        "coherent_prefill_device_v1": "1e72ec874aa228465e9d1554baf86c879feb088ba0f9f35a6bdd02cd3821af4b",
+        "coherent_prefill_model_v3": "096d6a778244c8e9606732a07c4fc707894cc1e97876ea8c12dab8e9470dd48e",
+        "coherent_prefill_speed_v1": "b86f7cd648f1e7673b13bde10b9ea75f7820bbe5616407b1347e2cdd68b99085"
+      },
+      "preserved_old_fallback_ELFs_not_execution_inputs": true,
+      "native_recompiled": false,
+      "new_GPU_or_model_qualification": false
+    },
+    "execution": "Read-only source/dependency/compiler/generated/link/12ELF/probe/closed-evidence verification under Main measurement lock;90s outer deadline. No native executable,GPU,model,build or profiler launched.",
+    "GPU_executed": false,
+    "model_executed": false,
+    "native_recompiled": false,
+    "previous_failure": "coherent_native_reuse_source_v1",
+    "meaning": "Prospective observer reuse source gate,not performance or new route qualification. Old historical fallback ELFs were not consumed;their original receipts/recipe remain checked.",
+    "next": "Pin a new bounded same-build decode resource plan after source safety review. Recover and retire ended legacy generations before another engine build."
   }
 }
