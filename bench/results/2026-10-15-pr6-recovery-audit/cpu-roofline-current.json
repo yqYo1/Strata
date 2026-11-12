@@ -8753,6 +8753,30 @@
       "instruction_count": 295,
       "YMM_rsp_operands": 0,
       "conclusion": "Actual optimized integer sums are already reassociated into multiple series;do not implement the proposed source-only multi-accumulator rewrite. This is static assembly inspection,no cycle/IPC/hardware-saturation measurement."
+    },
+    "fixture_retirement_for_scales_v1": {
+      "stage": "prepared_source_recovered",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-production-pool-timing-v2",
+      "files": 53,
+      "bytes": 3866348,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-production-pool-timing-v2/timing",
+        "sha256": "7d67f886de5571fc7f9f71dc51b8dc72d13a6ca0d24cfc68938725a3e0abcc61"
+      },
+      "source_proof": {
+        "project_revision_path_pins": 42,
+        "project_proof_sha256": "d44d9966f83ca1d7292000cb9659d2a01644532a2ab555203febd6c6445aafea",
+        "GGML_original_pins": 291,
+        "fixture_compiler_inputs": 506,
+        "fixture_link_inputs": 26,
+        "qualified_archive_members": 35,
+        "recipes": [
+          "7f8b40ae4a9dc7a36d10b6614ee8430cb774676e",
+          "e2fd9e722769dc11207d133f7e5ac3ef5430f050"
+        ]
+      },
+      "consumer": "cpu_compact_scale.py standalone single-TU;no V2artifact dependency",
+      "reason": "Keep72batches in pushed71e;closed fixture has no further byte consumer. Current numeric CPUarchives and coherent GPUfallback remain;no source or implementation adoption."
     }
   }
 }
