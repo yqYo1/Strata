@@ -28,9 +28,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   production selector/counters are removed;the current production prefill source
   is restored exactly. Independent overflow checking and the run helper used by
   the component fixture remain. Native max-copy modes
-  remain only for the imminent transfer-size/submission-versus-drain boundary
-  diagnostic;its source/plan/build must be separately committed before execution.
-  Resolve obsolete engine/fixture-reader holds before another engine build.
+  remain in source only for the imminent transfer-size/submission-versus-drain
+  diagnostic;its source/plan/fresh fixtures must be separately committed before
+  execution. Copy-size dependence is observed;the limiting physical resource
+  remains unproven. The closed exact-copy binaries,build output and raw traces
+  are retired:122paths(30215438summed content bytes),after2366Git recoveries and
+  the original727compiler/24link-input checks. Private source/recipe records stay
+  for the imminent fresh-fixture setup;the coherent engine is unchanged. The
+  failed GCC V1binary had nine uncaptured original headers;its provenance failure
+  remains explicit,and it is retired without retroactive qualification. Consumed
+  Orca reports and native review transactions are reduced to corrected findings
+  and identities in the index. Resolve obsolete engine/fixture-reader holds
+  before another engine build.
 - The historical partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
   **class-definition coherence hold**. The archive combined the new `Gemm`
   member declaration from `213dd970` with eleven original archive members,
