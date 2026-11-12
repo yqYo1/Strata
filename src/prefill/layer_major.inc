@@ -463,6 +463,17 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             source_views.push_back(view);
         }
     }
+    const bool expert_copy_runs_requested_on = expert_copy_runs_requested();
+    if (expert_copy_runs_requested_on && expert_upload_staging_requested()) {
+        err = "prefill expert copy runs: upload staging must be disabled";
+        return false;
+    }
+    const bool expert_copy_runs_on = expert_copy_runs_requested_on && packed_bank_on &&
+        source_view_on && window_on && accumulation_rows && scratch_mixed_on && m.copy == m.cs;
+    if (expert_copy_runs_requested_on)
+        std::fprintf(stderr, "strata prefill expert copy runs: requested=1 effective=%d "
+            "unadmitted_shape=existing_route no_overfetch=1 queue=same decode_changed=0\n",
+            int(expert_copy_runs_on));
     // Default copying isolates transient provider pointers. A qualified view
     // borrows the loaded Arena until checked retirement and needs no upload slab.
     // Also count the cache's small blocking staging allocation and two maps.
@@ -784,6 +795,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     m.native16_active = native16_on;
     m.layer_major_residual = plan;
     if (window_context) {
+        window_context->expert_copy_runs = expert_copy_runs_on;
         if (bank_plan.staged()) {
             window_context->expert_slots.reset(new detail::ExpertBankSlots(int32_t(bank_plan.slots)));
             window_context->expert_cache = &layer_cache;
@@ -1141,6 +1153,21 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     stats_.chunks = old_stats.chunks + logical_chunks;
     stats_.ms_total = old_stats.ms_total + ms_since(started);
     if (window_context && window_context->accumulation) {
+        if (window_context->expert_copy_runs) {
+            if (window_context->staged_run_experts > window_context->staged_uploads ||
+                window_context->staged_run_experts < 2 * window_context->staged_copy_runs ||
+                window_context->staged_copy_commands != window_context->staged_uploads -
+                    window_context->staged_run_experts + window_context->staged_copy_runs)
+                throw std::runtime_error("prefill expert copy-run command accounting mismatch");
+            std::fprintf(stderr, "strata prefill expert copy runs complete: commands=%llu runs=%llu "
+                "run_experts=%llu logical_uploads=%llu requested_H2D_bytes=%llu "
+                "exact_payload_union=1 scratch_single=1 final_drain=checked decode_changed=0\n",
+                (unsigned long long)window_context->staged_copy_commands,
+                (unsigned long long)window_context->staged_copy_runs,
+                (unsigned long long)window_context->staged_run_experts,
+                (unsigned long long)window_context->staged_uploads,
+                (unsigned long long)window_context->staged_upload_bytes);
+        }
         if (window_context->expert_slots)
             std::fprintf(stderr, "strata MoE expert bank complete: uploads=%llu requested_H2D_bytes=%llu permanent_hits=%llu permanent_slots=%d total_slots=%d final_drain=checked\n",
                 (unsigned long long)window_context->staged_uploads,

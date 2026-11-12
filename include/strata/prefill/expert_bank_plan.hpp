@@ -95,12 +95,34 @@ struct ExpertBankLayout {
 // cache hits. Private mappings may be published after successful enqueue only
 // when every reader uses the same in-order queue and the slab survives its drain.
 // An explicitly full-fit512 view needs no scratch: all experts can be permanent.
+inline uint64_t expert_bank_advance_generation(uint64_t current, uint64_t count) {
+    if (!count || count > uint64_t(ExpertBankPlan::experts))
+        throw std::invalid_argument("invalid expert bank generation count");
+    if (count > std::numeric_limits<uint64_t>::max() - current)
+        throw std::overflow_error("expert bank ticket generation exhausted");
+    return current + count;
+}
+
 class ExpertBankSlots {
 public:
     struct Ticket {
         int32_t expert = -1, slot = -1;
         uint64_t generation = 0;
         bool upload = false, permanent = false;
+    };
+    struct UploadRun {
+        Ticket first;
+        int32_t count = 0;
+        bool contains(int32_t expert) const {
+            return expert >= 0 && expert < ExpertBankPlan::experts && first.expert >= 0 &&
+                count > 0 && expert >= first.expert && expert - first.expert < count;
+        }
+        Ticket ticket(int32_t expert) const {
+            if (!first.upload || !first.permanent || !contains(expert))
+                throw std::invalid_argument("expert outside accepted bank upload run");
+            const int32_t at = expert - first.expert;
+            return {expert, first.slot + at, first.generation + uint64_t(at), true, true};
+        }
     };
     explicit ExpertBankSlots(int32_t slots, bool full_fit = false) : slots_(slots), full_fit_(full_fit) {
         if (slots < 1 || slots > ExpertBankPlan::experts || (full_fit && slots != ExpertBankPlan::experts))
@@ -115,17 +137,43 @@ public:
             throw std::invalid_argument("invalid expert or unqueued bank ticket");
         const int32_t hit = residency_[size_t(expert)];
         if (hit >= 0) return {expert, hit, 0, false, true};
-        if (generation_ == std::numeric_limits<uint64_t>::max())
-            throw std::overflow_error("expert bank ticket generation exhausted");
+        const uint64_t next_generation = expert_bank_advance_generation(generation_, 1);
         const bool permanent = used_ < slots_ - (full_fit_ ? 0 : 1);
-        pending_ = {expert, permanent ? used_ : slots_ - 1, ++generation_, true, permanent};
+        pending_ = {expert, permanent ? used_ : slots_ - 1, next_generation, true, permanent};
+        generation_ = next_generation;
+        pending_count_ = 1;
         return pending_;
+    }
+
+    // Only consecutive missing experts which the ordinary issuer would admit
+    // to consecutive permanent slots may share a copy. Hits and scratch stop it.
+    // The caller additionally stops at every unselected expert in its route.
+    int32_t permanent_run_length(int32_t expert, int32_t limit) const {
+        if (expert < 0 || expert >= ExpertBankPlan::experts || limit < 1 ||
+            limit > ExpertBankPlan::experts - expert || pending_.upload)
+            throw std::invalid_argument("invalid expert bank run query");
+        const int32_t available = slots_ - (full_fit_ ? 0 : 1) - used_;
+        int32_t count = 0;
+        while (count < limit && count < available && residency_[size_t(expert + count)] < 0)
+            ++count;
+        return count;
+    }
+
+    UploadRun begin_run(int32_t expert, int32_t count) {
+        if (permanent_run_length(expert, count) != count)
+            throw std::invalid_argument("expert bank run crosses hit or permanent capacity");
+        const uint64_t end_generation = expert_bank_advance_generation(generation_, uint64_t(count));
+        const UploadRun run{{expert, used_, generation_ + 1, true, true}, count};
+        generation_ = end_generation;
+        pending_ = run.first;
+        pending_count_ = count;
+        return run;
     }
 
     // This marks accepted enqueue, not DMA completion. On failed/ambiguous
     // enqueue the caller exits through its checked owner lease, without retry.
     void queued(const Ticket& t) {
-        if (!pending_.upload || !t.upload || t.expert != pending_.expert ||
+        if (pending_count_ != 1 || !pending_.upload || !t.upload || t.expert != pending_.expert ||
             t.slot != pending_.slot || t.generation != pending_.generation ||
             t.permanent != pending_.permanent)
             throw std::invalid_argument("stale or mismatched expert bank ticket");
@@ -134,6 +182,23 @@ public:
             ++used_;
         }
         pending_ = {};
+        pending_count_ = 0;
+    }
+
+    // Validate the complete ticket before publishing any mapping. Array writes
+    // below cannot throw; failed/ambiguous enqueue leaves the whole run pending.
+    void queued(const UploadRun& run) {
+        const auto& t = run.first;
+        if (run.count < 1 || run.count != pending_count_ || !pending_.upload ||
+            !pending_.permanent || !t.upload || !t.permanent ||
+            t.expert != pending_.expert || t.slot != pending_.slot ||
+            t.generation != pending_.generation)
+            throw std::invalid_argument("stale or mismatched expert bank upload run");
+        for (int32_t at = 0; at < run.count; ++at)
+            residency_[size_t(t.expert + at)] = t.slot + at;
+        used_ += run.count;
+        pending_ = {};
+        pending_count_ = 0;
     }
 
     // Caller must have checked retirement of the previous layer's readers.
@@ -152,6 +217,7 @@ private:
     bool full_fit_ = false;
     uint64_t generation_ = 0;
     Ticket pending_;
+    int32_t pending_count_ = 0;
     std::array<int32_t, size_t(ExpertBankPlan::experts)> residency_{};
 };
 

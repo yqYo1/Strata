@@ -132,7 +132,11 @@ void run(int capacity, size_t stride, int experts, unsigned layers, bool unwind,
 // Exercise the production private view through checked transitions in ONE
 // allocation. The source stride and destination stride deliberately differ.
 void run_private(int backing_slots, uint64_t backing_stride, int experts,
-                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false, bool staged=false, bool custom_queue=false) {
+                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false,
+                 bool staged=false, bool custom_queue=false, bool copy_runs=false) {
+    if (copy_runs) need(full_copy && !staged &&
+        std::all_of(strides.begin(),strides.end(),[&](uint64_t s) {return s==source_stride;}),
+        "copy runs require exact packed payloads without staging");
     auto runtime = sb::runtime_for();
     auto q = custom_queue ? runtime->make_queue(true) : runtime->compute();
     auto drain = [&] { q.wait_and_throw(); runtime->check(); runtime->wait(); };
@@ -150,6 +154,7 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
     if (staged) staging.reset(new pd::ExpertUploadStaging(cache.device_slot(0),
         size_t(cache.bytes()), size_t(source_stride), &q));
     uint64_t uploads=0,hits=0,consumers=0,expected_uploads=0,expected_hits=0;
+    uint64_t copy_commands=0,runs=0,run_experts=0;
     unsigned drains=0,cancellations=0;
     for (size_t layer=0;layer<strides.size();++layer) {
         // The previous iteration's lease drained before rebinding these views
@@ -170,9 +175,22 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
             lease.arm();
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));
             q.memset(status,0,4);
-            for (int round=0;round<2;++round) for (int e=0;e<experts;++e) {
-                const auto ticket=pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,
-                    blob_bytes,e,&q,source_stride,staging.get());
+            for (int round=0;round<2;++round) {
+              pd::ExpertBankSlots::UploadRun accepted;
+              for (int e=0;e<experts;++e) {
+                pd::ExpertBankSlots::Ticket ticket;
+                const int count=copy_runs && !accepted.contains(e) ?
+                    slots.permanent_run_length(e,experts-e) : 0;
+                if (copy_runs && accepted.contains(e)) ticket=accepted.ticket(e);
+                else if (count>1) {
+                    accepted=pd::stage_private_expert_bank_run(slots,bank,slab,slab_bytes,
+                        blob_bytes,e,count,&q,source_stride);
+                    ticket=accepted.ticket(e);++copy_commands;++runs;run_experts+=uint64_t(count);
+                } else {
+                    ticket=pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,
+                        blob_bytes,e,&q,source_stride,staging.get());
+                    copy_commands+=ticket.upload;
+                }
                 uploads+=ticket.upload;hits+=!ticket.upload;
                 need(cache.slot_of(0,e)<0,"private map leaked into general cache");
                 const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
@@ -192,6 +210,7 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
                     q.memcpy(&observed,status,4);
                     throw Stop{};
                 }
+              }
             }
             const auto* base=reinterpret_cast<const uint32_t*>(cache.device_slot(0));
             // Check every padding word, including the unused backing tail.
@@ -218,7 +237,10 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
         staging->check_guards();
         need(staging->copies()==uploads,"staging upload admission count");
     }
-    if (!unwind) need(uploads==expected_uploads && hits==expected_hits,"private upload/reuse totals");
+    if (!unwind) {
+        need(uploads==expected_uploads && hits==expected_hits,"private upload/reuse totals");
+        need(run_experts<=uploads && copy_commands==uploads-run_experts+runs,"private copy-run conservation");
+    }
     need(drains==strides.size() && cancellations==(unwind?strides.size():0),"private checked retirement count");
     unsigned rejects=0;
     auto reject=[&](auto action) {
@@ -247,7 +269,81 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
         <<" source_stride="<<source_stride<<" experts="<<experts<<" layers="<<strides.size()
         <<" uploads="<<uploads<<" hits="<<hits<<" consumers="<<consumers<<" unwind="<<cancellations
         <<" admission_rejections="<<rejects<<" status="<<observed<<" full_copy="<<int(full_copy)
-        <<" staged="<<staged<<" custom_queue="<<custom_queue<<" immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
+        <<" staged="<<staged<<" custom_queue="<<custom_queue<<" copy_runs="<<copy_runs
+        <<" copy_commands="<<copy_commands<<" runs="<<runs<<" run_experts="<<run_experts
+        <<" immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
+}
+
+void run_private_run_enqueue_failure() {
+    auto runtime=sb::runtime_for();auto& q=runtime->compute();
+    for (int mode=0;mode<3;++mode) {
+        strata::core::ExpertCache cache;std::string error;
+        if (!cache.open_uninitialized(4,1,512,256,error)) throw std::runtime_error(error);
+        pd::PrivateExpertBank bank(cache,256);pd::ExpertBankSlots slots(4);
+        std::vector<uint8_t> slab(512*256,0x7b),observed(4*256,0);
+        unsigned attempts=0,drains=0;bool rejected=false;
+        try {
+            pd::DraftUploadGuard lease([&] {runtime->wait();++drains;return true;},
+                [] {sb::cleanup_fail_stop("private run enqueue rejection retirement");});lease.arm();
+            q.memset(cache.device_slot(0),0xa5,4*256);
+            try {
+                pd::stage_private_expert_bank_run_enqueue(slots,bank,slab.data(),slab.size(),256,5,3,&q,256,
+                    [&](void* dst,const void* src,size_t bytes,void* stream) {
+                        need(dst==bank.device_slot(0) && src==slab.data()+5*256 &&
+                            bytes==3*256 && stream==&q,"wrong rejected run arguments");++attempts;
+                        if (mode==1) throw std::runtime_error("injected enqueue throw");
+                        if (mode==2) q.memcpy(dst,src,bytes); // accepted work,ambiguous caller result
+                        return false;
+                    });
+            } catch (const std::runtime_error&) {rejected=true;}
+            need(rejected && slots.permanent_used()==0,"failed run published mappings");
+            auto refuse=[&](auto action) {
+                bool caught=false;try {action();} catch(const std::invalid_argument&) {caught=true;}
+                need(caught,"ambiguous run permits retry/reset");
+            };
+            refuse([&] {(void)slots.begin(5);});refuse([&] {slots.reset();});
+            refuse([&] {(void)slots.begin_run(5,3);});
+            q.memcpy(observed.data(),cache.device_slot(0),observed.size());
+            throw Stop{};
+        } catch (const Stop&) {}
+        need(attempts==1 && drains==1,"run rejection lost checked retirement");
+        for (size_t i=0;i<observed.size();++i)
+            need(observed[i]==uint8_t(mode==2 && i<3*256 ? 0x7b : 0xa5),"ambiguous run bytes not drained");
+    }
+    std::cout<<"expert_bank_run_enqueue_failure modes=3 published=0 no_retry=PASS checked_drain=PASS\n";
+}
+
+void run_private_run_admissions() {
+    auto runtime=sb::runtime_for();auto& q=runtime->compute();
+    strata::core::ExpertCache cache;std::string error;
+    if (!cache.open_uninitialized(4,1,512,256,error)) throw std::runtime_error(error);
+    pd::PrivateExpertBank bank(cache,256);pd::ExpertBankSlots slots(4),wrong(3);
+    std::vector<uint8_t> slab(512*256,0x7b);unsigned rejected=0,attempts=0;
+    auto enqueue=[&](void*,const void*,size_t,void*) {++attempts;return true;};
+    auto reject=[&](auto action) {
+        bool caught=false;try {action();} catch(const std::invalid_argument&) {caught=true;}
+        need(caught,"invalid private copy run accepted");++rejected;
+    };
+    auto issue=[&](auto& s,const uint8_t* source,uint64_t bytes,uint64_t payload,
+                  int first,int count,void* stream,uint64_t stride) {
+        return pd::stage_private_expert_bank_run_enqueue(s,bank,source,bytes,payload,
+            first,count,stream,stride,enqueue);
+    };
+    reject([&] {issue(slots,slab.data(),slab.size()-1,256,0,2,&q,256);});
+    reject([&] {issue(slots,slab.data(),slab.size(),252,0,2,&q,256);});
+    reject([&] {issue(slots,slab.data(),slab.size(),256,0,2,&q,512);});
+    reject([&] {issue(slots,nullptr,slab.size(),256,0,2,&q,256);});
+    reject([&] {issue(slots,slab.data(),slab.size(),256,0,2,nullptr,256);});
+    reject([&] {issue(slots,slab.data(),slab.size(),256,511,2,&q,256);});
+    reject([&] {issue(slots,slab.data(),slab.size(),256,0,4,&q,256);});
+    reject([&] {issue(wrong,slab.data(),slab.size(),256,0,2,&q,256);});
+    sycl::queue foreign{sycl::context{runtime->device()},runtime->device(),sycl::property::queue::in_order{}};
+    reject([&] {issue(slots,slab.data(),slab.size(),256,0,2,&foreign,256);});
+    cache.enable_scratch_loan_tracking();
+    reject([&] {issue(slots,slab.data(),slab.size(),256,0,2,&q,256);});
+    need(attempts==0 && slots.permanent_used()==0,"run refusal mutated state or enqueued");
+    runtime->wait();
+    std::cout<<"expert_bank_run_admissions rejections="<<rejected<<" enqueues=0 mapping_unchanged=PASS\n";
 }
 
 void run_private_enqueue_failure() {
@@ -564,9 +660,20 @@ int main(int argc, char** argv) try {
         std::string(argv[1]) == "--packed-smoke" || std::string(argv[1]) == "--packed-validate" ||
         std::string(argv[1]) == "--staging-smoke" || std::string(argv[1]) == "--staging-validate" ||
         std::string(argv[1]) == "--packed-custom-smoke" || std::string(argv[1]) == "--staging-custom-smoke" ||
-        std::string(argv[1]) == "--staging-custom-validate"),
+        std::string(argv[1]) == "--staging-custom-validate" ||
+        std::string(argv[1]) == "--copy-runs-smoke" || std::string(argv[1]) == "--copy-runs-validate"),
         "use --smoke|--validate|--packed-smoke|--packed-validate");
-    if (std::string(argv[1]) == "--packed-custom-smoke") {
+    if (std::string(argv[1]) == "--copy-runs-smoke") {
+        run_private(4,256,10,{256,256},256,false,true,false,true,true);
+        run_private(1,256,10,{256},256,false,true,false,true,true);
+        run_private(512,256,512,{256},256,false,true,false,true,true);
+        run_private(8,256,10,{256,256},256,true,true,false,true,true);
+        run_private_run_enqueue_failure();run_private_run_admissions();
+    } else if (std::string(argv[1]) == "--copy-runs-validate") {
+        run_private(384,2662400,512,{2662400},2662400,false,true,false,true,true);
+        run_private(384,2662400,512,{1510400},1510400,false,true,false,true,true);
+        run_private_run_enqueue_failure();run_private_run_admissions();
+    } else if (std::string(argv[1]) == "--packed-custom-smoke") {
         run_private(4,512,10,{256,512,256},256,false,true,false,true);
         run_private(4,512,10,{256,512},256,true,false,false,true);
     } else if (std::string(argv[1]) == "--staging-custom-smoke") {

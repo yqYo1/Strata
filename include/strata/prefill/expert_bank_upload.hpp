@@ -79,6 +79,52 @@ inline ExpertBankSlots::Ticket stage_private_expert_bank(ExpertBankSlots& slots,
         });
 }
 
+// Exact payload union, with no padding, gaps, unselected experts or scratch.
+// Keep all existing owner/USM/queue checks. Source and bank live through the
+// outer checked drain, and accepted copies/readers share its in-order queue.
+template<class Enqueue>
+inline ExpertBankSlots::UploadRun stage_private_expert_bank_run_enqueue(ExpertBankSlots& slots,
+        const PrivateExpertBank& bank, const uint8_t* slab, uint64_t slab_bytes,
+        uint64_t blob_bytes, int32_t expert, int32_t count, void* stream,
+        uint64_t source_stride, Enqueue&& enqueue) {
+    const auto& layout = bank.layout();
+    if (!stream || !slab || !blob_bytes || blob_bytes != layout.stride ||
+        blob_bytes != source_stride || slots.slots() != layout.slots ||
+        slots.full_fit() != layout.full_fit() ||
+        slab_bytes != layer_major_mul(ExpertBankPlan::experts, source_stride))
+        throw std::invalid_argument("private expert bank run requires exact packed source/destination");
+    auto& queue = sycl_backend::queue_for(stream);
+    auto* base = bank.device_slot(0);
+    sycl_backend::validate_device_span(base, size_t(layout.backing_bytes), queue);
+    sycl_backend::validate_spans({{base, size_t(layout.backing_bytes)}},
+                                {{slab, size_t(slab_bytes)}}, 1);
+    const auto run = slots.begin_run(expert, count);
+    const uint64_t bytes = layer_major_mul(uint64_t(count), blob_bytes);
+    const uint64_t source_offset = layer_major_mul(uint64_t(expert), source_stride);
+    const uint64_t destination_offset = layout.offset(run.first.slot);
+    if (source_offset > slab_bytes || bytes > slab_bytes - source_offset ||
+        destination_offset > layout.used_bytes || bytes > layout.used_bytes - destination_offset)
+        throw std::invalid_argument("private expert bank run exceeds payload extent");
+    if (!enqueue(bank.device_slot(run.first.slot), slab + size_t(source_offset), size_t(bytes), stream))
+        throw std::runtime_error("private expert bank run upload enqueue failed");
+    slots.queued(run);
+    return run;
+}
+
+inline ExpertBankSlots::UploadRun stage_private_expert_bank_run(ExpertBankSlots& slots,
+        const PrivateExpertBank& bank, const uint8_t* slab, uint64_t slab_bytes,
+        uint64_t blob_bytes, int32_t expert, int32_t count, void* stream, uint64_t source_stride) {
+    return stage_private_expert_bank_run_enqueue(slots, bank, slab, slab_bytes,
+        blob_bytes, expert, count, stream, source_stride,
+        [](void* dst, const void* src, size_t bytes, void* queue) {
+#if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
+            sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::upload_submit);
+#endif
+            return cudaMemcpyAsync(dst, src, bytes, cudaMemcpyHostToDevice,
+                static_cast<cudaStream_t>(queue)) == cudaSuccess;
+        });
+}
+
 inline ExpertBankSlots::Ticket stage_expert_bank(ExpertBankSlots& slots,
         core::ExpertCache& cache, const uint8_t* slab, uint64_t slab_bytes,
         uint64_t stride, uint64_t blob_bytes, int32_t expert, void* stream,

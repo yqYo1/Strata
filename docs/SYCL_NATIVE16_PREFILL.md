@@ -8,6 +8,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
+- The exact selected-expert copy-run experiment is **source only,not adopted**.
+  Main authored it independently from the existing Strata private bank and the
+  reviewed `physical_fill_expert_copy_source_review_20261112` contract;repository
+  LICENSE applies. It targets the measured upload-wrapper submission cost while
+  preserving selected bytes,per-expert slots and arithmetic order. The explicit
+  immutable `STRATA_SYCL_PREFILL_EXPERT_COPY_RUNS=1` uses only consecutive misses
+  in permanent packed slots;hits,gaps and scratch split runs. It requires the
+  immutable source view,same queue and staging0;unadmitted shapes retain their
+  existing route. Decode selection/placement is unchanged by construction,not
+  yet validated. Pending:finish the coherent32K/64K baseline;migrate obsolete
+  build-reader dependencies and retire ended generations;commit the full rebuild
+  recipe/plan;then Main serializes CPU slot/generation/byte equivalence,traced
+  small and maximum-span device guards/failure retirement,whole upload-path
+  timing and matched model/independent-decode gates. No benchmark is running in
+  this isolated child. The large pageable-copy runtime source question remains
+  conditional until current loaded-provider hashes/build identities are pinned.
 - The historical partial-relink **engine dcb8efd4** and GU component **cd99a46e** are on a
   **class-definition coherence hold**. The archive combined the new `Gemm`
   member declaration from `213dd970` with eleven original archive members,
