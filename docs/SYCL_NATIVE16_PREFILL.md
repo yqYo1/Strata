@@ -41,9 +41,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   V1's wrong Python and V2's wrong action name remain recorded prelaunch failures;
   neither started a model. V3uses the qualified model venv and `run` interface.
   This is observed route/state evidence,not a clean-speed or sustained-TG result.
-  Next commit the coherent `bench.sh`32K/64K repeated-speed plan and a scoped
-  admission reader. Migrate its obsolete97fda/old-fixture dependencies before
-  another engine build;preserve56cad9 and a347for their named phase comparisons.
+  The fresh same-build `coherent_prefill_speed_v1` now closes six independent
+  `bench.sh` processes/eighteen thinking-on exact24-output requests at32K/64K,
+  evidence `f9662f7abfebb1c5f20e7e9e4677fad8f1f5e695`. All processes close
+  normally0,with exact fresh counts,actual GU/Down/placement checks,quiet
+  validation,unchanged boot/driver,no fresh fault and all15final asset hashes.
+  Warmed32K process medians are871.305/871.574/872.318tok/s;the aggregate is
+  37.5975s prefill and37.741s client TTFT. Warmed64K medians are
+  1006.412/1006.832/1008.257tok/s;the aggregate is65.0923s and65.2565s TTFT.
+  Thus the prospectively defined600PP repetition gate passes at both lengths,
+  and the1000PP gate passes for warmed64K. First requests remain separate:
+  aggregate32K/64K PP is676.896/865.934 and TTFT48.555/75.840s. All18individual
+  samples remain in the linked result;four summary rows are in the CSV.
+  The warmed adjacent slope is0.839074707ms/token;two lengths do not validate
+  a fitted law or physical fixed cost. No cross-build gain,sustainedTG,task/agent,
+  physical262144/RESTORE,ordinary teardown or model adoption is established.
+  Next validate Main's default-off exact expert-copy-run proposal isolated on
+  `feature/prefill-copy-runs`,then measure its whole upload path and model effect.
+  No candidate build/test has run. Migrate obsolete97fda/old-fixture reader
+  dependencies and retire ended generations before another engine build;
+  preserve56cad9 and a347only for their still-named phase comparisons.
   Normal successful test/model logs and caches are retired:151files,20896310bytes;
   both current test/model roots retain only their records and model admission
   still passes. The compact decision is under
@@ -75,9 +92,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and client TTFT **65.2995s**. First-use large PP is678.422at32Kand862.122at64K.
   The cohort evidence at `ef1d787134b15d13ebdc13559175b20a5a45601b` and the CSV
   retain all samples and separate scopes,including the earlier one-process
-  milestone. These are repeated64K observations above1000,held from target
-  qualification until the coherent rebuild reproduces them;they do not establish
-  a gain over56cad9.
+  milestone. These historical mixed-build observations remain held from target/
+  adoption qualification;the new coherent cohort independently reproduces
+  warmed64K above1000. Neither cohort establishes a gain over56cad9.
   The32K-to64K warmed adjacent slopes are0.838257/0.841042ms per token for
   large/auto;two lengths cannot validate a fitted time law or a physical fixed
   cost. Parameter validation and the retained-reference preload are charged;
