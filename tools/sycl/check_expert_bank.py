@@ -289,11 +289,52 @@ def query_limits():
         return 0 if query['passed'] else 1
 
 
+def copy_run_startup_errors(text,pid,traced):
+    """Only the verified before-main canary may return an API error in trace."""
+    import ur_validation as validation
+    proof=validation.preload_evidence(text,pid)
+    begin=text.index('strata UR validation: pid='+str(pid)+' phase=begin ')
+    post=text.index('strata UR validation API: pid='+str(pid)+' operation=postinit result=46')
+    end=text.index('strata UR validation: pid='+str(pid)+' phase=before-main ')
+    guards.require(begin<post<end,'startup API proof order differs')
+    pattern=r'\s*<--- urPlatformGetApiVersion\(\.hPlatform = nullptr, \.pVersion = 0x[0-9a-fA-F]+ \(-1\.65535\)\) -> UR_RESULT_ERROR_INVALID_NULL_HANDLE;'
+    count=0
+    for match in re.finditer(r'^.*(?:UR_RESULT_ERROR_|ZE_RESULT_ERROR_).*$',text,re.M):
+        guards.require(traced and begin<match.start()<post and re.fullmatch(pattern,match[0]),
+            'unexpected API error outside the verified startup canary: '+match[0])
+        count+=1
+    guards.require(count==int(traced),'startup canary trace count differs')
+    return proof,count
+
+
+def copy_run_startup_controls():
+    pid=123
+    begin='strata UR validation: pid=123 phase=begin loader=/pinned/loader.so\n'
+    error='   <--- urPlatformGetApiVersion(.hPlatform = nullptr, .pVersion = 0x1234 (-1.65535)) -> UR_RESULT_ERROR_INVALID_NULL_HANDLE;\n'
+    post='strata UR validation API: pid=123 operation=postinit result=46\n'
+    end='strata UR validation: pid=123 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\n'
+    valid=begin+error+post+end
+    guards.require(copy_run_startup_errors(valid,pid,True)[1]==1 and
+        copy_run_startup_errors(begin+post+end,pid,False)[1]==0,'valid startup controls failed')
+    cases=[(valid+error,pid,True),(begin+post+end+error,pid,True),
+        (valid.replace('urPlatformGetApiVersion(','urUSMDeviceAlloc('),pid,True),
+        (valid.replace('UR_RESULT_ERROR_INVALID_NULL_HANDLE','UR_RESULT_ERROR_INVALID_ARGUMENT'),pid,True),
+        (error+valid,pid,True),(begin+error+error+post+end,pid,True),(valid,124,True),
+        (valid.replace('untouched=1','untouched=0'),pid,True),(valid,pid,False),
+        (begin+post+end,pid,True)]
+    for text,actual_pid,traced in cases:
+        refused=False
+        try:copy_run_startup_errors(text,actual_pid,traced)
+        except (RuntimeError,ValueError):refused=True
+        guards.require(refused,'unexpected/misplaced/missing startup error accepted')
+    return dict(valid_traced=1,valid_quiet=1,negative_cases=len(cases),GPU_executed=False)
+
+
 def copy_run_device(action):
     """Fresh exact-copy fixture gates; no model,teardown or speed claim."""
     import build_expert_copy_runs as build
     import ur_validation as validation
-    root = B/'expert-copy-runs-device-v1';key='expert_copy_runs_device_v1'
+    root = B/'expert-copy-runs-device-v2';key='expert_copy_runs_device_v2'
     order=('cpu','smoke','large')
     def save(row):
         (root/'record.json').write_text(json.dumps(row,indent=2)+'\n')
@@ -301,7 +342,7 @@ def copy_run_device(action):
         build.RESULT.write_text(json.dumps(public,indent=2)+'\n')
     def current(row):
         guards.require(validation.committed(build.RESULT,(key,))==row,'commit exact device stage first')
-        native=json.loads((build.ROOT/'record.json').read_text());build.context().current(native)
+        native,_=build.observer_native(row['observer_admission'])
         guards.require(native['binaries']==row['binaries'] and native['passed'] and native['complete']
             and native['ownership_closed'] and not native['active'],'closed two-fixture build required')
         path=Path(row['runtime_manifest']['path'])
@@ -314,19 +355,27 @@ def copy_run_device(action):
         fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB);guards.no_model_owners([])
         if action=='prepare':
             guards.require(not root.exists() and key not in json.loads(build.RESULT.read_text()),'fresh device plan required')
-            native=json.loads((build.ROOT/'record.json').read_text());build.context().current(native)
+            native,admission=build.observer_native()
             guards.require(native['passed'] and native['complete'] and native['ownership_closed']
                 and not native['active'],'build both fresh fixtures first')
             providers=B/'coherent-prefill-speed-v1/runtime-inputs.json'
             guards.require(digest(providers)=='43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21',
                 'current coherent runtime receipt required')
             env=dict(native['recipe']['environment'])
+            previous=validation.committed(build.RESULT,('expert_copy_runs_device_v1',))
+            guards.require(previous['stage']=='failed' and not previous['passed']
+                and previous['ownership_closed'],'preserve original observer refusal')
+            controls=copy_run_startup_controls()
             guards.require({k:env[k] for k in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys',
                 'EnableDirectSubmission')}==dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',
                 NEOReadDebugKeys='1',EnableDirectSubmission='0'),'preserve safety settings')
             root.mkdir(mode=0o700)
             row=dict(stage='ready',source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
                 native_source_commit=native['native_source_commit'],build_key=build.KEY,binaries=native['binaries'],
+                observer_admission=admission,startup_trace_controls=controls,
+                previous_attempt=dict(key='expert_copy_runs_device_v1',
+                    evidence_commit='ddb3c33a1dc99e4df51905ac2e1ad8ec15fa5511',
+                    decision='Original envelope remains failed;fresh ordered processes with unchanged native inputs.'),
                 native_validation_probe=native['native_validation_probe'],environment=env,
                 runtime_manifest=dict(path=str(providers),sha256=digest(providers)),
                 boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver=guards.driver_guard(),
@@ -335,7 +384,9 @@ def copy_run_device(action):
                 plan='Commit each closed stage before next. CPU:repeat513/8/22oracle with same-build icpx '
                     'fixture. Smoke:traced/parameter-validated exact runs on one/four/eight-slot and full-fit512 '
                     'banks,checked error unwind,three false/throw/ambiguous-enqueue cases and ten pre-enqueue '
-                    'refusals. Large:only after smoke,real383*2662400=1019699200byte single copy and '
+                    'refusals. A traced startup admits exactly one null urPlatformGetApiVersion error '
+                    'between same-PID begin/postinit/before-main proofs;all other API errors fail. '
+                    'Quiet startup admits no printed API errors. Large:only after smoke,real383*2662400=1019699200byte single copy and '
                     'full-fit512*1510400=773324800bytes,all readbacks/guards/immutable sources/private maps '
                     'and final drains. Stop first source/provider/owner/validation/case/fault/budget failure;no retry.',
                 limits='Same production upload helper and queue ownership on synthetic bytes;no dequant/GEMM '
@@ -378,10 +429,11 @@ def copy_run_device(action):
             outcome.update(native_pid=event['pid'],native_exit_code=event['exit_code'])
             text,errors=out.read_text(),err.read_text()
             guards.require(supervision.closed(event) and event['exit_code']==0 and not re.search(
-                'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|teardown uncertain',errors),
+                'terminate called|cleanup failed|teardown uncertain',errors),
                 'copy-run fixture failed: '+(errors+text)[-4000:])
             if gpu:
-                outcome['validation']=validation.preload_evidence(errors,event['pid'])
+                outcome['validation'],outcome['expected_startup_API_errors']=copy_run_startup_errors(
+                    errors,event['pid'],action=='smoke')
                 guards.require(outcome['validation']['loader']==row['native_validation_probe']['loader']['path'],
                     'actual pre-main loader differs')
                 cases=[dict(re.findall(r'(\w+)=([^ ]+)',line)) for line in text.splitlines()
@@ -403,6 +455,7 @@ def copy_run_device(action):
                         for c in cases]==expected,'largest383/scratch or full-fit512 dispatch differs')
                 outcome['cases']=cases
             else:
+                guards.require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_',errors),'unexpected CPU API error')
                 match=re.search(r'expert_bank_upload_runs configurations=513 windows_each=8 logical_uploads=(\d+) '
                     r'commands=(\d+) runs=(\d+) run_experts=(\d+) negative_checks=22 PASS',text)
                 ref=row['cpu_reference'];guards.require(match and tuple(map(int,match.groups()))==tuple(
