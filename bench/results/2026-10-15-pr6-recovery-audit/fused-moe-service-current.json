@@ -308849,5 +308849,131 @@
       "selection_scope": "Packed full-fit512only;ordinary384not supported by profiling.",
       "qualification": "All17execution/eligibility/accounting gates passed,not clean speed or model adoption. Full-fit512cost shifts from upload wrapper toward next reader-submission calls at cap512. These API buckets may include runtime waits;CPU-vs-PCIe-vs-GPU saturation remains unknown."
     }
+  },
+  "expert_copy_size_clean_v1": {
+    "stage": "ready",
+    "source_commit": "8bb1150d7494ed6ae22d632229dd82aaf3223ec2",
+    "native_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1",
+    "observer_admission": {
+      "original_native_source": "f98dd2383bc970706eb9dd8047805e9d252383d1",
+      "observer_source_commit": "8bb1150d7494ed6ae22d632229dd82aaf3223ec2",
+      "exact_observer_deltas": {
+        "tools/sycl/build_expert_copy_runs.py": {
+          "original": "c64aff6b1758edd43973f089d1cca39e9ce2ff51f8a23721d165e625f51895da",
+          "observer": "7aa1413adecb062b39a5074ba615597db8a22afe9c003ae5d8ee23b7054cbce4"
+        },
+        "tools/sycl/check_expert_bank.py": {
+          "original": "f202b7fe216d34434f2467d04f72609e5616d7366c4dfe5a85b923973f04fa20",
+          "observer": "9bcade91f5e1e913b2f2c51ca984e19999ba83979fa5351c1a543eba83b8a54a"
+        }
+      },
+      "original_source_recovered_files": 1169,
+      "actual_native_compiler_files": 727,
+      "actual_external_link_files": 24,
+      "native_and_fixture_inputs_unchanged": true,
+      "native_recompiled": false,
+      "GPU_result_inherited": false
+    },
+    "profile_prerequisite": {
+      "key": "expert_copy_size_profile_v2",
+      "record_sha256": "1e6eb5590007c16d2256b51aadc0d30cf049bdf255b4ae961a3394d9015e4947",
+      "native_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1",
+      "all17stages_passed": true,
+      "original_gate_AST_unchanged": true
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-size-component-v2/build/sycl_expert_bank_test",
+      "sha256": "61f20c024c86d4608eca3db471acc4880266fa5279958eacacdb70fb0a0702d4",
+      "bytes": 575056,
+      "origin_source_commit": "f98dd2383bc970706eb9dd8047805e9d252383d1"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-size-component-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-copy-size-component-v2/cache",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+      "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+      "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+      "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+      "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+      "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "parser_replay_samples": 30,
+    "negative_controls": 45,
+    "order": [
+      1,
+      16,
+      16,
+      1,
+      1,
+      16
+    ],
+    "results": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "performance_qualified": false,
+    "budgets": {
+      "wall": 240,
+      "cpu": 1200,
+      "rss_cap": 12884901888,
+      "text_cap": 67108864,
+      "file_cap": 67108864,
+      "total_cap": 268435456
+    },
+    "plan": "Commit source and this prospective plan before six quiet independent native processes ABBAAB(cap1/16),three opposite-order pairs. Same fixed warmup/ordinary384then packed512 geometries,bytes/readers and checked final drain;per-expert clocks must be off. Record all wall/queue/thread/empty values and actual copy commands. Each geometry judged independently: all three paired candidate/reference wall ratios<1 and candidate median<reference median permit only that geometry to advance to a separately committed production/model plan. No arbitrary minimum percentage;mixed outcomes remain failed,with a new plan needed for more evidence. All samples need100mswall/queue and empty<=5%wall;also maximum empty over six<=5%minimum wall per geometry. Require exact source/ELF/provider/startup/cap/flags/counts,byte/source/guard/private-map/drain checks,normal0,quiet validation,no fresh fault and closed ownership. Stop first such failure;no retries. Stop after six samples either performance outcome.",
+    "selection": "Cap16selected from completed profiling screen:packed512 median150.087ms versus cap1 182.559ms. Ordinary384median401.888versus373.391is not a positive profile result;do not apply a packed-geometry win to ordinary placement. Profiling is not clean gain evidence.",
+    "limits": "Synthetic production copy helper/readers only. First large allocation/use per process;no warmed-model,physical bus traffic,saturation,model PP/TG,decode,full262144/RESTORE or ordinary teardown qualification. Parameter validation and retained-reference preload charged.",
+    "retention": "Reuse exact f98dd238native fixtures;no recompile or new generation. Keep individual clean samples and decision;retire normal profiling/clean traces/cache after source/evidence review. Legacy engine reader/provenance holds remain before another engine build."
   }
 }
