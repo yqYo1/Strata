@@ -273,6 +273,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   is retired remotely,locally and as a worktree;all original revisions remain
   ancestors of the pushed permanent primary. Current fresh pool archives and
   the coherent GPUengine remain. Legacy GPUfixture/IR/deployment holds stay separate.
+  Successful whole-pool output and four consumed source/report/review
+  transactions are also retired:2294files/links,463517579regular content bytes.
+  Recovery verifies492project revision/path pins and28research GGMLpins;
+  compact432samples/order evidence and corrected facts stay committed. The
+  current reader passes after deletion;its timing ELF/object/depfile and
+  build/check/attempt records remain for the named focused repeat. The CSV
+  now contains376points,including24whole-pool cells with the failed gate marked.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
