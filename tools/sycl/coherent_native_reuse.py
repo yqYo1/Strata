@@ -62,6 +62,9 @@ def verify(*, observers=(), expected=None):
         and row['native_source_commit'] == row['project']['revision'] == SOURCE,
         'original coherent build/receipt must be committed and closed')
     current = build.common.source.pin(P, PREFIXES)
+    untracked = build.common.source.git(P, 'ls-files', '--others',
+        '--exclude-standard', '-z', '--', *PREFIXES).decode().split('\0')
+    require(not any(untracked), 'uncommitted helper/fixture in the observer source scope')
     before, after = row['project']['source_sha256'], current['source_sha256']
     recovered = recover(row['project'])
     changed = {p: (before[p], after[p]) for p in before if p in after and before[p] != after[p]}
@@ -118,7 +121,12 @@ def verify(*, observers=(), expected=None):
     device = build.validation.committed(RESULT, ('coherent_prefill_device_v1',))
     require(device['binaries'] == row['binaries'] and len(device['results']) == 11
         and all(v['passed'] and v['ownership_closed'] and v['native_exit_code'] == 0
-            and not v['fresh_faults'] for v in device['results']), 'same-build native gates changed')
+            for v in device['results'])
+        and device['results'][0]['mode'] == 'host'
+        and not device['results'][0]['GPU_executed']
+        and all(v['GPU_executed'] and not v['fresh_faults'] and v['boot_unchanged']
+            and v['driver_after'] == device['driver'] for v in device['results'][1:]),
+        'same-build host/GPU native gates changed')
     proof = dict(original_native_source=SOURCE, original_record_sha256=sha(ROOT / 'record.json'),
         current_observer_source=current['revision'], current_source_sha256=current['aggregate_sha256'],
         original_source_dependency_files=len(recovered),
