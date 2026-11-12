@@ -172,8 +172,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Both long routes and all6warmup/long prompt/copy/API joins pass;baseline
   submitted/completed/private-view/GPU-miss copies are0. The code/prose MTP
   bands are observed in one sample each,not a confirmed repeated pair or gain.
-  Next run candidate1;all6processes,paired performance decisions,final full
-  model hashes and remaining adoption gates stay open. Strict API/prompt/copy counts,drafts and
+  Candidate1also closes normally0/quiet/owned/no freshfault. Its matched code
+  request has3602outputs/250052.2ms decode(14.405TG),50451.7ms prompt,
+  51.785sTTFT and2605/2994drafts;prose has8911/945592.2ms(9.424TG),
+  39433.2ms prompt,39.594sTTFT and4813/12294drafts. The first paired TG
+  ratios are0.959847code/1.041889prose;prose acceptance also changes from
+  0.339347to0.391492. Keep lengths/context dependence and separate workloads;
+  one pair does not establish reproducible gain or a hardware bottleneck.
+  Candidate code/prose requested copies are129390259200/404578022400bytes,
+  with63486/198497submitted/completed/private-view/GPU-miss groups. These
+  counters are requested payloads,not physical bus traffic or saturation.
+  Before process2,retire verified closed output and consumed research
+  transactions. All6processes,paired decisions,final full model hashes and
+  remaining adoption gates stay open. Strict API/prompt/copy counts,drafts and
   rounded clocks are joined;zero baseline and positive long-candidate private
   host-view counts must conserve. Commit each closure before the next process.
   This changes work distribution only;dedicated-prefill,agent,task,full-context
