@@ -3577,35 +3577,42 @@ int main(int argc, char** argv) {
     std::shared_ptr<const strata::kernels::cpu::compact_gu::Cache> cpu_compact_gu_cache;
 #if defined(STRATA_ENABLE_SYCL) && defined(STRATA_NATIVE_EXPERTS)
     if (cpu_compact_gu_budget) {
-        const auto start = Clock::now();
-        std::string why;
-        std::vector<strata::kernels::cpu::compact_gu::LayerView> views;
-        const auto& layout = strata::kernels::cpu::expert_layout();
-        bool immutable = native_pack && !o.no_pool && srcp &&
-            layout.fmt.size() == size_t(g.n_layers) && g.n_layers > 0 && g.n_expert > 0;
-        if (immutable) for (size_t layer = 0; layer < layout.fmt.size(); ++layer) {
-            const auto& format = layout.fmt[layer];
-            if (!strata::kernels::cpu::compact_gu::supported(format)) continue;
-            const auto view = srcp->resident_layer(int64_t(layer));
-            if (!view.data || view.experts != g.n_expert || view.stride != format.bytes ||
-                view.bytes > std::numeric_limits<size_t>::max()) { immutable = false; break; }
-            views.push_back({layer, size_t(view.experts), size_t(view.stride), size_t(view.bytes), view.data, format});
+        try {
+            const auto start = Clock::now();
+            std::string why;
+            std::vector<strata::kernels::cpu::compact_gu::LayerView> views;
+            const auto& layout = strata::kernels::cpu::expert_layout();
+            bool immutable = native_pack && !o.no_pool && srcp &&
+                layout.fmt.size() == size_t(g.n_layers) && g.n_layers > 0 && g.n_expert > 0;
+            if (immutable) for (size_t layer = 0; layer < layout.fmt.size(); ++layer) {
+                const auto& format = layout.fmt[layer];
+                if (!strata::kernels::cpu::compact_gu::supported(format)) continue;
+                const auto view = srcp->resident_layer(int64_t(layer));
+                if (!view.data || view.experts != g.n_expert || view.stride != format.bytes ||
+                    view.bytes > std::numeric_limits<size_t>::max()) { immutable = false; break; }
+                views.push_back({layer, size_t(view.experts), size_t(view.stride), size_t(view.bytes), view.data, format});
+            }
+            const char* pair = std::getenv("STRATA_IQ3_PAIR");
+            if (!pair || std::strcmp(pair, "1") || std::getenv("STRATA_NO_IQ256"))
+                why = "native IQ3 paired AVX2 selection is required";
+            else if (!strata::kernels::cpu::compact_gu::available()) why = "this CPU does not select the AVX2 GU cache";
+            else if (!immutable) why = "no qualified immutable resident model/source role";
+            else {
+                std::fprintf(stderr, "CPU_COMPACT_GU_BEGIN budget_bytes=%zu layers=%zu\n", cpu_compact_gu_budget, views.size());
+                cpu_compact_gu_cache = strata::kernels::cpu::compact_gu::prepare(
+                    size_t(g.n_layers), size_t(g.n_expert), cpu_compact_gu_budget, views, why);
+            }
+            if (cpu_compact_gu_cache)
+                std::fprintf(stderr, "CPU_COMPACT_GU_PREPARED phase=decode nt=1 entries=%zu known_bytes=%zu budget_bytes=%zu setup_s=%.6f\n",
+                    cpu_compact_gu_cache->prepared_entries(), cpu_compact_gu_cache->known_bytes(),
+                    cpu_compact_gu_budget, std::chrono::duration<double>(Clock::now() - start).count());
+            else std::fprintf(stderr, "CPU_COMPACT_GU_OFF native_fallback=1 reason=%s\n", why.c_str());
+        } catch (const std::bad_alloc&) {
+            // The optional layer-view vector and diagnostic strings allocate too.
+            // The cache helper's catch does not cover those caller allocations.
+            cpu_compact_gu_cache.reset();
+            std::fprintf(stderr, "CPU_COMPACT_GU_OFF native_fallback=1 reason=optional_preparation_allocation\n");
         }
-        const char* pair = std::getenv("STRATA_IQ3_PAIR");
-        if (!pair || std::strcmp(pair, "1") || std::getenv("STRATA_NO_IQ256"))
-            why = "native IQ3 paired AVX2 selection is required";
-        else if (!strata::kernels::cpu::compact_gu::available()) why = "this CPU does not select the AVX2 GU cache";
-        else if (!immutable) why = "no qualified immutable resident model/source role";
-        else {
-            std::fprintf(stderr, "CPU_COMPACT_GU_BEGIN budget_bytes=%zu layers=%zu\n", cpu_compact_gu_budget, views.size());
-            cpu_compact_gu_cache = strata::kernels::cpu::compact_gu::prepare(
-                size_t(g.n_layers), size_t(g.n_expert), cpu_compact_gu_budget, views, why);
-        }
-        if (cpu_compact_gu_cache)
-            std::fprintf(stderr, "CPU_COMPACT_GU_READY phase=decode nt=1 entries=%zu known_bytes=%zu budget_bytes=%zu setup_s=%.6f\n",
-                cpu_compact_gu_cache->prepared_entries(), cpu_compact_gu_cache->known_bytes(),
-                cpu_compact_gu_budget, std::chrono::duration<double>(Clock::now() - start).count());
-        else std::fprintf(stderr, "CPU_COMPACT_GU_OFF native_fallback=1 reason=%s\n", why.c_str());
     }
 #endif
     strata::kernels::cpu::ExpertPool pool(o.pool_workers, /*pin=*/true, /*host_works=*/!o.no_host_worker, o.pool_affinity);
@@ -4181,11 +4188,25 @@ int main(int argc, char** argv) {
     drive.d.split_rows = !o.no_split_rows;
     drive.d.pool = &pool;
     drive.d.src = srcp;
-    drive.d.compact_gu_cache = cpu_compact_gu_cache;
     if (cpu_compact_gu_cache) {
-        drive.d.compact_gu_source = srcp;
-        drive.d.compact_gu_experts.resize(size_t(g.n_expert));
-        drive.d.compact_gu_views.resize(size_t(g.n_expert));
+        try {
+            // Prepare both arrays before publishing an owner/source binding.
+            // Swaps and shared_ptr assignment below do not allocate. A failed
+            // second allocation leaves no partially configured dispatch owner.
+            decltype(drive.d.compact_gu_experts) experts;
+            decltype(drive.d.compact_gu_views) views;
+            experts.resize(size_t(g.n_expert));
+            views.resize(size_t(g.n_expert));
+            drive.d.compact_gu_experts.swap(experts);
+            drive.d.compact_gu_views.swap(views);
+            drive.d.compact_gu_source = srcp;
+            drive.d.compact_gu_cache = cpu_compact_gu_cache;
+            std::fprintf(stderr, "CPU_COMPACT_GU_READY phase=decode nt=1 entries=%zu known_bytes=%zu\n",
+                cpu_compact_gu_cache->prepared_entries(), cpu_compact_gu_cache->known_bytes());
+        } catch (const std::bad_alloc&) {
+            cpu_compact_gu_cache.reset();
+            std::fprintf(stderr, "CPU_COMPACT_GU_OFF native_fallback=1 reason=optional_dispatch_allocation\n");
+        }
     }
     drive.d.n_expert = g.n_expert;
     drive.d.jobs.resize((size_t) K);

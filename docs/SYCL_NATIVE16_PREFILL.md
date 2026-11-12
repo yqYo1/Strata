@@ -255,10 +255,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no cache-enabled model trial or adoption underV1. Commit a new focused,
   longer-batch comparison before collecting follow-up evidence;do not rewrite
   this failed gate. Actual limiting hardware resource remains unknown.
-  The native review also finds two conditional allocation-fallback gaps in
-  generate:collecting resident views and sizing dispatch metadata can throw
-  outside the helper's catch. Repair before model use;normal math has no
-  observed defect. Fault injection,RAM/TTFT,prefill preservation and model/
+  The native review finds two conditional allocation-fallback gaps in generate:
+  collecting resident views and sizing dispatch metadata can throw outside the
+  helper's catch. The source now catches preparation allocation failure and
+  prepares both dispatch arrays before publishing any cache/source binding.
+  Failure releases the optional cache and keeps native GU;PREPARED precedes
+  final READYbinding. This repair is unbuilt and fault injection is pending;
+  normal math has no observed defect. RAM/TTFT,prefill preservation and model/
   physical262144qualification remain pending. The old leaf loop's individual
   samples are retired from this current result to original`762d2ff47`Git;
   its eight summaries/CSV and current whole-pool samples remain.
