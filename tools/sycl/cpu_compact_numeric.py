@@ -16,8 +16,8 @@ sys.dont_write_bytecode = True
 import cpu_compact_hot as hot
 
 P, B = hot.P, hot.B
-ROOT = B / 'cpu-compact-hot-numeric-v2'
-PLAN = P / 'bench/sycl/cpu_compact_hot/numeric-plan-v2.json'
+ROOT = B / 'cpu-compact-hot-numeric-v3'
+PLAN = P / 'bench/sycl/cpu_compact_hot/numeric-plan-v3.json'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json'
 METADATA = Path('/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt')
 MODEL = Path('/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S')
@@ -61,6 +61,14 @@ def cmake_snapshot():
     need(len(pins) > 100, 'incomplete CMake source snapshot')
     return dict(root=str(root), version=version, files=len(pins),
                 canonical_sorted_json_sha256=hashlib.sha256(json.dumps(pins, sort_keys=True).encode()).hexdigest())
+
+
+def coherent_generated(recipe, compiler_inputs):
+    census = json.loads(Path(compiler_inputs['path']).read_text())
+    original_build = Path(recipe['path']).parent / 'build'
+    result = {str(Path(p).relative_to(original_build)): h for p, h in census['generated'].items()}
+    need(set(result) == {'ggml/src/ggml-version.h'}, 'unexpected coherent generated-source contract')
+    return result
 
 
 def fixture_hash(row):
@@ -107,6 +115,10 @@ def prepare():
     need(not failed['passed'] and not failed['complete'] and not failed['active']
          and failed['ownership_closed'] and not failed['numeric_fixture_executed']
          and failed['partial_build_retirement']['completed'], 'preserve closed original compile failure')
+    failed2 = json.loads(RESULT.read_text())['compact_cache_numeric_v2']
+    need(not failed2['passed'] and not failed2['complete'] and not failed2['active']
+         and failed2['ownership_closed'] and not failed2['numeric_fixture_executed']
+         and failed2['build_retirement']['completed'], 'preserve closed original generated-header refusal')
     lifetime = json.loads((hot.ROOT / 'check.json').read_text())
     public = json.loads(RESULT.read_text())['compact_cache_lifetime_v1']
     need(lifetime['passed'] and lifetime['complete'] and lifetime['ownership_closed']
@@ -127,14 +139,16 @@ def prepare():
     need(sha(external['path']) == external['sha256'], 'external census changed')
     flags, = [s.split('=', 1)[1] for s in native['recipe']['configure'] if s.startswith('-DCMAKE_CXX_FLAGS=')]
     env = dict(old_plan['environment']); env['TMPDIR'] = str(ROOT / 'tmp')
-    plan = dict(schema='compact-cache-numeric-v2', source_commit=revision, sources=pins,
-        previous_failure=dict(key='compact_cache_numeric_v1', source_commit=failed['source_commit'],
-            plan_commit=failed['plan_commit'], passed=False,
-            correction='Add the fixture private GGML table-header include path;fresh build/root. '
-                       'No numeric code,workload,dispatch,counts,tolerance or acceptance changes.'),
+    plan = dict(schema='compact-cache-numeric-v3', source_commit=revision, sources=pins,
+        previous_failure=dict(key='compact_cache_numeric_v2', source_commit=failed2['source_commit'],
+            plan_commit=failed2['plan_commit'], passed=False,
+            correction='Rebase the existing coherent generated-header pin and check it after configure,'
+                       'before compiling. Fresh build/root;no hash refresh,numeric code,workload,'
+                       'dispatch,counts,tolerance or acceptance changes. OriginalV1also remains failed.'),
         ownership_plan_sha256=sha(hot.PLAN), tools=tools, native_recipe=old_plan['native_recipe'],
         ownership_evidence={k: public[k] for k in OWNERSHIP_FIELDS},
         compiler_inputs=old_plan['compiler_inputs'], external_inputs=external,
+        generated_inputs=coherent_generated(old_plan['native_recipe'], old_plan['compiler_inputs']),
         cmake_inputs=cmake_snapshot(),
         GGML=dict(root=dep['root'], revision=dep['revision'], source_sha256=dep['source_sha256']),
         metadata=dict(path=str(METADATA), sha256=sha(METADATA)), formats=model_rows(),
@@ -182,6 +196,8 @@ def verify(plan, *, models=True):
     need(all(sha(p) == h for p, h in plan['tools'].items()), 'tool drift')
     for name in ('native_recipe', 'compiler_inputs', 'external_inputs', 'metadata'):
         need(sha(plan[name]['path']) == plan[name]['sha256'], name + ' drift')
+    need(coherent_generated(plan['native_recipe'], plan['compiler_inputs']) == plan['generated_inputs'],
+         'original generated-header pin changed')
     ggml = plan['GGML']; root = Path(ggml['root'])
     for name, expected in ggml['source_sha256'].items():
         raw = subprocess.check_output(['git', 'show', ggml['revision'] + ':' + name], cwd=root, timeout=30)
@@ -197,6 +213,7 @@ def dependencies(plan, text, build_log):
     known = dict(census['compiled']) | dict(census['links'])
     known.update({str(P / p): h for p, h in plan['sources'].items()})
     known.update({str(Path(plan['GGML']['root']) / p): h for p, h in plan['GGML']['source_sha256'].items()})
+    known.update({str(ROOT / 'build' / p): h for p, h in plan['generated_inputs'].items()})
     known = {str(Path(p).resolve()): h for p, h in known.items()}
     result = {}
     for line in text.splitlines():
@@ -251,6 +268,8 @@ def execute(action):
         if action == 'build':
             need(not (ROOT / 'build').exists(), 'fresh compilation directory required')
             run('configure', plan['configure'], plan['budgets']['configure_wall'])
+            need(all(sha(ROOT / 'build' / p) == h for p, h in plan['generated_inputs'].items()),
+                 'generated source differs before compilation')
             log, error = run('compile', plan['build'], plan['budgets']['build_wall'])
             dep, err = run('dependencies', [NJ, '-C', str(ROOT / 'build'), '-t', 'deps'], 20)
             need(not err, 'dependency tool error')
