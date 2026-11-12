@@ -328,6 +328,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   policy;replace it with an eligible-batch wrong-expert control while retaining
   large-batch native-fallback,phase,NTand span-bound checks. No speed/model
   qualification or reinterpretation of the old failed campaigns follows.
+  The new maintained CPUcontroller fresh-builds11CPU,24GGMLand two fixture
+  objects for this policy,without borrowing the old archives. Its prospective
+  gate checks240regular cases per layer,60forced-valid-lease controls,the
+  eligible6-job wrong-expert control,independent one-batch phase/NToracles,
+  short-span refusal and real Cache-owner retirement. Speed uses20cells per
+  layer:1or5workers,1/3/6/7/32jobs,reuse/stream32,in RCCRRCorder. Each cached
+  shape is decided independently;blocked shapes must select native math and
+  retain separate nonregression samples. This source is not built or measured
+  yet. Core/generate and allocation-fallback qualification remain separate.
+  The superseded pool.cpp,old timing controller and two ended plans are removed
+  from the active tree:four files,91353bytes,recoverable respectively from
+  c61ee3e7b,b3032cc18,e2fd9e722 and7f8b40ae4. Their original pins are verified
+  against pushed permanent history;the old qualified CPUbinary/receipts stay
+  until the fresh successor is validated and their source recovery is closed.
   The old plan/source are recoverable from`3cbf1c597`/`cd156b4ba`. After42project
   and291GGMLsource-pin recovery,the new committed consumer retires the old
   V1fixture's13files/3728035bytes;V2admission passes after deletion. Keep current

@@ -1,5 +1,5 @@
 // Main-authored production-pool comparison; repository LICENSE applies.
-// CPU-only. V2focus:32jobs,5workers+host,2s calibration/1s eligibility floor.
+// CPU-only: small-batch Decode policy, native fallbacks and full-pool timing.
 // Includes coordinate/lease handoff, GU, hidden quantization and Down.
 #include "cache.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
@@ -128,7 +128,8 @@ struct Fixture {
     std::vector<uint8_t> raw;
     std::shared_ptr<const gu::Cache> cache;
     std::array<std::vector<uint8_t>, 4> acts;
-    std::array<std::array<Output, E>, 4> expected;
+    using Oracle = std::array<std::array<std::array<Output, 2>, E>, 4>;
+    std::vector<Oracle> expected;
     double read_s = 0, encode_s = 0;
     long raw_peak = 0, encoded_peak = 0;
     Fixture(char** argv, bool encode) {
@@ -165,18 +166,31 @@ struct Fixture {
                 if (t == 3 && i % 256 == 0) input[i] = -16.f;
             }
             acts[t].resize(format.act_bytes); cpu::native_quant_act(format, input.data(), acts[t].data());
+            for (size_t b = 0; b < 10; ++b) {
+                block_q8_K block; std::memcpy(&block, acts[t].data() + b * sizeof block, sizeof block);
+                for (int8_t q : block.qs) need(q >= -127, "native Q8_K activation range");
+            }
         }
         // Full production-pool oracle, excluded from setup/speed clocks.
+        expected.resize(4); // Heap storage: phase/NT oracles exceed the usual stack limit.
         Pool oracle(1); std::array<cpu::ExpertJobMulti, E> jobs{};
-        for (size_t t = 0; t < acts.size(); ++t) {
-            for (int e = 0; e < E; ++e) {
-                jobs[e].blob = raw.data() + size_t(e) * format.bytes; jobs[e].nt = 1;
-                jobs[e].nact[0] = acts[t].data(); jobs[e].out[0] = expected[t][e].values();
+        for (auto phase : {cpu::NativeGuPhase::Decode, cpu::NativeGuPhase::Prefill})
+            for (int nt : {1, 2}) for (size_t t = 0; t < acts.size(); ++t) {
+                const size_t mode = (phase == cpu::NativeGuPhase::Prefill ? 2 : 0) + size_t(nt - 1);
+                for (int e = 0; e < E; ++e) {
+                    jobs[e].blob = raw.data() + size_t(e) * format.bytes; jobs[e].nt = nt;
+                    for (int a = 0; a < nt; ++a) {
+                        jobs[e].nact[a] = acts[(t + size_t(a)) % acts.size()].data();
+                        jobs[e].out[a] = expected[mode][t][e][a].values();
+                    }
+                }
+                oracle.native.run_split_multi_native(format, jobs.data(), E, phase);
+                for (const auto& expert : expected[mode][t]) for (int a = 0; a < nt; ++a) expert[a].check();
             }
-            oracle.native.run_split_multi_native(format, jobs.data(), E, cpu::NativeGuPhase::Decode);
-            for (const auto& out : expected[t]) out.check();
-        }
         oracle.verify();
+    }
+    const Output& reference(cpu::NativeGuPhase phase, int nt, size_t t, int expert, int a) const {
+        return expected[(phase == cpu::NativeGuPhase::Prefill ? 2 : 0) + size_t(nt - 1)][t][expert][a];
     }
     void guards() const {
         if (cache) for (int e = 0; e < E; ++e)
@@ -191,9 +205,11 @@ struct Case {
     std::vector<cpu::ExpertJobMulti> jobs;
     std::vector<gu::Lease> views;
     std::vector<Output> out;
+    bool bound_views = false;
     explicit Case(Fixture& fixture, int n) : f(fixture), jobs(n), views(n), out(size_t(n) * 2) {}
     void bind(uint64_t round, bool stream, bool compact, cpu::NativeGuPhase phase,
-              int policy = 0, bool misses = false, bool wrong_offset = false) {
+              int policy = 0, bool misses = false, bool wrong_expert = false, bool force_views = false) {
+        bound_views = compact && (force_views || gu::batch_eligible(phase, int(jobs.size())));
         for (int j = 0; j < int(jobs.size()); ++j) {
             auto& job = jobs[j]; const int e = expert(j, stream ? round : 0);
             job.blob = f.raw.data() + size_t(e) * f.format.bytes;
@@ -201,37 +217,45 @@ struct Case {
             for (int t = 0; t < job.nt; ++t) {
                 job.nact[t] = f.acts[token(j, round, t)].data(); job.out[t] = out[size_t(j) * 2 + t].values();
             }
-            if (compact) {
-                const int key = wrong_offset ? expert(j % 96, stream ? round : 0) : e;
+            if (bound_views) {
+                const int key = wrong_expert ? expert((j + 1) % int(jobs.size()), stream ? round : 0) : e;
                 views[j] = misses && (j + j / 17 + round) % 5 == 0 ? gu::Lease{} :
-                    f.cache->lookup({0, size_t(key)}, f.format, phase, job.nt);
+                    f.cache->lookup({0, size_t(key)}, f.format,
+                        force_views ? cpu::NativeGuPhase::Decode : phase, force_views ? 1 : job.nt);
+                if (!misses && policy == 0) need(bool(views[j]), "all-hit binding refused");
             }
         }
     }
     void run(Pool& pool, bool compact, cpu::NativeGuPhase phase) {
         pool.native.run_split_multi_native(f.format, jobs.data(), int(jobs.size()), phase,
-            compact ? std::span<const gu::Lease>(views) : std::span<const gu::Lease>{});
+            compact && bound_views ? std::span<const gu::Lease>(views) : std::span<const gu::Lease>{});
     }
-    void check(uint64_t round, bool stream) const {
-        for (int j = 0; j < int(jobs.size()); ++j) {
-            out[size_t(j) * 2].check();
-            need(equal(out[size_t(j) * 2], f.expected[token(j, round)][expert(j, stream ? round : 0)]),
-                 "timed final whole-pool bits");
+    void check(uint64_t round, bool stream, cpu::NativeGuPhase phase = cpu::NativeGuPhase::Decode) const {
+        for (int j = 0; j < int(jobs.size()); ++j) for (int a = 0; a < jobs[j].nt; ++a) {
+            const auto& value = out[size_t(j) * 2 + a]; value.check();
+            need(equal(value, f.reference(phase, jobs[j].nt, token(j, round), expert(j, stream ? round : 0), a)),
+                 "whole-pool output versus one-batch phase/NT oracle");
         }
     }
 };
 void numerical(Fixture& f) {
     uint64_t cases = 0, nt1_rows = 0, cached_rows = 0;
+    uint64_t forced_controls = 0, span_controls = 0, retirement_controls = 0;
+    for (int n : {-1, 0, 1, 2, 3, 4, 5, 6, 7, 32, 97, 193}) {
+        need(gu::batch_eligible(cpu::NativeGuPhase::Decode, n) == (n >= 1 && n <= 6) &&
+             !gu::batch_eligible(cpu::NativeGuPhase::Prefill, n) && gu::max_cached_jobs == 6,
+             "declared batch policy boundary");
+    }
     for (int workers : {1, 5}) {
         Pool pool(workers);
-        for (int n : {1, 6, 32, 97, 193}) for (int policy : {0, 1, 2})
+        for (int n : {1, 2, 3, 4, 5, 6, 7, 32, 97, 193}) for (int policy : {0, 1, 2})
             for (auto phase : {cpu::NativeGuPhase::Decode, cpu::NativeGuPhase::Prefill}) for (bool misses : {false, true}) {
                 Case ref(f, n), candidate(f, n); const uint64_t round = cases + 11;
                 ref.bind(round, true, false, phase, policy, misses);
                 candidate.bind(round, true, true, phase, policy, misses);
                 uint64_t rows = 0, selected = 0;
                 for (int j = 0; j < n; ++j) if (ref.jobs[j].nt == 1) {
-                    rows += FF; if (candidate.views[j]) selected += FF;
+                    rows += FF; if (candidate.bound_views && candidate.views[j]) selected += FF;
                 }
                 const auto a = cpu::iq3_gu_audit_snapshot();
                 need(a.enabled && !a.overflow, "audit must be enabled"); ref.run(pool, false, phase);
@@ -245,19 +269,93 @@ void numerical(Fixture& f) {
                     const size_t i = size_t(j) * 2 + t; ref.out[i].check(); candidate.out[i].check();
                     need(equal(ref.out[i], candidate.out[i]), "nonperiodic pool parity");
                 }
+                ref.check(round, true, phase); candidate.check(round, true, phase);
                 nt1_rows += rows; cached_rows += selected; ++cases;
             }
-        Case wrong(f, 193); wrong.bind(9, true, true, cpu::NativeGuPhase::Decode, 0, false, true);
+        // Supply valid leases even to blocked batch/phase/NT combinations.
+        // Independent expected selection below proves the pool's own guard,
+        // rather than just the fixture/dispatcher omitting the pointer.
+        for (int n : {6, 7, 32, 97, 193}) for (int policy : {0, 1, 2})
+            for (auto phase : {cpu::NativeGuPhase::Decode, cpu::NativeGuPhase::Prefill}) {
+                Case ref(f, n), candidate(f, n); const uint64_t round = 23 + forced_controls;
+                ref.bind(round, true, false, phase, policy);
+                candidate.bind(round, true, true, phase, policy, false, false, true);
+                uint64_t rows = 0, selected = 0;
+                for (const auto& job : ref.jobs) if (job.nt == 1) {
+                    rows += FF;
+                    if (n <= 6 && phase == cpu::NativeGuPhase::Decode) selected += FF;
+                }
+                const auto a = cpu::iq3_gu_audit_snapshot(); ref.run(pool, false, phase);
+                const auto b = cpu::iq3_gu_audit_snapshot(); candidate.run(pool, true, phase);
+                const auto c = cpu::iq3_gu_audit_snapshot();
+                need(!c.overflow && b.nt1_rows - a.nt1_rows == rows && c.nt1_rows - b.nt1_rows == rows - selected &&
+                     b.pair_rows - a.pair_rows == (phase == cpu::NativeGuPhase::Decode ? rows : 0) &&
+                     c.pair_rows - b.pair_rows == (phase == cpu::NativeGuPhase::Decode ? rows - selected : 0),
+                     "forced pool selection accounting");
+                for (int j = 0; j < n; ++j) for (int t = 0; t < ref.jobs[j].nt; ++t) {
+                    const size_t i = size_t(j) * 2 + t; ref.out[i].check(); candidate.out[i].check();
+                    need(equal(ref.out[i], candidate.out[i]), "forced pool parity");
+                }
+                ref.check(round, true, phase); candidate.check(round, true, phase);
+                ++forced_controls;
+            }
+        Case wrong(f, 6); wrong.bind(9, true, true, cpu::NativeGuPhase::Decode, 0, false, true);
+        const auto before_wrong = cpu::iq3_gu_audit_snapshot();
         wrong.run(pool, true, cpu::NativeGuPhase::Decode); bool detected = false;
-        for (int j = 96; j < 193; ++j) {
+        need(cpu::iq3_gu_audit_snapshot().nt1_rows == before_wrong.nt1_rows, "wrong-expert control must use cache");
+        for (int j = 0; j < 6; ++j) {
             wrong.out[size_t(j) * 2].check();
-            if (!equal(wrong.out[size_t(j) * 2], f.expected[token(j, 9)][expert(j, 9)])) detected = true;
+            if (!equal(wrong.out[size_t(j) * 2], f.reference(cpu::NativeGuPhase::Decode, 1,
+                    token(j, 9), expert(j, 9), 0))) detected = true;
         }
-        need(detected, "wrong-offset negative control must differ"); pool.verify();
+        need(detected, "wrong-expert negative control must differ");
+        Case valid(f, 6); valid.bind(17, true, true, cpu::NativeGuPhase::Decode);
+        const auto before_span = cpu::iq3_gu_audit_snapshot(); bool rejected = false;
+        try { pool.native.run_split_multi_native(f.format, valid.jobs.data(), 6,
+                  cpu::NativeGuPhase::Decode, {valid.views.data(), 5}); }
+        catch (const std::invalid_argument&) { rejected = true; }
+        need(rejected && cpu::iq3_gu_audit_snapshot().nt1_rows == before_span.nt1_rows, "short span before publication");
+        pool.native.run_split_multi_native(f.format, nullptr, 0, cpu::NativeGuPhase::Decode);
+        need(cpu::iq3_gu_audit_snapshot().nt1_rows == before_span.nt1_rows, "empty batch must do no work");
+        valid.run(pool, true, cpu::NativeGuPhase::Decode); valid.check(17, true); ++span_controls;
+
+        // The temporary Cache really dies; the borrowed leases retain its
+        // independent encoded Entry storage until the synchronous pool returns.
+        auto temporary = std::make_shared<gu::Cache>(1, E, 64u << 20);
+        Case lifetime(f, 6); lifetime.bind(7, true, false, cpu::NativeGuPhase::Decode);
+        for (int j = 0; j < 6; ++j) {
+            const size_t e = size_t(expert(j, 7));
+            need(temporary->prepare({0, e}, f.format,
+                {f.raw.data() + e * f.format.bytes, f.format.down_off}), "temporary cache preparation");
+        }
+        temporary->freeze();
+        for (int j = 0; j < 6; ++j) lifetime.views[j] = temporary->lookup(
+            {0, size_t(expert(j, 7))}, f.format, cpu::NativeGuPhase::Decode, 1);
+        std::weak_ptr<const gu::Cache> retired = temporary; temporary.reset();
+        need(retired.expired(), "temporary Cache owner must be retired"); lifetime.bound_views = true;
+        const auto before_lifetime = cpu::iq3_gu_audit_snapshot();
+        lifetime.run(pool, true, cpu::NativeGuPhase::Decode); lifetime.check(7, true);
+        need(cpu::iq3_gu_audit_snapshot().nt1_rows == before_lifetime.nt1_rows, "retired-owner leases must be used");
+        for (const auto& lease : lifetime.views) need(lease.guards_intact(), "retired-owner entry bounds");
+        ++retirement_controls; pool.verify();
     }
+    const gu::LayerView layer{0, E, f.format.bytes, f.raw.size(), f.raw.data(), f.format};
+    size_t budget = 0; std::string error;
+    for (const char* text : std::array<const char*, 4>{nullptr, "", "0", "016384"})
+        need(gu::parse_mib_budget(text, budget), "valid MiB budget");
+    for (const char* text : {"-1", "+1", " 1", "1 ", "nan", "18446744073709551615"})
+        need(!gu::parse_mib_budget(text, budget) && !budget, "invalid MiB budget");
+    need(!gu::prepare(1, E, 1, {&layer, 1}, error), "index-budget admission");
+    const std::array<gu::LayerView, 2> duplicate{layer, layer};
+    need(!gu::prepare(2, E, 128u << 20, duplicate, error), "duplicate immutable source");
+    auto truncated = layer; --truncated.bytes;
+    need(!gu::prepare(1, E, 64u << 20, {&truncated, 1}, error), "short immutable source");
     f.guards();
     std::cout << "{\"passed\":true,\"cases\":" << cases << ",\"nt1_rows\":" << nt1_rows
-              << ",\"compact_rows\":" << cached_rows << ",\"offset_control_detected\":true}\n";
+              << ",\"compact_rows\":" << cached_rows << ",\"wrong_expert_control_detected\":true"
+              << ",\"forced_policy_controls\":" << forced_controls << ",\"span_controls\":" << span_controls
+              << ",\"retirement_controls\":" << retirement_controls
+              << ",\"q8_range_checked\":true,\"source_budget_controls\":true}\n";
 }
 struct Sample { double wall, cpu, gu, quant, down; uint64_t calls, jobs; };
 Sample batch(Case& work, Pool& pool, bool compact, bool stream, uint64_t rounds) {
@@ -286,14 +384,14 @@ int main(int argc, char** argv) {
             const auto value = Clock::now().time_since_epoch().count(); asm volatile("" : : "g"(value) : "memory");
         }
         const double timer_pair = 2 * seconds(start) / 10000; need(timer_pair < 1e-4, "timer overhead");
-        std::cout << "{\"timing_envelope\":\"focus32_2s_1s\",\"arm\":\"" << arm << "\",\"down\":" << f.format.d_type << ",\"read_s\":" << f.read_s
+        std::cout << "{\"timing_envelope\":\"small6_cal05_floor025\",\"arm\":\"" << arm << "\",\"down\":" << f.format.d_type << ",\"read_s\":" << f.read_s
                   << ",\"encode_publish_s\":" << f.encode_s << ",\"raw_peak_kib\":" << f.raw_peak
                   << ",\"encoded_peak_kib\":" << f.encoded_peak << ",\"known_view_bytes\":" << (f.cache ? f.cache->known_bytes() : 0)
                   << ",\"raw_bytes_per_job\":" << f.format.bytes << ",\"timer_pair_s\":" << timer_pair << ",\"cells\":[";
         bool comma = false;
-        for (int workers : {5}) {
+        for (int workers : {1, 5}) {
             Pool pool(workers);
-            for (int n : {32}) for (bool stream : {false, true}) {
+            for (int n : {1, 3, 6, 7, 32}) for (bool stream : {false, true}) {
                 if (comma) std::cout << ','; comma = true; Case work(f, n);
                 std::cout << "{\"workers\":" << workers << ",\"host_works\":" << (workers == 5 ? "true" : "false")
                           << ",\"host_cpu\":0,\"worker_cpus\":[";
@@ -305,13 +403,13 @@ int main(int argc, char** argv) {
                     const auto s = batch(work, pool, arm == "compact", stream, rounds);
                     if (calibrating) std::cout << ','; calibrating = true;
                     std::cout << "{\"rounds\":" << rounds << ",\"wall_s\":" << s.wall << '}';
-                    if (s.wall >= 2.) break;
+                    if (s.wall >= .5) break;
                     need(rounds < 65536, "calibration duration floor"); rounds *= 2;
                 }
                 std::cout << "],\"rounds\":" << rounds << ",\"samples\":[";
                 for (int i = 0; i < 3; ++i) {
                     const auto s = batch(work, pool, arm == "compact", stream, rounds);
-                    need(s.wall >= 1. && timer_pair / s.wall < .001, "ineligible batch");
+                    need(s.wall >= .25 && timer_pair / s.wall < .001, "ineligible batch");
                     if (i) std::cout << ',';
                     std::cout << "{\"wall_s\":" << s.wall << ",\"process_cpu_s\":" << s.cpu
                               << ",\"calls\":" << s.calls << ",\"jobs\":" << s.jobs << ",\"pool_gu_s\":" << s.gu
