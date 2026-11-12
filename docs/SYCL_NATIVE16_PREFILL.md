@@ -174,9 +174,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   short warmup observations from the strict long read-1cells/8192chunk contract;
   all6request/footer/API/copy joins pass per process. Original Main launch/
   cleanup wrapper errors and their verified reconciliations also remain in the
-  compact result. The current final routine output awaits retirement after
-  pushed samples and original-source recovery;prior closed raw/research
-  retirements are recorded in that same result,without renewing their consumers.
+  compact result. After pushed samples at`b54cbd5df`and original-source recovery,
+  final routine output is retired:69files/links,13085550regular content bytes.
+  All6measured sessions are empty,the current reader passes after retirement,
+  and all12ELFs/generated inputs remain unchanged. Prior retirements remain
+  in that same result,without renewing their consumers. Four aggregate CSV
+  rows now reference the closed evidence;the index contains344rows.
 
   The completed EARLY audit establishes a finite-DMA gate,not a controlled
   deterministic hold. Its earlier completed-before-admission failure stays
@@ -187,9 +190,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The Nov11template root has a separate ownership/helper-consumer hold;reconcile
   its original Task before pruning ended payload. Legacy19reader/deployment
   and source-recovery holds remain open. No new engine generation was created.
-  Next run the committed d65bb75bCPUcompact ownership build/check,then independent
-  real-block production-dispatch numerics and hot/cold timing;the candidate is
-  still source-only and has no numeric/performance/model qualification.
+  The CPUcompact ownership build/check now pass at pushed child`8a05b016c`;
+  next prepare independent real-block production-dispatch numerics and hot/cold
+  timing. This component is not integrated into the engine and has no
+  independent numeric/performance/model qualification.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
@@ -1790,15 +1794,14 @@ and0.354..0.481s allocation/encoding costs remain charged in its original
 This component result does not establish production critical-path benefit,
 physical RAM traffic or model adoption. Its original source is313e5c4bc.
 
-The source-only child`experiment/cpu-compact-cache`now pins Main's bounded,
+The isolated child`experiment/cpu-compact-cache`pins Main's bounded,
 frozen compact-GU ownership component at`09ca4f1613d5e4f0ca5be80fb5dc0e8f691e34c3`.
 It restores only the original owned kernel and adds known-byte admission,
-independent leases and explicit decode/NT1guards. Primary measurement inputs
-are unchanged. No build,numeric/performance pass or production integration
-is claimed. Its maintained plan is`bench/sycl/cpu_compact_hot/README.md`on that
-child;after the active cohort closes,commit its exact CPU-only recipe and
-qualify ownership,real-block dispatch and hot/cold timing. Keep the child only
-for that concrete validation,then merge useful original commits into
+independent leases and explicit decode/NT1guards. Primary engine inputs are
+unchanged. The ownership gate below passes;independent numeric/performance
+and production integration remain pending. Its maintained plan is
+`bench/sycl/cpu_compact_hot/README.md`on that child. Keep the child for real-block
+dispatch and hot/cold timing,then merge useful original commits into
 `feature/sycl`or retire rejected source. Legacy reader/build holds remain open.
 The completed source audit at09ca4f16confirms no source index/encode-publication
 rollback defect,but retains serialized publication/model-role preconditions,
@@ -1806,9 +1809,15 @@ known-payload versus peak-RSS limits,and actual paired-versus-GGML numeric
 admission. Its12project/2GGMLpins match;the IQ3paired implementation itself
 was outside that audit's pins. Main has committed the ownership-only controller
 at`ca8f8cb8e275b5e0554f0a12a8b0b34963cc3d96`and generated recipe/budgets at
-`d65bb75bca80dad90931bb33a5697214637e0911`. The CPU-only source remains unbuilt;
-after cohort closure,run its locked build/check before preparing independent
-real-block dispatch and speed gates. No Source audit or ownership marker
+`d65bb75bca80dad90931bb33a5697214637e0911`. Its serialized CPU-only build and
+ownership check now pass at pushed child`8a05b016c674903ae9be27ffdf68f156acbfa0e1`:
+all432actual compiler inputs are covered,only standard CPU libraries are linked,
+and both owned stages close normally0with quiet stderr. The lease survives
+cache/raw retirement;known-byte/phase/type/bounds and six disjoint row readers
+pass. The fixture ELF is`0676de3990b4980ee723829cf74748d9263289852068044f96ed074ed64a95c5`.
+This is ownership consistency,not independent arithmetic,strict peak RSS or
+speed. Keep the child for real-block dispatch and hot/cold timing,then integrate
+useful original commits and retire it. No source audit or ownership marker
 qualifies arithmetic,physical RAM or model performance. The next numeric plan
 must pin the actual paired helper in`src/kernels/cpu/iq_single_avx2.cpp`and its
 `iq_avx2.hpp`declaration,then exercise production dispatch with explicit startup
