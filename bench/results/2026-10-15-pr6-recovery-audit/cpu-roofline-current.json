@@ -8755,7 +8755,7 @@
       "conclusion": "Actual optimized integer sums are already reassociated into multiple series;do not implement the proposed source-only multi-accumulator rewrite. This is static assembly inspection,no cycle/IPC/hardware-saturation measurement."
     },
     "fixture_retirement_for_scales_v1": {
-      "stage": "prepared_source_recovered",
+      "stage": "deleted_new_scale_admission_passed",
       "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-production-pool-timing-v2",
       "files": 53,
       "bytes": 3866348,
@@ -8776,7 +8776,76 @@
         ]
       },
       "consumer": "cpu_compact_scale.py standalone single-TU;no V2artifact dependency",
-      "reason": "Keep72batches in pushed71e;closed fixture has no further byte consumer. Current numeric CPUarchives and coherent GPUfallback remain;no source or implementation adoption."
+      "reason": "Keep72batches in pushed71e;closed fixture has no further byte consumer. Current numeric CPUarchives and coherent GPUfallback remain;no source or implementation adoption.",
+      "actual_removed_files": 53,
+      "actual_removed_regular_bytes": 3866348,
+      "new_scale_admission_passed": true
     }
+  },
+  "compact_expanded_scale_kernel_v1": {
+    "stage": "measurement_in_progress",
+    "source_commit": "a2afd41f8005cfe7a9d43d0f72589381da977c4b",
+    "plan_commit": "bad6016c473ce818f1fd2c8f260299930d8c2ddd",
+    "plan_path": "bench/sycl/cpu_compact_hot/scale-plan-v1.json",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-expanded-scales-v1/scale",
+      "sha256": "c92a494b9300e5bdc10be5a92228d20c0b25a50731b30dfe568ed63c01a9dc72"
+    },
+    "build": {
+      "compiler_inputs": 442,
+      "link_inputs": 23,
+      "ELF": {
+        "elf_class": "ELF64",
+        "data": "2's complement, little endian",
+        "machine": "Advanced Micro Devices X86-64",
+        "elf_type": "EXEC (Executable file)",
+        "interpreter": "/lib64/ld-linux-x86-64.so.2"
+      },
+      "libraries": [
+        "libm.so.6",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "fresh_single_TU": true
+    },
+    "numerical": {
+      "passed": true,
+      "total_cases": 768,
+      "bit_exact": true,
+      "wrong_scale_control_detected_both_layers": true,
+      "normal_zero_quiet_closed": true
+    },
+    "counter_capability": {
+      "command": [
+        "/usr/bin/perf",
+        "stat",
+        "-x,",
+        "-e",
+        "cycles,instructions,cache-references,cache-misses",
+        "--",
+        "/usr/bin/true"
+      ],
+      "available": false,
+      "exit_code": 1,
+      "perf_event_paranoid": "4",
+      "failure_excerpt": [
+        "Error:",
+        "No supported events found.",
+        "Access to performance monitoring and observability operations is limited."
+      ],
+      "ownership_closed": true
+    },
+    "scope": "Single-core real-weight GU kernel only;four syntheticQ8_K activations. Original134-byte production codec,pool and model paths unchanged. No model/70TGclaim.",
+    "order": [
+      "reference",
+      "expanded",
+      "expanded",
+      "reference",
+      "reference",
+      "expanded"
+    ],
+    "pending": "Finish all6frozen arms;each format/working-set cell needs3positive matched pairs before a separately planned production-pool comparison. Preserve failedV1/V2gates;no model trial from this component.",
+    "retention": "Current candidate ELF/records needed for frozen cohort;retire raw output and closed prototype after compact samples/source recovery and next-consumer decision."
   }
 }

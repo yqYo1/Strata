@@ -279,11 +279,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   eight precomputed odd scales in138bytes rather than134(+2.9851%),removing
   their runtime nibble/2*s+1work. Its FPblock-FMA order,reduction,std::exp and
   codes are unchanged;the production134-byte codec/pool stays untouched.
-  The single-core prototype/controller require a committed independent plan
-  and bit/guard/negative-control checks before timing. Shape-specific kernel
-  gains permit only a new corresponding whole-pool test,not model execution
-  or adoption. The actual generate/core wiring and12eallocation repair remain
-  unbuilt;native-reviewed resource and failure-test research is pending.
+  Source`a2afd41f8`and plan`bad6016c4`now build the standalone kernel
+  ELF`c92a494b`:442compiler/23link inputs and full ELFadmission pass.
+  All768real-layer/synthetic-Q8_K full/partial/empty-row cases match bits,
+  and both wrong-scale controls are detected,normal0quietclosed. The frozen
+  six-arm single-core comparison is active under`compact_expanded_scale_kernel_v1`.
+  Shape-specific kernel gains permit only a new corresponding whole-pool test,
+  not model execution or adoption. The unprivileged perf counter probe exits1
+  at paranoid4;no counters or privilege changes. The host is5600X,
+  family25/model33/stepping0 with32MiBL3;1/6/32-expert kernel working sets
+  do not establish physical cache/DRAMtraffic. The actual generate/core wiring
+  and12eallocation repair remain unbuilt. Native-reviewed source facts correct
+  Down42raw blob versus460800BDown accounting and the claim of saving bytes by
+  splitting already packed nibbles. Startup interposition is not GPU-free;
+  allocation-fault qualification remains conditional on its admitted setup.
   The old plan/source are recoverable from`3cbf1c597`/`cd156b4ba`. After42project
   and291GGMLsource-pin recovery,the new committed consumer retires the old
   V1fixture's13files/3728035bytes;V2admission passes after deletion. Keep current
@@ -311,8 +320,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   transactions are also retired:2294files/links,463517579regular content bytes.
   Recovery verifies492project revision/path pins and28research GGMLpins;
   compact432samples/order evidence and corrected facts stay committed. The
-  current reader passes after deletion;its timing ELF/object/depfile and
-  build/check/attempt records remain for the named focused repeat. The CSV
+  current reader passed after deletion. After its focused repeat closed and
+  evidence71eaf4c58was pushed,42project revision/path and291GGMLpins,
+  506compiler/26link inputs and35archive members were recovered. The ended
+  V2timing fixture/raw root is now retired:53files,3866348regular bytes.
+  New standalone scale admission passes without those bytes;the current CPU
+  numeric archives and coherent GPUfallback remain unchanged. The CSV
   now contains380points,including24V1and4V2whole-pool cells with failed gates marked.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
