@@ -20,7 +20,8 @@ import measurement_owner as owner
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT, KEY = B/'expert-copy-runs-host-v1', 'expert_copy_runs_host_v1'
+ROOT, KEY = B/'expert-copy-runs-host-v2', 'expert_copy_runs_host_v2'
+FAILED_V1 = '7aac66e14ed40b31593a65b1d56ba8116ae2f671'
 RESULT = P/'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 SOURCES = ('include/strata/prefill/expert_bank_plan.hpp',
     'include/strata/prefill/layer_major_plan.hpp', 'include/strata/core/expert_layer_view.hpp',
@@ -63,6 +64,10 @@ def current(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh host attempt required')
+    prior = json.loads(git('show',FAILED_V1+':'+str(RESULT.relative_to(P))))['expert_copy_runs_host_v1']
+    require(prior == json.loads(git('show','HEAD:'+str(RESULT.relative_to(P))))['expert_copy_runs_host_v1']
+        and prior['stage'] == 'failed' and not prior['passed'] and prior['ownership_closed'],
+        'preserve original dependency refusal')
     revision = git('rev-parse','HEAD').decode().strip()
     pins = {}
     for name in SOURCES:
@@ -89,6 +94,13 @@ def prepare():
                 name = str(path.resolve()); actual = sha(path)
                 require(name not in external or external[name] == actual, 'SDK input changed')
                 external[name] = actual
+    # Explicit new-plan inputs: GCC's fortified glibc headers were absent
+    # from the original icpx census. V1 remains failed before test execution.
+    for name in ('select-decl.h','select2.h','stdio2-decl.h','stdio2.h','stdlib.h',
+                 'string_fortified.h','strings_fortified.h','wchar2-decl.h','wchar2.h'):
+        path = Path('/usr/include/x86_64-linux-gnu/bits')/name
+        require(str(path) not in external, 'review changed fortify dependency inventory')
+        external[str(path)] = sha(path)
     programs = [compiler,Path(sys.executable).resolve()]
     for name in ('cc1plus','as','ld'):
         program = subprocess.check_output([str(compiler),'-print-prog-name='+name],text=True).strip()
@@ -102,6 +114,8 @@ def prepare():
     deps = ROOT/'compiler-inputs.json'; deps.write_text(json.dumps(external,sort_keys=True)+'\n')
     binary = ROOT/'plan-test'
     row = dict(stage='prepared',source_commit=revision,source_sha256=pins,
+        previous_attempt=dict(key='expert_copy_runs_host_v1',evidence_commit=FAILED_V1,
+            outcome='Compile0,dependency refusal before test;unchanged logic/gates,new nine-header plan'),
         compiler=dict(path=str(compiler),version=version),
         python=dict(path=str(Path(sys.executable).resolve()),version=sys.version),
         external_inputs=dict(path=str(deps),sha256=sha(deps),files=len(external)),
