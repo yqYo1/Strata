@@ -36,8 +36,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The campaign remains failed at00ac4489;the remaining14profiles did not run.
   This is not qualified attribution or clean speed. V2reduces clock switches
   3073to2049,includes loop/control explicitly in the renamed reader bucket,and
-  keeps the same1%estimate,100mswall/queue and5%empty gates. Fresh source/build/
-  CPU/smoke/profile gates are required;any clean comparison needs a new plan.
+  keeps the same1%estimate,100mswall/queue and5%empty gates. Sourcef98dd238now
+  passes fresh six-TU/727compiler/24link-input census and all17CPU/smoke/profile
+  stages at316a03df,with15independent profile processes,quiet validation,normal0,
+  closed owners and no fresh fault. Packed512cap1/4/16/64/512wall medians are
+  182.559/163.365/150.087/160.561/276.343ms;ordinary384is373.391/378.244/
+  401.888/372.722/541.131ms. Each setting has3processes;individual spreads and
+  conserved current-thread/wall buckets remain in the result. Cost at packed512
+  cap512moves into later reader-submission calls;the buckets can include runtime
+  waits and do not establish CPU arithmetic or physical-resource saturation.
+  Cap16is selected for a separately committed clean comparison,with geometry-
+  specific decisions. No model follow-up follows from these profile samples.
   Native Luna-max review corrects the report's false payload mismatch and byte
   arithmetic;no other reachable code defect was found. Source review is not
   hardware/runtime qualification. Physical resource saturation remains unknown.
