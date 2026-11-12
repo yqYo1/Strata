@@ -305978,7 +305978,7 @@
     }
   },
   "expert_copy_size_profile_v1": {
-    "stage": "running",
+    "stage": "failed",
     "native_source_commit": "23bb44b5338356e94390dd19e0ae6882e1c207fb",
     "binaries": {
       "sycl_expert_bank_test": {
@@ -306184,6 +306184,125 @@
           "exact_geometry_counters": true,
           "immutable_source_guards_private_map_and_checked_drain": true
         },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "profile",
+        "cap": 1,
+        "round": 0,
+        "passed": false,
+        "complete": false,
+        "host_probe_accepted": false,
+        "GPU_executed": true,
+        "native_pid": 2589842,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2589842,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "startup_errors": 0,
+        "case_checks": {
+          "count": 3,
+          "exact_geometry_counters": true,
+          "immutable_source_guards_private_map_and_checked_drain": true
+        },
+        "samples": [
+          {
+            "timing": {
+              "candidate": 0,
+              "payload": 2662400,
+              "logical_uploads": 641,
+              "requested_H2D_bytes": 1706598400,
+              "commands": 641,
+              "wall_ms": 370.849497,
+              "queue_ms": 345.79614499999997,
+              "thread_ms": 341.27981000000005,
+              "empty_ms": 0.168768,
+              "eligible": 1,
+              "preparation_timed": 0,
+              "guards_timed": 0,
+              "actual_copy_read_drain_timed": 1,
+              "model_qualified": 0
+            },
+            "host": {
+              "cap": 1,
+              "payload": 2662400,
+              "other_submit_wall_ms": 0.8665770000000023,
+              "other_submit_thread_ms": 0.7612779999937036,
+              "upload_wrapper_wall_ms": 194.91801599999982,
+              "upload_wrapper_thread_ms": 191.06512900000678,
+              "reader_submit_wall_ms": 72.18240099999998,
+              "reader_submit_thread_ms": 68.20770999999984,
+              "final_drain_wall_ms": 102.882503,
+              "final_drain_thread_ms": 81.24569300000006,
+              "clock_change_ns": 564.9697265625,
+              "clock_switches": 3073,
+              "timer_estimate_ms": 1.7361519697265624,
+              "intervals_disjoint": 1,
+              "coverage_conserved": 1,
+              "exceptions": 0,
+              "profiling_only": 1
+            },
+            "eligible": true
+          },
+          {
+            "timing": {
+              "candidate": 0,
+              "payload": 1510400,
+              "logical_uploads": 512,
+              "requested_H2D_bytes": 773324800,
+              "commands": 512,
+              "wall_ms": 157.534099,
+              "queue_ms": 157.373437,
+              "thread_ms": 153.09324899999987,
+              "empty_ms": 0.15378,
+              "eligible": 1,
+              "preparation_timed": 0,
+              "guards_timed": 0,
+              "actual_copy_read_drain_timed": 1,
+              "model_qualified": 0
+            },
+            "host": {
+              "cap": 1,
+              "payload": 1510400,
+              "other_submit_wall_ms": 0.8641659999999975,
+              "other_submit_thread_ms": 0.761213999997512,
+              "upload_wrapper_wall_ms": 86.35809999999958,
+              "upload_wrapper_thread_ms": 85.38327400000912,
+              "reader_submit_wall_ms": 70.17758,
+              "reader_submit_thread_ms": 66.81765499999332,
+              "final_drain_wall_ms": 0.13425299999999998,
+              "final_drain_thread_ms": 0.13110599999999195,
+              "clock_change_ns": 560.532470703125,
+              "clock_switches": 3073,
+              "timer_estimate_ms": 1.7225162824707032,
+              "intervals_disjoint": 1,
+              "coverage_conserved": 1,
+              "exceptions": 0,
+              "profiling_only": 1
+            },
+            "eligible": false
+          }
+        ],
+        "error": "RuntimeError('profile timing/accounting ineligible')",
         "ownership_closed": true,
         "fresh_faults": [],
         "boot_unchanged": true,
