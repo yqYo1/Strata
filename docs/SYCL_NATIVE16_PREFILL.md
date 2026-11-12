@@ -184,7 +184,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   50.893/39.551sTTFT. Reference3also closes normally0/quiet/owned/no freshfault,
   with2815/6823outputs and15.086125/9.104069TG. Reference4also closes normally0/
   quiet/owned/no freshfault,with the same2815/6823outputs and15.037120/9.073271TG.
-  Five of six processes are closed;the final candidate remains unexecuted.
+  Five of six processes are closed;the final candidate remains pending closure.
   Process4routine output and the completed compact-cache source audit/review
   payloads are retired:529files/links,125011282regular content bytes,after
   pushed samples/facts and original project/GGML source recovery. All12ELFs
