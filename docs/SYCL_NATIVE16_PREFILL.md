@@ -164,7 +164,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   chunks. V2remains failed under its original all-request contract. V3host
   admission passes both frontend probes,2positive/9negative copy bindings and
   1positive/4negative short/long draft controls,with normal closed owners.
-  Actual long runs remain unexecuted. Strict API/prompt/copy counts,drafts and
+  V3reference process0now closes normally0with quiet validation,unchanged
+  source/providers/boot/driver,closed ownership and no fresh fault. Code uses
+  33211fresh inputs/2815outputs,49144.7ms prompt/187571.7ms decode,50.609s
+  clientTTFT and2036/2340draft acceptance;prose uses33281/6823,
+  39239.5/754352.5ms,39.401s and3442/10143. Exact TG is about15.008/9.045.
+  Both long routes and all6warmup/long prompt/copy/API joins pass;baseline
+  submitted/completed/private-view/GPU-miss copies are0. The code/prose MTP
+  bands are observed in one sample each,not a confirmed repeated pair or gain.
+  Next run candidate1;all6processes,paired performance decisions,final full
+  model hashes and remaining adoption gates stay open. Strict API/prompt/copy counts,drafts and
   rounded clocks are joined;zero baseline and positive long-candidate private
   host-view counts must conserve. Commit each closure before the next process.
   This changes work distribution only;dedicated-prefill,agent,task,full-context
