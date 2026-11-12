@@ -302857,7 +302857,7 @@
     }
   },
   "expert_copy_runs_device_v1": {
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "93b53b65a99837707288cbb71554b265f9b52908",
     "native_source_commit": "98d0df9efbce6cbbd8a558714b885628d52ff847",
     "build_key": "expert_copy_runs_component_v1",
@@ -302951,7 +302951,39 @@
       "smoke",
       "large"
     ],
-    "results": [],
+    "results": [
+      {
+        "mode": "cpu",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "GPU_executed": false,
+        "native_pid": 2349427,
+        "native_exit_code": 0,
+        "checks": {
+          "configurations": 513,
+          "windows_each": 8,
+          "negative_cases": 22,
+          "logical_uploads": 1023936,
+          "copy_commands": 766876,
+          "runs": 2524,
+          "run_experts": 259584,
+          "sequential_ticket_slot_generation_and_bytes_equal": true,
+          "existing_planner_checks": true
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
