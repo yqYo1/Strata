@@ -129,11 +129,15 @@ void run(int capacity, size_t stride, int experts, unsigned layers, bool unwind,
         << " status=" << observed << " immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
 }
 
+class BankTimingMarker;
+sycl::event bank_marker(sycl::queue& q);
+double thread_seconds();
+
 // Exercise the production private view through checked transitions in ONE
 // allocation. The source stride and destination stride deliberately differ.
 void run_private(int backing_slots, uint64_t backing_stride, int experts,
                  const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false,
-                 bool staged=false, bool custom_queue=false, bool copy_runs=false) {
+                 bool staged=false, bool custom_queue=false, bool copy_runs=false, bool timing=false) {
     if (copy_runs) need(full_copy && !staged &&
         std::all_of(strides.begin(),strides.end(),[&](uint64_t s) {return s==source_stride;}),
         "copy runs require exact packed payloads without staging");
@@ -155,6 +159,7 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
         size_t(cache.bytes()), size_t(source_stride), &q));
     uint64_t uploads=0,hits=0,consumers=0,expected_uploads=0,expected_hits=0;
     uint64_t copy_commands=0,runs=0,run_experts=0;
+    double wall_ms=0,queue_ms=0,cpu_ms=0,empty_ms=0;
     unsigned drains=0,cancellations=0;
     for (size_t layer=0;layer<strides.size();++layer) {
         // The previous iteration's lease drained before rebinding these views
@@ -175,6 +180,18 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
             lease.arm();
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));
             q.memset(status,0,4);
+            using Wall=std::chrono::steady_clock;
+            Wall::time_point timed_start;
+            double cpu_start=0;
+            std::unique_ptr<sycl::event> begin_marker;
+            if (timing) {
+                need(custom_queue && !staged && !unwind && strides.size()==1,"timing owner/shape contract");
+                drain(); // allocation/source preparation and reset are not timed
+                auto start=Wall::now();bank_marker(q);bank_marker(q);drain();
+                empty_ms=std::chrono::duration<double,std::milli>(Wall::now()-start).count();
+                begin_marker=std::make_unique<sycl::event>(bank_marker(q));
+                cpu_start=thread_seconds();timed_start=Wall::now();
+            }
             for (int round=0;round<2;++round) {
               pd::ExpertBankSlots::UploadRun accepted;
               for (int e=0;e<experts;++e) {
@@ -211,6 +228,15 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
                     throw Stop{};
                 }
               }
+            }
+            if (timing) {
+                auto end_marker=bank_marker(q);drain();
+                wall_ms=std::chrono::duration<double,std::milli>(Wall::now()-timed_start).count();
+                cpu_ms=(thread_seconds()-cpu_start)*1000;
+                const auto start=begin_marker->get_profiling_info<sycl::info::event_profiling::command_end>();
+                const auto end=end_marker.get_profiling_info<sycl::info::event_profiling::command_start>();
+                need(end>start && wall_ms>0 && cpu_ms>=0,"copy-run timing clock/order invalid");
+                queue_ms=double(end-start)/1e6;
             }
             const auto* base=reinterpret_cast<const uint32_t*>(cache.device_slot(0));
             // Check every padding word, including the unused backing tail.
@@ -272,6 +298,14 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
         <<" staged="<<staged<<" custom_queue="<<custom_queue<<" copy_runs="<<copy_runs
         <<" copy_commands="<<copy_commands<<" runs="<<runs<<" run_experts="<<run_experts
         <<" immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
+    if (timing) {
+        const bool eligible=wall_ms>=100 && queue_ms>=100 && empty_ms<=0.05*wall_ms;
+        std::cout<<std::setprecision(17)<<"expert_bank_copy_timing candidate="<<copy_runs
+            <<" payload="<<source_stride<<" logical_uploads="<<uploads<<" requested_H2D_bytes="<<uploads*source_stride
+            <<" commands="<<copy_commands<<" wall_ms="<<wall_ms<<" queue_ms="<<queue_ms
+            <<" thread_ms="<<cpu_ms<<" empty_ms="<<empty_ms<<" eligible="<<eligible
+            <<" preparation_timed=0 guards_timed=0 actual_copy_read_drain_timed=1 model_qualified=0\n";
+    }
 }
 
 void run_private_run_enqueue_failure() {
@@ -631,6 +665,15 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
 }
 
 int main(int argc, char** argv) try {
+    if (argc==2 && (std::string(argv[1])=="--copy-runs-timing-reference" ||
+                   std::string(argv[1])=="--copy-runs-timing-candidate")) {
+        const bool candidate=std::string(argv[1])=="--copy-runs-timing-candidate";
+        run_private(4,256,10,{256},256,false,true,false,true,candidate);
+        auto runtime=sb::runtime_for();bank_marker(runtime->compute());runtime->wait();
+        run_private(384,2662400,512,{2662400},2662400,false,true,false,true,candidate,true);
+        run_private(384,2662400,512,{1510400},1510400,false,true,false,true,candidate,true);
+        std::cout<<"expert_bank_copy_timing PASS model=UNRUN\n";return 0;
+    }
 #if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
     if(argc==2 && std::string(argv[1])=="--padding-guard-smoke") {
         bank_padding_guard_smoke();std::cout<<"expert_bank_fixture PASS model=UNRUN\n";return 0;

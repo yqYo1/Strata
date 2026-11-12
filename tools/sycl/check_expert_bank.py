@@ -289,7 +289,147 @@ def query_limits():
         return 0 if query['passed'] else 1
 
 
+def copy_run_device(action):
+    """Fresh exact-copy fixture gates; no model,teardown or speed claim."""
+    import build_expert_copy_runs as build
+    import ur_validation as validation
+    root = B/'expert-copy-runs-device-v1';key='expert_copy_runs_device_v1'
+    order=('cpu','smoke','large')
+    def save(row):
+        (root/'record.json').write_text(json.dumps(row,indent=2)+'\n')
+        public=json.loads(build.RESULT.read_text());public[key]=row
+        build.RESULT.write_text(json.dumps(public,indent=2)+'\n')
+    def current(row):
+        guards.require(validation.committed(build.RESULT,(key,))==row,'commit exact device stage first')
+        native=json.loads((build.ROOT/'record.json').read_text());build.context().current(native)
+        guards.require(native['binaries']==row['binaries'] and native['passed'] and native['complete']
+            and native['ownership_closed'] and not native['active'],'closed two-fixture build required')
+        path=Path(row['runtime_manifest']['path'])
+        guards.require(digest(path)==row['runtime_manifest']['sha256'] and all(
+            digest(p)==h for p,h in json.loads(path.read_text()).items()),'runtime providers changed')
+        guards.require(Path('/proc/sys/kernel/random/boot_id').read_text().strip()==row['boot']
+            and guards.driver_guard()==row['driver'],'boot/driver changed')
+        return native
+    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB);guards.no_model_owners([])
+        if action=='prepare':
+            guards.require(not root.exists() and key not in json.loads(build.RESULT.read_text()),'fresh device plan required')
+            native=json.loads((build.ROOT/'record.json').read_text());build.context().current(native)
+            guards.require(native['passed'] and native['complete'] and native['ownership_closed']
+                and not native['active'],'build both fresh fixtures first')
+            providers=B/'coherent-prefill-speed-v1/runtime-inputs.json'
+            guards.require(digest(providers)=='43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21',
+                'current coherent runtime receipt required')
+            env=dict(native['recipe']['environment'])
+            guards.require({k:env[k] for k in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys',
+                'EnableDirectSubmission')}==dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',
+                NEOReadDebugKeys='1',EnableDirectSubmission='0'),'preserve safety settings')
+            root.mkdir(mode=0o700)
+            row=dict(stage='ready',source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
+                native_source_commit=native['native_source_commit'],build_key=build.KEY,binaries=native['binaries'],
+                native_validation_probe=native['native_validation_probe'],environment=env,
+                runtime_manifest=dict(path=str(providers),sha256=digest(providers)),
+                boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver=guards.driver_guard(),
+                cpu_reference=json.loads((build.cpu.ROOT/'record.json').read_text())['checks'],
+                order=list(order),results=[],passed=False,complete=False,active=False,ownership_closed=True,
+                plan='Commit each closed stage before next. CPU:repeat513/8/22oracle with same-build icpx '
+                    'fixture. Smoke:traced/parameter-validated exact runs on one/four/eight-slot and full-fit512 '
+                    'banks,checked error unwind,three false/throw/ambiguous-enqueue cases and ten pre-enqueue '
+                    'refusals. Large:only after smoke,real383*2662400=1019699200byte single copy and '
+                    'full-fit512*1510400=773324800bytes,all readbacks/guards/immutable sources/private maps '
+                    'and final drains. Stop first source/provider/owner/validation/case/fault/budget failure;no retry.',
+                limits='Same production upload helper and queue ownership on synthetic bytes;no dequant/GEMM '
+                    'speed,physical wire traffic,saturation,task/model,decode,full262144/RESTORE or ordinary '
+                    'runtime teardown qualification. Retained-reference validation charged;separate timing plan needed.',
+                retention='Keep compact per-case geometry/counters and failure outcome,then retire normal '
+                    'traces/logs/cache after extraction. Temporary fixture generation serves imminent whole '
+                    'copy-path timing only;before another engine build resolve legacy engine/reader holds.')
+            save(row);print('Prepared CPU,small traced,then maximum-span device gates;commit before run.',flush=True);return
+        row=json.loads((root/'record.json').read_text());native=current(row)
+        index=order.index(action)
+        guards.require(len(row['results'])==index and all(v['passed'] for v in row['results'])
+            and row['stage'] in ('ready','running'),'fresh ordered device gate only')
+        case=root/action;guards.require(not case.exists(),'inspect prior owned gate;no rerun');case.mkdir(mode=0o700)
+        for name in ('tmp','cache'):(case/name).mkdir(mode=0o700)
+        env=dict(row['environment'],TMPDIR=str(case/'tmp'),XDG_CACHE_HOME=str(case/'cache'))
+        gpu=action!='cpu'
+        if gpu:
+            probe=row['native_validation_probe'];env.update(LD_PRELOAD=probe['library']['path'],
+                STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
+                UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(case/'validation.log'))
+            for item in probe.values():guards.require(digest(item['path'])==item['sha256'],'validation provider changed')
+            if action=='large':env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
+        else:
+            env.pop('LD_PRELOAD',None)
+        cursor=next(s.split(': ',1)[1] for s in subprocess.check_output(
+            ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
+            if s.startswith('-- cursor: '))
+        outcome=dict(mode=action,passed=False,complete=False,host_probe_accepted=False,GPU_executed=gpu)
+        scope=None
+        def persist():
+            (case/'execution.json').write_text(json.dumps(dict(outcome,active=bool(scope and scope.active),
+                commands=scope.commands if scope else []),indent=2)+'\n')
+        scope=supervision.Owner(case/'owned',persist)
+        try:
+            binary=row['binaries']['sycl_expert_bank_test' if gpu else 'prefill_expert_bank_plan_test']
+            argv=[binary['path']]+(['--copy-runs-smoke' if action=='smoke' else '--copy-runs-validate'] if gpu else [])
+            event,out,err=scope.run(action,argv,env,P,wall=240,cpu=1200,rss_cap=12<<30,
+                text_cap=64<<20,file_cap=64<<20,total_cap=256<<20)
+            outcome.update(native_pid=event['pid'],native_exit_code=event['exit_code'])
+            text,errors=out.read_text(),err.read_text()
+            guards.require(supervision.closed(event) and event['exit_code']==0 and not re.search(
+                'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|teardown uncertain',errors),
+                'copy-run fixture failed: '+(errors+text)[-4000:])
+            if gpu:
+                outcome['validation']=validation.preload_evidence(errors,event['pid'])
+                guards.require(outcome['validation']['loader']==row['native_validation_probe']['loader']['path'],
+                    'actual pre-main loader differs')
+                cases=[dict(re.findall(r'(\w+)=([^ ]+)',line)) for line in text.splitlines()
+                    if line.startswith('expert_bank_private_case ')]
+                guards.require(len(cases)==(4 if action=='smoke' else 2) and all(
+                    c['copy_runs']=='1' and c['staged']=='0' and c['custom_queue']=='1' and c['status']=='0'
+                    and all(c[q]=='PASS' for q in ('immutable_slab','guards','private_map','checked_drain'))
+                    for c in cases),'copy-run case/guard coverage differs')
+                guards.require('expert_bank_run_enqueue_failure modes=3 published=0 no_retry=PASS checked_drain=PASS' in text
+                    and 'expert_bank_run_admissions rejections=10 enqueues=0 mapping_unchanged=PASS' in text
+                    and 'expert_bank_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED' in text,
+                    'missing failed-enqueue/refusal/final controls')
+                if action=='smoke':
+                    guards.require('urEnqueueUSMMemcpy' in errors and 'urEnqueueKernelLaunch' in errors,
+                        'small gate must trace actual copies and GPU readers')
+                else:
+                    expected=[('2662400','641','383','259','383'),('1510400','512','512','1','512')]
+                    guards.require([(c['source_stride'],c['uploads'],c['hits'],c['copy_commands'],c['run_experts'])
+                        for c in cases]==expected,'largest383/scratch or full-fit512 dispatch differs')
+                outcome['cases']=cases
+            else:
+                match=re.search(r'expert_bank_upload_runs configurations=513 windows_each=8 logical_uploads=(\d+) '
+                    r'commands=(\d+) runs=(\d+) run_experts=(\d+) negative_checks=22 PASS',text)
+                ref=row['cpu_reference'];guards.require(match and tuple(map(int,match.groups()))==tuple(
+                    ref[k] for k in ('logical_uploads','copy_commands','runs','run_experts')) and not errors,
+                    'same-build CPU oracle differs')
+                outcome['checks']=ref
+            if gpu:
+                log=case/'validation.log';guards.require(not log.exists() or not log.stat().st_size,
+                    'parameter validation reported a diagnostic')
+            current(row);outcome.update(complete=True,host_probe_accepted=True)
+        except BaseException as error:outcome['error']=repr(error)
+        finally:
+            validation.finish(outcome,scope,cursor,row['boot'])
+            outcome['passed']=bool(outcome['passed'] and outcome['complete'] and outcome.get('driver_after')==row['driver'])
+            persist();row['results'].append(outcome);row.update(stage='running' if outcome['passed'] else 'failed',
+                passed=False,complete=False,active=bool(scope.active),ownership_closed=outcome['ownership_closed'])
+            if outcome['passed'] and len(row['results'])==len(order):row.update(stage='closed',passed=True,complete=True)
+            save(row)
+        print(json.dumps({k:outcome.get(k) for k in ('mode','passed','complete','ownership_closed','error')}),flush=True)
+        guards.require(outcome['passed'],'exact copy-run device gate failed')
+
+
 def main():
+    if len(sys.argv)==2 and sys.argv[1].startswith('copy-runs-'):
+        action=sys.argv[1][len('copy-runs-'):]
+        guards.require(action in ('prepare','cpu','smoke','large'),'copy-runs-prepare|cpu|smoke|large')
+        copy_run_device(action);return 0
     if sys.argv[1:] in (['smoke'],['validate'],['packed-smoke'],['packed-validate']):
         return gpu_check(sys.argv[1])
     if sys.argv[1:] == ['limits']:
