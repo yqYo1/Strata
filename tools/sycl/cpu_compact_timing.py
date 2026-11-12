@@ -18,12 +18,15 @@ import admit_cpu_compact_numeric as prior
 
 hot, producer = prior.hot, prior.producer
 P, B = hot.P, hot.B
-ROOT = B / 'cpu-compact-hot-timing-v1'
-PLAN = P / 'bench/sycl/cpu_compact_hot/timing-plan-v1.json'
+ROOT = B / 'cpu-compact-hot-timing-v2'
+PLAN = P / 'bench/sycl/cpu_compact_hot/timing-plan-v2.json'
 THIS = 'tools/sycl/cpu_compact_timing.py'
 SOURCE = 'bench/sycl/cpu_compact_hot/timing.cpp'
 need, sha, write = hot.need, hot.sha, hot.write
 ORDER = ['reference', 'compact', 'compact', 'reference', 'reference', 'compact']
+LIBC_HEADERS = ('/usr/include/x86_64-linux-gnu/sys/resource.h',
+    '/usr/include/x86_64-linux-gnu/bits/resource.h',
+    '/usr/include/x86_64-linux-gnu/bits/types/struct_rusage.h')
 
 
 def std_headers():
@@ -51,6 +54,9 @@ def numeric_gate():
 def prepare():
     need(not ROOT.exists() and not PLAN.exists(), 'fresh timing root/plan required')
     old = numeric_gate(); original = json.loads(producer.PLAN.read_text())
+    failed = json.loads(producer.RESULT.read_text())['compact_cache_hot_timing_v1']
+    need(not failed['passed'] and not failed['native_fixture_executed']
+         and failed['ownership_closed'], 'preserve original V1header-admission failure')
     revision = hot.git('rev-parse', 'HEAD').decode().strip()
     sources = {}
     for name in (THIS, SOURCE, 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md'):
@@ -69,10 +75,14 @@ def prepare():
     includes = ['-I' + str(p) for p in (P / 'include', ggml / 'ggml/src', ggml / 'ggml/include')]
     environment = dict(old['environment'], TMPDIR=str(ROOT / 'tmp'))
     native = dict(old['native_environment'], TMPDIR=str(ROOT / 'tmp'), STRATA_IQ3_PAIR_AUDIT='0')
-    plan = dict(schema='compact-cache-hot-cold-v1', source_commit=revision, sources=sources,
+    plan = dict(schema='compact-cache-hot-cold-v2', source_commit=revision, sources=sources,
+        previous_failure=dict(source_commit=failed['source_commit'], plan_commit=failed['plan_commit'],
+            passed=False, correction='Declare the three RSS/glibc headers before fresh compilation.'
+            'Original V1stays failed;no native/math/workload/timing/criteria or hash replacement.'),
         qualified_archive_source=original['source_commit'], qualified_admission_source=old['admission_source_commit'],
         numeric_plan_sha256=sha(prior.PLAN), numeric_check_sha256=sha(prior.ROOT / 'check.json'),
         archives=archives, standard_headers=dict(count=len(std_headers()), sha256=signature(std_headers())),
+        operating_system_headers={p: sha(p) for p in LIBC_HEADERS},
         compiler=hot.CXX, compiler_sha256=sha(hot.CXX), formats=old['formats'],
         compile=[hot.CXX, *flags, *includes, '-MD', '-MF', str(ROOT / 'timing.d'),
                  '-c', str(P / SOURCE), '-o', str(ROOT / 'timing.o')],
@@ -124,6 +134,8 @@ def verify(plan):
          sha(prior.ROOT / 'check.json') == plan['numeric_check_sha256'], 'numeric evidence drift')
     numeric_gate()
     need(all(sha(p) == h for p, h in plan['archives'].items()), 'archive drift')
+    need(set(plan['operating_system_headers']) == set(LIBC_HEADERS) and
+         all(sha(p) == h for p, h in plan['operating_system_headers'].items()), 'RSS/libc header drift')
     headers = std_headers()
     need(len(headers) == plan['standard_headers']['count'] and
          signature(headers) == plan['standard_headers']['sha256'], 'standard headers drift')
@@ -132,7 +144,7 @@ def verify(plan):
 def dependencies(plan):
     original = json.loads(producer.PLAN.read_text())
     census = json.loads(Path(original['compiler_inputs']['path']).read_text())
-    known = dict(census['compiled']) | dict(census['links']) | std_headers()
+    known = dict(census['compiled']) | dict(census['links']) | std_headers() | plan['operating_system_headers']
     known.update({str(P / p): h for p, h in original['sources'].items()})
     known.update({str(P / p): h for p, h in plan['sources'].items()})
     known.update({str(Path(original['GGML']['root']) / p): h for p, h in original['GGML']['source_sha256'].items()})
