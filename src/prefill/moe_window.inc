@@ -209,7 +209,6 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     const auto& layout = strata::kernels::cpu::expert_layout();
     const auto& format = layout.fmt[size_t(layer)];
     int32_t loaded = -1;
-    detail::ExpertBankSlots::UploadRun accepted_run;
     for (size_t index = 0; index < owner.routes->jobs().size(); ++index) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         const auto& job = owner.routes->jobs()[index];
@@ -221,44 +220,17 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                     owner.expert_cache != m.cache)
                     throw std::invalid_argument("prefill expert bank: incomplete residual or queue contract");
                 hp::Host host(hp::upload_submit);
+                auto tag = command_trace.tag(cp::Kind::expert_upload, job.expert, job.global_row, job.rows,
+                    layout.blob_bytes(layer), 1, format.gu_type);
                 if (owner.private_expert_bank && owner.private_expert_bank->owner() != m.cache)
                     throw std::invalid_argument("prefill private expert bank: wrong backing cache");
-                detail::ExpertBankSlots::Ticket ticket;
-                int32_t run_count = 0;
-                if (owner.expert_copy_runs) {
-                    if (!owner.private_expert_bank || owner.expert_upload_staging ||
-                        owner.expert_source_stride != layout.blob_bytes(layer) ||
-                        owner.private_expert_bank->layout().stride != layout.blob_bytes(layer))
-                        throw std::invalid_argument("prefill expert copy runs: packed owner changed");
-                    if (!accepted_run.contains(job.expert)) {
-                        run_count = owner.expert_slots->permanent_run_length(job.expert, int32_t(NE) - job.expert);
-                        for (int32_t at = 1; at < run_count; ++at)
-                            if (!owner.routes->counts()[size_t(job.expert + at)]) { run_count = at; break; }
-                    }
-                }
-                auto tag = command_trace.tag(cp::Kind::expert_upload, job.expert, job.global_row, job.rows,
-                    layout.blob_bytes(layer), run_count > 1 ? run_count : 1, format.gu_type);
-                if (owner.expert_copy_runs && accepted_run.contains(job.expert)) {
-                    // Already accepted by the one copy. Preserve the ordinary
-                    // issuer's per-expert upload/slot/generation accounting.
-                    ticket = accepted_run.ticket(job.expert);
-                } else if (run_count > 1) {
-                    accepted_run = detail::stage_private_expert_bank_run(*owner.expert_slots,
-                        *owner.private_expert_bank, owner.expert_slab, owner.expert_slab_bytes,
-                        layout.blob_bytes(layer), job.expert, run_count, m.cs, owner.expert_source_stride);
-                    ticket = accepted_run.ticket(job.expert);
-                    ++owner.staged_copy_commands; ++owner.staged_copy_runs;
-                    owner.staged_run_experts += uint64_t(run_count);
-                } else {
-                    ticket = owner.private_expert_bank ?
-                        detail::stage_private_expert_bank(*owner.expert_slots, *owner.private_expert_bank,
-                            owner.expert_slab, owner.expert_slab_bytes, layout.blob_bytes(layer),
-                            job.expert, m.cs, owner.expert_source_stride, owner.expert_upload_staging.get()) :
-                        detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
-                            owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
-                            layout.blob_bytes(layer), job.expert, m.cs, owner.expert_source_stride);
-                    if (owner.expert_copy_runs && ticket.upload) ++owner.staged_copy_commands;
-                }
+                const auto ticket = owner.private_expert_bank ?
+                    detail::stage_private_expert_bank(*owner.expert_slots, *owner.private_expert_bank,
+                        owner.expert_slab, owner.expert_slab_bytes, layout.blob_bytes(layer),
+                        job.expert, m.cs, owner.expert_source_stride, owner.expert_upload_staging.get()) :
+                    detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
+                        owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
+                        layout.blob_bytes(layer), job.expert, m.cs, owner.expert_source_stride);
                 if (upload_census) upload_census->record(job.rows, ticket.upload);
                 slot = ticket.slot;
                 if (ticket.upload) {

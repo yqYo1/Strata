@@ -522,8 +522,6 @@ struct MoeWindowContext {
     const uint8_t* expert_slab = nullptr;
     uint64_t expert_slab_bytes = 0, expert_stride = 0, expert_source_stride = 0;
     uint64_t staged_uploads = 0, staged_upload_bytes = 0, staged_hits = 0;
-    bool expert_copy_runs = false;
-    uint64_t staged_copy_commands = 0, staged_copy_runs = 0, staged_run_experts = 0;
     uint16_t* bank = nullptr;
     uint64_t bank_bytes = 0;
     uint16_t* mixed = nullptr;
@@ -571,15 +569,6 @@ bool expert_upload_staging_requested() {
         if (!value || std::strcmp(value, "0") == 0) return false;
         if (std::strcmp(value, "1") == 0) return true;
         throw std::invalid_argument("STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING must be0 or1");
-    }();
-    return enabled;
-}
-bool expert_copy_runs_requested() {
-    static const bool enabled = [] {
-        const char* value = std::getenv("STRATA_SYCL_PREFILL_EXPERT_COPY_RUNS");
-        if (!value || std::strcmp(value, "0") == 0) return false;
-        if (std::strcmp(value, "1") == 0) return true;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_EXPERT_COPY_RUNS must be0 or1");
     }();
     return enabled;
 }

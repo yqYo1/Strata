@@ -24,7 +24,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   641to259and512to1with identical requested H2D bytes,so fewer commands alone
   did not shorten the dependency path. This is copy/helper/read/drain evidence,
   not model PP/TG,physical bus traffic,saturation or a CPU-arithmetic diagnosis.
-  The existing faster coherent engine remains selected. Native max-copy modes
+  The existing faster coherent engine remains selected. The failed maximum-run
+  production selector/counters are removed;the current production prefill source
+  is restored exactly. Independent overflow checking and the run helper used by
+  the component fixture remain. Native max-copy modes
   remain only for the imminent transfer-size/submission-versus-drain boundary
   diagnostic;its source/plan/build must be separately committed before execution.
   Resolve obsolete engine/fixture-reader holds before another engine build.
