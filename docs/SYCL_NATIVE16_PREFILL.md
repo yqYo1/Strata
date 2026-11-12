@@ -179,7 +179,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All6measured sessions are empty,the current reader passes after retirement,
   and all12ELFs/generated inputs remain unchanged. Prior retirements remain
   in that same result,without renewing their consumers. Four aggregate CSV
-  rows now reference the closed evidence;the index contains344rows.
+  rows reference the closed evidence and remain in the cumulative CSV.
 
   The completed EARLY audit establishes a finite-DMA gate,not a controlled
   deterministic hold. Its earlier completed-before-admission failure stays
@@ -196,10 +196,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   phase/NT/alias guards and exact IQ3paired/Q8_K output bits. This is component
   parity,not model/task/RSS or performance qualification. The fresh hot/streaming
   fixture at`20a202d28`reuses the source-qualified CPUarchives;its separate128case
-  admission per format also passes. The committed V2plan`d27a245f0`charges lookup+
-  GU,encoding/publication,RSS and synthetic reuse/stream32 at1/6cores in three
-  matched R/Cpairs. That comparison is in progress;the original V1missing-header
-  refusal remains failed. No engine route,including prefill,has changed. The ended
+  admission per format also passes. The committed V2plan`d27a245f0`now closes
+  12fresh processes/144eligible timing batches,min157.451ms,at evidence`762d2ff47`.
+  Lookup+GU gains pass all3matched pairs in all8Down20/42/thread/pattern cells.
+  Geometric-mean speedups are2.33..2.41for1core reuse,2.21..2.25for1core
+  stream32,2.62..2.68for6core reuse,and1.82..1.86for6core stream32. Per32experts,
+  allocation/encoding/freeze is171..195ms and known view storage54898632bytes;
+  raw bytes remain resident. These are synthetic full640-row worker loops,not
+  production-pool partial-row scheduling or observed model reuse. Cross-worker
+  L3reuse is possible;logical bytes/time is not physical DRAM traffic or saturation.
+  All individual samples/setup/RSS and per-cell amortization remain in the linked
+  CPUresult. Eight component rows bring the CSV to352;model PP/TG remain blank.
+  Next implement a source-owned decode-only production bridge with actual
+  identity/lifetime,RSS and separate prefill checks before a whole-model trial.
+  Two immutable Orca Luna source audits cover that boundary and the new timing
+  contract while Main proceeds. The original V1missing-header refusal remains
+  failed. No engine route,including prefill,has changed. The ended
   ownership ELF/build and routine V4output are retired after source recovery:
   9files/192066bytes;the numeric reader still passes. Preserve the consumed
   ownership check receipt and V3archive/input proofs for this immediate timing.
