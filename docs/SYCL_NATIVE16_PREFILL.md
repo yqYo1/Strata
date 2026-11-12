@@ -272,12 +272,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   allowed by these campaigns. GU wall improves in the medians,while unchanged
   Down math can take longer with the larger GU representation. This does not
   establish physical RAM/cache traffic or saturation. The next bounded
-  mechanism is to inspect the compact GU integer dependency chains and test
-  independent integer accumulators without changing the FP block-FMA order,
-  storage footprint,phase selection or old native/compact references. This is
-  a proposal,not an implemented or adopted kernel. Commit its separate plan
-  before running it. The actual generate/core wiring and12eallocation repair
-  remain unbuilt;native-reviewed resource and failure-test research is pending.
+  mechanism inspection finds the optimized integer sums already reassociated
+  into multiple series:the actual c61compact object has295instructions in
+  pair_dot and no YMMstack operands. The source-only accumulator rewrite was
+  therefore not implemented. A separate Main-authored kernel prototype stores
+  eight precomputed odd scales in138bytes rather than134(+2.9851%),removing
+  their runtime nibble/2*s+1work. Its FPblock-FMA order,reduction,std::exp and
+  codes are unchanged;the production134-byte codec/pool stays untouched.
+  The single-core prototype/controller require a committed independent plan
+  and bit/guard/negative-control checks before timing. Shape-specific kernel
+  gains permit only a new corresponding whole-pool test,not model execution
+  or adoption. The actual generate/core wiring and12eallocation repair remain
+  unbuilt;native-reviewed resource and failure-test research is pending.
   The old plan/source are recoverable from`3cbf1c597`/`cd156b4ba`. After42project
   and291GGMLsource-pin recovery,the new committed consumer retires the old
   V1fixture's13files/3728035bytes;V2admission passes after deletion. Keep current
@@ -307,7 +313,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   compact432samples/order evidence and corrected facts stay committed. The
   current reader passes after deletion;its timing ELF/object/depfile and
   build/check/attempt records remain for the named focused repeat. The CSV
-  now contains376points,including24whole-pool cells with the failed gate marked.
+  now contains380points,including24V1and4V2whole-pool cells with failed gates marked.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
   and **221e / enginea347** for independent sustained-decode preservation.
