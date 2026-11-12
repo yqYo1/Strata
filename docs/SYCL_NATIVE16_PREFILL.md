@@ -388,7 +388,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   supported-layer3/6pool exposure,with80GiB RSS cap and77GiB available-memory
   admission(old model peak52.016GiB). This is allocation/state/route diagnosis;
   per-job cached-math coverage,clean speed,task and whole262144model/RESTORE
-  qualification remain separate. Commit its plan before actual model execution.
+  qualification remain separate. Its committed diagnostic now closes all three
+  requests and the native process normally0,without a fresh GPUfault. The8704
+  entries use14932662352known bytes;setup is44.809973s and peakRSS70997741568B.
+  The original selected-shape gate fails:867supported-layer pool calls all
+  have7..36jobs,so none can use the measured3/6policy. The three request-owned
+  CPUcensuses conserve jobs/rows and pass error checks;their aggregate NTbins
+  and charged pool times remain compact,not clean-speed or saturation evidence.
+  Final quiet-validation/asset/source checks after the route predicate were
+  not reached. Keep the screen failed;do not claim cached-math/model adoption.
+  Next freeze a representative7..36job/mixed-NT CPUcomparison before widening
+  selection,and qualify the new full engine with cache0independently. Keep
+  the14508GPUfallback until that migration qualifies.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
@@ -416,8 +427,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   helper's catch. The source now catches preparation allocation failure and
   prepares both dispatch arrays before publishing any cache/source binding.
   Failure releases the optional cache and keeps native GU;PREPARED precedes
-  final READYbinding. This repair is unbuilt and fault injection is pending;
-  normal math has no observed defect. RAM/TTFT,prefill preservation and model/
+  final READYbinding. The repair is in the coherent89be7full build and normal
+  cache preparation completes above;allocation-fault injection remains pending.
+  Normal math has no observed defect. RAM/TTFT,prefill preservation and model/
   physical262144qualification remain pending. The old leaf loop's individual
   samples are retired from this current result to original`762d2ff47`Git;
   its eight summaries/CSV and current whole-pool samples remain.

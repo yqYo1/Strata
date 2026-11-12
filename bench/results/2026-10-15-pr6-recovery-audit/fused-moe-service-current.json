@@ -317244,7 +317244,7 @@
     ]
   },
   "compact_cpu_model_entry_v1": {
-    "stage": "host_passed",
+    "stage": "failed",
     "source_commit": "e2a81624abb1603e3f4334bfdfa49864058ddb42",
     "native_source_commit": "89be7ce361e0082d469170c93b96479082143eeb",
     "native_build": {
@@ -317607,12 +317607,160 @@
     "plan": "Candidate-only functional diagnostic with16GiB optional CPUcache budget. Preserve actual32769/82/32769thinking inputs,32outputs each,spec4,5workers+host, static1256slots,8192prefill and logical262144/resident20480INT8KV. Require complete8704-entry cache preparation and at least one supported-layer3/6job pool call,plus all maintained route/state/MTP restore,asset,pre-main,normal-exit and fault checks. Pool trace/CPUwork/audit are charged diagnostics,not speed. The previous model peak was52.016GiB;allow80GiB RSS with77GiB MemAvailable admission. After this,collect explicit cached-math coverage and prospectively matched cache0/on long/agent and thinking long-generation evidence before model adoption.",
     "limits": "Actual route/state handoff only. Native/component success is not model task quality,sustainedTG,clean PP/TTFT,physical262144/tails/RESTORE or inference adoption. Historical partial-relink observations stay historical even though final ELF bytes match. Complete allocation and pool-shape exposure do not alone prove actual per-job cached arithmetic;that coverage remains an adoption prerequisite. No sustained TG or physical262144model fill is qualified here.",
     "retention": "Keep compact admission/shape/setup/RSS/state/fault outcome for the imminent full-model comparison. Retire normal traces/cache after closure; preserve selected14508engine and current89be7candidate until comparison closes.",
-    "results": [],
+    "results": [
+      {
+        "passed": false,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 32769,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 27,
+            "output_ids_sha256": "853fe774d45ad2795d94f2e3d0ef5da55d6aa927a05aa0d6db20ce73f9f479a3",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 24,
+            "offered": 27,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 32769,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 27,
+            "output_ids_sha256": "853fe774d45ad2795d94f2e3d0ef5da55d6aa927a05aa0d6db20ce73f9f479a3",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "262144",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "942",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 878020,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "d6a4c9efc41d214cfac345e60fb1799287b3347f13f1e9556a33d7a9061f62f1",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "memory_at_READY": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "59625",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "2816 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "2816 KiB",
+              "drm-total-gtt": "4229160 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "4229160 KiB",
+              "drm-total-vram0": "8905808 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "8905808 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "55202774781099",
+              "drm-total-cycles-vcs": "55202774781099",
+              "drm-total-cycles-vecs": "55202774781099",
+              "drm-total-cycles-bcs": "55202774781099",
+              "drm-total-cycles-ccs": "55202774781099"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "memory_after_requests": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "59625",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "34852 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "0",
+              "drm-total-gtt": "4722692 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "4722692 KiB",
+              "drm-total-vram0": "9680264 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "9680264 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "55205093868261",
+              "drm-total-cycles-vcs": "55205093868261",
+              "drm-total-cycles-vecs": "55205093868261",
+              "drm-total-cycles-bcs": "55205093868261",
+              "drm-total-cycles-ccs": "55205093868261"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "host_probe_accepted": false,
+        "error": "RuntimeError('diagnostic must encounter selected batch shapes')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "host_controls": {
       "positive": 2,
       "negative": 13,
@@ -317646,6 +317794,114 @@
       "input_files": 34,
       "sha256": "3caaa997d821c22cc83f385028f23e707ff93179a7c572727621b46668e79768"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "model",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ],
+    "post_close_analysis": {
+      "scope": "Post-close interpretation only;the original selected-shape gate remains failed. No rerun,threshold change or model adoption.",
+      "cache_prepared": {
+        "entries": 8704,
+        "known_bytes": 14932662352,
+        "setup_s": 44.809973
+      },
+      "pool_trace_exposure": {
+        "total_run_calls": 2448,
+        "supported_layer_calls": 867,
+        "supported_layer_total_jobs": 20226,
+        "supported_layer_min_jobs": 7,
+        "supported_layer_max_jobs": 36,
+        "supported_layer_3or6_calls": 0,
+        "scope": "Pool trace includes target and draft calls;do not equate its count with request-owned target census callbacks."
+      },
+      "request_CPU_work": [
+        {
+          "request": 1,
+          "jobs_by_NT": [
+            7331,
+            1652,
+            550,
+            239,
+            0,
+            0,
+            0,
+            0
+          ],
+          "pool_ns": 836083389,
+          "callbacks": 480,
+          "format_bins": 7,
+          "valid": true,
+          "error": "none",
+          "windows": 10,
+          "rows": 37,
+          "CPU_rows": 13241,
+          "VRAM_rows": 4519,
+          "PCIe_rows": 0
+        },
+        {
+          "request": 2,
+          "jobs_by_NT": [
+            7875,
+            1805,
+            549,
+            256,
+            0,
+            0,
+            0,
+            0
+          ],
+          "pool_ns": 837218051,
+          "callbacks": 480,
+          "format_bins": 7,
+          "valid": true,
+          "error": "none",
+          "windows": 10,
+          "rows": 37,
+          "CPU_rows": 14156,
+          "VRAM_rows": 3604,
+          "PCIe_rows": 0
+        },
+        {
+          "request": 3,
+          "jobs_by_NT": [
+            7331,
+            1652,
+            550,
+            239,
+            0,
+            0,
+            0,
+            0
+          ],
+          "pool_ns": 795842493,
+          "callbacks": 480,
+          "format_bins": 7,
+          "valid": true,
+          "error": "none",
+          "windows": 10,
+          "rows": 37,
+          "CPU_rows": 13241,
+          "VRAM_rows": 4519,
+          "PCIe_rows": 0
+        }
+      ],
+      "CPU_work_scope": "Request-owned target decode counters;all three conservation/error checks pass. Pool_ns is charged service attribution,not clean speed or physical CPU/RAM saturation.",
+      "native_execution": {
+        "exit_code": 0,
+        "elapsed_seconds": 232.7253773030825,
+        "peak_session_rss_bytes": 70997741568,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "fresh_GPU_faults": false
+      },
+      "unreached_final_checks": "The route exception precedes quiet-validation/final asset/source checks in the original controller;normal execution and counters do not qualify those unexecuted checks.",
+      "raw_log_sha256": "fac16950c1d966e71f5144cdcd22da92eb10faf50f0b7d1d1675e88100cd491b",
+      "next": "Preserve the failed screen. Use actual7..36job,mixed-NT production batches for a new committed CPU comparison before widening selection. Separately qualify the new full engine with cache0;keep the14508GPUfallback until migration qualifies."
+    }
   }
 }
