@@ -207,11 +207,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   L3reuse is possible;logical bytes/time is not physical DRAM traffic or saturation.
   All individual samples/setup/RSS and per-cell amortization remain in the linked
   CPUresult. Eight component rows bring the CSV to352;model PP/TG remain blank.
-  Next implement a source-owned decode-only production bridge with actual
-  identity/lifetime,RSS and separate prefill checks before a whole-model trial.
-  Two immutable Orca Luna source audits cover that boundary and the new timing
-  contract while Main proceeds. The original V1missing-header refusal remains
-  failed. No engine route,including prefill,has changed. The ended
+  The new source-owned production bridge is implemented in source but remains
+  unbuilt/unqualified. `STRATA_CPU_COMPACT_GU_MIB=0`or unset keeps native GU;
+  an explicit budget prepares all eligible immutable resident host layers before
+  pool/READY,or keeps native fallback. Source coordinates are captured before
+  CPUjob grouping loses expert identity. Leases span synchronous pool readers;
+  raw blobs still provide Down. Only Decode/NT1 with matching GU format selects
+  cached math;prefill,NT>1,misses and unsupported providers retain native GU.
+  The codec arithmetic is moved unchanged from the owned component into the
+  CPUmodule;Cache now hides storage behind an opaque API. Fresh whole-pool tests
+  cover GU/hidden quantization/Down,partial rows,>96job batches,lease retirement,
+  misses and phase/NT/budget refusals. Commit recipe and rebuild every affected
+  CPUtranslation unit before running;do not mix the changed ExpertPool/Dispatch
+  definitions with old objects. No new model/TTFT/RSS or physical262144 claim.
+  The completed source reviews correct six-worker stream32 to16experts per
+  worker/32aggregate and distinguish singleton affinity from topology admission.
+  Main observed distinct host cores0..5 outside the old controller;the new pool
+  plan must pin and recheck topology. Old raw samples/gain gates remain a CPU
+  screen,not cold-DRAM or model evidence. The original V1missing-header refusal
+  remains failed. The retained engine ELF and its prefill/decode paths are
+  unchanged;new source is opt-in and pending validation. The ended
   ownership ELF/build and routine V4output are retired after source recovery:
   9files/192066bytes;the numeric reader still passes. Preserve the consumed
   ownership check receipt and V3archive/input proofs for this immediate timing.

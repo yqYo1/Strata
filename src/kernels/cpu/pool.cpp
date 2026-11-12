@@ -10,6 +10,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <stdexcept>
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
@@ -563,6 +564,14 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 } else if (mode_ == 5) {
                     float* ff[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) ff[t] = sb.ff[t];
+#ifdef STRATA_NATIVE_EXPERTS
+                    const bool compact = compact_gu_views_ && native_gu_phase_ == NativeGuPhase::Decode &&
+                        mjobs_[e].nt == 1 && compact_gu_views_[e].matches(*nfmt_) &&
+                        compact_gu_views_[e].gu_rows(native_gu_phase_, 1,
+                            {static_cast<const uint8_t*>(mjobs_[e].nact[0]), nfmt_->act_bytes},
+                            {ff[0], FF}, r0, r1);
+                    if (!compact)
+#endif
                     native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1, native_gu_phase_);
                 } else if (nfmt_->d_type == 42) {
                     // Q2_0 down: q2_rows_any selects AVX-512 or AVX2 on the current CPU.
@@ -668,16 +677,20 @@ void ExpertPool::run_split_multi(ExpertJobMulti* jobs, int n) {
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 }
 
-void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n, NativeGuPhase phase) {
+void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n, NativeGuPhase phase,
+                                      std::span<const compact_gu::Lease> gu_views) {
 #ifdef STRATA_CPU_SERVICE_PROFILE
     service::Profile::BatchScope service_batch(service_profile_,phase);
 #endif
     if (n <= 0) return;
+    if (!gu_views.empty() && gu_views.size() < size_t(n))
+        throw std::invalid_argument("compact GU lease span is shorter than the expert batch");
     const auto t0 = std::chrono::steady_clock::now();
     // more distinct experts than buffers: run them in batches
     for (int b0 = 0; b0 < n; b0 += kMaxSplitMulti) {
         const int nb = (std::min)(kMaxSplitMulti, n - b0);
         mjobs_ = jobs + b0;
+        compact_gu_views_ = gu_views.empty() ? nullptr : gu_views.data() + b0;
         nfmt_ = &f;
         // Published by the same run_phase release/acquire protocol as mjobs_
         // and nfmt_; unchanged until every worker has parked on return.
@@ -708,6 +721,7 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         ms_multi_down += std::chrono::duration<double, std::milli>(d - c).count();
     }
     multi_bytes += (int64_t) n * (int64_t) f.bytes;
+    compact_gu_views_ = nullptr;
     mode_ = 0;
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 }

@@ -29,6 +29,7 @@
 
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
+#include "strata/kernels/cpu/compact_gu.hpp"
 #include "strata/kernels/cpu/service_profile.hpp"
 
 #include <atomic>
@@ -163,7 +164,8 @@ public:
     void run_split_multi(ExpertJobMulti* jobs, int n);
     /// Plan v0.3 P6: the same for a native pack's layer (ggml-cpu arithmetic, `nact` activations).
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
-                                NativeGuPhase phase = NativeGuPhase::Decode);
+                                NativeGuPhase phase = NativeGuPhase::Decode,
+                                std::span<const compact_gu::Lease> gu_views = {});
     static constexpr int kMaxSplitMulti = 96;
     /// run_split_multi's phases, accumulated ms: gate/up rows, the intermediate quantization, down rows.
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
@@ -278,6 +280,9 @@ private:
     };
     const NativeFmt* nfmt_ = nullptr;
     NativeGuPhase native_gu_phase_ = NativeGuPhase::Prefill;
+    // Borrowed from the serialized caller until all phase workers park. Each
+    // lease owns GU bytes; mjobs_ still owns the original Down input contract.
+    const compact_gu::Lease* compact_gu_views_ = nullptr;
     std::vector<SplitBufMulti> split_multi_;
     PoolAffinity affinity_ = PoolAffinity::All;
     CpuTopology topo_;

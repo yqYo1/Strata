@@ -22,7 +22,7 @@ set(CPU "${STRATA_ROOT}/src/kernels/cpu")
 add_library(compact_reference_cpu STATIC
   ${CPU}/expert.cpp ${CPU}/pool.cpp ${CPU}/expert_layout.cpp ${CPU}/q2_avx2.cpp
   ${CPU}/native_expert.cpp ${CPU}/iq_avx512.cpp ${CPU}/iq_avx2.cpp
-  ${CPU}/iq_single_avx2.cpp ${CPU}/iq2_pair_avx2.cpp ${CPU}/kq_avx2.cpp)
+  ${CPU}/iq_single_avx2.cpp ${CPU}/iq2_pair_avx2.cpp ${CPU}/kq_avx2.cpp ${CPU}/compact_gu.cpp)
 target_include_directories(compact_reference_cpu PUBLIC "${STRATA_ROOT}/include"
   PRIVATE "${STRATA_ROOT}/third_party/ggml")
 target_compile_definitions(compact_reference_cpu PUBLIC
@@ -31,7 +31,7 @@ target_compile_options(compact_reference_cpu PRIVATE -march=znver3 -mtune=znver3
 set_source_files_properties(${CPU}/expert.cpp ${CPU}/iq_avx512.cpp PROPERTIES
   COMPILE_OPTIONS "-mavx512f;-mavx512bw;-mavx512vl;-mavx512dq;-mavx512vnni;-mavx512vbmi;-mf16c;-mfma")
 set_source_files_properties(${CPU}/q2_avx2.cpp ${CPU}/iq_avx2.cpp
-  ${CPU}/iq_single_avx2.cpp ${CPU}/iq2_pair_avx2.cpp ${CPU}/kq_avx2.cpp
+  ${CPU}/iq_single_avx2.cpp ${CPU}/iq2_pair_avx2.cpp ${CPU}/kq_avx2.cpp ${CPU}/compact_gu.cpp
   PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
 find_package(Threads REQUIRED)
 target_link_libraries(compact_reference_cpu PUBLIC ggml-cpu ggml-base Threads::Threads)
@@ -39,3 +39,7 @@ add_executable(compact_cache_numeric numeric.cpp)
 target_include_directories(compact_cache_numeric PRIVATE "${STRATA_GGML_DIR}/ggml/src")
 target_compile_options(compact_cache_numeric PRIVATE -march=znver3 -mtune=znver3)
 target_link_libraries(compact_cache_numeric PRIVATE compact_reference_cpu)
+add_executable(compact_cache_pool pool.cpp)
+target_include_directories(compact_cache_pool PRIVATE "${STRATA_GGML_DIR}/ggml/src")
+target_compile_options(compact_cache_pool PRIVATE -march=znver3 -mtune=znver3)
+target_link_libraries(compact_cache_pool PRIVATE compact_reference_cpu)

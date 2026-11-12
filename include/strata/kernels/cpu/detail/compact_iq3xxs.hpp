@@ -1,6 +1,6 @@
 // Main-authored compact-view candidate; repository LICENSE applies.
 // Format constants/tables come from the pinned MIT-licensed GGML dependency.
-// Benchmark-only: no production dispatch or weight ownership changes.
+// Shared arithmetic for the owned CPU decode cache and its numerical fixtures.
 #pragma once
 #include <array>
 #include <cmath>

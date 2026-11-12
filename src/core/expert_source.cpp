@@ -1894,6 +1894,18 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     if ((int64_t) d.act_multi.size() < n_tok) d.act_multi.resize((size_t) MAXT);
     const ExpertLayout& lay = expert_layout();
     const bool native = lay.native;
+    bool compact_gu = false;
+#ifdef STRATA_NATIVE_EXPERTS
+    compact_gu = native && d.native_gu_phase == NativeGuPhase::Decode && d.compact_gu_cache &&
+        d.compact_gu_source == d.src && d.layers >= 0 && size_t(d.layers) < lay.fmt.size() &&
+        strata::kernels::cpu::compact_gu::supported(lay.fmt[size_t(d.layers)]);
+    if (compact_gu && (d.compact_gu_experts.size() < size_t(d.n_expert) ||
+                       d.compact_gu_views.size() < size_t(d.n_expert))) {
+        // Production reserves these before READY. Refuse the optional path for
+        // a custom/unprepared adapter; never allocate it inside GPU dispatch.
+        compact_gu = false;
+    }
+#endif
     if (native && d.nact_multi.size() < (size_t) MAXT * kNativeActBytes) d.nact_multi.resize((size_t) MAXT * kNativeActBytes);
     if (d.job_of.size() != (size_t) d.n_expert) d.job_of.assign((size_t) d.n_expert, (int16_t) -1);
     if (d.jobs_multi.size() < (size_t) (n_tok * k)) d.jobs_multi.resize((size_t) (MAXT * k));
@@ -2100,6 +2112,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                 ExpertJobMulti& nj = d.jobs_multi[(size_t) jo];
                 nj.blob = b;
                 nj.nt = 0;
+                if (compact_gu) d.compact_gu_experts[size_t(jo)] = size_t(e);
             }
             ExpertJobMulti& jb = d.jobs_multi[(size_t) jo];
             jb.act[jb.nt] = &d.act_multi[(size_t) t];
@@ -2108,12 +2121,22 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             ++jb.nt;
             ++d.multi_entries;
         }
+    std::span<const strata::kernels::cpu::compact_gu::Lease> views;
+#ifdef STRATA_NATIVE_EXPERTS
+    if (compact_gu) {
+        for (int j = 0; j < njobs; ++j)
+            d.compact_gu_views[size_t(j)] = d.compact_gu_cache->lookup(
+                {size_t(d.layers), d.compact_gu_experts[size_t(j)]}, lay.fmt[size_t(d.layers)],
+                d.native_gu_phase, d.jobs_multi[size_t(j)].nt);
+        views = {d.compact_gu_views.data(), size_t(njobs)};
+    }
+#endif
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
     if (native) {
         // Native jobs borrow dispatch-owned buffers. Do not unwind them if completion throws.
         try {
-            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs, d.native_gu_phase);
+            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs, d.native_gu_phase, views);
         } catch (...) {
             std::fprintf(stderr, "strata: native expert pool failed before completion; retaining owners and aborting\n");
             strata::core::release_gpu_waits(stderr);
