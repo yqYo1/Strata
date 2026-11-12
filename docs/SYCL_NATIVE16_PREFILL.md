@@ -161,8 +161,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   contract:short inputs retain their existing route and can omit callbacks or
   use smaller chunks. Warmup API/prompt/copy counts and clocks still bind;
   timed long requests must cover read-1cells exactly in batched mode2/8192
-  chunks. V2remains failed under its original all-request contract. New host/long checks
-  remain unexecuted. Strict API/prompt/copy counts,drafts and
+  chunks. V2remains failed under its original all-request contract. V3host
+  admission passes both frontend probes,2positive/9negative copy bindings and
+  1positive/4negative short/long draft controls,with normal closed owners.
+  Actual long runs remain unexecuted. Strict API/prompt/copy counts,drafts and
   rounded clocks are joined;zero baseline and positive long-candidate private
   host-view counts must conserve. Commit each closure before the next process.
   This changes work distribution only;dedicated-prefill,agent,task,full-context

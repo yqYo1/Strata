@@ -312645,7 +312645,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "e2ce32a8f33cc4bd2538c0ef6281d1e7d4399521",
     "native_observer_admission": {
       "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
@@ -312988,7 +312988,7 @@
       }
     ],
     "processes": [],
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -313030,6 +313030,29 @@
       "retention": "Existing coherent generation only. Keep compact individual samples,actual copy/cache/route counts,source/recipe/runtime/configuration and decision. Retire normal raw logs/JIT at verified closure. Generated config/plan bytes are reconstructible from committed base configuration,arm,root and probe."
     },
     "invariant_signature": "c3b6dc2e1ce920ad376c298733c1654150d75c8c18abdb25bf8f2037674cc9e4",
+    "host_results": [
+      {
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "role": "server",
+        "passed": true
+      }
+    ],
+    "copy_controls": {
+      "passed": true,
+      "positive": 2,
+      "rejected": 9,
+      "GPU_executed": false
+    },
+    "draft_controls": {
+      "passed": true,
+      "positive": 1,
+      "rejected": 4,
+      "GPU_executed": false,
+      "scope": "Warmup zero/smaller callbacks and strict long8192coverage;not model execution."
+    },
     "source_inputs": {
       "files": 721,
       "sha256": "2eb9e5b7d4454a824961a97062b28eb32be91b0a5bc0050f033f924d275398d4"
