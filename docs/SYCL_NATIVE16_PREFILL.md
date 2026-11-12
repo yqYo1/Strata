@@ -185,6 +185,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with2815/6823outputs and15.086125/9.104069TG. Reference4also closes normally0/
   quiet/owned/no freshfault,with the same2815/6823outputs and15.037120/9.073271TG.
   Five of six processes are closed;the final candidate remains unexecuted.
+  Process4routine output and the completed compact-cache source audit/review
+  payloads are retired:529files/links,125011282regular content bytes,after
+  pushed samples/facts and original project/GGML source recovery. All12ELFs
+  and generated inputs remain unchanged;see
+  `coherent_decode_pcie_speed_v3.process4_and_cacheaudit_raw_retirement`.
   The second pair's candidate/reference TG ratios are0.955140/1.030666. Remaining
   samples and final pair decisions stay pending;length/acceptance differences
   still prevent a causal hardware attribution.

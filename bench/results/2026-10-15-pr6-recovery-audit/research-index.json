@@ -30991,14 +30991,19 @@
   },
   "cpu_compact_cache_source_audit_20261112": {
     "classification": "decision_support",
-    "stage": "native_reviewed_retirement_pending",
+    "stage": "retired_to_compact_corrected_facts",
     "scope": "Frozen compact GU cache source safety and phase admission",
     "source_commit": "09ca4f1613d5e4f0ca5be80fb5dc0e8f691e34c3",
     "policy_commit": "09ca4f1613d5e4f0ca5be80fb5dc0e8f691e34c3",
     "source_pins": {
       "project_files": 12,
       "GGML_files": 2,
-      "GGML_revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d"
+      "GGML_revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "project_sha256": "2b094e84a98109d982b27748d8b020836b03a0e9b372ac1ac632886f5031acf8",
+      "GGML": {
+        "ggml/src/ggml-common.h": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c",
+        "ggml/include/ggml.h": "12ee71f99db7db9b353bc02b1fbb57c344ee17c01ac5fb7952b41a637a747ea9"
+      }
     },
     "model": "gpt-6-luna",
     "effort": "medium",
@@ -31007,7 +31012,6 @@
     "terminal": "term_c8589791-9ce4-47c2-bf36-3095c235dd24",
     "capability_passed": true,
     "actual_Task_spec_verified": true,
-    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cpu-compact-cache-source-audit-20261112/report.md",
     "report_identity": {
       "bytes": 10242,
       "sha256": "cf67c0d279a8b2d6b835d908a48da924dcc8aa878797d9c208b934595154bcaa"
@@ -31033,6 +31037,7 @@
       "schedulable_now": false,
       "reason": "Source audit consumed. Close activeEARLY0cohort,pin exact CPU recipe,then owned lifecycle/actual-dispatch real-block gate precedes any hot/cold timing and model bridge."
     },
-    "retention": "Keep compact corrected source/contract facts;retire closed report/snapshot/lifecycle/review products after this commit is pushed and original source/dependency recovery is verified."
+    "retention": "Compact corrected source/contract facts retained;closed audit snapshot/report/lifecycle/review products retired after project source recovery from pushed child and GGML3cf source recovery. Actual child/recipe remain unbuilt and pending validation.",
+    "retired_private_payload": true
   }
 }
