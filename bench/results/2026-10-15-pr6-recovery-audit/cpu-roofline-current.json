@@ -7423,5 +7423,1327 @@
       "post_retirement_admission_passed": true,
       "retained": "Fresh coherent CPUarchives/numeric8c2e and GPUengine dcb8;V2will link only current source-qualified CPUarchives,no V1ELF/object reuse."
     }
+  },
+  "compact_production_pool_timing_v2": {
+    "stage": "closed_component_gain_gate_failed",
+    "complete": true,
+    "active": false,
+    "execution_passed": true,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "fixture_source_commit": "b3032cc1856f0be6a5ded6e1eb1157e6c2597f94",
+    "production_archive_source_commit": "c61ee3e7bd6d7257319eb0f79f6db1a30ca96fe4",
+    "engine_integration_source_commit": "166cc09a675f865d30bedeab9c199cb472bf1db6",
+    "allocation_repair_source_commit": "12e70f8d4c8d457be08fb8e48b3fab2e6ebcba0a",
+    "plan_commit": "7f8b40ae4a9dc7a36d10b6614ee8430cb774676e",
+    "plan_path": "bench/sycl/cpu_compact_hot/pool-timing-plan-v2.json",
+    "plan_sha256": "4e9e2edd0d2e2dec09f950607963de231b7865b326d2a03c17a57ef30bb86b51",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-production-pool-timing-v2/timing",
+      "sha256": "7d67f886de5571fc7f9f71dc51b8dc72d13a6ca0d24cfc68938725a3e0abcc61"
+    },
+    "build": {
+      "compiler_input_count": 506,
+      "link_input_count": 26,
+      "archives": {
+        "archives": {
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-production-pool-v1/build/libcompact_reference_cpu.a": "296fc3c2ec66d0daa9144a4731bcb3226d65ea22dc50da25b011357af5e89d7b",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-production-pool-v1/build/ggml/src/libggml-cpu.a": "0ffc744b74c23a09a740296e71a6634176bb6ade555c9a23ffc81ea29ed55045",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-production-pool-v1/build/ggml/src/libggml-base.a": "c5fccf0e93d5cc66b70a1e29dc4e9ae44a7f58cb3c7d12c08af23b8048ddbb83"
+        },
+        "counts": {
+          "libcompact_reference_cpu.a": 11,
+          "ggml/src/libggml-cpu.a": 15,
+          "ggml/src/libggml-base.a": 9
+        },
+        "member_object_map_sha256": "c8de411ec5ed929db4ff4fcf1702732956166ae1aee28000fdccf442c3b81b53",
+        "tool": {
+          "path": "/usr/bin/ar",
+          "sha256": "6452af2eea333b8c65e1adb92964fc8f97863ab003fa13f9d12bff5345cd7dbe"
+        }
+      },
+      "ELF": {
+        "elf_class": "ELF64",
+        "data": "2's complement, little endian",
+        "machine": "Advanced Micro Devices X86-64",
+        "elf_type": "EXEC (Executable file)",
+        "interpreter": "/lib64/ld-linux-x86-64.so.2"
+      },
+      "libraries": [
+        "libm.so.6",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ]
+    },
+    "numerical": {
+      "cases_per_format": 120,
+      "total_cases": 240,
+      "expected": {
+        "passed": true,
+        "cases": 120,
+        "nt1_rows": 2534400,
+        "compact_rows": 1140480,
+        "offset_control_detected": true
+      },
+      "passed": true,
+      "wrong_offset_control_detected_in_both_worker_geometries": true
+    },
+    "prior_evidence": {
+      "commit": "9843c0efd36234d33abdb66bef3cc579eaa51842",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+      "key": "compact_production_pool_timing_v1",
+      "canonical_consumed_fields_sha256": "dd904917992ee05df95a1d9e4f0772bdaa7fe799530277358be9ea0d03f864ad"
+    },
+    "order": [
+      "reference",
+      "compact",
+      "compact",
+      "reference",
+      "reference",
+      "compact"
+    ],
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "original_receipt_order_fields": [
+      "process_index",
+      "arm",
+      "down",
+      "started_utc",
+      "finished_utc"
+    ],
+    "original_receipt_order": [
+      [
+        0,
+        "reference",
+        20,
+        "2026-11-12T18:58:40.654575+00:00",
+        "2026-11-12T18:59:12.605442+00:00"
+      ],
+      [
+        0,
+        "reference",
+        42,
+        "2026-11-12T18:59:12.606239+00:00",
+        "2026-11-12T18:59:43.205524+00:00"
+      ],
+      [
+        1,
+        "compact",
+        20,
+        "2026-11-12T19:02:25.672762+00:00",
+        "2026-11-12T19:02:54.272511+00:00"
+      ],
+      [
+        1,
+        "compact",
+        42,
+        "2026-11-12T19:02:54.273213+00:00",
+        "2026-11-12T19:03:20.140553+00:00"
+      ],
+      [
+        2,
+        "compact",
+        20,
+        "2026-11-12T19:08:58.225346+00:00",
+        "2026-11-12T19:09:24.409294+00:00"
+      ],
+      [
+        2,
+        "compact",
+        42,
+        "2026-11-12T19:09:24.409977+00:00",
+        "2026-11-12T19:09:45.870691+00:00"
+      ],
+      [
+        3,
+        "reference",
+        20,
+        "2026-11-12T19:17:33.741671+00:00",
+        "2026-11-12T19:18:05.418607+00:00"
+      ],
+      [
+        3,
+        "reference",
+        42,
+        "2026-11-12T19:18:05.419417+00:00",
+        "2026-11-12T19:18:35.264472+00:00"
+      ],
+      [
+        4,
+        "reference",
+        20,
+        "2026-11-12T19:21:45.197392+00:00",
+        "2026-11-12T19:22:17.940363+00:00"
+      ],
+      [
+        4,
+        "reference",
+        42,
+        "2026-11-12T19:22:17.941368+00:00",
+        "2026-11-12T19:22:46.997002+00:00"
+      ],
+      [
+        5,
+        "compact",
+        20,
+        "2026-11-12T19:23:22.035029+00:00",
+        "2026-11-12T19:23:49.427638+00:00"
+      ],
+      [
+        5,
+        "compact",
+        42,
+        "2026-11-12T19:23:49.428421+00:00",
+        "2026-11-12T19:24:11.879524+00:00"
+      ]
+    ],
+    "batch_sample_fields": [
+      "wall_s",
+      "process_cpu_s",
+      "pool_gu_s",
+      "pool_quant_s",
+      "pool_down_s"
+    ],
+    "batch_sample_counts": "calls=rounds;jobs=rounds*jobs_per_call",
+    "samples": [
+      {
+        "arm": "reference",
+        "down": 20,
+        "read_s": 0.101950684,
+        "encode_publish_s": 0,
+        "raw_peak_kib": 72544,
+        "encoded_peak_kib": 72544,
+        "known_view_bytes": 0,
+        "raw_bytes_per_job": 2176000,
+        "timer_pair_s": 4.164040000000001e-08,
+        "final_peak_kib": 79912,
+        "process_index": 0,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 9.872219375610352e-05,
+            "final_calibration_seconds": 3.1575091530000003,
+            "samples": [
+              [
+                3.0271344800000004,
+                18.004621478000004,
+                2.1576831679999944,
+                0.007413994000000017,
+                0.8614773029999984
+              ],
+              [
+                3.234928845,
+                19.078988229999993,
+                2.291963678999986,
+                0.007620089000000018,
+                0.9347634679999955
+              ],
+              [
+                3.5600818590000003,
+                20.703894574999993,
+                2.50706301399997,
+                0.007720539000000056,
+                1.044667464000005
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 9.470136502075196e-05,
+            "final_calibration_seconds": 3.148395326,
+            "samples": [
+              [
+                3.1031743290000002,
+                18.390179047000004,
+                2.2052501290000057,
+                0.008076102999999911,
+                0.8892649269999884
+              ],
+              [
+                3.0884519810000004,
+                18.280622518,
+                2.1945158119999544,
+                0.007222683000000011,
+                0.8861544620000141
+              ],
+              [
+                3.2081215860000003,
+                18.882588311999996,
+                2.278405057000047,
+                0.0071920540000002834,
+                0.9219531100000186
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "reference",
+        "down": 42,
+        "read_s": 0.16610506,
+        "encode_publish_s": 0,
+        "raw_peak_kib": 58156,
+        "encoded_peak_kib": 58156,
+        "known_view_bytes": 0,
+        "raw_bytes_per_job": 1715200,
+        "timer_pair_s": 4.037400000000001e-08,
+        "final_peak_kib": 65384,
+        "process_index": 0,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 9.397459463500978e-05,
+            "final_calibration_seconds": 3.1895085670000003,
+            "samples": [
+              [
+                3.0793595170000003,
+                18.012117434000004,
+                2.4390524750000133,
+                0.013466281000000038,
+                0.6263399040000002
+              ],
+              [
+                3.0549876890000003,
+                18.100133993999997,
+                2.407733078999999,
+                0.009853336000000042,
+                0.6368969060000023
+              ],
+              [
+                3.1507914240000003,
+                18.493602351999996,
+                2.4777328609999913,
+                0.009625839000000106,
+                0.6628917549999979
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 8.846631094360352e-05,
+            "final_calibration_seconds": 2.908416293,
+            "samples": [
+              [
+                2.895008599,
+                17.23468540799999,
+                2.2965030050000097,
+                0.009200510000000037,
+                0.588835554999997
+              ],
+              [
+                3.0834043490000003,
+                18.23748278100001,
+                2.423891222999926,
+                0.009706112000000147,
+                0.6491059620000051
+              ],
+              [
+                2.8988640770000003,
+                17.24810647199999,
+                2.2962414750000173,
+                0.009319000000000173,
+                0.5928181699999842
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "compact",
+        "down": 20,
+        "read_s": 0.103084298,
+        "encode_publish_s": 0.181830135,
+        "raw_peak_kib": 72664,
+        "encoded_peak_kib": 126168,
+        "known_view_bytes": 54898640,
+        "raw_bytes_per_job": 2176000,
+        "timer_pair_s": 4.195100000000001e-08,
+        "final_peak_kib": 133352,
+        "process_index": 1,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 7.452553756713868e-05,
+            "final_calibration_seconds": 2.341433143,
+            "samples": [
+              [
+                2.7152456810000003,
+                15.763618910000002,
+                1.7141903279999942,
+                0.008687632999999962,
+                0.9911150680000015
+              ],
+              [
+                2.4289227280000003,
+                14.252403427000004,
+                1.5224708380000047,
+                0.008228887000000015,
+                0.8970326750000004
+              ],
+              [
+                2.4420528150000003,
+                14.354002178999998,
+                1.5103339640000004,
+                0.008220717999999991,
+                0.9222629399999929
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 0.00010138591369628907,
+            "final_calibration_seconds": 2.964763107,
+            "samples": [
+              [
+                3.045360794,
+                17.06800124600001,
+                1.9275642459999982,
+                0.008748867000000089,
+                1.1075426949999938
+              ],
+              [
+                3.3222136200000003,
+                18.71769207199999,
+                2.1098589890000077,
+                0.009522640000000053,
+                1.2013093239999908
+              ],
+              [
+                3.4596065890000003,
+                18.887544046000016,
+                2.097183628000037,
+                0.009040667000000042,
+                1.3518436949999997
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "compact",
+        "down": 42,
+        "read_s": 0.11756728200000001,
+        "encode_publish_s": 0.181208785,
+        "raw_peak_kib": 58156,
+        "encoded_peak_kib": 111660,
+        "known_view_bytes": 54898640,
+        "raw_bytes_per_job": 1715200,
+        "timer_pair_s": 4.397280000000001e-08,
+        "final_peak_kib": 118884,
+        "process_index": 1,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 7.720309674072266e-05,
+            "final_calibration_seconds": 2.450773743,
+            "samples": [
+              [
+                2.5297910740000003,
+                14.454301199999996,
+                1.7807957960000045,
+                0.012587815999999965,
+                0.7350693230000008
+              ],
+              [
+                2.4306283310000003,
+                13.716515168999997,
+                1.6961673739999887,
+                0.010519051000000083,
+                0.7225530169999934
+              ],
+              [
+                2.5978809380000003,
+                14.558632821000003,
+                1.7859375269999882,
+                0.010704202999999843,
+                0.799859291000003
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 8.00437836303711e-05,
+            "final_calibration_seconds": 2.4113322690000003,
+            "samples": [
+              [
+                2.562298939,
+                14.524404040999997,
+                1.764040824000009,
+                0.010696881999999918,
+                0.7861261230000027
+              ],
+              [
+                2.6228747020000003,
+                14.960018945000016,
+                1.8520061850000167,
+                0.010670429000000098,
+                0.7587557289999987
+              ],
+              [
+                2.648466426,
+                14.795392800000002,
+                1.8616146160000608,
+                0.010903871999999993,
+                0.7745652989999963
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "compact",
+        "down": 20,
+        "read_s": 0.10139039700000001,
+        "encode_publish_s": 0.18325006400000002,
+        "raw_peak_kib": 72540,
+        "encoded_peak_kib": 126044,
+        "known_view_bytes": 54898640,
+        "raw_bytes_per_job": 2176000,
+        "timer_pair_s": 4.037400000000001e-08,
+        "final_peak_kib": 133364,
+        "process_index": 2,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 7.655440615844727e-05,
+            "final_calibration_seconds": 2.7566577210000003,
+            "samples": [
+              [
+                2.5085347810000003,
+                14.721362012,
+                1.5585978110000014,
+                0.010400683999999955,
+                0.9382927300000038
+              ],
+              [
+                2.397618855,
+                14.142167164999996,
+                1.5020723149999922,
+                0.007857708000000088,
+                0.8864648579999971
+              ],
+              [
+                2.625947042,
+                15.240399765999996,
+                1.638673769999995,
+                0.008966799999999992,
+                0.9770056430000109
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 7.821996966552735e-05,
+            "final_calibration_seconds": 2.509266432,
+            "samples": [
+              [
+                2.309862758,
+                13.705499942000003,
+                1.4536015079999942,
+                0.007349846999999841,
+                0.8478269579999924
+              ],
+              [
+                2.793095197,
+                15.805983034999983,
+                1.6720968840000041,
+                0.008335229999999883,
+                1.1113016379999745
+              ],
+              [
+                2.563111966,
+                14.929447444000004,
+                1.5896741419999816,
+                0.008005324000000157,
+                0.964188736999995
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "compact",
+        "down": 42,
+        "read_s": 0.143186317,
+        "encode_publish_s": 0.187805403,
+        "raw_peak_kib": 58228,
+        "encoded_peak_kib": 111732,
+        "known_view_bytes": 54898640,
+        "raw_bytes_per_job": 1715200,
+        "timer_pair_s": 4.0594600000000005e-08,
+        "final_peak_kib": 119072,
+        "process_index": 2,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 6.27780724182129e-05,
+            "final_calibration_seconds": 2.224454923,
+            "samples": [
+              [
+                2.228300733,
+                13.015431778,
+                1.5444466099999963,
+                0.010418754999999948,
+                0.6721457829999979
+              ],
+              [
+                2.057111877,
+                12.108163695000002,
+                1.4115399059999945,
+                0.010230085999999925,
+                0.6341154439999969
+              ],
+              [
+                1.9872664860000002,
+                11.779767362000001,
+                1.3762245010000043,
+                0.010207315000000059,
+                0.5995896209999978
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 6.100744873046875e-05,
+            "final_calibration_seconds": 2.047953854,
+            "samples": [
+              [
+                2.147487685,
+                12.494051385999995,
+                1.4493614360000011,
+                0.009865622999999985,
+                0.6869376370000119
+              ],
+              [
+                1.99909208,
+                11.819393356999996,
+                1.3765233149999767,
+                0.009555278000000087,
+                0.6119186340000115
+              ],
+              [
+                1.9420184090000001,
+                11.505942793000003,
+                1.33158772900003,
+                0.009260232999999687,
+                0.600046782000003
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "reference",
+        "down": 20,
+        "read_s": 0.094100056,
+        "encode_publish_s": 0,
+        "raw_peak_kib": 72412,
+        "encoded_peak_kib": 72412,
+        "known_view_bytes": 0,
+        "raw_bytes_per_job": 2176000,
+        "timer_pair_s": 4.0804600000000005e-08,
+        "final_peak_kib": 79900,
+        "process_index": 3,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 9.278200064086915e-05,
+            "final_calibration_seconds": 3.222499999,
+            "samples": [
+              [
+                3.1590527870000003,
+                18.614017986,
+                2.255648770999992,
+                0.007446582000000076,
+                0.8954551470000054
+              ],
+              [
+                2.968807259,
+                17.702433373999995,
+                2.1228941590000314,
+                0.007260317999999945,
+                0.8381612759999967
+              ],
+              [
+                3.040280597,
+                18.059717183000004,
+                2.197316561999976,
+                0.0072498910000000335,
+                0.8352170009999964
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 8.997250103759767e-05,
+            "final_calibration_seconds": 3.55489261,
+            "samples": [
+              [
+                3.1844435,
+                18.794616798999982,
+                2.2807790680000437,
+                0.00843399999999997,
+                0.8946731549999941
+              ],
+              [
+                2.941533773,
+                17.45439732599999,
+                2.1157665169999853,
+                0.0068046040000000405,
+                0.8184851699999872
+              ],
+              [
+                2.9482189140000004,
+                17.51017780800001,
+                2.113539796000019,
+                0.006960934000000137,
+                0.8272336810000106
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "reference",
+        "down": 42,
+        "read_s": 0.116134659,
+        "encode_publish_s": 0,
+        "raw_peak_kib": 58376,
+        "encoded_peak_kib": 58376,
+        "known_view_bytes": 0,
+        "raw_bytes_per_job": 1715200,
+        "timer_pair_s": 4.081480000000001e-08,
+        "final_peak_kib": 65572,
+        "process_index": 3,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 8.571763204956055e-05,
+            "final_calibration_seconds": 2.6532989110000003,
+            "samples": [
+              [
+                2.808795367,
+                16.698098843999993,
+                2.1774191320000065,
+                0.009389493999999984,
+                0.6214900710000013
+              ],
+              [
+                2.6719099760000002,
+                15.913378704999992,
+                2.0743875500000057,
+                0.00913512,
+                0.5879079660000016
+              ],
+              [
+                2.811832645,
+                16.705938775000007,
+                2.179607258000004,
+                0.009551894999999946,
+                0.6221746639999979
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 8.575768145751954e-05,
+            "final_calibration_seconds": 3.133746618,
+            "samples": [
+              [
+                2.810107706,
+                16.703345824999985,
+                2.183138253999952,
+                0.009386204000000177,
+                0.6170641610000012
+              ],
+              [
+                3.032981657,
+                17.522255384000005,
+                2.24917913399998,
+                0.009342166000000134,
+                0.7739468050000005
+              ],
+              [
+                2.673308582,
+                15.93764414200001,
+                2.067086940999994,
+                0.008946683000000021,
+                0.596788990999993
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "reference",
+        "down": 20,
+        "read_s": 0.093105801,
+        "encode_publish_s": 0,
+        "raw_peak_kib": 72324,
+        "encoded_peak_kib": 72324,
+        "known_view_bytes": 0,
+        "raw_bytes_per_job": 2176000,
+        "timer_pair_s": 4.041000000000001e-08,
+        "final_peak_kib": 79968,
+        "process_index": 4,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 0.00010196442108154298,
+            "final_calibration_seconds": 3.120715317,
+            "samples": [
+              [
+                3.3411701500000004,
+                19.58660168,
+                2.3392488369999973,
+                0.0072937590000000056,
+                0.9940899980000024
+              ],
+              [
+                3.254948632,
+                19.251957440999995,
+                2.3370944549999932,
+                0.007187386999999966,
+                0.9101607960000061
+              ],
+              [
+                3.6526210900000002,
+                20.912101562000004,
+                2.5954119909999736,
+                0.008107693000000001,
+                1.0485611260000165
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 9.911663034057618e-05,
+            "final_calibration_seconds": 3.0844969190000002,
+            "samples": [
+              [
+                3.2414752310000003,
+                19.028290368,
+                2.315015719000037,
+                0.007212570999999933,
+                0.9187375520000051
+              ],
+              [
+                3.2478537430000003,
+                19.217248082999987,
+                2.322740281999988,
+                0.0072330320000000585,
+                0.917371837999991
+              ],
+              [
+                3.4142097860000002,
+                19.934989271000006,
+                2.4453354150000486,
+                0.007119482000000204,
+                0.9612279559999879
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "reference",
+        "down": 42,
+        "read_s": 0.152965396,
+        "encode_publish_s": 0,
+        "raw_peak_kib": 58152,
+        "encoded_peak_kib": 58152,
+        "known_view_bytes": 0,
+        "raw_bytes_per_job": 1715200,
+        "timer_pair_s": 4.113140000000001e-08,
+        "final_peak_kib": 65412,
+        "process_index": 4,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 8.57030302734375e-05,
+            "final_calibration_seconds": 2.7138754680000003,
+            "samples": [
+              [
+                3.3105418870000003,
+                18.784663727,
+                2.5930489839999975,
+                0.009633728000000044,
+                0.7072815750000032
+              ],
+              [
+                2.808316896,
+                16.668014489999997,
+                2.1931970829999963,
+                0.00909685999999998,
+                0.6054871189999963
+              ],
+              [
+                2.6724938710000004,
+                15.938487217000002,
+                2.0748440519999822,
+                0.009024422000000023,
+                0.5881161860000079
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 8.851285766601564e-05,
+            "final_calibration_seconds": 2.7922525830000002,
+            "samples": [
+              [
+                2.982640044,
+                17.61997435100001,
+                2.3276839169999675,
+                0.009537475000000186,
+                0.6448634069999943
+              ],
+              [
+                2.753149209,
+                16.311771120000003,
+                2.103368880000002,
+                0.009067559000000188,
+                0.640193009000006
+              ],
+              [
+                2.9003893200000004,
+                17.128372181999993,
+                2.2643960020000415,
+                0.009653386000000253,
+                0.6257891670000063
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "compact",
+        "down": 20,
+        "read_s": 0.09307841500000001,
+        "encode_publish_s": 0.17589238000000001,
+        "raw_peak_kib": 72788,
+        "encoded_peak_kib": 126292,
+        "known_view_bytes": 54898640,
+        "raw_bytes_per_job": 2176000,
+        "timer_pair_s": 4.218960000000001e-08,
+        "final_peak_kib": 133508,
+        "process_index": 5,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 7.549077124023438e-05,
+            "final_calibration_seconds": 2.3669253980000002,
+            "samples": [
+              [
+                2.349734904,
+                13.888632765,
+                1.467726399000007,
+                0.007753191000000037,
+                0.873080805999997
+              ],
+              [
+                2.473681592,
+                14.509527018,
+                1.548261004999993,
+                0.007977679000000052,
+                0.9161975329999927
+              ],
+              [
+                2.5099634340000003,
+                14.711316148999998,
+                1.5767941020000062,
+                0.008236891999999987,
+                0.9237045059999937
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 8.276111270141602e-05,
+            "final_calibration_seconds": 3.4801136870000002,
+            "samples": [
+              [
+                2.584048248,
+                14.997982934000007,
+                1.6255781680000092,
+                0.007734372999999977,
+                0.9495256820000022
+              ],
+              [
+                2.992082924,
+                17.109021446,
+                1.8581902320000319,
+                0.008452627000000205,
+                1.1238334449999965
+              ],
+              [
+                2.711916141,
+                15.579292443000014,
+                1.6477939439999736,
+                0.019356288000000065,
+                1.0432410769999987
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "compact",
+        "down": 42,
+        "read_s": 0.14035081600000002,
+        "encode_publish_s": 0.174638648,
+        "raw_peak_kib": 58200,
+        "encoded_peak_kib": 111704,
+        "known_view_bytes": 54898640,
+        "raw_bytes_per_job": 1715200,
+        "timer_pair_s": 4.1742600000000003e-08,
+        "final_peak_kib": 119036,
+        "process_index": 5,
+        "cells": [
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "reuse",
+            "rounds": 1024,
+            "median_seconds_per_job": 6.954941213989259e-05,
+            "final_calibration_seconds": 2.25579054,
+            "samples": [
+              [
+                2.3289604870000002,
+                13.397867594999997,
+                1.6426534230000025,
+                0.010858338999999965,
+                0.6739662910000002
+              ],
+              [
+                2.2789951370000003,
+                13.298594489000003,
+                1.5972137409999887,
+                0.010250046999999977,
+                0.6702911959999979
+              ],
+              [
+                2.2331263270000004,
+                12.893376724,
+                1.5703644680000106,
+                0.009990937999999816,
+                0.6515417289999986
+              ]
+            ]
+          },
+          {
+            "workers": 5,
+            "host_works": true,
+            "jobs_per_call": 32,
+            "pattern": "stream32",
+            "rounds": 1024,
+            "median_seconds_per_job": 6.89517682800293e-05,
+            "final_calibration_seconds": 2.0960073130000003,
+            "samples": [
+              [
+                1.9732949960000001,
+                11.678826600999997,
+                1.3618847210000131,
+                0.00931725499999999,
+                0.600966376999997
+              ],
+              [
+                2.259411543,
+                13.112707008000001,
+                1.5662574649999934,
+                0.013912610999999998,
+                0.6775981700000057
+              ],
+              [
+                2.2641595160000003,
+                13.197608141999993,
+                1.5722499259999914,
+                0.01007189299999969,
+                0.6804113699999889
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "summary": [
+      {
+        "down": 20,
+        "workers": 5,
+        "host_works": true,
+        "jobs_per_call": 32,
+        "pattern": "reuse",
+        "reference_process_medians": [
+          9.872219375610352e-05,
+          9.278200064086915e-05,
+          0.00010196442108154298
+        ],
+        "candidate_process_medians": [
+          7.452553756713868e-05,
+          7.655440615844727e-05,
+          7.549077124023438e-05
+        ],
+        "reference_median_seconds_per_job": 9.872219375610352e-05,
+        "candidate_median_seconds_per_job": 7.549077124023438e-05,
+        "paired_reference_over_candidate_speedups": [
+          1.3246760369513138,
+          1.211974663467901,
+          1.3506872350934325
+        ],
+        "geomean_speedup": 1.2943528138600557,
+        "component_gain_gate_passed": true,
+        "reference_stage_seconds_per_job": {
+          "pool_gu_s": 6.99451806335445e-05,
+          "pool_quant_s": 2.2258786010742204e-07,
+          "pool_down_s": 2.85267171630858e-05
+        },
+        "reference_process_cpu_over_wall": 5.897807693510487,
+        "candidate_stage_seconds_per_job": {
+          "pool_gu_s": 4.72491761779783e-05,
+          "pool_quant_s": 2.511257019042973e-07,
+          "pool_down_s": 2.814523132324197e-05
+        },
+        "candidate_process_cpu_over_wall": 5.867787913836015
+      },
+      {
+        "down": 20,
+        "workers": 5,
+        "host_works": true,
+        "jobs_per_call": 32,
+        "pattern": "stream32",
+        "reference_process_medians": [
+          9.470136502075196e-05,
+          8.997250103759767e-05,
+          9.911663034057618e-05
+        ],
+        "candidate_process_medians": [
+          0.00010138591369628907,
+          7.821996966552735e-05,
+          8.276111270141602e-05
+        ],
+        "reference_median_seconds_per_job": 9.470136502075196e-05,
+        "candidate_median_seconds_per_job": 8.276111270141602e-05,
+        "paired_reference_over_candidate_speedups": [
+          0.9340682701192465,
+          1.1502497561981264,
+          1.1976232206805544
+        ],
+        "geomean_speedup": 1.0876696053542898,
+        "component_gain_gate_passed": false,
+        "reference_stage_seconds_per_job": {
+          "pool_gu_s": 6.7298893096924e-05,
+          "pool_quant_s": 2.2011019897460734e-07,
+          "pool_down_s": 2.7138211883544567e-05
+        },
+        "reference_process_cpu_over_wall": 5.919024362516064,
+        "candidate_stage_seconds_per_job": {
+          "pool_gu_s": 5.028668041992107e-05,
+          "pool_quant_s": 2.5795370483399064e-07,
+          "pool_down_s": 3.18371910705566e-05
+        },
+        "candidate_process_cpu_over_wall": 5.744754495710645
+      },
+      {
+        "down": 42,
+        "workers": 5,
+        "host_works": true,
+        "jobs_per_call": 32,
+        "pattern": "reuse",
+        "reference_process_medians": [
+          9.397459463500978e-05,
+          8.571763204956055e-05,
+          8.57030302734375e-05
+        ],
+        "candidate_process_medians": [
+          7.720309674072266e-05,
+          6.27780724182129e-05,
+          6.954941213989259e-05
+        ],
+        "reference_median_seconds_per_job": 8.571763204956055e-05,
+        "candidate_median_seconds_per_job": 6.954941213989259e-05,
+        "paired_reference_over_candidate_speedups": [
+          1.2172386679074827,
+          1.3654071994840755,
+          1.2322610304894213
+        ],
+        "geomean_speedup": 1.2699312617967462,
+        "component_gain_gate_passed": true,
+        "reference_stage_seconds_per_job": {
+          "pool_gu_s": 6.69310633239745e-05,
+          "pool_quant_s": 2.8654461669921827e-07,
+          "pool_down_s": 1.8966371795654337e-05
+        },
+        "reference_process_cpu_over_wall": 5.935232777234267,
+        "candidate_stage_seconds_per_job": {
+          "pool_gu_s": 4.874309512329067e-05,
+          "pool_quant_s": 3.128066101074212e-07,
+          "pool_down_s": 2.0455663940429622e-05
+        },
+        "candidate_process_cpu_over_wall": 5.773688916793644
+      },
+      {
+        "down": 42,
+        "workers": 5,
+        "host_works": true,
+        "jobs_per_call": 32,
+        "pattern": "stream32",
+        "reference_process_medians": [
+          8.846631094360352e-05,
+          8.575768145751954e-05,
+          8.851285766601564e-05
+        ],
+        "candidate_process_medians": [
+          8.00437836303711e-05,
+          6.100744873046875e-05,
+          6.89517682800293e-05
+        ],
+        "reference_median_seconds_per_job": 8.846631094360352e-05,
+        "candidate_median_seconds_per_job": 6.89517682800293e-05,
+        "paired_reference_over_candidate_speedups": [
+          1.105224002804843,
+          1.4056919809316637,
+          1.2836923529871513
+        ],
+        "geomean_speedup": 1.2587335555813703,
+        "component_gain_gate_passed": true,
+        "reference_stage_seconds_per_job": {
+          "pool_gu_s": 6.910388189697392e-05,
+          "pool_quant_s": 2.8510028076172285e-07,
+          "pool_down_s": 1.8831303741455114e-05
+        },
+        "reference_process_cpu_over_wall": 5.944023351608853,
+        "candidate_stage_seconds_per_job": {
+          "pool_gu_s": 4.779838455200175e-05,
+          "pool_quant_s": 3.0736978149413115e-07,
+          "pool_down_s": 2.0678655090332204e-05
+        },
+        "candidate_process_cpu_over_wall": 5.828921526393016
+      }
+    ],
+    "gates": {
+      "independent_native_processes": 12,
+      "eligible_batches": 72,
+      "minimum_batch_seconds": 1.9420184090000001,
+      "duration_floor_seconds": 1,
+      "calibration_target_seconds": 2,
+      "minimum_last_calibration_seconds": 2.047953854,
+      "original_receipts_verify_declared_order_and_no_overlap": true,
+      "all_children_normal_zero_quiet_closed": true,
+      "numerical_qualified": true,
+      "repeated_gain_cells": 3,
+      "total_cells": 4,
+      "earlier_23_passing_V1cells_unchanged": true,
+      "all_four_fresh_cells_gain_in_all3pairs": false
+    },
+    "performance_qualified": false,
+    "model_trial_gate_passed": false,
+    "model_adopted": false,
+    "decision": "Complete fresh focused cohort;Down20/stream32 first pair is slower,so the declared all-four/combined gate fails. Preserve V1failed gate. Do not repeat to seek a favorable pair or enable cached model execution under this campaign.",
+    "resource_interpretation": "Whole production-pool wall includes lease handoff,GU,host hidden quantization,Down and waits. GU speed improves in these medians;Down remains unchanged arithmetic with slower candidate wall in some cells. CPU/wall includes spinning;physical RAM/cache/TLB traffic,CPU frequency and hardware ceilings are unknown. Stage times do not prove a resource is saturated.",
+    "pending_safety": "Actual generate/core engine and allocation repair are unbuilt;optional-failure injection,admitted RAM/TTFT,prefill preservation,task quality,physical262144/RESTORE and model-speed qualification remain open.",
+    "next": "Select a new bounded shape/schedule/cache-footprint mechanism from closed small-job gains and this large-job control failure;commit a new plan before evidence. Receive native-reviewed resource/allocation-method research without reading original bodies.",
+    "retention": "Keep useful72individual batches,paired process medians,setup/knownbytes/RSS,order/source/ELF/recipe and failed gates in this maintained result. Routine logs and per-process receipts can retire after pushed evidence and exact source recovery. The timing ELF is held only until the next explicit consumer/source-retirement decision;current qualified CPUarchives/numeric and coherent GPUfallback remain separate."
   }
 }

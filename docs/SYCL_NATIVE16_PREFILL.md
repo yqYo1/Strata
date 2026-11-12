@@ -262,9 +262,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   qualification follows from these component checks. Source`b3032cc18`and
   plan`7f8b40ae4`build timing ELF`7d67f886`;its506compiler/26link inputs,
   all35archive members and ELFheader/interpreter admission pass. Both fresh
-  120case nonperiodic checks pass,normal0and closed;the RCCRRCspeed cohort is
-  in progress under`cpu-compact-production-pool-timing-v2`. The actual
-  generate/core wiring and12eallocation repair remain unbuilt.
+  120case nonperiodic checks pass,normal0and closed. The RCCRRCspeed cohort
+  is now closed under`compact_production_pool_timing_v2`:12native processes,
+  72eligible batches,min1.942018409s,last calibration at least2.047953854s.
+  Three of4cells gain in all3pairs:Down20/reuse1.294353x,Down42/reuse1.269931x,
+  and Down42/stream321.258734x geometric means. Down20/stream32 has ratios
+  0.934068/1.150250/1.197623(mean1.087670),so the all-four/combined component
+  gate fails. Preserve both V1andV2failures;no cache-enabled model trial is
+  allowed by these campaigns. GU wall improves in the medians,while unchanged
+  Down math can take longer with the larger GU representation. This does not
+  establish physical RAM/cache traffic or saturation. The next bounded
+  mechanism is to inspect the compact GU integer dependency chains and test
+  independent integer accumulators without changing the FP block-FMA order,
+  storage footprint,phase selection or old native/compact references. This is
+  a proposal,not an implemented or adopted kernel. Commit its separate plan
+  before running it. The actual generate/core wiring and12eallocation repair
+  remain unbuilt;native-reviewed resource and failure-test research is pending.
   The old plan/source are recoverable from`3cbf1c597`/`cd156b4ba`. After42project
   and291GGMLsource-pin recovery,the new committed consumer retires the old
   V1fixture's13files/3728035bytes;V2admission passes after deletion. Keep current
