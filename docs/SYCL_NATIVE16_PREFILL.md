@@ -147,7 +147,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the inherited host reader rechecked the committed result. The gate correctly
   refuses that mutation. Preserve the failure;the separately plannedV2keeps
   controls local until host closure,with native/settings/workload/criteria
-  unchanged. Actual long runs remain unexecuted. Strict API/prompt/copy counts,drafts and
+  unchanged. V2passes both current-source frontend probes and2positive/9negative
+  copy/API binding controls,with normal closed host owners. Actual long runs
+  remain unexecuted. Strict API/prompt/copy counts,drafts and
   rounded clocks are joined;zero baseline and positive long-candidate private
   host-view counts must conserve. Commit each closure before the next process.
   This changes work distribution only;dedicated-prefill,agent,task,full-context
