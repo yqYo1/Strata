@@ -1,15 +1,16 @@
 # Bounded compact GU cache candidate
 
-This is a source-only, CPU-component experiment on
-`experiment/cpu-compact-cache`. Nothing is integrated into the production engine
-or selected by the ongoing six-process decode comparison. No build, test,
-numerical pass, RAM admission or performance improvement is claimed yet.
+This is a CPU-component experiment on `experiment/cpu-compact-cache`.
+The committed ownership fixture now builds and passes its bounded lifetime,
+phase/type/bounds and known-byte checks. Independent arithmetic, actual model
+reuse/RAM admission and performance remain unqualified. Nothing is integrated
+into the production engine or selected by the closed six-process comparison.
 
-The isolated child is necessary because Main's current `feature/sycl` engine,
-helpers and comparison inputs are frozen. Main owns implementation and all
-testing. Integrate useful completed work into `feature/sycl` with its original
-commits after the comparison closes, then retire this child. Rejecting this
-candidate means removing its unused source after preserving the decision.
+The child isolated source work while Main's comparison inputs were frozen.
+It remains only for the concrete real-block numeric and hot/cold timing gates
+below. Main owns all testing. Integrate useful completed work into
+`feature/sycl` with its original commits, then retire this child; preserve a
+rejected candidate's decision in Git and remove its unused active source.
 
 ## Evidence and provenance
 
@@ -64,26 +65,30 @@ before the ownership test. Its shared measurement lock prevents overlap with
 Main's GPU work. Build/check are finite, supervised by the existing pidfd
 owner, with an8GiB virtual-address cap;the ownership check has a128MiB RSS cap.
 Prepare the plan,commit it,then build/check only at a serialized boundary.
-No invocation or pass is implied by this recipe's source preparation.
+The plan is committed at `d65bb75b`;build and check both completed normally
+with closed owners. The build covers all432actual compiler inputs and links
+only libstdc++, libm, libgcc_s and libc. Result key
+`compact_cache_lifetime_v1` in the maintained CPU result holds exact identities
+and limits;this pass does not establish independent arithmetic or speed.
 
 ## Pending Main gates
 
-1. Commit the exact CPU-only build recipe, compiler/dependency inputs and
-   controller before building. Preserve the coherent engine/fallback; do not
-   build, test or clean while another GPU job is active.
-2. At a serialized boundary, build/run the bounded ownership fixture. Then
-   compare real IQ3_XXS blocks against the actual decode dispatcher with the
-   same Q8_K activation, rounding and reduction contract. Include both actual
-   Down formats, disjoint row partitions, aliases, finite outputs and guards.
-3. Commit a prospective timing plan before speed samples: lookup plus actual
+1. Compare real IQ3_XXS blocks against the actual decode dispatcher with the
+   same Q8_K activation, rounding and reduction contract. Pin the actual pair
+   implementation in `iq_single_avx2.cpp` and the called native dispatcher;
+   prove startup selection with its audit, rather than assuming the pair flag
+   selected it. Include both actual Down formats, disjoint row partitions,
+   aliases, finite outputs and guards. The completed lifetime gate is separate.
+2. Commit a prospective timing plan before speed samples: lookup plus actual
    GU dispatch, setup/conversion and allocation separately, first use versus
    amortized reuse, bounded hot/cold coverage and raw fallback. Keep individual
    matched repetitions, timer floors, known bytes/RSS and observer conditions.
    The old mixed-NT synthetic distribution does not prove model cache reuse.
-4. Admit a production bridge only after component gates and measured route/
+3. Admit a production bridge only after component gates and measured route/
    reuse/RAM evidence. Keep the bridge decode-only, preserve current prefill
    and collect repeated matched model results with strong/weak MTP. Physical
    context/RESTORE, task quality and default adoption remain separate.
 
-Review point: after the active EARLY0 comparison closes. A prepared prototype
-or one component pass does not complete the throughput goal.
+Review point: the next real-block numeric build/check boundary. Keep the
+coherent engine and independent prefill/decode references unchanged. One
+component pass does not complete the throughput goal.

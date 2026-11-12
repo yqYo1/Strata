@@ -980,5 +980,57 @@
     "commit": "f13e5eaa38fda3a674b0cf1f9a738d078e828270",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-plan.json",
     "sha256": "c2f269066331d124722b400c30d05101fba0a748b7501fad004ce4fd712e8efa"
+  },
+  "compact_cache_lifetime_v1": {
+    "stage": "ownership_passed_numeric_and_performance_pending",
+    "source_commit": "ca8f8cb8e275b5e0554f0a12a8b0b34963cc3d96",
+    "component_source_commit": "09ca4f1613d5e4f0ca5be80fb5dc0e8f691e34c3",
+    "plan_commit": "d65bb75bca80dad90931bb33a5697214637e0911",
+    "plan_path": "bench/sycl/cpu_compact_hot/plan.json",
+    "plan_sha256": "54f68b7ae3ad6ea5d496aee045bb3e5317e6109ad17b41f237d36b4c1e8df40c",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-lifetime-v1/lifetime",
+      "sha256": "0676de3990b4980ee723829cf74748d9263289852068044f96ed074ed64a95c5"
+    },
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "provenance": "Main-owned compact kernel from313e5c4bc;new cache/lifetime/controller under repository LICENSE;GGML3cf MIT headers. No XeStrata code/design/proposal.",
+    "actual_compiler_inputs": {
+      "count": 432,
+      "all_covered_by_frozen_coherent_census_and_committed_inputs": true,
+      "canonical_sorted_json_sha256": "ff72120360a664c79d7fa09f56fc4ed7bc20344989194ed2c5850136f279df90"
+    },
+    "libraries": [
+      "libstdc++.so.6",
+      "libm.so.6",
+      "libgcc_s.so.1",
+      "libc.so.6"
+    ],
+    "source_inputs_verified": 7,
+    "GGML_headers_verified": 2,
+    "gates": {
+      "build_normal_zero_quiet_stderr": true,
+      "check_normal_zero_quiet_stderr": true,
+      "exact_marker": true,
+      "phase_NT_type_bounds_refusals": true,
+      "known_byte_admission": true,
+      "six_disjoint_row_readers": true,
+      "lease_survives_cache_and_raw_retirement": true,
+      "finite_outputs_and_guards": true
+    },
+    "marker": "compact_cache_lifetime=PASS phase_guard=PASS budget=PASS source_retirement=PASS numeric_oracle=UNRUN performance=UNRUN",
+    "numeric_oracle_qualified": false,
+    "performance_qualified": false,
+    "strict_peak_RSS_admission_qualified": false,
+    "model_adopted": false,
+    "limits": "Same compact kernel before/after retirement proves ownership consistency only. Known-byte budget excludes control-block/allocator/peak RSS;no independent arithmetic,real-model dispatch,hot/cold speed,task or model route qualification.",
+    "next": "Pin actual iq_single_avx2.cpp pair implementation and native_gu_rows dispatcher/Q8_K quantizer;new committed real-weight numeric/actual-route plan,then hot/cold lookup+GU timing with conversion/allocation amortization before a decode-only production bridge.",
+    "retention": {
+      "private_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-hot-lifetime-v1",
+      "consumer": "Current ownership/reference fixture and build receipts for immediate real-block numeric candidate preparation;review when that fixture is built. Retire routine output after this result is pushed;no engine generation changed."
+    }
   }
 }
