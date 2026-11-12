@@ -478,7 +478,228 @@ def copy_run_device(action):
         guards.require(outcome['passed'],'exact copy-run device gate failed')
 
 
+def copy_run_timing_rows(text,candidate):
+    """The native PASS banner does not establish timing eligibility."""
+    import math
+    lines=[s for s in text.splitlines() if s.startswith('expert_bank_copy_timing candidate=')]
+    guards.require(len(lines)==2,'exactly two copy-path timing shapes required')
+    rows=[]
+    for line,(payload,uploads,commands) in zip(lines,[(2662400,641,259 if candidate else 641),
+                                                   (1510400,512,1 if candidate else 512)]):
+        tokens=[s.split('=',1) for s in line.split()[1:]]
+        guards.require(all(len(s)==2 for s in tokens) and len({s[0] for s in tokens})==len(tokens),
+            'malformed/duplicate timing fields')
+        row=dict(tokens)
+        ints=dict(candidate=int(candidate),payload=payload,logical_uploads=uploads,
+            requested_H2D_bytes=payload*uploads,commands=commands,preparation_timed=0,
+            guards_timed=0,actual_copy_read_drain_timed=1,model_qualified=0)
+        floats=('wall_ms','queue_ms','thread_ms','empty_ms')
+        guards.require(set(row)==set(ints)|set(floats)|{'eligible'} and
+            all(int(row[k])==v for k,v in ints.items()),'timed bytes/dispatch/geometry differs')
+        row={k:(float(v) if k in floats else int(v)) for k,v in row.items()}
+        guards.require(all(math.isfinite(row[k]) and row[k]>=0 for k in floats) and
+            0<row['queue_ms']<=row['wall_ms']+5 and row['thread_ms']<=row['wall_ms']+5,
+            'nonfinite,negative or inconsistent timing clocks')
+        eligible=row['wall_ms']>=100 and row['queue_ms']>=100 and row['empty_ms']<=.05*row['wall_ms']
+        guards.require(row['eligible'] in (0,1) and bool(row['eligible'])==eligible,
+            'printed eligibility contradicts measured clocks')
+        rows.append(row)
+    return rows
+
+
+def copy_run_timing_controls():
+    def example(candidate):
+        return '\n'.join('expert_bank_copy_timing '+ ' '.join(f'{k}={v}' for k,v in dict(
+            candidate=int(candidate),payload=p,logical_uploads=u,requested_H2D_bytes=p*u,
+            commands=c if candidate else u,wall_ms=200,queue_ms=180,thread_ms=100,empty_ms=1,
+            eligible=1,preparation_timed=0,guards_timed=0,actual_copy_read_drain_timed=1,
+            model_qualified=0).items()) for p,u,c in [(2662400,641,259),(1510400,512,1)])
+    valid=example(True)
+    guards.require(len(copy_run_timing_rows(valid,True))==2 and
+        len(copy_run_timing_rows(example(False),False))==2,'valid timing controls failed')
+    ineligible=valid.replace('wall_ms=200','wall_ms=90').replace('queue_ms=180','queue_ms=80').replace(
+        'thread_ms=100','thread_ms=60').replace('eligible=1','eligible=0')
+    guards.require(not any(r['eligible'] for r in copy_run_timing_rows(ineligible,True)),
+        'ineligible native success was accepted as timing evidence')
+    cases=[valid.replace('wall_ms=200','wall_ms=nan'),valid.replace('empty_ms=1','empty_ms=-1'),
+        valid.replace('queue_ms=180','queue_ms=500'),valid.replace('commands=259','commands=641'),
+        valid.replace('eligible=1','eligible=0'),valid+'\n'+valid,
+        valid.replace('candidate=1','candidate=1 candidate=1'),valid.replace('model_qualified=0','model_qualified=1')]
+    for text in cases:
+        refused=False
+        try:copy_run_timing_rows(text,True)
+        except (RuntimeError,ValueError):refused=True
+        guards.require(refused,'invalid timing control admitted')
+    return dict(valid_arms=2,ineligible_success_recognized=True,negative_cases=len(cases),GPU_executed=False)
+
+
+def copy_run_timing(action):
+    """Prospective matched helper-path comparison; no model/saturation claim."""
+    import ast
+    import statistics
+    import build_expert_copy_runs as build
+    import ur_validation as validation
+    root=B/'expert-copy-runs-timing-v1';key='expert_copy_runs_timing_v1'
+    device_key='expert_copy_runs_device_v2'
+    order=[('diagnostic-reference',False,True),('diagnostic-candidate',True,True)]+[
+        ('speed-'+str(i),arm,False) for i,arm in enumerate([False,True,True,False,False,True])]
+    def save(row):
+        (root/'record.json').write_text(json.dumps(row,indent=2)+'\n')
+        public=json.loads(build.RESULT.read_text());public[key]=row
+        build.RESULT.write_text(json.dumps(public,indent=2)+'\n')
+    def device_gate(native):
+        gate=validation.committed(build.RESULT,(device_key,))
+        guards.require(gate==json.loads((B/'expert-copy-runs-device-v2/record.json').read_text()) and
+            gate['stage']=='closed' and gate['passed'] and gate['complete'] and
+            gate['ownership_closed'] and not gate['active'] and gate['binaries']==native['binaries'] and
+            gate['native_source_commit']==native['native_source_commit'] and
+            [v['mode'] for v in gate['results']]==['cpu','smoke','large'] and
+            all(v['passed'] and v['complete'] and v['ownership_closed'] and v['fresh_faults']==[]
+                for v in gate['results']),'closed exact native CPU/small/maximum-span gates required')
+        old=ast.parse(subprocess.check_output(['git','show',gate['source_commit']+':tools/sycl/check_expert_bank.py'],cwd=P))
+        now=ast.parse(Path(__file__).read_text())
+        names={'copy_run_device','copy_run_startup_errors','copy_run_startup_controls'}
+        functions=lambda tree:{n.name:ast.dump(n,include_attributes=False) for n in tree.body
+            if isinstance(n,ast.FunctionDef) and n.name in names}
+        guards.require(functions(old)==functions(now) and set(functions(old))==names,
+            'old qualification functions changed;no inherited gate')
+        return dict(key=device_key,source_commit=gate['source_commit'],native_source_commit=gate['native_source_commit'],
+            record_sha256=digest(B/'expert-copy-runs-device-v2/record.json'),
+            existing_device_functions_AST_unchanged=True,maximum_span_passed=True)
+    def current(row,committed=True):
+        if committed:guards.require(validation.committed(build.RESULT,(key,))==row,'commit exact timing stage first')
+        native,_=build.observer_native(row['observer_admission'])
+        guards.require(device_gate(native)==row['device_prerequisite'],'original device qualification changed')
+        runtime_path=Path(row['runtime_manifest']['path'])
+        guards.require(digest(runtime_path)==row['runtime_manifest']['sha256'] and all(
+            digest(p)==h for p,h in json.loads(runtime_path.read_text()).items()),'runtime providers changed')
+        guards.require(row['boot']==Path('/proc/sys/kernel/random/boot_id').read_text().strip() and
+            guards.driver_guard()==row['driver'],'boot/driver changed')
+        return native
+    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB);guards.no_model_owners([])
+        if action=='prepare':
+            guards.require(not root.exists() and key not in json.loads(build.RESULT.read_text()),'fresh timing plan only')
+            native,proof=build.observer_native();gate=device_gate(native)
+            controls=copy_run_timing_controls();startup=copy_run_startup_controls()
+            env=dict(native['recipe']['environment'])
+            guards.require({k:env[k] for k in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys',
+                'EnableDirectSubmission','SYCL_CACHE_PERSISTENT')}==dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',
+                NEOReadDebugKeys='1',EnableDirectSubmission='0',SYCL_CACHE_PERSISTENT='0'),'preserve safety/cache policy')
+            prior=validation.committed(build.RESULT,(device_key,))
+            row=dict(stage='ready',source_commit=proof['observer_source_commit'],
+                native_source_commit=native['native_source_commit'],observer_admission=proof,
+                device_prerequisite=gate,native_validation_probe=native['native_validation_probe'],
+                runtime_manifest=prior['runtime_manifest'],environment=env,binary=native['binaries']['sycl_expert_bank_test'],
+                boot=prior['boot'],driver=prior['driver'],parser_controls=controls,startup_controls=startup,
+                order=[dict(label=n,candidate=c,traced=t) for n,c,t in order],results=[],active=False,
+                ownership_closed=True,passed=False,complete=False,performance_qualified=False,
+                budgets=dict(wall=240,cpu=1200,rss_cap=12<<30,text_cap=64<<20,file_cap=64<<20,total_cap=256<<20),
+                plan='Commit source and this plan before execution,and each closed process before the next. '
+                    'Two traced timing-branch diagnostics,then six fresh quiet processes ABBAAB,three per arm;'
+                    'adjacent opposite-order pairs(0,1),(2,3),(4,5). Each native process warms the small helper '
+                    'and marker,then measures ordinary384/max2662400 and full-fit512/1510400 in fixed order. '
+                    'Same bytes,hits,readers,source/slot order;only copy-run batching differs. Each shape has '
+                    'one empty marker/drain pair per process,six independent clean controls;require each native '
+                    'wall/queue>=100ms and empty<=5%wall,and per-shape maximum empty across six<=5%minimum wall. '
+                    'Require normal0,all byte/source/map/guard/drain/counter checks,exact actual dispatch,quiet '
+                    'validation,no fresh faults,closed ownership and frozen inputs. Stop first such failure;no retry. '
+                    'Record all individual samples,medians/ranges and paired wall/queue/thread ratios. Each geometry '
+                    'independently permits model follow-up only when all three candidate/reference wall ratios<1 '
+                    'and candidate median<reference median,with timing eligibility/calibration gates passing. '
+                    'No arbitrary minimum percentage. Mixed/small results remain candidates for a separately '
+                    'committed narrower plan,not a passed gate. Stop after six clean processes either outcome.',
+                timing_scope='Copy helper,all GPU byte readers,submission gaps and checked final drain;source fill,'
+                    'allocations,memset/reset and post-timing guards excluded. Large spans are first use in each '
+                    'fresh process;not warmed-model/request throughput. Queue interval is not pure DMA time;thread '
+                    'CPU includes polling. Per-process private NEO/SYCL/XDG caches;SYCL persistent cache remains0. '
+                    'Parameter validation and retained-reference preload charged in both arms. No bus-traffic,'
+                    'saturation,GEMM,model PP/TG,decode,ordinary teardown or262144/RESTORE qualification.',
+                retention='Keep compact individual timing/counter/eligibility samples and source/build/environment '
+                    'identities;retire successful traces/cache/logs after decision. No new engine generation. '
+                    'Existing engine/provenance reader holds remain for before the next engine build.')
+            root.mkdir(mode=0o700);current(row,False);save(row)
+            print('Prepared pinned eight-process comparison;commit before timing.',flush=True);return
+        row=json.loads((root/'record.json').read_text());current(row)
+        index=len(row['results']);guards.require(row['stage'] in ('ready','running') and index<len(order) and
+            all(v['passed'] for v in row['results']),'inspect existing timing owner/outcome;no restart')
+        label,candidate,traced=order[index];case=root/label
+        guards.require(not case.exists(),'existing owned process cannot be repeated');case.mkdir(mode=0o700)
+        for name in ('tmp','cache'):(case/name).mkdir(mode=0o700)
+        env=dict(row['environment'],TMPDIR=str(case/'tmp'),XDG_CACHE_HOME=str(case/'cache'),
+            NEO_CACHE_DIR=str(case/'cache/neo'),SYCL_CACHE_DIR=str(case/'cache/sycl'))
+        probe=row['native_validation_probe'];env.update(LD_PRELOAD=probe['library']['path'],
+            STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
+            UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(case/'validation.log'))
+        if not traced:env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
+        cursor=next(s.split(': ',1)[1] for s in subprocess.check_output(
+            ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
+            if s.startswith('-- cursor: '))
+        outcome=dict(label=label,candidate=candidate,traced=traced,passed=False,complete=False,
+            host_probe_accepted=False,execution_success=False,timing_eligible=False,GPU_executed=True)
+        scope=None
+        def persist():
+            (case/'execution.json').write_text(json.dumps(dict(outcome,active=bool(scope and scope.active),
+                commands=scope.commands if scope else []),indent=2)+'\n')
+        scope=supervision.Owner(case/'owned',persist)
+        try:
+            argv=[row['binary']['path'],'--copy-runs-timing-'+('candidate' if candidate else 'reference')]
+            event,out,err=scope.run(label,argv,env,P,**row['budgets'])
+            outcome.update(native_pid=event['pid'],native_exit_code=event['exit_code'])
+            text,errors=out.read_text(),err.read_text()
+            guards.require(supervision.closed(event) and event['exit_code']==0 and not re.search(
+                'terminate called|cleanup failed|teardown uncertain',errors),'copy timing child failed')
+            outcome['validation'],outcome['expected_startup_API_errors']=copy_run_startup_errors(errors,event['pid'],traced)
+            guards.require(outcome['validation']['loader']==probe['loader']['path'],'actual validation loader differs')
+            if traced:guards.require('urEnqueueUSMMemcpy' in errors and 'urEnqueueKernelLaunch' in errors,
+                'timing diagnostics require copies and readers traced')
+            cases=[dict(re.findall(r'(\w+)=([^ ]+)',line)) for line in text.splitlines()
+                if line.startswith('expert_bank_private_case ')]
+            expected=[(256,17,3,40),(2662400,641,383,2048),(1510400,512,512,2048)]
+            guards.require(len(cases)==3 and [(int(c['source_stride']),int(c['uploads']),int(c['hits']),
+                int(c['consumers'])) for c in cases]==expected and all(c['copy_runs']==str(int(candidate)) and
+                c['staged']=='0' and c['custom_queue']=='1' and c['status']=='0' and c['unwind']=='0' and
+                all(c[q]=='PASS' for q in ('immutable_slab','guards','private_map','checked_drain'))
+                for c in cases) and 'expert_bank_copy_timing PASS model=UNRUN' in text,'copy/read/guard checks differ')
+            outcome['timings']=copy_run_timing_rows(text,candidate)
+            outcome['execution_success']=True
+            outcome['timing_eligible']=all(v['eligible'] for v in outcome['timings'])
+            log=case/'validation.log';guards.require(not log.exists() or not log.stat().st_size,'validation diagnostic')
+            guards.require(outcome['timing_eligible'],'normal success is ineligible timing;stop without advancement')
+            current(row);outcome.update(complete=True,host_probe_accepted=True)
+        except BaseException as error:outcome['error']=repr(error)
+        finally:
+            validation.finish(outcome,scope,cursor,row['boot'])
+            outcome['passed']=bool(outcome['passed'] and outcome['complete'] and outcome.get('driver_after')==row['driver'])
+            persist();row['results'].append(outcome);row.update(stage='running' if outcome['passed'] else 'failed',
+                active=bool(scope.active),ownership_closed=outcome['ownership_closed'])
+            if outcome['passed'] and len(row['results'])==len(order):
+                clean=row['results'][2:];decisions=[]
+                for i in range(2):
+                    samples=[v['timings'][i] for v in clean]
+                    a=[v for v in samples if not v['candidate']];b=[v for v in samples if v['candidate']]
+                    ratios={k:[next(v[k] for v in samples[j:j+2] if v['candidate'])/
+                        next(v[k] for v in samples[j:j+2] if not v['candidate']) for j in (0,2,4)]
+                        for k in ('wall_ms','queue_ms','thread_ms')}
+                    calibration=max(v['empty_ms'] for v in samples)<=.05*min(v['wall_ms'] for v in samples)
+                    median=lambda group,k:statistics.median(v[k] for v in group)
+                    gain=calibration and all(v<1 for v in ratios['wall_ms']) and median(b,'wall_ms')<median(a,'wall_ms')
+                    decisions.append(dict(payload=samples[0]['payload'],paired_candidate_over_reference=ratios,
+                        reference_medians={k:median(a,k) for k in ('wall_ms','queue_ms','thread_ms')},
+                        candidate_medians={k:median(b,k) for k in ('wall_ms','queue_ms','thread_ms')},
+                        repeated_empty_control_max_ms=max(v['empty_ms'] for v in samples),
+                        cross_process_calibration_passed=calibration,mechanism_gain_gate_passed=gain,
+                        model_followup_permitted=gain,model_qualified=False))
+                row.update(stage='closed',passed=True,complete=True,decisions=decisions,
+                    performance_qualified=all(v['mechanism_gain_gate_passed'] for v in decisions))
+            save(row)
+        print(json.dumps({k:outcome.get(k) for k in ('label','passed','complete','ownership_closed','timings','error')}),flush=True)
+        guards.require(outcome['passed'],'copy-path timing process failed')
+
+
 def main():
+    if sys.argv[1:] in (['copy-runs-timing-prepare'],['copy-runs-timing-next']):
+        copy_run_timing(sys.argv[1].rsplit('-',1)[1]);return 0
     if len(sys.argv)==2 and sys.argv[1].startswith('copy-runs-'):
         action=sys.argv[1][len('copy-runs-'):]
         guards.require(action in ('prepare','cpu','smoke','large'),'copy-runs-prepare|cpu|smoke|large')
