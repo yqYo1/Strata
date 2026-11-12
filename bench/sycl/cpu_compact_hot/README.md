@@ -71,6 +71,15 @@ only libstdc++, libm, libgcc_s and libc. Result key
 `compact_cache_lifetime_v1` in the maintained CPU result holds exact identities
 and limits;this pass does not establish independent arithmetic or speed.
 
+`numeric.cpp` and its CPU-only CMake target now prepare the next gate, without
+executing it. The reference is a fresh compilation of the actual native
+dispatcher, quantizer and paired implementation, with this coherent engine's
+compiler settings. No existing archive is reused. `cpu_compact_numeric.py`
+pins project/GGML/tool/CMake inputs, both real Down-format slices and the
+consumed ownership fields before launch. It then requires actual raw dispatch
+counts, exact GU bits, guarded partial/threaded rows and alias refusal. This
+source preparation is not a numeric pass and permits no speed/model trial.
+
 ## Pending Main gates
 
 1. Compare real IQ3_XXS blocks against the actual decode dispatcher with the
