@@ -141,8 +141,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   missed-expert offload,EARLY0and static1256slots in both arms. Each process
   uses four warmups then32K-plus regular-code/varied-prose thinking-on long
   generation,with at least1Kactual output and observed strong/weakMTP classes.
-  Source/build/12ELF/provider/15asset checks pass preparation;host probes and
-  actual long runs remain unexecuted. Strict API/prompt/copy counts,drafts and
+  Source/build/12ELF/provider/15asset checks pass preparation. V1host admission
+  stops before Owner/host/native launch:Main saved passing copy controls before
+  the inherited host reader rechecked the committed result. The gate correctly
+  refuses that mutation. Preserve the failure;the separately plannedV2keeps
+  controls local until host closure,with native/settings/workload/criteria
+  unchanged. Actual long runs remain unexecuted. Strict API/prompt/copy counts,drafts and
   rounded clocks are joined;zero baseline and positive long-candidate private
   host-view counts must conserve. Commit each closure before the next process.
   This changes work distribution only;dedicated-prefill,agent,task,full-context

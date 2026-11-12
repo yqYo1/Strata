@@ -311611,7 +311611,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "3a19121d3b99ebbc87d8f2387e3aa775643b9e0f",
     "native_observer_admission": {
       "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
@@ -311980,6 +311980,21 @@
       "retention": "Existing coherent generation only. Keep compact individual samples,actual copy/cache/route counts,source/recipe/runtime/configuration and decision. Retire normal raw logs/JIT at verified closure. Generated config/plan bytes are reconstructible from committed base configuration,arm,root and probe."
     },
     "invariant_signature": "6b2a31ec41c0e050b9229fb169800f578e7591a2e1d1fe78e73c4a4099683677",
+    "copy_controls": {
+      "passed": true,
+      "positive": 2,
+      "rejected": 9,
+      "GPU_executed": false
+    },
+    "error": "RuntimeError('commit exact input first: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json / coherent_decode_pcie_speed_v1')",
+    "failed_action": "host",
+    "failure_diagnosis": {
+      "GPU_executed": false,
+      "host_probes_executed": false,
+      "copy_controls_passed": true,
+      "cause": "Main saved copy_controls inside the pinned result before inherited host() called current() again. The committed-row gate correctly refused the mutation before Owner/native launch.",
+      "next": "Commit the original failed V1;use a new V2 source/plan with no intermediate result mutation. Do not retry V1 or relax source matching."
+    },
     "source_inputs": {
       "files": 721,
       "sha256": "470458dc52a4a8035fc7e813b2681e47eca299b2549d45836bdf4884985cb24d"

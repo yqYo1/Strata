@@ -20,7 +20,7 @@ import coherent_prefill_bench as prefill
 import pool_spin as runner
 
 P, B, RESULT = reuse.P, reuse.B, reuse.RESULT
-ROOT, KEY = B / 'coherent-decode-pcie-speed-v1', 'coherent_decode_pcie_speed_v1'
+ROOT, KEY = B / 'coherent-decode-pcie-speed-v2', 'coherent_decode_pcie_speed_v2'
 THIS = 'tools/sycl/coherent_decode_bench.py'
 PYTHON = prefill.model.PYTHON
 ARMS = ('reference', 'candidate', 'candidate', 'reference', 'reference', 'candidate')
@@ -273,6 +273,10 @@ def runner_context():
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh comparison only')
+    failed = reuse.build.validation.committed(RESULT, ('coherent_decode_pcie_speed_v1',))
+    require(failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
+        and failed['ownership_closed'] and not failed['active'] and failed['processes'] == []
+        and failed['failed_action'] == 'host', 'preserve original V1 host prelaunch failure')
     n, proof, prior, providers = basis()
     contract, manifest = runner.model.python_manifest()
     assets = shared.models.model_pins(prior['configuration'], prior['model_assets'], full=True)
@@ -285,6 +289,10 @@ def prepare():
         passed=False, complete=False, active=False, ownership_closed=True, whole_bytes=448 << 20,
         budgets=dict(wall=2700, cpu=16200, rss_cap=104 << 30, text_cap=16 << 20,
             file_cap=32 << 20, total_cap=64 << 20),
+        previous_attempt=dict(key='coherent_decode_pcie_speed_v1', source_commit=failed['source_commit'],
+            stage='failed', GPU_executed=False,
+            correction='V1saved successful copy controls before the inherited host gate rechecked committed state. '
+                'V2keeps controls local until host closure;native/configuration/workload/performance criteria unchanged.'),
         plan=dict(question='Does assigning1/16of distinct decode misses to existing GPU copies improve sustained generation?',
             evidence='Corrected finite1/16/EARLY0 same-build32769/82/32769handoff passes. Existing caller/pool/wait '
                 'observations do not establish saturation. This changes CPU/GPU/PCIe work distribution,not native math.',
@@ -344,8 +352,10 @@ def execute(action):
     try:
         if INDEX is None:
             current(row)
-            row['copy_controls'] = copy_controls(); save(row)
+            controls = copy_controls()
             runner.comparison.host(runner_context())
+            row = json.loads((ROOT / 'record.json').read_text())
+            row['copy_controls'] = controls; save(row)
         else:
             runner_context().run(INDEX)
     except BaseException as error:
