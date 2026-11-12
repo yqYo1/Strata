@@ -199,40 +199,51 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   admission per format also passes. The committed V2plan`d27a245f0`now closes
   12fresh processes/144eligible timing batches,min157.451ms,at evidence`762d2ff47`.
   Lookup+GU gains pass all3matched pairs in all8Down20/42/thread/pattern cells.
-  Geometric-mean speedups are2.33..2.41for1core reuse,2.21..2.25for1core
-  stream32,2.62..2.68for6core reuse,and1.82..1.86for6core stream32. Per32experts,
+  Geometric-mean speedups are2.33..2.41for1worker reuse,2.21..2.25for1worker
+  stream32,2.62..2.68for6worker reuse,and1.82..1.86for6worker stream32. Per32experts,
   allocation/encoding/freeze is171..195ms and known view storage54898632bytes;
   raw bytes remain resident. These are synthetic full640-row worker loops,not
   production-pool partial-row scheduling or observed model reuse. Cross-worker
   L3reuse is possible;logical bytes/time is not physical DRAM traffic or saturation.
   All individual samples/setup/RSS and per-cell amortization remain in the linked
   CPUresult. Eight component rows bring the CSV to352;model PP/TG remain blank.
-  The new source-owned production bridge is implemented in source but remains
-  unbuilt/unqualified. `STRATA_CPU_COMPACT_GU_MIB=0`or unset keeps native GU;
+  The new source-owned production bridge has passed its fresh CPU whole-pool
+  numerical gate;the generate/core engine wiring remains unbuilt and has no
+  model qualification. `STRATA_CPU_COMPACT_GU_MIB=0`or unset keeps native GU;
   an explicit budget prepares all eligible immutable resident host layers before
   pool/READY,or keeps native fallback. Source coordinates are captured before
   CPUjob grouping loses expert identity. Leases span synchronous pool readers;
   raw blobs still provide Down. Only Decode/NT1 with matching GU format selects
   cached math;prefill,NT>1,misses and unsupported providers retain native GU.
   The codec arithmetic is moved unchanged from the owned component into the
-  CPUmodule;Cache now hides storage behind an opaque API. Fresh whole-pool tests
-  cover GU/hidden quantization/Down,partial rows,>96job batches,lease retirement,
-  misses and phase/NT/budget refusals. Commit recipe and rebuild every affected
-  CPUtranslation unit before running;do not mix the changed ExpertPool/Dispatch
-  definitions with old objects. No new model/TTFT/RSS or physical262144 claim.
+  CPUmodule;Cache now hides storage behind an opaque API. Source`c61ee3e7b`and
+  plan`e2fd9e722`fresh-build11CPUunits,24GGMLunits and the fixture,covering627
+  compiler inputs and22external links. All96whole-pool cases pass across
+  Down20/42,including GU/hidden quantization/Down bit equality,partial rows,
+  97/193job batches,lease retirement,misses and phase/NT/budget refusals. Both
+  children close normally0;no GPU work runs. See`compact_production_pool_v1`
+  in the CPUresult. This is numerical evidence,not production-pool speed.
+  Existing keys/misses repeat every32/3jobs,so a wrong96job-offset implementation
+  could escape these data;the source uses the correct offset. The next timing
+  admission must use nonperiodic keys/misses across batches and independently
+  enforce host/worker topology,with correctness outside timing. Reuse only this
+  coherently built generation;rebuild all affected translation units for any
+  further class change. No new model/TTFT/RSS or physical262144 claim.
   The completed source reviews correct six-worker stream32 to16experts per
   worker/32aggregate and distinguish singleton affinity from topology admission.
   Main observed distinct host cores0..5 outside the old controller;the new pool
-  plan must pin and recheck topology. Old raw samples/gain gates remain a CPU
+  controller pins and rechecks topology. Old raw samples/gain gates remain a CPU
   screen,not cold-DRAM or model evidence. The original V1missing-header refusal
   remains failed. The retained engine ELF and its prefill/decode paths are
-  unchanged;new source is opt-in and pending validation. The ended
+  unchanged;new source is opt-in and model/performance validation is pending. The ended
   ownership ELF/build and routine V4output are retired after source recovery:
   9files/192066bytes;the numeric reader still passes. Preserve the consumed
-  ownership check receipt and V3archive/input proofs for this immediate timing.
+  ownership check receipt and V3archive/input proofs until their old reader is
+  migrated/retired at the next timing-build boundary;new pool timing uses the
+  fresh qualified archives instead of old CPUobjects.
   Closed timing output and consumed numeric-research payloads are now retired;
   individual samples and compact provenance remain in Git. The CPUchild remains
-  for the imminent production-pool bridge and migration of its path-bound source
+  for migration/retirement of its path-bound source
   readers. Legacy GPUfixture/IR/deployment holds remain separate.
   Preserve the coherent **dc645 / engine97fda** fallback and its build-proof
   readers, **611a / engine56cad9** for the matched32K/64Kprefill comparison,
