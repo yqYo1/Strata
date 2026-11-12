@@ -366,6 +366,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   evidence. Keep the14508GPUfallback and current CPUfixtures;legacy reader/IR/
   deployment holds remain separate. CPUresult and native build result are
   frozen during this build. No GPUexecution or model qualification yet.
+  Configure/host-control/planning children now close normally0. The fresh
+  configuration plans138object compilations,including compact_gu.cpp and
+  both actual generate entrypoints. Commit this configured stage before
+  compilation;the final build census and executable checks are still pending.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
