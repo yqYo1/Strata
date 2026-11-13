@@ -408,14 +408,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   clean speed,sustained TG/task and physical262144/RESTORE remain pending.
   Keep14508as the clean measured reference. The earlier cache-on exposure
   screen remains failed and is not superseded by the independent cache0pass.
-  The new CPU-only scheduling experiment is isolated on
-  `experiment/cpu-native-whole`,sourcea841051e2,in the ghq child worktree
-  `cpu-native-whole`. It retains the existing native math but claims complete
-  experts for GU/quant/Down,instead of two global row phases and serial quant.
-  Core/generate do not select it. Fresh36-object CPUbuild,numeric boundaries
-  and fixedRCCRRC12/24/36job tests are pending;not a speed or model result.
-  Preserve the primary GPUreference while this child is evaluated,then merge
-  useful original commits and retire the branch/worktree at its decision.
+  The CPU-only scheduling component at sourcea841051e2 now closes a fresh
+  36-object build,180numeric cases per Down20/42format and12RCCRRCnative
+  processes/432eligible batches. Fourteen of24cells gain in all3pairs;all eight
+  mixed-NT24/36job cells pass with geometric means1.018636..1.083121. All12job
+  cells fail;two NT1stream64cells also lose a pair. The unchanged native math
+  completes GU/quant/Down on one claiming worker. Serial quantization is only
+  0.19..0.48percent of reference service;the joint scheduling/locality effect
+  does not establish physical CPU/RAM saturation or model TG. Original samples
+  and failures are committed at1d207e4fa;24CSVpoints index them. Merge d67570b63
+  integrates the original child identities into pushed feature/sycl. Core/generate
+  still do not select it. Next commit a shape-scoped model policy and fresh full
+  build,preserving prefill and14508clean fallback. The finished child and its
+  extra CPUfixture are ready for retirement after203project/291GGMLpins,
+  635compiler inputs,36objects,22links and original recipe recovery;the compact
+  result carries the actual cleanup state. This is component progress,not adoption.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
