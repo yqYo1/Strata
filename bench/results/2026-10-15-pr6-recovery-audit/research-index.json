@@ -32652,5 +32652,347 @@
       "wrong-hash-refused",
       "writable-mount-refused"
     ]
+  },
+  "native_session_protocol_ports_20261113f": {
+    "classification": "decision_support",
+    "stage": "reviewed_source_capability_port_map",
+    "title": "Serial native SAVE/RESTORE protocol and capability port map",
+    "source_packet": {
+      "fork_commit": "8757530baf90a09233900010177792659f12a058",
+      "manifest_sha256": "567c75f4a31d87a3cecaba2f3c1b06764ccac667d2171d63b464b1bb9d270417",
+      "upstream_repository": "Niko1221/Strata",
+      "upstream_commit": "c1ff07f1a1817594811c960039571c6e268fe89a"
+    },
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/native_session_protocol_ports_20261113f/report.md",
+      "bytes": 8030,
+      "sha256": "e5cddd83159be73b82ca1f67d72b7f97ff64ff224043b57ee644f574fe6defce"
+    },
+    "related_prior_keys": [
+      "native_session_protocol_ports_20261113b",
+      "native_disk_session_design_20261113",
+      "upstream_e88_generation_protocol_port_scope"
+    ],
+    "review": "Accept as pinned-source decision support only: Python exposes disk-session SAVE/RESTORE while the pinned native serial protocol does not; API method presence does not establish backend capability. No implementation or runtime result.",
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "The source/protocol discrepancy is mapped; a live required endpoint and an explicit port-or-disable decision are needed before a new scoped task.",
+      "nonduplication": "Narrow serial SAVE/RESTORE capability gap; distinct from BGEN/generation protocol planning.",
+      "pending": "Main must decide truthful capability serialization or keep /slots/{id}?action=save|restore disabled on this backend."
+    },
+    "retrieval": "Before enabling or porting serial disk SAVE/RESTORE; keep RAM snapshots, disk artifacts, and batch BGEN distinct.",
+    "active": false,
+    "ownership_closed": true,
+    "worker_done_acknowledged": true,
+    "author": {
+      "agent": "Orca",
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    },
+    "reviewer": {
+      "agent": "native Codex",
+      "model": "gpt-6-luna",
+      "effort": "max"
+    },
+    "retention_review": "Retrieve for the named protocol/full-context/resource/AOT question;review necessity after its current implementation or measurement decision. No raw worker transactions are required."
+  },
+  "native16_full_context_gate_audit_20261113f": {
+    "classification": "decision support",
+    "stage": "reviewed_source_only_gate_map",
+    "title": "Fast native16 physical-context fill and RESTORE gate map",
+    "source_packet": {
+      "fork_commit": "8757530baf90a09233900010177792659f12a058",
+      "manifest_sha256": "567c75f4a31d87a3cecaba2f3c1b06764ccac667d2171d63b464b1bb9d270417",
+      "upstream_repository": "Niko1221/Strata",
+      "upstream_commit": "c1ff07f1a1817594811c960039571c6e268fe89a"
+    },
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/native16_full_context_gate_audit_20261113f/report.md",
+      "bytes": 12844,
+      "sha256": "646ac2127d5dee2bf16580529777a85ff329c8ed053242e744b3a9046eb3fd13"
+    },
+    "related_prior_keys": [
+      "native16_full_context_session_gate_source_audit",
+      "exact_full_context_entrypoint_isolation_audit_20261028"
+    ],
+    "review": "Accept as a pinned-packet source/gate map, not a fresh product-HEAD audit or model qualification. Its exact-size consume-prompt diagnostic requires zero output room and stops after filling position 262143.",
+    "qualification_boundary_correction": "A successful full fill through position 262143 has zero output room; do not require a decode after that full fill. Validate prefill-to-decode separately with a near-cap prompt that reserves an output slot. Preserve independent full-fill allocation/tail, numerical, RESTORE/reentry, and fault-owner gates.",
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "The diagnostic route and missing gates are mapped. Main needs a committed current-source plan and serialized run ownership before physical-context execution.",
+      "nonduplication": "Adds the fast native16 consume-prompt mechanics and reusable runners to the broader prior source maps; does not repeat their general gate inventory.",
+      "pending": "No actual physical 262144 fill, full-boundary numerical result, RESTORE, allocation admission, or injected-failure result was produced by this report."
+    },
+    "retrieval": "Before committing the physical-context qualification plan; use the full-fill diagnostic for zero-output fill, near-cap request for decode handoff, and distinct restore/failure-owner gates.",
+    "active": false,
+    "ownership_closed": true,
+    "worker_done_acknowledged": true,
+    "author": {
+      "agent": "Orca",
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    },
+    "reviewer": {
+      "agent": "native Codex",
+      "model": "gpt-6-luna",
+      "effort": "max"
+    },
+    "retention_review": "Retrieve for the named protocol/full-context/resource/AOT question;review necessity after its current implementation or measurement decision. No raw worker transactions are required."
+  },
+  "cpu_mixed_nt_kernel_cache_20261113g": {
+    "classification": "decision_support",
+    "stage": "reviewed_source_and_corpus_reference",
+    "title": "Fork-393 AVX2 GU/Down and mixed-NT cache under long requests",
+    "source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
+    "historical_wave_d_packet_base": "8757530baf90a09233900010177792659f12a058",
+    "upstream_repository": "Niko1221/Strata",
+    "upstream_commit": "c1ff07f1a1817594811c960039571c6e268fe89a",
+    "workload_evidence_commit": "aebb52c6bf8c508f111b30cfb4f67ca0f3dbb1d2",
+    "source_addendum_manifest_sha256": "1a84affe6e886e3d15ffa17248b48d33461748d558b4d28756c5b9ab4aac06aa",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cpu_mixed_nt_kernel_cache_20261113g/report.md",
+      "bytes": 10487,
+      "sha256": "b314a34cb10bc97ec812b31cc3befd3af54d0d3c7fd4ab7ab26b5eeddb656c73"
+    },
+    "related_prior_keys": [
+      "cpu_valid_mixed_nt_cache_methods_20261113b",
+      "cpu_mixed_nt_corpus_decision_20261113c",
+      "zen3_avx2_expert_instruction_collection_scope"
+    ],
+    "review": "Retain as source-only decision support. The two supplied >1K generations had zero NT1 cache bindings; exact AVX2 helper bodies/assembly, physical DRAM traffic, and saturation remain unknown. The old stream64 overlap does not establish reuse across 48 layers.",
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "A live measured-cost question plus CPU critical-path attribution and the exact helper bodies/assembly are required before selecting an AVX2/cache optimization.",
+      "nonduplication": "Fork-393 paths and the long-request census extend the earlier conditional mixed-NT reference; they do not repeat the failed no-report worker task.",
+      "pending": "The proposed cache fixture and any multi-layer claim remain unrun."
+    },
+    "retrieval": "Before a newly committed mixed-NT component comparison; account for lookup/binding inside timing, separate warm adjacent-set reuse from same-set work, and do not project component outcomes to 48 layers.",
+    "source_provenance": "Pinned Niko fork source only; no implementation copied or proposed.",
+    "report_proof": {
+      "worker_done_acknowledged": true,
+      "ownership_closed": true,
+      "pinned_source_hash_pairs_verified": 55,
+      "worker_proof_sha256": "ddd7eda1b4ed0585c26ee771b4d8b4e54ea95548ebccf5fd2524bf17b18dd146"
+    },
+    "active": false,
+    "author": {
+      "agent": "Orca",
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    },
+    "reviewer": {
+      "agent": "native Codex",
+      "model": "gpt-6-luna",
+      "effort": "max"
+    },
+    "retention_review": "Retrieve for the named protocol/full-context/resource/AOT question;review necessity after its current implementation or measurement decision. No raw worker transactions are required.",
+    "later_evidence_limit": "Its zero-NT1 statement applies only to the supplied earlier corpus. The later closed cpu_mixed_cache_speed_v1 cohort has nonzero bindings and rejects adoption;do not generalize the report to that later evidence."
+  },
+  "fork393_expert_source_cache_ram_methods_20261114j": {
+    "classification": "decision_support",
+    "stage": "reviewed_source_path_and_bounded_method_reference",
+    "title": "Fork-393 ExpertSource/cache paths and bounded CPU/RAM discriminators",
+    "author": {
+      "agent": "Orca",
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    },
+    "reviewer": {
+      "agent": "native Codex",
+      "model": "gpt-6-luna",
+      "effort": "max"
+    },
+    "source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
+    "historical_wave_d_packet_base": "8757530baf90a09233900010177792659f12a058",
+    "upstream_repository": "Niko1221/Strata",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/strata_reader_ram_tlb_methods_20261114j/report.md",
+      "bytes": 11627,
+      "sha256": "485851942cd5fb6dd823e6ddc6b227ac7c9cd0d3317db13c4ae91c101f9c9e93"
+    },
+    "related_prior_keys": [
+      "cpu_mixed_nt_kernel_cache_20261113g"
+    ],
+    "review": "Accept as a source-path and bounded-method reference extending G with fork-393 ExpertSource/cache/helper paths. Logical counters and proposed telemetry do not establish physical traffic, saturation, or a limiting resource. Processes 0-3 are not clean speed/cache-causality evidence.",
+    "filesystem_proof": {
+      "protected_inputs": 47,
+      "proof_rows": 48,
+      "all_rows_passed": true,
+      "filesystem_sha256": "87267f259895bf19c008f6275be60d67e2e685f8e9aaf5164e106ed6ae812595",
+      "worker_proof_sha256": "038554268fbcd01cd428894a98a56be8e7321e4023a7d4ae3adb2958fad9afd4",
+      "limit": "Read-only filesystem/source-integrity evidence only; not IPC, runtime, performance, or model qualification."
+    },
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "The source map is complete; a live measured-cost question and a separate committed comparison plan are required for follow-up.",
+      "nonduplication": "Adds ExpertSource/cache/helper paths beyond G's mixed-NT corpus and dispatch; it does not restate G's no-NT1-bindings result as cache-on evidence.",
+      "pending": "No physical traffic, saturation, implementation gain, or limiting resource is proven."
+    },
+    "retrieval": "Before a separately committed ExpertSource/cache comparison; preserve bounds and distinguish logical counts from measured traffic.",
+    "active": false,
+    "worker_done_acknowledged": true,
+    "ownership_closed": true,
+    "retention_review": "Retrieve for the named protocol/full-context/resource/AOT question;review necessity after its current implementation or measurement decision. No raw worker transactions are required."
+  },
+  "b570_oneapi_2026_2_aot_jit_20261114j": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed_source_only_feasibility",
+    "title": "B570 oneAPI 2026.2 AOT/JIT first-request and warmed-decode boundaries",
+    "author": {
+      "agent": "Orca",
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    },
+    "reviewer": {
+      "agent": "native Codex",
+      "model": "gpt-6-luna",
+      "effort": "max"
+    },
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/bmg_aot_first_request_methods_20261114j/report.md",
+      "bytes": 6263,
+      "sha256": "586b571e2bf19d75c426e338e922c0944a8f779156d266ab6067ad37ed5b3474"
+    },
+    "related_prior_keys": [
+      "bmg_aot_first_request_methods_20261113"
+    ],
+    "references": [
+      "https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-2/ahead-of-time-compilation.html",
+      "https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/supported-environment-variables.html"
+    ],
+    "review": "Accept as version-bounded feasibility only: Intel 2026.2 documents B570 bmg-g21, generic AOT flag syntax, and OCLOC; it does not prove Strata emits or selects full images. The cache guide is 2026.0, not target-2026.2 runtime evidence. No AOT comparison or TTFT/decode result exists.",
+    "filesystem_proof": {
+      "protected_inputs": 24,
+      "proof_rows": 25,
+      "all_rows_passed": true,
+      "filesystem_sha256": "0390f5dbbcdff64a81d8107a082077fec7c03850060792d18f4dd4af653705a2",
+      "worker_proof_sha256": "4ef90a6a932359fad5203e669fde9f2c555f86e7a48fa23d2186ddea6bd57a14",
+      "limit": "Read-only filesystem/source-integrity evidence only; no AOT build, runtime, performance, or model-route proof."
+    },
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "Feasibility is documented. A separately committed build/runtime comparison plan must name image coverage/selection, first-use client TTFT, warmed decode, and independent-process repetitions.",
+      "nonduplication": "Provides B570/oneAPI 2026.2 feasibility beyond the failed no-report 2026-11-13 task; it is not an AOT measurement.",
+      "pending": "No image build/selection, clean timing, TTFT, or decode evidence exists."
+    },
+    "retrieval": "Before an independently committed AOT/JIT build/runtime comparison; keep the 2026.0 cache claim version-bounded.",
+    "active": false,
+    "worker_done_acknowledged": true,
+    "ownership_closed": true,
+    "retention_review": "Retrieve for the named protocol/full-context/resource/AOT question;review necessity after its current implementation or measurement decision. No raw worker transactions are required."
+  },
+  "orca_research_wave_f_20261113": {
+    "classification": "reviewed_wave_closure",
+    "stage": "closed_at_original_deadline_two_reports_reviewed_three_tasks_failed_or_partial",
+    "accepted_reports": 2,
+    "ownership_closed": true,
+    "failed_scopes": [
+      {
+        "key": "strata_reader_ram_tlb_methods_20261113f",
+        "status": "failed_supervisor_deadline",
+        "reason": "Fixed deadline expired without startup proof, report, or worker_done; preserve failure; no retry."
+      },
+      {
+        "key": "decode_weight_ownership_residency_20261113f",
+        "status": "failed_startup_probe",
+        "reason": "Worker startup probe reported ENOENT although the packet file was present and hash-matched; no source research/report."
+      },
+      {
+        "key": "target_verify_skinny_gemm_designs_20261113f",
+        "status": "failed_coordinator_deadline_partial",
+        "reason": "Startup passed but no worker_done/completed report arrived by the original deadline; partial output is failure evidence only, not an indexable report."
+      }
+    ],
+    "limit": "Only compact success/failure closure is retained;no new runtime,model or performance qualification. Original reviewed source reports have their own indexed references."
+  },
+  "orca_research_wave_g_20261113": {
+    "classification": "reviewed_wave_closure",
+    "stage": "closed_at_original_deadline_one_report_reviewed_two_tasks_failed_or_partial",
+    "accepted_reports": 1,
+    "ownership_closed": true,
+    "failed_scopes": [
+      {
+        "key": "decode_weight_ownership_residency_20261113g",
+        "status": "failed_output_cap_partial_report",
+        "reason": "Fixed 2 MiB output cap terminated the child (-15); no successful worker_done, no indexing, and no retry."
+      },
+      {
+        "key": "strata_reader_ram_tlb_methods_20261113g",
+        "status": "failed_before_worker_launch",
+        "reason": "No nonempty preamble within the fixed 120-second wait; no researcher child, source work, or report. Preserve failure; no retry."
+      }
+    ],
+    "limit": "Only compact success/failure closure is retained;no new runtime,model or performance qualification. Original reviewed source reports have their own indexed references."
+  },
+  "orca_research_wave_j_20261114": {
+    "classification": "reviewed_wave_closure",
+    "stage": "closed_reviewed_partial_two_reports_one_failed_scope",
+    "accepted_reports": 2,
+    "ownership_closed": true,
+    "failed_scopes": [
+      {
+        "key": "gpu_owner_j",
+        "status": "failed_before_source_research",
+        "reason": "Task wording wrongly forbade file inspection before the helper. The checker passed, but research never began; preserve the failed Task and do not retry it."
+      }
+    ],
+    "limit": "Only compact success/failure closure is retained;no new runtime,model or performance qualification. Original reviewed source reports have their own indexed references."
+  },
+  "mapped_rows_subgroup_source_design_20261114k": {
+    "classification": "decision_support",
+    "stage": "eligible_bounded_source_question",
+    "title": "Audit current masked host-USM copy vectorization and subgroup alternatives",
+    "source_commit": "d0e6e9f405e7b7b01e2e6dfadd5e9e9259cdc03f",
+    "source_inputs": {
+      "src/kernels/sycl/elementwise.cpp": "0556415837aef62f09f285769cd14a59f3bb34cbddcc19b54731e5992e9c6d26",
+      "include/strata/kernels/elementwise.hpp": "1bfc635ba57c6d61124be22ffbdedf3fc3d78dbc6758c8ab21b28485ce08ce49",
+      "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+      "src/sycl/runtime.cpp": "5418457a1244708f32335f45ef0146b9c488115fb55213e0dab7a779cc774f22",
+      "bench/sycl/mapped_rows.cpp": "faa8384ce29399b0c4b291cd07427b99b6266ddd20a3830ef5fee0108074a22a"
+    },
+    "related_prior_keys": [
+      "mapped_copy_component_contract_20261105"
+    ],
+    "question": "Compare the actual scalar/subgroup calls with official SYCL/Intel guidance for coalesced host-USM reads;consider one versus four elements per lane,typed vector loads and staged DMA+mask. Bound alternative applicability and counterevidence;no implementation/patch/build or performance claim.",
+    "scope_eligibility": {
+      "schedulable_now": true,
+      "prerequisite_evidence": "Current owned scalar and four-floats-per-lane subgroup proposal are committed and compiled as standalone3596912d/245eecc93. Source/design audit can compare coalescing,collective participation and alternative staging without timing/assembly;prior source contract predates this prototype. Any lowering or speed claim stays unknown.",
+      "missing_prerequisites": [],
+      "nonduplication": "New current-source dependency/design question;not a rerun of closed runtime or conditional assembly/AOT tasks."
+    },
+    "assignment": {
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "via": "Orca",
+      "report_words": 1100
+    },
+    "retention": "One reusable source/design reference only if review finds substantive new applicable information;no dispatch/raw-output archive."
+  },
+  "kv_stream_gpu_resolver_design_20261114k": {
+    "classification": "decision_support",
+    "stage": "eligible_bounded_source_question",
+    "title": "Audit current serial GPU KVresolver and bounded parallel alternatives",
+    "source_commit": "d0e6e9f405e7b7b01e2e6dfadd5e9e9259cdc03f",
+    "source_inputs": {
+      "src/kernels/sycl/kv_stream.cpp": "4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696",
+      "include/strata/kernels/kv_stream.hpp": "d3389020074da15a5b414667089734d0f46b20697b23dc5a46e04f6ea6dbaea9",
+      "src/core/verify.cpp": "6a72051021ad81e55845f3f0bdd8a8977052382655ff3a697d67a3524d678133",
+      "include/strata/core/verify.hpp": "0e81b57afb386d6621e5f39839a1641fb960c859addd74abbea7d7c675425ed5"
+    },
+    "related_prior_keys": [],
+    "question": "Map what the single_task really scans and mutates,ordering/cache ownership,alias/lifetime and request/context complexity;compare bounded GPU-parallel lookup/scan/planning designs from checked primary engine/SYCL sources. Identify safe seams and counterexamples;do not treat the page-copy kernel as the resolver or claim the whole161ms is PCIe.",
+    "scope_eligibility": {
+      "schedulable_now": true,
+      "prerequisite_evidence": "No existing resolver/page/kv_stream index scope found. Actual current fork source has explicit single_task resolution and a separate RAMpage-copy kernel. The failed-overhead d2016f730 profile observed161.75/162.20ms resolver service over80calls;hypothesis only,not critical-path or hardware saturation evidence. Exact code permits a source-only dependency/parallelism audit now.",
+      "missing_prerequisites": [],
+      "nonduplication": "New current-source dependency/design question;not a rerun of closed runtime or conditional assembly/AOT tasks."
+    },
+    "assignment": {
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "via": "Orca",
+      "report_words": 1100
+    },
+    "retention": "One reusable source/design reference only if review finds substantive new applicable information;no dispatch/raw-output archive."
   }
 }
