@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Coherent full build for the independently measured Down42 CPU selector.
+"""Coherent full build for baseline CPU joint-shape/resource observation.
 
 Main authored; repository LICENSE. No GPU execution or inherited model speed.
 """
@@ -15,7 +15,7 @@ import build_coherent_prefill as coherent
 import cpu_native_schedule as cpu
 
 P, B, RESULT = coherent.P, coherent.B, coherent.RESULT
-ROOT, KEY = B / 'cpu-down42-model-native-v1', 'cpu_down42_model_native_v1'
+ROOT, KEY = B / 'cpu-joint-census-native-v1', 'cpu_joint_census_native_v1'
 CPU_RESULT = P / cpu.CPU_RESULT
 CPU_KEY = 'native_whole_down42_v2'
 PREVIOUS_ROOT = B / 'compact-cpu-model-native-v1'
@@ -25,7 +25,7 @@ class_prerequisite = coherent.prerequisite
 require, sha = coherent.require, coherent.sha
 # Include this adapter and its CPU admission readers in the committed full-build snapshot.
 coherent.base.common.PREFIXES = tuple(dict.fromkeys((*coherent.base.common.PREFIXES,
-    'tools/sycl/build_cpu_decode_schedule.py', 'tools/sycl/cpu_native_schedule.py',
+    'tools/sycl/build_cpu_joint_census.py', 'tools/sycl/cpu_native_schedule.py',
     'tools/sycl/cpu_compact_pool.py', 'tools/sycl/cpu_compact_numeric.py',
     'tools/sycl/cpu_compact_hot.py')))
 
@@ -36,7 +36,7 @@ def fields(value):
         'source_commit', 'plan_commit', 'plan_sha256', 'cases', 'case_columns',
         'samples', 'sample_columns', 'summary', 'order', 'pairs', 'gates',
         'complete', 'active', 'ownership_closed', 'build', 'numerical_results',
-        'eligibility', 'execution_receipts')}
+        'eligibility', 'execution_receipts', 'model_scope_limits')}
     result['binary_sha256'] = value['binary']['sha256']
     return json.dumps(result, sort_keys=True, separators=(',', ':'), allow_nan=False)
 
@@ -54,16 +54,14 @@ def prerequisite():
             'CPU qualification fields/type changed')
     require(original['complete'] and original['ownership_closed']
             and not original['active'] and original['gates']['build']
-            and original['gates']['numerical'] and original['gates']['performance']
-            and original['gates']['model_trial_allowed']
-            and not original['gates']['model_adopted'], 'closed passing CPU gate first')
+            and original['gates']['numerical']
+            and original['gates']['model_admission_allowed'] is True
+            and original['gates']['model_trial_allowed'] is False
+            and not original['gates']['model_adopted'], 'closed CPU numerics and baseline-only admission first')
     expected = {(42, n, 'observed_mix', pattern)
                 for n in (24, 36) for pattern in ('reuse', 'stream64')}
     require({tuple(c) for c in original['cases']} == expected
-            and len(original['summary']) == 4
-            and all(v['all_three_pairs_gain']
-                    and all(r > 1 for r in v['paired_reference_over_candidate'])
-                    for v in original['summary']), 'all four independent parts must pass')
+            and len(original['summary']) == 4, 'preserve the complete four-cell stress result')
     plan = json.loads(cpu.PLAN.read_text())
     cpu.verify(plan)
     built = cpu.base.qualified_build(plan)
@@ -83,8 +81,9 @@ def prerequisite():
         CPU_qualification_sha256=hashlib.sha256(fields(original).encode()).hexdigest(),
         CPU_binary=built['binaries']['pool'],
         retired_temporary_engine=PREVIOUS_KEY,
-        scope='Down42parts only;original broad selector failure stays failed. '
-              'Full model coverage,quality,prefill/TTFT preservation and speed remain unqualified.')
+        scope='Baseline observation with experimental selector0only. Original failed/stress outcomes stay unchanged. '
+              'Global NTmixture at36jobs exceeds spec4/topk10physical routing volume;capture actual joint '
+              'jobs/NT/format distribution before another optimized model selection. No model gain or adoption.')
 
 
 coherent.ROOT, coherent.KEY = ROOT, KEY
@@ -96,14 +95,16 @@ coherent.prerequisite = prerequisite
 def prepare():
     coherent.prepare()
     row = json.loads((ROOT / 'record.json').read_text())
-    row['plan'] = ('Fresh coherent full-engine build of the measured Down42-only CPU selection. '
+    row['plan'] = ('Fresh coherent full-engine baseline observer,not an optimized-model trial. '
         'Compile every affected core/generate/CPU/GGML translation unit;no object/archive reuse. '
         'Check complete source/generated/compiler/link inputs and every Gemm header consumer. '
-        'Keep independent prefill/default-row and explicit pre-exec experimental decode selection. '
-        'After build,commit bounded native/actual-model coverage/state and phase-preservation '
-        'checks,then matched official long/agent/thinking long-generation comparisons. '
-        'No GPU,model speed,task,ordinary teardown or physical262144/RESTORE qualification here.')
-    row['retention'] = ('Keep14508clean GPUreference and this one temporary candidate;the ended '
+        'Require separately committed bounded native checks before model execution. The model observer '
+        'must set STRATA_CPU_DECODE_WHOLE=0 and STRATA_CPU_WORK_CENSUS=1 before exec,verify zero '
+        'actual whole calls,and capture the joint layer/format/jobs/NT distribution and work conservation. '
+        'Only then choose a new prospective representative CPU/model optimization plan. '
+        'No optimized decode,prefill gain,task,ordinary teardown or physical262144/RESTORE qualification here.')
+    row['required_model_environment'] = dict(STRATA_CPU_DECODE_WHOLE='0', STRATA_CPU_WORK_CENSUS='1')
+    row['retention'] = ('Keep14508clean GPUreference and this one temporary observer;the ended '
         '89be7generation must already be retired after exact source/recipe recovery. '
         'Keep49296435CPUauxiliary only for this actual prerequisite until its consumer closes. '
         'LegacyH9/P5/D5reader/IR/deployment holds remain separate. Review actual paths and '

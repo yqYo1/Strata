@@ -446,8 +446,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Source5660b2f41now builds36fresh CPU/GGML/fixture objects with635compiler
   inputs/22links,ELF49296435. Both formats pass540regular cases plus controls;
   selected whole calls are exactly0forDown20and2forDown42. Both native checks
-  close normally0;the new four-cell timing gate is pending. Physical saturation and whole-model speed remain
-  unqualified. This is component progress,not adoption.
+  close normally0;the frozen four-cell stress timing is in progress. A separate
+  representativeness check finds that its36job global mix has47..52token-expert
+  rows/call(mean48.9375),above the40-entry limit of this spec4/topk10target.
+  The24job mix has30..36rows and fits that bound,but actual joint distribution
+  is still unknown. Preserve stress timings without treating36job gains as model
+  evidence. The next full build is explicitly a baseline selector0joint-census
+  observer(`tools/sycl/build_cpu_joint_census.py`),not an optimized model trial.
+  Capture actual layer/format/jobs/NThistogram before choosing another policy.
+  Physical saturation and whole-model speed remain unqualified.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic

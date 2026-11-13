@@ -22482,6 +22482,23 @@
     "numerical_receipt": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-native-whole-down42-v2/check.json",
       "sha256": "9ba224b48b904578d0149458d7822ce8efacb5980f7533dc4bf1acc51f68fa98"
+    },
+    "model_scope_limits": {
+      "source_basis": "src/program/generate.cpp:S=o.spec,S_mtp<=S,ver.run(T);configured spec4. Original target census17760entries/37rows/48layers gives topk10.",
+      "configured_window_max_tokens": 4,
+      "topk": 10,
+      "maximum_token_expert_rows_per_layer": 40,
+      "synthetic_24job_rows_min_max": [
+        30,
+        36
+      ],
+      "synthetic_36job_rows_min_max": [
+        47,
+        52
+      ],
+      "synthetic_36job_rows_mean": 48.9375,
+      "actual_joint_distribution_qualified": false,
+      "decision": "Treat36job global-mixture timing as synthetic stress only,not a physically representative spec4/topk10model-shape result. Finish the frozen cohort honestly;do not enable an optimized model route from its speed. First use baseline selector0actual-model joint census;then commit representative policy/workload/model plan."
     }
   }
 }
