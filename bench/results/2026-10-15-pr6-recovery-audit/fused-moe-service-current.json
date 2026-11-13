@@ -332681,7 +332681,7 @@
     }
   },
   "mapped_rows_subgroup_v3": {
-    "stage": "ready",
+    "stage": "failed",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -332942,11 +332942,40 @@
       "tools.sycl.test_mapped_rows_experiment"
     ],
     "host_tests": 7,
-    "cases": [],
+    "cases": [
+      {
+        "mode": "correctness",
+        "index": 0,
+        "passed": false,
+        "complete": false,
+        "runtime_maps": {
+          "files": 34,
+          "sha256": "8095c7e8b465b822460d7158c6c57f7555699a1d3caa95db71e33cbbd9882b87",
+          "unknown": 0,
+          "missing": 0
+        },
+        "validation": {
+          "pid": 3993715,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "error": "RuntimeError('traced first check incomplete or failed')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "fault_probe_successful": true
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "complete": false,
-    "passed": true,
+    "passed": false,
     "GPU_executed": false,
     "model_executed": false,
     "retention": "One standalone fixture for immediate component decision. Keep compact individual samples,source/recipe/actual inputs/failure outcomes. Retire successful API/build output after decision;no third engine generation.",

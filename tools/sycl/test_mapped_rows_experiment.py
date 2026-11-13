@@ -23,6 +23,25 @@ def encode(data):
 
 
 class Admission(unittest.TestCase):
+    def graph_log(self):
+        names = {'urCommandBufferCreateExp':18, 'urCommandBufferAppendKernelLaunchWithArgsExp':18,
+                 'urCommandBufferFinalizeExp':18, 'urEnqueueCommandBufferExp':54, 'urCommandBufferReleaseExp':18}
+        return '\n'.join(' ---> '+k+'\n <--- '+k+'(.arg = 0) -> UR_RESULT_SUCCESS;'
+                         for k,n in names.items() for _ in range(n))
+
+    def test_actual_command_graph_api(self):
+        self.assertTrue(trial.graph_trace(self.graph_log())['complete_success_pairs'])
+
+    def test_missing_graph_enqueue_or_append_refused(self):
+        text = self.graph_log()
+        for name in ('urEnqueueCommandBufferExp', 'urCommandBufferAppendKernelLaunchWithArgsExp'):
+            with self.subTest(name=name), self.assertRaises(RuntimeError):
+                trial.graph_trace(text.replace(' ---> '+name, ' ---> Missing', 1))
+
+    def test_graph_error_refused(self):
+        with self.assertRaises(RuntimeError):
+            trial.graph_trace(self.graph_log().replace('UR_RESULT_SUCCESS', 'UR_RESULT_ERROR_INVALID_VALUE', 1))
+
     def test_completion_is_consumed_before_eof(self):
         from unittest.mock import Mock
         io = Mock(); io.line.return_value = 'fixture=PASS checked_teardown=PASS'

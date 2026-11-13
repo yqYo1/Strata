@@ -5,6 +5,7 @@ Fresh five-TU fixture, never an engine relink. Keep the old production entry
 unchanged. Commit each plan/result before the next serialized stage.
 """
 import copy
+from collections import Counter
 import fcntl
 import hashlib
 import json
@@ -26,9 +27,9 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = source.P, source.B
-ROOT = B / 'mapped-rows-subgroup-v3'
+ROOT = B / 'mapped-rows-subgroup-v4'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY, TARGET = 'mapped_rows_subgroup_v3', 'sycl_mapped_rows_bench'
+KEY, TARGET = 'mapped_rows_subgroup_v4', 'sycl_mapped_rows_bench'
 THIS = 'tools/sycl/mapped_rows_experiment.py'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'tests',
             'bench/sycl', 'tools/sycl', 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
@@ -137,7 +138,7 @@ def prepare():
             gate='Traced correctness before any speed. Component gain permits a separately committed decode-only model plan,not production adoption. Prefill stays unchanged.'),
         budget=dict(wall=900, cpu=2400, rss_cap=8 << 30, text_cap=32 << 20,
                     file_cap=256 << 20, total_cap=1 << 30),
-        host_command=[sys.executable, '-B', '-m', 'unittest', '-v', 'tools.sycl.test_mapped_rows_experiment'], host_tests=7,
+        host_command=[sys.executable, '-B', '-m', 'unittest', '-v', 'tools.sycl.test_mapped_rows_experiment'], host_tests=10,
         cases=[], commands=[], active=False, ownership_closed=True, complete=False, passed=False,
         GPU_executed=False, model_executed=False,
         retention='One standalone fixture for immediate component decision. Keep compact individual samples,source/recipe/actual inputs/failure outcomes. Retire successful API/build output after decision;no third engine generation.')
@@ -161,18 +162,25 @@ def prepare():
     require(changed == {THIS, 'tools/sycl/test_mapped_rows_experiment.py'} and
             not {str((P / p).resolve()) for p in changed} & old['actual_inputs']['compiled'].keys(),
             'reuse permits only these uncompiled controller/test edits')
+    trace_failure = validation.committed(RESULT, ('mapped_rows_subgroup_v3',))
+    require(trace_failure['stage'] == 'failed' and trace_failure['ownership_closed'] and
+            len(trace_failure['cases']) == 1 and not trace_failure['cases'][0]['passed'] and
+            trace_failure['cases'][0]['fresh_faults'] == [] and
+            trace_failure['cases'][0]['error'] == "RuntimeError('traced first check incomplete or failed')",
+            'preserve V3direct-kernel-name gate failure;no qualification reused')
     row.update(stage='built', binary=old['binary'], actual_inputs=old['actual_inputs'], recipe=old['recipe'],
         native_source_commit=old['project']['revision'], controller_source_commit=row['project']['revision'],
         reused_component_build=dict(source_commit=old['project']['revision'], path=str(previous), sha256=sha(previous),
             project_sha256=old['project']['aggregate_sha256'], actual_inputs_sha256=signature(old['actual_inputs']),
             controller_only_changes=sorted(changed), original_failure_preserved=True,
             qualification_reused=False, measured_process_reaped=True, session_empty=True, process_handle_missing=True),
-        plan=dict(row['plan'], host='Seven CPU controls,then new traced correctness;original V2protocol failure stays failed. Exact five-TU binary reused,no new native compilation.'))
+        plan=dict(row['plan'], host='Ten CPU controls,then new traced correctness;V2protocol and V3API-name failures stay failed. Exact five-TU binary reused,no new native compilation.',
+            trace='Actual compat source uses SYCL command_graph:require18create/append-with-args/finalize/release and54enqueue command-buffer pairs,all successful;18captures/54replays also checked by native body. No direct urEnqueueKernelLaunch requirement.'))
     check(row, committed=False)
     ROOT.mkdir(mode=0o700)
     for leaf in ('tmp', 'cache'): (ROOT / leaf).mkdir()
     save(row)
-    print('Prepared controller-only V3 plan with original five-TU build proof;commit before host/check.', flush=True)
+    print('Prepared controller-only V4 plan with original five-TU build proof;commit before host/check.', flush=True)
 
 
 def host_controls(row, owner):
@@ -197,7 +205,7 @@ def host():
         row['active'] = owner.active is not None
         row['ownership_closed'] = owner.active is None and all(ownership.closed(c) for c in owner.commands)
         save(row)
-    print('Seven host controls pass;commit before traced correctness.', flush=True)
+    print('All host controls pass;commit before traced correctness.', flush=True)
 
 
 def census(row, compile_output):
@@ -351,9 +359,7 @@ def run_case(mode):
         if mode == 'correctness':
             trace = root / 'ur.trace'
             traced = trace.read_text(errors='replace')
-            require('urEnqueueKernelLaunch' in traced and
-                    set(re.findall(r'UR_RESULT_ERROR_[A-Z_]+', traced)) <= {'UR_RESULT_ERROR_INVALID_NULL_HANDLE'}, 'traced first check incomplete or failed')
-            result['tracing'] = dict(bytes=trace.stat().st_size, sha256=sha(trace))
+            result['tracing'] = dict(bytes=trace.stat().st_size, sha256=sha(trace), **graph_trace(traced))
         check(row)
         result.update(passed=True, complete=True, exit_code=0)
     except BaseException as error:
@@ -402,6 +408,17 @@ def complete_retirement(io):
     io.send(b'QUIT\n')
     require(io.line(30) == 'fixture=PASS checked_teardown=PASS', 'checked retirement marker missing')
     io.exit(30)
+
+
+def graph_trace(text):
+    names = {'urCommandBufferCreateExp': 18, 'urCommandBufferAppendKernelLaunchWithArgsExp': 18,
+             'urCommandBufferFinalizeExp': 18, 'urEnqueueCommandBufferExp': 54, 'urCommandBufferReleaseExp': 18}
+    begin = Counter(re.findall(r'^\s*---> (\w+)', text, re.M))
+    end = Counter(re.findall(r'^\s*<--- (\w+)\(.* -> UR_RESULT_SUCCESS;', text, re.M))
+    require(all(begin[k] == end[k] == n for k, n in names.items()) and
+            set(re.findall(r'UR_RESULT_ERROR_[A-Z_]+', text)) <= {'UR_RESULT_ERROR_INVALID_NULL_HANDLE'},
+            'incomplete or failed actual command-graph trace')
+    return dict(operations=names, complete_success_pairs=True)
 
 
 if __name__ == '__main__':
