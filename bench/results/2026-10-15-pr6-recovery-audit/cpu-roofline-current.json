@@ -22391,7 +22391,7 @@
     }
   },
   "native_whole_down42_v2": {
-    "stage": "prepared_unbuilt",
+    "stage": "numerical_passed_timing_pending",
     "source_commit": "5660b2f41268063c1639ef215486b5afd7acb273",
     "plan_path": "bench/sycl/cpu_native_schedule/plan.json",
     "plan_sha256": "63f1adbe1f7a495c35f176feb505466806540805520355e55cb9e181e58e1e2d",
@@ -22413,13 +22413,75 @@
     "active": false,
     "ownership_closed": true,
     "gates": {
-      "build": false,
-      "numerical": false,
+      "build": true,
+      "numerical": true,
       "performance": false,
       "model_trial_allowed": false,
       "model_adopted": false
     },
-    "next": "Fresh36object CPUbuild;540cases each onDown20/42with selected0/2,then sixDown42-onlyRCCRRCprocesses/four selected cells. Stop first failure;no model claim.",
-    "retention": "Current c0dc/c858 CPUauxiliary and14508GPUreference preserved. Both closed extra whole/selector CPUbuilds retired after original-source proof. This fresh extra generation serves the immediate numeric/timing/model-prerequisite question;review at campaign closure. Legacy GPU/IR/deployment holds separate."
+    "next": "Run sixDown42-onlyRCCRRCnative processes/four selected cells under committed plan. Preserve the original eight-cell failure;no model trial before this new four-cell gate passes.",
+    "retention": "Current c0dc/c858 CPUauxiliary and14508GPUreference preserved. Both closed extra whole/selector CPUbuilds retired after original-source proof. This fresh extra generation serves the immediate numeric/timing/model-prerequisite question;review at campaign closure. Legacy GPU/IR/deployment holds separate.",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-native-whole-down42-v2/build/cpu_native_schedule",
+      "sha256": "49296435830cf6b50a42035fd0d0898ba69c18433109d8ceaed27364d4c60f55"
+    },
+    "build": {
+      "fresh_objects": 36,
+      "actual_compiler_inputs": 635,
+      "external_links": 22,
+      "ELF": {
+        "elf_class": "ELF64",
+        "data": "2's complement, little endian",
+        "machine": "Advanced Micro Devices X86-64",
+        "elf_type": "EXEC (Executable file)",
+        "interpreter": "/lib64/ld-linux-x86-64.so.2"
+      },
+      "CPU_only_libraries": [
+        "libm.so.6",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "all4children_normal0_closed": true
+    },
+    "plan_commit": "d303f8e442ab388f4fcca2600ac117bef10f521e",
+    "numerical_results": [
+      {
+        "down": 20,
+        "result": {
+          "passed": true,
+          "cases": 180,
+          "whole_calls": 40,
+          "selected_cases": 360,
+          "selected_whole_calls": 0,
+          "lease_controls": 4,
+          "token_expert_rows": 18773,
+          "wrong_activation_controls": 2,
+          "guards": true,
+          "inputs_immutable": true,
+          "performance_qualified": false
+        }
+      },
+      {
+        "down": 42,
+        "result": {
+          "passed": true,
+          "cases": 180,
+          "whole_calls": 40,
+          "selected_cases": 360,
+          "selected_whole_calls": 2,
+          "lease_controls": 4,
+          "token_expert_rows": 18773,
+          "wrong_activation_controls": 2,
+          "guards": true,
+          "inputs_immutable": true,
+          "performance_qualified": false
+        }
+      }
+    ],
+    "numerical_receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-native-whole-down42-v2/check.json",
+      "sha256": "9ba224b48b904578d0149458d7822ce8efacb5980f7533dc4bf1acc51f68fa98"
+    }
   }
 }
