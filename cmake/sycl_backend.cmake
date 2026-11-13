@@ -181,6 +181,8 @@ target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_ker
 
 # Explicitly invoked production-verifier lifetime checks; never automatic GPU work.
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  add_executable(sycl_expert_dispatch_bounds_test EXCLUDE_FROM_ALL tests/core/expert_dispatch_bounds.cpp)
+  target_link_libraries(sycl_expert_dispatch_bounds_test PRIVATE strata_engine)
   add_executable(sycl_verifier_retirement_test EXCLUDE_FROM_ALL tests/sycl/verifier_retirement.cpp)
   target_link_libraries(sycl_verifier_retirement_test PRIVATE strata_engine)
   # Explicit native-event interop qualification only; never a production dependency.

@@ -21,6 +21,7 @@ EVIDENCE = '29193d347e5235e192a31d740b897cec24c25c49'
 RETIREMENT = 'mixed_nt_prebuild_retirement_v1'
 require, sha = coherent.require, coherent.sha
 class_prerequisite = coherent.prerequisite
+coherent.TARGETS = [*coherent.TARGETS, 'sycl_expert_dispatch_bounds_test']
 coherent.base.common.PREFIXES = tuple(dict.fromkeys((*coherent.base.common.PREFIXES,
     'AGENTS.md', 'docs/ARTIFACT_RETENTION.md')))
 
@@ -93,7 +94,7 @@ coherent.prerequisite = prerequisite
 def prepare():
     coherent.prepare()
     row = json.loads((ROOT / 'record.json').read_text())
-    row['plan'] = ('Fresh complete compilation of engine and all twelve fixtures after explicit '
+    row['plan'] = ('Fresh complete compilation of engine and all thirteen executables after explicit '
         'decode MixedNt wiring and ExpertDispatch header change;no native object/archive reuse. '
         'STRATA_CPU_COMPACT_GU_POLICY=small remains default;cache budget0 remains default. '
         'Only a separately committed model plan may choose mixed with an admitted immutable '
