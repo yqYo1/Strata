@@ -327956,7 +327956,7 @@
     ]
   },
   "current_profile_control_v2": {
-    "stage": "ready",
+    "stage": "closed",
     "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-profile-fixture-v3/sycl_profile_compat_window",
@@ -328142,6 +328142,91 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "active",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "clock_domain": "CLOCK_MONOTONIC_RAW",
+        "clock_bounds": {
+          "phases": {
+            "before-runtime": {
+              "raw_ns": 2938913465903378,
+              "monotonic_ns": 2938936747819744,
+              "boottime_ns": 2938936747820275
+            },
+            "runtime-ready": {
+              "raw_ns": 2938913487483176,
+              "monotonic_ns": 2938936769399609,
+              "boottime_ns": 2938936769399879
+            },
+            "captured": {
+              "raw_ns": 2938913542003147,
+              "monotonic_ns": 2938936823919799,
+              "boottime_ns": 2938936823920029
+            },
+            "window-drained": {
+              "raw_ns": 2938913551537176,
+              "monotonic_ns": 2938936833453741,
+              "boottime_ns": 2938936833453972
+            },
+            "before-exit": {
+              "raw_ns": 2938913555602610,
+              "monotonic_ns": 2938936837519173,
+              "boottime_ns": 2938936837519284
+            }
+          },
+          "capture_begin": 2938913465903378,
+          "begin": 2938913542003147,
+          "end": 2938913551537176,
+          "capture_end": 2938913679812200
+        },
+        "native_exit_code": 0,
+        "numerical_and_guard_check_passed": true,
+        "validation": {
+          "pid": 3320320,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "trace": {
+          "inner_kernels": 6,
+          "inner_copies": 3,
+          "post_kernels": 2,
+          "post_copies": 1,
+          "whole_kernels": 8,
+          "whole_copies": 5,
+          "unique_native_instance_joins": true,
+          "gpu_interval_union_us": 38.3291015625,
+          "window_wall_us": 9534.02880859375,
+          "collection_active_through_native_exit": true,
+          "lossless_pending_boundary_qualified": false,
+          "model_observer_overhead_qualified": false,
+          "physical_saturation_qualified": false,
+          "sha256": "14bfd7b6d00ec4dd213f8075df1c153ed531afbfac974af50110db6b7b17a109",
+          "bytes": 59403,
+          "collection_active_from_exec": true
+        },
+        "mapped_ELF_files": 35,
+        "mapped_ELF_sha256": "ce61161650621d071b6663a4831c7071a8e06c98d485dc7ef1011e34df0f173a",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host": {
@@ -328154,8 +328239,8 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "budget": {
       "wall": 240,
       "cpu": 240,
