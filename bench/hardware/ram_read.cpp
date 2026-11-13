@@ -138,6 +138,21 @@ int main(int argc, char** argv) try {
         if (read_pass(data + count - n, n) != expected_tail) fail("guard-page tail");
     }
     const double setup = std::chrono::duration<double>(Clock::now() - setup_begin).count();
+    constexpr int timer_iterations = 10000;
+    const auto timer_begin = Clock::now();
+    for (int i = 0; i < timer_iterations; ++i) {
+        const auto value = Clock::now().time_since_epoch().count();
+        const double cpu = thread_seconds();
+        rusage usage{};
+        if (getrusage(RUSAGE_SELF, &usage)) fail("timer calibration rusage");
+        asm volatile("" : : "g"(value), "g"(cpu), "g"(usage.ru_minflt) : "memory");
+    }
+    // Charge a complete clock+rusage triplet for every individual observer
+    // call, including both worker CPU clocks. This is a conservative estimate,
+    // measured outside all timed read batches rather than assumed negligible.
+    const double timer_estimate = (4 + 2 * cpus.size()) *
+        std::chrono::duration<double>(Clock::now() - timer_begin).count() / timer_iterations;
+    if (!(timer_estimate > 0)) fail("timer calibration");
     uint64_t passes = 1;
     for (;;) {
         Sample s = batch(data, count, cpus, expected, passes);
@@ -148,11 +163,13 @@ int main(int argc, char** argv) try {
     std::array<Sample, 3> samples;
     for (auto& s : samples) {
         s = batch(data, count, cpus, expected, passes);
-        if (s.wall < .5 || s.major) fail("ineligible duration or major fault");
+        if (s.wall < .5 || s.major || !(timer_estimate / s.wall < .001))
+            fail("ineligible duration, observer overhead or major fault");
     }
     std::printf("{\"schema\":\"ram-read-v1\",\"buffer_bytes\":%zu,\"threads\":%zu,"
-        "\"passes\":%llu,\"setup_seconds\":%.9f,\"checksum_valid\":true,\"samples\":[",
-        bytes, cpus.size(), (unsigned long long)passes, setup);
+        "\"passes\":%llu,\"setup_seconds\":%.9f,\"timer_iterations\":%d,"
+        "\"timer_estimate_seconds\":%.12f,\"checksum_valid\":true,\"samples\":[",
+        bytes, cpus.size(), (unsigned long long)passes, setup, timer_iterations, timer_estimate);
     for (size_t i = 0; i < samples.size(); ++i) {
         auto s = samples[i];
         std::printf("%s{\"wall_seconds\":%.9f,\"worker_cpu_seconds\":%.9f,\"logical_bytes\":%llu,"

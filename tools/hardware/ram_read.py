@@ -18,9 +18,9 @@ import sys
 sys.dont_write_bytecode = True
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'ram-read-ceiling-v3'
+ROOT = B / 'ram-read-ceiling-v4'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json'
-KEY = 'ram_read_ceiling_v3'
+KEY = 'ram_read_ceiling_v4'
 SOURCE = P / 'bench/hardware/ram_read.cpp'
 PINNED = ['bench/hardware/ram_read.cpp', 'tools/hardware/ram_read.py',
           'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
@@ -151,6 +151,8 @@ def prepare():
              'anonymous read-only buffer,disjoint slices,prefaulted deterministic integer data,guard pages. '
              'Four AVX2XOR accumulators;exact scalar slice/tail checks outside timing. Calibrate by '
              'doubling to0.75s,then3eligible batches/process with0.5s floor,no major faults and '
+             'estimated observer overhead below0.1percent,from10000untimed clock/CPU/rusage triplets '
+             'conservatively charged once per individual observer call. '
              'exact post-batch checksum. Store every individual wall/worker CPU/fault/byte sample. '
              'Stop first failure;no threshold changes or retries. No inference/adoption gate.',
         budgets=dict(process_wall_seconds=90, process_cpu_seconds=180, address_space_bytes=3 << 30,
@@ -237,9 +239,11 @@ def measure(row):
             value = json.loads(text)
             require(value['schema'] == 'ram-read-v1' and value['buffer_bytes'] == 1 << 30
                 and value['threads'] == n and value['checksum_valid'] is True
+                and value['timer_iterations'] == 10000 and value['timer_estimate_seconds'] > 0
                 and len(value['samples']) == 3, 'native workload or checks differ')
             for s in value['samples']:
                 require(s['wall_seconds'] >= .5 and s['logical_bytes'] == value['passes'] * (1 << 30)
+                    and value['timer_estimate_seconds'] / s['wall_seconds'] < .001
                     and s['major_faults'] == 0 and 0 < s['worker_cpu_seconds'] <= n * s['wall_seconds'] * 1.02
                     and abs(s['logical_GBps'] - s['logical_bytes'] / s['wall_seconds'] / 1e9) < 1e-5,
                     'sample duration/CPU/fault/byte conservation')
