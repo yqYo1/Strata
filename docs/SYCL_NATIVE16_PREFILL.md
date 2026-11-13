@@ -509,7 +509,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   includes arithmetic,quantization,dispatch and waits;the comparison does not
   establish its saturation or justify changing its worker count. The prior
   nine-process V3observations retain their missing-observer-check hold.
-  The32-output diagnostics visit0.62609..0.67167logical GB/output:unchanged
+  Target-verifier CPUjobs in the32-output diagnostics visit0.62609..0.67167
+  logical GB/output(draft/refill/prefill excluded):unchanged
   traffic would require43.83..47.02GB/s at70TG. Dividing the measured6-core or
   3-core continuous-read rates by those bytes gives illustrative58.5..67.5TG,
   only if every blob requires one DRAMread and effective bandwidth matches this
@@ -543,8 +544,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in that plan;preserve both prefill strategies and cache0/MTPdefaults. Do not
   partial-relink old class consumers. Closed RAMfixture/raw generations are
   retired after original Git/source/recipe recovery:44files,364453regular bytes;
-  all27individual samples remain in the CPUresult. Three aggregate points bring
-  the performance CSV to443rows before the mixed-cache comparison is indexed.
+  all27individual samples remain in the CPUresult. The455-row performance CSV
+  now includes three RAMreference points and twelve mixed-cache comparison points.
   Keep14508clean speed reference;
   this baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
