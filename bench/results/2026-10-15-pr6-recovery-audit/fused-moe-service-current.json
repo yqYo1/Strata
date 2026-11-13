@@ -316236,7 +316236,7 @@
     "next": "Finish the distinct Control/App/MCP setup port and direct CLI adoption adapter;do not infer native full-suite/model installation from this10-test entry slice."
   },
   "cpu_joint_census_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -316562,8 +316562,8 @@
       }
     },
     "outcomes": {},
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -316589,6 +316589,110 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/compile_commands.json": "c8916e3a3a0782cffcc82a74407cdb76272c633123f33e37465ee5692d663c62",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/CMakeFiles/rules.ninja": "fa75a511ac5d4345a4f403f2b792ba40bb5bda84fe39062a77d4826bbedb8891",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/configure/owned/planned.stdout": "b0ce9306b6854d036a713a483f066199a3ca80a6f6dd148196967d3a55d52e97"
+    },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/actual-inputs.json",
+      "sha256": "8b1d3e00d892dcdb967daf01bf477c09ef2d7319f4b9ed196c1ee8a52e81b168",
+      "compiler_files": 1473,
+      "generated_files": 1,
+      "external_link_files": 29,
+      "uncovered": 0,
+      "translation_units": 135,
+      "source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2",
+      "class_definition_coherence": {
+        "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+        "includer_count": 5,
+        "includer_objects": [
+          "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm16.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/qsa_score_gemm.cpp.o",
+          "CMakeFiles/sycl_gu_policy_test.dir/bench/sycl/gu_compact.cpp.o"
+        ],
+        "same_SYCL_class_condition": true,
+        "all_objects_from_fresh_build": true,
+        "partial_archive_reuse": false
+      }
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/strata",
+        "sha256": "f59e7f44a21fc70cbde7e67fa6fda8a8af4c7d2b4d47a0801dc975f5d028c089",
+        "bytes": 26483920,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_q6_head_owner_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_q6_head_owner_test",
+        "sha256": "b13f489feee5d8d038d5d7ad9ef6d0011fdaf15c8b8cb8839b6cbc48e44c5657",
+        "bytes": 11734112,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_submission_test",
+        "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+        "bytes": 352152,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_verifier_retirement_test",
+        "sha256": "fb5e421c89bdcf6a8d1e19270ee6c52d76150d311bc26fceb9ba0fa124e502e4",
+        "bytes": 19733696,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_verify_window_policy_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_verify_window_policy_test",
+        "sha256": "3c78d87eed186c47eb5ee893568a07f90573923ddd431b2393a682c29138b4fd",
+        "bytes": 114968,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_qsa_bf16_prefix_cached_subgroup_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_test",
+        "sha256": "b03178375e5ade2bfc39e496520f6b89368b2ae1d5441b959d3b66d2bc8c31f1",
+        "bytes": 1577968,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_qsa_bf16_prefix_cached_subgroup_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_bench",
+        "sha256": "4f2ac632ba10ff01cab43fb0d5dd5e90123d8667cc64dce691702bdff21eb24a",
+        "bytes": 1547096,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_native16_qsa_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_native16_qsa_test",
+        "sha256": "85866bb1827cea081aac5ccfef8ac634ca70e1e36e534ed70c350844287c501f",
+        "bytes": 442664,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_moe_upload_census_host_test",
+        "sha256": "f274461c3b915becf16f611f7447681ca1e2bad2860b51a1b2288f3a09571269",
+        "bytes": 96456,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/strata_full_context_diagnostic",
+        "sha256": "a14eb7e62bd0c0dd9ce67661dc58a204d7a58321b66fbbfe791721bc59827d8b",
+        "bytes": 26484112,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      },
+      "sycl_gu_policy_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/sycl_gu_policy_test",
+        "sha256": "cd99a46ea8a34a2dd03cfe9d65908a4b24242608e97c7e003fa1dcc1b5aef013",
+        "bytes": 14155160,
+        "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-joint-census-native-v1/build/strata",
+      "sha256": "f59e7f44a21fc70cbde7e67fa6fda8a8af4c7d2b4d47a0801dc975f5d028c089",
+      "bytes": 26483920,
+      "origin_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2"
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -316627,6 +316731,20 @@
       },
       {
         "label": "planned",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "dependencies",
         "exit_code": 0,
         "ownership_closed": true,
         "errors": [],
