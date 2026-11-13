@@ -475,8 +475,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fresh device-v2root/plan with the same f59e7f44engine. No GPU was submitted.
   V2preparation now closes normally0and pins explicit row/cache0fixture settings;
   the11-stage plan now passes54reader controls,11native CPUrefusals,phase/census/
-  physical-context host controls and current-head IR identity. Traced GPU stages
-  are next;this is not actual-model or throughput qualification. The consumed V1private
+  physical-context host controls and current-head IR identity. All11stages now
+  close normally0,with quiet validation,no fresh GPUfault,and44GU numerical
+  cases at0FP16ULP plus exact BF16capture. Fresh QSA/producer262144-cell checks
+  pass;physical model fill remains unqualified. The next committed controller,
+  `tools/sycl/cpu_joint_census_model.py`,keeps row/cache0and checks each target
+  callback against its actual traced width*topk10,census,resident membership
+  and old pool clocks. Parser controls and model admission are pending. The consumed V1private
   preparation transaction is retired after exact controller recovery. Capture actual layer/format/jobs/NThistogram before choosing another policy.
   Physical saturation and whole-model speed remain unqualified.
   See`compact_small_batch_pool_v1`in the
