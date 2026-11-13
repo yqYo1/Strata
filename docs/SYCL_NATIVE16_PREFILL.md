@@ -604,9 +604,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   for code and8.29497->7.56419for prose;prompt time rises18.57%/14.77% and
   TTFT18.55%/15.66%. Request/output/thinking hashes,MTPacceptance and actual
   CPU/GPU/NTcounts match. All timed candidate NT1bindings are307272/858655.
-  Candidate2also closes normally/no fault,with12.4693/7.6409TG and the same
-  task/MTPcounts. Its matching reference3has not run;three processes remain.
-  No adoption or changed gate. Cache expansion
+  Candidate2and reference3also close normally/no fault with matching task/
+  MTPcounts. Their second-pair candidate/reference TGis12.46926/12.39097
+  for code and7.64088/7.58449for prose:ratios1.006318/1.007435. The original
+  negative first pair remains;reference4/candidate5are pending. No adoption
+  or changed gate. Cache expansion
   adds141590937600/395668224000logical bytes across those long requests,not
   measured DRAMtraffic. Candidate format-service projections are retained for
   later R3/R4comparison,without inventing missing R0format times. Actual long-workload
