@@ -589,35 +589,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Actual NT1bindings are2844/3157/2844,with independent NT/entry/membership
   conservation and prefill/decode/cache handoff. Poolwall790.041/771.382/772.646ms
   is unmatched against the older baseline,not a speedup. This charged diagnostic
-  is not sustainedTG/cleanPP or adoption. Next compare repeated bench.sh long
-  thinking workloads before independent prefill/agent/task/full-context gates.
-  The frozen`cpu_mixed_cache_speed_v1`plan now specifies six independent
-  bench.sh processes inR,C,C,R,R,Corder,each with4warmups and thinking-enabled
-  code/prose1K+ generation. Only cache budget0/16GiBdiffers;common census/trace
-  validates actual timed bindings and charges its observer cost. Collector
-  controls pass3positive/9negative cases,including a zero-window one-token
-  warmup. Current-source frontend admission passes. Reference process0now
-  closes normally/no fresh fault with2815code and6823prose output tokens:
-  13.95058/8.29497TG and.870085/.339347MTPacceptance,actual CPUcache bindings0.
-  All6actual request frames conserve source/NT/entries/membership and pool clocks.
-  Candidate1also closes normally/no fault. First-pair TGfalls13.95058->11.49292
-  for code and8.29497->7.56419for prose;prompt time rises18.57%/14.77% and
-  TTFT18.55%/15.66%. Request/output/thinking hashes,MTPacceptance and actual
-  CPU/GPU/NTcounts match. All timed candidate NT1bindings are307272/858655.
-  Candidate2and reference3also close normally/no fault with matching task/
-  MTPcounts. Their second-pair candidate/reference TGis12.46926/12.39097
-  for code and7.64088/7.58449for prose:ratios1.006318/1.007435. The original
-  negative first pair remains. Reference4also closes normally0without a fresh
-  fault;candidate5is the only remaining process. No adoption or changed gate.
-  Cache expansion
-  adds141590937600/395668224000logical bytes across those long requests,not
-  measured DRAMtraffic. Candidate format-service projections are retained for
-  later R3/R4comparison,without inventing missing R0format times. Actual long-workload
-  logical raw blob visits are.77907/1.11066GBper output,or54.5351/77.7464GB/s at
-  hypothetical70TG with unchanged visits. These exclude draft/refill/prefill,
-  do not measure DRAMtraffic/LLCreuse and are not hardware ceilings. This is a
-  mechanism screen before clean timing/adoption. See`mixed_nt_model_v1`;
-  clean14508PP/TG remains the speed reference.
+  is not sustainedTG/cleanPP or adoption. Its separate repeated bench.sh
+  comparison and rejection are recorded below.
+  The frozen CPU mixed-cache comparison now closes all six fresh bench.sh
+  processes and twelve thinking-on long requests,normal0/closed owners,quiet
+  validation/no fresh fault and all15final asset hashes. Code/prose read33211/
+  33281tokens and generate2815/6823with strong.870085/weak.339347acceptance;
+  requests,outputs and logical work match across arms.
+  Charged reference/candidate TGmedians are
+  12.61910/12.46926for code and
+  7.58449/7.60636for prose.
+  Candidate/reference paired TGis
+  0.823831/1.006318/1.015203and
+  0.911901/1.007435/1.009865;
+  geometric means0.944152/0.975310.
+  Both original reproducibility gates fail:cache0remains selected. Favorable later
+  pairs and individual samples remain;no changed criteria or candidate adoption.
+  Existing affected-format pool clocks improve in the two later pairs,but are
+  not pure CPUarithmetic and do not establish hardware saturation or clean
+  whole-model gain. Reference0format times were not retained;none are invented.
+  Next qualify the current-runtime collector fixture,then profile current393/
+  e8cache0. The old fixture refuses a runtime-source mismatch;its launcher/
+  collector hashes still match. The current build already defines the four-TU
+  sycl_profile_compat_window target. Do not bypass the old guard.
+  The current engine remains for this named attribution consumer;retire the
+  unused cache prototype at the next engine change,keeping independent bounds
+  guards. Clean14508remains the speed reference. No candidate clean-speed,
+  dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
+  teardown qualification follows. See mixed_nt_model_v1.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the

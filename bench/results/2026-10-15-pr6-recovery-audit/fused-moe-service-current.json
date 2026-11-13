@@ -323326,7 +323326,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "60ad216831eac9274c8806386d1fbd743fe90b4f",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/strata",
@@ -326085,11 +326085,541 @@
           "consumer": "Compare R3/R4/C5 and select bounded same-build caller/worker service-clock diagnostic after cohort;GPU profiler stamp path is explicitly disabled for SYCL.",
           "limits": "Host-clock intervals/rounding;no GPUarithmetic/VRAM/PCIe saturation or exposed CPUcritical-path attribution."
         }
+      },
+      {
+        "index": 5,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 3093015,
+          "start_ticks": 293271675,
+          "sid": 3092945
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33211,
+            "reused_tokens": 0,
+            "generated_tokens": 2815,
+            "output_chars": 5578,
+            "reasoning_chars": 2215,
+            "prompt_ms": 56684.5,
+            "prompt_tps": 585.9,
+            "decode_ms": 219733.8,
+            "decode_tps": 12.8,
+            "ttft_s": 58.347,
+            "total_s": 276.444,
+            "drafts_offered": 2340,
+            "drafts_accepted": 2036,
+            "acceptance_rate": 0.8700854700854701,
+            "request_sha256": "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "80fb70a27be6e9e2923f645a59c4fad548a829f3ea3586b26cc823a9803221d2",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33281,
+            "reused_tokens": 0,
+            "generated_tokens": 6823,
+            "output_chars": 6053,
+            "reasoning_chars": 10469,
+            "prompt_ms": 46263.2,
+            "prompt_tps": 719.4,
+            "decode_ms": 897012.2,
+            "decode_tps": 7.6,
+            "ttft_s": 46.439,
+            "total_s": 943.302,
+            "drafts_offered": 10143,
+            "drafts_accepted": 3442,
+            "acceptance_rate": 0.339347333136153,
+            "request_sha256": "7f66dd020f7748c3ae0f978ed052f0a769236fd43ae2b3e89a3ef02956b4f7c3",
+            "output_sha256": "dda985df40fab9b950bc667543a55506e2d7a413bbf96c8368afe0bd69ca61a0",
+            "reasoning_sha256": "3138a5fa9fc34cc98580851d6fc9edc728ef9762ab0e3a3e895c4bb62b0621bb",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3093015,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 33210,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 33210,
+            "residual_gpu_bytes": 680140800,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 33210,
+              "residual_gpu_rows": 33210,
+              "residual_gpu_bytes": 680140800,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20301,
+              "fused_down_jobs": 2114,
+              "maximum_window_rows": 33210,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 39575040000,
+              "requested_dequant_H2D_bytes": 63763200,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2114,
+                "fused_rows": 13045892,
+                "separate_jobs": 18187
+              },
+              "down": {
+                "fused_jobs": 2114,
+                "fused_rows": 13045892,
+                "separate_jobs": 18187
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20301,
+              "windows": 48,
+              "dequants": 19378,
+              "maximum_physical_window_rows": 33210,
+              "requested_source_map_bytes": 63763200,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            }
+          },
+          {
+            "rows": 33280,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 33280,
+            "residual_gpu_bytes": 681574400,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 33280,
+              "residual_gpu_rows": 33280,
+              "residual_gpu_bytes": 681574400,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 19991,
+              "fused_down_jobs": 2106,
+              "maximum_window_rows": 33280,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 38961638400,
+              "requested_dequant_H2D_bytes": 63897600,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2106,
+                "fused_rows": 13041169,
+                "separate_jobs": 17885
+              },
+              "down": {
+                "fused_jobs": 2106,
+                "fused_rows": 13041169,
+                "separate_jobs": 17885
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 19991,
+              "windows": 48,
+              "dequants": 19060,
+              "maximum_physical_window_rows": 33280,
+              "requested_source_map_bytes": 63897600,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            }
+          }
+        ],
+        "cache": [
+          {
+            "hits": 143358,
+            "lookups": 1498080,
+            "hit_percent": 9.6
+          },
+          {
+            "hits": 366480,
+            "lookups": 6492000,
+            "hit_percent": 5.6
+          }
+        ],
+        "common_cache_footers": 6,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "0b1f15ec5e4d36d6eb7bb06aa4925ad98841c01ba84ab11947d3f9f7ba72bd63",
+            "e4c88bf24cac79c1313fccbc0b8ea8e810146353aeb56810c825ea96dc9afd32",
+            "6bae76526d1b4c6aa4c64cdca70a819dd775adebebab9e6758942b05c3948e24",
+            "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033",
+            "7f66dd020f7748c3ae0f978ed052f0a769236fd43ae2b3e89a3ef02956b4f7c3"
+          ],
+          "valid": true,
+          "journal_sha256": "7ad5238ea1bb6a680de07065b2ffe52727182b514db96e14672f09a7a46931b7",
+          "CPU_cache_census": {
+            "cache_setup": {
+              "layers": 17,
+              "entries": 8704,
+              "known_bytes": 14932662352,
+              "budget_bytes": 17179869184,
+              "setup_s": 45.90081
+            },
+            "requests": [
+              {
+                "request": 1,
+                "read_tokens": 74,
+                "generated_tokens": 24,
+                "windows": 7,
+                "rows": 25,
+                "CPU_jobs": 7028,
+                "CPU_entries": 9845,
+                "GPU_entries": 2155,
+                "jobs_NT": [
+                  5178,
+                  1135,
+                  463,
+                  252,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 2108,
+                "pool_ms": 601.575987,
+                "logical_job_blob_bytes": 14399078400
+              },
+              {
+                "request": 2,
+                "read_tokens": 263,
+                "generated_tokens": 1,
+                "windows": 1,
+                "rows": 1,
+                "CPU_jobs": 393,
+                "CPU_entries": 393,
+                "GPU_entries": 87,
+                "jobs_NT": [
+                  393,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 147,
+                "pool_ms": 31.223939,
+                "logical_job_blob_bytes": 803404800
+              },
+              {
+                "request": 3,
+                "read_tokens": 909,
+                "generated_tokens": 1,
+                "windows": 1,
+                "rows": 1,
+                "CPU_jobs": 395,
+                "CPU_entries": 395,
+                "GPU_entries": 85,
+                "jobs_NT": [
+                  395,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 147,
+                "pool_ms": 31.873829,
+                "logical_job_blob_bytes": 808396800
+              },
+              {
+                "request": 4,
+                "read_tokens": 1068,
+                "generated_tokens": 8,
+                "windows": 3,
+                "rows": 9,
+                "CPU_jobs": 2456,
+                "CPU_entries": 3416,
+                "GPU_entries": 904,
+                "jobs_NT": [
+                  1867,
+                  322,
+                  163,
+                  104,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 750,
+                "pool_ms": 199.436162,
+                "logical_job_blob_bytes": 5042764800
+              },
+              {
+                "request": 5,
+                "read_tokens": 33211,
+                "generated_tokens": 2815,
+                "windows": 781,
+                "rows": 3121,
+                "CPU_jobs": 1074995,
+                "CPU_entries": 1354722,
+                "GPU_entries": 143358,
+                "jobs_NT": [
+                  853019,
+                  174157,
+                  37887,
+                  9932,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 307272,
+                "pool_ms": 91494.478426,
+                "logical_job_blob_bytes": 2193088563200
+              },
+              {
+                "request": 6,
+                "read_tokens": 33281,
+                "generated_tokens": 6823,
+                "windows": 3382,
+                "rows": 13525,
+                "CPU_jobs": 3718375,
+                "CPU_entries": 6125520,
+                "GPU_entries": 366480,
+                "jobs_NT": [
+                  2308894,
+                  735820,
+                  349658,
+                  324003,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 858655,
+                "pool_ms": 341849.678424,
+                "logical_job_blob_bytes": 7578050304000
+              }
+            ],
+            "actual_timed_binding_checked": true,
+            "physical_traffic_or_saturation_qualified": false
+          },
+          "timing_scope": "Common trace/census charged;not clean speed,task quality or adoption."
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68727
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "owned_resources": {
+          "peak_session_rss_bytes": 71159926784,
+          "elapsed_seconds": 1411.3734938129783
+        },
+        "posthoc_format_service": {
+          "columns": [
+            "request",
+            "category",
+            "calls",
+            "CPU_entries",
+            "NT1",
+            "NT2",
+            "NT3",
+            "NT4",
+            "pool_ns"
+          ],
+          "rows": [
+            [
+              5,
+              "GU18_Down20",
+              10934,
+              392096,
+              250533,
+              47287,
+              11251,
+              3309,
+              25771114274
+            ],
+            [
+              5,
+              "GU18_Down42",
+              2343,
+              87762,
+              56739,
+              11486,
+              2149,
+              401,
+              5073541868
+            ],
+            [
+              5,
+              "unchanged_formats",
+              24211,
+              874864,
+              545747,
+              115384,
+              24487,
+              6222,
+              60649822284
+            ],
+            [
+              6,
+              "GU18_Down20",
+              47348,
+              1791295,
+              705562,
+              199252,
+              94775,
+              100726,
+              95205438273
+            ],
+            [
+              6,
+              "GU18_Down42",
+              10146,
+              383991,
+              153093,
+              50939,
+              22300,
+              15530,
+              18244189281
+            ],
+            [
+              6,
+              "unchanged_formats",
+              104842,
+              3950234,
+              1450239,
+              485629,
+              232583,
+              207747,
+              228400050870
+            ]
+          ],
+          "source": "Existing accepted native census,project reader tools/sycl/cpu_work_census.py at60ad216831eac9274c8806386d1fbd743fe90b4f;post-closure projection only,no new timing or gate.",
+          "consumer": "Closed comparison and forthcoming cache0resource metrology;not pure arithmetic.",
+          "limits": "Pool calls include both GU/Down,scheduling/waits and may overlap GPUwork. Not CPUarithmetic time or resource saturation;not used to change the frozen performance gate."
+        },
+        "posthoc_host_timing": {
+          "columns": [
+            "workload",
+            "windows",
+            "wall_ms_per_window",
+            "verify_ms_per_window",
+            "layer_completion_wrapper_wait_ms_per_window",
+            "host_callback_ms_per_window",
+            "CPU_pool_call_ms_per_window",
+            "staging_ms_per_window",
+            "commit_emit_ms_per_window",
+            "draft_ms_per_window"
+          ],
+          "rows": [
+            [
+              "regular-code",
+              781,
+              281.35,
+              252.84,
+              109.98,
+              126.26,
+              117.15,
+              2.78,
+              0.16,
+              28.32
+            ],
+            [
+              "varied-prose",
+              3382,
+              265.23,
+              236.96,
+              109.36,
+              110.32,
+              101.08,
+              4.9,
+              0.17,
+              28.07
+            ]
+          ],
+          "source": "Existing legacy decode timer;verify.cpp Runtime event wait plus callback/staging scopes,not GPUkernel service. Post-closure projection,no new timing/gate.",
+          "consumer": "Compare R3/R4/C5 and select bounded same-build caller/worker service-clock diagnostic after cohort;GPU profiler stamp path is explicitly disabled for SYCL.",
+          "limits": "Host-clock intervals/rounding;no GPUarithmetic/VRAM/PCIe saturation or exposed CPUcritical-path attribution."
+        }
       }
     ],
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "whole_bytes": 805306368,
@@ -326357,6 +326887,280 @@
       "first_pair_losses_preserved": true,
       "candidate_adopted": false,
       "limits": "Second pair alone is positive;first pair remains negative in both tasks. Charged observer envelope,not clean speed. Preserve all three pairs and original stopping/performance gates."
+    },
+    "decision": {
+      "repeated_comparison_complete": true,
+      "workloads": {
+        "regular-code": {
+          "arms": {
+            "candidate": {
+              "samples": [
+                {
+                  "exact_tg": 11.492915423982428,
+                  "acceptance": 0.8700854700854701,
+                  "generated_tokens": 2815
+                },
+                {
+                  "exact_tg": 12.469258736897311,
+                  "acceptance": 0.8700854700854701,
+                  "generated_tokens": 2815
+                },
+                {
+                  "exact_tg": 12.810955801974936,
+                  "acceptance": 0.8700854700854701,
+                  "generated_tokens": 2815
+                }
+              ],
+              "median_tg": 12.469258736897311,
+              "min_tg": 11.492915423982428,
+              "max_tg": 12.810955801974936,
+              "observed_MTP_class": "strong"
+            },
+            "reference": {
+              "samples": [
+                {
+                  "exact_tg": 13.950581736780522,
+                  "acceptance": 0.8700854700854701,
+                  "generated_tokens": 2815
+                },
+                {
+                  "exact_tg": 12.390973736857974,
+                  "acceptance": 0.8700854700854701,
+                  "generated_tokens": 2815
+                },
+                {
+                  "exact_tg": 12.61910258680396,
+                  "acceptance": 0.8700854700854701,
+                  "generated_tokens": 2815
+                }
+              ],
+              "median_tg": 12.61910258680396,
+              "min_tg": 12.390973736857974,
+              "max_tg": 13.950581736780522,
+              "observed_MTP_class": "strong"
+            }
+          },
+          "paired_candidate_over_reference_TG": [
+            0.8238305499247756,
+            1.0063179054125886,
+            1.0152033961092923
+          ],
+          "geometric_mean_TG_ratio": 0.944152291686353,
+          "reproducible_TG_gain": false,
+          "paired_prompt_time_ratios": [
+            1.185691634646544,
+            1.007294363316504,
+            1.0279191729425567
+          ],
+          "paired_TTFT_ratios": [
+            1.1855108405666404,
+            1.011034146681054,
+            1.0281772044829773
+          ]
+        },
+        "varied-prose": {
+          "arms": {
+            "candidate": {
+              "samples": [
+                {
+                  "exact_tg": 7.5641925338104885,
+                  "acceptance": 0.339347333136153,
+                  "generated_tokens": 6823
+                },
+                {
+                  "exact_tg": 7.640879770650421,
+                  "acceptance": 0.339347333136153,
+                  "generated_tokens": 6823
+                },
+                {
+                  "exact_tg": 7.6063625444559175,
+                  "acceptance": 0.339347333136153,
+                  "generated_tokens": 6823
+                }
+              ],
+              "median_tg": 7.6063625444559175,
+              "min_tg": 7.5641925338104885,
+              "max_tg": 7.640879770650421,
+              "observed_MTP_class": "weak"
+            },
+            "reference": {
+              "samples": [
+                {
+                  "exact_tg": 8.294967739833437,
+                  "acceptance": 0.339347333136153,
+                  "generated_tokens": 6823
+                },
+                {
+                  "exact_tg": 7.584491266052015,
+                  "acceptance": 0.339347333136153,
+                  "generated_tokens": 6823
+                },
+                {
+                  "exact_tg": 7.532056500911011,
+                  "acceptance": 0.339347333136153,
+                  "generated_tokens": 6823
+                }
+              ],
+              "median_tg": 7.584491266052015,
+              "min_tg": 7.532056500911011,
+              "max_tg": 8.294967739833437,
+              "observed_MTP_class": "weak"
+            }
+          },
+          "paired_candidate_over_reference_TG": [
+            0.9119013805787721,
+            1.0074347115212328,
+            1.0098653061797822
+          ],
+          "geometric_mean_TG_ratio": 0.9753101532339917,
+          "reproducible_TG_gain": false,
+          "paired_prompt_time_ratios": [
+            1.1476681831010846,
+            0.9981260502922884,
+            1.0128380271822894
+          ],
+          "paired_TTFT_ratios": [
+            1.1565673420738973,
+            0.9979219429833105,
+            1.0130892907785947
+          ]
+        }
+      },
+      "inference_adopted": false,
+      "dedicated_prefill_nonregression_qualified": false,
+      "physical_resource_saturation_qualified": false,
+      "next": "Judge the counted mechanism separately per workload. If useful,qualify a low-output observer for clean speed;independent prefill strategies,agent/task/full-context/RESTORE/teardown remain open.",
+      "variable": "Only pre-exec STRATA_CPU_COMPACT_GU_MIB=0/16384;requested mixed in both.",
+      "clean_speed_qualified": false
+    },
+    "model_summary": {
+      "workloads": {
+        "regular-code": {
+          "reference": {
+            "read_tokens": 33211,
+            "generated_tokens": 2815,
+            "pp_tps": 602.2497094019574,
+            "pp_process_min_tps": 593.7575982951214,
+            "pp_process_max_tps": 640.6146320386401,
+            "prefill_s": 55.1449,
+            "ttft_s": 56.748,
+            "tg_tps": 12.61910258680396,
+            "tg_sample_min_tps": 12.390973736857974,
+            "tg_sample_max_tps": 13.950581736780522,
+            "mtp_acceptance": 0.8700854700854701,
+            "process_count": 3,
+            "sample_count": 3,
+            "thinking": true,
+            "sample_scope": "three_independent_process_medians_first_long_after_four_official_warmups",
+            "selected": false
+          },
+          "candidate": {
+            "read_tokens": 33211,
+            "generated_tokens": 2815,
+            "pp_tps": 585.8920869020632,
+            "pp_process_min_tps": 540.287721798432,
+            "pp_process_max_tps": 589.4578783705114,
+            "prefill_s": 56.6845,
+            "ttft_s": 58.347,
+            "tg_tps": 12.469258736897311,
+            "tg_sample_min_tps": 11.492915423982428,
+            "tg_sample_max_tps": 12.810955801974936,
+            "mtp_acceptance": 0.8700854700854701,
+            "process_count": 3,
+            "sample_count": 3,
+            "thinking": true,
+            "sample_scope": "three_independent_process_medians_first_long_after_four_official_warmups",
+            "selected": false
+          }
+        },
+        "varied-prose": {
+          "reference": {
+            "read_tokens": 33281,
+            "generated_tokens": 6823,
+            "pp_tps": 728.619342861146,
+            "pp_process_min_tps": 723.5141557117422,
+            "pp_process_max_tps": 796.0323952488244,
+            "prefill_s": 45.6768,
+            "ttft_s": 45.839,
+            "tg_tps": 7.584491266052015,
+            "tg_sample_min_tps": 7.532056500911011,
+            "tg_sample_max_tps": 8.294967739833437,
+            "mtp_acceptance": 0.339347333136153,
+            "process_count": 3,
+            "sample_count": 3,
+            "thinking": true,
+            "sample_scope": "three_independent_process_medians_second_long_after_code_after_four_official_warmups",
+            "selected": false
+          },
+          "candidate": {
+            "read_tokens": 33281,
+            "generated_tokens": 6823,
+            "pp_tps": 719.3838731432327,
+            "pp_process_min_tps": 693.6084897795859,
+            "pp_process_max_tps": 724.8725303781725,
+            "prefill_s": 46.2632,
+            "ttft_s": 46.439,
+            "tg_tps": 7.6063625444559175,
+            "tg_sample_min_tps": 7.5641925338104885,
+            "tg_sample_max_tps": 7.640879770650421,
+            "mtp_acceptance": 0.339347333136153,
+            "process_count": 3,
+            "sample_count": 3,
+            "thinking": true,
+            "sample_scope": "three_independent_process_medians_second_long_after_code_after_four_official_warmups",
+            "selected": false
+          }
+        }
+      },
+      "source": "Exact accepted counts/times/clientTTFT;medians of3independent processes per arm. Common trace/census/validation charged,not clean speed.",
+      "source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
+      "binary_sha256": "e8a1e54df5173b680e0181dacc9c4474fab49a750d9f109731f352afea92953a"
+    },
+    "posthoc_mechanism": {
+      "rows": [
+        {
+          "candidate_index": 2,
+          "reference_index": 3,
+          "workload": "regular-code",
+          "affected_pool_time_ratio": 0.8753732156805628,
+          "unchanged_pool_time_ratio": 0.9986407518749776,
+          "reference_affected_pool_over_decode_wall": 0.15930771116926334
+        },
+        {
+          "candidate_index": 2,
+          "reference_index": 3,
+          "workload": "varied-prose",
+          "affected_pool_time_ratio": 0.8749033681658334,
+          "unchanged_pool_time_ratio": 0.9963438154208571,
+          "reference_affected_pool_over_decode_wall": 0.14141968466279806
+        },
+        {
+          "candidate_index": 5,
+          "reference_index": 4,
+          "workload": "regular-code",
+          "affected_pool_time_ratio": 0.8823098592926315,
+          "unchanged_pool_time_ratio": 1.0015072248859929,
+          "reference_affected_pool_over_decode_wall": 0.1567143885697379
+        },
+        {
+          "candidate_index": 5,
+          "reference_index": 4,
+          "workload": "varied-prose",
+          "affected_pool_time_ratio": 0.89267172720894,
+          "unchanged_pool_time_ratio": 1.0266418294690516,
+          "reference_affected_pool_over_decode_wall": 0.14029735789301126
+        }
+      ],
+      "reference0_format_times_missing": true,
+      "limits": "Conserved host pool clocks include GU/Down/scheduling/waits and can overlap device work. Not CPUarithmetic,physical traffic,hardware saturation or a new gate. No invented first-pair format times."
+    },
+    "candidate_disposition": {
+      "runtime_passed": true,
+      "performance_gate_passed": false,
+      "adopted": false,
+      "decision": "Reject mixed-NT cache for model adoption:both original all-three-pairs TG gates fail. Preserve all samples and favorable later pairs.",
+      "next": "Keep cache0. Qualify current-runtime four-TU collector fixture,then bounded current393/e8cache0resource attribution. Preserve clean14508reference. Retire unused cache prototype at next engine change after this named profiling consumer;keep independent bounds guards.",
+      "remaining_qualification": "No candidate clean-speed,dedicated-prefill,agent/task/full262144/RESTORE or ordinary-provider teardown qualification."
     },
     "source_inputs": {
       "files": 740,
