@@ -166,9 +166,20 @@ public:
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode,
                                 std::span<const compact_gu::Lease> gu_views = {});
+    /// Experimental Decode scheduling: each claimed expert completes GU,
+    /// hidden quantization and Down on one worker. Only IQ3_XXS GU with the
+    /// tested Down20/42 geometry,7..36 jobs and NT1..4 is admitted. Other
+    /// phases/shapes keep the existing row-split path. No cached GU leases.
+    /// This is a component candidate;the production dispatcher does not select it.
+    void run_whole_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
+                                NativeGuPhase phase = NativeGuPhase::Decode);
     static constexpr int kMaxSplitMulti = 96;
     /// run_split_multi's phases, accumulated ms: gate/up rows, the intermediate quantization, down rows.
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
+    // Whole-expert time includes overlapping per-job stages;do not add it to
+    // row-split GU/quant/Down service times or infer hardware saturation.
+    double ms_multi_whole = 0;
+    uint64_t native_whole_calls = 0;
     int64_t multi_bytes = 0;
 
     /// Total `_mm_pause` iterations spent waiting, over all workers, is no longer counted - see the note on the
