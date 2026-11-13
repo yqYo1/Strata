@@ -1574,14 +1574,20 @@
           "original_outcome_unchanged": true
         },
         "native_sycl_entry_restore": {
-          "stage": "source_restored_host_validation_pending",
+          "stage": "host_entry_passed",
           "source_commit": "b8f0a5bbf29df810022064a7a92462e9313cd918",
           "tests_source_commit": "ca6f461ce82cedacdd527c51e9290aaf23ec76a9",
           "origin_owned_commit": "51ad49e895c7dce75c0fb74b254255d504f22704",
           "upstream_import_that_lost_the_adapter": "97e9c984703efb842fe2c1b24b6e712ce334cc26",
           "scope": "Restore Linux source-checkout setup and native installed/previous-config start/update routing;preserve all CLI args and existing maintained config validation. Control/App/MCP setup remains unported and cannot invoke the source builder. No inference or excluded-model execution change.",
-          "validation": "native_sycl_setup_entry_host_v1 in fused-moe-service-current.json;queued after current CPUtiming;not yet run.",
-          "model_or_install_qualified": false
+          "validation": "native_sycl_setup_entry_host_v1 in fused-moe-service-current.json;10CPU/mock cases pass on the pinned interpreter/source. Config-preservation/unsupported-flags and existing-native start/update/adoption routing exercised. No actual installation or Control/App/MCP model route qualified.",
+          "model_or_install_qualified": false,
+          "passed": true,
+          "tests": 10,
+          "skipped": 0,
+          "normal_exit_code": 0,
+          "ownership_closed": true,
+          "GPU_executed": false
         }
       }
     },

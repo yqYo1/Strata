@@ -55,8 +55,9 @@ The [Arc setup source map](research/upstream-arc-control-setup.md) identified
 that the broad import lost this fork's native setup routing. Source `b8f0a5bbf`
 restores the Linux checkout entry to `tools/setup_intel.py` and sends installed/
 previous native configurations through it before upstream update/migration.
-The focused10-test host plan is committed and pending;no actual install is
-qualified. Control/App/MCP setup and the CLI launcher's direct `adopt.plan` /
+All10focused CPU/mock entry/config-preservation tests pass with zero skips,
+normal0and closed ownership;source/interpreter checks pass before and after.
+No actual installation is qualified. Control/App/MCP setup and the CLI launcher's direct `adopt.plan` /
 `adopt.write` config replacement still need their native adapters. Control cannot
 invoke the source builder while its component route is pending. The
 [unmodified Arc benchmark source map](research/upstream-arc-benchmark-readiness.md)
