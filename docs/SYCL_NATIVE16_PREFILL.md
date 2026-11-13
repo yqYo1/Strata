@@ -549,7 +549,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in that plan;preserve both prefill strategies and cache0/MTPdefaults. Do not
   partial-relink old class consumers. Closed RAMfixture/raw generations are
   retired after original Git/source/recipe recovery:44files,364453regular bytes;
-  all27individual samples remain in the CPUresult. The455-row performance CSV
+  all27individual samples remain in the CPUresult. The459-row performance CSV
   now includes three RAMreference points and twelve mixed-cache comparison points.
   Keep14508clean speed reference and3d7fCPUfixture. The ended c0dc/c858small,
   492whole-stress and f59observer roots are now retired after original Git/recipe/
@@ -615,10 +615,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and no fresh fault pass in both modes. Active collection retains inner6
   kernels/3copies and whole8/5 with unique native joins. V1's shared test-mock
   failure remains failed;V2passes all nine host controls. The old fixture's
-  source-mismatch refusal is preserved. Next profile current393/e8cache0 with
-  separately committed matched observer controls;toy coverage is not model
-  coverage,overhead qualification or a speedup.
-  The current engine remains for this named attribution consumer;retire the
+  source-mismatch refusal is preserved. The current393/e8cache0 profile now
+  closes three bracketed processes at`d2016f730`:all native requests/owners and
+  fault checks pass,but both decode observer ratios1.57633/1.53794 exceed the
+  prospective1.5bound. The observer gate remains failed;these kernel services
+  do not establish critical-path shares,hardware saturation or clean speed.
+  Caller accounting includes substantial GPUcompletion polling. Scalar mapped
+  row copies and GPU KVresolution are bounded mechanism hypotheses,not a
+  conclusion that PCIe or CPUarithmetic is saturated. Successful raw profile
+  output and the superseded V2fixture are retired at`dc3df2ef2`;compact original
+  samples and the failed decision remain in`current_decode_device_service_v1`.
+  Main next tests subgroup-shared row-mask lookup in a fresh five-TU standalone
+  fixture under`mapped_rows_subgroup_v1`:bitwise/capture/bounds first,then six
+  matched processes over10/20/30/40rows. Graph launch and completion are timed;
+  source preparation is excluded explicitly. Production dispatch is unchanged;
+  only qualifying shapes may enter a later decode-only model plan. This is not
+  a new engine build,model gain or full-context qualification.
+  The current engine remains for the ensuing named mechanism/model decision;retire the
   unused cache prototype at the next engine change,keeping independent bounds
   guards. Clean14508remains the speed reference. No candidate clean-speed,
   dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
