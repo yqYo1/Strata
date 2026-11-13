@@ -18,9 +18,9 @@ import sys
 sys.dont_write_bytecode = True
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'ram-read-ceiling-v1'
+ROOT = B / 'ram-read-ceiling-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json'
-KEY = 'ram_read_ceiling_v1'
+KEY = 'ram_read_ceiling_v2'
 SOURCE = P / 'bench/hardware/ram_read.cpp'
 PINNED = ['bench/hardware/ram_read.cpp', 'tools/hardware/ram_read.py',
           'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
@@ -76,6 +76,29 @@ def dependency_paths(text):
     return {str((P / p).resolve()) for p in shlex.split(text.split(':', 1)[1].replace('\\\n', ' '))}
 
 
+def cpu_cgroup():
+    membership = Path('/proc/self/cgroup').read_text().strip()
+    require(membership.startswith('0::/'), 'this fixture records the actual cgroup2 hierarchy')
+    root = Path('/sys/fs/cgroup')
+    current = root / membership.split('::', 1)[1].lstrip('/')
+    require(current.is_dir(), 'current cgroup must be visible')
+    rows, limits = [], []
+    while True:
+        path = current / 'cpu.max'
+        # The cgroup2 root has no cpu.max; limits belong to descendant groups.
+        if path.exists():
+            text = path.read_text().strip(); quota, period = text.split()
+            rows.append(dict(path=str(path), value=text))
+            if quota != 'max':
+                limits.append(int(quota) / int(period))
+        if current == root:
+            break
+        current = current.parent
+    return dict(membership=membership, visible_limits=rows,
+        effective_quota_cores=min(limits) if limits else None,
+        meaning='None means no finite quota in the visible current-to-root hierarchy')
+
+
 def prepare():
     require(not ROOT.exists(), 'do not replace an existing run or failed plan')
     revision = git('rev-parse', 'HEAD')
@@ -129,7 +152,7 @@ def prepare():
              'while hardware ceilings need remeasurement.',
         runtime=dict(kernel=os.uname().release, boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
             cpu_model=next(x.split(':', 1)[1].strip() for x in Path('/proc/cpuinfo').read_text().splitlines()
-                if x.startswith('model name')), cpu_max=Path('/sys/fs/cgroup/cpu.max').read_text().strip(),
+                if x.startswith('model name')), initial_cpu_cgroup=cpu_cgroup(),
             llc_size=Path(f'/sys/devices/system/cpu/cpu{cpus[0]}/cache/index3/size').read_text().strip(),
             allowed_cpus=sorted(os.sched_getaffinity(0)), initial_load_average=os.getloadavg(),
             thp=Path('/sys/kernel/mm/transparent_hugepage/enabled').read_text().strip()))
@@ -174,6 +197,8 @@ def measure(row):
     require(int(next(x.split()[1] for x in Path('/proc/meminfo').read_text().splitlines()
         if x.startswith('MemAvailable:'))) * 1024 >= 8 << 30, '8GiB available required')
     row.update(stage='measuring', active=True, ownership_closed=False, samples=[])
+    row['measurement_cpu_cgroup'] = cpu_cgroup()
+    row['measurement_load_average'] = os.getloadavg()
     save(row)
     try:
         for ordinal, n in enumerate(ORDER):

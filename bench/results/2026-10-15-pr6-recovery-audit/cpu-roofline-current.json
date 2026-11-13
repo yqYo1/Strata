@@ -23382,5 +23382,17 @@
       "physical_RAM_bus_or_CPU_saturation_qualified": false,
       "limits": "Summed processCPU includes pool polling;neither thread occupancy nor native raw payload bytes establish DRAM bandwidth or hardware saturation. Actual model critical resource remains unknown."
     }
+  },
+  "ram_read_ceiling_v1_prepare_failure": {
+    "stage": "failed_prelaunch",
+    "source_commit": "cd8962d9d67401559314e2d9c4e907df29f56007",
+    "action": "prepare",
+    "native_model_or_measurement_started": false,
+    "native_binary_built": false,
+    "ownership_closed": true,
+    "native_tool_process_exit_code": 1,
+    "reason": "Read /sys/fs/cgroup/cpu.max at the cgroup2 root,where this file is absent. Current descendant and ancestor cpu.max files must be read instead. The compiler -M dependency query closed normally;no native fixture was compiled or executed.",
+    "root_created": false,
+    "next_action": "New v2controller/root records the actual visible current-to-root cgroup2 quota hierarchy;original failed preparation stays failed."
   }
 }
