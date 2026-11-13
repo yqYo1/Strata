@@ -600,7 +600,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   closes normally/no fresh fault with2815code and6823prose output tokens:
   13.95058/8.29497TG and.870085/.339347MTPacceptance,actual CPUcache bindings0.
   All6actual request frames conserve source/NT/entries/membership and pool clocks.
-  Five processes remain;there is no paired speed gain yet. Actual long-workload
+  Candidate1also closes normally/no fault. First-pair TGfalls13.95058->11.49292
+  for code and8.29497->7.56419for prose;prompt time rises18.57%/14.77% and
+  TTFT18.55%/15.66%. Request/output/thinking hashes,MTPacceptance and actual
+  CPU/GPU/NTcounts match. All timed candidate NT1bindings are307272/858655.
+  Four processes/two pairs remain;no adoption or changed gate. Cache expansion
+  adds141590937600/395668224000logical bytes across those long requests,not
+  measured DRAMtraffic. Candidate format-service projections are retained for
+  later R3/R4comparison,without inventing missing R0format times. Actual long-workload
   logical raw blob visits are.77907/1.11066GBper output,or54.5351/77.7464GB/s at
   hypothetical70TG with unchanged visits. These exclude draft/refill/prefill,
   do not measure DRAMtraffic/LLCreuse and are not hardware ceilings. This is a
