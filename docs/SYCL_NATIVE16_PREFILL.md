@@ -400,6 +400,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Next freeze a representative7..36job/mixed-NT CPUcomparison before widening
   selection,and qualify the new full engine with cache0independently. Keep
   the14508GPUfallback until that migration qualifies.
+  The independent cache0plan at168c76904now passes all32769/82/32769input
+  requests and96generated tokens,including complete normal0/closed ownership,
+  quiet parameter validation,15assets before/after and no fresh GPUfault.
+  No optional CPUcache is prepared. Peak owned RSS is55855677440B. This
+  qualifies the coherent89be7engine for this functional handoff only;matched
+  clean speed,sustained TG/task and physical262144/RESTORE remain pending.
+  Keep14508as the clean measured reference. The earlier cache-on exposure
+  screen remains failed and is not superseded by the independent cache0pass.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
