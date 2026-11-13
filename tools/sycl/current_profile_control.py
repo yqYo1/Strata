@@ -20,7 +20,7 @@ import current_profile_fixture as fixture_build
 import profile_compat as adapter
 
 P, B, RESULT = fixture_build.P, fixture_build.B, fixture_build.RESULT
-ROOT, KEY = B / 'current-profile-control-v1', 'current_profile_control_v1'
+ROOT, KEY = B / 'current-profile-control-v2', 'current_profile_control_v2'
 THIS = 'tools/sycl/current_profile_control.py'
 TEST = 'tools/sycl/test_current_profile_control.py'
 EXTRA = {THIS, TEST}

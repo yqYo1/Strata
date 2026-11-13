@@ -39,7 +39,8 @@ class CurrentControlTest(unittest.TestCase):
         profile = dict(control.adapter.profile.profiling(Path('/private'), {
             'launcher': {'path': '/launcher'}, 'collector': {'path': '/collector'}}), mode='aggregate')
         row = {'native_validation_probe': {'library': {'path': '/probe'}}}
-        with patch.object(control.adapter.engine_once, 'native_environment', return_value=dict(env, LD_PRELOAD='/probe')):
+        with patch.object(control.adapter.engine_once, 'native_environment',
+                          side_effect=lambda *_args, **_kw: dict(env, LD_PRELOAD='/probe')):
             direct = control.expected_environment(row, {'environment': env, 'profile': None})
             active = control.expected_environment(row, {'environment': env, 'profile': profile})
         self.assertEqual(direct['LD_PRELOAD'], '/probe')
