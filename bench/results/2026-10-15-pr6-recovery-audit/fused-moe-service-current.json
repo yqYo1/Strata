@@ -323326,7 +323326,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "60ad216831eac9274c8806386d1fbd743fe90b4f",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/strata",
@@ -323623,7 +323623,405 @@
         "environment_sha256": "c076e80d4f55994e2a847c9b44b8223e4b99324d0a936e964359b2b9670f79ab"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 2671704,
+          "start_ticks": 292218480,
+          "sid": 2671622
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33211,
+            "reused_tokens": 0,
+            "generated_tokens": 2815,
+            "output_chars": 5578,
+            "reasoning_chars": 2215,
+            "prompt_ms": 51842.4,
+            "prompt_tps": 640.6,
+            "decode_ms": 201783.7,
+            "decode_tps": 14.0,
+            "ttft_s": 53.226,
+            "total_s": 253.651,
+            "drafts_offered": 2340,
+            "drafts_accepted": 2036,
+            "acceptance_rate": 0.8700854700854701,
+            "request_sha256": "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "80fb70a27be6e9e2923f645a59c4fad548a829f3ea3586b26cc823a9803221d2",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33281,
+            "reused_tokens": 0,
+            "generated_tokens": 6823,
+            "output_chars": 6053,
+            "reasoning_chars": 10469,
+            "prompt_ms": 41808.6,
+            "prompt_tps": 796.0,
+            "decode_ms": 822546.9,
+            "decode_tps": 8.3,
+            "ttft_s": 41.95,
+            "total_s": 864.382,
+            "drafts_offered": 10143,
+            "drafts_accepted": 3442,
+            "acceptance_rate": 0.339347333136153,
+            "request_sha256": "7f66dd020f7748c3ae0f978ed052f0a769236fd43ae2b3e89a3ef02956b4f7c3",
+            "output_sha256": "dda985df40fab9b950bc667543a55506e2d7a413bbf96c8368afe0bd69ca61a0",
+            "reasoning_sha256": "3138a5fa9fc34cc98580851d6fc9edc728ef9762ab0e3a3e895c4bb62b0621bb",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2671704,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 33210,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 33210,
+            "residual_gpu_bytes": 680140800,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 33210,
+              "residual_gpu_rows": 33210,
+              "residual_gpu_bytes": 680140800,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20301,
+              "fused_down_jobs": 2114,
+              "maximum_window_rows": 33210,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 39575040000,
+              "requested_dequant_H2D_bytes": 63763200,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2114,
+                "fused_rows": 13045892,
+                "separate_jobs": 18187
+              },
+              "down": {
+                "fused_jobs": 2114,
+                "fused_rows": 13045892,
+                "separate_jobs": 18187
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20301,
+              "windows": 48,
+              "dequants": 19378,
+              "maximum_physical_window_rows": 33210,
+              "requested_source_map_bytes": 63763200,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            }
+          },
+          {
+            "rows": 33280,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 33280,
+            "residual_gpu_bytes": 681574400,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 33280,
+              "residual_gpu_rows": 33280,
+              "residual_gpu_bytes": 681574400,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 19991,
+              "fused_down_jobs": 2106,
+              "maximum_window_rows": 33280,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 38961638400,
+              "requested_dequant_H2D_bytes": 63897600,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2106,
+                "fused_rows": 13041169,
+                "separate_jobs": 17885
+              },
+              "down": {
+                "fused_jobs": 2106,
+                "fused_rows": 13041169,
+                "separate_jobs": 17885
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 19991,
+              "windows": 48,
+              "dequants": 19060,
+              "maximum_physical_window_rows": 33280,
+              "requested_source_map_bytes": 63897600,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            }
+          }
+        ],
+        "cache": [
+          {
+            "hits": 143358,
+            "lookups": 1498080,
+            "hit_percent": 9.6
+          },
+          {
+            "hits": 366480,
+            "lookups": 6492000,
+            "hit_percent": 5.6
+          }
+        ],
+        "common_cache_footers": 6,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "0b1f15ec5e4d36d6eb7bb06aa4925ad98841c01ba84ab11947d3f9f7ba72bd63",
+            "e4c88bf24cac79c1313fccbc0b8ea8e810146353aeb56810c825ea96dc9afd32",
+            "6bae76526d1b4c6aa4c64cdca70a819dd775adebebab9e6758942b05c3948e24",
+            "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033",
+            "7f66dd020f7748c3ae0f978ed052f0a769236fd43ae2b3e89a3ef02956b4f7c3"
+          ],
+          "valid": true,
+          "journal_sha256": "d7be2300321501d16e4611158f24fa46fd20c889955f15889b477cca1f26a1a6",
+          "CPU_cache_census": {
+            "cache_setup": null,
+            "requests": [
+              {
+                "request": 1,
+                "read_tokens": 74,
+                "generated_tokens": 24,
+                "windows": 7,
+                "rows": 25,
+                "CPU_jobs": 7028,
+                "CPU_entries": 9845,
+                "GPU_entries": 2155,
+                "jobs_NT": [
+                  5178,
+                  1135,
+                  463,
+                  252,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 0,
+                "pool_ms": 579.439557,
+                "logical_job_blob_bytes": 14399078400
+              },
+              {
+                "request": 2,
+                "read_tokens": 263,
+                "generated_tokens": 1,
+                "windows": 1,
+                "rows": 1,
+                "CPU_jobs": 393,
+                "CPU_entries": 393,
+                "GPU_entries": 87,
+                "jobs_NT": [
+                  393,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 0,
+                "pool_ms": 28.448111,
+                "logical_job_blob_bytes": 803404800
+              },
+              {
+                "request": 3,
+                "read_tokens": 909,
+                "generated_tokens": 1,
+                "windows": 1,
+                "rows": 1,
+                "CPU_jobs": 395,
+                "CPU_entries": 395,
+                "GPU_entries": 85,
+                "jobs_NT": [
+                  395,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 0,
+                "pool_ms": 32.048549,
+                "logical_job_blob_bytes": 808396800
+              },
+              {
+                "request": 4,
+                "read_tokens": 1068,
+                "generated_tokens": 8,
+                "windows": 3,
+                "rows": 9,
+                "CPU_jobs": 2456,
+                "CPU_entries": 3416,
+                "GPU_entries": 904,
+                "jobs_NT": [
+                  1867,
+                  322,
+                  163,
+                  104,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 0,
+                "pool_ms": 204.66638,
+                "logical_job_blob_bytes": 5042764800
+              },
+              {
+                "request": 5,
+                "read_tokens": 33211,
+                "generated_tokens": 2815,
+                "windows": 781,
+                "rows": 3121,
+                "CPU_jobs": 1074995,
+                "CPU_entries": 1354722,
+                "GPU_entries": 143358,
+                "jobs_NT": [
+                  853019,
+                  174157,
+                  37887,
+                  9932,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 0,
+                "pool_ms": 90042.622442,
+                "logical_job_blob_bytes": 2193088563200
+              },
+              {
+                "request": 6,
+                "read_tokens": 33281,
+                "generated_tokens": 6823,
+                "windows": 3382,
+                "rows": 13525,
+                "CPU_jobs": 3718375,
+                "CPU_entries": 6125520,
+                "GPU_entries": 366480,
+                "jobs_NT": [
+                  2308894,
+                  735820,
+                  349658,
+                  324003,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "NT1_bindings": 0,
+                "pool_ms": 328838.018857,
+                "logical_job_blob_bytes": 7578050304000
+              }
+            ],
+            "actual_timed_binding_checked": true,
+            "physical_traffic_or_saturation_qualified": false
+          },
+          "timing_scope": "Common trace/census charged;not clean speed,task quality or adoption."
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68727
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "owned_resources": {
+          "peak_session_rss_bytes": 56370470912,
+          "elapsed_seconds": 1241.3217352856882
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,

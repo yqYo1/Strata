@@ -596,8 +596,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   code/prose1K+ generation. Only cache budget0/16GiBdiffers;common census/trace
   validates actual timed bindings and charges its observer cost. Collector
   controls pass3positive/9negative cases,including a zero-window one-token
-  warmup. Current-source frontend admission also passes;all six native benchmark
-  processes remain pending. This is a
+  warmup. Current-source frontend admission passes. Reference process0now
+  closes normally/no fresh fault with2815code and6823prose output tokens:
+  13.95058/8.29497TG and.870085/.339347MTPacceptance,actual CPUcache bindings0.
+  All6actual request frames conserve source/NT/entries/membership and pool clocks.
+  Five processes remain;there is no paired speed gain yet. Actual long-workload
+  logical raw blob visits are.77907/1.11066GBper output,or54.5351/77.7464GB/s at
+  hypothetical70TG with unchanged visits. These exclude draft/refill/prefill,
+  do not measure DRAMtraffic/LLCreuse and are not hardware ceilings. This is a
   mechanism screen before clean timing/adoption. See`mixed_nt_model_v1`;
   clean14508PP/TG remains the speed reference.
   Legacy holds remain separate.
