@@ -1611,8 +1611,17 @@ int main(int argc, char** argv) {
     }
     Options o;
     size_t cpu_compact_gu_budget = 0;
+    auto cpu_compact_gu_policy = strata::kernels::cpu::compact_gu::BatchPolicy::SmallJobs;
     bool cpu_decode_whole_mixed = false;
 #if defined(STRATA_ENABLE_SYCL) && defined(STRATA_NATIVE_EXPERTS)
+    if (const char* value = std::getenv("STRATA_CPU_COMPACT_GU_POLICY")) {
+        if (!std::strcmp(value, "mixed"))
+            cpu_compact_gu_policy = strata::kernels::cpu::compact_gu::BatchPolicy::MixedNt;
+        else if (std::strcmp(value, "small")) {
+            std::fprintf(stderr, "strata generate: STRATA_CPU_COMPACT_GU_POLICY needs small or mixed\n");
+            return 2;
+        }
+    }
     if (const char* value = std::getenv("STRATA_CPU_DECODE_WHOLE")) {
         if (std::strcmp(value, "0") && std::strcmp(value, "1")) {
             std::fprintf(stderr, "strata generate: STRATA_CPU_DECODE_WHOLE needs 0 or 1\n");
@@ -4197,6 +4206,7 @@ int main(int argc, char** argv) {
     drive.d.pool = &pool;
     drive.d.cpu_decode_whole_mixed = cpu_decode_whole_mixed;
     drive.d.src = srcp;
+    drive.d.compact_gu_policy = cpu_compact_gu_policy;
     std::fprintf(stderr, "CPU_DECODE_SCHEDULE whole_mixed=%d down=42 jobs=24,36 nt=mixed_1_to_4 workers=5 host=1\n",
         int(cpu_decode_whole_mixed));
     if (cpu_compact_gu_cache) {
@@ -4212,9 +4222,12 @@ int main(int argc, char** argv) {
             drive.d.compact_gu_views.swap(views);
             drive.d.compact_gu_source = srcp;
             drive.d.compact_gu_cache = cpu_compact_gu_cache;
-            std::fprintf(stderr, "CPU_COMPACT_GU_READY phase=decode nt=1 max_jobs=%d entries=%zu known_bytes=%zu\n",
-                strata::kernels::cpu::compact_gu::max_cached_jobs,
-                cpu_compact_gu_cache->prepared_entries(), cpu_compact_gu_cache->known_bytes());
+            const bool mixed = cpu_compact_gu_policy == strata::kernels::cpu::compact_gu::BatchPolicy::MixedNt;
+            std::fprintf(stderr, "CPU_COMPACT_GU_READY phase=decode nt=1 max_jobs=%d entries=%zu known_bytes=%zu "
+                "policy=%s max_total_nt=%d\n",
+                mixed ? strata::kernels::cpu::compact_gu::max_mixed_rows : strata::kernels::cpu::compact_gu::max_cached_jobs,
+                cpu_compact_gu_cache->prepared_entries(), cpu_compact_gu_cache->known_bytes(),
+                mixed ? "mixed" : "small", mixed ? strata::kernels::cpu::compact_gu::max_mixed_rows : 0);
         } catch (const std::bad_alloc&) {
             cpu_compact_gu_cache.reset();
             std::fprintf(stderr, "CPU_COMPACT_GU_OFF native_fallback=1 reason=optional_dispatch_allocation\n");

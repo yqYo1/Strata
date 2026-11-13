@@ -239,6 +239,9 @@ struct ExpertDispatch {
     // Source identity is retained beside the explicit layer/expert coordinates.
     std::shared_ptr<const strata::kernels::cpu::compact_gu::Cache> compact_gu_cache;
     const ExpertSource* compact_gu_source = nullptr;
+    // Explicit experimental decode selection; cache0 and SmallJobs stay default.
+    strata::kernels::cpu::compact_gu::BatchPolicy compact_gu_policy =
+        strata::kernels::cpu::compact_gu::BatchPolicy::SmallJobs;
     RouterLookahead* lookahead = nullptr;   ///< CS-T: warms the next layer's predicted file-tier experts
     RemoteExperts* remote[3] = {}; ///< optional CUDA1..3 tiers for otherwise CPU-served rows
     int remote_count = 0;

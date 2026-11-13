@@ -539,7 +539,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   under`mixed_nt_cache_v1`in the CPUresult. The rotating64expert sets overlap
   between adjacent calls;this is not DRAM-cold or serial48-layer model coverage.
   Cache payload adds460800logical bytes per NT1job. This qualifies a separate
-  model-plan preparation,not model speed or adoption. Audit the actual activation
+  model-plan preparation,not model speed or adoption. The uncompiled owned model
+  adapter now offers explicit `STRATA_CPU_COMPACT_GU_POLICY=mixed` alongside a
+  nonzero cache budget;`small` and cache0stay default. It checks totalNT<=40,
+  NT1..4and the measured5worker+host configuration before leasing NT1GU,with
+  optional census binding counts. A repeated-expert MAXTwrite guard is added
+  independently. No new model/PP/TG evidence follows;see`mixed_nt_model_v1`. Audit the actual activation
   format/range and cache selection,RAM/setup,handoff and full-context boundaries
   in that plan;preserve both prefill strategies and cache0/MTPdefaults. Do not
   partial-relink old class consumers. Closed RAMfixture/raw generations are
