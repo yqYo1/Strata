@@ -23979,7 +23979,40 @@
         "6": 5.719096029526661
       },
       "model_comparison": "Observed baseline pool logical rates21.25..25.92GB/s include GU/Down arithmetic,hidden quantization,dispatch/waits and possible weight reuse. A continuous1GiBread rate is not proof of random-expert or physical DRAM saturation;do not change production workers from this fixture alone.",
-      "next_optimization": "Compare per-job NT1compact GU with native NT2..4in actual legal7..33job cohorts;preserve native phase and default/reference path,judge shapes/Down formats independently before model validation."
+      "next_optimization": "Compare per-job NT1compact GU with native NT2..4in actual legal7..33job cohorts;preserve native phase and default/reference path,judge shapes/Down formats independently before model validation.",
+      "conditional_token_traffic_projection": {
+        "model_census_commit": "2154ddab4c6f19843fceca28eb32f2dd964c2030",
+        "read_envelope_commit": "7b5b82c6f1cb3642fed9eea2446202ee760ab0f4",
+        "samples": [
+          {
+            "prompt_tokens": 32769,
+            "generated_tokens": 32,
+            "logical_GB_per_generated_token": 0.6260928,
+            "logical_GBps_for70tps": 43.826496,
+            "reference_equivalent_tps_at6core_read_rate": 62.775841709088496,
+            "reference_equivalent_tps_at3core_read_rate": 67.51937982835771
+          },
+          {
+            "prompt_tokens": 82,
+            "generated_tokens": 32,
+            "logical_GB_per_generated_token": 0.671668,
+            "logical_GBps_for70tps": 47.016760000000005,
+            "reference_equivalent_tps_at6core_read_rate": 58.51626474389133,
+            "reference_equivalent_tps_at3core_read_rate": 62.93793596092116
+          },
+          {
+            "prompt_tokens": 32769,
+            "generated_tokens": 32,
+            "logical_GB_per_generated_token": 0.6260928,
+            "logical_GBps_for70tps": 43.826496,
+            "reference_equivalent_tps_at6core_read_rate": 62.775841709088496,
+            "reference_equivalent_tps_at3core_read_rate": 67.51937982835771
+          }
+        ],
+        "formula": "logical_bytes/generated_tokens;required_rate=bytes_per_output*70;illustrative_rate=observed_continuous_read_GBps/GB_per_output",
+        "assumptions": "Only if each logical job blob requires one DRAMread and effective read throughput matches this continuous-read fixture. LLCreuse,physical bus traffic and long strong/weak acceptance are unmeasured. These32output diagnostics are not representative sustained-TG evidence. No hard bandwidth ceiling or saturation claim.",
+        "implication": "Measure useful CPUcompute reduction now,but separately investigate reducing bytes per accepted output,more GPU-resident expert work and verification reuse. Cache expansion can lower arithmetic cost while increasing memory traffic;do not infer70TGfrom its component speedup."
+      }
     },
     "performance_eligible": true,
     "model_performance_qualified": false,
@@ -24012,7 +24045,7 @@
     "retention": "Retain useful27individual wall/CPU/byte/fault samples,three-process spreads,setup,overhead and resource limits. Full433-input source/build/recipe record and untracked-file audit are in the named original Git commits;all ended fixture bytes and routine raw output are retired."
   },
   "mixed_nt_cache_v1": {
-    "stage": "built_pending_numeric",
+    "stage": "numeric_passed_pending_comparison",
     "active": false,
     "ownership_closed": true,
     "native_component_built": true,
@@ -24149,7 +24182,7 @@
       "decision": "Judge each Down/shape/pattern independently:all3paired gains without a minimum percentage keep that component eligible. Preserve failures and spreads. No model trial from a failed selected cell;any narrower selection needs a new committed prospective model plan,not retroactive relabeling.",
       "correctness": "Exact native output parity,NT1actual dispatch accounting,NT2..4native preservation,Prefill/phase/NT5..8/over-volume/over40fallback,miss/format/invalid-policy/span/null/retired-lease/bounds and wrong-expert controls. Freeze exact case/count/source/build/ELF contract before execution."
     },
-    "next_action": "Run both real Downformats152regular+14special controls with actual native dispatch audit. Only if both pass may the unchanged6-arm/12-process comparison begin;no core/generate model trial.",
+    "next_action": "Run the frozen6RCCRRCarms,each Down20thenDown42,216eligible batches total. Each shape/pattern/Downcell is judged independently in all3matched pairs. No model trial until a separately committed scoped model-admission plan;MixedNt still has no core/generate caller.",
     "retention": "One current CPUcandidate fixture for this imminent comparison;preserve original closed fallback until numerical qualification. Retire failed whole prototype and ended auxiliary consumers once their current f59qualification reader is migrated;old stress/performance failures stay in Git. No new full-engine generation before that generation/consumer review.",
     "component_source_commit": "761de6d1dd2a60d74728a2061ef4b06df68a4796",
     "fixture_and_controller_commit": "0a79ad94e39857a406a17c37e9e87f049db33c8b",
@@ -24192,7 +24225,7 @@
       "source_commit": "81914a76e50736fecd547a2ad31bca7339e70a27",
       "scope": "Original closed CPUauxiliary retained;no project object/archive reuse."
     },
-    "numerical_qualified": false,
+    "numerical_qualified": true,
     "build": {
       "source_commit": "761de6d1dd2a60d74728a2061ef4b06df68a4796",
       "plan_commit": "cddebd8b410725a6e072344d6e949e674067552c",
@@ -24241,7 +24274,42 @@
       "ownership_closed": true,
       "original_private_record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-v1/build.json",
       "original_private_record_sha256": "2e5c766fb482be73aee3e178e850428c771fa0ea4a23bd3ef54ffe85cbd21a50"
-    }
+    },
+    "numeric_results": [
+      {
+        "down": 20,
+        "result": {
+          "passed": true,
+          "cases": 152,
+          "nt1_rows": 1157120,
+          "compact_rows": 277120,
+          "special_controls": 14,
+          "whole_calls": 0,
+          "inputs_immutable": true,
+          "guards": true,
+          "performance_qualified": false
+        }
+      },
+      {
+        "down": 42,
+        "result": {
+          "passed": true,
+          "cases": 152,
+          "nt1_rows": 1090560,
+          "compact_rows": 247040,
+          "special_controls": 14,
+          "whole_calls": 0,
+          "inputs_immutable": true,
+          "guards": true,
+          "performance_qualified": false
+        }
+      }
+    ],
+    "numeric_exit_codes": [
+      0,
+      0
+    ],
+    "numeric_record_sha256": "f1abe3308b137fbdd0e71487459095c4973e1b7602f22598300087cc73fcebc9"
   },
   "ram_read_artifact_retirement_v1": {
     "stage": "retired",

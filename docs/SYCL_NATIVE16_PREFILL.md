@@ -509,14 +509,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   includes arithmetic,quantization,dispatch and waits;the comparison does not
   establish its saturation or justify changing its worker count. The prior
   nine-process V3observations retain their missing-observer-check hold.
+  The32-output diagnostics visit0.62609..0.67167logical GB/output:unchanged
+  traffic would require43.83..47.02GB/s at70TG. Dividing the measured6-core or
+  3-core continuous-read rates by those bytes gives illustrative58.5..67.5TG,
+  only if every blob requires one DRAMread and effective bandwidth matches this
+  fixture. Physical traffic,LLCreuse and sustained strong/weak-context dependence
+  remain unknown;this is not a hard ceiling. Reducing bytes per accepted output,
+  increasing GPU-resident expert work and improving verification reuse remain
+  important alternatives alongside CPUmath improvements.
   Next test actual legal mixed-NT shapes with selective NT1cached-GU and unchanged
   native NT2..4processing;also obtain1K+strong/weak long-census coverage.
   The source-only `BatchPolicy::MixedNt` proposal now gives that CPUcomparison
   an explicit per-call policy. Default model callers retain`SmallJobs`;the new
   policy is Decode-only,at most40jobs,totalNT<=40and eachNT1..4. Existing per-job
   NT1/format/lease guards remain;unsupported shapes and Prefill keep native GU.
-  No mixed-policy fixture is built or model route enabled yet. Build every
-  affected class-header consumer freshly;do not partial-relink old CPUarchives.
+  Source`761de6d1`now builds all36CPU/GGML/fixture objects freshly,with635actual
+  compiler and22external-link inputs,ELF`3d7f6388`. Both class-header consumers
+  share the same header and definitions. Both actual Down20/42formats pass
+  152regular/legacy cases and14special controls,including actual NT1route
+  accounting,NT2..4parity,NT5..8fallback and cache-owner retirement. This permits
+  only the frozen CPUcomponent comparison;no model route is enabled. Do not
+  partial-relink old class consumers. Closed RAMfixture/raw generations are
+  retired after original Git/source/recipe recovery:44files,364453regular bytes;
+  all27individual samples remain in the CPUresult. Three aggregate points bring
+  the performance CSV to443rows.
   Keep14508clean speed reference;
   this baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
