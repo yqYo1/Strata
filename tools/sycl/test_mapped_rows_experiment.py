@@ -23,6 +23,18 @@ def encode(data):
 
 
 class Admission(unittest.TestCase):
+    def test_completion_is_consumed_before_eof(self):
+        from unittest.mock import Mock
+        io = Mock(); io.line.return_value = 'fixture=PASS checked_teardown=PASS'
+        trial.complete_retirement(io)
+        self.assertEqual([x[0] for x in io.method_calls], ['send', 'line', 'exit'])
+
+    def test_bad_completion_refuses_qualification(self):
+        from unittest.mock import Mock
+        io = Mock(); io.line.return_value = 'fixture=FAIL'
+        with self.assertRaises(RuntimeError): trial.complete_retirement(io)
+        io.exit.assert_not_called()
+
     def test_exact_matrix(self):
         for arm in ('scalar', 'subgroup'):
             data = corpus(arm)

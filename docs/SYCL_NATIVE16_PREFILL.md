@@ -626,12 +626,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   output and the superseded V2fixture are retired at`dc3df2ef2`;compact original
   samples and the failed decision remain in`current_decode_device_service_v1`.
   Main next tests subgroup-shared row-mask lookup in a fresh five-TU standalone
-  fixture under`mapped_rows_subgroup_v2`:five host controls and bitwise/capture/
+  fixture under`mapped_rows_subgroup_v3`:seven host controls and bitwise/capture/
   bounds first,then six
   matched processes over10/20/30/40rows. Graph launch and completion are timed;
   source preparation is excluded explicitly. Production dispatch is unchanged;
   only qualifying shapes may enter a later decode-only model plan. This is not
-  a new engine build,model gain or full-context qualification.
+  a new engine build,model gain or full-context qualification. V2's native
+  correctness body passed18captures/54replays and five refusals with normal0,
+  empty/reaped process and no fresh fault,but the supervisor missed the final
+  stdout marker and failed its protocol gate. Preserve that failure. V3fixes
+  only the uncompiled controller/test protocol and reuses the exact3596912d
+  five-TU fixture after recovering its original245eecc93source and715compiler/
+  24external-link inputs;new host and traced qualification remain required.
   The current engine remains for the ensuing named mechanism/model decision;retire the
   unused cache prototype at the next engine change,keeping independent bounds
   guards. Clean14508remains the speed reference. No candidate clean-speed,

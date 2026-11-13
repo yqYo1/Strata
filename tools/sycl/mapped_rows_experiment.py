@@ -26,9 +26,9 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = source.P, source.B
-ROOT = B / 'mapped-rows-subgroup-v2'
+ROOT = B / 'mapped-rows-subgroup-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY, TARGET = 'mapped_rows_subgroup_v2', 'sycl_mapped_rows_bench'
+KEY, TARGET = 'mapped_rows_subgroup_v3', 'sycl_mapped_rows_bench'
 THIS = 'tools/sycl/mapped_rows_experiment.py'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'tests',
             'bench/sycl', 'tools/sycl', 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
@@ -137,15 +137,67 @@ def prepare():
             gate='Traced correctness before any speed. Component gain permits a separately committed decode-only model plan,not production adoption. Prefill stays unchanged.'),
         budget=dict(wall=900, cpu=2400, rss_cap=8 << 30, text_cap=32 << 20,
                     file_cap=256 << 20, total_cap=1 << 30),
-        host_command=[sys.executable, '-B', '-m', 'unittest', '-v', 'tools.sycl.test_mapped_rows_experiment'],
+        host_command=[sys.executable, '-B', '-m', 'unittest', '-v', 'tools.sycl.test_mapped_rows_experiment'], host_tests=7,
         cases=[], commands=[], active=False, ownership_closed=True, complete=False, passed=False,
         GPU_executed=False, model_executed=False,
         retention='One standalone fixture for immediate component decision. Keep compact individual samples,source/recipe/actual inputs/failure outcomes. Retire successful API/build output after decision;no third engine generation.')
+    # V2's native operation passed, but its supervisor failed to consume the
+    # final marker before expecting EOF. Preserve that failed run and reuse only
+    # its exactly proved compilation, never its incomplete qualification.
+    previous = B / 'mapped-rows-subgroup-v2/record.json'
+    old = json.loads(previous.read_text())
+    require(validation.committed(RESULT, ('mapped_rows_subgroup_v2',)) == compact(old)
+            and old['stage'] == 'failed' and len(old['cases']) == 1 and
+            old['cases'][0]['fresh_faults'] == [] and not old['cases'][0]['passed'], 'preserve original V2failure')
+    failed = json.loads((previous.parent / 'case0/execution.json').read_text())['commands']
+    require(len(failed) == 1 and failed[0]['exit_code'] == 0 and failed[0]['direct_child_reaped']
+            and failed[0]['session_empty'] and not failed[0]['survivors'] and not failed[0]['errors']
+            and failed[0]['error'] == "RuntimeError('unexpected trailing protocol')"
+            and not Path('/proc', str(failed[0]['pid'])).exists(), 'confirm exact terminated protocol failure before reuse')
+    recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in source.blobs(P,
+        old['project']['revision'], old['project']['source_sha256'])}
+    require(recovered == old['project']['source_sha256'], 'original five-TU source not recoverable')
+    changed = {p for p, h in recovered.items() if sha(P / p) != h}
+    require(changed == {THIS, 'tools/sycl/test_mapped_rows_experiment.py'} and
+            not {str((P / p).resolve()) for p in changed} & old['actual_inputs']['compiled'].keys(),
+            'reuse permits only these uncompiled controller/test edits')
+    row.update(stage='built', binary=old['binary'], actual_inputs=old['actual_inputs'], recipe=old['recipe'],
+        native_source_commit=old['project']['revision'], controller_source_commit=row['project']['revision'],
+        reused_component_build=dict(source_commit=old['project']['revision'], path=str(previous), sha256=sha(previous),
+            project_sha256=old['project']['aggregate_sha256'], actual_inputs_sha256=signature(old['actual_inputs']),
+            controller_only_changes=sorted(changed), original_failure_preserved=True,
+            qualification_reused=False, measured_process_reaped=True, session_empty=True, process_handle_missing=True),
+        plan=dict(row['plan'], host='Seven CPU controls,then new traced correctness;original V2protocol failure stays failed. Exact five-TU binary reused,no new native compilation.'))
     check(row, committed=False)
     ROOT.mkdir(mode=0o700)
     for leaf in ('tmp', 'cache'): (ROOT / leaf).mkdir()
     save(row)
-    print('Prepared fresh five-TU fixture and prospective repeated plan;commit before build.', flush=True)
+    print('Prepared controller-only V3 plan with original five-TU build proof;commit before host/check.', flush=True)
+
+
+def host_controls(row, owner):
+    entry, out, err = owner.run('host', row['host_command'], row['recipe']['environment'], P,
+        wall=60, cpu=60, rss_cap=1 << 30, text_cap=1 << 20, file_cap=2 << 20, total_cap=8 << 20)
+    text = out.read_text() + err.read_text()
+    require(ownership.closed(entry) and entry['exit_code'] == 0 and
+            'Ran ' + str(row['host_tests']) + ' tests' in text and '\nOK\n' in text and
+            'skipped' not in text, 'all host controls required')
+    row['host_controls'] = dict(tests=row['host_tests'], skipped=0, passed=True, exit_code=0, ownership_closed=True)
+
+
+def host():
+    row = json.loads((ROOT / 'record.json').read_text()); check(row)
+    require(row['stage'] == 'built' and not row['cases'] and 'host_controls' not in row, 'one fresh host stage')
+    owner = ownership.Owner(ROOT / 'host-owned')
+    try:
+        host_controls(row, owner); row.update(stage='ready', passed=True)
+    except BaseException as error:
+        row.update(stage='failed', passed=False, error=repr(error)); raise
+    finally:
+        row['active'] = owner.active is not None
+        row['ownership_closed'] = owner.active is None and all(ownership.closed(c) for c in owner.commands)
+        save(row)
+    print('Seven host controls pass;commit before traced correctness.', flush=True)
 
 
 def census(row, compile_output):
@@ -201,12 +253,7 @@ def compile_fixture():
     write(ROOT / 'build-attempt.json', dict(source_commit=row['project']['revision']))
     owner = ownership.Owner(ROOT / 'build-owned')
     try:
-        entry, out, err = owner.run('host', row['host_command'], row['recipe']['environment'], P,
-            wall=60, cpu=60, rss_cap=1 << 30, text_cap=1 << 20, file_cap=2 << 20, total_cap=8 << 20)
-        text = out.read_text() + err.read_text()
-        require(ownership.closed(entry) and entry['exit_code'] == 0 and
-                'Ran 5 tests' in text and '\nOK\n' in text and 'skipped' not in text, 'all five host controls required')
-        row['host_controls'] = dict(tests=5, skipped=0, passed=True, exit_code=0, ownership_closed=True)
+        host_controls(row, owner)
         for label, args in [('configure', row['recipe']['configure']),
                 ('compile', ['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', TARGET, '-j', '4'])]:
             check(row, committed=False)
@@ -251,7 +298,7 @@ def run_case(mode):
     row = json.loads((ROOT / 'record.json').read_text()); check(row)
     expected = ['correctness', *ORDER]
     i = len(row['cases'])
-    require(row['stage'] in ('built', 'ready') and i < len(expected) and mode == expected[i]
+    require(row['stage'] == 'ready' and row.get('host_controls', {}).get('passed') and i < len(expected) and mode == expected[i]
             and all(x['passed'] for x in row['cases']), 'frozen order;stop on failed case')
     label = 'case' + str(i); root = ROOT / label
     root.mkdir(mode=0o700)
@@ -289,7 +336,7 @@ def run_case(mode):
             require(len(mapped) >= 8 and not mapped - allowed.keys() and not required - mapped, 'unexpected/missing runtime mappings')
             require(all(sha(p) == allowed[p] for p in mapped), 'mapped runtime bytes changed')
             result['runtime_maps'] = dict(files=len(mapped), sha256=signature({p: allowed[p] for p in sorted(mapped)}), unknown=0, missing=0)
-            io.send(b'QUIT\n'); io.exit(30)
+            complete_retirement(io)
         args = ['correctness'] if mode == 'correctness' else ['bench', mode]
         budget = dict(row['budget'], wall=240, cpu=480, total_cap=128 << 20, text_cap=8 << 20)
         entry, out, err = owner.run('fixture', [row['binary']['path'], *args], env, P, interaction=interact, **budget)
@@ -351,11 +398,18 @@ def decision(cases):
         next='Only qualified primary shapes may enter a new committed decode-only model plan;keep prompt scalar and existing defaults pending model evidence.')
 
 
+def complete_retirement(io):
+    io.send(b'QUIT\n')
+    require(io.line(30) == 'fixture=PASS checked_teardown=PASS', 'checked retirement marker missing')
+    io.exit(30)
+
+
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'correctness', 'scalar', 'subgroup'),
-            'use prepare|build|correctness|scalar|subgroup')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'host', 'build', 'correctness', 'scalar', 'subgroup'),
+            'use prepare|host|build|correctness|scalar|subgroup')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); guards.no_model_owners([])
         if sys.argv[1] == 'prepare': prepare()
+        elif sys.argv[1] == 'host': host()
         elif sys.argv[1] == 'build': compile_fixture()
         else: run_case(sys.argv[1])

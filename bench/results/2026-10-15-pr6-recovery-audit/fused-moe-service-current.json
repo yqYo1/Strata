@@ -332341,7 +332341,7 @@
     "retirement": "Unexecuted V1preparation only;three small private directories/record retained until this cancellation is committed,then retire. Original builder recipe/source0dc618115 is in permanent Git history."
   },
   "mapped_rows_subgroup_v2": {
-    "stage": "built",
+    "stage": "failed",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -332600,11 +332600,28 @@
       "-v",
       "tools.sycl.test_mapped_rows_experiment"
     ],
-    "cases": [],
+    "cases": [
+      {
+        "mode": "correctness",
+        "index": 0,
+        "passed": false,
+        "complete": false,
+        "runtime_maps": {
+          "files": 34,
+          "sha256": "8095c7e8b465b822460d7158c6c57f7555699a1d3caa95db71e33cbbd9882b87",
+          "unknown": 0,
+          "missing": 0
+        },
+        "error": "RuntimeError('fixture failed or did not close')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "fault_probe_successful": true
+      }
+    ],
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "complete": false,
-    "passed": true,
+    "passed": false,
     "GPU_executed": false,
     "model_executed": false,
     "retention": "One standalone fixture for immediate component decision. Keep compact individual samples,source/recipe/actual inputs/failure outcomes. Retire successful API/build output after decision;no third engine generation.",
