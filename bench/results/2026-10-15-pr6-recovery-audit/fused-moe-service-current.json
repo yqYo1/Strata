@@ -333729,7 +333729,7 @@
     }
   },
   "mapped_rows_subgroup_v5": {
-    "stage": "prepared",
+    "stage": "built",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -333994,7 +333994,7 @@
     "active": false,
     "ownership_closed": true,
     "complete": false,
-    "passed": false,
+    "passed": true,
     "GPU_executed": false,
     "model_executed": false,
     "retention": "One standalone fixture for immediate component decision. Keep compact individual samples,source/recipe/actual inputs/failure outcomes. Retire successful API/build output after decision;no third engine generation.",
@@ -334005,6 +334005,19 @@
       "failing_batch_metrics_unrecorded": true,
       "change": "Keep original250ms floor and1%timer bound;add500ms per-cell warmup and750ms calibration,raise call cap262144 and native wall420s. New fixture must compile and requalify;no candidate speed was obtained in the failed cohort."
     },
+    "host_controls": {
+      "tests": 10,
+      "skipped": 0,
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-rows-subgroup-v5/build/sycl_mapped_rows_bench",
+      "sha256": "89401e6b0eca0336d330b0a8d82305999589022bc2b24dd612b276816baeab7b",
+      "bytes": 490136
+    },
+    "native_source_commit": "8b40f5c84133378a50002dc4a5b0707b6ebdb9fa",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "8b40f5c84133378a50002dc4a5b0707b6ebdb9fa",
@@ -334025,6 +334038,27 @@
         "aggregate_sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
       }
     ],
-    "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51"
+    "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51",
+    "actual_inputs": {
+      "compiled": {
+        "files": 715,
+        "sha256": "386d1117fca64148574538499ae900ef85721048268fa47f3c3602dfca34d877"
+      },
+      "generated": {
+        "files": 0,
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "links": {
+        "files": 24,
+        "sha256": "44a95de723b5016eb81e2aa07d119c3ac501c8e4a6223941ec6a8e42732871a8"
+      },
+      "objects": {
+        "files": 5,
+        "sha256": "1ed657c5170a4017d157f92b0fd51fba76f279a69df045acbf2cb0e3adcc8642"
+      },
+      "translation_units": 5,
+      "reused_objects": 0,
+      "uncovered": 0
+    }
   }
 }
