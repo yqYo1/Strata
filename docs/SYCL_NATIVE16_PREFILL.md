@@ -565,7 +565,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   That fixture incorrectly selected the AVX512-only canonical Q2_0path on this
   AVX2PC. The target-model native IQ3path is separate. Preserve this failure and
   use matching native geometry in a new committed V2qualification;no old result
-  is relabelled. Legacy holds remain separate.
+  is relabelled. Original2405source/dependency and1474compiler/29link inputs
+  are recovered before retiring the ended V1build/host roots:211files,214621561
+  regular bytes. The corrected native fixture retains all six positive/negative
+  cases;V2must compile freshly and pass them before GPUwork. Legacy holds remain
+  separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
   verified actual layer/format/jobs/NTcorpus for the next prospective policy.
