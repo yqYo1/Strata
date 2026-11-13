@@ -404,9 +404,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   requests and96generated tokens,including complete normal0/closed ownership,
   quiet parameter validation,15assets before/after and no fresh GPUfault.
   No optional CPUcache is prepared. Peak owned RSS is55855677440B. This
-  qualifies the coherent89be7engine for this functional handoff only;matched
-  clean speed,sustained TG/task and physical262144/RESTORE remain pending.
-  Keep14508as the clean measured reference. The earlier cache-on exposure
+  qualifies the historical coherent89be7engine for this functional handoff only;
+  no matched clean-speed,sustained TG/task or physical262144/RESTORE adoption follows.
+  Its ended build,native-check and cache0raw roots are now retired after exact
+  original Git source/recipe recovery and final-input/12ELF checks:359files,
+  220404252regular content bytes. The original build/native/model outcomes are
+  recoverable atbe45a249e/6652e07b5/13645ffde;compact results keep their limits
+  and deletion proof. The fresh baseline joint-census successor uses14508seed,
+  not these old bytes. Keep14508as the clean measured reference. The earlier cache-on exposure
   screen remains failed and is not superseded by the independent cache0pass.
   The CPU-only scheduling component at sourcea841051e2 now closes a fresh
   36-object build,180numeric cases per Down20/42format and12RCCRRCnative
