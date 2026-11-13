@@ -107,6 +107,7 @@ def cpu_cgroup():
 
 def prepare():
     require(not ROOT.exists(), 'do not replace an existing run or failed plan')
+    require(KEY not in json.loads(RESULT.read_text()), 'retiring artifacts does not reopen a closed result')
     revision = git('rev-parse', 'HEAD')
     sources = {}
     for rel in PINNED:

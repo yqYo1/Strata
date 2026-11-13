@@ -459,16 +459,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   enable an optimized model trial. A separate
   representativeness check finds that its36job global mix has47..52token-expert
   rows/call(mean48.9375),above the40-entry limit of this spec4/topk10target.
-  The24job mix has30..36rows and fits that bound,but actual joint distribution
-  is still unknown. Preserve stress timings without treating36job gains as model
-  evidence. The next full build is explicitly a baseline selector0joint-census
+  The24job mix has30..36rows and fits that bound,but that fixture did not
+  establish the actual joint distribution. Preserve stress timings without
+  treating36job gains as model evidence. The full build is a baseline selector0joint-census
   observer(`tools/sycl/build_cpu_joint_census.py`),not an optimized model trial.
   Its12-target plan pins1199project files atd3578a0ae and requires
   selector0/census1before native exec. Fresh configuration closes normally0
   with138objects/135unique sources;the complete fresh build now closes normally0.
   ELFf59e7f44and all12fixtures have1473compiler/29external-link inputs with
   zero uncovered inputs;all five Gemm consumers have the same class definition.
-  Fresh native/model qualification remains pending;no speed result is inherited.
+  No speed result is inherited;its fresh native/model checks are recorded below.
   Native V1preparation passed source/build admission but failed before any child:
   the new controller omitted one zero-argument context factory before saving its
   explicit baseline environment. Keep V1failed;the corrected controller uses a
@@ -496,11 +496,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Pool wall per32output sample is772.924/843.415/942.614ms,not sustained-TG
   or hardware-saturation evidence. Ninety bounded representative joint cases
   retain explicit coverage;full prefill histograms and GPUcycle counters are
-  omitted. Next use actual legal mixed-NT shapes to test selective NT1cached-GU
-  with unchanged native NT2..4processing;also obtain1K+strong/weak long-census
-  coverage and a measured RAMread ceiling. Keep14508clean speed reference;
+  omitted. The separate Main-authored RAMread fixture now closes nine fresh
+  processes/27eligible batches with a1GiB anonymous read-only buffer and distinct
+  physical-core affinities. Three-process median logical rates are31.8424GB/s
+  on1core,42.2734on3cores and39.3035on6cores;process ranges are31.5284..31.9334,
+  38.5364..42.6838and36.4578..40.2513GB/s respectively. Minimum batch wall is
+  0.802038s;estimated timer overhead is at most0.002180percent and timed minor/
+  major faults are0. Worker CPU/wall medians are0.9992/2.9503/5.7191. Source
+  `7f7c64676` and ELF`7a2f3e48` are pinned under`ram_read_ceiling_v4`in the
+  CPUresult. These are application continuous-read references,not physical
+  DRAMtraffic or random-expert ceilings. The model pool's logical21..26GB/s
+  includes arithmetic,quantization,dispatch and waits;the comparison does not
+  establish its saturation or justify changing its worker count. The prior
+  nine-process V3observations retain their missing-observer-check hold.
+  Next test actual legal mixed-NT shapes with selective NT1cached-GU and unchanged
+  native NT2..4processing;also obtain1K+strong/weak long-census coverage.
+  Keep14508clean speed reference;
   this baseline observer is not an optimized model adoption. The consumed V1private
-  preparation transaction is retired after exact controller recovery. Capture actual layer/format/jobs/NThistogram before choosing another policy.
+  preparation transaction is retired after exact controller recovery. Use the
+  verified actual layer/format/jobs/NTcorpus for the next prospective policy.
   Physical saturation and whole-model speed remain unqualified.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
