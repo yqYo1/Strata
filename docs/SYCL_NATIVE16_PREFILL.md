@@ -463,9 +463,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   is still unknown. Preserve stress timings without treating36job gains as model
   evidence. The next full build is explicitly a baseline selector0joint-census
   observer(`tools/sycl/build_cpu_joint_census.py`),not an optimized model trial.
-  Its prepared12-target plan pins1199project files atd3578a0ae and requires
-  selector0/census1before native exec;fresh configure/compile and native checks
-  are pending. Capture actual layer/format/jobs/NThistogram before choosing another policy.
+  Its12-target plan pins1199project files atd3578a0ae and requires
+  selector0/census1before native exec. Fresh configuration closes normally0
+  with138planned objects/135unique sources;compilation and native checks remain pending. Capture actual layer/format/jobs/NThistogram before choosing another policy.
   Physical saturation and whole-model speed remain unqualified.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
