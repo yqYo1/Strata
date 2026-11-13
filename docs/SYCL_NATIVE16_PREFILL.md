@@ -408,6 +408,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   clean speed,sustained TG/task and physical262144/RESTORE remain pending.
   Keep14508as the clean measured reference. The earlier cache-on exposure
   screen remains failed and is not superseded by the independent cache0pass.
+  The new CPU-only scheduling experiment is isolated on
+  `experiment/cpu-native-whole`,sourcea841051e2,in the ghq child worktree
+  `cpu-native-whole`. It retains the existing native math but claims complete
+  experts for GU/quant/Down,instead of two global row phases and serial quant.
+  Core/generate do not select it. Fresh36-object CPUbuild,numeric boundaries
+  and fixedRCCRRC12/24/36job tests are pending;not a speed or model result.
+  Preserve the primary GPUreference while this child is evaluated,then merge
+  useful original commits and retire the branch/worktree at its decision.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
