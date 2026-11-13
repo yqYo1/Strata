@@ -32938,17 +32938,17 @@
     ],
     "limit": "Only compact success/failure closure is retained;no new runtime,model or performance qualification. Original reviewed source reports have their own indexed references."
   },
-  "mapped_rows_subgroup_source_design_20261114k": {
+  "mapped_rows_subgroup_source_design_20261114m": {
     "classification": "decision_support",
-    "stage": "eligible_bounded_source_question",
+    "stage": "eligible_after_closed_isolated_orca_canary",
     "title": "Audit current masked host-USM copy vectorization and subgroup alternatives",
-    "source_commit": "d0e6e9f405e7b7b01e2e6dfadd5e9e9259cdc03f",
+    "source_commit": "8b40f5c84133378a50002dc4a5b0707b6ebdb9fa",
     "source_inputs": {
       "src/kernels/sycl/elementwise.cpp": "0556415837aef62f09f285769cd14a59f3bb34cbddcc19b54731e5992e9c6d26",
       "include/strata/kernels/elementwise.hpp": "1bfc635ba57c6d61124be22ffbdedf3fc3d78dbc6758c8ab21b28485ce08ce49",
       "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
       "src/sycl/runtime.cpp": "5418457a1244708f32335f45ef0146b9c488115fb55213e0dab7a779cc774f22",
-      "bench/sycl/mapped_rows.cpp": "faa8384ce29399b0c4b291cd07427b99b6266ddd20a3830ef5fee0108074a22a"
+      "bench/sycl/mapped_rows.cpp": "96a5bfc3ebe7b7ecfb6b08bf8f1af4032e85572d9c345d8aa8807e37c72f37e4"
     },
     "related_prior_keys": [
       "mapped_copy_component_contract_20261105"
@@ -32956,7 +32956,7 @@
     "question": "Compare the actual scalar/subgroup calls with official SYCL/Intel guidance for coalesced host-USM reads;consider one versus four elements per lane,typed vector loads and staged DMA+mask. Bound alternative applicability and counterevidence;no implementation/patch/build or performance claim.",
     "scope_eligibility": {
       "schedulable_now": true,
-      "prerequisite_evidence": "Current owned scalar and four-floats-per-lane subgroup proposal are committed and compiled as standalone3596912d/245eecc93. Source/design audit can compare coalescing,collective participation and alternative staging without timing/assembly;prior source contract predates this prototype. Any lowering or speed claim stays unknown.",
+      "prerequisite_evidence": "Current owned scalar and four-floats-per-lane subgroup proposal are committed and compiled as standalone3596912d/245eecc93. Source/design audit can compare coalescing,collective participation and alternative staging without timing/assembly;prior source contract predates this prototype. Any lowering or speed claim stays unknown. Fresh isolated Orca canary L now passes12/12filesystem inputs plus exact worker IPC/done acknowledgment and actual terminal closure;launch through proven raw dispatch,not worker-start on a shell terminal.",
       "missing_prerequisites": [],
       "nonduplication": "New current-source dependency/design question;not a rerun of closed runtime or conditional assembly/AOT tasks."
     },
@@ -32966,13 +32966,14 @@
       "via": "Orca",
       "report_words": 1100
     },
-    "retention": "One reusable source/design reference only if review finds substantive new applicable information;no dispatch/raw-output archive."
+    "retention": "One reusable source/design reference only if review finds substantive new applicable information;no dispatch/raw-output archive.",
+    "previous_launch": "Wave Kfailed before Dispatch/research because worker-start rejected a shell-only supervisor. No failed Task retry;fresh MTask after actual capability qualification and repinned source."
   },
-  "kv_stream_gpu_resolver_design_20261114k": {
+  "kv_stream_gpu_resolver_design_20261114m": {
     "classification": "decision_support",
-    "stage": "eligible_bounded_source_question",
+    "stage": "eligible_after_closed_isolated_orca_canary",
     "title": "Audit current serial GPU KVresolver and bounded parallel alternatives",
-    "source_commit": "d0e6e9f405e7b7b01e2e6dfadd5e9e9259cdc03f",
+    "source_commit": "8b40f5c84133378a50002dc4a5b0707b6ebdb9fa",
     "source_inputs": {
       "src/kernels/sycl/kv_stream.cpp": "4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696",
       "include/strata/kernels/kv_stream.hpp": "d3389020074da15a5b414667089734d0f46b20697b23dc5a46e04f6ea6dbaea9",
@@ -32983,7 +32984,7 @@
     "question": "Map what the single_task really scans and mutates,ordering/cache ownership,alias/lifetime and request/context complexity;compare bounded GPU-parallel lookup/scan/planning designs from checked primary engine/SYCL sources. Identify safe seams and counterexamples;do not treat the page-copy kernel as the resolver or claim the whole161ms is PCIe.",
     "scope_eligibility": {
       "schedulable_now": true,
-      "prerequisite_evidence": "No existing resolver/page/kv_stream index scope found. Actual current fork source has explicit single_task resolution and a separate RAMpage-copy kernel. The failed-overhead d2016f730 profile observed161.75/162.20ms resolver service over80calls;hypothesis only,not critical-path or hardware saturation evidence. Exact code permits a source-only dependency/parallelism audit now.",
+      "prerequisite_evidence": "No existing resolver/page/kv_stream index scope found. Actual current fork source has explicit single_task resolution and a separate RAMpage-copy kernel. The failed-overhead d2016f730 profile observed161.75/162.20ms resolver service over80calls;hypothesis only,not critical-path or hardware saturation evidence. Exact code permits a source-only dependency/parallelism audit now. Fresh isolated Orca canary L now passes12/12filesystem inputs plus exact worker IPC/done acknowledgment and actual terminal closure;launch through proven raw dispatch,not worker-start on a shell terminal.",
       "missing_prerequisites": [],
       "nonduplication": "New current-source dependency/design question;not a rerun of closed runtime or conditional assembly/AOT tasks."
     },
@@ -32993,6 +32994,25 @@
       "via": "Orca",
       "report_words": 1100
     },
-    "retention": "One reusable source/design reference only if review finds substantive new applicable information;no dispatch/raw-output archive."
+    "retention": "One reusable source/design reference only if review finds substantive new applicable information;no dispatch/raw-output archive.",
+    "previous_launch": "Wave Kfailed before Dispatch/research because worker-start rejected a shell-only supervisor. No failed Task retry;fresh MTask after actual capability qualification and repinned source."
+  },
+  "orca_research_wave_k_20261114": {
+    "stage": "closed_failed_before_dispatch",
+    "reports": 0,
+    "source_research": false,
+    "ownership_closed": true,
+    "reason": "agent_unconfigured:worker-start requires recognized agent terminal;custom shell supervisor instead needs the proven raw-dispatch binding. FailedTask is not retried;second scope never launched."
+  },
+  "orca_capability_preflight_l_20261114": {
+    "stage": "passed_closed",
+    "classification": "orchestration_capability_only",
+    "filesystem_inputs": 12,
+    "filesystem_sha256": "5ba776d9d1184c378d94232c49b30e742e4f328490578d09c62f10bc9212eeb9",
+    "worker_ipc_sha256": "f3d14c47eb9b66feb131c16dc1e8c0813765984041548bda8bfaa2a568ec2b4c",
+    "supervisor_sha256": "f0c6c73837fb04d03ba36a3315d60e8d73aa6274e2ec29a6ab4fa6d454525350",
+    "ownership_closed": true,
+    "worker_done_acknowledged": true,
+    "limit": "Raw-dispatch custom supervisor is classified unsupervised by Orca;the wrapper supplies actual read-only filesystem and finite execution limits. No inference/source/performance/GPU qualification."
   }
 }
