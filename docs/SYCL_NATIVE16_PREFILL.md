@@ -582,10 +582,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `cache_policy/bound_nt1`observer adapter. Two literal positives and17negative
   parser controls pass,including NT4native fallback and independent per-NT
   conservation. The prepared`cpu_mixed_cache_model_v1`plan uses16GiBcache and
-  thinking32769/82/32769inputs with32outputs each;host admission and actual
-  source/cache/setup/RAM/handoff checks remain next. This charged diagnostic
-  is not sustainedTG/cleanPP or adoption. See`mixed_nt_model_v1`for the concrete
-  remaining gates. Clean14508PP/TG remains the speed reference.
+  thinking32769/82/32769inputs with32outputs each. Host2positive/13negative
+  checks and the actual model route now pass,normal0/closed ownership,no fresh
+  fault and15full asset hashes verified. All8704entries across17layers are
+  admitted:14932662352known bytes,44.545736s setup,70997975040peak owned RSSbytes.
+  Actual NT1bindings are2844/3157/2844,with independent NT/entry/membership
+  conservation and prefill/decode/cache handoff. Poolwall790.041/771.382/772.646ms
+  is unmatched against the older baseline,not a speedup. This charged diagnostic
+  is not sustainedTG/cleanPP or adoption. Next compare repeated bench.sh long
+  thinking workloads before independent prefill/agent/task/full-context gates.
+  See`mixed_nt_model_v1`;clean14508PP/TG remains the speed reference.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
