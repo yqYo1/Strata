@@ -551,8 +551,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retired after original Git/source/recipe recovery:44files,364453regular bytes;
   all27individual samples remain in the CPUresult. The455-row performance CSV
   now includes three RAMreference points and twelve mixed-cache comparison points.
-  Keep14508clean speed reference;
-  this baseline observer is not an optimized model adoption. The consumed V1private
+  Keep14508clean speed reference and3d7fCPUfixture. The ended c0dc/c858small,
+  492whole-stress and f59observer roots are now retired after original Git/recipe/
+  final-input recovery:390files,231322303regular bytes. Useful actual census,
+  failed gates and original samples remain;see`mixed_nt_prebuild_retirement_v1`.
+  The fresh explicit model adapter requires these completed retirements before
+  building its one temporary candidate. Legacy holds remain separate.
+  This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
   verified actual layer/format/jobs/NTcorpus for the next prospective policy.
   Physical saturation and whole-model speed remain unqualified.
@@ -568,8 +573,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   291GGML,627compiler,36object and22external-link inputs. Its old CPUroot,
   closed speed receipts/output and both consumed research/review transactions
   are deleted:1256files/links,248238592regular bytes. Current source/build/
-  executable/numeric admission still passes after deletion. Keep the fresh CPU
-  pair and dependency proof for the named coherent engine/model qualification.
+  executable/numeric admission passed at that boundary. The selected3d7fCPU
+  fixture now supplies the coherent engine/model qualification;the superseded
+  small CPU pair is retired as recorded above.
   Corrected research facts remain indexed;legacy GPU/IR/deployment and Nov11
   ownership holds are separate. This is not global cleanup.
   The old plan/source are recoverable from`3cbf1c597`/`cd156b4ba`. After42project
