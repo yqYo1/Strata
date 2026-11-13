@@ -188,8 +188,8 @@ struct Fixture {
 int expert(int j,uint64_t round){return int((13u*j+7u*(j/E)+13u*round+3u)%E);}
 int activation(int j,uint64_t round){return int((3u*j+j/5+round)%4);}
 int nt_value(int j,uint64_t round,int policy){
-    if(policy)return policy;const auto x=(11u*j+7u*round)%100;
-    return x<75?1:x<92?2:x<97?3:4;
+    if(policy)return policy;const auto x=(11u*j+7u*round)%64;
+    return x<48?1:x<59?2:x<62?3:4;
 }
 struct Case {
     Fixture& f;std::vector<cpu::ExpertJobMulti> jobs;std::vector<Output> out;
@@ -267,7 +267,7 @@ int main(int argc,char**argv){try{
     for(int n:{12,24,36})for(int policy:{0,1})for(bool stream:{false,true}){
         if(comma)std::cout<<',';comma=true;Case work(f,n);
         std::cout<<"{\"workers\":5,\"host_works\":true,\"jobs_per_call\":"<<n<<",\"NT_policy\":\""<<(policy?"NT1":"observed_mix")<<"\",\"pattern\":\""<<(stream?"stream64":"reuse")<<"\",\"calibration\":[";
-        uint64_t rounds=1;bool sep=false;for(;;){const auto s=batch(work,pool,arm=="whole",stream,policy,rounds);if(sep)std::cout<<',';sep=true;
+        uint64_t rounds=64;bool sep=false;for(;;){const auto s=batch(work,pool,arm=="whole",stream,policy,rounds);if(sep)std::cout<<',';sep=true;
             std::cout<<"{\"rounds\":"<<rounds<<",\"wall_s\":"<<s.wall<<'}';if(s.wall>=.5)break;need(rounds<65536,"calibration floor");rounds*=2;}
         std::cout<<"],\"rounds\":"<<rounds<<",\"samples\":[";
         for(int i=0;i<3;++i){const auto s=batch(work,pool,arm=="whole",stream,policy,rounds);need(s.wall>=.25&&timer/s.wall<.001,"timing floor");if(i)std::cout<<',';
