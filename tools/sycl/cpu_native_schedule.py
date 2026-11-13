@@ -15,10 +15,11 @@ import cpu_compact_pool as base
 
 P=Path(__file__).resolve().parents[2];hot,inputs=base.hot,base.inputs
 base.P=hot.P=inputs.P=P
-B=base.B;ROOT=B/'cpu-native-whole-schedule-v1';PLAN=P/'bench/sycl/cpu_native_schedule/plan.json'
+B=base.B;ROOT=B/'cpu-native-whole-schedule-v2';PLAN=P/'bench/sycl/cpu_native_schedule/plan.json'
 base.ROOT,base.PLAN=ROOT,PLAN
 THIS='tools/sycl/cpu_native_schedule.py';KEY='cpu_native_whole_schedule_v1'
 ORDER=['reference','whole','whole','reference','reference','whole']
+base.ORDER=ORDER
 need,sha,write=base.need,base.sha,base.write
 PREFIXES=('include/strata','src/kernels/cpu','third_party/ggml','bench/sycl/cpu_native_schedule',
     THIS,'tools/sycl/cpu_compact_pool.py','tools/sycl/cpu_compact_numeric.py',
@@ -52,7 +53,7 @@ def prepare():
     child=dict(env,STRATA_IQ3_PAIR='1',STRATA_IQ3_PAIR_AUDIT='1',STRATA_IQ2_PAIR='0',STRATA_IQ2_PAIR_AUDIT='0',STRATA_IQ_SINGLE_EXACT='0',STRATA_IQ_MT_MIN='2',STRATA_CPU_SERVICE='0',STRATA_CPU_WORK_CENSUS='0')
     headers=base.std_headers();formats=inputs.model_rows()
     for row in formats:row['sha256']=fixture_hash(row);row['fixture_experts']=64
-    plan=dict(schema='native-whole-schedule-v1',source_commit=revision,sources=sources,native_recipe=recipe,compiler_inputs=census,external_inputs=external,
+    plan=dict(schema='native-whole-schedule-v2',previous_prebuild_plan=dict(commit='2b444b6f9',source='aa3167b0ae1a386182195c277fc1f33f0ed84c29',native_execution_attempted=False,reason='Prospective review found inherited base.ORDER still namedcompact rather thanwhole;withdraw before build and preserve original plan in Git. New root/source/plan;no hashes refreshed.'),source_commit=revision,sources=sources,native_recipe=recipe,compiler_inputs=census,external_inputs=external,
         generated_inputs=inputs.coherent_generated(recipe,census),GGML=ggml,cmake_inputs=inputs.cmake_snapshot(),standard_headers=dict(count=len(headers),sha256=base.signature(headers)),
         extra_headers={x:sha(x) for x in base.EXTRA_HEADERS},topology=base.topology(),tools={x:sha(x) for x in (hot.CXX,inputs.CC,inputs.CM,inputs.NJ,hot.READELF,hot.PRLIMIT,hot.PYTHON)},
         metadata=dict(path=str(inputs.METADATA),sha256=sha(inputs.METADATA)),formats=formats,environment=env,native_environment=child,speed_environment=dict(child,STRATA_IQ3_PAIR_AUDIT='0'),
