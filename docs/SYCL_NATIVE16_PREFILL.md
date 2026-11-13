@@ -484,7 +484,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and old pool clocks. One literal positive and five rejection controls pass,
   including the prior47..52row/spec4volume error. The actual32769/82/32769-input,
   thinking-on32-output model plan is prepared with explicit selector0/cache0,
-  census1and immutable safety settings;host/model execution remains pending. The consumed V1private
+  census1and immutable safety settings. Two positive and13negative host placement
+  controls pass;actual model execution is next. Source confirms the target width
+  trace precedes the CPUcallbacks and the census attaches only after refill. The consumed V1private
   preparation transaction is retired after exact controller recovery. Capture actual layer/format/jobs/NThistogram before choosing another policy.
   Physical saturation and whole-model speed remain unqualified.
   See`compact_small_batch_pool_v1`in the
