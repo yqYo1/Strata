@@ -607,8 +607,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Candidate2and reference3also close normally/no fault with matching task/
   MTPcounts. Their second-pair candidate/reference TGis12.46926/12.39097
   for code and7.64088/7.58449for prose:ratios1.006318/1.007435. The original
-  negative first pair remains;reference4/candidate5are pending. No adoption
-  or changed gate. Cache expansion
+  negative first pair remains. Reference4also closes normally0without a fresh
+  fault;candidate5is the only remaining process. No adoption or changed gate.
+  Cache expansion
   adds141590937600/395668224000logical bytes across those long requests,not
   measured DRAMtraffic. Candidate format-service projections are retained for
   later R3/R4comparison,without inventing missing R0format times. Actual long-workload
