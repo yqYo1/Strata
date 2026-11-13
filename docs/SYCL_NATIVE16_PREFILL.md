@@ -608,10 +608,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Existing affected-format pool clocks improve in the two later pairs,but are
   not pure CPUarithmetic and do not establish hardware saturation or clean
   whole-model gain. Reference0format times were not retained;none are invented.
-  Next qualify the current-runtime collector fixture,then profile current393/
-  e8cache0. The old fixture refuses a runtime-source mismatch;its launcher/
-  collector hashes still match. The current build already defines the four-TU
-  sycl_profile_compat_window target. Do not bypass the old guard.
+  The current-runtime fixture and direct/active-from-exec controls now pass
+  at`c95d4670c`:665actual fixture compiler inputs,the current archive/three
+  runtime objects and13retainedELFs are bound without an engine rebuild. All
+  five native gates,guarded arithmetic,normal0/closed owners,quiet validation
+  and no fresh fault pass in both modes. Active collection retains inner6
+  kernels/3copies and whole8/5 with unique native joins. V1's shared test-mock
+  failure remains failed;V2passes all nine host controls. The old fixture's
+  source-mismatch refusal is preserved. Next profile current393/e8cache0 with
+  separately committed matched observer controls;toy coverage is not model
+  coverage,overhead qualification or a speedup.
   The current engine remains for this named attribution consumer;retire the
   unused cache prototype at the next engine change,keeping independent bounds
   guards. Clean14508remains the speed reference. No candidate clean-speed,

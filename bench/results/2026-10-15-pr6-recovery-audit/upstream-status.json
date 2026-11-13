@@ -12,6 +12,8 @@
   "source_fetched": true,
   "fetch_command": [
     "git",
+    "-c",
+    "credential.https://github.com.helper=!gh auth git-credential",
     "-C",
     "/home/yayoi/ghq/github.com/Niko1221/Strata",
     "fetch",
@@ -26,7 +28,7 @@
     "commits": 379,
     "changed_paths": 1000,
     "describe": "v0.2.13.1-160-g13eedf55",
-    "source_access": "Fetched origin/main without changing checkout or forcing/replacing tags;actual ls-remote HEAD/main match. No new checkout,branch,native build or inference import.",
+    "source_access": "Fetched origin/main without changing the divergent legacy checkout or forcing/replacing tags;actual ls-remote origin refs/heads/main matches13eedf55. No new checkout,branch,native build or inference import.",
     "integration_state": "fetched_not_imported",
     "whole_function_ledger_complete": false,
     "unmodified_hardware_tuned_performance_complete": false,
@@ -115,7 +117,7 @@
   "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
   "current_engine_changed_by_check": false,
   "next_check_utc": "2026-11-15T21:06:39.366569+00:00",
-  "pending": "Complete the required-function ledger/imports throughc1ff07f1,including the new Intel Arc setup fix;current630-path functional import remains146df3c4. Finish native SAVE/RESTORE/disk-session,BGEN/capability and desktop ports,full host validation,native v3.1 execution and unmodified hardware-tuned Niko performance evaluation. DFlash2 clean repeated agent/task/physical262144/RESTORE and default adoption remain open. Choose inference components separately;DeepSeek/35B execution remains excluded.",
+  "pending": "Complete the required-function ledger/imports through13eedf55,including the new Intel Arc setup fix;current630-path functional import remains146df3c4. Finish native SAVE/RESTORE/disk-session,BGEN/capability and desktop ports,full host validation,native v3.1 execution and unmodified hardware-tuned Niko performance evaluation. DFlash2 clean repeated agent/task/physical262144/RESTORE and default adoption remain open. Choose inference components separately;DeepSeek/35B execution remains excluded.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
@@ -914,6 +916,8 @@
   },
   "remote_check_command": [
     "git",
+    "-c",
+    "credential.https://github.com.helper=!gh auth git-credential",
     "-C",
     "/home/yayoi/ghq/github.com/Niko1221/Strata",
     "ls-remote",
