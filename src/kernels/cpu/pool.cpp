@@ -720,14 +720,27 @@ void ExpertPool::run_split_multi(ExpertJobMulti* jobs, int n) {
 }
 
 void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n, NativeGuPhase phase,
-                                      std::span<const compact_gu::Lease> gu_views) {
+                                      std::span<const compact_gu::Lease> gu_views,
+                                      compact_gu::BatchPolicy cache_policy) {
 #ifdef STRATA_CPU_SERVICE_PROFILE
     service::Profile::BatchScope service_batch(service_profile_,phase);
 #endif
     if (n <= 0) return;
     if (!gu_views.empty() && gu_views.size() < size_t(n))
         throw std::invalid_argument("compact GU lease span is shorter than the expert batch");
-    const bool use_compact = !gu_views.empty() && compact_gu::batch_eligible(phase, n);
+    bool use_compact = !gu_views.empty() && compact_gu::batch_eligible(phase, n, cache_policy);
+    if (use_compact && cache_policy == compact_gu::BatchPolicy::MixedNt) {
+        if (!jobs) throw std::invalid_argument("mixed compact GU requires an expert batch");
+        int rows = 0;
+        for (int e = 0; e < n; ++e) {
+            const int nt = jobs[e].nt;
+            if (nt < 1 || nt > 4 || nt > compact_gu::max_mixed_rows - rows) {
+                use_compact = false;
+                break;
+            }
+            rows += nt;
+        }
+    }
     const auto t0 = std::chrono::steady_clock::now();
     // more distinct experts than buffers: run them in batches
     for (int b0 = 0; b0 < n; b0 += kMaxSplitMulti) {
@@ -771,10 +784,12 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
 
 void ExpertPool::run_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,
                                  int n, NativeGuPhase phase, bool whole_decode,
-                                 std::span<const compact_gu::Lease> gu_views) {
+                                 std::span<const compact_gu::Lease> gu_views,
+                                 compact_gu::BatchPolicy cache_policy) {
     bool eligible = whole_decode && phase == NativeGuPhase::Decode &&
         n_ == 5 && host_works_ && (n == 24 || n == 36) && jobs &&
-        gu_views.empty() && f.gu_type == 18 && f.d_type == 42 &&
+        gu_views.empty() && cache_policy == compact_gu::BatchPolicy::SmallJobs &&
+        f.gu_type == 18 && f.d_type == 42 &&
         f.n_embd == H && f.n_ff == FF;
     bool single = false, multiple = false;
     if (eligible) for (int e = 0; e < n; ++e) {
@@ -786,7 +801,7 @@ void ExpertPool::run_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,
     if (eligible && single && multiple)
         run_whole_multi_native(f, jobs, n, phase);
     else
-        run_split_multi_native(f, jobs, n, phase, gu_views);
+        run_split_multi_native(f, jobs, n, phase, gu_views, cache_policy);
 }
 
 void ExpertPool::run_whole_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,

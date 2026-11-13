@@ -511,6 +511,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   nine-process V3observations retain their missing-observer-check hold.
   Next test actual legal mixed-NT shapes with selective NT1cached-GU and unchanged
   native NT2..4processing;also obtain1K+strong/weak long-census coverage.
+  The source-only `BatchPolicy::MixedNt` proposal now gives that CPUcomparison
+  an explicit per-call policy. Default model callers retain`SmallJobs`;the new
+  policy is Decode-only,at most40jobs,totalNT<=40and eachNT1..4. Existing per-job
+  NT1/format/lease guards remain;unsupported shapes and Prefill keep native GU.
+  No mixed-policy fixture is built or model route enabled yet. Build every
+  affected class-header consumer freshly;do not partial-relink old CPUarchives.
   Keep14508clean speed reference;
   this baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the

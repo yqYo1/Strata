@@ -165,13 +165,15 @@ public:
     /// Plan v0.3 P6: the same for a native pack's layer (ggml-cpu arithmetic, `nact` activations).
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode,
-                                std::span<const compact_gu::Lease> gu_views = {});
+                                std::span<const compact_gu::Lease> gu_views = {},
+                                compact_gu::BatchPolicy cache_policy = compact_gu::BatchPolicy::SmallJobs);
     /// Explicit decode experiment. Only the measured Down42 24/36-job mixed-NT
     /// geometry in a five-worker+host pool may use whole-expert scheduling.
     /// Prefill, cached leases and all other shapes retain the row path.
     void run_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                           NativeGuPhase phase, bool whole_decode,
-                          std::span<const compact_gu::Lease> gu_views = {});
+                          std::span<const compact_gu::Lease> gu_views = {},
+                          compact_gu::BatchPolicy cache_policy = compact_gu::BatchPolicy::SmallJobs);
     /// Experimental Decode scheduling: each claimed expert completes GU,
     /// hidden quantization and Down on one worker. Only IQ3_XXS GU with the
     /// tested Down20/42 geometry,7..36 jobs and NT1..4 is admitted. Other

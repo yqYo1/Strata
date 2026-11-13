@@ -17,8 +17,15 @@ inline constexpr size_t raw_projection_bytes = projection_blocks * 98;
 // representation. Per-job NT=1/format checks remain in lookup and Lease;
 // prefill is never eligible here.
 inline constexpr int max_cached_jobs = 6;
-inline bool batch_eligible(NativeGuPhase phase, int jobs) noexcept {
-    return phase == NativeGuPhase::Decode && jobs > 0 && jobs <= max_cached_jobs;
+// The wider policy is an explicitly selected CPU-component experiment. Model
+// callers retain SmallJobs until numerical/performance/model gates qualify it.
+enum class BatchPolicy : uint8_t { SmallJobs, MixedNt };
+inline constexpr int max_mixed_rows = 40; // spec4 * topk10, not a global NT histogram
+inline bool batch_eligible(NativeGuPhase phase, int jobs,
+                           BatchPolicy policy = BatchPolicy::SmallJobs) noexcept {
+    if (phase != NativeGuPhase::Decode || jobs <= 0) return false;
+    if (policy == BatchPolicy::SmallJobs) return jobs <= max_cached_jobs;
+    return policy == BatchPolicy::MixedNt && jobs <= max_mixed_rows;
 }
 
 bool available() noexcept;
