@@ -316785,7 +316785,7 @@
     }
   },
   "cpu_joint_census_device_v2": {
-    "stage": "in_progress",
+    "stage": "closed",
     "source_commit": "12c87efbc4dac686a7add7549831764b7ca4801d",
     "native_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2",
     "native_record": {
@@ -317788,10 +317788,49 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "gu-numerics",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "numerics": {
+          "correctness_cases": 44,
+          "max_half_ulp": 0,
+          "BF16_capture_exact": true,
+          "guards": true,
+          "inputs_immutable": true
+        },
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 1673454,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": true,
@@ -317987,6 +318026,13 @@
       },
       {
         "label": "smoke",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "numerics",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
