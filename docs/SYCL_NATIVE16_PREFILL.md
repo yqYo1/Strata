@@ -574,7 +574,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   runtime qualification. The V2host stage now passes all six actual native
   MAXT/overflow cases,six invalid-policy refusals and the existing54reader/11native
   controls,with normal/expected exits and closed owners. No GPUwas submitted
-  by that host stage. Full GPU/model validation and model speed remain pending.
+  by that host stage. All11V2native stages now close normally0,with quiet
+  validation,no fresh fault,44GUcases at0FP16ULP and exact BF16capture. QSAand
+  producer262144-cell boundaries pass;actual full-context model fill is still
+  unqualified. This admits preparation of a new bounded model-cache plan,not
+  model speed/adoption. The new native proof uses`declared_observers`;the old
+  model wrapper/parser needs an explicit adapter for that proof and the new
+  `cache_policy/bound_nt1`log fields before use. See`mixed_nt_model_v1`for the
+  concrete next checks. Clean14508PP/TG remains the speed reference.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
