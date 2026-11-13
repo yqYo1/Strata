@@ -328295,7 +328295,7 @@
     ]
   },
   "current_decode_device_service_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "b4b5a1dbebd7c5d58ea05e4ae0ad7a107b7ca2ca",
     "qualification": {
       "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
@@ -331474,6 +331474,691 @@
             "errors": []
           }
         ]
+      },
+      {
+        "label": "reference-after",
+        "passed": true,
+        "complete": true,
+        "model_executed": true,
+        "native_execution_complete": true,
+        "initial_clock": {
+          "raw_before_ns": 2954725464499516,
+          "monotonic_ns": 2954748862908071,
+          "raw_after_ns": 2954725464499876
+        },
+        "windows": [
+          {
+            "begin_clock": {
+              "raw_before_ns": 2954813151663613,
+              "monotonic_ns": 2954836550635484,
+              "raw_after_ns": 2954813151664314
+            },
+            "begin": 10724,
+            "end_clock": {
+              "raw_before_ns": 2954871339541162,
+              "monotonic_ns": 2954894738894162,
+              "raw_after_ns": 2954871339541833
+            },
+            "end": 107035
+          },
+          {
+            "begin_clock": {
+              "raw_before_ns": 2954873504849722,
+              "monotonic_ns": 2954896904217124,
+              "raw_after_ns": 2954873504850574
+            },
+            "begin": 107035,
+            "end_clock": {
+              "raw_before_ns": 2954922065660448,
+              "monotonic_ns": 2954945465350135,
+              "raw_after_ns": 2954922065661149
+            },
+            "end": 203346
+          }
+        ],
+        "pre_main_validation": {
+          "pid": 3840861,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "26d4fe480f141f9f7f270e7d4a07b48e5a34b6ce6eabf6cfcc0ffc45956dff70",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "native_identity": {
+          "pid": 3840861,
+          "start_ticks": 295475056,
+          "sid": 3840797
+        },
+        "startup": {
+          "chunk": 8192,
+          "free_MiB": 942
+        },
+        "native_exit_code": 0,
+        "benchmark_exit_code": 0,
+        "final_clock": {
+          "raw_before_ns": 2954929231277248,
+          "monotonic_ns": 2954952631015408,
+          "raw_after_ns": 2954929231278600
+        },
+        "journal": {
+          "warmups": 1,
+          "long_requests": 2,
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "91f8a473d7a70c5d73cebd639a47cd97d26e8484b19f8777f17969a3a2f5db3c",
+            "484bed36327f07a2d3fb99ef1be7dcebe69cd5a1925c591dd69d5d869f49ba78"
+          ]
+        },
+        "caller": [
+          {
+            "request": 1,
+            "wall_ns": 3084579150,
+            "caller_cpu_ns": 2871098233,
+            "accounting_passed": true,
+            "native_wait_wall_ns": 763882800,
+            "native_wait_caller_cpu_ns": 757018591,
+            "unclassified": {
+              "wall_ns": 1320434107,
+              "caller_cpu_ns": 1309732227,
+              "native_wait_calls": 350,
+              "native_wait_wall_ns": 146497396,
+              "native_wait_caller_cpu_ns": 145458934
+            },
+            "regions": {
+              "capture": {
+                "calls": 7,
+                "wall_ns": 369349294,
+                "caller_cpu_ns": 201494562,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "stage": {
+                "calls": 7,
+                "wall_ns": 20940734,
+                "caller_cpu_ns": 730329,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "layer_wait": {
+                "calls": 336,
+                "wall_ns": 591184322,
+                "caller_cpu_ns": 585390772,
+                "native_wait_calls": 336,
+                "native_wait_wall_ns": 590488706,
+                "native_wait_caller_cpu_ns": 584734622
+              },
+              "pool": {
+                "calls": 336,
+                "wall_ns": 685058839,
+                "caller_cpu_ns": 678289277,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "copy_retire": {
+                "calls": 336,
+                "wall_ns": 1830160,
+                "caller_cpu_ns": 1828662,
+                "native_wait_calls": 336,
+                "native_wait_wall_ns": 1102639,
+                "native_wait_caller_cpu_ns": 1105017
+              },
+              "submit": {
+                "calls": 343,
+                "wall_ns": 69961126,
+                "caller_cpu_ns": 67886807,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "final_compute_wait": {
+                "calls": 7,
+                "wall_ns": 25796403,
+                "caller_cpu_ns": 25721302,
+                "native_wait_calls": 7,
+                "native_wait_wall_ns": 25781716,
+                "native_wait_caller_cpu_ns": 25707605
+              },
+              "final_copy_wait": {
+                "calls": 7,
+                "wall_ns": 24165,
+                "caller_cpu_ns": 24295,
+                "native_wait_calls": 7,
+                "native_wait_wall_ns": 12343,
+                "native_wait_caller_cpu_ns": 12413
+              },
+              "sampling_wait": {
+                "calls": 0,
+                "wall_ns": 0,
+                "caller_cpu_ns": 0,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              }
+            }
+          },
+          {
+            "request": 2,
+            "wall_ns": 2115541130,
+            "caller_cpu_ns": 2023033517,
+            "accounting_passed": true,
+            "native_wait_wall_ns": 1136192774,
+            "native_wait_caller_cpu_ns": 1114191812,
+            "unclassified": {
+              "wall_ns": 215081846,
+              "caller_cpu_ns": 211484305,
+              "native_wait_calls": 410,
+              "native_wait_wall_ns": 192489454,
+              "native_wait_caller_cpu_ns": 192169685
+            },
+            "regions": {
+              "capture": {
+                "calls": 8,
+                "wall_ns": 90450187,
+                "caller_cpu_ns": 90220535,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "stage": {
+                "calls": 8,
+                "wall_ns": 50329614,
+                "caller_cpu_ns": 1286112,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "layer_wait": {
+                "calls": 384,
+                "wall_ns": 920922830,
+                "caller_cpu_ns": 899265639,
+                "native_wait_calls": 384,
+                "native_wait_wall_ns": 920088253,
+                "native_wait_caller_cpu_ns": 898489440
+              },
+              "pool": {
+                "calls": 384,
+                "wall_ns": 748082230,
+                "caller_cpu_ns": 734792854,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "copy_retire": {
+                "calls": 384,
+                "wall_ns": 2353726,
+                "caller_cpu_ns": 2228549,
+                "native_wait_calls": 384,
+                "native_wait_wall_ns": 1356799,
+                "native_wait_caller_cpu_ns": 1359839
+              },
+              "submit": {
+                "calls": 392,
+                "wall_ns": 66030711,
+                "caller_cpu_ns": 61551795,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "final_compute_wait": {
+                "calls": 8,
+                "wall_ns": 22261663,
+                "caller_cpu_ns": 22175565,
+                "native_wait_calls": 8,
+                "native_wait_wall_ns": 22243730,
+                "native_wait_caller_cpu_ns": 22158241
+              },
+              "final_copy_wait": {
+                "calls": 8,
+                "wall_ns": 28323,
+                "caller_cpu_ns": 28163,
+                "native_wait_calls": 8,
+                "native_wait_wall_ns": 14538,
+                "native_wait_caller_cpu_ns": 14607
+              },
+              "sampling_wait": {
+                "calls": 0,
+                "wall_ns": 0,
+                "caller_cpu_ns": 0,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              }
+            }
+          },
+          {
+            "request": 3,
+            "wall_ns": 1890035971,
+            "caller_cpu_ns": 1884770720,
+            "accounting_passed": true,
+            "native_wait_wall_ns": 1033529713,
+            "native_wait_caller_cpu_ns": 1032353243,
+            "unclassified": {
+              "wall_ns": 209753420,
+              "caller_cpu_ns": 209066231,
+              "native_wait_calls": 409,
+              "native_wait_wall_ns": 193327399,
+              "native_wait_caller_cpu_ns": 193060663
+            },
+            "regions": {
+              "capture": {
+                "calls": 8,
+                "wall_ns": 98180291,
+                "caller_cpu_ns": 98101745,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "stage": {
+                "calls": 8,
+                "wall_ns": 135173,
+                "caller_cpu_ns": 135435,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "layer_wait": {
+                "calls": 384,
+                "wall_ns": 821043499,
+                "caller_cpu_ns": 820189427,
+                "native_wait_calls": 384,
+                "native_wait_wall_ns": 820255890,
+                "native_wait_caller_cpu_ns": 819443580
+              },
+              "pool": {
+                "calls": 384,
+                "wall_ns": 686558326,
+                "caller_cpu_ns": 684566035,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "copy_retire": {
+                "calls": 384,
+                "wall_ns": 2077997,
+                "caller_cpu_ns": 2064198,
+                "native_wait_calls": 384,
+                "native_wait_wall_ns": 1240399,
+                "native_wait_caller_cpu_ns": 1240916
+              },
+              "submit": {
+                "calls": 392,
+                "wall_ns": 53548769,
+                "caller_cpu_ns": 52008487,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "final_compute_wait": {
+                "calls": 8,
+                "wall_ns": 18707277,
+                "caller_cpu_ns": 18608013,
+                "native_wait_calls": 8,
+                "native_wait_wall_ns": 18689261,
+                "native_wait_caller_cpu_ns": 18591193
+              },
+              "final_copy_wait": {
+                "calls": 8,
+                "wall_ns": 31219,
+                "caller_cpu_ns": 31149,
+                "native_wait_calls": 8,
+                "native_wait_wall_ns": 16764,
+                "native_wait_caller_cpu_ns": 16891
+              },
+              "sampling_wait": {
+                "calls": 0,
+                "wall_ns": 0,
+                "caller_cpu_ns": 0,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              }
+            }
+          }
+        ],
+        "samples": [
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 54.067,
+            "total_s": 56.036,
+            "prompt_tokens": 32769,
+            "reused_tokens": 0,
+            "read_tokens": 32769,
+            "generated_tokens": 24,
+            "prompt_tps": 607.9,
+            "prompt_tps_source": "engine",
+            "decode_tps": 11.4,
+            "decode_tps_source": "engine",
+            "prompt_ms": 53901.7,
+            "decode_ms": 2113.6,
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "finish_reason": "length",
+            "request_sha256": "91f8a473d7a70c5d73cebd639a47cd97d26e8484b19f8777f17969a3a2f5db3c",
+            "stream_complete": true,
+            "truncated": true,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 2954838702210664,
+              "first_output_monotonic_ns": 2954892768831285,
+              "request_end_monotonic_ns": 2954894738670191
+            },
+            "output_chars": 0,
+            "reasoning_chars": 121,
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+            "eligible": true,
+            "eligibility_errors": [],
+            "requested_min_tokens": 32769,
+            "actual_prompt_tokens": 32769,
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_count_source": "usage.prompt_tokens",
+            "read_count_source": "timings.prompt_n",
+            "reuse_counts_reported": {
+              "usage": 0,
+              "timings": 0
+            },
+            "long_input_extent": true,
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "reasoning_tokens_reported": null,
+            "timing_frontend_state": "post-count-preflight",
+            "exact_input_tokens": 32769,
+            "run": 0
+          },
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 44.541,
+            "total_s": 46.295,
+            "prompt_tokens": 32769,
+            "reused_tokens": 0,
+            "read_tokens": 32769,
+            "generated_tokens": 24,
+            "prompt_tps": 738.3,
+            "prompt_tps_source": "engine",
+            "decode_tps": 12.7,
+            "decode_tps_source": "engine",
+            "prompt_ms": 44384.6,
+            "decode_ms": 1888.1,
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "finish_reason": "length",
+            "request_sha256": "484bed36327f07a2d3fb99ef1be7dcebe69cd5a1925c591dd69d5d869f49ba78",
+            "stream_complete": true,
+            "truncated": true,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 2954899170455194,
+              "first_output_monotonic_ns": 2954943711394773,
+              "request_end_monotonic_ns": 2954945465205152
+            },
+            "output_chars": 0,
+            "reasoning_chars": 121,
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+            "eligible": true,
+            "eligibility_errors": [],
+            "requested_min_tokens": 32769,
+            "actual_prompt_tokens": 32769,
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_count_source": "usage.prompt_tokens",
+            "read_count_source": "timings.prompt_n",
+            "reuse_counts_reported": {
+              "usage": 0,
+              "timings": 0
+            },
+            "long_input_extent": true,
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "reasoning_tokens_reported": null,
+            "timing_frontend_state": "post-count-preflight",
+            "exact_input_tokens": 32769,
+            "run": 1
+          }
+        ],
+        "routes": [
+          {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 32768,
+              "residual_gpu_rows": 32768,
+              "residual_gpu_bytes": 671088640,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 18242,
+              "fused_down_jobs": 2080,
+              "maximum_window_rows": 32768,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 35414732800,
+              "requested_dequant_H2D_bytes": 62914560,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2080,
+                "fused_rows": 12890210,
+                "separate_jobs": 16162
+              },
+              "down": {
+                "fused_jobs": 2080,
+                "fused_rows": 12890210,
+                "separate_jobs": 16162
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 18242,
+              "windows": 48,
+              "dequants": 17330,
+              "maximum_physical_window_rows": 32768,
+              "requested_source_map_bytes": 62914560,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "rounded_decode_timing": {
+              "windows": 8,
+              "ms_per_window": {
+                "average_T": 3.62,
+                "tokens_per_window": 3.0,
+                "total": 264.2,
+                "verify": 239.1,
+                "GPU_reach_wait": 115.16,
+                "per_layer_host": 94.86,
+                "plan": 5.14,
+                "activation_quant": 0.37,
+                "jobs": 0.18,
+                "CPU_pool_run": 87.75,
+                "stage": 6.29,
+                "commit_emit": 0.1,
+                "draft": 24.98,
+                "CPU_experts": 19.47,
+                "CPU_entries": 27.41,
+                "VRAM_hits": 8.84,
+                "PCIe": 0.0
+              },
+              "outer_residual_ms_per_window": 0.01999999999998181,
+              "host_nested_residual_ms_per_window": 1.4200000000000017,
+              "work": {
+                "target_windows": 8,
+                "target_rows": 29,
+                "emitted_tokens": 24,
+                "target_rows_per_emitted": 1.2083333333333333,
+                "cpu_unique_jobs": 7477,
+                "cpu_entries": 10525,
+                "cpu_unique_jobs_per_emitted": 311.5416666666667,
+                "minimum_NT1_jobs": 4429,
+                "minimum_NT1_job_fraction": 0.592349872943694,
+                "expert_copy_requested_bytes": 0,
+                "mathematical_dot_equivalent_ops": 103464960000,
+                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+              },
+              "clock_binding": {
+                "absolute_total_difference_ms": 0.0,
+                "rounding_bound_ms": 0.09,
+                "average_quantum_ms": 0.01,
+                "DONE_total_quantum_ms": 0.1
+              },
+              "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
+            }
+          },
+          {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 32768,
+              "residual_gpu_rows": 32768,
+              "residual_gpu_bytes": 671088640,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 18191,
+              "fused_down_jobs": 2080,
+              "maximum_window_rows": 32768,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 35306624000,
+              "requested_dequant_H2D_bytes": 62914560,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2080,
+                "fused_rows": 12889381,
+                "separate_jobs": 16111
+              },
+              "down": {
+                "fused_jobs": 2080,
+                "fused_rows": 12889381,
+                "separate_jobs": 16111
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 18191,
+              "windows": 48,
+              "dequants": 17279,
+              "maximum_physical_window_rows": 32768,
+              "requested_source_map_bytes": 62914560,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "rounded_decode_timing": {
+              "windows": 8,
+              "ms_per_window": {
+                "average_T": 3.62,
+                "tokens_per_window": 3.0,
+                "total": 236.01,
+                "verify": 210.98,
+                "GPU_reach_wait": 102.67,
+                "per_layer_host": 86.61,
+                "plan": 4.36,
+                "activation_quant": 0.34,
+                "jobs": 0.16,
+                "CPU_pool_run": 80.89,
+                "stage": 0.02,
+                "commit_emit": 0.07,
+                "draft": 24.93,
+                "CPU_experts": 19.46,
+                "CPU_entries": 27.4,
+                "VRAM_hits": 8.85,
+                "PCIe": 0.0
+              },
+              "outer_residual_ms_per_window": 0.030000000000001137,
+              "host_nested_residual_ms_per_window": 0.8599999999999994,
+              "work": {
+                "target_windows": 8,
+                "target_rows": 29,
+                "emitted_tokens": 24,
+                "target_rows_per_emitted": 1.2083333333333333,
+                "cpu_unique_jobs": 7474,
+                "cpu_entries": 10523,
+                "cpu_unique_jobs_per_emitted": 311.4166666666667,
+                "minimum_NT1_jobs": 4425,
+                "minimum_NT1_job_fraction": 0.592052448488092,
+                "expert_copy_requested_bytes": 0,
+                "mathematical_dot_equivalent_ops": 103445299200,
+                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+              },
+              "clock_binding": {
+                "absolute_total_difference_ms": 0.01999999999998181,
+                "rounding_bound_ms": 0.09,
+                "average_quantum_ms": 0.01,
+                "DONE_total_quantum_ms": 0.1
+              },
+              "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
+            }
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "commands": [
+          {
+            "label": "bench",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "error": null,
+            "errors": []
+          }
+        ]
       }
     ],
     "host": {
@@ -331505,7 +332190,7 @@
       "skipped": 0,
       "ownership_closed": true
     },
-    "complete": false,
+    "complete": true,
     "passed": false,
     "active": false,
     "ownership_closed": true,
@@ -331528,6 +332213,81 @@
       "clocks": "Sampled RAW/MONOTONIC brackets<=1ms,offset envelope<=50ms,BOOTTIME continuity;interior client decode clips100ms at each end,>=100ms. Sampled offsets do not prove unsampled clock error.",
       "retention": "1GiB/file,1.5GiB/job,2GiBwhole,2400s/104GiBRSS;one complete native trace is needed because paused graph construction loses replays. Reduce after native exit under240s/16GiBCPU owner;retain compact samples/clock/conservation/topservices and retire normal timelines/API/JIT.",
       "limits": "24output requests are resource diagnostics,not sustainedTG,quality,agent/session,length scaling,physical262144/RESTORE,default adoption or1000PP/70TG proof. Service/API sums overlap;CPU leaves include memory stalls;requested bytes and observed gaps are not bus/VRAM/DRAM traffic or hardware saturation. No engine rebuild."
+    },
+    "observer_decision": {
+      "requests": [
+        {
+          "request": 0,
+          "fixed_24_output_work": true,
+          "phases": {
+            "prompt_ms": {
+              "reference_samples": [
+                54724.8,
+                53901.7
+              ],
+              "profile": 68148.6,
+              "ratio": 1.2547325008170198,
+              "screen_passed": true
+            },
+            "decode_ms": {
+              "reference_samples": [
+                2146.8,
+                2113.6
+              ],
+              "profile": 3357.9,
+              "ratio": 1.5763308609520235,
+              "screen_passed": false
+            },
+            "ttft_s": {
+              "reference_samples": [
+                54.898,
+                54.067
+              ],
+              "profile": 68.512,
+              "ratio": 1.2575047033451108,
+              "screen_passed": true
+            }
+          },
+          "observer_screen_passed": false
+        },
+        {
+          "request": 1,
+          "fixed_24_output_work": true,
+          "phases": {
+            "prompt_ms": {
+              "reference_samples": [
+                43154.0,
+                44384.6
+              ],
+              "profile": 49244.2,
+              "ratio": 1.1250853909018421,
+              "screen_passed": true
+            },
+            "decode_ms": {
+              "reference_samples": [
+                2006.2,
+                1888.1
+              ],
+              "profile": 2994.6,
+              "ratio": 1.537940066250674,
+              "screen_passed": false
+            },
+            "ttft_s": {
+              "reference_samples": [
+                43.321,
+                44.541
+              ],
+              "profile": 49.605,
+              "ratio": 1.129157087250461,
+              "screen_passed": true
+            }
+          },
+          "observer_screen_passed": false
+        }
+      ],
+      "observer_screen_passed": false,
+      "clean_speed_qualified": false,
+      "sustained_TG_qualified": false
     },
     "source_inputs": {
       "files": 706,
