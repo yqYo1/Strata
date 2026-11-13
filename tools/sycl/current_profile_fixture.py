@@ -20,8 +20,8 @@ import measurement_guards as guards
 import measurement_owner as ownership
 
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT = B / 'current-profile-fixture-v2'
-KEY = 'current_profile_fixture_v2'
+ROOT = B / 'current-profile-fixture-v3'
+KEY = 'current_profile_fixture_v3'
 THIS = 'tools/sycl/current_profile_fixture.py'
 OBSERVERS = {THIS, 'tools/sycl/cpu_mixed_cache_bench.py'}
 CPP = 'tests/sycl/profile_compat_window.cpp'
@@ -150,6 +150,26 @@ def current(row):
                                    cwd=build, text=True, timeout=30)
     require(hashlib.sha256(text.encode()).hexdigest() == row['generated_target_commands_sha256'],
             'generated target recipe changed')
+    entries = [c for c in json.loads((build / 'compile_commands.json').read_text())
+               if c['file'] == str(P / CPP) and TARGET + '.dir/' in c['output']]
+    require(len(entries) == 1, 'one current fixture compile command')
+    compile_args = command(entries[0]['command'])
+    old_object = compile_args[compile_args.index('-o') + 1]
+    compile_args[compile_args.index('-o') + 1] = str(ROOT / 'fixture.o')
+    compile_args.extend(['-MD', '-MF', str(ROOT / 'fixture.d')])
+    links = []
+    for line in text.splitlines():
+        tokens = shlex.split(line)
+        if '-o' in tokens and tokens[tokens.index('-o') + 1] == TARGET:
+            links.append(command(line))
+    require(len(links) == 1 and links[0].count(old_object) == 1, 'one original command object')
+    link_args, = links
+    link_args[link_args.index(old_object)] = str(ROOT / 'fixture.o')
+    link_args[link_args.index('-o') + 1] = str(ROOT / TARGET)
+    environment = dict(n['recipe']['environment'], TMPDIR=str(ROOT / 'tmp'),
+                       TMPPREFIX=str(ROOT / 'tmp/zsh'))
+    require(row['recipe'] == dict(compile=compile_args, link=link_args, environment=environment),
+            'actual flags, class conditions or command inputs changed')
     return n
 
 
@@ -166,6 +186,8 @@ def build():
                                          Path(row['build_root']), **row['budget'])
             require(ownership.closed(entry) and entry['exit_code'] == 0, 'owned ' + label + ' failed')
             logs[label] = output
+            if label == 'compile':
+                input_object = dict(path=str(ROOT / 'fixture.o'), sha256=sha(ROOT / 'fixture.o'))
         deptext = (ROOT / 'fixture.d').read_text().replace('\\\n', ' ')
         dependencies = shlex.split(deptext.split(':', 1)[1])
         expected = {str(P / p): h for p, h in n['project']['source_sha256'].items()}
@@ -190,16 +212,25 @@ def build():
         link_inputs = {}
         outputs = {str((ROOT / 'fixture.o').resolve()): sha(ROOT / 'fixture.o'),
                    str(Path(row['runtime_archive']['path']).resolve()): row['runtime_archive']['sha256']}
+        require(sha(input_object['path']) == input_object['sha256'] and
+                row['recipe']['link'].count(input_object['path']) == 1,
+                'original compiler command input changed')
+        generated_objects = set()
+        permitted = outputs | expected
         for line in Path(logs['link']).read_text().splitlines():
             path = Path(line.strip())
             path = path if path.is_absolute() else Path(row['build_root']) / path
             if not path.is_file():
+                if line.strip().startswith('/'):
+                    require((ROOT / 'tmp').resolve() in path.resolve().parents and path.suffix == '.o',
+                            'missing external linker input: ' + str(path))
+                    generated_objects.add(str(path))
                 continue
             name = str(path.resolve())
-            permitted = outputs | expected
             require(name in permitted and sha(path) == permitted[name], 'unadmitted fixture link input: ' + name)
             link_inputs[name] = permitted[name]
-        require(len(link_inputs) > 8 and set(outputs) <= set(link_inputs), 'incomplete linker input closure')
+        require(len(link_inputs) > 8 and str(Path(row['runtime_archive']['path']).resolve()) in link_inputs
+                and 1 <= len(generated_objects) <= 8, 'incomplete linker input closure')
         current(row)
         binary = ROOT / TARGET
         require(binary.read_bytes()[:4] == b'\x7fELF', 'fixture output is not ELF')
@@ -208,6 +239,10 @@ def build():
                    actual_compiler_inputs=dict(files=len(actual), sha256=model.base.original.signature(actual),
                        dependency_file={'path': str(ROOT / 'fixture.d'), 'sha256': sha(ROOT / 'fixture.d')}),
                    actual_link_inputs=dict(files=len(link_inputs), sha256=model.base.original.signature(link_inputs)),
+                   original_command_object=input_object,
+                   compiler_generated_link_products=dict(count=len(generated_objects),
+                       paths_sha256=model.base.original.signature(sorted(generated_objects)),
+                       provenance='Pinned SYCL driver transforms the separately hashed command input into temporary host/offload objects. Not external source inputs.'),
                    retained_thirteen_ELFs_unchanged=True)
     except BaseException as error:
         row.update(stage='failed', passed=False, complete=False, error=repr(error))
