@@ -266,8 +266,10 @@ def execute(action):
                 links[name] = allowed[name]
             need(len(links) == 22, 'external link coverage')
             binaries, headers, all_libraries = {}, {}, {}
-            for key in ('pool', 'numeric'):
-                path = ROOT / ('build/compact_cache_' + key)
+            targets = plan.get('binary_targets', dict(pool='compact_cache_pool', numeric='compact_cache_numeric'))
+            for key, target in targets.items():
+                need(re.fullmatch(r'[A-Za-z0-9_]+', target), 'local CPUtarget name')
+                path = ROOT / 'build' / target
                 text, error = run('ELF-' + key, [hot.READELF, '--file-header', '--program-headers', '--dynamic', str(path)], 10)
                 libraries = re.findall(r'Shared library: \[([^\]]+)\]', text)
                 need(not error and set(libraries) == {'libm.so.6', 'libstdc++.so.6', 'libgcc_s.so.1', 'libc.so.6'}, 'CPU-only libraries')

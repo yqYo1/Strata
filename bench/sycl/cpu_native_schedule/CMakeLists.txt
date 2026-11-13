@@ -35,7 +35,9 @@ set_source_files_properties(${CPU}/q2_avx2.cpp ${CPU}/iq_avx2.cpp
   PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
 find_package(Threads REQUIRED)
 target_link_libraries(compact_reference_cpu PUBLIC ggml-cpu ggml-base Threads::Threads)
-add_executable(cpu_native_schedule pool.cpp)
+set(STRATA_CPU_NATIVE_FIXTURE "${CMAKE_CURRENT_LIST_DIR}/pool.cpp" CACHE FILEPATH
+  "Committed CPU fixture; production CPU sources are always compiled freshly")
+add_executable(cpu_native_schedule "${STRATA_CPU_NATIVE_FIXTURE}")
 target_include_directories(cpu_native_schedule PRIVATE "${STRATA_GGML_DIR}/ggml/src")
 target_compile_options(cpu_native_schedule PRIVATE -march=znver3 -mtune=znver3)
 target_link_libraries(cpu_native_schedule PRIVATE compact_reference_cpu)
