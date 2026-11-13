@@ -320836,7 +320836,7 @@
     }
   },
   "cpu_mixed_cache_device_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "fbc04ab339786701547fc3d710287007a9660680",
     "native_source_commit": "a1d8c29ec68a4c8edf8a845ce036fe13664040de",
     "native_record": {
@@ -321104,7 +321104,16 @@
     },
     "limits": "All13ELFs are from the coherent full build,not old fixture/archive reuse. A host bounds test or262144-cell component does not qualify physical model fill. No partial-relink numerical/speed result,ordinary teardown,task or model adoption inherited. Native fixtures keep cache0;the actual model cache route remains unqualified. Attention/producer262144-cell checks do not fill a physical model context.",
     "retention": "Keep14508validated fallback and this one temporary candidate,plus3d7fCPUauxiliary for its live qualification reader. Ended f59/492/c0dc generations are already retired. Legacy H9/P5/D5/IR/deployment holds remain separate. Retire successful raw output at native/model closure;no whole-model adoption follows from native checks.",
-    "results": [],
+    "results": [
+      {
+        "mode": "host",
+        "passed": false,
+        "GPU_executed": false,
+        "host_probe_accepted": false,
+        "error": "RuntimeError('actual dispatcher final-slot and over-capacity controls failed')",
+        "ownership_closed": true
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
@@ -321117,6 +321126,14 @@
       "count": 342,
       "aggregate_sha256": "f888237a649f6c78c1a29962bbe20ea8b236d1c32cf696d9b8368fc94cbbdf4e"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "actual-dispatch-bounds",
+        "exit_code": -4,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }

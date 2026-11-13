@@ -560,7 +560,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the actual-dispatch bounds fixture. Enginee8a1e54d is built,not yet runtime/model
   qualified. ExpertDispatch/ExpertPool have10/12fresh header consumers with their
   matching class conditions. Next run the separately committed native checks;
-  no model PP/TG is inherited. Legacy holds remain separate.
+  no model PP/TG is inherited. Its first actual-dispatch host fixture exits
+  SIGILL(-4),with no stdout/stderr and closed ownership,before any GPUstage.
+  That fixture incorrectly selected the AVX512-only canonical Q2_0path on this
+  AVX2PC. The target-model native IQ3path is separate. Preserve this failure and
+  use matching native geometry in a new committed V2qualification;no old result
+  is relabelled. Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
   verified actual layer/format/jobs/NTcorpus for the next prospective policy.
