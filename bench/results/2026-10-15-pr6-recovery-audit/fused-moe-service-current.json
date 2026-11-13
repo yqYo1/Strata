@@ -327763,7 +327763,7 @@
     "retained_thirteen_ELFs_unchanged": true
   },
   "current_profile_control_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-profile-fixture-v3/sycl_profile_compat_window",
@@ -327883,7 +327883,12 @@
       "devcoredump": false
     },
     "cases": [],
-    "host": null,
+    "host": {
+      "passed": false,
+      "GPU_executed": false,
+      "error": "RuntimeError('all nine CPU controls required')",
+      "ownership_closed": true
+    },
     "active": false,
     "ownership_closed": true,
     "passed": false,
@@ -327902,6 +327907,15 @@
     "acceptance": "Exact source/build/13retainedELFs/665fixture compiler inputs;all five native gates;normal0,closed owners,quiet pre-main validation,no fresh fault. Active from exec with no pause/resume:inner6kernels/3copies,post2/1,whole8/5,unique native joins and contained RAW clocks.",
     "limits": "Control only;no model coverage,observer overhead,physical traffic/saturation,clean speed,task/full-context or ordinary-provider teardown claim.",
     "retention": "Keep compact source,counts,clocks,numerical/provider/fault/closure outcomes. Retire successful full trace/API/JIT/host output after the current collector question closes.",
+    "failure_diagnosis": {
+      "tests": 9,
+      "passed": 8,
+      "failed": 1,
+      "GPU_executed": false,
+      "mechanism": "The test mock returns one shared dict for direct and active compositions. The active composition mutates that mock-owned object;production native_environment creates a fresh dict on each call.",
+      "diagnostic_sha256": "6ff207470cae5b5628261ce7afc3406cda9a2fc634d039abf711d00b6239ca56",
+      "next_action": "KeepV1failed;use a fresh V2plan with a fresh-dict mock and unchanged nine-control criteria before any GPU process."
+    },
     "source": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "2f3a6adc16aba74162c80bf8d7b7988ea11ed303",
