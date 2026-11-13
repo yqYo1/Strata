@@ -333315,7 +333315,48 @@
       "tools.sycl.test_mapped_rows_experiment"
     ],
     "host_tests": 10,
-    "cases": [],
+    "cases": [
+      {
+        "mode": "correctness",
+        "index": 0,
+        "passed": true,
+        "complete": true,
+        "runtime_maps": {
+          "files": 34,
+          "sha256": "8095c7e8b465b822460d7158c6c57f7555699a1d3caa95db71e33cbbd9882b87",
+          "unknown": 0,
+          "missing": 0
+        },
+        "validation": {
+          "pid": 4009724,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "tracing": {
+          "bytes": 357640,
+          "sha256": "3f37179915073c862449eaef4df6470ce6a9de87dc28615262054cb7d76c7306",
+          "operations": {
+            "urCommandBufferCreateExp": 18,
+            "urCommandBufferAppendKernelLaunchWithArgsExp": 18,
+            "urCommandBufferFinalizeExp": 18,
+            "urEnqueueCommandBufferExp": 54,
+            "urCommandBufferReleaseExp": 18
+          },
+          "complete_success_pairs": true
+        },
+        "exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "fault_probe_successful": true
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "complete": false,
