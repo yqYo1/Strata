@@ -166,7 +166,7 @@ public:
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode,
                                 std::span<const compact_gu::Lease> gu_views = {});
-    /// Explicit decode experiment. Only the measured 24/36-job mixed-NT
+    /// Explicit decode experiment. Only the measured Down42 24/36-job mixed-NT
     /// geometry in a five-worker+host pool may use whole-expert scheduling.
     /// Prefill, cached leases and all other shapes retain the row path.
     void run_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,

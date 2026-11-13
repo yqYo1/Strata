@@ -4197,7 +4197,7 @@ int main(int argc, char** argv) {
     drive.d.pool = &pool;
     drive.d.cpu_decode_whole_mixed = cpu_decode_whole_mixed;
     drive.d.src = srcp;
-    std::fprintf(stderr, "CPU_DECODE_SCHEDULE whole_mixed=%d jobs=24,36 nt=mixed_1_to_4 workers=5 host=1\n",
+    std::fprintf(stderr, "CPU_DECODE_SCHEDULE whole_mixed=%d down=42 jobs=24,36 nt=mixed_1_to_4 workers=5 host=1\n",
         int(cpu_decode_whole_mixed));
     if (cpu_compact_gu_cache) {
         try {

@@ -774,7 +774,7 @@ void ExpertPool::run_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,
                                  std::span<const compact_gu::Lease> gu_views) {
     bool eligible = whole_decode && phase == NativeGuPhase::Decode &&
         n_ == 5 && host_works_ && (n == 24 || n == 36) && jobs &&
-        gu_views.empty() && f.gu_type == 18 && (f.d_type == 20 || f.d_type == 42) &&
+        gu_views.empty() && f.gu_type == 18 && f.d_type == 42 &&
         f.n_embd == H && f.n_ff == FF;
     bool single = false, multiple = false;
     if (eligible) for (int e = 0; e < n; ++e) {

@@ -436,8 +436,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   wall/CPU samples and all failures;16forced-row cells pass dispatch/work gates
   but supply no adoption claim. Default0stays selected;the gated model trial is
   blocked. Next scope Down42parts prospectively with changed source/plan/new
-  evidence,preserving prefill and14508clean reference. Physical saturation and
-  whole-model speed remain unqualified. This is component progress,not adoption.
+  evidence,preserving prefill and14508clean reference. The closed selector
+  fixture/output are retired after205project/291GGMLpins,635compiler inputs,
+  36objects,22links and original source/recipe recovery(118files,14965957bytes).
+  The new prospective selector excludesDown20;both formats retain numerical
+  coverage,but fresh timing focuses on four Down42mixed24/36cells in sixRCCRRC
+  processes. Its scoped qualifier preserves the original failed cohort and all
+  consumed source/sample/gate fields without freezing unrelated result rows.
+  Source is not yet built or measured. Physical saturation and whole-model
+  speed remain unqualified. This is component progress,not adoption.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic

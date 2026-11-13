@@ -20646,7 +20646,8 @@
     "plan_sha256": "478d4f590d3f6b67df8f28d534601b7c96322c9b71b1bcc40849a68e8d4545f3",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-native-whole-selected-v1/build/cpu_native_schedule",
-      "sha256": "3d00f20357773100f48795ee8634c8f14a4425f72ecf6f323dff7e768dea520e"
+      "sha256": "3d00f20357773100f48795ee8634c8f14a4425f72ecf6f323dff7e768dea520e",
+      "retired": true
     },
     "build": {
       "fresh_CPU_GGML_fixture_objects": 36,
@@ -22371,6 +22372,22 @@
       "exact_64_round_composition": true
     },
     "decision": "Original eight-selected-cell gate failed:Down20/24mixed/reuse loses two pairs,andDown20/36mixed/stream64 loses one. Six cells pass all3pairs,including all four Down42cells. Do not run the gated model candidate or blanket-enable the current selector. Keep original failures and default0.",
-    "resource_interpretation": "Actual production-wrapper CPU wall evidence only. Native GU/quant/Down math unchanged;reference stage time includes dispatch/waits,and processCPU includes busy polling. Serial hidden quantization is a small service share. CPU/RAM physical saturation and whole-model limiting resource remain unknown;no modelPP/TG claim."
+    "resource_interpretation": "Actual production-wrapper CPU wall evidence only. Native GU/quant/Down math unchanged;reference stage time includes dispatch/waits,and processCPU includes busy polling. Serial hidden quantization is a small service share. CPU/RAM physical saturation and whole-model limiting resource remain unknown;no modelPP/TG claim.",
+    "artifact_retirement": {
+      "stage": "retired_after_verified_original_source_recovery",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-native-whole-selected-v1",
+      "files_and_links": 118,
+      "regular_bytes": 14965957,
+      "inventory_sha256": "cc296457ca6f99519d4c03fce38b539c37e594847a59546b0d8af704efe4f172",
+      "source_commit": "e2a305b744f99de62464a43fbf6e6c5f14997e25",
+      "plan_commit": "681adbc613fac6e2d562a6e3a954e70df5d5c995",
+      "project_sources": 205,
+      "GGML_sources": 291,
+      "actual_compiler_inputs": 635,
+      "fresh_objects": 36,
+      "external_links": 22,
+      "final_binary_sha256": "3d00f20357773100f48795ee8634c8f14a4425f72ecf6f323dff7e768dea520e",
+      "decision": "Original eight-cell gate failed;all144useful selected samples/evidence and CSV points are pushed. No next consumer needs these CPUfixture bytes. Keep c0dc/c858 auxiliary and14508clean GPUfallback;nextDown42policy must get new source/plan/evidence. Normal output and extra build retired;legacy GPU/IR/deployment holds remain separate."
+    }
   }
 }

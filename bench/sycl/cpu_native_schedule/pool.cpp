@@ -246,7 +246,7 @@ void numerical(Fixture& f){uint64_t cases=0,whole_calls=0,active_rows=0,selected
                     Case work(f,n);const uint64_t round=selected_cases+31;
                     work.bind(round,true,policy);const auto before=pool.native.native_whole_calls;
                     work.run(pool,enabled,phase,true);
-                    const bool hit=enabled&&workers==5&&phase==cpu::NativeGuPhase::Decode&&
+                    const bool hit=enabled&&workers==5&&f.format.d_type==42&&phase==cpu::NativeGuPhase::Decode&&
                         (n==24||n==36)&&policy==0;
                     need(pool.native.native_whole_calls-before==uint64_t(hit),"production selector dispatch");
                     work.check(round,true,phase);work.inactive();selected_calls+=hit;++selected_cases;
@@ -278,12 +278,14 @@ Sample batch(Case& work,Pool& pool,bool whole,bool stream,int policy,uint64_t ro
     for(uint64_t i=0;i<rounds;++i){work.bind(i,stream,policy);work.run(pool,whole,cpu::NativeGuPhase::Decode,true);rows+=work.rows;}
     Sample s{seconds(start),cpu_seconds()-c,(pool.native.ms_multi_gu-g)*.001,(pool.native.ms_multi_q-q)*.001,
         (pool.native.ms_multi_down-d)*.001,(pool.native.ms_multi_whole-w)*.001,rounds,rounds*work.jobs.size(),rows,pool.native.native_whole_calls-selected};
-    const bool hit=whole&&(work.jobs.size()==24||work.jobs.size()==36)&&policy==0;
+    const bool hit=whole&&work.f.format.d_type==42&&(work.jobs.size()==24||work.jobs.size()==36)&&policy==0;
     need(s.selected==(hit?rounds:0)&&s.gu>=0&&s.quant>=0&&s.down>=0&&s.whole>=0&&s.gu+s.quant+s.down+s.whole<=s.wall+1e-6,"timed route/service accounting");
     work.check(rounds-1,stream,cpu::NativeGuPhase::Decode);pool.verify();return s;
 }
 int main(int argc,char**argv){try{
-    need(argc==8,"pool SHARD DOWN GATE UP DOWN_OFFSET BLOB_BYTES check|reference|selected");const std::string arm(argv[7]);
+    need(argc==8||argc==9,"pool SHARD DOWN GATE UP DOWN_OFFSET BLOB_BYTES check|reference|selected [mixed-only]");const std::string arm(argv[7]);
+    const bool mixed_only=argc==9;
+    need(!mixed_only||(std::string(argv[8])=="mixed-only"&&arm!="check"),"timing shape selection");
     need(arm=="check"||arm=="reference"||arm=="selected","arm");Fixture f(argv);std::cout<<std::setprecision(17);
     if(arm=="check"){numerical(f);return 0;}need(!cpu::iq3_gu_audit_snapshot().enabled,"clean audit setting");
     const auto now=Clock::now();for(int i=0;i<10000;++i){auto t=Clock::now().time_since_epoch().count();asm volatile(""::"g"(t):"memory");}
@@ -292,6 +294,7 @@ int main(int argc,char**argv){try{
         <<",\"read_s\":"<<f.read_s<<",\"oracle_setup_s\":"<<f.oracle_s<<",\"timer_pair_s\":"<<timer<<",\"raw_bytes_per_job\":"<<f.format.bytes<<",\"cells\":[";
     Pool pool(5);bool comma=false;
     for(int n:{12,24,36})for(int policy:{0,1})for(bool stream:{false,true}){
+        if(mixed_only&&(n==12||policy!=0))continue;
         if(comma)std::cout<<',';comma=true;Case work(f,n);
         std::cout<<"{\"workers\":5,\"host_works\":true,\"jobs_per_call\":"<<n<<",\"NT_policy\":\""<<(policy?"NT1":"observed_mix")<<"\",\"pattern\":\""<<(stream?"stream64":"reuse")<<"\",\"calibration\":[";
         uint64_t rounds=64;bool sep=false;for(;;){const auto s=batch(work,pool,arm=="selected",stream,policy,rounds);if(sep)std::cout<<',';sep=true;
