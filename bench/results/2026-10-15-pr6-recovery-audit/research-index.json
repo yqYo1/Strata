@@ -32033,18 +32033,19 @@
   },
   "cpu_valid_mixed_nt_cache_methods_20261113b": {
     "classification": "decision_support",
-    "stage": "planned_eligible",
+    "stage": "reviewed_source_reference",
     "title": "Model-valid mixed-NT CPUexpert scheduling and selective NT1cache versus native NT2..4",
-    "scope": "Compare legal spec1..4/topk10families with sumNT<=10T,per-job NT1cache/native NT2+ and row/whole alternatives;account for expanded134B cache traffic,dispatch/lifetime/phase bounds and counterevidence. No actual joint census required for conditional design;do not infer a model distribution.",
+    "scope": "Compare legal spec1..4/topk10families with sumNT<=10T,per-job NT1cache/native NT2+ and row/whole alternatives;account for expanded134-byte-per-block cache traffic,dispatch/lifetime/phase bounds and counterevidence. No actual joint census required for conditional design;do not infer a model distribution.",
     "source_commit": "0c2b68556f513baf764b24b7ad425a01b953fb2b",
     "native_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2",
     "policy_commit": "0c2b68556f513baf764b24b7ad425a01b953fb2b",
     "model": "gpt-6-luna",
     "effort": "medium",
     "scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite_evidence": "Actual closed capability orca_capability_128m_20261113;committed current source and corrected stress-volume evidence8f97c999c/CPUresult native_whole_down42_v2;no unmeasured actual distribution or profiler capability is prerequisite.",
-      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts."
+      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts.",
+      "pending": "This source-only reference is completed;do not redispatch the same scope. New trials/followups need separately met prerequisites."
     },
     "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cpu_valid_mixed_nt_cache_methods_20261113b",
     "report_budget_bytes": 32768,
@@ -32052,11 +32053,72 @@
     "active": false,
     "ownership_closed": true,
     "main_reads_collection_body_on_arrival": false,
-    "retention": "Current decision support or substantive reusable methods only;native Luna-max review/short digest before Main retrieval. Do not commit routine launch/spec/review transactions or empty/redundant reports."
+    "retention": "Substantive conditional methods reference with a named retrieval topic;retain until its next implementation/method choice,then curate useful facts into maintained docs or retire. Main reads collection sections only for a concrete question.",
+    "task": "task_e3b893db42fa",
+    "dispatch": "ctx_8a05dc1eafce",
+    "terminal": "term_c458f5dc-2b34-40d0-ac17-8db59fc9e9ee",
+    "worker_done_message": "msg_0a84d9d81c55",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cpu_valid_mixed_nt_cache_methods_20261113b/report.md",
+      "bytes": 8770,
+      "sha256": "acafe910e9eedd3478a78551dbcb2395dfb22b192bef1146bc184a7548b689de"
+    },
+    "report_present": true,
+    "worker_done_delivered": true,
+    "source_packet_sha256": "ac7210bb1a486c52f8c756498728fd90d66d47655e868ca34b2fe3fa44f079df",
+    "native_review_key": "orca_research_wave_b_review_20261113",
+    "native_review": {
+      "decision": "retain and index; useful conditional NT1 prepared-cache, native NT2..4 reuse, row/whole scheduling and geometry-split alternatives",
+      "novelty_and_redundancy": "Distinct from completed prepared-IQ3 NT2..4 and pool-resource reports: covers mixed legal per-job NT, NT1 cache amortization, phase/scheduling limits and exact expansion arithmetic. Prior cache and legality facts are bounded rather than repeated.",
+      "corrections": [
+        "Keep 4.9152 MB/expert as decimal bytes; do not present the 46.8384 GiB packed payload plus 112.5 GiB expansion as observed RSS or a minimum-residency requirement.",
+        "Main source check:134Bmeans134bytes per Block,sizeof(Block)==134,not134billion or a whole-cache total. Existing two-projection compact cache measured8704entries/14932662352known bytes. Do not transfer the alternative full-model int8-expansion estimate to this representation."
+      ],
+      "retrieval_tags": [
+        "cpu",
+        "mixed_nt",
+        "NT1_prepared_cache",
+        "native_NT2_4",
+        "row_vs_whole",
+        "phase_dispatch",
+        "cache_lifetime",
+        "compact_block_134_bytes"
+      ],
+      "eligibility_recommendation": "Index as source-only decision support, not adoption or speed evidence. Future NT1-cache comparison requires cache identity/lifetime/capacity and numerical bounds; mixed scheduler work requires an approved legal-geometry corpus. The report itself does not require a complete joint model census.",
+      "original_capacity_correction_scope": "The review120.7959552GB arithmetic describes an alternative whole-model unpacked expansion;it must not replace the unit of the existing compact cache.",
+      "capacity_evidence": [
+        "include/strata/kernels/cpu/detail/compact_iq3xxs.hpp:20",
+        "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json#compact_cpu_model_entry_v1.post_close_analysis.cache_prepared"
+      ]
+    },
+    "source_provenance": {
+      "local": "Pinned Niko1221/Strata native files at d3578a0aeca747fbbeede0527f124d9bb364a0a2; report cites the supplied exact packet copies.",
+      "external": [
+        {
+          "source": "llama.cpp graph and CPU quantized-matmul sources",
+          "revision": "moving master, accessed 2026-11-13; SHA not recorded",
+          "license": "MIT",
+          "reuse": "inspection lead only; no code copied or proposed"
+        },
+        {
+          "source": "Microsoft Tutel",
+          "revision": "moving main; SHA not recorded",
+          "license": "MIT declared in setup.py",
+          "reuse": "distributed-MoE comparison only; no code copied or proposed"
+        },
+        {
+          "source": "HiNa-MoE arXiv:2610.05123v1; Intel Optimization Reference Manual 248966-048",
+          "revision": "arXiv v1 / manual revision 048",
+          "license": "paper implementation license unverified; Intel manual redistribution terms not established",
+          "reuse": "method/counterevidence only"
+        }
+      ]
+    },
+    "normal_exit_qualified": null
   },
   "decode_gpu_dependency_m1to4_methods_20261113b": {
     "classification": "decision_support",
-    "stage": "planned_eligible",
+    "stage": "reviewed_source_reference",
     "title": "Small-window GPUdependency and launch chain versus SGLang/vLLM",
     "scope": "Trace current M1..4dense/attention/recurrent wrappers and compare actual SGLang/vLLMmodel paths:unnecessary work,waits,round trips,storage/accumulation and opportunities compatible with qualified runtime. Source audit only,no unsupported hardware-saturation or speed claim.",
     "source_commit": "0c2b68556f513baf764b24b7ad425a01b953fb2b",
@@ -32065,9 +32127,10 @@
     "model": "gpt-6-luna",
     "effort": "medium",
     "scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite_evidence": "Actual closed capability orca_capability_128m_20261113;committed current source and corrected stress-volume evidence8f97c999c/CPUresult native_whole_down42_v2;no unmeasured actual distribution or profiler capability is prerequisite.",
-      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts."
+      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts.",
+      "pending": "This source-only reference is completed;do not redispatch the same scope. New trials/followups need separately met prerequisites."
     },
     "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode_gpu_dependency_m1to4_methods_20261113b",
     "report_budget_bytes": 32768,
@@ -32075,11 +32138,65 @@
     "active": false,
     "ownership_closed": true,
     "main_reads_collection_body_on_arrival": false,
-    "retention": "Current decision support or substantive reusable methods only;native Luna-max review/short digest before Main retrieval. Do not commit routine launch/spec/review transactions or empty/redundant reports."
+    "retention": "Substantive conditional methods reference with a named retrieval topic;retain until its next implementation/method choice,then curate useful facts into maintained docs or retire. Main reads collection sections only for a concrete question.",
+    "task": "task_024ccdbdf48f",
+    "dispatch": "ctx_2fc7fe88ba01",
+    "terminal": "term_22250555-654b-4f10-b9a3-a2f6eafc9c87",
+    "worker_done_message": "msg_5acc54235e48",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode_gpu_dependency_m1to4_methods_20261113b/report.md",
+      "bytes": 10690,
+      "sha256": "045849870793296498a2aa30340bab70fde5892e0417952741e180268e386b7b"
+    },
+    "report_present": true,
+    "worker_done_delivered": true,
+    "source_packet_sha256": "6939e6fefdc3f012c650b19a15dbefbfe225a84b2a862668c7207b0b0f1f9604",
+    "native_review_key": "orca_research_wave_b_review_20261113",
+    "native_review": {
+      "decision": "retain and index; source-only small-window decode dependency gates",
+      "novelty_and_redundancy": "Adds GDN z-projection dependency ordering and QSA all-cells-selected identity behavior through n_kv=2051. Does not repeat the separately consumed MTP expert-reuse task or the failed QSA/KV-movement task.",
+      "corrections": [
+        "Keep identity selection conditional on n_kv<=2051 and preserve ID order/padding, partial 4-cell blocks and index-key state updates; this is not a general QSA skip path.",
+        "Keep finish(stream,event) blocking behavior explicitly unknown because the helper definition is absent from the packet; do not infer wrapper wait cost from its calls."
+      ],
+      "retrieval_tags": [
+        "decode",
+        "M1_M4",
+        "GDN",
+        "QSA",
+        "z_projection_dependency",
+        "identity_selection_small_context",
+        "SYCL",
+        "source_only"
+      ],
+      "eligibility_recommendation": "Index as decision support, not an implementation or performance result. Before a trial, resolve queue/event/finish semantics, scratch aliasing and live ranges, and graph-safe QSA IDs through 2051 plus incomplete-block boundaries."
+    },
+    "source_provenance": {
+      "local": "Pinned Niko1221/Strata native source at d3578a0aeca747fbbeede0527f124d9bb364a0a2; local derived flash source provenance noted in its header and excluded as a new implementation basis.",
+      "external": [
+        {
+          "source": "SGLang Qwen4-Exp / Qwen3.5 GDN",
+          "revision": "00752f2600b11b78e22aa3153507e0f772c2f27a",
+          "license": "Apache-2.0"
+        },
+        {
+          "source": "vLLM Qwen4-Exp",
+          "revision": "f48bfde4dde385b8dde7df481be7c8c84dff23f5",
+          "license": "Apache-2.0"
+        },
+        {
+          "source": "LMSYS Qwen3.8-Flash-Next post",
+          "revision": "2026-08-26 publication",
+          "license": "web page; no implementation reuse"
+        }
+      ],
+      "reuse": "Source/scheduling comparison only; no CUDA, HIP, Triton or XeStrata code adopted or proposed."
+    },
+    "normal_exit_qualified": null
   },
   "zen3_weight_stream_translation_20261113b": {
     "classification": "knowledge_collection",
-    "stage": "planned_eligible",
+    "stage": "reviewed_source_reference",
     "title": "Zen3quantized weight streaming,TLB/page layout and decompress reuse",
     "scope": "Compare CPUweight streaming/translation/page-layout and quantized-decompression methods,including transferable non-LLM methods,AMD/Linuxprimary documentation and original technical blogs. Account for memory expansion,polling,VM/lifetime and conditional applicability;no system changes.",
     "source_commit": "0c2b68556f513baf764b24b7ad425a01b953fb2b",
@@ -32088,9 +32205,10 @@
     "model": "gpt-6-luna",
     "effort": "medium",
     "scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite_evidence": "Actual closed capability orca_capability_128m_20261113;committed current source and corrected stress-volume evidence8f97c999c/CPUresult native_whole_down42_v2;no unmeasured actual distribution or profiler capability is prerequisite.",
-      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts."
+      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts.",
+      "pending": "This source-only reference is completed;do not redispatch the same scope. New trials/followups need separately met prerequisites."
     },
     "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3_weight_stream_translation_20261113b",
     "report_budget_bytes": 32768,
@@ -32098,11 +32216,73 @@
     "active": false,
     "ownership_closed": true,
     "main_reads_collection_body_on_arrival": false,
-    "retention": "Current decision support or substantive reusable methods only;native Luna-max review/short digest before Main retrieval. Do not commit routine launch/spec/review transactions or empty/redundant reports."
+    "retention": "Substantive conditional methods reference with a named retrieval topic;retain until its next implementation/method choice,then curate useful facts into maintained docs or retire. Main reads collection sections only for a concrete question.",
+    "task": "task_7f22bd80cb98",
+    "dispatch": "ctx_cba2933c6a44",
+    "terminal": "term_c37e69b5-b5d6-4f6f-975e-3c7dfd23d16e",
+    "worker_done_message": "msg_0db42b1a71d5",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3_weight_stream_translation_20261113b/report.md",
+      "bytes": 10596,
+      "sha256": "9b54b0d04767ae4e3c253876f1a8965109d2b493ce305ac6ac002acc4aee9050"
+    },
+    "report_present": true,
+    "worker_done_delivered": true,
+    "source_packet_sha256": "08a02c8f998cb22ea49df71f149276e8c8017cd31be741f68cba116cb1db4161",
+    "native_review_key": "orca_research_wave_b_review_20261113",
+    "native_review": {
+      "decision": "retain and index as knowledge collection",
+      "novelty_and_redundancy": "Distinct from indexed temporal/non-temporal output-store, AVX2 instruction and expert-arena studies: covers page translations, file-backed advice, explicit hugetlb staging and bounded quantized tile reuse. Transfer to Strata remains unestablished.",
+      "corrections": [
+        "Keep THP, WILLNEED/NOREUSE, pinning and hugetlb explicitly advisory/conditional; they neither guarantee residency nor diagnose a bottleneck.",
+        "The report correctly marks llama.cpp source as rolling MIT with no SHA; do not turn it into a reimplementation proposal before exact revision/license review.",
+        "The native reviewer separately identified that the cited Linux next THP documentation does not establish THP support for regular file-backed model mmap. Establish the actual Strata mapping path before transferring anonymous/tmpfs/shmem advice."
+      ],
+      "retrieval_tags": [
+        "zen3",
+        "quantized_weights",
+        "TLB",
+        "THP",
+        "mmap",
+        "posix_fadvise",
+        "hugetlb",
+        "page_cache",
+        "dequant_tile_reuse",
+        "non_LLM"
+      ],
+      "eligibility_recommendation": "Index as a general reference only. No Strata VM or performance trial until a pinned reader/kernel path, access shape/lifetime and evidence separating faults, TLB pressure and decode cost are available."
+    },
+    "source_provenance": {
+      "external": [
+        {
+          "source": "AMD Software Optimization Guide for Family 19h",
+          "revision": "document 56665",
+          "license": "AMD proprietary/copyright; redistribution terms not established from official listing; official download plus page-reading mirror cited"
+        },
+        {
+          "source": "Linux THP and hugetlb documentation",
+          "revision": "6.2 and next",
+          "license": "kernel documentation/source provenance stated in report; next is mutable"
+        },
+        {
+          "source": "Linux man-pages posix_fadvise",
+          "revision": "6.17 (2026-02-08)",
+          "license": "man-pages project license stated in report"
+        },
+        {
+          "source": "llama.cpp mmap and quantized CPU kernels",
+          "revision": "moving master, accessed 2026-11-13; SHA not recorded",
+          "license": "MIT",
+          "reuse": "illustration only; no code copied or proposed"
+        }
+      ],
+      "local": "Only the pinned Strata/policy/index metadata packet was provided; no concrete local weight reader or mapping path was established."
+    },
+    "normal_exit_qualified": null
   },
   "small_n_sycl_submission_methods_20261113b": {
     "classification": "knowledge_collection",
-    "stage": "planned_eligible",
+    "stage": "reviewed_source_reference",
     "title": "Small-N SYCL/LevelZeroGPUsubmission and reusable pipelines",
     "scope": "Collect substantive small-N1..8GPU/ASIC/HPCpipeline methods beyond LLM:batching,fusion,command reuse and event/dependency cost. Compare official SYCL/LevelZero/Intel guidance and original implementations/papers;state safety limits for this B570direct-submission0/copy-offload-disabled setup. No graph/safety-setting adoption or execution.",
     "source_commit": "0c2b68556f513baf764b24b7ad425a01b953fb2b",
@@ -32111,9 +32291,10 @@
     "model": "gpt-6-luna",
     "effort": "medium",
     "scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite_evidence": "Actual closed capability orca_capability_128m_20261113;committed current source and corrected stress-volume evidence8f97c999c/CPUresult native_whole_down42_v2;no unmeasured actual distribution or profiler capability is prerequisite.",
-      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts."
+      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts.",
+      "pending": "This source-only reference is completed;do not redispatch the same scope. New trials/followups need separately met prerequisites."
     },
     "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/small_n_sycl_submission_methods_20261113b",
     "report_budget_bytes": 32768,
@@ -32121,11 +32302,72 @@
     "active": false,
     "ownership_closed": true,
     "main_reads_collection_body_on_arrival": false,
-    "retention": "Current decision support or substantive reusable methods only;native Luna-max review/short digest before Main retrieval. Do not commit routine launch/spec/review transactions or empty/redundant reports."
+    "retention": "Substantive conditional methods reference with a named retrieval topic;retain until its next implementation/method choice,then curate useful facts into maintained docs or retire. Main reads collection sections only for a concrete question.",
+    "task": "task_ec188aac85d6",
+    "dispatch": "ctx_23f7a6feb488",
+    "terminal": "term_1ff94335-4240-4f0a-8ab0-fbd0f1396a42",
+    "worker_done_message": "msg_7bf63c7e37d2",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/small_n_sycl_submission_methods_20261113b/report.md",
+      "bytes": 15225,
+      "sha256": "7fc1ac8709ce7822975ead06433751ea2b748c2d93b4d8108a3a32b8b1e49d9c"
+    },
+    "report_present": true,
+    "worker_done_delivered": true,
+    "source_packet_sha256": "d9f6a0f161b3e4e8b0b8fbe5eb2b6e27785f1c231014903db738cef604dba841",
+    "native_review_key": "orca_research_wave_b_review_20261113",
+    "native_review": {
+      "decision": "retain and index as knowledge collection",
+      "novelty_and_redundancy": "Adds concrete small-N non-LLM methods\u2014fusion, indirect multi-kernel append, persistent queues, HPC asynchronous pipelines, FPGA invocation pipelines and bounded iteration batching\u2014to the existing generic command/list/graph and host-task references. Some API-boundary overlap is useful for the pinned B570 environment.",
+      "corrections": [
+        "The cited Intel guide confirms Arc B-series uses the Level Zero V2 adapter and immediate command lists are its only supported mode. EnableDirectSubmission=0 disables the driver-bypass path; it does not restore ordinary recorded command lists.",
+        "Keep UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 scoped to the pinned measurement environment: it routes copies to the original queue engine and does not remove host appends or event dependencies.",
+        "Treat performance numbers from NVIDIA/HPC/FPGA work as non-transferable examples; no B570 test or direct implementation adoption follows."
+      ],
+      "retrieval_tags": [
+        "small_N",
+        "SYCL",
+        "Level_Zero",
+        "B570",
+        "submission",
+        "kernel_fusion",
+        "indirect_multi_kernel",
+        "persistent_queue",
+        "event_dependencies",
+        "copy_offload_disabled"
+      ],
+      "eligibility_recommendation": "Index as a reference; keep body unread by Main until a specific host-submission question. Future source/validation work needs actual wrapper attribution, exact compiler/UR/driver API support and the current qualified safety settings. No graph, runtime-setting or API adoption is recommended."
+    },
+    "source_provenance": {
+      "local": "Pinned measurement environment at 0c2b68556f513baf764b24b7ad425a01b953fb2b; no local command path or timing was examined beyond packet facts.",
+      "external": [
+        {
+          "source": "Intel Level Zero Immediate Command Lists guide",
+          "revision": "web guide accessed 2026-11-13",
+          "license": "vendor documentation; no code reuse"
+        },
+        {
+          "source": "oneAPI Level Zero specification",
+          "revision": "v1.20.41 API; v1.7.0 programming guide",
+          "license": "specification documentation; no source/license claim used"
+        },
+        {
+          "source": "Intel LLVM SYCL environment variables / Intel compute-runtime debug variable source",
+          "revision": "rolling sycl branch / master; no immutable SHAs recorded",
+          "license": "official source refs; re-pin exact versions before runtime admission"
+        },
+        {
+          "source": "P\u00e9rez et al. SYCL fusion (ACM 2023); Edge (PACT 2019); Yamazaki (SC-W 2024); Ekelund et al. (arXiv v1, 2025); Intel FPGA guide 2024.0",
+          "revision": "publication/version pins stated in report",
+          "license": "CC BY-NC-SA 4.0 noted for ACM article; other source/implementation terms are not uniformly established; no code copied or proposed"
+        }
+      ]
+    },
+    "normal_exit_qualified": null
   },
   "native_session_protocol_ports_20261113b": {
     "classification": "decision_support",
-    "stage": "planned_eligible",
+    "stage": "failed_worker_preflight_no_report",
     "title": "Native disk-session SAVE/RESTORE and BGEN/capability adaptation",
     "scope": "Map required session/persistence/capability protocol behavior from pinned Niko c1ff07f1 against current SYCLentrypoint;identify minimal independent functional ports,shared-state/physical262144boundaries and API/CLI consumers. Respect DeepSeek/35B exclusion and avoid CUDA/HIP imports. No implementation.",
     "source_commit": "0c2b68556f513baf764b24b7ad425a01b953fb2b",
@@ -32134,9 +32376,10 @@
     "model": "gpt-6-luna",
     "effort": "medium",
     "scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite_evidence": "Actual closed capability orca_capability_128m_20261113;committed current source and corrected stress-volume evidence8f97c999c/CPUresult native_whole_down42_v2;no unmeasured actual distribution or profiler capability is prerequisite.",
-      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts."
+      "nonduplication": "Original five Nov13Tasks failed before producing reports. Coordinator must still check existing index/curated metadata and investigate alternatives/counterevidence,not duplicate known facts.",
+      "pending": "Keep the original Task failed and non-indexable as a research result; do not retry/relabel it. Any future separately authorized session needs the exact immutable packet mounted in the worker view and must pass a fresh worker-side filesystem/no-GPU/Orca IPC gate before investigation."
     },
     "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/native_session_protocol_ports_20261113b",
     "report_budget_bytes": 32768,
@@ -32144,6 +32387,48 @@
     "active": false,
     "ownership_closed": true,
     "main_reads_collection_body_on_arrival": false,
-    "retention": "Current decision support or substantive reusable methods only;native Luna-max review/short digest before Main retrieval. Do not commit routine launch/spec/review transactions or empty/redundant reports."
+    "retention": "Current decision support or substantive reusable methods only;native Luna-max review/short digest before Main retrieval. Do not commit routine launch/spec/review transactions or empty/redundant reports.",
+    "task": "task_9f361603e5f3",
+    "dispatch": "ctx_eabdfc88c127",
+    "terminal": "term_71daa108-1e3e-4321-b4dc-4a3a76867a27",
+    "worker_done_message": "msg_e731b70e9892",
+    "worker_done_delivered": true,
+    "report_present": false,
+    "normal_exit_qualified": null,
+    "failure": "Required worker-side write-denial probes returned ENOENT for immutable packet/task inputs, not EROFS; no source investigation or report was produced. The later availability of coordinator-side packet files does not retroactively satisfy the failed worker preflight.",
+    "source_packet_sha256": "bf0658a3d2ef22caa1c0eafa9f9eab38c36621b472ff02913965b62469aa25a1",
+    "native_review_key": "orca_research_wave_b_review_20261113"
+  },
+  "orca_research_wave_b_review_20261113": {
+    "classification": "native_review",
+    "stage": "closed",
+    "model": "gpt-6-luna",
+    "effort": "max",
+    "source_policy_commit": "0c2b68556f513baf764b24b7ad425a01b953fb2b",
+    "index_base_commit": "12c87efbc4dac686a7add7549831764b7ca4801d",
+    "reports_reviewed": 4,
+    "failed_preflight": 1,
+    "all_exact_terminals_observed_exited": true,
+    "managed_resources_remaining": false,
+    "worker_done_acknowledged": true,
+    "delivery_id": "delivery_f7c3b95ba046",
+    "normal_native_wait_status_not_claimed": true,
+    "review_digest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-research-wave-b-20261113/digest.md",
+      "sha256": "8aec5f90390d1050b8bb5285628711c8cc7476c69f8400f49e2318fa8a9c24ed"
+    },
+    "proposal_sha256": "842679d59f8717b4ff011f823575932ab48e1fb0a72a87e3127ddbffe27e3f96",
+    "retention": "Keep four substantive report references;completed transaction roots/private auth/cache are retired. Native review corrections are in each report row;Main did not load collection bodies.",
+    "cleanup": {
+      "worker_transaction_roots_retired": 5,
+      "regular_worker_root_bytes": 448307664,
+      "inventory_hashes": [
+        "9d3a3c1141468d13539cdf60069c1913c0f0547d08a0240a632a3470a6f5a65a",
+        "c3f860f1cf4568bae762bfa81105249cfd81479f616f8287512e79964fe578db",
+        "7a045b2a966fb543403a7a59cb37421942db888df236202b198344e000cbf848",
+        "d498b4882bfb97320c79baf32d079c32a5cf9f017ad81353e6b9883612a83445",
+        "79044ff09a6ae97b4cffb6f62edd32a1c993df61ee075be4d1ec6136806d2fe0"
+      ]
+    }
   }
 }
