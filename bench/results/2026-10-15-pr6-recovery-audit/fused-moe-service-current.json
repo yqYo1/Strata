@@ -323247,5 +323247,413 @@
       }
     ],
     "result_retention": "Post-closure keep useful actual aggregate route/format/bytes,CPUshape/binding,cache/setup/RSS and fault evidence. Drop duplicate prefill row-bin/upload histograms before first result commit;no current consumer needs their individual bins. Original frozen parser already passed full arrays;this is retention,not weaker admission."
+  },
+  "cpu_mixed_cache_speed_v1": {
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "stage": "prepared",
+    "source_commit": "60ad216831eac9274c8806386d1fbd743fe90b4f",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/strata",
+      "sha256": "e8a1e54df5173b680e0181dacc9c4474fab49a750d9f109731f352afea92953a",
+      "bytes": 26483840,
+      "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+    },
+    "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "native_observer_admission": {
+      "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
+      "original_source_files": 1209,
+      "observer_source_files": 1211,
+      "observer_source_sha256": "f75cc9c3926ffc44bda50a9b4355ca4e95fdf5f3bdb4b60aae795c9ab805e873",
+      "declared_observers": {
+        "tools/sycl/check_cpu_mixed_cache_model.py": "2af25a0e9d2d2bd6cdaa5620f77f3c7cd94b0a27bb3a100eff1e61d85f37563e",
+        "tools/sycl/cpu_mixed_cache_bench.py": "a288358c2bea7c33a14ecb74a7b11530fa308726a4e64bd06bf7add3604bc4e2",
+        "tools/sycl/cpu_mixed_cache_model.py": "e5627a8ac943beea14b4b3ac6e58b5328ece142e21052016580b6e2803927beb"
+      },
+      "exact_thirteen_ELFs_census_recipe": true,
+      "class_coherence": {
+        "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+        "includer_count": 5,
+        "includer_objects": [
+          "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm16.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/qsa_score_gemm.cpp.o",
+          "CMakeFiles/sycl_gu_policy_test.dir/bench/sycl/gu_compact.cpp.o"
+        ],
+        "same_SYCL_class_condition": true,
+        "all_objects_from_fresh_build": true,
+        "partial_archive_reuse": false
+      },
+      "dispatch_pool_class_inputs": {
+        "include/strata/core/expert_source.hpp": {
+          "header_sha256": "37404864ee64128c27e44942ae02aca3c78b9bf727c0d5c80dec088362a51822",
+          "consumers": 10,
+          "macro": "STRATA_ENABLE_SYCL",
+          "value": 1,
+          "all_objects_from_fresh_build": true
+        },
+        "include/strata/kernels/cpu/pool.hpp": {
+          "header_sha256": "7600178da919a0f66e39508b59b6b911f2e0cb28aaf912e9eb103c78dcedd315",
+          "consumers": 12,
+          "macro": "STRATA_CPU_SERVICE_PROFILE",
+          "value": 1,
+          "all_objects_from_fresh_build": true
+        }
+      },
+      "exact_seed_recipe_sha256": "f0aa022c7294af6d7b8aa81c928c84ec6fbb2f62e1f65c6d11aa968bdad45b57",
+      "native_recompiled": false,
+      "GPU_result_inherited": false,
+      "device_key": "cpu_mixed_cache_device_v2",
+      "device_evidence_sha256": "4de967abeb8f4fb25b1033021dfe02a42a0ce813e16c2ab97a7c1cc7fa8e14bf",
+      "fresh_eleven_stage_controls": true,
+      "model_observer": "tools/sycl/cpu_mixed_cache_model.py",
+      "additional_observers": [
+        "tools/sycl/cpu_mixed_cache_bench.py"
+      ],
+      "original_partial_relink_or_model_result_inherited": false
+    },
+    "qualified_model_sha256": "c3226f630155987588f278aa2fb73d4f05f3ec98496db80f07ce91be1fdb3487",
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+    },
+    "controls": {
+      "positive": 3,
+      "rejected": 9,
+      "GPU_executed": false,
+      "fixture_sha256": "868d15a51dd8492ed38c6ee6cc0a5ba5001bbb41357577100b39e933f13df8db",
+      "synthetic_cache0_and_zero_window_not_model_evidence": true
+    },
+    "plans": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/0",
+        "generated": {
+          "config.json": "1723ff4622a92ee29a6604c9f0deaba136f5e60085a04be7789cd0fbbe101655",
+          "plan.json": "74ddf128adb20f4f8b2dcb3a9d60c7dd3c96f9399fad03085e1acdfb0fd318e6"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/0/config.json",
+          "--port",
+          "41687",
+          "--long-generation-only",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "cpu_mixed_cache_20261113",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/0/bench"
+        ],
+        "environment_sha256": "b220cb41d8dc92051fab71355157fb3523be67547e2d0ec4f412b3e81f0af328"
+      },
+      {
+        "index": 1,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/1",
+        "generated": {
+          "config.json": "21e71d70255e52fb1d6e45c73d8ffa8646f3e50361e79651722da2fbea55f328",
+          "plan.json": "74ddf128adb20f4f8b2dcb3a9d60c7dd3c96f9399fad03085e1acdfb0fd318e6"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/1/config.json",
+          "--port",
+          "35385",
+          "--long-generation-only",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "cpu_mixed_cache_20261113",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/1/bench"
+        ],
+        "environment_sha256": "c792492026944e14571e6b79ac576cc9a82f043a8f1c00abb7fcd34c7d73f44f"
+      },
+      {
+        "index": 2,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/2",
+        "generated": {
+          "config.json": "46d743e7c93846edf072403c66636355084b528c984781aa506331214e3f4ed4",
+          "plan.json": "74ddf128adb20f4f8b2dcb3a9d60c7dd3c96f9399fad03085e1acdfb0fd318e6"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/2/config.json",
+          "--port",
+          "57501",
+          "--long-generation-only",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "cpu_mixed_cache_20261113",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/2/bench"
+        ],
+        "environment_sha256": "d09c908a20a8cf93124be38cc2c6ee6ab54e653fdd35d0e666b7ad8dfe9ddb9c"
+      },
+      {
+        "index": 3,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/3",
+        "generated": {
+          "config.json": "cec2457c3e3ea409b40259c94e5c69824888357dc3ab06b7af748adf4c192beb",
+          "plan.json": "74ddf128adb20f4f8b2dcb3a9d60c7dd3c96f9399fad03085e1acdfb0fd318e6"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/3/config.json",
+          "--port",
+          "40487",
+          "--long-generation-only",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "cpu_mixed_cache_20261113",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/3/bench"
+        ],
+        "environment_sha256": "d6609ec8a5c92b6eaeb477d547b5c2694a10fa5c9b3051033c207873ce9c4079"
+      },
+      {
+        "index": 4,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/4",
+        "generated": {
+          "config.json": "e08a059689c99885584b8ce1a259c05572d2fba651f38ee698a63bd13a700d63",
+          "plan.json": "74ddf128adb20f4f8b2dcb3a9d60c7dd3c96f9399fad03085e1acdfb0fd318e6"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/4/config.json",
+          "--port",
+          "58157",
+          "--long-generation-only",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "cpu_mixed_cache_20261113",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/4/bench"
+        ],
+        "environment_sha256": "48c8c54d9d1afbe6e7ee58b1774b56b6273acd320c1f5f51e6793809dfd6bd0d"
+      },
+      {
+        "index": 5,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/5",
+        "generated": {
+          "config.json": "7b72347dfcb98f1cf0ea15eb670871afd6d1df6361b0542d01e2c2c0201b3999",
+          "plan.json": "74ddf128adb20f4f8b2dcb3a9d60c7dd3c96f9399fad03085e1acdfb0fd318e6"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/5/config.json",
+          "--port",
+          "35115",
+          "--long-generation-only",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "cpu_mixed_cache_20261113",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-speed-v1/5/bench"
+        ],
+        "environment_sha256": "c076e80d4f55994e2a847c9b44b8223e4b99324d0a936e964359b2b9670f79ab"
+      }
+    ],
+    "processes": [],
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "whole_bytes": 805306368,
+    "budgets": {
+      "wall": 2700,
+      "cpu": 16200,
+      "rss_cap": 111669149696,
+      "text_cap": 67108864,
+      "file_cap": 67108864,
+      "total_cap": 134217728
+    },
+    "plan": {
+      "question": "Does the measured selective NT1cache gain survive actual mixed-NT model work?",
+      "order": "Six fresh processes R,C,C,R,R,C;four official warmups then code/prose once each. Commit each closure.",
+      "constants": "Same393d88/e8a1full build,13ELFs,static1256slots,pcie0,adapt0,spec4,5workers+host,262144/20480INT8,8192BF16throughput,largeGU,head2/dense1,MTP16 and safety. Only CPUcache budget0/16384MiB differs.",
+      "observers": "Common STRATA_TRACE=1,CPU_WORK_CENSUS=1,DECODE_TIMING=1 and nominal snapshot marker. Actual timed callback/NT1bindings,pool-clock/membership/NT/entry conservation;charged diagnostics,not clean speed.",
+      "acceptance": "All6processes/12long requests:>=32768fresh input,>=1024generated with thinking,>=512answer chars,>=256drafts,valid SSE/clientTTFT/journal/body/GPUroute/state/source/build/13ELFs/assets/providers,normal0/closed ownership/quiet validation/no fresh fault. Check all6actual CPUframes including zero-window single-token warmups;candidate timed NT1bindings positive,reference0.",
+      "decision": "Retain3paired TG/prompt/TTFT ratios and spread per workload;gain requires all3TG ratios>1,no minimum floor. Strong code all acceptance>=.60,weak prose all<=.40;classification failure does not stop collection. No adoption/clean-speed/target claim.",
+      "stopping": "Stop first source/ownership/input/provider/clock/route/fault/budget/eligibility failure;exclusive durable attempt before preflight,no retry,hash refresh or changed criteria. Final15full hashes after process5.",
+      "retention": "Keep compact individual samples/cache/setup/CPUshape/binding/conservation and decision. Retire successful raw logs/JIT after verification;no new engine generation. Native source14508 remains clean speed reference."
+    },
+    "invariant_signature": "b2aa47ebe0849e22d39f39253a3cf98e8491c80e0c865815a7630aed5d63e74f",
+    "source_inputs": {
+      "files": 740,
+      "sha256": "8d77c4d0ce29a2170e7fbf01b5ec4ff6c069cd537c2a568ceff41728223dd6f6"
+    },
+    "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
