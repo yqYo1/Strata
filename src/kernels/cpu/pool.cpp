@@ -537,6 +537,48 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
             const int e = (int) i / parts_b_, part = (int) i % parts_b_;
             const int r0 = H * part / parts_b_, r1 = H * (part + 1) / parts_b_;
             s2_expert_down_rows(jobs_[e].blob, split_[(size_t) e].a2, jobs_[e].out, r0, r1);
+        } else if (mode_ == 7) {
+            // Complete one independently routed expert on its claiming worker.
+            // The synchronous batch keeps all jobs/activations and split buffers
+            // alive until every worker parks. No peer accesses this expert's
+            // intermediate before it is consumed here.
+            const auto& job = mjobs_[i];
+            auto& sb = split_multi_[i];
+            float* ff[MAXT];
+            for (int t = 0; t < job.nt; ++t) ff[t] = sb.ff[t];
+            {
+#ifdef STRATA_CPU_SERVICE_PROFILE
+                service::Profile::Scope cpu_service(service_profile_,id,*nfmt_,
+                    service::Op::Gu,job.nt,FF,native_gu_phase_);
+#endif
+                native_gu_rows(*nfmt_,job.blob,job.nact,job.nt,ff,0,FF,native_gu_phase_);
+            }
+            {
+#ifdef STRATA_CPU_SERVICE_PROFILE
+                service::Profile::Scope cpu_service(service_profile_,id,*nfmt_,
+                    service::Op::HiddenQuant,job.nt,FF,native_gu_phase_);
+#endif
+                for (int t = 0; t < job.nt; ++t) {
+                    if (nfmt_->d_type == 42) act_quant_any(sb.ff[t],FF,sb.a2[t]);
+                    else native_quant_h(*nfmt_,sb.ff[t],sb.hq[t]);
+                }
+            }
+            {
+#ifdef STRATA_CPU_SERVICE_PROFILE
+                service::Profile::Scope cpu_service(service_profile_,id,*nfmt_,
+                    service::Op::Down,job.nt,H,native_gu_phase_);
+#endif
+                if (nfmt_->d_type == 42) {
+                    const ActQ* a2[MAXT];
+                    for (int t = 0; t < job.nt; ++t) a2[t] = &sb.a2[t];
+                    q2_rows_any(job.blob+nfmt_->down_off,nfmt_->d_row,
+                        int(nfmt_->n_ff/64),a2,job.nt,job.out,0,H);
+                } else {
+                    const void* hq[MAXT];
+                    for (int t = 0; t < job.nt; ++t) hq[t] = sb.hq[t];
+                    native_down_rows(*nfmt_,job.blob,hq,job.nt,job.out,0,H);
+                }
+            }
         } else if (mode_ >= 5) {
             // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows
             const int per = mode_ == 5 ? FF : H;
@@ -725,6 +767,35 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
     compact_gu_views_ = nullptr;
     mode_ = 0;
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+}
+
+void ExpertPool::run_whole_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,
+                                      int n, NativeGuPhase phase) {
+    bool eligible = phase == NativeGuPhase::Decode && n >= 7 && n <= 36 &&
+        jobs && f.gu_type == 18 && (f.d_type == 20 || f.d_type == 42) &&
+        f.n_embd == H && f.n_ff == FF;
+    if (eligible) for (int e = 0; e < n; ++e)
+        eligible = eligible && jobs[e].nt >= 1 && jobs[e].nt <= 4;
+    if (!eligible) {
+        run_split_multi_native(f,jobs,n,phase);
+        return;
+    }
+#ifdef STRATA_CPU_SERVICE_PROFILE
+    service::Profile::BatchScope service_batch(service_profile_,phase);
+#endif
+    const auto start = std::chrono::steady_clock::now();
+    mjobs_ = jobs;
+    nfmt_ = &f;
+    native_gu_phase_ = phase;
+    compact_gu_views_ = nullptr;
+    run_phase(7,n);
+    mode_ = 0;
+    const double elapsed = std::chrono::duration<double,std::milli>(
+        std::chrono::steady_clock::now()-start).count();
+    ms_multi_whole += elapsed;
+    ms_drain_ += elapsed;
+    multi_bytes += int64_t(n)*int64_t(f.bytes);
+    ++native_whole_calls;
 }
 
 void ExpertPool::run(ExpertJob* jobs, int n) {
