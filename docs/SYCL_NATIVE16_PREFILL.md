@@ -423,8 +423,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retired remotely/locally with its worktree;its extra CPUfixture and normal
   output are deleted(118files/links,14945636bytes)after203project/291GGMLpins,
   635compiler inputs,36objects,22links and original recipe recovery. The new
-  production selector remains opt-in and requires a fresh actual-entry CPU
-  comparison before any model trial. This is component progress,not adoption.
+  production selector at sourcee2a305b74 remains opt-in via
+  STRATA_CPU_DECODE_WHOLE=1;default0and all prefill keep row scheduling.
+  Its fresh36-object CPUbuild3d00f203passes635compiler/22link admission.
+  The540regular cases/format and fixedRCCRRCactual-entry comparison are pending
+  before any full-engine model trial. This is component progress,not adoption.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
