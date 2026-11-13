@@ -333971,7 +333971,8 @@
       "eligibility": "Per-cell warmup sum>=500ms;calibration sum>=750ms;3samples per cell sum>=250ms;clock-pair estimate<=1%;max262144calls. Exact same72cells and dispatch each process;stop first failure/no retry.",
       "primary": "producer_update=true,quarter-hit,rows10/20/30/40,width2560. Per-shape all3paired candidate/reference time ratios<1,geometric mean<1. No arbitrary minimumgain;unqualified shapes retain scalar.",
       "auxiliary": "zero/allhit and static-source cells retain samples,not substitutes for primary. No physical bus bytes,coldRAM,modelTG or full-context claim.",
-      "gate": "Traced correctness before any speed. Component gain permits a separately committed decode-only model plan,not production adoption. Prefill stays unchanged."
+      "gate": "Traced correctness before any speed. Component gain permits a separately committed decode-only model plan,not production adoption. Prefill stays unchanged.",
+      "postbuild_host": "The build performed10CPUcontrols before compiling. Preserve them under compilation_host_controls and run the existing explicit10case host stage again after compilation to reach ready before first GPU;no source,binary,hash,workload or speed criterion changes."
     },
     "budget": {
       "wall": 900,
@@ -334004,13 +334005,6 @@
       "partial_samples": 18,
       "failing_batch_metrics_unrecorded": true,
       "change": "Keep original250ms floor and1%timer bound;add500ms per-cell warmup and750ms calibration,raise call cap262144 and native wall420s. New fixture must compile and requalify;no candidate speed was obtained in the failed cohort."
-    },
-    "host_controls": {
-      "tests": 10,
-      "skipped": 0,
-      "passed": true,
-      "exit_code": 0,
-      "ownership_closed": true
     },
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-rows-subgroup-v5/build/sycl_mapped_rows_bench",
@@ -334059,6 +334053,13 @@
       "translation_units": 5,
       "reused_objects": 0,
       "uncovered": 0
+    },
+    "compilation_host_controls": {
+      "tests": 10,
+      "skipped": 0,
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true
     }
   }
 }
