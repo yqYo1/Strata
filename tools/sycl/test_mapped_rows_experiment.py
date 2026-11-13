@@ -13,7 +13,7 @@ def corpus(arm='scalar', ns=10000.):
     return [dict(type='sample', rows=r, width=2560, hits=h, producer_update=u,
         subgroup_dispatch=arm == 'subgroup', rep=i, calls=32768,
         elapsed_ns=ns * 32768, ns_per_call=ns, clock_pair_ns=20.,
-        timer_fraction=20./ns, calibration_ns=400000000.)
+        timer_fraction=20./ns, calibration_ns=1000000000., warmup_ns=600000000.)
         for r in (10, 20, 30, 40) for h in (0, r//4, r)
         for u in (False, True) for i in range(3)]
 
@@ -65,7 +65,7 @@ class Admission(unittest.TestCase):
             with self.assertRaises(RuntimeError): trial.samples(encode(bad), 'scalar')
 
     def test_duration_and_timer_must_pass(self):
-        for k, v in (('elapsed_ns', 249999999.), ('calibration_ns', 299999999.),
+        for k, v in (('elapsed_ns', 249999999.), ('calibration_ns', 749999999.), ('warmup_ns', 499999999.),
                      ('timer_fraction', .010001), ('calls', 32767),
                      ('ns_per_call', float('nan')), ('clock_pair_ns', -1.)):
             data = corpus(); data[0][k] = v

@@ -27,9 +27,9 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = source.P, source.B
-ROOT = B / 'mapped-rows-subgroup-v4'
+ROOT = B / 'mapped-rows-subgroup-v5'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY, TARGET = 'mapped_rows_subgroup_v4', 'sycl_mapped_rows_bench'
+KEY, TARGET = 'mapped_rows_subgroup_v5', 'sycl_mapped_rows_bench'
 THIS = 'tools/sycl/mapped_rows_experiment.py'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'tests',
             'bench/sycl', 'tools/sycl', 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
@@ -116,7 +116,7 @@ def prepare():
     cohort = json.loads((B / 'cpu-mixed-cache-speed-v1/record.json').read_text())
     actual_probe, reuse = probe.current_probe()
     row = dict(stage='prepared', project=source.pin(P, PREFIXES),
-        dependencies=native['dependencies'], toolchain=native['toolchain'],
+        dependencies=native['dependencies'], toolchain=native['toolchain'] | {str(Path(sys.executable).resolve()): sha(sys.executable)},
         external_inputs=native['external_inputs'], fallbacks=fallback, recipe=recipe,
         recipe_origin=dict(path=str(original), sha256=sha(original),
             source_commit=native['project']['revision']),
@@ -132,7 +132,7 @@ def prepare():
             correctness='18captures/54dynamic replays;bit-exact zeros,NaNs,infinities,subnormals;guards/source/metadata intact;empty and5invalid-span/dimension cases;checked teardown.',
             order=ORDER, repeats=3,
             timing='Captured single production kernel:graph launch plus completion wait. Host source refresh,metadata/reset/oracle/capture/validation outside timed intervals. Sum disjoint per-call intervals,not contiguous batch wall.',
-            eligibility='16warmups;calibration sum>=300ms;3samples per cell sum>=250ms;clock-pair estimate<=1%;max65536calls. Exact same72cells and dispatch each process;stop first failure/no retry.',
+            eligibility='Per-cell warmup sum>=500ms;calibration sum>=750ms;3samples per cell sum>=250ms;clock-pair estimate<=1%;max262144calls. Exact same72cells and dispatch each process;stop first failure/no retry.',
             primary='producer_update=true,quarter-hit,rows10/20/30/40,width2560. Per-shape all3paired candidate/reference time ratios<1,geometric mean<1. No arbitrary minimumgain;unqualified shapes retain scalar.',
             auxiliary='zero/allhit and static-source cells retain samples,not substitutes for primary. No physical bus bytes,coldRAM,modelTG or full-context claim.',
             gate='Traced correctness before any speed. Component gain permits a separately committed decode-only model plan,not production adoption. Prefill stays unchanged.'),
@@ -142,45 +142,25 @@ def prepare():
         cases=[], commands=[], active=False, ownership_closed=True, complete=False, passed=False,
         GPU_executed=False, model_executed=False,
         retention='One standalone fixture for immediate component decision. Keep compact individual samples,source/recipe/actual inputs/failure outcomes. Retire successful API/build output after decision;no third engine generation.')
-    # V2's native operation passed, but its supervisor failed to consume the
-    # final marker before expecting EOF. Preserve that failed run and reuse only
-    # its exactly proved compilation, never its incomplete qualification.
-    previous = B / 'mapped-rows-subgroup-v2/record.json'
-    old = json.loads(previous.read_text())
-    require(validation.committed(RESULT, ('mapped_rows_subgroup_v2',)) == compact(old)
-            and old['stage'] == 'failed' and len(old['cases']) == 1 and
-            old['cases'][0]['fresh_faults'] == [] and not old['cases'][0]['passed'], 'preserve original V2failure')
-    failed = json.loads((previous.parent / 'case0/execution.json').read_text())['commands']
-    require(len(failed) == 1 and failed[0]['exit_code'] == 0 and failed[0]['direct_child_reaped']
-            and failed[0]['session_empty'] and not failed[0]['survivors'] and not failed[0]['errors']
-            and failed[0]['error'] == "RuntimeError('unexpected trailing protocol')"
-            and not Path('/proc', str(failed[0]['pid'])).exists(), 'confirm exact terminated protocol failure before reuse')
-    recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in source.blobs(P,
-        old['project']['revision'], old['project']['source_sha256'])}
-    require(recovered == old['project']['source_sha256'], 'original five-TU source not recoverable')
-    changed = {p for p, h in recovered.items() if sha(P / p) != h}
-    require(changed == {THIS, 'tools/sycl/test_mapped_rows_experiment.py'} and
-            not {str((P / p).resolve()) for p in changed} & old['actual_inputs']['compiled'].keys(),
-            'reuse permits only these uncompiled controller/test edits')
-    trace_failure = validation.committed(RESULT, ('mapped_rows_subgroup_v3',))
-    require(trace_failure['stage'] == 'failed' and trace_failure['ownership_closed'] and
-            len(trace_failure['cases']) == 1 and not trace_failure['cases'][0]['passed'] and
-            trace_failure['cases'][0]['fresh_faults'] == [] and
-            trace_failure['cases'][0]['error'] == "RuntimeError('traced first check incomplete or failed')",
-            'preserve V3direct-kernel-name gate failure;no qualification reused')
-    row.update(stage='built', binary=old['binary'], actual_inputs=old['actual_inputs'], recipe=old['recipe'],
-        native_source_commit=old['project']['revision'], controller_source_commit=row['project']['revision'],
-        reused_component_build=dict(source_commit=old['project']['revision'], path=str(previous), sha256=sha(previous),
-            project_sha256=old['project']['aggregate_sha256'], actual_inputs_sha256=signature(old['actual_inputs']),
-            controller_only_changes=sorted(changed), original_failure_preserved=True,
-            qualification_reused=False, measured_process_reaped=True, session_empty=True, process_handle_missing=True),
-        plan=dict(row['plan'], host='Ten CPU controls,then new traced correctness;V2protocol and V3API-name failures stay failed. Exact five-TU binary reused,no new native compilation.',
-            trace='Actual compat source uses SYCL command_graph:require18create/append-with-args/finalize/release and54enqueue command-buffer pairs,all successful;18captures/54replays also checked by native body. No direct urEnqueueKernelLaunch requirement.'))
+    prior_timing = validation.committed(RESULT, ('mapped_rows_subgroup_v4',))
+    require(prior_timing['stage'] == 'failed' and len(prior_timing['cases']) == 2 and
+            prior_timing['cases'][0]['passed'] and not prior_timing['cases'][1]['passed'] and
+            prior_timing['cases'][1]['fresh_faults'] == [], 'preserve failed original timing cohort')
+    previous = B / 'mapped-rows-subgroup-v4/case1'
+    execution = json.loads((previous / 'execution.json').read_text())['commands']
+    require(len(execution) == 1 and execution[0]['exit_code'] == 1 and execution[0]['direct_child_reaped']
+            and execution[0]['session_empty'] and not execution[0]['survivors'] and
+            not Path('/proc', str(execution[0]['pid'])).exists() and
+            'fixture=FAIL error=ineligible duration/timer cost' in (previous / 'owned/fixture.stderr').read_text(),
+            'confirm actual terminated timing failure before a new plan')
+    row['previous_timing_failure'] = dict(key='mapped_rows_subgroup_v4',
+        original_outcome_preserved=True, partial_samples=18, failing_batch_metrics_unrecorded=True,
+        change='Keep original250ms floor and1%timer bound;add500ms per-cell warmup and750ms calibration,raise call cap262144 and native wall420s. New fixture must compile and requalify;no candidate speed was obtained in the failed cohort.')
     check(row, committed=False)
     ROOT.mkdir(mode=0o700)
     for leaf in ('tmp', 'cache'): (ROOT / leaf).mkdir()
     save(row)
-    print('Prepared controller-only V4 plan with original five-TU build proof;commit before host/check.', flush=True)
+    print('Prepared fresh five-TU V5 fixture and unchanged-floor repeated plan;commit before build.', flush=True)
 
 
 def host_controls(row, owner):
@@ -270,6 +250,7 @@ def compile_fixture():
         row['actual_inputs'] = census(row, output)
         path = ROOT / 'build' / TARGET
         row['binary'] = dict(path=str(path), sha256=sha(path), bytes=path.stat().st_size)
+        row['native_source_commit'] = row['project']['revision']
         check(row, committed=False)
         row.update(stage='built', passed=True)
     except BaseException as error:
@@ -291,9 +272,9 @@ def samples(text, arm):
                 d['rows'] in (10, 20, 30, 40) and d['hits'] in (0, d['rows'] // 4, d['rows']) and
                 type(d['producer_update']) is bool and d['rep'] in range(3) and
                 d['subgroup_dispatch'] is (arm == 'subgroup') and
-                type(d['calls']) is int and 64 <= d['calls'] <= 65536 and not d['calls'] & (d['calls'] - 1) and
-                all(math.isfinite(d[k]) for k in ('elapsed_ns', 'ns_per_call', 'clock_pair_ns', 'timer_fraction', 'calibration_ns')) and
-                d['elapsed_ns'] >= 250000000 and d['calibration_ns'] >= 300000000 and
+                type(d['calls']) is int and 64 <= d['calls'] <= 262144 and not d['calls'] & (d['calls'] - 1) and
+                all(math.isfinite(d[k]) for k in ('elapsed_ns', 'ns_per_call', 'clock_pair_ns', 'timer_fraction', 'calibration_ns', 'warmup_ns')) and
+                d['elapsed_ns'] >= 250000000 and d['calibration_ns'] >= 750000000 and d['warmup_ns'] >= 500000000 and
                 0 <= d['timer_fraction'] <= .01 and d['clock_pair_ns'] >= 0 and
                 abs(d['ns_per_call'] * d['calls'] - d['elapsed_ns']) <= 1 and
                 abs(d['timer_fraction'] - d['clock_pair_ns'] * d['calls'] / d['elapsed_ns']) < 1e-12,
@@ -346,7 +327,7 @@ def run_case(mode):
             result['runtime_maps'] = dict(files=len(mapped), sha256=signature({p: allowed[p] for p in sorted(mapped)}), unknown=0, missing=0)
             complete_retirement(io)
         args = ['correctness'] if mode == 'correctness' else ['bench', mode]
-        budget = dict(row['budget'], wall=240, cpu=480, total_cap=128 << 20, text_cap=8 << 20)
+        budget = dict(row['budget'], wall=420, cpu=840, total_cap=128 << 20, text_cap=8 << 20)
         entry, out, err = owner.run('fixture', [row['binary']['path'], *args], env, P, interaction=interact, **budget)
         require(ownership.closed(entry) and entry['exit_code'] == 0 and
                 'fixture=PASS checked_teardown=PASS' in out.read_text(), 'fixture failed or did not close')

@@ -220,25 +220,33 @@ void benchmark(Fixture& f, bool candidate) {
             const int count = pattern == 0 ? 0 : pattern == 1 ? rows / 4 : rows;
             f.reset(rows, int(max_width), 0, count, 7);
             f.capture(candidate);
-            for (int i = 0; i < 16; ++i) f.replay();
-            f.verify();
             unsigned calls = 64, seed = 1;
+            double warmup = 0;
+            do { warmup += batch(f, 512, update, seed); }
+            while (warmup < 500000000.);
+            f.verify();
             double calibration = 0;
             for (;;) {
                 calibration = batch(f, calls, update, seed);
-                if (calibration >= 300000000.) break;
-                need(calls < 65536, "calibration call cap"); calls *= 2;
+                if (calibration >= 750000000.) break;
+                need(calls < 262144, "calibration call cap"); calls *= 2;
             }
             for (int rep = 0; rep < 3; ++rep) {
                 const double elapsed = batch(f, calls, update, seed);
                 f.verify();
                 const double observer_fraction = pair_ns * calls / elapsed;
-                need(elapsed >= 250000000. && observer_fraction <= .01, "ineligible duration/timer cost");
+                if (elapsed < 250000000. || observer_fraction > .01)
+                    throw std::runtime_error("ineligible duration/timer cost rows=" + std::to_string(rows) +
+                        " hits=" + std::to_string(count) + " update=" + std::to_string(update) +
+                        " calls=" + std::to_string(calls) + " elapsed_ns=" + std::to_string(elapsed) +
+                        " calibration_ns=" + std::to_string(calibration) +
+                        " timer_fraction=" + std::to_string(observer_fraction));
                 std::cout << "{\"type\":\"sample\",\"rows\":" << rows << ",\"width\":2560,\"hits\":" << count
                     << ",\"producer_update\":" << (update ? "true" : "false") << ",\"subgroup_dispatch\":" << (f.selected ? "true" : "false")
                     << ",\"rep\":" << rep << ",\"calls\":" << calls << ",\"elapsed_ns\":" << elapsed
                     << ",\"ns_per_call\":" << elapsed / calls << ",\"clock_pair_ns\":" << pair_ns
-                    << ",\"timer_fraction\":" << observer_fraction << ",\"calibration_ns\":" << calibration << "}\n";
+                    << ",\"timer_fraction\":" << observer_fraction << ",\"calibration_ns\":" << calibration
+                    << ",\"warmup_ns\":" << warmup << "}\n";
                 ++samples;
             }
             f.retire_graph();

@@ -626,7 +626,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   output and the superseded V2fixture are retired at`dc3df2ef2`;compact original
   samples and the failed decision remain in`current_decode_device_service_v1`.
   Main next tests subgroup-shared row-mask lookup in a fresh five-TU standalone
-  fixture under`mapped_rows_subgroup_v4`:ten host controls and bitwise/capture/
+  fixture under`mapped_rows_subgroup_v5`:ten host controls and bitwise/capture/
   bounds first,then six
   matched processes over10/20/30/40rows. Graph launch and completion are timed;
   source preparation is excluded explicitly. Production dispatch is unchanged;
@@ -642,7 +642,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   graph APItrace. That gate stays failed. V4prospectively requires all18actual
   command-buffer create/append/finalize/release and54enqueue success pairs,
   with three new negative/positive host controls;no native change or prior
-  qualification is inferred. New host and traced qualification remain required.
+  qualification is inferred. V4's new traced correctness now passes all18graph
+  success-pairs/54replays,34mapped providers,quiet validation,normal0/closed
+  owners and no fault. Its first scalar speed process then fails the original
+  duration/timer eligibility after18samples;the failing batch's exact values
+  were not printed. Keep that screen failed. V5keeps the250ms sample floor and
+  1%timer bound,increases per-cell warmup to500ms and calibration to750ms,and
+  records future failing-batch values. It needs a fresh fixture build and new
+  qualification/cohort;no candidate speed or production gain follows yet.
   The current engine remains for the ensuing named mechanism/model decision;retire the
   unused cache prototype at the next engine change,keeping independent bounds
   guards. Clean14508remains the speed reference. No candidate clean-speed,
