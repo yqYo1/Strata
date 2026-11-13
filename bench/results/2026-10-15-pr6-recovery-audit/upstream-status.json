@@ -1,38 +1,31 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-11-11T19:42:07.658258+00:00",
+  "queried_utc": "2026-11-13T21:06:39.366569+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "queried_utc": "2026-11-09T19:52:50.499216+00:00",
-    "observed_sha": "504b143342a9fe1aa8320a7b31e11f5c0ac265c3"
+    "queried_utc": "2026-11-11T19:42:07.658258+00:00",
+    "observed_sha": "c1ff07f1a1817594811c960039571c6e268fe89a"
   },
-  "observed_sha": "c1ff07f1a1817594811c960039571c6e268fe89a",
+  "observed_sha": "13eedf552417a6a791a7d13c6597e24300ee3a09",
   "changed_since_previous_observation": true,
   "source_fetched": true,
   "fetch_command": [
     "git",
     "-C",
     "/home/yayoi/ghq/github.com/Niko1221/Strata",
-    "-c",
-    "url.https://github.com/.insteadOf=git@github.com:",
-    "-c",
-    "credential.https://github.com.helper=!gh auth git-credential",
     "fetch",
-    "--no-tags",
-    "origin",
-    "main"
+    "origin"
   ],
   "remote_check": [
-    "c1ff07f1a1817594811c960039571c6e268fe89a\tHEAD",
-    "c1ff07f1a1817594811c960039571c6e268fe89a\trefs/heads/main"
+    "13eedf552417a6a791a7d13c6597e24300ee3a09\trefs/heads/main"
   ],
   "new_interval": {
     "start": "146df3c468739147f520ac3816de806f71232571",
-    "target": "c1ff07f1a1817594811c960039571c6e268fe89a",
-    "commits": 371,
-    "changed_paths": 995,
-    "describe": "v0.2.13.1-152-gc1ff07f1",
+    "target": "13eedf552417a6a791a7d13c6597e24300ee3a09",
+    "commits": 379,
+    "changed_paths": 1000,
+    "describe": "v0.2.13.1-160-g13eedf55",
     "source_access": "Fetched origin/main without changing checkout or forcing/replacing tags;actual ls-remote HEAD/main match. No new checkout,branch,native build or inference import.",
     "integration_state": "fetched_not_imported",
     "whole_function_ledger_complete": false,
@@ -91,6 +84,26 @@
       "main_ref_updated": true,
       "error_reason_not_preserved": true,
       "followup": "Verified successful main-only no-tags fetch and exact remote refs;no tag forced/replaced."
+    },
+    "last_check_delta": {
+      "start": "c1ff07f1a1817594811c960039571c6e268fe89a",
+      "target": "13eedf552417a6a791a7d13c6597e24300ee3a09",
+      "commits": 8,
+      "changed_paths": 11,
+      "source_only": true,
+      "inference_adopted": false,
+      "required_function_candidates": [
+        "Bound vision GPU-context retries by count and18s,with thread-local test clock;shared picture-reader recovery/retention behavior needs platform-specific applicability review.",
+        "Apply bounded serve-stop behavior on every backend,including this SYCL entrypoint."
+      ],
+      "inference_safety_candidate": "Dense MMQ row-id table padding matches speculative kernel reads;review actual SYCL dispatch/allocation before importing. No engine change in this check.",
+      "excluded_execution": [
+        "DeepSeek MTP MMQ execution",
+        "Qwen3.5/35B MMQ execution",
+        "CUDA/HIP execution"
+      ],
+      "pending": "No new source import or hardware-tuned unmodified upstream benchmark;older required ports remain open.",
+      "legacy_clone": "ghq default checkout has pre-existing divergent local history;fetch updated only origin/main. No reset,checkout replacement or branch mutation."
     }
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
@@ -101,7 +114,7 @@
   "current_engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
   "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-11-13T19:42:07.658258+00:00",
+  "next_check_utc": "2026-11-15T21:06:39.366569+00:00",
   "pending": "Complete the required-function ledger/imports throughc1ff07f1,including the new Intel Arc setup fix;current630-path functional import remains146df3c4. Finish native SAVE/RESTORE/disk-session,BGEN/capability and desktop ports,full host validation,native v3.1 execution and unmodified hardware-tuned Niko performance evaluation. DFlash2 clean repeated agent/task/physical262144/RESTORE and default adoption remain open. Choose inference components separately;DeepSeek/35B execution remains excluded.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
@@ -903,13 +916,8 @@
     "git",
     "-C",
     "/home/yayoi/ghq/github.com/Niko1221/Strata",
-    "-c",
-    "url.https://github.com/.insteadOf=git@github.com:",
-    "-c",
-    "credential.https://github.com.helper=!gh auth git-credential",
     "ls-remote",
     "origin",
-    "HEAD",
     "refs/heads/main"
   ],
   "earlier_pending_intervals": [

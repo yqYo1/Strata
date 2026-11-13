@@ -16,10 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check and fetch | 2026-11-11 19:42:07 UTC / November 12 04:42:07 JST |
-| Observed upstream | `c1ff07f1a1817594811c960039571c6e268fe89a`, `v0.2.13.1-152-gc1ff07f1` |
-| Next check at the approximate 48-hour cadence | 2026-11-13 19:42:07 UTC / November 14 04:42:07 JST |
-| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `c1ff07f1` are fetched, with the plain GPU-list ordering fix imported and tested |
+| Last actual check and fetch | 2026-11-13 21:06:39 UTC / November 14 06:06:39 JST |
+| Observed upstream | `13eedf552417a6a791a7d13c6597e24300ee3a09`, `v0.2.13.1-160-g13eedf55` |
+| Next check at the approximate 48-hour cadence | 2026-11-15 21:06:39 UTC / November 16 06:06:39 JST |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `13eedf55` are fetched, with the plain GPU-list ordering fix imported and tested |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
 | New inference adoption from this check | None |
@@ -33,8 +33,14 @@ own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
-The latest observation adds151commits and303changed paths beyond `504b1433`,
-or371commits and995changed paths beyond the partial `146df3c4` import. Bounded
+The November14JST check fetches eight further commits/11changed paths from
+`c1ff07f1` through `13eedf55`. Required candidates include the18-second vision
+context-retry bound and portable serve-stop bound;dense MMQ row-id padding
+needs an actual SYCL-path safety review. DeepSeek/35B and CUDA/HIP execution
+remain excluded. No new inference or functional import follows from this check.
+The complete interval now contains379commits/1000changed paths beyond
+the partial `146df3c4` import. The prior151-commit/303-path review through
+`c1ff07f1` remains partial,with its original evidence in Git. Bounded
 source reviews cover router, control/launch and server/reader changes; they do
 not complete the function ledger. The plain `--gpu` fix from Niko
 `2b9df3fe71cb24cef3052c332e032ea681729abe` now clears stale GPU ordering when
