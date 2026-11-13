@@ -485,8 +485,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   including the prior47..52row/spec4volume error. The actual32769/82/32769-input,
   thinking-on32-output model plan is prepared with explicit selector0/cache0,
   census1and immutable safety settings. Two positive and13negative host placement
-  controls pass;actual model execution is next. Source confirms the target width
-  trace precedes the CPUcallbacks and the census attaches only after refill. The consumed V1private
+  controls pass. All three actual requests now close normally0with quiet
+  validation,all15assets before/after,no fresh fault and complete state handoff.
+  All1440target CPUcallbacks conserve actual traced width/topk10,NT,format,
+  restored membership and the old pool clocks. NT1is75.0508percent of30029CPUjobs;
+  GU18accounts for38.8463percent of observed pool wall and8845NT1jobs. Its
+  actual decode batches are7..33(Down20)and9..33(Down42),with zero3/6job calls;
+  those old small-cache selection shapes still do not occur. Peak owned RSS
+  is56047382528bytes.
+  Pool wall per32output sample is772.924/843.415/942.614ms,not sustained-TG
+  or hardware-saturation evidence. Ninety bounded representative joint cases
+  retain explicit coverage;full prefill histograms and GPUcycle counters are
+  omitted. Next use actual legal mixed-NT shapes to test selective NT1cached-GU
+  with unchanged native NT2..4processing;also obtain1K+strong/weak long-census
+  coverage and a measured RAMread ceiling. Keep14508clean speed reference;
+  this baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Capture actual layer/format/jobs/NThistogram before choosing another policy.
   Physical saturation and whole-model speed remain unqualified.
   See`compact_small_batch_pool_v1`in the
