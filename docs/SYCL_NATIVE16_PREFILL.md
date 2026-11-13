@@ -429,8 +429,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Both formats now pass180direct-method plus360actual-selector cases,with
   exact2selected whole calls/format,four lease/span controls,two wrong-input
   controls and intact guards/inputs. Both native processes close normally0.
-  The fixedRCCRRCactual-entry comparison remains pending before any full-engine
-  model trial. This is component progress,not adoption.
+  The actual-entry comparison now closes12native processes/432eligible batches.
+  Its original eight-selected-cell gate fails:Down20/24mixed/reuse loses two
+  pairs,andDown20/36mixed/stream64 loses one. Six cells pass all3pairs;all four
+  Down42cells have geometric means1.052688..1.095976. Preserve144selected
+  wall/CPU samples and all failures;16forced-row cells pass dispatch/work gates
+  but supply no adoption claim. Default0stays selected;the gated model trial is
+  blocked. Next scope Down42parts prospectively with changed source/plan/new
+  evidence,preserving prefill and14508clean reference. Physical saturation and
+  whole-model speed remain unqualified. This is component progress,not adoption.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block
   payload alone would add13.906GiB while retaining raw weights. This arithmetic
