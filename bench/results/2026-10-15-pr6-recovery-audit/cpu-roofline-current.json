@@ -23418,7 +23418,7 @@
   },
   "ram_read_ceiling_v3": {
     "schema": "ram-read-ceiling-v1",
-    "stage": "prepared",
+    "stage": "built",
     "active": false,
     "ownership_closed": true,
     "source_commit": "6c8018e9034f6d7e0bd80c319f96591095bf6709",
@@ -24359,6 +24359,68 @@
         0.76025390625
       ],
       "thp": "always [madvise] never"
-    }
+    },
+    "binary_sha256": "528a12c5ef4025c23ed8eb8a7463239debddf3fb373a33b230b8b82c0bbec2b3",
+    "actual_link_inputs": [
+      "/usr/lib/x86_64-linux-gnu/Scrt1.o",
+      "/usr/lib/x86_64-linux-gnu/crti.o",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v3/ram-read.o",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "/usr/lib/x86_64-linux-gnu/libm.so",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "/usr/lib/x86_64-linux-gnu/libmvec.so.1",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/x86_64-linux-gnu/libpthread.a",
+      "/usr/lib/x86_64-linux-gnu/libc.so",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "/usr/lib/x86_64-linux-gnu/libc_nonshared.a",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/usr/lib/x86_64-linux-gnu/libc_nonshared.a",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+      "/usr/lib/x86_64-linux-gnu/crtn.o"
+    ],
+    "compile_argv": [
+      "/usr/bin/x86_64-linux-gnu-g++-13",
+      "-O3",
+      "-march=znver3",
+      "-std=c++20",
+      "-pthread",
+      "-fno-lto",
+      "-c",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/hardware/ram_read.cpp",
+      "-MD",
+      "-MF",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v3/ram-read.d",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v3/ram-read.o"
+    ],
+    "build_argv": [
+      "/usr/bin/x86_64-linux-gnu-g++-13",
+      "-O3",
+      "-march=znver3",
+      "-std=c++20",
+      "-pthread",
+      "-fno-lto",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v3/ram-read.o",
+      "-Wl,-t",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v3/ram-read"
+    ],
+    "generated_object": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v3/ram-read.o",
+      "sha256": "3a2462edb16e0abab662a1978632ccc00b7c9536ba8badf015bceb3a6205ea27",
+      "source": "/home/yayoi/orca/workspaces/Strata/sycl/bench/hardware/ram_read.cpp"
+    },
+    "build_exit_code": 0
   }
 }
