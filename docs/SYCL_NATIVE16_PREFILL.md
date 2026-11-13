@@ -446,7 +446,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Source5660b2f41now builds36fresh CPU/GGML/fixture objects with635compiler
   inputs/22links,ELF49296435. Both formats pass540regular cases plus controls;
   selected whole calls are exactly0forDown20and2forDown42. Both native checks
-  close normally0;the frozen four-cell stress timing is in progress. A separate
+  close normally0. The frozen four-cell cohort now closes six fresh processes/72eligible
+  batches(min0.452564786s):only1of4cells gains in all3pairs. Paired gains for24reuse
+  are0.998965/1.010517/0.983845;24stream1.003947/1.006470/0.994736;
+  36reuse1.063607/1.075312/0.914179;36stream1.046199/1.064652/1.026876.
+  The original performance gate fails;keep the production row default and do not
+  enable an optimized model trial. A separate
   representativeness check finds that its36job global mix has47..52token-expert
   rows/call(mean48.9375),above the40-entry limit of this spec4/topk10target.
   The24job mix has30..36rows and fits that bound,but actual joint distribution

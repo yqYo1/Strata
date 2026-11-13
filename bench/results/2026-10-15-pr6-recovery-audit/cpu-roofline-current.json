@@ -22391,7 +22391,7 @@
     }
   },
   "native_whole_down42_v2": {
-    "stage": "numerical_passed_timing_pending",
+    "stage": "closed_performance_gate_failed_baseline_joint_census_next",
     "source_commit": "5660b2f41268063c1639ef215486b5afd7acb273",
     "plan_path": "bench/sycl/cpu_native_schedule/plan.json",
     "plan_sha256": "63f1adbe1f7a495c35f176feb505466806540805520355e55cb9e181e58e1e2d",
@@ -22409,7 +22409,7 @@
     },
     "scope": "Actual production run_multi_native entry in both arms;explicit policy false versus true. Whole scheduling only for Decode,5workers+host,24/36jobs,mixed NT1..4,GU18/Down42 and no cache leases. Down20 stays row. Core wiring is committed but no full engine built here. Fresh11CPU+24GGML+onefixture;no GPU or optional compact cache.",
     "acceptance": "Source/build/ELF/numeric/owner gates first,including Down20and Prefill fallback. Each of four selected Down42cells must gain in all3predeclaredR/Cpairs,without minimum percentage. Any failed selected cell blocks this model trial;preserve failure and require new source/plan/evidence for a changed rule. Passing only permits a separately committed coherent full-engine/model-admission and matched long/agent/thinking/prefill-preservation plan;no model adoption or target claim. Original eight-cell failure remains failed",
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "gates": {
@@ -22417,9 +22417,12 @@
       "numerical": true,
       "performance": false,
       "model_trial_allowed": false,
-      "model_adopted": false
+      "model_adopted": false,
+      "selected_cells_passing": 1,
+      "selected_cells": 4,
+      "model_admission_allowed": true
     },
-    "next": "Run sixDown42-onlyRCCRRCnative processes/four selected cells under committed plan. Preserve the original eight-cell failure;no model trial before this new four-cell gate passes.",
+    "next": "Retire ended89be7full-engine build after original source/recipe/actual-input recovery;prepare coherent baseline joint-census build through tools/sycl/build_cpu_joint_census.py using this committed evidence. Obtain bounded native qualification,then actual model selector0joint distribution. Preserve14508validated fallback.",
     "retention": "Current c0dc/c858 CPUauxiliary and14508GPUreference preserved. Both closed extra whole/selector CPUbuilds retired after original-source proof. This fresh extra generation serves the immediate numeric/timing/model-prerequisite question;review at campaign closure. Legacy GPU/IR/deployment holds separate.",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-native-whole-down42-v2/build/cpu_native_schedule",
@@ -22499,6 +22502,885 @@
       "synthetic_36job_rows_mean": 48.9375,
       "actual_joint_distribution_qualified": false,
       "decision": "Treat36job global-mixture timing as synthetic stress only,not a physically representative spec4/topk10model-shape result. Finish the frozen cohort honestly;do not enable an optimized model route from its speed. First use baseline selector0actual-model joint census;then commit representative policy/workload/model plan."
+    },
+    "order": [
+      "reference",
+      "selected",
+      "selected",
+      "reference",
+      "reference",
+      "selected"
+    ],
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "case_columns": [
+      "down",
+      "jobs_per_call",
+      "NT_policy",
+      "pattern"
+    ],
+    "cases": [
+      [
+        42,
+        24,
+        "observed_mix",
+        "reuse"
+      ],
+      [
+        42,
+        24,
+        "observed_mix",
+        "stream64"
+      ],
+      [
+        42,
+        36,
+        "observed_mix",
+        "reuse"
+      ],
+      [
+        42,
+        36,
+        "observed_mix",
+        "stream64"
+      ]
+    ],
+    "sample_columns": [
+      "stage",
+      "case",
+      "batch",
+      "calls",
+      "token_expert_rows",
+      "wall_seconds",
+      "process_CPU_seconds"
+    ],
+    "samples": [
+      [
+        0,
+        0,
+        0,
+        512,
+        16704,
+        0.9116603280000001,
+        5.453370330999999
+      ],
+      [
+        0,
+        0,
+        1,
+        512,
+        16704,
+        0.9405791010000001,
+        5.622791828
+      ],
+      [
+        0,
+        0,
+        2,
+        512,
+        16704,
+        0.9270876960000001,
+        5.534667109000001
+      ],
+      [
+        0,
+        1,
+        0,
+        512,
+        16704,
+        0.9015717990000001,
+        5.3921997300000015
+      ],
+      [
+        0,
+        1,
+        1,
+        512,
+        16704,
+        0.926808606,
+        5.532179141
+      ],
+      [
+        0,
+        1,
+        2,
+        512,
+        16704,
+        1.013768402,
+        5.998798602999997
+      ],
+      [
+        0,
+        2,
+        0,
+        256,
+        12528,
+        0.7266157790000001,
+        4.340113208999995
+      ],
+      [
+        0,
+        2,
+        1,
+        256,
+        12528,
+        0.7570840910000001,
+        4.413781055000001
+      ],
+      [
+        0,
+        2,
+        2,
+        256,
+        12528,
+        0.7057436810000001,
+        4.187456898000008
+      ],
+      [
+        0,
+        3,
+        0,
+        256,
+        12528,
+        0.69833884,
+        4.158674866000013
+      ],
+      [
+        0,
+        3,
+        1,
+        256,
+        12528,
+        0.682329904,
+        4.07836816999999
+      ],
+      [
+        0,
+        3,
+        2,
+        256,
+        12528,
+        0.716141314,
+        4.2735359079999995
+      ],
+      [
+        1,
+        0,
+        0,
+        512,
+        16704,
+        0.9325960040000001,
+        5.572068925
+      ],
+      [
+        1,
+        0,
+        1,
+        512,
+        16704,
+        0.892860898,
+        5.335695586
+      ],
+      [
+        1,
+        0,
+        2,
+        512,
+        16704,
+        0.928047767,
+        5.5493799960000025
+      ],
+      [
+        1,
+        1,
+        0,
+        512,
+        16704,
+        0.9534633010000001,
+        5.694567306000003
+      ],
+      [
+        1,
+        1,
+        1,
+        512,
+        16704,
+        0.9231646680000001,
+        5.496186057999999
+      ],
+      [
+        1,
+        1,
+        2,
+        512,
+        16704,
+        0.900393042,
+        5.386464345
+      ],
+      [
+        1,
+        2,
+        0,
+        256,
+        12528,
+        0.683162047,
+        4.0480958200000074
+      ],
+      [
+        1,
+        2,
+        1,
+        256,
+        12528,
+        0.6796681560000001,
+        4.035252009999994
+      ],
+      [
+        1,
+        2,
+        2,
+        256,
+        12528,
+        0.735735429,
+        4.3517751960000055
+      ],
+      [
+        1,
+        3,
+        0,
+        256,
+        12528,
+        0.667501152,
+        3.9921187850000024
+      ],
+      [
+        1,
+        3,
+        1,
+        256,
+        12528,
+        0.695432324,
+        4.152989007000002
+      ],
+      [
+        1,
+        3,
+        2,
+        256,
+        12528,
+        0.656581116,
+        3.9136575570000076
+      ],
+      [
+        2,
+        0,
+        0,
+        512,
+        16704,
+        0.8900386650000001,
+        5.310800005000001
+      ],
+      [
+        2,
+        0,
+        1,
+        512,
+        16704,
+        0.9219171370000001,
+        5.512846551999999
+      ],
+      [
+        2,
+        0,
+        2,
+        512,
+        16704,
+        0.900176025,
+        5.375484291999999
+      ],
+      [
+        2,
+        1,
+        0,
+        512,
+        16704,
+        0.8892674620000001,
+        5.3188381289999995
+      ],
+      [
+        2,
+        1,
+        1,
+        512,
+        16704,
+        0.898510137,
+        5.365251088999997
+      ],
+      [
+        2,
+        1,
+        2,
+        512,
+        16704,
+        0.9276500010000001,
+        5.543069926000001
+      ],
+      [
+        2,
+        2,
+        0,
+        256,
+        12528,
+        0.651221375,
+        3.8940059230000017
+      ],
+      [
+        2,
+        2,
+        1,
+        256,
+        12528,
+        0.7028242410000001,
+        4.199281760999995
+      ],
+      [
+        2,
+        2,
+        2,
+        256,
+        12528,
+        0.656262149,
+        3.9187480890000046
+      ],
+      [
+        2,
+        3,
+        0,
+        256,
+        12528,
+        0.7078752530000001,
+        4.221113633999991
+      ],
+      [
+        2,
+        3,
+        1,
+        256,
+        12528,
+        0.649311368,
+        3.8790816439999958
+      ],
+      [
+        2,
+        3,
+        2,
+        256,
+        12528,
+        0.651167684,
+        3.898711219000006
+      ],
+      [
+        3,
+        0,
+        0,
+        512,
+        16704,
+        0.909189875,
+        5.435020753
+      ],
+      [
+        3,
+        0,
+        1,
+        512,
+        16704,
+        0.9627574630000001,
+        5.744128704000001
+      ],
+      [
+        3,
+        0,
+        2,
+        512,
+        16704,
+        0.9096435410000001,
+        5.443369035
+      ],
+      [
+        3,
+        1,
+        0,
+        512,
+        16704,
+        0.9043231030000001,
+        5.397013209000001
+      ],
+      [
+        3,
+        1,
+        1,
+        512,
+        16704,
+        0.901897487,
+        5.397552111000003
+      ],
+      [
+        3,
+        1,
+        2,
+        512,
+        16704,
+        0.9777055600000001,
+        5.838836045000001
+      ],
+      [
+        3,
+        2,
+        0,
+        256,
+        12528,
+        0.731824173,
+        4.380666163999997
+      ],
+      [
+        3,
+        2,
+        1,
+        256,
+        12528,
+        0.7056865710000001,
+        4.208032951000007
+      ],
+      [
+        3,
+        2,
+        2,
+        256,
+        12528,
+        0.6783194140000001,
+        4.054736210999991
+      ],
+      [
+        3,
+        3,
+        0,
+        256,
+        12528,
+        0.6932670780000001,
+        4.138818192000002
+      ],
+      [
+        3,
+        3,
+        1,
+        256,
+        12528,
+        0.6867688030000001,
+        4.109354734999997
+      ],
+      [
+        3,
+        3,
+        2,
+        256,
+        12528,
+        0.6996624300000001,
+        4.181844631000004
+      ],
+      [
+        4,
+        0,
+        0,
+        512,
+        16704,
+        0.9308240950000001,
+        5.568591913999999
+      ],
+      [
+        4,
+        0,
+        1,
+        512,
+        16704,
+        0.93821944,
+        5.59462001
+      ],
+      [
+        4,
+        0,
+        2,
+        512,
+        16704,
+        0.9049824360000001,
+        5.411708487000002
+      ],
+      [
+        4,
+        1,
+        0,
+        256,
+        8352,
+        0.464731045,
+        2.780476182000001
+      ],
+      [
+        4,
+        1,
+        1,
+        256,
+        8352,
+        0.456935266,
+        2.734025549000002
+      ],
+      [
+        4,
+        1,
+        2,
+        256,
+        8352,
+        0.45256478600000005,
+        2.697481611999997
+      ],
+      [
+        4,
+        2,
+        0,
+        256,
+        12528,
+        0.684297648,
+        4.089171413999999
+      ],
+      [
+        4,
+        2,
+        1,
+        256,
+        12528,
+        0.679017807,
+        4.055714396999996
+      ],
+      [
+        4,
+        2,
+        2,
+        256,
+        12528,
+        0.712379765,
+        4.260747964000004
+      ],
+      [
+        4,
+        3,
+        0,
+        256,
+        12528,
+        0.6885484420000001,
+        4.118525761000001
+      ],
+      [
+        4,
+        3,
+        1,
+        256,
+        12528,
+        0.7579970410000001,
+        4.525915878999996
+      ],
+      [
+        4,
+        3,
+        2,
+        256,
+        12528,
+        0.6896004330000001,
+        4.127819639000009
+      ],
+      [
+        5,
+        0,
+        0,
+        512,
+        16704,
+        0.9461086500000001,
+        5.6370915020000005
+      ],
+      [
+        5,
+        0,
+        1,
+        512,
+        16704,
+        0.906652985,
+        5.411107317999999
+      ],
+      [
+        5,
+        0,
+        2,
+        512,
+        16704,
+        0.9510669970000001,
+        5.668119244
+      ],
+      [
+        5,
+        1,
+        0,
+        512,
+        16704,
+        0.9438405990000001,
+        5.642792826000004
+      ],
+      [
+        5,
+        1,
+        1,
+        512,
+        16704,
+        0.918706923,
+        5.470902914999996
+      ],
+      [
+        5,
+        1,
+        2,
+        512,
+        16704,
+        0.9043667110000001,
+        5.402683521
+      ],
+      [
+        5,
+        2,
+        0,
+        256,
+        12528,
+        0.650231942,
+        3.8887176409999924
+      ],
+      [
+        5,
+        2,
+        1,
+        256,
+        12528,
+        0.7485375150000001,
+        4.4234688559999995
+      ],
+      [
+        5,
+        2,
+        2,
+        256,
+        12528,
+        0.780783203,
+        4.457433526000003
+      ],
+      [
+        5,
+        3,
+        0,
+        256,
+        12528,
+        0.6715515780000001,
+        4.010494143999992
+      ],
+      [
+        5,
+        3,
+        1,
+        256,
+        12528,
+        0.7235790520000001,
+        4.302490109000004
+      ],
+      [
+        5,
+        3,
+        2,
+        256,
+        12528,
+        0.664620576,
+        3.970464960000001
+      ]
+    ],
+    "summary": [
+      {
+        "case": 0,
+        "reference_process_medians_seconds_per_job": [
+          7.544658984375001e-05,
+          7.402698087565105e-05,
+          7.575065877278647e-05
+        ],
+        "candidate_process_medians_seconds_per_job": [
+          7.552472062174479e-05,
+          7.325651245117187e-05,
+          7.699451904296876e-05
+        ],
+        "paired_reference_over_candidate": [
+          0.9989654939819494,
+          1.0105174051930566,
+          0.9838448205710835
+        ],
+        "geometric_mean_ratio": 0.9977160600104082,
+        "all_three_pairs_gain": false,
+        "reference_stage_median_seconds_per_job": {
+          "pool_gu_s": 5.631681144205747e-05,
+          "pool_quant_s": 3.311562499999996e-07,
+          "pool_down_s": 1.87798194986979e-05
+        },
+        "candidate_whole_stage_median_seconds_per_job": 7.501223673502607e-05,
+        "reference_serial_quant_share": 0.004390374719100695,
+        "representative_spec4_volume_bound": true
+      },
+      {
+        "case": 1,
+        "reference_process_medians_seconds_per_job": [
+          7.542387744140625e-05,
+          7.359400252278646e-05,
+          7.437097428385416e-05
+        ],
+        "candidate_process_medians_seconds_per_job": [
+          7.51273330078125e-05,
+          7.312094213867188e-05,
+          7.476456079101563e-05
+        ],
+        "paired_reference_over_candidate": [
+          1.0039472242887006,
+          1.006469560843697,
+          0.9947356541254669
+        ],
+        "geometric_mean_ratio": 1.0017047601650304,
+        "all_three_pairs_gain": false,
+        "reference_stage_median_seconds_per_job": {
+          "pool_gu_s": 5.568602197265627e-05,
+          "pool_quant_s": 3.1993066406249897e-07,
+          "pool_down_s": 1.862632600911459e-05
+        },
+        "candidate_whole_stage_median_seconds_per_job": 7.475159903971385e-05,
+        "reference_serial_quant_share": 0.004286759963215466,
+        "representative_spec4_volume_bound": true
+      },
+      {
+        "case": 2,
+        "reference_process_medians_seconds_per_job": [
+          7.884285796440972e-05,
+          7.657189355468751e-05,
+          7.425104687500001e-05
+        ],
+        "candidate_process_medians_seconds_per_job": [
+          7.412782628038196e-05,
+          7.120900054253473e-05,
+          8.122151855468751e-05
+        ],
+        "paired_reference_over_candidate": [
+          1.0636067711765023,
+          1.0753120107190581,
+          0.9141794957330895
+        ],
+        "geometric_mean_ratio": 1.0149602226528163,
+        "all_three_pairs_gain": false,
+        "reference_stage_median_seconds_per_job": {
+          "pool_gu_s": 5.769790690104158e-05,
+          "pool_quant_s": 3.701981336805464e-07,
+          "pool_down_s": 1.8985703233507087e-05
+        },
+        "candidate_whole_stage_median_seconds_per_job": 7.411711968316049e-05,
+        "reference_serial_quant_share": 0.004804410606051594,
+        "representative_spec4_volume_bound": false
+      },
+      {
+        "case": 3,
+        "reference_process_medians_seconds_per_job": [
+          7.577461371527779e-05,
+          7.522429231770834e-05,
+          7.482643587239584e-05
+        ],
+        "candidate_process_medians_seconds_per_job": [
+          7.242851041666667e-05,
+          7.065621571180556e-05,
+          7.286800976562502e-05
+        ],
+        "paired_reference_over_candidate": [
+          1.0461987037889038,
+          1.064652154943242,
+          1.026876349622694
+        ],
+        "geometric_mean_ratio": 1.0457953076840487,
+        "all_three_pairs_gain": true,
+        "reference_stage_median_seconds_per_job": {
+          "pool_gu_s": 5.5969971571180115e-05,
+          "pool_quant_s": 3.5191167534721825e-07,
+          "pool_down_s": 1.876544086371496e-05
+        },
+        "candidate_whole_stage_median_seconds_per_job": 7.241682020399154e-05,
+        "reference_serial_quant_share": 0.0046866988472055,
+        "representative_spec4_volume_bound": false
+      }
+    ],
+    "execution_receipts": [
+      {
+        "stage": 0,
+        "sha256": "5023db112e7cfdd780a103c75ee1bc6b4a67fb11656e9cdf59711491e9f4bc4a",
+        "native_children_normal0_closed": 1
+      },
+      {
+        "stage": 1,
+        "sha256": "b0ba6d4e481cc04bf2273164fa94ba4fbd2d30753b615b97ed7a2e73ef61ceae",
+        "native_children_normal0_closed": 1
+      },
+      {
+        "stage": 2,
+        "sha256": "ad0bd827bd6f190d5f04dfdea18e4d7d3cb2474003278c12858fdb829cf42e5e",
+        "native_children_normal0_closed": 1
+      },
+      {
+        "stage": 3,
+        "sha256": "0ccf3065e8a72331329999e0dc253479d270f7d1ab4b2c2c217282e17acbbeac",
+        "native_children_normal0_closed": 1
+      },
+      {
+        "stage": 4,
+        "sha256": "fbbaa5d9eb28b0f3d6b9056f3c71738c2ecedd87064b1d62c58470a93a9d267b",
+        "native_children_normal0_closed": 1
+      },
+      {
+        "stage": 5,
+        "sha256": "82b5f55398e058998a57e8a764f23f599424fdccdcf9d0d50c761639961b6582",
+        "native_children_normal0_closed": 1
+      }
+    ],
+    "eligibility": {
+      "native_processes": 6,
+      "all_cohort_eligible_batches": 72,
+      "retained_selected_batches": 72,
+      "minimum_all_batch_seconds": 0.45256478600000005,
+      "maximum_timer_pair_over_wall": 8.920269815248065e-08,
+      "exact_64_round_composition": true,
+      "actual_selected_counters_verified": true,
+      "all6normal0_closed": true
+    },
+    "decision": "Original four-cell repeated-gain performance gate failed:only1of4cells gains in all3pairs. Keep the row production default;no optimized-model trial or adoption. Independent physical-volume evidence also makes36job global-mixture shapes stress-only forspec4/topk10. Numerical/build gates permit only a separately committed baseline selector0joint-census observation,not an exception to the failed performance gate.",
+    "baseline_observation_scope": "STRATA_CPU_DECODE_WHOLE=0,CPUcache0;collect actual joint layer/GU/Down/jobs/NT and work conservation under bounded native/model qualification before another representative optimization plan. Existing experimental method/counter/fixture are temporary admission inputs,not adopted processing;review retirement at the baseline-census boundary.",
+    "resource_interpretation": {
+      "process_CPU_over_wall_min_max": [
+        5.708925997476924,
+        5.987261522333172
+      ],
+      "physical_RAM_bus_or_CPU_saturation_qualified": false,
+      "limits": "Summed processCPU includes pool polling;neither thread occupancy nor native raw payload bytes establish DRAM bandwidth or hardware saturation. Actual model critical resource remains unknown."
     }
   }
 }
