@@ -32430,5 +32430,116 @@
         "79044ff09a6ae97b4cffb6f62edd32a1c993df61ee075be4d1ec6136806d2fe0"
       ]
     }
+  },
+  "gdn_z_projection_alias_lifetimes_20261113c": {
+    "classification": "decision_support",
+    "stage": "reviewed_source_reference_with_corrections",
+    "title": "GDN z projection, recurrence queue chain and scratch lifetimes",
+    "scope": "Source-only trace of finish(stream,event), GDN decode ordering, queue dependencies, scratch readers and candidate movement/fusion boundaries.",
+    "source_commit": "11a83eb36cf37944ab72da856207cac143b36103",
+    "native_source_commit": "d3578a0aeca747fbbeede0527f124d9bb364a0a2",
+    "policy_commit": "11a83eb36cf37944ab72da856207cac143b36103",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gdn_z_projection_alias_lifetimes_20261113c",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gdn_z_projection_alias_lifetimes_20261113c/report.md",
+      "bytes": 12923,
+      "sha256": "210bc3d5f55f4b66774590a3e6d9d337db709d0f0f02fd7b691213d2ba5286e6"
+    },
+    "active": false,
+    "ownership_closed": true,
+    "main_reads_collection_body_on_arrival": false,
+    "native_review": {
+      "review_key": "orca_research_wave_c_20261113",
+      "decision": "Retain and index as a conditional source reference with the corrections below; it is not implementation, timing, performance eligibility, qualification, or adoption evidence.",
+      "novelty_and_redundancy": "Resolves the earlier report\u2019s missing finish helper and full GDN queue/consumer chain, and ranks order/fusion options without repeating the broad M1\u20134 survey. Its current native_q8_1 scratch ownership conclusion is incorrect.",
+      "corrections": [
+        "NativeDense allocates one q8_1 scratch buffer and publishes that same pointer to every native WeightRef in its table (src/core/native_dense.cpp:216\u2013239; include/strata/core/weights.hpp:88\u201392). In GDN, attn_qkv submits quantize+MMVQ on mixed, and attn_gate passes x_q8_1_ready when both projections are native (src/core/layer.cpp:146\u2013158, 247, 324\u2013326). The gate therefore reuses the shared QKV scratch after intervening work on the same ordered session queue; the report\u2019s statement that this alias is not established, and its per-weight description, are false. A move or cross-queue design must preserve the shared scratch\u2019s queued reader/writer order or add explicit exclusion/events.",
+        "Canonical x_q8_0/x_q8k buffers are produced when either qkv or gate is non-native, but the native gemv branch ignores those buffers. They remain live through attn_gate only when w_gate is canonical; the report states this unconditionally."
+      ],
+      "eligibility_recommendation": "Keep the report source-only. Before any trial, pin actual qkv/gate native-format selection and preserve the QKV-to-gate shared q8_1 lifetime; a same-queue move from after recurrence to before recurrence still needs a frozen phase-specific plan and measured dispatch confirmation. A separate queue needs explicit event ordering and exclusive scratch ownership. No speed result is implied.",
+      "retrieval_tags": [
+        "decode",
+        "GDN",
+        "z_projection",
+        "recurrence",
+        "SYCL",
+        "finish_event_semantics",
+        "queue_ordering",
+        "native_q8_1_shared_scratch",
+        "scratch_lifetimes",
+        "aliasing",
+        "source_only"
+      ]
+    },
+    "source_provenance": {
+      "local": "Pinned fork/native snapshot 11a83eb36cf37944ab72da856207cac143b36103 / d3578a0aeca747fbbeede0527f124d9bb364a0a2. The report records the existing GDN recurrence adaptation provenance to llama.cpp commit 3cf03257f219afbe7334045ff7c6a06ac68c627d and its MIT notice.",
+      "external": [],
+      "reuse": "No third-party code or design reuse is proposed."
+    },
+    "normal_exit_qualified": true,
+    "task": "task_5f2bc048b844",
+    "dispatch": "ctx_989fe6a26c39",
+    "terminal": "term_7289667c-1197-4243-a458-ebb915e73bf0",
+    "worker_done_message": "msg_1e5201685ad2",
+    "worker_done_delivered": true,
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "Completed and reviewed conditional source reference;retrieve only for a concrete GDNordering/scratch question,not repeat the same scope."
+    },
+    "retention": "Current GDNordering/scratch reference with explicit material corrections;curate or retire after that implementation decision. No code or performance adoption."
+  },
+  "cpu_mixed_nt_corpus_decision_20261113c": {
+    "classification": "decision_support",
+    "stage": "failed_worker_preflight_no_report",
+    "source_commit": "11a83eb36cf37944ab72da856207cac143b36103",
+    "policy_commit": "11a83eb36cf37944ab72da856207cac143b36103",
+    "task": "task_e49ca55bbbab",
+    "dispatch": "ctx_3d01cc980700",
+    "terminal": "term_cad3e314-7b5f-44a1-87ac-818b059393cf",
+    "worker_done_message": "msg_fb2c1afb58f0",
+    "active": false,
+    "ownership_closed": true,
+    "report_present": false,
+    "normal_worker_exit_code": 0,
+    "research_succeeded": false,
+    "failure": "The worker tested the external final report directory,which is read-only,instead of the writable private-root/report bind;protected-path proof entries were relative. No investigation/report;the original Task stays failed.",
+    "followup": "Main independently implemented/validated the legal CPUcorpus at29193d347e5235e192a31d740b897cec24c25c49. No retry of this Task;future research must ask a distinct current question.",
+    "scope_eligibility": {
+      "schedulable_now": false
+    }
+  },
+  "orca_research_wave_c_20261113": {
+    "classification": "native_review",
+    "stage": "closed_partial",
+    "model": "gpt-6-luna",
+    "effort": "max",
+    "reviewed_reports": 1,
+    "failed_preflight": 1,
+    "never_dispatched_scopes": [
+      "native_session_protocol_ports_20261113c",
+      "strata_reader_ram_tlb_methods_20261113c",
+      "native16_full_context_f59_gate_audit_20261113c"
+    ],
+    "coordinator_deadline_seconds": 2100,
+    "no_active_dispatches": true,
+    "unread_messages": 0,
+    "source_policy_commit": "11a83eb36cf37944ab72da856207cac143b36103",
+    "digest_sha256": "f71344a0ad136add0293e7e5a54cd719daabc14a2924084d329e1bfde6a8090f",
+    "index_proposal_sha256": "cafa7afe3c528959195c4d83a57bf5822c161f48b42b4b55817de22cd2e8bd02",
+    "cleanup": {
+      "files_removed": 823,
+      "regular_bytes_removed": 136032325,
+      "inventory_hashes": [
+        "93f4869c27803173d1d040eccfe497fcabe79594022f8e9deebd8a7b8cf358cc",
+        "e01d8a73ad1bf5bff12b9c093e0e52c4028edb47ab3ec190b73545b0bbd067c8",
+        "6dde4de7281a5e0c3c2d342a68f3c5625182b4ca5b37d288c3a9c2f7ae51a969",
+        "421e4e0187d0cdb854f4afab330c9cc35ca6ff4e61bc54c088dbeef3ecdd15d5",
+        "fc8ef7dfa5f38bfbe6b83979dc5aa48b6e026539d2598b2e1edce496af0ef090"
+      ]
+    },
+    "next": "Fresh finite Run may dispatch the three unlaunched questions after current eligibility/capacity/source checks. Use exact absolute protected paths and the actual writable report bind. After a worker startup proof passes,launch other eligible workers without waiting for its report;aim five concurrent when capacity permits. Do not steer active workers.",
+    "retention": "Keep one substantive report reference/corrections and concise failure/undispatched distinctions. Lifecycle/spec/launch payloads are transaction history;common source packet only for the named imminent fresh-wave reuse,then retire."
   }
 }
