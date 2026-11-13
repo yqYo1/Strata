@@ -539,7 +539,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   under`mixed_nt_cache_v1`in the CPUresult. The rotating64expert sets overlap
   between adjacent calls;this is not DRAM-cold or serial48-layer model coverage.
   Cache payload adds460800logical bytes per NT1job. This qualifies a separate
-  model-plan preparation,not model speed or adoption. The uncompiled owned model
+  model-plan preparation,not model speed or adoption. The owned model
   adapter now offers explicit `STRATA_CPU_COMPACT_GU_POLICY=mixed` alongside a
   nonzero cache budget;`small` and cache0stay default. It checks totalNT<=40,
   NT1..4and the measured5worker+host configuration before leasing NT1GU,with
@@ -578,10 +578,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   validation,no fresh fault,44GUcases at0FP16ULP and exact BF16capture. QSAand
   producer262144-cell boundaries pass;actual full-context model fill is still
   unqualified. This admits preparation of a new bounded model-cache plan,not
-  model speed/adoption. The new native proof uses`declared_observers`;the old
-  model wrapper/parser needs an explicit adapter for that proof and the new
-  `cache_policy/bound_nt1`log fields before use. See`mixed_nt_model_v1`for the
-  concrete next checks. Clean14508PP/TG remains the speed reference.
+  model speed/adoption. Source1826e44b0adds the explicit native-proof and
+  `cache_policy/bound_nt1`observer adapter. Two literal positives and17negative
+  parser controls pass,including NT4native fallback and independent per-NT
+  conservation. The prepared`cpu_mixed_cache_model_v1`plan uses16GiBcache and
+  thinking32769/82/32769inputs with32outputs each;host admission and actual
+  source/cache/setup/RAM/handoff checks remain next. This charged diagnostic
+  is not sustainedTG/cleanPP or adoption. See`mixed_nt_model_v1`for the concrete
+  remaining gates. Clean14508PP/TG remains the speed reference.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
