@@ -568,8 +568,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   is relabelled. Original2405source/dependency and1474compiler/29link inputs
   are recovered before retiring the ended V1build/host roots:211files,214621561
   regular bytes. The corrected native fixture retains all six positive/negative
-  cases;V2must compile freshly and pass them before GPUwork. Legacy holds remain
-  separate.
+  cases. Fresh V2from393d88e01now compiles139objects/136unique sources,1474
+  compiler inputs/29links and13ELFs,with zero uncovered input. Its engine is
+  byte-identical e8a1e54d;the corrected bounds fixture differs and still needs
+  runtime qualification. GPU/model stages and model speed remain unrun.
+  Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
   verified actual layer/format/jobs/NTcorpus for the next prospective policy.

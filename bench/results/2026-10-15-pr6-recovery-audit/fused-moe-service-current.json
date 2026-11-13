@@ -320307,7 +320307,7 @@
     "scope": "Host-only SIGILL remains failed;all later stages unrun. Source393d88corrects only the fixture geometry for a newV2plan. Current consumer uses closure/failure/retirement fields;retrieve old full plan from Git."
   },
   "cpu_mixed_cache_native_v2": {
-    "stage": "configured",
+    "stage": "built",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -320693,8 +320693,8 @@
       }
     },
     "outcomes": {},
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -320716,6 +320716,116 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/compile_commands.json": "5f932205bdd2c485ee78297182a836dbe981f5801d64cb1f00c2669416c45062",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/CMakeFiles/rules.ninja": "90ff1eb71fdd366f6ae2928cfe9ee9c5be307ca212a77877aa97a7776f3089a1",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/configure/owned/planned.stdout": "56ec17214d8ae1f4ea89fe3c3eb497c5c37111012750475b3e2fe4daa83c1308"
+    },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/actual-inputs.json",
+      "sha256": "e4c6ae3756ff89a228bc6d6d512270e53a5574bdf6ab59c712cffe26166bcc65",
+      "compiler_files": 1474,
+      "generated_files": 1,
+      "external_link_files": 29,
+      "uncovered": 0,
+      "translation_units": 136,
+      "source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
+      "class_definition_coherence": {
+        "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+        "includer_count": 5,
+        "includer_objects": [
+          "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm16.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/qsa_score_gemm.cpp.o",
+          "CMakeFiles/sycl_gu_policy_test.dir/bench/sycl/gu_compact.cpp.o"
+        ],
+        "same_SYCL_class_condition": true,
+        "all_objects_from_fresh_build": true,
+        "partial_archive_reuse": false
+      }
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/strata",
+        "sha256": "e8a1e54df5173b680e0181dacc9c4474fab49a750d9f109731f352afea92953a",
+        "bytes": 26483840,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_q6_head_owner_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_q6_head_owner_test",
+        "sha256": "b13f489feee5d8d038d5d7ad9ef6d0011fdaf15c8b8cb8839b6cbc48e44c5657",
+        "bytes": 11734112,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_submission_test",
+        "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+        "bytes": 352152,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_verifier_retirement_test",
+        "sha256": "fb5e421c89bdcf6a8d1e19270ee6c52d76150d311bc26fceb9ba0fa124e502e4",
+        "bytes": 19733696,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_verify_window_policy_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_verify_window_policy_test",
+        "sha256": "3c78d87eed186c47eb5ee893568a07f90573923ddd431b2393a682c29138b4fd",
+        "bytes": 114968,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_qsa_bf16_prefix_cached_subgroup_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_qsa_bf16_prefix_cached_subgroup_test",
+        "sha256": "b03178375e5ade2bfc39e496520f6b89368b2ae1d5441b959d3b66d2bc8c31f1",
+        "bytes": 1577968,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_qsa_bf16_prefix_cached_subgroup_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_qsa_bf16_prefix_cached_subgroup_bench",
+        "sha256": "4f2ac632ba10ff01cab43fb0d5dd5e90123d8667cc64dce691702bdff21eb24a",
+        "bytes": 1547096,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_native16_qsa_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_native16_qsa_test",
+        "sha256": "85866bb1827cea081aac5ccfef8ac634ca70e1e36e534ed70c350844287c501f",
+        "bytes": 442664,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_moe_upload_census_host_test",
+        "sha256": "f274461c3b915becf16f611f7447681ca1e2bad2860b51a1b2288f3a09571269",
+        "bytes": 96456,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/strata_full_context_diagnostic",
+        "sha256": "9eae970f86fb33ea76eb78e522118a52869b29b08a75fb953d7d56280ffc7dc4",
+        "bytes": 26484008,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_gu_policy_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_gu_policy_test",
+        "sha256": "cd99a46ea8a34a2dd03cfe9d65908a4b24242608e97c7e003fa1dcc1b5aef013",
+        "bytes": 14155160,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      },
+      "sycl_expert_dispatch_bounds_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/sycl_expert_dispatch_bounds_test",
+        "sha256": "bba4826785ff445f2749c1ae1c2076372db09f5638140a2ec361d6ab7ddf3813",
+        "bytes": 15779000,
+        "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-mixed-cache-native-v2/build/strata",
+      "sha256": "e8a1e54df5173b680e0181dacc9c4474fab49a750d9f109731f352afea92953a",
+      "bytes": 26483840,
+      "origin_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55"
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -320754,6 +320864,20 @@
       },
       {
         "label": "planned",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "dependencies",
         "exit_code": 0,
         "ownership_closed": true,
         "errors": [],
