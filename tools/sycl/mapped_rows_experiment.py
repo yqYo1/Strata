@@ -26,9 +26,9 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = source.P, source.B
-ROOT = B / 'mapped-rows-subgroup-v1'
+ROOT = B / 'mapped-rows-subgroup-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY, TARGET = 'mapped_rows_subgroup_v1', 'sycl_mapped_rows_bench'
+KEY, TARGET = 'mapped_rows_subgroup_v2', 'sycl_mapped_rows_bench'
 THIS = 'tools/sycl/mapped_rows_experiment.py'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'tests',
             'bench/sycl', 'tools/sycl', 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
@@ -44,11 +44,14 @@ def write(path, data):
 
 def compact(row):
     value = {k: v for k, v in row.items()
-             if k not in ('project', 'dependencies', 'runtime_files', 'commands')}
+             if k not in ('project', 'dependencies', 'runtime_files', 'commands', 'actual_inputs')}
     value['project'] = {k: v for k, v in row['project'].items() if k != 'source_sha256'}
     value['dependencies'] = [{k: v for k, v in p.items() if k != 'source_sha256'}
                              for p in row['dependencies']]
     value['runtime_files_sha256'] = signature(row['runtime_files'])
+    if 'actual_inputs' in row:
+        value['actual_inputs'] = {k: dict(files=len(v), sha256=signature(v)) if isinstance(v, dict) else v
+                                 for k, v in row['actual_inputs'].items()}
     return value
 
 
@@ -134,6 +137,7 @@ def prepare():
             gate='Traced correctness before any speed. Component gain permits a separately committed decode-only model plan,not production adoption. Prefill stays unchanged.'),
         budget=dict(wall=900, cpu=2400, rss_cap=8 << 30, text_cap=32 << 20,
                     file_cap=256 << 20, total_cap=1 << 30),
+        host_command=[sys.executable, '-B', '-m', 'unittest', '-v', 'tools.sycl.test_mapped_rows_experiment'],
         cases=[], commands=[], active=False, ownership_closed=True, complete=False, passed=False,
         GPU_executed=False, model_executed=False,
         retention='One standalone fixture for immediate component decision. Keep compact individual samples,source/recipe/actual inputs/failure outcomes. Retire successful API/build output after decision;no third engine generation.')
@@ -197,9 +201,15 @@ def compile_fixture():
     write(ROOT / 'build-attempt.json', dict(source_commit=row['project']['revision']))
     owner = ownership.Owner(ROOT / 'build-owned')
     try:
+        entry, out, err = owner.run('host', row['host_command'], row['recipe']['environment'], P,
+            wall=60, cpu=60, rss_cap=1 << 30, text_cap=1 << 20, file_cap=2 << 20, total_cap=8 << 20)
+        text = out.read_text() + err.read_text()
+        require(ownership.closed(entry) and entry['exit_code'] == 0 and
+                'Ran 5 tests' in text and '\nOK\n' in text and 'skipped' not in text, 'all five host controls required')
+        row['host_controls'] = dict(tests=5, skipped=0, passed=True, exit_code=0, ownership_closed=True)
         for label, args in [('configure', row['recipe']['configure']),
                 ('compile', ['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', TARGET, '-j', '4'])]:
-            check(row)
+            check(row, committed=False)
             entry, output, _ = owner.run(label, args, row['recipe']['environment'], P, **row['budget'])
             require(ownership.closed(entry) and entry['exit_code'] == 0, label + ' failed')
         row['actual_inputs'] = census(row, output)
