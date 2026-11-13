@@ -596,7 +596,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   code/prose1K+ generation. Only cache budget0/16GiBdiffers;common census/trace
   validates actual timed bindings and charges its observer cost. Collector
   controls pass3positive/9negative cases,including a zero-window one-token
-  warmup. Host admission and all six processes remain pending. This is a
+  warmup. Current-source frontend admission also passes;all six native benchmark
+  processes remain pending. This is a
   mechanism screen before clean timing/adoption. See`mixed_nt_model_v1`;
   clean14508PP/TG remains the speed reference.
   Legacy holds remain separate.
