@@ -328075,7 +328075,75 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "cases": [],
+    "cases": [
+      {
+        "mode": "direct",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "clock_domain": "CLOCK_MONOTONIC_RAW",
+        "clock_bounds": {
+          "phases": {
+            "before-runtime": {
+              "raw_ns": 2938822549382002,
+              "monotonic_ns": 2938845830208045,
+              "boottime_ns": 2938845830208526
+            },
+            "runtime-ready": {
+              "raw_ns": 2938822593016329,
+              "monotonic_ns": 2938845873842689,
+              "boottime_ns": 2938845873842999
+            },
+            "captured": {
+              "raw_ns": 2938822633584015,
+              "monotonic_ns": 2938845914410625,
+              "boottime_ns": 2938845914410875
+            },
+            "window-drained": {
+              "raw_ns": 2938822638111155,
+              "monotonic_ns": 2938845918937578,
+              "boottime_ns": 2938845918937779
+            },
+            "before-exit": {
+              "raw_ns": 2938822641511191,
+              "monotonic_ns": 2938845922337716,
+              "boottime_ns": 2938845922337906
+            }
+          },
+          "capture_begin": 2938822549382002,
+          "begin": 2938822633584015,
+          "end": 2938822638111155,
+          "capture_end": 2938822764701560
+        },
+        "native_exit_code": 0,
+        "numerical_and_guard_check_passed": true,
+        "validation": {
+          "pid": 3315893,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapped_ELF_files": 34,
+        "mapped_ELF_sha256": "6d652026f6d1ff2c213b91d1248a73a00b4d7d6b815da7fef19a42b471e81ce0",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host": {
       "passed": true,
       "GPU_executed": false,
