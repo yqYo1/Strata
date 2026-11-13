@@ -528,11 +528,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   share the same header and definitions. Both actual Down20/42formats pass
   152regular/legacy cases and14special controls,including actual NT1route
   accounting,NT2..4parity,NT5..8fallback and cache-owner retirement. This permits
-  only the frozen CPUcomponent comparison;no model route is enabled. Do not
+  only the CPUcomponent comparison;no model route is enabled. Its frozen cohort
+  now closes all12fresh processes/216eligible batches,normal0/ownership closed.
+  All12Down/shape/pattern cells gain in all3matched pairs;geometric-mean gains
+  are1.16024..1.82795. For example,Down20mixed25stream64 falls2.00557->1.47264ms
+  per complete pool call;Down42mixed13stream64 falls1.14435->0.98865ms. Minimum
+  batch wall is0.397586s,final calibration minimum0.501367s and maximum observer
+  fraction0.00000372819. All216individual samples and paired spreads remain
+  under`mixed_nt_cache_v1`in the CPUresult. The rotating64expert sets overlap
+  between adjacent calls;this is not DRAM-cold or serial48-layer model coverage.
+  Cache payload adds460800logical bytes per NT1job. This qualifies a separate
+  model-plan preparation,not model speed or adoption. Audit the actual activation
+  format/range and cache selection,RAM/setup,handoff and full-context boundaries
+  in that plan;preserve both prefill strategies and cache0/MTPdefaults. Do not
   partial-relink old class consumers. Closed RAMfixture/raw generations are
   retired after original Git/source/recipe recovery:44files,364453regular bytes;
   all27individual samples remain in the CPUresult. Three aggregate points bring
-  the performance CSV to443rows.
+  the performance CSV to443rows before the mixed-cache comparison is indexed.
   Keep14508clean speed reference;
   this baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
