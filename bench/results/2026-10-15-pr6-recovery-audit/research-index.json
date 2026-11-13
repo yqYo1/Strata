@@ -32587,7 +32587,7 @@
     "retention": "Keep reusable capability proof and concise launch-failure distinction;reuse Dimmutable packet for the imminent corrected launch,then retire ended transaction metadata/source copies."
   },
   "worker_filesystem_controls_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "c95d4670c5b2e8d36dcf0bb70ab44c2ba833b003",
     "sources": {
       "tools/research/check_worker_inputs.py": "d863c0b8b857c9919760203827a7d9ee29fc9019df73d5da797b15f4df13ecd6",
@@ -32635,13 +32635,22 @@
     },
     "question": "Does one checker inspect every declared source and refuse missing/hash-mismatched/writable mounts without changing bytes?",
     "acceptance": "Exactly four real bwrap controls,no skips,normal0,closed owners. All9read-only inputs pass;missing/hashbad fail8of9;RWfails0of9;no source byte changes. No GPU/network/Orca tasks.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
     "Orca_worker_qualified": false,
     "consumer": "Fresh Orca Luna research tasks require this source-pinned helper plus separate actual worker-side IPC/lifecycle proof.",
-    "retention": "Keep compact source/recipe/case outcome;retire routine test output and temporary namespaces after verification."
+    "retention": "Keep compact source/recipe/case outcome;retire routine test output and temporary namespaces after verification.",
+    "exit_code": 0,
+    "tests": 4,
+    "skipped": 0,
+    "cases": [
+      "all-nine-readonly-pass",
+      "missing-input-refused",
+      "wrong-hash-refused",
+      "writable-mount-refused"
+    ]
   }
 }
