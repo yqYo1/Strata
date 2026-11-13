@@ -6,6 +6,12 @@
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/pool.hpp"
 #include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <stdexcept>
+#include <vector>
 #include <chrono>
 #include <filesystem>
 #include <iomanip>
