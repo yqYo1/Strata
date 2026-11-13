@@ -18,9 +18,9 @@ import sys
 sys.dont_write_bytecode = True
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'ram-read-ceiling-v2'
+ROOT = B / 'ram-read-ceiling-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json'
-KEY = 'ram_read_ceiling_v2'
+KEY = 'ram_read_ceiling_v3'
 SOURCE = P / 'bench/hardware/ram_read.cpp'
 PINNED = ['bench/hardware/ram_read.cpp', 'tools/hardware/ram_read.py',
           'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
@@ -41,8 +41,14 @@ def sha(path):
 
 
 def run(argv, **kw):
-    return subprocess.run(list(map(str, argv)), check=True, capture_output=True,
-        text=True, env=ENV, cwd=P, timeout=60, **kw).stdout.strip()
+    with subprocess.Popen(list(map(str, argv)), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, env=ENV, cwd=P, start_new_session=True, **kw) as child:
+        try:
+            out, error = child.communicate(timeout=60)
+        except subprocess.TimeoutExpired:
+            os.killpg(child.pid, 9); child.communicate(); raise
+        require(child.returncode == 0, 'command failed: ' + error[-2000:])
+        return out.strip()
 
 
 def git(*argv):
@@ -123,10 +129,15 @@ def prepare():
             path = Path('/usr/bin') / value
         require(path.is_file(), 'compiler program missing: ' + name)
         inputs.add(str(path.resolve()))
+    programs = sorted(inputs - deps)
+    for program in programs:
+        for token in run(['/usr/bin/ldd', program]).split():
+            if token.startswith('/') and Path(token).is_file():
+                inputs.add(str(Path(token).resolve()))
     for name in ('Scrt1.o', 'crti.o', 'crtbeginS.o', 'crtendS.o', 'crtn.o',
                  'libstdc++.so', 'libm.so', 'libm.so.6', 'libmvec.so.1',
                  'libgcc_s.so', 'libgcc_s.so.1', 'libgcc.a', 'libc.so', 'libc.so.6',
-                 'libc_nonshared.a', 'libpthread.a', 'ld-linux-x86-64.so.2'):
+                 'libc_nonshared.a', 'libpthread.a', 'ld-linux-x86-64.so.2', 'liblto_plugin.so'):
         path = Path(run([CC, '-print-file-name=' + name]))
         require(path.is_file(), 'link input missing: ' + name)
         inputs.add(str(path.resolve()))
@@ -162,15 +173,20 @@ def prepare():
 def build(row):
     require(row['stage'] == 'prepared', 'build only the original prepared stage')
     require_committed_row(row); verify(row)
-    argv = [CC, *FLAGS, SOURCE, '-MD', '-MF', ROOT / 'ram-read.d', '-Wl,-t', '-o', ROOT / 'ram-read']
-    text = run(argv)
+    obj = ROOT / 'ram-read.o'
+    compile_argv = [CC, *FLAGS, '-c', SOURCE, '-MD', '-MF', ROOT / 'ram-read.d', '-o', obj]
+    run(compile_argv)
     require(dependency_paths((ROOT / 'ram-read.d').read_text()) == set(row['headers']), 'actual header closure differs')
+    object_hash = sha(obj)
+    argv = [CC, *FLAGS, obj, '-Wl,-t', '-o', ROOT / 'ram-read']
+    text = run(argv)
     links = []
     for line in text.splitlines():
         value = line.strip()
         if value.startswith('/') and Path(value).is_file():
             real = str(Path(value).resolve()); links.append(real)
-            require(real in row['build_inputs'], 'unprepared actual linker input: ' + real)
+            require(real in row['build_inputs'] or (real == str(obj) and sha(obj) == object_hash),
+                'unprepared actual linker input: ' + real)
         elif value.startswith('('):
             archive = value[1:].split(')', 1)[0]
             require(str(Path(archive).resolve()) in row['build_inputs'], 'unprepared archive: ' + archive)
@@ -179,7 +195,8 @@ def build(row):
     require(len(links) >= 10, 'missing real linker trace')
     verify(row)
     row.update(stage='built', binary_sha256=sha(ROOT / 'ram-read'), actual_link_inputs=links,
-        build_argv=list(map(str, argv)), build_exit_code=0)
+        compile_argv=list(map(str, compile_argv)), build_argv=list(map(str, argv)),
+        generated_object=dict(path=str(obj), sha256=object_hash, source=str(SOURCE)), build_exit_code=0)
     save(row); print('built', row['binary_sha256'], 'links', len(links), '; commit before measure')
 
 
@@ -258,4 +275,11 @@ if __name__ == '__main__':
             prepare()
         else:
             row = json.loads((ROOT / 'record.json').read_text())
-            build(row) if action == 'build' else measure(row)
+            try:
+                build(row) if action == 'build' else measure(row)
+            except BaseException as e:
+                if action == 'build':
+                    row.update(stage='failed_build_admission', active=False, ownership_closed=True,
+                        passed=False, error=type(e).__name__ + ': ' + str(e))
+                    save(row)
+                raise

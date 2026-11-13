@@ -23397,7 +23397,7 @@
   },
   "ram_read_ceiling_v2": {
     "schema": "ram-read-ceiling-v1",
-    "stage": "prepared",
+    "stage": "failed_build_input_classification",
     "active": false,
     "ownership_closed": true,
     "source_commit": "24f583621cb63468332247c1fafe8fd53368fffd",
@@ -24327,6 +24327,39 @@
         0.7119140625
       ],
       "thp": "always [madvise] never"
+    },
+    "passed": false,
+    "controller_exit_code": 1,
+    "native_measurement_started": false,
+    "reason": "Compiler/link completed normally,but the actual ld trace included driver-generated /tmp/ccgQVxqG.o,already auto-retired before classification. Gate correctly refused to treat it as a prepared external input. No fixture executed.",
+    "unqualified_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v2/ram-read",
+      "sha256": "528a12c5ef4025c23ed8eb8a7463239debddf3fb373a33b230b8b82c0bbec2b3"
+    },
+    "retirement": {
+      "state": "ready_after_committed_failure",
+      "plan_commit": "6d0322fed06894169853eb84754e51d24d10c894",
+      "source_commit": "24f583621cb63468332247c1fafe8fd53368fffd",
+      "all_original_Git_sources_and_422_compiler_header_link_inputs_verified": true,
+      "generated_tmp_object_automatically_absent": true,
+      "files": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v2/ram-read",
+          "bytes": 37272,
+          "sha256": "528a12c5ef4025c23ed8eb8a7463239debddf3fb373a33b230b8b82c0bbec2b3"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v2/record.json",
+          "bytes": 74860,
+          "sha256": "26638c2a1677e7fd02965a6812c5624e86be3a0b7fbfd4a03bee6654e26337a2"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ram-read-ceiling-v2/ram-read.d",
+          "bytes": 18974,
+          "sha256": "3448f0dd9d58e08f1133d5bc8584f0fe708fce48d265321eba2f68de305e45f1"
+        }
+      ],
+      "next": "Commit this failure,then retire this unqualified3file root. New v3uses an explicit committed-source object and separate link;no changed performance criteria."
     }
   }
 }
