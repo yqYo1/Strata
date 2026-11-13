@@ -18,7 +18,7 @@ import check_coherent_prefill as inherited
 
 build = candidate.coherent
 P, B, RESULT = build.P, build.B, build.RESULT
-ROOT, KEY = B / 'cpu-mixed-cache-device-v1', 'cpu_mixed_cache_device_v1'
+ROOT, KEY = B / 'cpu-mixed-cache-device-v2', 'cpu_mixed_cache_device_v2'
 THIS = 'tools/sycl/check_cpu_mixed_cache_model.py'
 STAGES = inherited.STAGES
 original = inherited.original
@@ -67,7 +67,7 @@ def native(expected=None, *, observers=None):
     after = original.common.source.pin(P, original.common.PREFIXES)['source_sha256']
     recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
         original.common.source.blobs(P, row['project']['revision'], before)}
-    require(recovered == before and set(after)-set(before) == observers
+    require(recovered == before and set(after)-set(before) == observers - set(before)
         and not set(before)-set(after) and all(after[p] == h for p, h in before.items()),
         'only explicitly named committed observers may extend the native source snapshot')
     actual = row['actual_inputs']
@@ -113,7 +113,7 @@ def native(expected=None, *, observers=None):
         for p, h in census[family].items()), 'actual compiler/header/link input changed')
     proof = dict(native_source_commit=row['native_source_commit'], original_source_files=len(before),
         observer_source_files=len(after), observer_source_sha256=original.common.signature(after),
-        added_observers={p: after[p] for p in sorted(observers)}, exact_thirteen_ELFs_census_recipe=True,
+        declared_observers={p: after[p] for p in sorted(observers)}, exact_thirteen_ELFs_census_recipe=True,
         class_coherence=coherence, dispatch_pool_class_inputs=class_inputs(row), exact_seed_recipe_sha256=hashlib.sha256(
             json.dumps(recipe, sort_keys=True).encode()).hexdigest(),
         native_recompiled=False, GPU_result_inherited=False)

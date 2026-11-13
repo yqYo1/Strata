@@ -15,7 +15,7 @@ import build_coherent_prefill as coherent
 import cpu_mixed_cache as cpu
 
 P, B, RESULT = coherent.P, coherent.B, coherent.RESULT
-ROOT, KEY = B / 'cpu-mixed-cache-native-v1', 'cpu_mixed_cache_native_v1'
+ROOT, KEY = B / 'cpu-mixed-cache-native-v2', 'cpu_mixed_cache_native_v2'
 CPU_RESULT, CPU_KEY = cpu.RESULT, cpu.KEY
 EVIDENCE = '29193d347e5235e192a31d740b897cec24c25c49'
 RETIREMENT = 'mixed_nt_prebuild_retirement_v1'
@@ -75,6 +75,14 @@ def prerequisite():
         and all(not (B / name / 'build').exists() for name in (
             'cpu-compact-small-batch-pool-v1', 'cpu-native-whole-down42-v2',
             'cpu-joint-census-native-v1')), 'retire ended comparison builds first')
+    failed = coherent.base.validation.committed(RESULT, ('cpu_mixed_cache_device_v1',))
+    old = coherent.base.validation.committed(RESULT, ('cpu_mixed_cache_native_v1',))
+    require(failed['stage'] == 'failed' and failed['ownership_closed'] and not failed['active']
+        and len(failed['results']) == 1 and not failed['results'][0]['GPU_executed']
+        and old['artifact_retirement']['stage'] == 'retired'
+        and old['artifact_retirement']['original_source_recipe_final_inputs_recovered']
+        and not (B / 'cpu-mixed-cache-native-v1').exists(),
+        'preserve the V1host SIGILL and retire its ended candidate before V2')
     return dict(coherent_class_basis=proof, CPU_evidence_commit=EVIDENCE,
         CPU_source_commit=original['source_commit'], CPU_plan_commit=original['build']['plan_commit'],
         CPU_qualification_sha256=hashlib.sha256(fields(original).encode()).hexdigest(),

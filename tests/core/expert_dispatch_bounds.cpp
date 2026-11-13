@@ -3,8 +3,11 @@
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstdio>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <stdexcept>
 #include <vector>
 
@@ -12,8 +15,25 @@ namespace cpu = strata::kernels::cpu;
 namespace core = strata::core;
 namespace {
 void need(bool ok, const char* why) { if (!ok) throw std::runtime_error(why); }
+struct NativeLayout {
+    std::filesystem::path path;
+    NativeLayout() {
+        cpu::NativeFmt format;
+        std::string error;
+        need(cpu::native_fmt(18, 20, cpu::H, cpu::FF, format, error), "target native format");
+        path = std::filesystem::temp_directory_path() / ("strata-native-dispatch-bounds-" +
+            std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+        need(std::filesystem::create_directory(path), "private native metadata directory");
+        std::ofstream metadata(path / "native_experts.txt");
+        metadata << "0 18 20 0 " << format.bytes << '\n';
+        metadata.close();
+        need(bool(metadata) && cpu::expert_layout_load(path.string(), 1, 1, error),
+            "load native IQ3_XXS/IQ4_NL geometry");
+    }
+    ~NativeLayout() { std::error_code ignored; std::filesystem::remove_all(path, ignored); }
+};
 struct Source final : core::ExpertSource {
-    std::vector<uint8_t> raw = std::vector<uint8_t>(cpu::BLOB, 0);
+    std::vector<uint8_t> raw = std::vector<uint8_t>(cpu::expert_layout().blob_bytes(0), 0);
     int calls = 0;
     const uint8_t* blob(int64_t layer, int64_t expert) override {
         need(layer == 0 && expert == 0, "source coordinates");
@@ -30,7 +50,7 @@ void check(cpu::NativeGuPhase phase, int k, bool overflow) {
     d.n_expert = 1;
     d.native_gu_phase = phase;
     // No cache was admitted: even an explicit experimental policy must retain
-    // the existing canonical path. This test never initializes a GPU owner.
+    // the existing native path. This test never initializes a GPU owner.
     d.compact_gu_policy = cpu::compact_gu::BatchPolicy::MixedNt;
     std::array<float, cpu::H> x{};
     std::vector<int32_t> ids(size_t(k), 0);
@@ -52,13 +72,15 @@ void check(cpu::NativeGuPhase phase, int k, bool overflow) {
         for (size_t i = 1; i + 1 < output.size(); ++i) {
             uint32_t bits;
             std::memcpy(&bits, &output[i], sizeof bits);
-            need((bits & 0x7fffffffu) == 0, "actual canonical zero-weight result");
+            need((bits & 0x7fffffffu) == 0, "actual native zero-weight result");
         }
     }
 }
 }
 int main() try {
-    need(!cpu::expert_layout().native, "fresh process canonical layout");
+    NativeLayout layout;
+    need(cpu::expert_layout().native && cpu::expert_layout().fmt[0].gu_type == 18 &&
+        cpu::expert_layout().fmt[0].d_type == 20, "target native AVX2 path");
     static_assert(cpu::MAXT + 2 <= 128);
     for (auto phase : {cpu::NativeGuPhase::Prefill, cpu::NativeGuPhase::Decode}) {
         check(phase, cpu::MAXT, false);
