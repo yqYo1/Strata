@@ -327199,7 +327199,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "current_profile_fixture_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "c0b9aad25d5342609ad9f67e8c914333518b85f1",
     "builder_sha256": "11dc02b87e631dc31b09ee494670a2facaf9e5f268c28039976ba4dbc1af7cab",
     "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
@@ -327452,6 +327452,31 @@
     "model_executed": false,
     "acceptance": "Only one new fixture object/ELF;exact current runtime archive and all three objects plus13retained ELFs unchanged;dependency/source/SDK hashes admitted;normal0and closed owners. Build is not runtime/tool/model qualification.",
     "consumer": "Fresh bounded direct/active-from-exec collector controls,then current cache0GPU/CPU attribution;retire superseded fixture after original-input recovery.",
-    "review_point": "After current collector control closure;no unused standalone generation retained."
+    "review_point": "After current collector control closure;no unused standalone generation retained.",
+    "error": "RuntimeError('incomplete linker input closure')",
+    "failure_diagnosis": {
+      "compile_and_link_normal0": true,
+      "retained13_ELFs_and_runtime_archive_objects_unchanged": true,
+      "cause": "The pinned SYCL driver transforms fixture.o into temporary host/offload-wrapper objects before GNUld. The original command input is not a direct ld trace entry;the final census incorrectly required it there. External library entries were verified. No GPU was executed.",
+      "next": "Preserve this failed outcome. Commit corrected source and a fresh V3plan,record the original command object separately,require the runtime archive in the actual linker census and bound compiler-generated temporary products. Fresh build before any GPU profiling.",
+      "retained_consumer": "Compare corrected V3source/recipe and retire the ended V2products after original-input recovery;review at V3build closure."
+    },
+    "unqualified_products": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-profile-fixture-v2/fixture.o",
+        "bytes": 56064,
+        "sha256": "12c08d9babf801b2dac87ff0f0caefc20ddc2e7b4225dab168cb8f7b56a5e94d"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-profile-fixture-v2/sycl_profile_compat_window",
+        "bytes": 298280,
+        "sha256": "e88e18261c86e87971b1cb98b231e45314536b2624c8b5676ac0818789a3759f"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-profile-fixture-v2/fixture.d",
+        "bytes": 55036,
+        "sha256": "7c477a2bd9786cf330dfefe002af8ee23e52975bb71f850530ed692315dc21a9"
+      }
+    ]
   }
 }
