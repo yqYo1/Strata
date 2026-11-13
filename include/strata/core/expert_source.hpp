@@ -231,6 +231,8 @@ struct ExpertDispatch {
     // Prompt/window reads keep the baseline CPU producer. Generation enters a
     // host-owned scope after prefill; each pool batch copies this selection.
     strata::kernels::cpu::NativeGuPhase native_gu_phase = strata::kernels::cpu::NativeGuPhase::Prefill;
+    // Fixed before runtime initialization;only Decode may select this experiment.
+    bool cpu_decode_whole_mixed = false;
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
     // Prepared once from this immutable model/source role before READY.

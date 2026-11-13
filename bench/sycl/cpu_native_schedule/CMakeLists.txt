@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(strata_compact_gu_numeric LANGUAGES C CXX)
+project(strata_cpu_native_schedule LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 get_filename_component(STRATA_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)

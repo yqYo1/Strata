@@ -769,6 +769,26 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 }
 
+void ExpertPool::run_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,
+                                 int n, NativeGuPhase phase, bool whole_decode,
+                                 std::span<const compact_gu::Lease> gu_views) {
+    bool eligible = whole_decode && phase == NativeGuPhase::Decode &&
+        n_ == 5 && host_works_ && (n == 24 || n == 36) && jobs &&
+        gu_views.empty() && f.gu_type == 18 && (f.d_type == 20 || f.d_type == 42) &&
+        f.n_embd == H && f.n_ff == FF;
+    bool single = false, multiple = false;
+    if (eligible) for (int e = 0; e < n; ++e) {
+        const int nt = jobs[e].nt;
+        if (nt < 1 || nt > 4) { eligible = false; break; }
+        single |= nt == 1;
+        multiple |= nt > 1;
+    }
+    if (eligible && single && multiple)
+        run_whole_multi_native(f, jobs, n, phase);
+    else
+        run_split_multi_native(f, jobs, n, phase, gu_views);
+}
+
 void ExpertPool::run_whole_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,
                                       int n, NativeGuPhase phase) {
     bool eligible = phase == NativeGuPhase::Decode && n >= 7 && n <= 36 &&

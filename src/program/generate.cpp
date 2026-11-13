@@ -1611,7 +1611,15 @@ int main(int argc, char** argv) {
     }
     Options o;
     size_t cpu_compact_gu_budget = 0;
+    bool cpu_decode_whole_mixed = false;
 #if defined(STRATA_ENABLE_SYCL) && defined(STRATA_NATIVE_EXPERTS)
+    if (const char* value = std::getenv("STRATA_CPU_DECODE_WHOLE")) {
+        if (std::strcmp(value, "0") && std::strcmp(value, "1")) {
+            std::fprintf(stderr, "strata generate: STRATA_CPU_DECODE_WHOLE needs 0 or 1\n");
+            return 2;
+        }
+        cpu_decode_whole_mixed = std::strcmp(value, "1") == 0;
+    }
     if (!strata::kernels::cpu::compact_gu::parse_mib_budget(
             std::getenv("STRATA_CPU_COMPACT_GU_MIB"), cpu_compact_gu_budget)) {
         std::fprintf(stderr, "strata generate: STRATA_CPU_COMPACT_GU_MIB needs a nonnegative MiB integer\n");
@@ -4187,7 +4195,10 @@ int main(int argc, char** argv) {
     drive.d.hit_cpu_order = o.expert_cache_cpu_order;
     drive.d.split_rows = !o.no_split_rows;
     drive.d.pool = &pool;
+    drive.d.cpu_decode_whole_mixed = cpu_decode_whole_mixed;
     drive.d.src = srcp;
+    std::fprintf(stderr, "CPU_DECODE_SCHEDULE whole_mixed=%d jobs=24,36 nt=mixed_1_to_4 workers=5 host=1\n",
+        int(cpu_decode_whole_mixed));
     if (cpu_compact_gu_cache) {
         try {
             // Prepare both arrays before publishing an owner/source binding.

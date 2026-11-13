@@ -201,8 +201,9 @@ struct Case {
             const int a=activation(j,round);
             for(int t=0;t<job.nt;++t){job.nact[t]=f.acts[(a+t)%4].data();job.out[t]=out[size_t(j)*4+t].values();}}
     }
-    void run(Pool& pool,bool whole,cpu::NativeGuPhase phase){
-        if(whole)pool.native.run_whole_multi_native(f.format,jobs.data(),int(jobs.size()),phase);
+    void run(Pool& pool,bool whole,cpu::NativeGuPhase phase,bool selected=false){
+        if(selected)pool.native.run_multi_native(f.format,jobs.data(),int(jobs.size()),phase,whole);
+        else if(whole)pool.native.run_whole_multi_native(f.format,jobs.data(),int(jobs.size()),phase);
         else pool.native.run_split_multi_native(f.format,jobs.data(),int(jobs.size()),phase);
     }
     void check(uint64_t round,bool stream,cpu::NativeGuPhase phase)const{
@@ -214,7 +215,7 @@ struct Case {
             for(float v:out[size_t(j)*4+t].data)need(v==guard,"inactive output untouched");
     }
 };
-void numerical(Fixture& f){uint64_t cases=0,whole_calls=0,active_rows=0;
+void numerical(Fixture& f){uint64_t cases=0,whole_calls=0,active_rows=0,selected_cases=0,selected_calls=0,lease_controls=0;
     need(cpu::ExpertPool::kMaxSplitMulti>=36,"whole expert buffer capacity");
     for(int workers:{1,5}){Pool pool(workers);
         pool.native.run_whole_multi_native(f.format,nullptr,0,cpu::NativeGuPhase::Decode);
@@ -237,27 +238,53 @@ void numerical(Fixture& f){uint64_t cases=0,whole_calls=0,active_rows=0;
                 for(size_t i=0;i<ref.out.size();++i)need(equal(ref.out[i],candidate.out[i]),"whole pool parity");
                 active_rows+=ref.rows;whole_calls+=eligible;++cases;
             }
+        // Exercise the real production selector in both settings. A numeric
+        // component pass does not establish performance of the selector.
+        for(int n:{1,6,7,12,24,36,37,97,193})for(int policy:{0,1,2,3,4})
+            for(auto phase:{cpu::NativeGuPhase::Decode,cpu::NativeGuPhase::Prefill})
+                for(bool enabled:{false,true}){
+                    Case work(f,n);const uint64_t round=selected_cases+31;
+                    work.bind(round,true,policy);const auto before=pool.native.native_whole_calls;
+                    work.run(pool,enabled,phase,true);
+                    const bool hit=enabled&&workers==5&&phase==cpu::NativeGuPhase::Decode&&
+                        (n==24||n==36)&&policy==0;
+                    need(pool.native.native_whole_calls-before==uint64_t(hit),"production selector dispatch");
+                    work.check(round,true,phase);work.inactive();selected_calls+=hit;++selected_cases;
+                }
+        Case leased(f,24);leased.bind(73,true,0);std::vector<gu::Lease> leases(24);
+        const auto count=pool.native.native_whole_calls;
+        pool.native.run_multi_native(f.format,leased.jobs.data(),24,cpu::NativeGuPhase::Decode,true,leases);
+        need(pool.native.native_whole_calls==count,"leases preserve row dispatch");
+        leased.check(73,true,cpu::NativeGuPhase::Decode);leased.inactive();++lease_controls;
+        bool span_error=false;
+        try {pool.native.run_multi_native(f.format,leased.jobs.data(),24,cpu::NativeGuPhase::Decode,true,
+            std::span<const gu::Lease>(leases.data(),23));}
+        catch(const std::invalid_argument&){span_error=true;}
+        need(span_error&&pool.native.native_whole_calls==count,"short lease span rejected");++lease_controls;
         // A changed input must break the oracle;do not validate only finiteness.
         Case bad(f,24);bad.bind(0,true,1);for(auto& j:bad.jobs)j.nact[0]=f.acts[1].data();bad.run(pool,true,cpu::NativeGuPhase::Decode);
         bool detected=false;for(int j=0;j<24;++j){bad.out[size_t(j)*4].check();if(!equal(bad.out[size_t(j)*4],f.reference(cpu::NativeGuPhase::Decode,1,activation(j,0),expert(j,0),0)))detected=true;}
         need(detected,"wrong activation control detected");pool.verify();
     }
     f.guards();std::cout<<"{\"passed\":true,\"cases\":"<<cases<<",\"whole_calls\":"<<whole_calls
+        <<",\"selected_cases\":"<<selected_cases<<",\"selected_whole_calls\":"<<selected_calls
+        <<",\"lease_controls\":"<<lease_controls
         <<",\"token_expert_rows\":"<<active_rows<<",\"wrong_activation_controls\":2,\"guards\":true,\"inputs_immutable\":true,\"performance_qualified\":false}\n";
 }
 struct Sample{double wall,cpu,gu,quant,down,whole;uint64_t calls,jobs,rows,selected;};
 Sample batch(Case& work,Pool& pool,bool whole,bool stream,int policy,uint64_t rounds){
     pool.verify();const auto g=pool.native.ms_multi_gu,q=pool.native.ms_multi_q,d=pool.native.ms_multi_down,w=pool.native.ms_multi_whole;
     const auto selected=pool.native.native_whole_calls;const double c=cpu_seconds();const auto start=Clock::now();uint64_t rows=0;
-    for(uint64_t i=0;i<rounds;++i){work.bind(i,stream,policy);work.run(pool,whole,cpu::NativeGuPhase::Decode);rows+=work.rows;}
+    for(uint64_t i=0;i<rounds;++i){work.bind(i,stream,policy);work.run(pool,whole,cpu::NativeGuPhase::Decode,true);rows+=work.rows;}
     Sample s{seconds(start),cpu_seconds()-c,(pool.native.ms_multi_gu-g)*.001,(pool.native.ms_multi_q-q)*.001,
         (pool.native.ms_multi_down-d)*.001,(pool.native.ms_multi_whole-w)*.001,rounds,rounds*work.jobs.size(),rows,pool.native.native_whole_calls-selected};
-    need(s.selected==(whole?rounds:0)&&s.gu>=0&&s.quant>=0&&s.down>=0&&s.whole>=0&&s.gu+s.quant+s.down+s.whole<=s.wall+1e-6,"timed route/service accounting");
+    const bool hit=whole&&(work.jobs.size()==24||work.jobs.size()==36)&&policy==0;
+    need(s.selected==(hit?rounds:0)&&s.gu>=0&&s.quant>=0&&s.down>=0&&s.whole>=0&&s.gu+s.quant+s.down+s.whole<=s.wall+1e-6,"timed route/service accounting");
     work.check(rounds-1,stream,cpu::NativeGuPhase::Decode);pool.verify();return s;
 }
 int main(int argc,char**argv){try{
-    need(argc==8,"pool SHARD DOWN GATE UP DOWN_OFFSET BLOB_BYTES check|reference|whole");const std::string arm(argv[7]);
-    need(arm=="check"||arm=="reference"||arm=="whole","arm");Fixture f(argv);std::cout<<std::setprecision(17);
+    need(argc==8,"pool SHARD DOWN GATE UP DOWN_OFFSET BLOB_BYTES check|reference|selected");const std::string arm(argv[7]);
+    need(arm=="check"||arm=="reference"||arm=="selected","arm");Fixture f(argv);std::cout<<std::setprecision(17);
     if(arm=="check"){numerical(f);return 0;}need(!cpu::iq3_gu_audit_snapshot().enabled,"clean audit setting");
     const auto now=Clock::now();for(int i=0;i<10000;++i){auto t=Clock::now().time_since_epoch().count();asm volatile(""::"g"(t):"memory");}
     const double timer=2*seconds(now)/10000;need(timer<1e-4,"timer overhead");
@@ -267,10 +294,10 @@ int main(int argc,char**argv){try{
     for(int n:{12,24,36})for(int policy:{0,1})for(bool stream:{false,true}){
         if(comma)std::cout<<',';comma=true;Case work(f,n);
         std::cout<<"{\"workers\":5,\"host_works\":true,\"jobs_per_call\":"<<n<<",\"NT_policy\":\""<<(policy?"NT1":"observed_mix")<<"\",\"pattern\":\""<<(stream?"stream64":"reuse")<<"\",\"calibration\":[";
-        uint64_t rounds=64;bool sep=false;for(;;){const auto s=batch(work,pool,arm=="whole",stream,policy,rounds);if(sep)std::cout<<',';sep=true;
+        uint64_t rounds=64;bool sep=false;for(;;){const auto s=batch(work,pool,arm=="selected",stream,policy,rounds);if(sep)std::cout<<',';sep=true;
             std::cout<<"{\"rounds\":"<<rounds<<",\"wall_s\":"<<s.wall<<'}';if(s.wall>=.5)break;need(rounds<65536,"calibration floor");rounds*=2;}
         std::cout<<"],\"rounds\":"<<rounds<<",\"samples\":[";
-        for(int i=0;i<3;++i){const auto s=batch(work,pool,arm=="whole",stream,policy,rounds);need(s.wall>=.25&&timer/s.wall<.001,"timing floor");if(i)std::cout<<',';
+        for(int i=0;i<3;++i){const auto s=batch(work,pool,arm=="selected",stream,policy,rounds);need(s.wall>=.25&&timer/s.wall<.001,"timing floor");if(i)std::cout<<',';
             std::cout<<"{\"wall_s\":"<<s.wall<<",\"process_cpu_s\":"<<s.cpu<<",\"calls\":"<<s.calls<<",\"jobs\":"<<s.jobs<<",\"token_expert_rows\":"<<s.rows
                 <<",\"whole_calls\":"<<s.selected<<",\"pool_gu_s\":"<<s.gu<<",\"pool_quant_s\":"<<s.quant<<",\"pool_down_s\":"<<s.down<<",\"pool_whole_s\":"<<s.whole<<'}';}
         std::cout<<"]}";

@@ -2140,10 +2140,12 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
 #endif
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
+    const uint64_t whole_before = native ? d.pool->native_whole_calls : 0;
     if (native) {
         // Native jobs borrow dispatch-owned buffers. Do not unwind them if completion throws.
         try {
-            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs, d.native_gu_phase, views);
+            d.pool->run_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs,
+                d.native_gu_phase, d.cpu_decode_whole_mixed, views);
         } catch (...) {
             std::fprintf(stderr, "strata: native expert pool failed before completion; retaining owners and aborting\n");
             strata::core::release_gpu_waits(stderr);
@@ -2182,6 +2184,18 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             lay.fmt[(size_t)d.layers], ids, kind, d.job_of.data(), d.jobs_multi.data(), njobs,
             std::chrono::duration_cast<std::chrono::nanoseconds>(c4 - c3).count());
         else d.cpu_work_census->invalidate("non_native_dispatch");
+        if (native) {
+            int nt[5] = {};
+            for (int j = 0; j < njobs; ++j) {
+                const int t = d.jobs_multi[size_t(j)].nt;
+                ++nt[t >= 1 && t <= 4 ? t : 0];
+            }
+            std::fprintf(stderr, "strata cpu schedule: layer=%lld gu=%d down=%d jobs=%d "
+                "nt1=%d nt2=%d nt3=%d nt4=%d other=%d whole_calls=%llu\n",
+                (long long)d.layers, lay.fmt[size_t(d.layers)].gu_type,
+                lay.fmt[size_t(d.layers)].d_type, njobs, nt[1], nt[2], nt[3], nt[4], nt[0],
+                (unsigned long long)(d.pool->native_whole_calls - whole_before));
+        }
     }
     for (int64_t i = 0; i < n_tok * k; ++i) {
         const int64_t e = ids[i];
