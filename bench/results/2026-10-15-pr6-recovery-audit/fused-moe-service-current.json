@@ -327761,5 +327761,184 @@
       "provenance": "Pinned SYCL driver transforms the separately hashed command input into temporary host/offload objects. Not external source inputs."
     },
     "retained_thirteen_ELFs_unchanged": true
+  },
+  "current_profile_control_v1": {
+    "stage": "prepared",
+    "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-profile-fixture-v3/sycl_profile_compat_window",
+      "sha256": "e88e18261c86e87971b1cb98b231e45314536b2624c8b5676ac0818789a3759f",
+      "bytes": 298280
+    },
+    "native_proof": {
+      "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
+      "original_source_files": 1209,
+      "observer_source_files": 1214,
+      "observer_source_sha256": "3c0b917a147d1e64072b0e5785d9e50921e70528d9918ca1f88214b5b96512a3",
+      "declared_observers": {
+        "tools/sycl/check_cpu_mixed_cache_model.py": "2af25a0e9d2d2bd6cdaa5620f77f3c7cd94b0a27bb3a100eff1e61d85f37563e",
+        "tools/sycl/cpu_mixed_cache_bench.py": "a288358c2bea7c33a14ecb74a7b11530fa308726a4e64bd06bf7add3604bc4e2",
+        "tools/sycl/cpu_mixed_cache_model.py": "e5627a8ac943beea14b4b3ac6e58b5328ece142e21052016580b6e2803927beb",
+        "tools/sycl/current_profile_control.py": "9bd4c79e508651a3994d6ac44f8cc8c416d5c046c0bdcbd2286e7b133c42708c",
+        "tools/sycl/current_profile_fixture.py": "a81ad4106cb6752820368c1b4107d0edd8be42236c1490872ffa0251c5eaa286",
+        "tools/sycl/test_current_profile_control.py": "3d3f69f7f5ae61976c33d998d316f904c02584c82dc524e35ea4d1cfbc36ae33"
+      },
+      "exact_thirteen_ELFs_census_recipe": true,
+      "class_coherence": {
+        "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+        "includer_count": 5,
+        "includer_objects": [
+          "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm16.cpp.o",
+          "CMakeFiles/strata_prefill.dir/src/prefill/sycl/qsa_score_gemm.cpp.o",
+          "CMakeFiles/sycl_gu_policy_test.dir/bench/sycl/gu_compact.cpp.o"
+        ],
+        "same_SYCL_class_condition": true,
+        "all_objects_from_fresh_build": true,
+        "partial_archive_reuse": false
+      },
+      "dispatch_pool_class_inputs": {
+        "include/strata/core/expert_source.hpp": {
+          "header_sha256": "37404864ee64128c27e44942ae02aca3c78b9bf727c0d5c80dec088362a51822",
+          "consumers": 10,
+          "macro": "STRATA_ENABLE_SYCL",
+          "value": 1,
+          "all_objects_from_fresh_build": true
+        },
+        "include/strata/kernels/cpu/pool.hpp": {
+          "header_sha256": "7600178da919a0f66e39508b59b6b911f2e0cb28aaf912e9eb103c78dcedd315",
+          "consumers": 12,
+          "macro": "STRATA_CPU_SERVICE_PROFILE",
+          "value": 1,
+          "all_objects_from_fresh_build": true
+        }
+      },
+      "exact_seed_recipe_sha256": "f0aa022c7294af6d7b8aa81c928c84ec6fbb2f62e1f65c6d11aa968bdad45b57",
+      "native_recompiled": false,
+      "GPU_result_inherited": false,
+      "device_key": "cpu_mixed_cache_device_v2",
+      "device_evidence_sha256": "4de967abeb8f4fb25b1033021dfe02a42a0ce813e16c2ab97a7c1cc7fa8e14bf",
+      "fresh_eleven_stage_controls": true,
+      "model_observer": "tools/sycl/cpu_mixed_cache_model.py",
+      "additional_observers": [
+        "tools/sycl/cpu_mixed_cache_bench.py",
+        "tools/sycl/current_profile_control.py",
+        "tools/sycl/current_profile_fixture.py",
+        "tools/sycl/test_current_profile_control.py"
+      ],
+      "original_partial_relink_or_model_result_inherited": false
+    },
+    "fixture_build_sha256": "7306925f76b6907579285ccf0211924c029aece3ff609b7d06eabcfd7a4ac82b",
+    "assets": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      }
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_reuse": {
+      "original_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "build_commands_sha256": "ee47f8167845a77e5da3ccf048c9378bd012a51de47e5465fff82297cbcdc98b",
+      "original_input_files": 117,
+      "original_inputs_sha256": "a385a4a6638a99563de33aac08f81b3046e0b56c5976dcb157062a976c742d35",
+      "later_source_commit": "011fa1cb932c137b7ef2a84963ca1b4bb1182668",
+      "later_committed_key": "decode_iq3_audit_speed_v2",
+      "later_processes": 6,
+      "later_pre_main_proofs_checked": true,
+      "legacy_refusal_preserved": true,
+      "ordinary_runtime_teardown_qualified": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "cases": [],
+    "host": null,
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "budget": {
+      "wall": 240,
+      "cpu": 240,
+      "rss_cap": 4294967296,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 134217728,
+    "question": "Does current393 ordinary runtime retain exact guarded graph instances in direct and active-from-exec control?",
+    "order": "Commit source/plan;four CPU controls and five existing trace controls;commit;direct;commit;active. Stop on first failed case.",
+    "acceptance": "Exact source/build/13retainedELFs/665fixture compiler inputs;all five native gates;normal0,closed owners,quiet pre-main validation,no fresh fault. Active from exec with no pause/resume:inner6kernels/3copies,post2/1,whole8/5,unique native joins and contained RAW clocks.",
+    "limits": "Control only;no model coverage,observer overhead,physical traffic/saturation,clean speed,task/full-context or ordinary-provider teardown claim.",
+    "retention": "Keep compact source,counts,clocks,numerical/provider/fault/closure outcomes. Retire successful full trace/API/JIT/host output after the current collector question closes.",
+    "source": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "2f3a6adc16aba74162c80bf8d7b7988ea11ed303",
+      "count": 348,
+      "aggregate_sha256": "183cd0ca9892f9aff6d939678e5824ee7955740fd484d81f33aa4aae45d40a69"
+    },
+    "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51",
+    "plans": [
+      {
+        "mode": "direct",
+        "profile": null,
+        "environment_sha256": "d149390ab118e53f9f96568d2c53f666ecc461eaa7b2a7bf5a21969c2cba0772"
+      },
+      {
+        "mode": "active",
+        "profile": {
+          "mode": "aggregate",
+          "launcher": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+            "bytes": 513168,
+            "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+          },
+          "collector": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+            "bytes": 2329704,
+            "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+          },
+          "session": "StrataPrefilld147531207569d72befa0f49",
+          "environment": {
+            "UNITRACE_SystemTime": "1",
+            "UNITRACE_FollowChildProcess": "1",
+            "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-profile-control-v1/active/trace",
+            "LD_DEBUG": "libs"
+          }
+        },
+        "environment_sha256": "927667b73dfed1dc128b0739549f074bd47109380934b986c5a0c0ec29ea2114"
+      }
+    ]
   }
 }
