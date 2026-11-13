@@ -571,7 +571,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cases. Fresh V2from393d88e01now compiles139objects/136unique sources,1474
   compiler inputs/29links and13ELFs,with zero uncovered input. Its engine is
   byte-identical e8a1e54d;the corrected bounds fixture differs and still needs
-  runtime qualification. GPU/model stages and model speed remain unrun.
+  runtime qualification. The V2host stage now passes all six actual native
+  MAXT/overflow cases,six invalid-policy refusals and the existing54reader/11native
+  controls,with normal/expected exits and closed owners. No GPUwas submitted
+  by that host stage. Full GPU/model validation and model speed remain pending.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the

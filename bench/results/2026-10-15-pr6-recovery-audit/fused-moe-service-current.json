@@ -320890,7 +320890,7 @@
     }
   },
   "cpu_mixed_cache_device_v2": {
-    "stage": "prepared",
+    "stage": "in_progress",
     "source_commit": "5ca28e8639674b549d54fd28c5ae9d3d96452560",
     "native_source_commit": "393d88e0109b9e5d3e0ea95576bf019bac664b55",
     "native_record": {
@@ -321158,7 +321158,57 @@
     },
     "limits": "All13ELFs are from the coherent full build,not old fixture/archive reuse. A host bounds test or262144-cell component does not qualify physical model fill. No partial-relink numerical/speed result,ordinary teardown,task or model adoption inherited. Native fixtures keep cache0;the actual model cache route remains unqualified. Attention/producer262144-cell checks do not fill a physical model context.",
     "retention": "Keep14508validated fallback and this one temporary candidate,plus3d7fCPUauxiliary for its live qualification reader. Ended f59/492/c0dc generations are already retired. Legacy H9/P5/D5/IR/deployment holds remain separate. Retire successful raw output at native/model closure;no whole-model adoption follows from native checks.",
-    "results": [],
+    "results": [
+      {
+        "mode": "host",
+        "passed": true,
+        "GPU_executed": false,
+        "native_exit_code": 0,
+        "reader_cases": 54,
+        "native_cases": 11,
+        "policy_check": {
+          "passed": true,
+          "GPU_executed": false,
+          "native_exit_code": 0
+        },
+        "selected_head_IR": {
+          "sha256": "1abd10f1d7fd82842e060d83f848830c422e528264e38784170b1db6dfa9bde3",
+          "instructions": 2443,
+          "functions": 34,
+          "IDs": 1681,
+          "scope": "Exact selected linked-module structure,not final ISA or model speed.",
+          "same_as_current_reference": true,
+          "engine_fixture_identical": true
+        },
+        "diagnostics_controls": {
+          "valid_controls": 2,
+          "refused_controls": 6,
+          "passed": true
+        },
+        "host_census_controls": {
+          "passed": true,
+          "native_exit_code": 0,
+          "GPU_executed": false,
+          "source": "tests/sycl/moe_upload_census_host.cpp",
+          "scope": "Literal miss/hit/format/requested-byte bins,invalid rows,empty frame and512expert cap;not GPU/model correctness."
+        },
+        "physical_context_host": {
+          "passed": true,
+          "GPU_executed": false,
+          "bounds_cases": 134,
+          "hash_cases": 9459,
+          "actual_model_physical_fill_qualified": false
+        },
+        "mixed_cache_host": {
+          "passed": true,
+          "GPU_executed": false,
+          "actual_dispatch_cases": 6,
+          "policy_refusals": 6,
+          "model_cache_route_qualified": false
+        },
+        "ownership_closed": true
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
@@ -321171,6 +321221,161 @@
       "count": 342,
       "aggregate_sha256": "3dcae777307515a91fe0114ca9f64fbaeea55b6b3ab705fcd8d41b1ac08e9629"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "actual-dispatch-bounds",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "cache-policy-refusal-0",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "cache-policy-refusal-1",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "cache-policy-refusal-2",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "cache-policy-refusal-3",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "cache-policy-refusal-4",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "cache-policy-refusal-5",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "physical-context-host",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "census-host",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "reader-controls",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "empty",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "flag3",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "empty-flag",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "release0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "release-absent",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "packed-release0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "packed-release-absent",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "backing3",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "backing-empty",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "backing-release0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "backing-release-absent",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "phase-shape-policy",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
