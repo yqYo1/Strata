@@ -468,7 +468,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with138objects/135unique sources;the complete fresh build now closes normally0.
   ELFf59e7f44and all12fixtures have1473compiler/29external-link inputs with
   zero uncovered inputs;all five Gemm consumers have the same class definition.
-  Fresh native/model qualification remains pending;no speed result is inherited. Capture actual layer/format/jobs/NThistogram before choosing another policy.
+  Fresh native/model qualification remains pending;no speed result is inherited.
+  Native V1preparation passed source/build admission but failed before any child:
+  the new controller omitted one zero-argument context factory before saving its
+  explicit baseline environment. Keep V1failed;the corrected controller uses a
+  fresh device-v2root/plan with the same f59e7f44engine. No GPU was submitted. Capture actual layer/format/jobs/NThistogram before choosing another policy.
   Physical saturation and whole-model speed remain unqualified.
   See`compact_small_batch_pool_v1`in the
   CPUresult. The metadata contains17eligible layers/8704experts:encoded block

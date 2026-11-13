@@ -17,7 +17,7 @@ import check_coherent_prefill as inherited
 
 build = candidate.coherent
 P, B, RESULT = build.P, build.B, build.RESULT
-ROOT, KEY = B / 'cpu-joint-census-device-v1', 'cpu_joint_census_device_v1'
+ROOT, KEY = B / 'cpu-joint-census-device-v2', 'cpu_joint_census_device_v2'
 THIS = 'tools/sycl/check_cpu_joint_census.py'
 STAGES = inherited.STAGES
 original = inherited.original
@@ -111,7 +111,7 @@ def prepare():
         'Retain49296435CPUauxiliary only for its explicit build/model admission reader;'
         'legacy H9/P5/D5/IR/deployment holds remain separate. Retire successful raw '
         'output and obsolete adapter/controller source at the joint-census closure boundary.')
-    inherited.context().context(row['native_observer_admission']).save(row)
+    inherited.context().context().context(row['native_observer_admission']).save(row)
 
 
 if __name__ == '__main__':
