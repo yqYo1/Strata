@@ -51,12 +51,15 @@ B570. No new inference component from the observed interval is adopted. The
 remaining source and pending review are recorded under `new_interval`; older
 unfinished scopes remain open.
 
-The follow-up [Arc setup source map](research/upstream-arc-control-setup.md)
-confirms an unfinished entrypoint: this fork's `setup.py` routes SYCL setup to
-the absent `sycl/setup_intel.py`; the separate `tools/setup_intel.py` adapter
-is not wired through that path. Its guards also do not cover the CLI launcher's
-direct `adopt.plan` / `adopt.write` config replacement. These are required
-port gaps, not completed fixes. The [unmodified Arc benchmark source map](research/upstream-arc-benchmark-readiness.md)
+The [Arc setup source map](research/upstream-arc-control-setup.md) identified
+that the broad import lost this fork's native setup routing. Source `b8f0a5bbf`
+restores the Linux checkout entry to `tools/setup_intel.py` and sends installed/
+previous native configurations through it before upstream update/migration.
+The focused10-test host plan is committed and pending;no actual install is
+qualified. Control/App/MCP setup and the CLI launcher's direct `adopt.plan` /
+`adopt.write` config replacement still need their native adapters. Control cannot
+invoke the source builder while its component route is pending. The
+[unmodified Arc benchmark source map](research/upstream-arc-benchmark-readiness.md)
 records B570 build/workload prerequisites; its helper dependency closure,
 target configuration, runtime qualification and actual measurement remain open.
 These source reviews did not perform another upstream fetch or import.
