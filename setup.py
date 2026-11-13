@@ -8246,29 +8246,16 @@ def mac_setup(argv) -> int:
 
 
 def sycl_setup(argv) -> int:
-    """--backend sycl: the Intel Arc engine (the SYCL port in sycl/, PR #423), experimental. There is no ready-made
-    Intel engine: it is compiled from source on the PC (docs/INTEL_ARC.md), then sycl/setup_intel.py runs this setup
-    with the Intel steps swapped in. Nothing of the CUDA / HIP paths is used or changed."""
-    say()
-    say("  Intel Arc (--backend sycl): supported since 0.1.40.2 on Linux, tested on an Arc Pro B70 (xe) and an Arc A750 "
-        "(i915); other Arc cards and driver versions are untested, and reports help (docs/INTEL.md).")
+    """Use this fork's host-native Intel adapter, sharing the upstream installer."""
     if WIN:
-        fail("the Intel Arc engine has no Windows setup yet (no ready-made Intel engine either)",
-             "run it on Linux (Ubuntu 24.04 with Intel's GPU driver and oneAPI): docs/INTEL_ARC.md")
-    say("  There is no ready-made Intel engine: it is built from source with Intel oneAPI (icpx + oneMKL),")
-    say("  docs/INTEL_ARC.md. Setup continues with sycl/setup_intel.py.")
-    rest, skip = [], False
-    for x in argv:                                     # setup_intel.py drives this setup through its AMD path
-        if skip:
-            skip = False
-        elif x == "--backend":
-            skip = True
-        elif not x.startswith("--backend="):
-            rest.append(x)
-    script = ROOT / "sycl" / "setup_intel.py"
-    if not script.exists():
-        fail(f"{script} is missing", "use a full Strata checkout (git clone) - docs/INTEL_ARC.md")
-    return subprocess.call([sys.executable, str(script), *rest])
+        fail("native Intel setup currently requires Linux")
+    if CONTROL:
+        fail("Intel Arc setup through Control still needs this fork's native engine adapter",
+             "use this fork's source checkout; the Control/App port remains incomplete")
+    script = ROOT / "tools" / "setup_intel.py"
+    if not script.is_file():
+        fail(f"{script} is missing", "use a full checkout of this fork")
+    return subprocess.call([sys.executable, str(script), *argv])
 
 
 def control_engine_step(gpu, vision):
@@ -10117,7 +10104,7 @@ def main() -> int:
         if a.family in MULTI_FILE_FAMILIES:            # DeepSeek-V4.1-Flash: its own engine package, the generic DeepSeek install
             return mac_dsv41_setup(a)
         return mac_control_setup(a)
-    if a.backend == "sycl":                            # Intel Arc: the SYCL port's own setup (sycl/setup_intel.py)
+    if a.backend == "sycl":                            # this fork's host-native adapter
         return sycl_setup(sys.argv[1:])
     if a.resident_budget_gib is not None and not a.resident_budget_gib > 0:
         ap.error("--resident-budget-gib takes a number of GiB above 0, e.g. --resident-budget-gib 32")
@@ -10157,6 +10144,11 @@ def main() -> int:
                        OWN_PATH_FAMILIES[a.family]["title"] if a.family in OWN_PATH_FAMILIES else "Qwen3.8-Flash-Next")
         + " on a normal PC (a GPU + system RAM + CPU)")
     have = installed_configs()
+    if not CONTROL and a.backend is None and have and all(
+            json.loads(p.read_text(encoding="utf-8-sig")).get("backend") == "sycl" for p in have):
+        # Preserve native startup/update before an upstream updater or config
+        # migration can replace the local engine and tuning choices.
+        return sycl_setup(sys.argv[1:])
     # A plain start of an installed model finds everything where it already is: it creates, moves and copies nothing
     # (the model paths are in the run config; the data folder is the one settings.json remembers).  Setting up, checking,
     # tuning and updating look for and gather the model files (data_folder).
@@ -10179,6 +10171,8 @@ def main() -> int:
     if not have and not explicit:                      # a new copy of Strata (an update unzipped elsewhere): set it
         prev = previous_config(elsewhere, load_settings())   # up like the last one, from the files already here
         if prev is not None:
+            if not CONTROL and a.backend is None and json.loads(prev.read_text(encoding="utf-8-sig")).get("backend") == "sycl":
+                return sycl_setup(sys.argv[1:])
             ch = choices_from_config(prev)
             if ch["model"]:
                 say(f"  Found your earlier install in {prev.parent} ({prev.stem[len('strata-'):]}): setting up this "
