@@ -132,6 +132,75 @@ def request_evidence(text, samples):
     return evidence
 
 
+def api_segment_evidence(text, sample, *, insertion_token_counts=()):
+    """Bind one gated API interval to ordered native generations.
+
+    Allowed insertion lengths must come from the pinned server/tokenizer recipe,
+    independently of these observed counts. Rewritten recovery prompts and
+    unknown insertions fail this prefix-continuation contract. Native footer
+    clocks round to whole milliseconds; API clocks round to tenths.
+    """
+    guards.require(all(type(n) is int and n > 0 for n in insertion_token_counts),
+        'invalid independently pinned insertion lengths')
+    pattern = (r'strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read '
+        r'in (\d+) ms \([0-9.]+ tok/s\), (\d+) generated in (\d+) ms '
+        r'\([0-9.]+ tok/s\), drafts accepted (\d+) of (\d+), (\d+) checkpoints')
+    fields = ('prompt_tokens', 'reused_tokens', 'read_tokens', 'prompt_ms',
+        'generated_tokens', 'decode_ms', 'drafts_accepted', 'drafts_offered', 'checkpoints')
+    segments = []
+    for line in text.splitlines():
+        if not line.startswith('strata serve: prompt '):
+            continue
+        match = re.fullmatch(pattern, line)
+        guards.require(match is not None, 'malformed/cancelled native segment footer')
+        row = dict(zip(fields, map(int, match.groups())))
+        guards.require(row['prompt_tokens'] == row['read_tokens'] + row['reused_tokens'] > 0
+            and row['drafts_offered'] >= row['drafts_accepted'],
+            'native segment extent/drafts do not conserve')
+        row['server_inserted_before'] = 0
+        if segments:
+            previous = segments[-1]
+            inserted = row['prompt_tokens'] - previous['prompt_tokens'] - previous['generated_tokens']
+            guards.require(inserted == 0 or inserted in insertion_token_counts,
+                'native continuation contains an unpinned insertion or rewritten prompt')
+            row['server_inserted_before'] = inserted
+        segments.append(row)
+    guards.require(segments, 'missing native segment footer')
+    for key in ('prompt_tokens', 'reused_tokens', 'read_tokens', 'generated_tokens',
+                'drafts_accepted', 'drafts_offered'):
+        guards.require(type(sample.get(key)) is int and sample[key] >= 0,
+            'invalid API count: ' + key)
+    guards.require(all(segments[0][k] == sample[k] for k in
+        ('prompt_tokens', 'reused_tokens', 'read_tokens')), 'original API/native prompt differs')
+    generated = sum(r['generated_tokens'] for r in segments)
+    inserted = sum(r['server_inserted_before'] for r in segments)
+    guards.require(generated > 0 and sample['generated_tokens'] == generated + inserted,
+        'API output does not conserve native generation and pinned insertions')
+    guards.require(all(sum(r[k] for r in segments) == sample[k]
+        for k in ('drafts_accepted', 'drafts_offered')), 'API/native draft totals differ')
+    rounding = .5 * len(segments) + .05
+    differences = {}
+    for key in ('prompt_ms', 'decode_ms'):
+        value = sample.get(key)
+        guards.require(type(value) in (int, float) and math.isfinite(value) and value >= 0,
+            'invalid API native clock: ' + key)
+        differences[key] = abs(sum(r[key] for r in segments) - value)
+        guards.require(differences[key] <= rounding + 1e-8,
+            'summed native/API rounded clock differs: ' + key)
+    guards.require(sample['decode_ms'] > 0, 'missing positive aggregate native decode clock')
+    exact_tps = 1000 * generated / sample['decode_ms']
+    reported = sample.get('decode_tps')
+    guards.require(type(reported) in (int, float) and math.isfinite(reported)
+        and sample.get('decode_tps_source') == 'engine' and abs(reported-exact_tps) <= .05000001,
+        'API rate does not use native generation and aggregate decode time')
+    return dict(segments=segments, native_generated_tokens=generated,
+        server_inserted_tokens=inserted, api_generated_tokens=sample['generated_tokens'],
+        decode_ms=sample['decode_ms'], exact_native_decode_tps=exact_tps,
+        clock_binding=dict(absolute_differences_ms=differences, rounding_bound_ms=rounding),
+        scope='One owned API interval; native work and inserted tokens separated. '
+              'Segment clocks are service accounting, not physical traffic or saturation.')
+
+
 def iq2_pair_evidence(text, samples, arm, expected_cpus=None):
     """Bind drained host counters to requests; observers remain charged to timing.
 

@@ -28,6 +28,63 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    @staticmethod
+    def continuation_sample(reused=45588):
+        def footer(n, cached, read, pp, generated, tg, accepted, offered):
+            return (f'strata serve: prompt {n} tokens = {cached} reused + {read} read '
+                f'in {pp} ms (1.0 tok/s), {generated} generated in {tg} ms (1.0 tok/s), '
+                f'drafts accepted {accepted} of {offered}, 0 checkpoints\n')
+        text = (footer(33283, 0, 33283, 40000, 12288, 1000000, 5000, 6000) +
+                footer(45589, reused, 45589-reused, 3, 2432, 100000, 1000, 2000))
+        sample = dict(prompt_tokens=33283, reused_tokens=0, read_tokens=33283,
+            generated_tokens=14738, prompt_ms=40003., decode_ms=1100000.,
+            drafts_accepted=6000, drafts_offered=8000, decode_tps=13.4, decode_tps_source='engine')
+        return text, sample
+
+    def test_api_binds_all_native_segments_and_separates_inserted_tokens(self):
+        # Same physical counts as the failed historical prose request, with
+        # literal synthetic clocks. Both a reused and a reread continuation count.
+        for reused in (0, 45588):
+            with self.subTest(reused=reused):
+                text, sample = self.continuation_sample(reused)
+                proof = generation.api_segment_evidence(text, sample, insertion_token_counts=(18,))
+                self.assertEqual(proof['native_generated_tokens'], 14720)
+                self.assertEqual(proof['server_inserted_tokens'], 18)
+                self.assertEqual(proof['api_generated_tokens'], 14738)
+                self.assertEqual(proof['segments'][1]['reused_tokens'], reused)
+                self.assertEqual(proof['segments'][1]['read_tokens'], 45589-reused)
+                self.assertAlmostEqual(proof['exact_native_decode_tps'], 14720/1100)
+
+    def test_single_native_generation_keeps_native_counts_without_insertions(self):
+        text, _ = self.continuation_sample()
+        sample = dict(prompt_tokens=33283, reused_tokens=0, read_tokens=33283,
+            generated_tokens=12288, prompt_ms=40000.5, decode_ms=1000000.5,
+            drafts_accepted=5000, drafts_offered=6000, decode_tps=12.3, decode_tps_source='engine')
+        proof = generation.api_segment_evidence(text.splitlines()[0], sample)
+        self.assertEqual(proof['server_inserted_tokens'], 0)
+        self.assertEqual(len(proof['segments']), 1)
+        self.assertEqual(proof['clock_binding']['rounding_bound_ms'], .55)
+
+    def test_native_segment_binding_refuses_unknown_work_and_wrong_totals(self):
+        text, sample = self.continuation_sample()
+        bad = [(text, sample, ()), (text, dict(sample, generated_tokens=14720), (18,)),
+            (text, dict(sample, drafts_accepted=6001), (18,)),
+            (text, dict(sample, read_tokens=33282), (18,)),
+            (text, dict(sample, prompt_ms=40005.), (18,)),
+            (text, dict(sample, decode_ms=1100002.), (18,)),
+            (text, dict(sample, decode_ms=float('nan')), (18,)),
+            (text, dict(sample, decode_tps=13.5), (18,)),
+            (text, dict(sample, decode_tps_source='client'), (18,)),
+            (text, dict(sample, generated_tokens=True), (18,)),
+            (text.replace('45588 reused', '45587 reused'), sample, (18,)),
+            (text.replace('2432 generated', '2431 generated'), sample, (18,)),
+            (text.replace('1 read in', '1 of 2 read in'), sample, (18,)),
+            ('\n'.join(reversed(text.splitlines())), sample, (18,)),
+            (text+text, sample, (18,)), ('', sample, (18,)), (text, sample, (True,))]
+        for i, (actual, api, allowed) in enumerate(bad):
+            with self.subTest(case=i), self.assertRaises(RuntimeError):
+                generation.api_segment_evidence(actual, api, insertion_token_counts=allowed)
+
     def test_completed_api_sample_is_durable_before_end_gate(self):
         with tempfile.TemporaryDirectory() as td:
             directory = Path(td)
