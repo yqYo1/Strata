@@ -979,7 +979,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   native outputs,TG12.237382/7.718794and MTPacceptance0.803074/0.342952.
   Both original request hashes and CPUentries/jobs match the earlier long
   corpus;these are contemporary reference samples,not a speedup or completed
-  capacity decision. Process1is running with an actual1worker+host header.
+  capacity decision. The first1worker+host process also closes normally0,
+  with identical output counts,acceptance and CPUentries/jobs for these bodies.
+  Its code/prose TGis7.983899/4.874395;one pair does not settle the prospective
+  three-pair capacity decision. Continue the unchanged5,1,1,5,5,1plan.
+  The741-source cohort also freezes AGENTS.md and the retention policy.
+  Apply the phase naming,separation and smallest-coherent-unit requirements
+  under Qualification and operating constraints immediately;mirror them into
+  AGENTS.md's existing tuning/measurement rules when this cohort closes.
+  Do not refresh its policy hashes to absorb a mid-cohort edit.
   The reused driver's`execution.json`is an Owner-closure snapshot before
   final publication;completion comes from the canonical record plus actual
   reaped/session-empty/absent-owner checks. Preserve the snapshot unchanged.
@@ -4969,6 +4977,33 @@ record the engine entrypoint and actual processed extent for full fill.
 Ordinary provider/runtime teardown is not qualified by the retained pre-exec
 validation reference through process exit.
 
+Design and select prefill and decode independently. Owned inference functions
+and kernels must identify their phase in their name (`prefill_`, `decode_` or
+`common_`, or an explicitly phase-qualified namespace); wrappers around external
+APIs carry the same distinction. Names describe the actual callers and state
+ownership. Existing shared processing remains an audit item until matched
+measurements justify it. A change to common processing must check both phases.
+If one phase worsens, retain its previous implementation and give the improved
+implementation to the benefiting phase. Do not accept the other phase's loss
+as the price of that improvement.
+
+When local separation cannot remove the effect, revisit the enclosing
+architecture: shared workspaces, weights and cache placement, initialization,
+runtime configuration, graph lifetime, scheduling and the state handoff.
+Separate ownership and selection at the boundary that actually causes the
+coupling; renaming functions alone does not resolve it. Preserve the unchanged
+phase's implementation, configuration, placement, correctness and repeated
+performance before adoption.
+
+Compare each smallest coherent change separately, even when several changes
+are being developed together. Include the headers, callers, producer/consumer
+layout changes and tests needed for that unit to remain valid. Evaluate
+independent kernels, placement changes and settings in separate matched
+comparisons. If several edits are inseparable, state their invariant and why
+they form one unit in the committed plan before measurement. Keep each unit's
+outcome and then validate the combined implementation; an aggregate improvement
+cannot establish which constituent changes to adopt or conceal a phase loss.
+
 Preserve the qualified runtime safety settings and immutable pre-exec
 SYCL/Level Zero environment in
 [`measurement_environment.json`](../tools/sycl/measurement_environment.json).
@@ -4977,16 +5012,11 @@ fallback plus a named imminent candidate while that comparison is active; do
 not infer global cleanup from the current-build inventory. Keep unresolved
 legacy source/recipe recovery holds separate from these two comparison
 executables, with the missing inputs, consumer, next bounded recovery action
-and review point recorded in the retained-build result. The current97fda fallback
-retains nine ELF artifacts;56cad9 and a347 have the named imminent prefill and
-decode comparisons above. The obsolete9af/552b roots are physically deleted
-after exact original source/recipe recovery and current-consumer checks. The
-117K552b milestone remains in Git/CSV without retaining its unused executable.
-Closed a1b0,519e,429b and superseded f633 outputs are also retired. Earlier
-adaptive/DFlash2 records and the56legacy ELF provenance holds remain separate
-reconciliation work;their old retention instructions do not renew a consumer.
-Review actual remaining paths against those recorded holds before the next
-generation or collector/model boundary. This is not global cleanup.
+and review point recorded in the retained-build result. Use the current build
+selection and concrete holds above, rather than an older generation's retention
+instruction, before the next build or collector/model boundary. Historical
+milestones remain recoverable from Git and the performance CSV after their
+executables are retired. This is not global cleanup.
 Other configured
 deployment outputs and qualified validation/profiling tools have separate named
 consumers. The standalone widening executable,IR and receipt are retired after
@@ -4994,24 +5024,13 @@ numerical/IL choice;successful host/device/build output and superseded source
 reviews are also retired. This is not global cleanup:the configured deployments'
 original source/recipe recovery and validated migration remain independent holds.
 
-Niko1221/Strata remains the only upstream. The maintained
+Niko1221/Strata remains the only upstream. Consult the maintained
 [`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
-records the last actual check at **2026-11-11 19:42:07 UTC**,
-`c1ff07f1a1817594811c960039571c6e268fe89a`(`v0.2.13.1-152-gc1ff07f1`).
-The latest interval adds151commits/303changed paths beyond504b1433. The interval
-is fetched, with only the plain GPU-list ordering fix and help from Niko
-2b9df3fe imported so far;four regressions and14existing GPU-role tests pass.
-The current
-630-path functional import still targets
-`146df3c468739147f520ac3816de806f71232571`(`v0.2.12`):shared Python/setup/
-control/server/API/Web/CLI source is present with partial validation. Native
-disk-session SAVE/RESTORE,BGEN/capability and desktop ports,the whole function
-ledger,full host validation and hardware-tuned unmodified-upstream evaluation
-remain incomplete. Bounded router/control/server source reviews cover selected
-changes in the latest151commits;the complete functional/component ledger is
-still pending. The earlier Arc-setup/readiness review covers504b1433only.
-The next actual check
-is due around **2026-11-13 19:42:07 UTC**.
+for the last actual check, fetched revision and next due time, and
+[`UPSTREAM_INTEGRATION.md`](UPSTREAM_INTEGRATION.md) for functional imports,
+component decisions and outstanding validation. Fetching a revision does not
+complete its functional ports or the hardware-tuned unmodified-upstream
+evaluation. Keep those obligations moving alongside tuning.
 **DeepSeek and35B execution support remain excluded until the
 user explicitly requests them, including future syncs.**
 
