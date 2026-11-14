@@ -346047,7 +346047,7 @@
     }
   },
   "decode_kv_policy_host_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "c5d5bbb1db92fc1d59602b0d0abd8ee9645dde98",
@@ -346250,7 +346250,28 @@
       "file_cap": 33554432,
       "total_cap": 67108864
     },
-    "outcomes": [],
+    "outcomes": [
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "syntax",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "link",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "run",
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
@@ -346258,6 +346279,29 @@
     "GPU_executed": false,
     "model_executed": false,
     "acceptance": "Exact committed source/controller/recipe/compiler/SDK/header/link inputs;actual policy fixture0andPASS;actual SYCL verifier syntax0;all owned processes normally reaped with empty sessions. No native engine build,ODR/model/physical-context or performance qualification.",
-    "consumer": "Current explicit decode KVhook;retire this temporary CPUELF after result/source recovery. Full engine rebuild remains mandatory before runtime tests."
+    "consumer": "Current explicit decode KVhook;retire this temporary CPUELF after result/source recovery. Full engine rebuild remains mandatory before runtime tests.",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-policy-host-v1/policy",
+      "sha256": "b51fffdca4e2c5b569c54c992d299b1d2a3e94597494cae99c76ee7eab2238e4",
+      "bytes": 109552
+    },
+    "error": "RuntimeError('all actual policy/cache controls required')",
+    "marker_failure": {
+      "actual_stdout": "verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 dpas-dense=4 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64\n",
+      "actual_stdout_sha256": "cd67bbc0c1f3ad388cd0fa6c36ec6f75380428673ca44b11c2d0fee43b062f05",
+      "expected_by_controller": "uppercase PASS substring",
+      "reason": "Controller did not use the actual committed fixture success marker. All4native CPUcommands exited0and owners closed;the overall qualification remains failed.",
+      "next": "New V2plan uses the exact committed success line and before-launch object/ELF checks;repeat all4commands with new committed controller/plan. No GPU/model qualification."
+    },
+    "actual_inputs": {
+      "compiled": {
+        "files": 874,
+        "sha256": "4f47763555cbca231df5a6a6e6a37c44aad18c102ff84e3a609b36579e0aebc4"
+      },
+      "links": {
+        "files": 23,
+        "sha256": "212362415b8b6a2f714f793c860ecc0bc2017d54e4f61b1cd4b7e1d9185c6bba"
+      }
+    }
   }
 }
