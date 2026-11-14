@@ -842,6 +842,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   two CPU preservation-policy tests pass normally with closed ownership.
   These controls cover ten invalid cohorts and keep first-use,warmed and
   TTFT-only regressions separate;they do not execute a model or establish PP.
+  This campaign isolates the flag within330405. A matched cross-build
+  prefill/TTFT comparison with the retained coherent14508fallback is still
+  required before claiming whole-engine preservation. Its older
+  `native_gdn_20261018`absolute PP and this campaign's different workload ID
+  are not a matched regression comparison.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
   checks,the six-process cohort retires424successful raw/cache files
@@ -859,8 +864,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ODRqualification. Both temporary host products and eight ended engine/fixture
   groups are now retired after exact Git source/recipe/compiler/link recovery:
   1210files/970017769regular bytes. Original source receipts and still-consumed
-  SDK/census metadata remain;the known-good14508engine and1e776KVfixture are
-  unchanged. The partial GU,adaptive audit and old DFlash2special-format
+  SDK/census metadata remain;the known-good14508engine is unchanged and the
+  separate1e776timing fixture is now retired as recorded above. The partial
+  GU,adaptive audit and old DFlash2special-format
   provenance holds remain separate,with exact recovery actions in
   `production_preparation.build_retirement`. The build-closure inventory confirms
   that only those three legacy engine roots remain alongside the validated
