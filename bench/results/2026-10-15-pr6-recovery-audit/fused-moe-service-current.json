@@ -366569,5 +366569,177 @@
     "compatibility_control_adopted": false,
     "performance_qualified": false,
     "retention": "These compact observations support the pending A scope decision. Source f6/8139 remains on the active pushed child pending B1integration;preserve original identities before retiring that child. Keep private records only through that decision;normal Git history is the archive."
+  },
+  "phase_kv_naming_oracle_v1": {
+    "stage": "built",
+    "native_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e",
+    "native_observer_admission": {
+      "native_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e",
+      "original_source_files": 1187,
+      "observer_source_files": 1189,
+      "observer_source_sha256": "b1ae6c6b7a6d5e955f496f3269b03d57256a9ec466802803298df9a57915275b",
+      "added_observers": {
+        "tools/sycl/check_named_kv.py": "f562291a293f3c250c975836fce51bec66518f06fa3b267a550a85554e482303",
+        "tools/sycl/check_named_kv_oracle.py": "946268bf553a79e0870db3d74d4351592edb2014b18a4b2be87ae29e766381c1"
+      },
+      "actual_census_sha256": "82aecb2e341e2981e7d471d1d4d6099dd44c357128eded3077264d48e026b037",
+      "class_coherence": {
+        "headers": {
+          "include/strata/prefill/gemm.hpp": {
+            "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+            "includers": 5,
+            "includers_sha256": "0b5bdd4c29a4d3e822f50a33f2b72c39c0f5cd2c25197a37933c8186e45972a2",
+            "conditions": {
+              "STRATA_ENABLE_SYCL": "1"
+            },
+            "all_objects_from_fresh_build": true
+          },
+          "include/strata/core/verify.hpp": {
+            "header_sha256": "d0e6b46ac93d2451de3696aaa7ccdf788db71e02195b2aa867794570e3a7cf25",
+            "includers": 4,
+            "includers_sha256": "6d41dd724d2d9b157078c7cb6b3e28d9816f612b2e96b5fa0faf991c8649a6b9",
+            "conditions": {
+              "STRATA_ENABLE_SYCL": "1"
+            },
+            "all_objects_from_fresh_build": true
+          },
+          "include/strata/core/verify_window_policy.hpp": {
+            "header_sha256": "be517d179213990d646d8d40f1843298d2e9c8df43f014a5eb41d87531dd87a4",
+            "includers": 6,
+            "includers_sha256": "9792931437f18571e95ebbf2ae29aea08b08b1b24187dd478606644596f32880",
+            "conditions": {},
+            "all_objects_from_fresh_build": true
+          },
+          "include/strata/kernels/cpu/pool.hpp": {
+            "header_sha256": "a8be9d7685d1ab38ccfdf51f34668e9326cddc127f1ac3d55237d20d5f787dab",
+            "includers": 12,
+            "includers_sha256": "790ff48b233539d50dfdbfc7cdd64d3a6418b99cd6e2e76c7e8a1a655ce7a1e6",
+            "conditions": {
+              "STRATA_CPU_SERVICE_PROFILE": "1"
+            },
+            "all_objects_from_fresh_build": true
+          },
+          "include/strata/core/expert_source.hpp": {
+            "header_sha256": "9981b72b916c9ceee6f037cf621fc9b5b2566da90ab663d235504f85cd9e3226",
+            "includers": 10,
+            "includers_sha256": "384fd508ead59c486495666c3fb55e32d7d2687ea9d6b1cf04c8a6239ed9cba1",
+            "conditions": {
+              "STRATA_ENABLE_SYCL": "1"
+            },
+            "all_objects_from_fresh_build": true
+          }
+        },
+        "partial_archive_reuse": false,
+        "fresh_complete_build": true
+      },
+      "exact_fourteen_ELFs_census_recipe": true,
+      "exact_seed_recipe_sha256": "1c14fb531398338c49a4aa3ee0612e1fdad81f46ee9ce2a50ac01805b00b5fdd",
+      "native_recompiled": false,
+      "GPU_result_inherited": false,
+      "naming_unit_origin": "ae74403d163208bec938e0af92c5d10eb3d92263",
+      "TU_split_included": false
+    },
+    "native_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/record.json",
+      "sha256": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c"
+    },
+    "native_gate_sha256": "19d2a981fecc018606ca6fec31490cc9e543d127488eafc5b4de2ea5e6e74602",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_kv_copy_groups_bench",
+      "sha256": "eeaf60aa8a0fe4f2c052d6f92bf006a509747ce62b9c6937539ba9348a437805",
+      "bytes": 465912,
+      "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+    },
+    "recipe": {
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/cache",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_IQ3_PAIR": "1",
+        "STRATA_IQ3_PAIR_AUDIT": "1",
+        "STRATA_CPU_SERVICE": "0",
+        "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+        "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+        "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+        "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+        "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+        "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+        "STRATA_SYCL_PREFILL_QSA_STREAM": "1",
+        "STRATA_SYCL_DECODE_KV_COALESCED": "0"
+      }
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+    },
+    "driver_library": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "cases": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "performance_qualified": false,
+    "plan": {
+      "order": [
+        "smoke",
+        "full"
+      ],
+      "source": "Same-build14th KVfixture from the naming-only coherent generation. All scalar/cooperative body,geometry,policy and oracle definitions unchanged;no TU split.",
+      "smoke": "Separate immutable child with full URtrace/parameter validation:14direct semantics,refusals/null-stream and20graph replays. Preserve qualified copy-offload/direct-submission/queue settings and pre-main provider probe.",
+      "full": "Separate quiet child:795exact oracle records,60graph replays,15physical-tail graph replays and12prospective timing-shape checks with two exact replays each. Guards,map/control/payload/source/input invariants and final cell262143 remain required. No timing gain claim.",
+      "stopping": "Commit exact source/recipe/plan before smoke;commit its closure before full. Stop first failed identity,budget,oracle,ownership,validation or fresh-fault gate;no retries,changed pins or reclassified results.",
+      "limits": "Component correctness only. Do not claim model262144fill,RESTORE,quality,ordinary teardown or speed. Actual production phase/state handoff and original comparison obligations remain separate;static ELF equivalence alone changes none of them."
+    },
+    "retention": "Use the existing14-target generation;no new binaries. Keep compact counts,exactness,provider,fault/closure and source identities;retire successful trace/cache/raw records after this oracle decision. Three named phase-comparison generations remain bounded by their existing retirement point.",
+    "controller": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "568f7c1a5626e36ea71525729659848ef6dcaebd",
+      "count": 342,
+      "aggregate_sha256": "73bc68b2b0d854d78738772118c0b917d0fa520818c50b6a8058807e68fa88c3"
+    },
+    "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51"
   }
 }
