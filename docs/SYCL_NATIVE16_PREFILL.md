@@ -1033,10 +1033,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   recovered using the originalbbd345checkout. Its already-retired558-source
   prerequisite is expanded from the original Git count/hash scope;no private
   receipt is rewritten or execution qualification inferred. The temporary
-  `.worktree/retire-adaptive-source`checkout is source-recovery data only.
+  `.worktree/retire-adaptive-source`checkout's source-only consumer is closed;
+  its973regular files(13916535bytes)are retired after verifying a clean tree
+  and the originalbbd345commit's reachability from the pushed primary.
   Before another engine generation,finish binding the1467/698GU,1453adaptive
   and1461DFlash2compiler maps,original link/recipe and final ELF inputs,then
-  retire the ended builds and this checkout at a serialized safe boundary.
+  retire the ended builds at a serialized safe boundary.
   The three holds remain pending until those checks and actual cleanup finish.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
@@ -1570,8 +1572,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   CLI/tool surface. AHnative Luna-max review confirms that prerequisite stop;
   it does not establish global impossibility. No worker,helper,Task or
   Dispatch is created. Actual report-only writes,recognition,worker IPC and
-  handle/Dispatch binding remain unqualified. A future documented client is
-  required before another canary;do not retry AG or guess RPC. The current
+  handle/Dispatch binding remain unqualified. Main now identifies a different
+  documented custom-argv route:`terminal create --command`with plain native
+  Codex,then`worker-start --terminal`on the same primary worktree. This needs
+  a new finite no-source canary at a serialized measurement gap;recognition,
+  sandbox enforcement and IPC are not established by the guide. Keep AG's
+  original stop and do not retry it or guess RPC. Existing-terminal start
+  cannot take model/effort flags;pin them in the native startup argv. The current
   custom workspace-write policy requires sandbox network access for IPC;
   AF's contrary network=false suggestion is rejected. Xtraces Tto N's supervisor,whose ancestry/license
   remain unresolved;do not reuse T/N/Wcode as an implementation basis.
