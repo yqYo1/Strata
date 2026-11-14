@@ -1018,7 +1018,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Main`8a1d10d28`integrates the reviewed`bbc8a6c00`qualification proposal and
   prepares`phase_kv_naming_device_v1`:11fresh host/submission/phase/head/
   attention/producer/GUstages on this generation,without copying old results.
-  Actual numerical/device execution remains pending;KVoracle,model handoff
+  The fresh host stage closes normally with all owned children reaped and
+  empty sessions:MAXT/physical admission and hash-order guards,reader controls,
+  owner/configuration refusals,phase policy and retained1eecselected-head check.
+  Device numerical execution remains pending;KVoracle,model handoff
   and per-unit speed comparison still follow only after their prerequisite gates.
   Its temporary-third-generation
   consumer is the sole-change naming comparison,preserving both phase references.
