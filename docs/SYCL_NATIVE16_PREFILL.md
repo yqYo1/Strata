@@ -1023,6 +1023,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in that exact child revision,with GCC13and no generated ELF. It cannot
   qualify SYCL compilation,linkage,actual routes or
   speed;fresh bounded native/oracle/model and both-phase comparisons remain required.
+  B1scovers Verifier's scalar fallback,not the separate single-token
+  Layer/Session path. That legacy caller still reaches`qsa_kv_resolve`and
+  needs explicit phase attribution before changing its shared scalar body.
   The new decode source is extracted from the owned1eec implementation;
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
   are unchanged. The independent expert-dispatch bounds fix is preserved.
