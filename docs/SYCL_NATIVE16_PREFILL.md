@@ -1036,8 +1036,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   boundaries include262144component cells and GUfinishes44numerical cases
   within the original FP16ULP/BF16capture/guard criteria. All source/provider/
   ownership gates remain intact. This is native component qualification only;
-  KVoracle,model handoff
-  and per-unit speed comparison still follow only after their prerequisite gates.
+  The same-build KVfixture now also closes its fresh traced smoke and full
+  oracle checks normally0:14direct smoke semantics,20smoke graph replays,
+  795exact full oracle records,60full graph replays,15physical-tail graph
+  records and12timing-shape correctness cases. All provider/validation/owner
+  and unchanged-boot gates pass without fresh GPUfaults. This is component
+  correctness only;the final physical context cell in a fixture does not
+  qualify a full model fill. Actual model handoff and per-unit speed
+  comparison still follow only after their prerequisite gates.
   The independent naming-image checks now compare the exact330405and6d2b4f
   production ELFs. V1`f6da849ab`passes36ordinary sections(22974831bytes),
   load layout and24645normalized non-file symbols;AMreview identifies its
