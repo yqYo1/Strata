@@ -357084,11 +357084,119 @@
       "proof_of_zero_effect_or_physical_saturation": false,
       "task_agent_physical262144_RESTORE_ordinary_teardown_pending": true
     },
+    "artifact_retirement": {
+      "complete": true,
+      "files": 835,
+      "regular_bytes": 126546171,
+      "manifest_sha256": "2d93be23e473487fdc6b9fc443d037b22446f11077b87459a2c9abb006999067",
+      "manifest_retired": true,
+      "source_commit": "9269a3cefe67e4e87af386a960698a8ee525d80f",
+      "recovered_controller_inputs": 735,
+      "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+      "native_recipe_sha256": "1a05f982286e1616f90fbd171fc68bc8ee690508e8522456a9742a5972c9e588",
+      "native_census_sha256": "2457f798c17913b344a179549ab7ef7c5b30b3e497c03d16f2d4be5c34b596d2",
+      "retained25ELFs_unchanged": true,
+      "kept_process_configs_and_plans": 24,
+      "original_samples_and_failed_decision_unchanged": true,
+      "reason": "Closed twelve-process comparison;successful raw logs,normal ownership transactions and generated caches have no remaining consumer. Keep private source/configuration receipt and compact36samples. Both native generations remain for the named imminent historical cross-build comparison;three legacy provenance holds are separate."
+    },
     "source_inputs": {
       "files": 735,
       "sha256": "539b53f251247ff586b47efa2bf3438c2d6622b5e01d72cb3b021669b11b998a"
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "decode_resource_demand_v1": {
+    "evidence_commit": "4ee20baa4cddb738ba2f530bdd1be08f1b353b32",
+    "evidence_key": "decode_kv_speed_v1",
+    "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+    "classification": "Derived workload demand,not a new measurement or speedup",
+    "consumer": "Choose the next bounded decode CPU/GPU resource attribution and capacity comparison after prefill preservation",
+    "review_point": "At the next decode-attribution decision;remove the estimates if superseded by exact layer-weighted service/traffic evidence",
+    "source_sha256": {
+      "include/strata/kernels/cpu/expert.hpp": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+      "src/core/expert_source.cpp": "7e3c7c5cfee6cb821f3b74b65f579c8c07feadb5d0910ece8c4792866274899b",
+      "src/program/generate.cpp": "f59cfe1d32016e2b46300a31fc10bad51a5d83b4dd53617e560fbd16b6071617"
+    },
+    "layout": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+      "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+      "layers": 48,
+      "experts_per_layer": 512,
+      "blob_bytes_min": 1510400,
+      "blob_bytes_max": 2662400
+    },
+    "expert_geometry": {
+      "hidden": 2560,
+      "intermediate": 640,
+      "dense_equivalent_MACs_per_entry": 4915200
+    },
+    "formulas": {
+      "MACs_per_output": "CPU_entries*3*2560*640/generated_tokens",
+      "logical_one_scan_bytes_per_output_bounds": "CPU_unique_jobs*[minimum_blob_bytes,maximum_blob_bytes]/generated_tokens",
+      "target70": "per-output demand times70"
+    },
+    "workloads": {
+      "regular-code": {
+        "candidate_process_indices": [
+          1,
+          2,
+          5
+        ],
+        "native_outputs": 3548,
+        "CPU_unique_jobs": 1366387,
+        "CPU_entries": 1770752,
+        "VRAM_hits": 228448,
+        "lookups": 1999200,
+        "VRAM_lookup_fraction": 0.11426970788315326,
+        "CPU_entries_per_output": 499.0845546786922,
+        "CPU_dense_equivalent_MACs_per_output": 2453100403.1567082,
+        "candidate_median_decode_seconds": 236.6771,
+        "dense_equivalent_GMAC_per_wall_second": 36.77415445093759,
+        "logical_one_scan_GB_per_wall_second_bounds": [
+          8.71985893354279,
+          15.370598798109324
+        ],
+        "target70_dense_equivalent_GMAC_per_second": 171.71702822096958,
+        "target70_logical_one_scan_GB_per_second_bounds": [
+          40.71740832468997,
+          71.77305874182639
+        ]
+      },
+      "varied-prose": {
+        "candidate_process_indices": [
+          1,
+          2,
+          5
+        ],
+        "native_outputs": 5485,
+        "CPU_unique_jobs": 2943695,
+        "CPU_entries": 4898046,
+        "VRAM_hits": 292194,
+        "lookups": 5190240,
+        "VRAM_lookup_fraction": 0.05629681864422455,
+        "CPU_entries_per_output": 892.9892433910666,
+        "CPU_dense_equivalent_MACs_per_output": 4389220729.11577,
+        "candidate_median_decode_seconds": 581.0509000000001,
+        "dense_equivalent_GMAC_per_wall_second": 41.43333346390135,
+        "logical_one_scan_GB_per_wall_second_bounds": [
+          7.651923313430888,
+          13.488136010115463
+        ],
+        "target70_dense_equivalent_GMAC_per_second": 307.24545103810397,
+        "target70_logical_one_scan_GB_per_second_bounds": [
+          56.74220327438468,
+          100.0201549243391
+        ]
+      }
+    },
+    "limits": [
+      "CPU entries include verified draft-token computations;they are not unique generated tokens. Counts start after prefill.",
+      "MACs are dense-equivalent scalar arithmetic volume,not native ISA instruction throughput or saturation.",
+      "One whole blob traversal per distinct CPU job is a demand model. Per-layer job weights,cache reuse,reloads and actual DRAM/bus traffic are not measured;the byte range is not a measured RAM-bandwidth bound.",
+      "PCIe expert copies are zero for this static placement;other transfers still exist.",
+      "No measured RAM,PCIe,VRAM or arithmetic ceiling is inferred. Existing DECODE_TIMING and CPU_WORK_CENSUS/CPU_SERVICE need their own committed observer/overhead plan before use."
+    ]
   }
 }

@@ -829,7 +829,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   TTFT55.627s exceeds53.315s by4.3%. The third code pair is also slower by
   0.56%in prompt time and1.06%in TTFT;the prose intervals do not worsen.
   Preserve this unresolved first-use result rather than dismissing it as noise.
-  Dedicated first/warmed32K/64K prefill/TTFT preservation checks remain.
+  The dedicated first/warmed32K/64K comparison below is now closed,but
+  preservation remains unresolved.
   The separate`decode_kv_prefill_v1`plan from`9269a3cef`uses twelve fresh
   processes:three adjacent flag0/1pairs per length,with each middle pair
   reversed. Every process uses three exact24-output thinking-on requests;
@@ -842,6 +843,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   two CPU preservation-policy tests pass normally with closed ownership.
   These controls cover ten invalid cohorts and keep first-use,warmed and
   TTFT-only regressions separate;they do not execute a model or establish PP.
+  All twelve processes/thirty-six requests now close normally0,with unchanged
+  boot/driver,quiet validation,closed ownership and all15final asset hashes.
+  Evidence`18a7118b2`keeps the original order and criteria. The32K first/warmed
+  prompt-time median C/Rratios are0.992524/0.998343,and TTFT0.992042/0.998041.
+  The64K first-use prompt/TTFT ratios are0.994457/0.996003,but warmed prompt
+  time66.91395->67.2345s and TTFT67.0715->67.3985s give1.004790/1.004875.
+  Thus two of eight median series fail;execution success does not pass the
+  preservation screen. All three paired ratios and mixed directions remain.
+  Keep the measured decode gain as an eligible candidate,with its default
+  flag0and preservation unresolved;no criterion change or extra cohort sample.
+  After735original controller-input and native source/recipe/census checks,
+  835ended raw/cache/transaction files(126546171regular bytes)are retired.
+  Keep the receipt and24config/plan files;all25fallback/candidate ELFs and
+  original36samples/failed decision are unchanged.
   This campaign isolates the flag within330405. A matched cross-build
   prefill/TTFT comparison with the retained coherent14508fallback is still
   required before claiming whole-engine preservation. Its older
@@ -881,12 +896,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   that only those three legacy engine roots remain alongside the validated
   reference and current candidate among these reviewed paths;no global cleanup
   is claimed. The fresh native/model handoff stages above are closed;the
-  separate repeated decode speed comparison is closed,while prefill-preservation
-  checks remain open. The component alone did not qualify model TG;the
+  separate repeated decode speed comparison and dedicated prefill comparison
+  are closed,while the failed preservation screen and cross-build comparison
+  remain open. The component alone did not qualify model TG;the
   completed model campaign above supplies the workload-scoped gain.
   Actual request overlap/hit distribution and physical bus traffic remain
   unknown. The161ms observer service is still
   only a mechanism hypothesis;the limiting physical resource remains unknown.
+  The source-bound`decode_resource_demand_v1`derives the current workload's
+  CPUdemand from closed`4ee20baa4`counters and the pinned48-layer expert layout.
+  CPUentries per generated token are499.085for code and892.989for prose,
+  including verified drafts;VRAMlookup fractions are11.427%and5.630%.
+  At70TG,the same work distribution needs171.717/307.245dense-equivalent
+  GMAC/s on the CPU. Assuming one whole expert-blob traversal per distinct
+  CPUjob,the layer-size bounds give40.717..71.773/56.742..100.020GB/s.
+  These are logical demand estimates,not measured DRAM traffic,ISAthroughput
+  or a hardware ceiling;per-layer job weights and cache reuse are unresolved.
+  Use a separately planned,overhead-checked CPUcensus/service attribution to
+  distinguish quantization arithmetic from RAMlimits before choosing a CPU
+  optimization. Existing decode timing counters alone are wall-time regions.
   No default adoption or hardware-saturation claim follows. The opt-in hook
   has a named prefill-preservation consumer;the standalone timing fixture's
   generation is retired after exact original source/recipe recovery. Active
