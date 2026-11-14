@@ -717,8 +717,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   remains the speed reference. No candidate clean-speed,
   dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
   teardown qualification follows. See mixed_nt_model_v1.
-  The separate cooperative KVplanner has component qualification and a
-  built,runtime-unqualified opt-in decode hook from`644412c8e`;default selection stays scalar. Its
+  The separate cooperative KVplanner has component qualification and an
+  opt-in decode hook from`644412c8e`;default selection stays scalar. Its
   standalone timing fixture now builds from`79ed58840`:five fresh TUs,718compiler
   inputs/24external links,zero uncovered/reused objects and36passing host
   controls. Binary`1e7765b60`first passes14bounded semantics and20traced graph
@@ -781,12 +781,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and off/on KV producers, including 262144 cells and final-cell overwrite;
   and GU smoke plus 44 numerical cases. All native children close normally
   with quiet parameter validation, closed ownership and no fresh fault.
-  GU has zero FP16 ULP difference and exact BF16 captures. Small fixture
-  geometry can select the scalar fallback: this does not yet prove actual
-  model selection of the cooperative planner. Next require the real
-  32769/82/32769-input handoff and actual decode-only cooperative capture;
-  sustained TG, clean PP/TTFT, agent/task, physical model 262144/RESTORE and
-  ordinary teardown remain unqualified. The corrected
+  GU has zero FP16 ULP difference and exact BF16 captures. Its successful raw
+  traces, transactions and cache are retired: 95 files, 9700246 regular bytes.
+  The fresh `decode_kv_model_v1` now passes the thinking-on
+  32769/82/32769-input handoff with 32 generated tokens per request. Both long
+  handoffs actually capture cooperative decode4 in all 12 QSA layers, with
+  zero scalar calls in those captures. Prompt1/4 and decode1 retain 12 scalar
+  calls and zero cooperative calls. All 15 model asset hashes match before
+  and after; the native child closes normally with quiet parameter validation,
+  closed ownership and no fresh fault. Width2 has not been observed in this
+  model check. This qualifies the observed route/state handoff, not sustained
+  TG, clean PP/TTFT, task/agent, physical model 262144/RESTORE, ordinary teardown
+  or default adoption. Next repair API/native-segment journal binding and
+  commit a repeated thinking-enabled long-generation comparison. The corrected
   `decode_kv_policy_host_v2`check from`ba7715d00`passes all four CPUcommands:
   actual policy compilation,actual SYCL Verifier syntax,link and fixture
   execution,with874compiler/23link inputs and closed ownership. V1's incorrect
