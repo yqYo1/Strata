@@ -272,11 +272,17 @@ def decision(processes):
         task_agent_physical262144_RESTORE_and_ordinary_teardown_pending=True, physical_saturation_qualified=False)
 
 
+def native_context(row, plan):
+    """Default single-image contract; a pinned comparison may select by arm."""
+    return {k: row[k] for k in ('binary', 'native_source_commit', 'native_validation_probe', 'boot')}
+
+
 def run(index):
     row = json.loads((ROOT/'record.json').read_text()); files, manifest = current(row)
     require(row['host_passed'] and row['stage'] in ('ready','running') and len(row['processes']) == index
         and all(p['passed'] for p in row['processes']), 'fresh ordered process only; no retry')
     plan = row['plans'][index]; root = Path(plan['root']); env = environment(row, plan)
+    native = native_context(row, plan)
     cursor = next(v.split(': ',1)[1] for v in subprocess.check_output(['journalctl','-k','-b','-n','0',
         '--show-cursor','--no-pager'],text=True,timeout=15).splitlines() if v.startswith('-- cursor: '))
     outcome, owner = dict(index=index, kernel=plan['kernel'], passed=False, complete=False,
@@ -302,16 +308,16 @@ def run(index):
                 claim = json.loads((root/'engine-start.json').read_text())['native']
                 actual = build.supervision.identity(claim['pid'])
                 require(actual and actual['start_ticks']==claim['start_ticks'] and actual['sid']==entry['pid']
-                    and str(Path('/proc',str(claim['pid']),'exe').resolve())==row['binary']['path']
+                    and str(Path('/proc',str(claim['pid']),'exe').resolve())==native['binary']['path']
                     and (identity is None or identity==claim), 'native ownership/executable differs')
                 identity = claim
                 outcome.update(model_executed=True, native_identity=claim)
-                expected = runner.model.engine_once.native_environment(row,env)
+                expected = runner.model.engine_once.native_environment(dict(row, **native),env)
                 actual_env = dict(v.split(b'=',1) for v in Path('/proc',str(claim['pid']),'environ').read_bytes().split(b'\0') if b'=' in v)
                 require(all(actual_env.get(k.encode())==v.encode() for k,v in expected.items())
                     and set(actual_env)-{k.encode() for k in expected}<={b'PWD',b'OLDPWD',b'SHLVL',b'_'}, 'native environment differs')
                 mapped = shared.runtime.executable_mappings(Path('/proc',str(claim['pid']),'maps').read_text())
-                require(mapped <= set(files)|{row['binary']['path']} and
+                require(mapped <= set(files)|{native['binary']['path']} and
                     {row['native_validation_probe']['loader']['path'],row['native_validation_probe']['library']['path'],env['ZE_ENABLE_ALT_DRIVERS']} <= mapped,
                     'native providers differ')
                 shared.python_runtime.check_running(entry['pid'],P/'tools/strata_bench.py',manifest['selected'],env,
@@ -364,7 +370,7 @@ def run(index):
             for sample,api in zip(outcome['samples'],actual)),'official/durable API samples differ')
         hashes=[s['request_sha256'] for s in outcome['samples']]
         require(not row['processes'] or hashes==row['processes'][0]['request_sha256'],'paired request bodies differ')
-        end=shared.gen.native_end(root,row,dict(config=configuration(row,plan)),row['boot'],entry['pid'])
+        end=shared.gen.native_end(root,dict(row, **native),dict(config=configuration(row,plan)),row['boot'],entry['pid'])
         text=(root/'engine.stderr').read_text(); base.clean_observers(text)
         runner.generation.gdn.validate_model_text(text,plan)
         validation=shared.runtime.validation.preload_evidence(text,end['native']['pid'])
@@ -373,7 +379,7 @@ def run(index):
         if index==len(ARMS)-1: shared.models.model_pins(row['configuration'],row['model_assets'],full=True)
         outcome.update(complete=True,host_probe_accepted=True,native_exit_code=0,native_identity=identity,
             validation=validation,API_native_binding=bundles,request_sha256=hashes,journal_sha256=sha(journal_path),
-            journal_complete=True)
+            journal_complete=True,binary=native['binary'],native_source_commit=native['native_source_commit'])
     except BaseException as error:
         outcome['error']=repr(error)
     finally:
