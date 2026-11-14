@@ -38,13 +38,19 @@ class EvidenceTests(unittest.TestCase):
                     rows = [json.loads(x) for x in (directory / 'requests.jsonl').read_text().splitlines()]
                     self.assertEqual([r['kind'] for r in rows], ['start', 'result'])
                     self.assertEqual(rows[-1]['sample']['generated_tokens'], 1500)
-                    self.assertTrue(b.verify_request_journal(directory)['valid'])
+                    proof = b.verify_request_journal(directory)
+                    self.assertTrue(proof['valid'])
+                    self.assertEqual(len(proof['pending_gates']), 1)
                 observed.append(stage)
             suite = b.Suite('unused', '', 262144, 1, True, journal=journal,
                 want_long_generation=True, long_generation_only=True, request_gate=gate)
             with patch.object(b, 'chat', return_value=raw()):
                 suite.request('long-generation/regular-code', 0, None, [], 16384, True)
             self.assertEqual(observed, ['begin', 'end'])
+            journal.state(complete=True, terminal='complete')
+            proof = b.verify_request_journal(directory)
+            self.assertTrue(proof['complete'])
+            self.assertEqual(proof['pending_gates'], [])
 
     def test_failed_end_gate_preserves_one_api_result_and_failed_gate(self):
         with tempfile.TemporaryDirectory() as td:
@@ -67,6 +73,55 @@ class EvidenceTests(unittest.TestCase):
             self.assertFalse(proof['complete'])
             self.assertEqual(proof['pending'], [])
             self.assertEqual(len(proof['failed_gates']), 1)
+            journal.state(complete=True, terminal='complete')
+            self.assertFalse(b.verify_request_journal(directory)['valid'])
+
+    def test_request_error_and_end_gate_error_are_recorded_separately(self):
+        for failure in ('begin', 'http', 'digest'):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as td:
+                directory = Path(td)
+                journal = b.RequestJournal(directory, lambda x: x)
+                stages = []
+                def gate(stage, phase, run):
+                    stages.append(stage)
+                    if stage == failure:
+                        raise RuntimeError('primary begin failure')
+                    if stage == 'end':
+                        raise RuntimeError('secondary end failure')
+                suite = b.Suite('unused', '', 262144, 1, True, journal=journal,
+                    want_long_generation=True, long_generation_only=True, request_gate=gate)
+                reply = raw()
+                if failure == 'digest':
+                    del reply['text']
+                expected = 'primary begin failure' if failure == 'begin' else 'primary HTTP failure' if failure == 'http' else 'text'
+                with patch.object(b, 'chat', side_effect=RuntimeError('primary HTTP failure')
+                        if failure == 'http' else None, return_value=reply) as chat, self.assertRaisesRegex(
+                        (RuntimeError, KeyError), expected):
+                    suite.request('long-generation/regular-code', 0, None, [], 16384, True)
+                self.assertEqual(chat.call_count, 0 if failure == 'begin' else 1)
+                self.assertEqual(stages, ['begin'] if failure == 'begin' else ['begin', 'end'])
+                rows = [json.loads(x) for x in (directory / 'requests.jsonl').read_text().splitlines()]
+                self.assertEqual([r['kind'] for r in rows], ['start', 'interrupted', 'gate'])
+                self.assertIn(expected, rows[1]['error'])
+                self.assertIn('begin failure' if failure == 'begin' else 'secondary end failure', rows[2]['error'])
+                proof = b.verify_request_journal(directory)
+                self.assertTrue(proof['valid'])
+                self.assertEqual(proof['pending'], [])
+                self.assertEqual(proof['pending_gates'], [])
+                self.assertEqual(len(proof['failed_gates']), 1)
+
+    def test_completed_api_with_unfinished_gate_is_incomplete_evidence(self):
+        with tempfile.TemporaryDirectory() as td:
+            journal = b.RequestJournal(Path(td), lambda x: x)
+            index = journal.append('start', 'prefill-only', 0, gate_required=True)
+            journal.append('result', 'prefill-only', 0, request_index=index, sample={'ok': True})
+            proof = b.verify_request_journal(td)
+            self.assertTrue(proof['valid'])
+            self.assertFalse(proof['complete'])
+            self.assertEqual(proof['pending'], [])
+            self.assertEqual(len(proof['pending_gates']), 1)
+            journal.state(complete=True, terminal='complete')
+            self.assertFalse(b.verify_request_journal(td)['valid'])
 
     def test_warmup_reconciliation_rejects_failed_missing_reordered_and_changed_requests(self):
         phases = [('warm-up/chat',None,24,True),('calibration',200,1,False),

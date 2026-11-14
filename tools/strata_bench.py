@@ -314,12 +314,15 @@ class RequestJournal:
         self.index, self.previous = 0, None
         self.lock = threading.RLock()
         self.pending = {}
+        self.pending_gates, self.failed_gates = {}, []
         self.state(complete=False, terminal="running")
 
     def state(self, **values):
         with self.lock:
             data = {"complete": False, "qualified": False, "last_index": self.index - 1,
-                    "last_sha256": self.previous, "pending": list(self.pending.values()), **values}
+                    "last_sha256": self.previous, "pending": list(self.pending.values()),
+                    "pending_gates": list(self.pending_gates.values()),
+                    "failed_gates": self.failed_gates, **values}
             tmp = self.directory / "journal-state.tmp"
             with tmp.open("w", encoding="utf-8") as f:
                 json.dump(redact_obj(data, self.red), f, ensure_ascii=False)
@@ -351,8 +354,14 @@ class RequestJournal:
             if kind == "start":
                 self.pending[row["index"]] = {"request_index": row["index"], "phase": phase, "run": run, "turn": turn,
                     "request_sha256": row.get("request_sha256")}
+                if row.get("gate_required") is True:
+                    self.pending_gates[row["index"]] = self.pending[row["index"]]
             elif kind in ("result", "interrupted"):
                 self.pending.pop(values.get("request_index"), None)
+            elif kind == "gate":
+                gate = self.pending_gates.pop(values["request_index"])
+                if row["status"] == "failed":
+                    self.failed_gates.append(gate)
             self.state(terminal="running")
             return row["index"]
 
@@ -361,6 +370,7 @@ def verify_request_journal(directory):
     """Verify the durable complete prefix and state. A truncated/stale journal is incomplete."""
     directory = Path(directory)
     previous, pending, rows, errors = None, {}, [], []
+    pending_gates, failed_gates = {}, []
     try:
         for line in (directory / "requests.jsonl").read_text().splitlines():
             row = json.loads(line)
@@ -372,6 +382,10 @@ def verify_request_journal(directory):
             if row["kind"] == "start":
                 pending[row["index"]] = {"request_index": row["index"], "phase": row["phase"],
                     "run": row["run"], "turn": row["turn"], "request_sha256": row.get("request_sha256")}
+                if "gate_required" in row and type(row["gate_required"]) is not bool:
+                    raise ValueError("gate requirement must be boolean")
+                if row.get("gate_required") is True:
+                    pending_gates[row["index"]] = pending[row["index"]]
             elif row["kind"] in ("result", "interrupted"):
                 request_index = row["request_index"]
                 if request_index not in pending:
@@ -379,6 +393,16 @@ def verify_request_journal(directory):
                 start = pending.pop(request_index)
                 if any(row[k] != start[k] for k in ("phase", "run", "turn")):
                     raise ValueError("terminal request identity mismatch")
+            elif row["kind"] == "gate":
+                request_index = row["request_index"]
+                if request_index in pending or request_index not in pending_gates:
+                    raise ValueError("gate must follow its sole request terminal row")
+                gate = pending_gates.pop(request_index)
+                if (any(row[k] != gate[k] for k in ("phase", "run", "turn"))
+                        or row["status"] not in ("passed", "failed")):
+                    raise ValueError("gate identity/status mismatch")
+                if row["status"] == "failed":
+                    failed_gates.append(gate)
             previous = digest
             row["sha256"] = digest
             rows.append(row)
@@ -388,15 +412,18 @@ def verify_request_journal(directory):
     try:
         state = json.loads((directory / "journal-state.json").read_text())
         if (state["last_index"] != len(rows)-1 or state["last_sha256"] != previous or
-                state["pending"] != list(pending.values())):
+                state["pending"] != list(pending.values()) or
+                state.get("pending_gates", []) != list(pending_gates.values()) or
+                state.get("failed_gates", []) != failed_gates):
             raise ValueError("journal state/head/pending mismatch")
-        if state["complete"] and (pending or state["terminal"] != "complete"):
+        if state["complete"] and (pending or pending_gates or failed_gates or state["terminal"] != "complete"):
             raise ValueError("complete state has unfinished work")
     except (OSError, ValueError, KeyError, TypeError) as error:
         errors.append(repr(error))
     return {"valid": not errors, "complete": not errors and state.get("complete", False),
             "complete_prefix_rows": len(rows), "last_sha256": previous,
-            "pending": list(pending.values()), "errors": errors}
+            "pending": list(pending.values()), "pending_gates": list(pending_gates.values()),
+            "failed_gates": failed_gates, "errors": errors}
 
 
 def client_fingerprint():
@@ -536,46 +563,73 @@ class Suite:
         if self.fail_fast_engine_error and self.out.get("terminal_failure"):
             raise EngineRequestError(self.out["terminal_failure"]["error"])
         request_index = None
+        gated = self.request_gate is not None and (phase == 'prefill-only' or
+            phase.startswith(('prefill-scaling/', 'long-generation/')))
+        gate_begun = False
         if self.journal:
             payload = json.dumps(chat_body(messages, max_tokens, think, kwargs.get("tools"),
                                            kwargs.get("request_overrides"))).encode()
             request_index = self.journal.append("start", phase, run, turn,
                 request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think,
+                **({"gate_required": True} if gated else {}),
                 **({"input_case": self.generation_input_case,
                     "target_input_tokens": long_generation.SPLIT_TARGET_INPUT_TOKENS}
                    if phase.startswith("long-generation/") and self.generation_case_metadata() else {}))
-        try:
-            gated=self.request_gate is not None and (phase=='prefill-only' or phase.startswith(('prefill-scaling/', 'long-generation/')))
-            if gated:self.request_gate('begin',phase,run)
+        def gate_result(status, error=None):
+            if self.journal:
+                self.journal.append("gate", phase, run, turn, request_index=request_index,
+                    status=status, **({"error": repr(error)[:300]} if error is not None else {}))
+
+        def end_gate():
             try:
-                raw = chat(self.base, self.key, messages, max_tokens, think, **kwargs)
-            finally:
-                if gated:self.request_gate('end',phase,run)
+                self.request_gate('end', phase, run)
+            except BaseException as error:
+                gate_result('failed', error)
+                raise
+            gate_result('passed')
+
+        try:
+            if gated:
+                self.request_gate('begin', phase, run)
+                gate_begun = True
+            raw = chat(self.base, self.key, messages, max_tokens, think, **kwargs)
+            row = digest(raw)
+            row.update(output_chars=len(raw["text"]), reasoning_chars=len(raw["reasoning_text"]),
+                       output_sha256=hashlib.sha256(raw["text"].encode()).hexdigest(),
+                       reasoning_sha256=hashlib.sha256(raw["reasoning_text"].encode()).hexdigest())
+            if phase == "prefill-only" or phase.startswith('prefill-scaling/'):
+                minimum = int(phase.rsplit('/', 1)[1]) if phase.startswith('prefill-scaling/') else self.prefill_tokens
+                row.update(prefill_eligibility(raw, row, minimum, self.ctx))
+                if phase == 'prefill-only' and self.prefill_exact_tokens is not None:
+                    errors = row['eligibility_errors']
+                    if row.get('actual_prompt_tokens') != self.prefill_exact_tokens or row.get('actual_read_tokens') != self.prefill_exact_tokens:
+                        errors.append('actual prompt/read count differs from exact preflight target')
+                    if raw.get('request_sha256') != self.frozen_prefill_hashes.get(run):
+                        errors.append('timed body differs from count-verified frozen body')
+                    row.update(eligible=not errors, timing_frontend_state='post-count-preflight',
+                               exact_input_tokens=self.prefill_exact_tokens)
+                if not row["eligible"]:
+                    row.update(ok=False, err="; ".join(row["eligibility_errors"]))
+            if phase.startswith("long-generation/"):
+                row.update(self.generation_eligibility(raw, row, max_tokens, phase, run))
+            if self.journal:
+                # API evidence must survive a refused or interrupted native end gate.
+                self.journal.append("result", phase, run, turn, request_index=request_index, sample=row)
         except BaseException as error:
             if self.journal:
                 self.journal.append("interrupted", phase, run, turn, request_index=request_index, error=repr(error)[:300])
+            if gated:
+                if gate_begun:
+                    try:
+                        end_gate()
+                    except BaseException as gate_error:
+                        if hasattr(error, 'add_note'):
+                            error.add_note("request end gate also failed: " + repr(gate_error)[:300])
+                else:
+                    gate_result('failed', error)
             raise
-        row = digest(raw)
-        row.update(output_chars=len(raw["text"]), reasoning_chars=len(raw["reasoning_text"]),
-                   output_sha256=hashlib.sha256(raw["text"].encode()).hexdigest(),
-                   reasoning_sha256=hashlib.sha256(raw["reasoning_text"].encode()).hexdigest())
-        if phase == "prefill-only" or phase.startswith('prefill-scaling/'):
-            minimum = int(phase.rsplit('/', 1)[1]) if phase.startswith('prefill-scaling/') else self.prefill_tokens
-            row.update(prefill_eligibility(raw, row, minimum, self.ctx))
-            if phase == 'prefill-only' and self.prefill_exact_tokens is not None:
-                errors = row['eligibility_errors']
-                if row.get('actual_prompt_tokens') != self.prefill_exact_tokens or row.get('actual_read_tokens') != self.prefill_exact_tokens:
-                    errors.append('actual prompt/read count differs from exact preflight target')
-                if raw.get('request_sha256') != self.frozen_prefill_hashes.get(run):
-                    errors.append('timed body differs from count-verified frozen body')
-                row.update(eligible=not errors, timing_frontend_state='post-count-preflight',
-                           exact_input_tokens=self.prefill_exact_tokens)
-            if not row["eligible"]:
-                row.update(ok=False, err="; ".join(row["eligibility_errors"]))
-        if phase.startswith("long-generation/"):
-            row.update(self.generation_eligibility(raw, row, max_tokens, phase, run))
-        if self.journal:
-            self.journal.append("result", phase, run, turn, request_index=request_index, sample=row)
+        if gated:
+            end_gate()
         if raw.get("_interrupted") is not None:
             if self.prefill_only or self.generation_case_metadata():
                 self.out.setdefault("request_samples", []).append({"phase":phase,"run":run,"turn":turn,"sample":row})
