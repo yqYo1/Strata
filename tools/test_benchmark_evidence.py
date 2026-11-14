@@ -18,6 +18,7 @@ import long_generation_bench as lg
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'sycl'))
 import generation_engine as generation
 import decode_kv_bench as kv_bench
+import decode_kv_prefill as kv_prefill
 
 
 def raw(body="answer", offered=300):
@@ -29,6 +30,53 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    @staticmethod
+    def kv_prefill_cohort(first=.99, warmed=.99):
+        rows = []
+        for i, (read, arm) in enumerate(kv_prefill.CASES):
+            base = 50000. if read == 32769 else 75000.
+            samples = []
+            for run in range(3):
+                factor = (first if run == 0 else warmed) if arm == 'candidate' else 1.
+                milliseconds = base * (1. if run == 0 else .8) * factor
+                samples.append(dict(prompt_ms=milliseconds, ttft_s=milliseconds/1000+.125))
+            rows.append(dict(index=i, read=read, kernel=arm, passed=True, complete=True,
+                ownership_closed=True, native_exit_code=0, fresh_faults=[], samples=samples))
+        return rows
+
+    def test_kv_prefill_medians_keep_first_and_warmed_independent(self):
+        good = self.kv_prefill_cohort()
+        result = kv_prefill.decision(good)
+        self.assertTrue(result['median_preservation_screen_passed'])
+        self.assertFalse(result['inference_adopted'])
+        for first, warm in ((1.04, .99), (.99, 1.01)):
+            result = kv_prefill.decision(self.kv_prefill_cohort(first, warm))
+            self.assertFalse(result['median_preservation_screen_passed'])
+            for point in result['points']:
+                self.assertEqual(point['scopes']['first']['prompt_ms']['median_not_slower'], first <= 1)
+                self.assertEqual(point['scopes']['warmed']['prompt_ms']['median_not_slower'], warm <= 1)
+                self.assertEqual(len(point['scopes']['first']['prompt_ms']['paired_ratios']), 3)
+        for row in good:
+            if row['kernel'] == 'candidate':
+                for sample in row['samples']: sample['ttft_s'] *= 1.02
+        self.assertFalse(kv_prefill.decision(good)['median_preservation_screen_passed'])
+
+    def test_kv_prefill_refuses_incomplete_or_nonfinite_cohorts(self):
+        mutations = [
+            lambda rows: rows.pop(),
+            lambda rows: rows[1].update(kernel='reference'),
+            lambda rows: rows[1].update(read=1),
+            lambda rows: rows[1].update(passed=False),
+            lambda rows: rows[1].update(native_exit_code=-11),
+            lambda rows: rows[1].update(ownership_closed=False),
+            lambda rows: rows[1].update(fresh_faults=['fault']),
+            lambda rows: rows[1]['samples'].pop(),
+            lambda rows: rows[1]['samples'][0].update(prompt_ms=float('nan')),
+            lambda rows: rows[1]['samples'][2].update(ttft_s=0.)]
+        for i, mutate in enumerate(mutations):
+            rows = self.kv_prefill_cohort(); mutate(rows)
+            with self.subTest(case=i), self.assertRaises(RuntimeError): kv_prefill.decision(rows)
+
     def test_kv_native_windows_require_ordered_footer_copy_cache_coverage(self):
         header = 'strata serve: prompt 33283 tokens = fixture\n'
         copied = 'strata serve: SYCL_EXPERT_COPY '+ ' '.join(k+'=0' for k in kv_bench.decode_footer.COPY_KEYS)+'\n'
