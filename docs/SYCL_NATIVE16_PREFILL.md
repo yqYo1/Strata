@@ -872,8 +872,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Original source and test-evidence commits remain through the pushed merge;
   the finished remote/local child and worktree are retired. Its three consumed
   host-output/receipt files(1337bytes)are also retired;the CPUoutcome is unchanged.
-  Use a separate committed comparison
-  controller before running either engine;no third engine is built.
+  Source`34ea625bca77eb72c9b9e756aaa8fdb09cc976f3`now prepares the separate
+  `coherent_generations_prefill_v1`comparison. It uses the same twelve-case
+  order,three thinking-on exact24-output requests per process and pinned
+  `decode_kv_prefill_20261114`input ID as the closed flag comparison. Both
+  generations use KVcoalesced0/copygroups0;only the supervised launch plan's
+  native ELF/source changes. Current engine_once/server/benchmark,placement,
+  safety and runtime remain identical. Original14508has no KV_PLANfooter;
+  its scalar-only frozen source and closed handoff evidence apply,while
+  current330405must print actual scalar decode4captures. Preserve first and
+  warmed samples and all paired ratios;the same eight-series median screen
+  does not adopt inference or revise the old failed flag screen. The plan
+  binds both source/recipe/compiler/provider/ELF proofs and739current inputs.
+  Host controls and model samples remain pending;no third engine is built.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
   checks,the six-process cohort retires424successful raw/cache files

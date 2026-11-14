@@ -357246,5 +357246,816 @@
       "original_test_outcome_unchanged": true,
       "source_and_evidence_reachable_from_pushed_primary": true
     }
+  },
+  "coherent_generations_prefill_v1": {
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "source_commit": "34ea625bca77eb72c9b9e756aaa8fdb09cc976f3",
+    "native_builds": {
+      "reference": {
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+          "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+          "bytes": 26448640,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "native_validation_probe": {
+          "library": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+            "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+          },
+          "loader": {
+            "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+          }
+        },
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840"
+      },
+      "candidate": {
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata",
+          "sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+          "bytes": 26476224,
+          "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+        },
+        "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+        "native_validation_probe": {
+          "library": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+            "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+          },
+          "loader": {
+            "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+          }
+        },
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840"
+      }
+    },
+    "native_proofs": {
+      "reference": {
+        "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "original_build_evidence": "cca8ac8d9426769c995e99e4af0aa7d5b624ff11",
+        "original_record_sha256": "499acb67205a74aa206d7850805c69450200c15898303e4f3df7db19c2030ca7",
+        "reader_sha256": "caf97b855501d7285dda8ba6f664d64ddecebac967e03cada128e47707ec28d2",
+        "original_source_dependency_files": 2361,
+        "actual_compiler_census_sha256": "48ddc825fd24676050c119b35cb3ba2e4da6b53519ca8d17f62127a47f040bc5",
+        "original_recipe_sha256": "3c8a6e4b6b5c5ca978fbdd9789c551accce7c129056cea07e6192860b86eb08a",
+        "actual_compiler_inputs": 1470,
+        "external_link_inputs": 29,
+        "coherent_translation_units": 134,
+        "actual_objects": 137,
+        "same_build_executables": {
+          "strata": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+            "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+            "bytes": 26448640,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_q6_head_owner_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_q6_head_owner_test",
+            "sha256": "b13f489feee5d8d038d5d7ad9ef6d0011fdaf15c8b8cb8839b6cbc48e44c5657",
+            "bytes": 11734112,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_submission_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_submission_test",
+            "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+            "bytes": 352152,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_verifier_retirement_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_verifier_retirement_test",
+            "sha256": "fb5e421c89bdcf6a8d1e19270ee6c52d76150d311bc26fceb9ba0fa124e502e4",
+            "bytes": 19733696,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_verify_window_policy_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_verify_window_policy_test",
+            "sha256": "3c78d87eed186c47eb5ee893568a07f90573923ddd431b2393a682c29138b4fd",
+            "bytes": 114968,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_qsa_bf16_prefix_cached_subgroup_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_test",
+            "sha256": "b03178375e5ade2bfc39e496520f6b89368b2ae1d5441b959d3b66d2bc8c31f1",
+            "bytes": 1577968,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_qsa_bf16_prefix_cached_subgroup_bench": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_bench",
+            "sha256": "4f2ac632ba10ff01cab43fb0d5dd5e90123d8667cc64dce691702bdff21eb24a",
+            "bytes": 1547096,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_native16_qsa_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_native16_qsa_test",
+            "sha256": "85866bb1827cea081aac5ccfef8ac634ca70e1e36e534ed70c350844287c501f",
+            "bytes": 442664,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_moe_upload_census_host_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_moe_upload_census_host_test",
+            "sha256": "f274461c3b915becf16f611f7447681ca1e2bad2860b51a1b2288f3a09571269",
+            "bytes": 96456,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "strata_full_context_diagnostic": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata_full_context_diagnostic",
+            "sha256": "05846c9d0a689c341c8f6596e8a5a40084a91ee1931fe8919a1fee4baf7405c1",
+            "bytes": 26456976,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "full_context_diagnostic_host_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/full_context_diagnostic_host_test",
+            "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+            "bytes": 91448,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "sycl_gu_policy_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_gu_policy_test",
+            "sha256": "cd99a46ea8a34a2dd03cfe9d65908a4b24242608e97c7e003fa1dcc1b5aef013",
+            "bytes": 14155160,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          }
+        },
+        "class_coherence": {
+          "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+          "includer_count": 5,
+          "includer_objects": [
+            "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+            "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o",
+            "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm16.cpp.o",
+            "CMakeFiles/strata_prefill.dir/src/prefill/sycl/qsa_score_gemm.cpp.o",
+            "CMakeFiles/sycl_gu_policy_test.dir/bench/sycl/gu_compact.cpp.o"
+          ],
+          "same_SYCL_class_condition": true,
+          "all_objects_from_fresh_build": true,
+          "partial_archive_reuse": false
+        },
+        "closed_evidence_sha256": {
+          "coherent_prefill_device_v1": "1e72ec874aa228465e9d1554baf86c879feb088ba0f9f35a6bdd02cd3821af4b",
+          "coherent_prefill_model_v3": "096d6a778244c8e9606732a07c4fc707894cc1e97876ea8c12dab8e9470dd48e",
+          "coherent_prefill_speed_v1": "b86f7cd648f1e7673b13bde10b9ea75f7820bbe5616407b1347e2cdd68b99085"
+        },
+        "runtime_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+          "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+          "files": 84
+        },
+        "historical_sources_recovered_from_git": true,
+        "current_worktree_not_substituted_for_native_source": true,
+        "native_recompiled": false,
+        "new_GPU_or_model_qualification": false,
+        "physical262144_or_adoption_qualified": false
+      },
+      "candidate": {
+        "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+        "original_source_files": 1179,
+        "observer_source_files": 1185,
+        "observer_source_sha256": "8c64dbd96a7469acb73fc1ee65d080370f0ee56f6b2e4bf07c228c1657e1fc42",
+        "added_observers": {
+          "tools/sycl/check_decode_kv.py": "c73cd9e7f2eff57b7e6df53579bb0431b8b902adccd552aade4878b6da055801",
+          "tools/sycl/coherent_original_reuse.py": "caf97b855501d7285dda8ba6f664d64ddecebac967e03cada128e47707ec28d2",
+          "tools/sycl/compare_coherent_generations.py": "cb3f58484179b0983e9ef9fd08bc0c767824cbc0862846c2e432c32906bb4595",
+          "tools/sycl/decode_kv_bench.py": "6684795fa7692a844ff9e3f84d23a7dc034caf3c330575030c6cd7403523c096",
+          "tools/sycl/decode_kv_model.py": "30ae3daddf48a69c137dd81e64167e7ebbe283d88344567f8ed39c3557cb4505",
+          "tools/sycl/decode_kv_prefill.py": "2c49fd62494af1fb8b231583e262019a4d63ac283cd41ef6ec73c01d6da8301f"
+        },
+        "actual_census_sha256": "2457f798c17913b344a179549ab7ef7c5b30b3e497c03d16f2d4be5c34b596d2",
+        "class_coherence": {
+          "headers": {
+            "include/strata/prefill/gemm.hpp": {
+              "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+              "includers": 5,
+              "includers_sha256": "0b5bdd4c29a4d3e822f50a33f2b72c39c0f5cd2c25197a37933c8186e45972a2",
+              "conditions": {
+                "STRATA_ENABLE_SYCL": "1"
+              },
+              "all_objects_from_fresh_build": true
+            },
+            "include/strata/core/verify.hpp": {
+              "header_sha256": "d0e6b46ac93d2451de3696aaa7ccdf788db71e02195b2aa867794570e3a7cf25",
+              "includers": 4,
+              "includers_sha256": "6d41dd724d2d9b157078c7cb6b3e28d9816f612b2e96b5fa0faf991c8649a6b9",
+              "conditions": {
+                "STRATA_ENABLE_SYCL": "1"
+              },
+              "all_objects_from_fresh_build": true
+            },
+            "include/strata/core/verify_window_policy.hpp": {
+              "header_sha256": "43c5b8956defb9bf81b4077af22677dab8759d399a5660076796e3c8fc7b8fab",
+              "includers": 6,
+              "includers_sha256": "9792931437f18571e95ebbf2ae29aea08b08b1b24187dd478606644596f32880",
+              "conditions": {},
+              "all_objects_from_fresh_build": true
+            },
+            "include/strata/kernels/cpu/pool.hpp": {
+              "header_sha256": "a8be9d7685d1ab38ccfdf51f34668e9326cddc127f1ac3d55237d20d5f787dab",
+              "includers": 12,
+              "includers_sha256": "790ff48b233539d50dfdbfc7cdd64d3a6418b99cd6e2e76c7e8a1a655ce7a1e6",
+              "conditions": {
+                "STRATA_CPU_SERVICE_PROFILE": "1"
+              },
+              "all_objects_from_fresh_build": true
+            },
+            "include/strata/core/expert_source.hpp": {
+              "header_sha256": "9981b72b916c9ceee6f037cf621fc9b5b2566da90ab663d235504f85cd9e3226",
+              "includers": 10,
+              "includers_sha256": "384fd508ead59c486495666c3fb55e32d7d2687ea9d6b1cf04c8a6239ed9cba1",
+              "conditions": {
+                "STRATA_ENABLE_SYCL": "1"
+              },
+              "all_objects_from_fresh_build": true
+            }
+          },
+          "partial_archive_reuse": false,
+          "fresh_complete_build": true
+        },
+        "exact_thirteen_ELFs_census_recipe": true,
+        "exact_seed_recipe_sha256": "1a05f982286e1616f90fbd171fc68bc8ee690508e8522456a9742a5972c9e588",
+        "native_recompiled": false,
+        "GPU_result_inherited": false,
+        "retained_frontend": {
+          "build_evidence_commit": "6c05d9a4dd6d813627672d9c9badd61daa173b90",
+          "changes": {
+            "tools/sycl/generation_engine.py": [
+              "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9",
+              "741e854a1954269b9c5419a5007e223ef70b30d3c9b291382462d30996485d43"
+            ]
+          }
+        }
+      }
+    },
+    "policies": {
+      "AGENTS.md": "f8d233a805cfff41d06605490300f1d323447b036f0e7a7d8a0b32ea56cf212d",
+      "docs/ARTIFACT_RETENTION.md": "90d6b06b141f2285bbb537490e1c702d964c56d23c4c94570515c3c2b6fc62fd"
+    },
+    "prior_comparison_sha256": "2ecf9d37ffd096358a39ce8c30f9b41a96e1d68fccb5e546b6eadad28d2b2f2e",
+    "stage": "prepared",
+    "plans": [
+      {
+        "index": 0,
+        "read": 32769,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/0",
+        "port": 44803,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/0/config.json",
+          "--port",
+          "44803",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/0/bench"
+        ],
+        "generated": {
+          "config.json": "79fbd085a60f9c6cbb5137b97b62e54a0099f01803656b2b35ee53113977c1e1",
+          "plan.json": "fc71ddcc2cb581fd889001d3cee623d3c1a29331fe4f88b16b9876b92076b84a"
+        },
+        "environment_sha256": "f96fc3e16c7e4817cb42939cf6661f1af2f4afbb8c0e4e1e0c43b6c9767726b4"
+      },
+      {
+        "index": 1,
+        "read": 32769,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/1",
+        "port": 56765,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/1/config.json",
+          "--port",
+          "56765",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/1/bench"
+        ],
+        "generated": {
+          "config.json": "eca6dac938a6083977dd8cb83b0b903303170f5cb09328dc6c210483f7f17bce",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "629f9e7d74e299d83dfcbc88f5f0222f3a968889c59901104d6ddd1f9a6e9fec"
+      },
+      {
+        "index": 2,
+        "read": 65537,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/2",
+        "port": 54337,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/2/config.json",
+          "--port",
+          "54337",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/2/bench"
+        ],
+        "generated": {
+          "config.json": "527b6acddc003e6caea90f533e4757d79d83adbfbc242284de37109efd2a101d",
+          "plan.json": "fc71ddcc2cb581fd889001d3cee623d3c1a29331fe4f88b16b9876b92076b84a"
+        },
+        "environment_sha256": "b106564add363b866fa475a9d512ebee5778357883aa7ddab03aab067bf4b1c4"
+      },
+      {
+        "index": 3,
+        "read": 65537,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/3",
+        "port": 52311,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/3/config.json",
+          "--port",
+          "52311",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/3/bench"
+        ],
+        "generated": {
+          "config.json": "1962e3e03500e8ac1a563a4a781a443bb41eaeb587cb01d83cf7c98293736364",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "6c061d38a42f4bf785ad41594073db5c8660310259504d1e5882e99c69d7cd75"
+      },
+      {
+        "index": 4,
+        "read": 65537,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/4",
+        "port": 37591,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/4/config.json",
+          "--port",
+          "37591",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/4/bench"
+        ],
+        "generated": {
+          "config.json": "a9d018270657da2a733a417bd4f32456443b0edcb6233868b36617fd36d28ca0",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "e4ca06e29726b487ddd9cabd577441aef91281b809161853f898d692f5c10d2c"
+      },
+      {
+        "index": 5,
+        "read": 65537,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/5",
+        "port": 37579,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/5/config.json",
+          "--port",
+          "37579",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/5/bench"
+        ],
+        "generated": {
+          "config.json": "f55b2150bd3885ff247841f7a52f6afe1c95f822abd5da8f05388356012d0fd5",
+          "plan.json": "fc71ddcc2cb581fd889001d3cee623d3c1a29331fe4f88b16b9876b92076b84a"
+        },
+        "environment_sha256": "a4d42d27e972334ef0f994a747158d56cc67404c7d6dcaa0a0fb503dddcf3acd"
+      },
+      {
+        "index": 6,
+        "read": 32769,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/6",
+        "port": 50067,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/6/config.json",
+          "--port",
+          "50067",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/6/bench"
+        ],
+        "generated": {
+          "config.json": "2f3d1a6b9f8009bc150629df4070bee1456f32e64640572a12736d896babf71d",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "40c7f011f75658c03a5b91b7c030da57ff85628c881169d88afe936abae3da23"
+      },
+      {
+        "index": 7,
+        "read": 32769,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/7",
+        "port": 52869,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/7/config.json",
+          "--port",
+          "52869",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/7/bench"
+        ],
+        "generated": {
+          "config.json": "40138090ff6e9486b9ea74ca935fd0deb5823ae9ac29d0d25be461441e101886",
+          "plan.json": "fc71ddcc2cb581fd889001d3cee623d3c1a29331fe4f88b16b9876b92076b84a"
+        },
+        "environment_sha256": "65a964b92cee44eca7e933d93d2e383d084f763429588510cb3262cf752f398a"
+      },
+      {
+        "index": 8,
+        "read": 32769,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/8",
+        "port": 52927,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/8/config.json",
+          "--port",
+          "52927",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/8/bench"
+        ],
+        "generated": {
+          "config.json": "7b20cb0a67b5841d4a4eb33e59775f6f855efa608d9a6d31aae5358542cf2e56",
+          "plan.json": "fc71ddcc2cb581fd889001d3cee623d3c1a29331fe4f88b16b9876b92076b84a"
+        },
+        "environment_sha256": "0ccc21ee54dea89f44aa3c09b4f1b067d45326cbe7fcb8d28f192c42e5ba2b10"
+      },
+      {
+        "index": 9,
+        "read": 32769,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/9",
+        "port": 60309,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/9/config.json",
+          "--port",
+          "60309",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/9/bench"
+        ],
+        "generated": {
+          "config.json": "a973598e04424defc2510c4524f27bcdc9b7d58515afda5a9791e02c035c6954",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "5cefa0f815be5edca4f6cbb786d154167f42268866f1b6d38195287300ddad56"
+      },
+      {
+        "index": 10,
+        "read": 65537,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/10",
+        "port": 58757,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/10/config.json",
+          "--port",
+          "58757",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/10/bench"
+        ],
+        "generated": {
+          "config.json": "109b8ad5b0121638b292c6824b2976f5976676a8c7304df00a2176300411c0cb",
+          "plan.json": "fc71ddcc2cb581fd889001d3cee623d3c1a29331fe4f88b16b9876b92076b84a"
+        },
+        "environment_sha256": "d221b90b7531c6c5c049a42b34645237860b635ba7785f3bb3f3bf32f86e1608"
+      },
+      {
+        "index": 11,
+        "read": 65537,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/11",
+        "port": 51445,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/11/config.json",
+          "--port",
+          "51445",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-generations-prefill-v1/11/bench"
+        ],
+        "generated": {
+          "config.json": "86971def1887f14e675a84dc957f16790bf1fbf91963e359318042d9b15fd617",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "1d58cf851e05a18be6d551b01bf073668330c15ff24c06bdc16618ccfcd752f6"
+      }
+    ],
+    "processes": [],
+    "request_hashes": {},
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "whole_bytes": 872415232,
+    "budgets": {
+      "wall": 1800,
+      "cpu": 16200,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "plan": {
+      "question": "Does the current scalar0 native generation preserve the fastest coherent14508 PP/TTFT?",
+      "order": "Twelve fresh processes:32R,32C,64R,64C,64C,64R,32C,32R,32R,32C,64R,64C. Official short warmup,then three thinking-enabled exact24-output requests. First long GPU use separate from subsequent2 medians. Commit each closed process before the next.",
+      "constants": "Same pinned current engine_once.py/server/bench.sh/input ID decode_kv_prefill_20261114 and models. Same262144logical/20480residentK8V8,8192BF16throughput/largeGU/staged384,1256staticdecode slots,5workers,pcie0/adapt0,spec4,head2/dense1. KVcoalesced0/copygroups0 in both immutable environments. Only native plan ELF/source differs. Safety/quiet retained-reference validation charged.",
+      "acceptance": "Exact original14508 Git source/recipe/census/12ELFs and current1eec/13ELFs;pin controller/helpers/policies/configurations/generated launcher plans/providers/Python/models. Actual fresh32769/65537read,zero reuse,thinking/exact24outputs/valid clocks/clientTTFT/journals/matched bodies. Actual typedQSA,GU/Down,placement/drains/handoff and zero expert copies. New generation must capture scalar decode4;original generation has no hook and its pinned scalar-only source/closed model evidence applies. Normal0/closed ownership/quiet validation/no freshfault/unchangedboot-driver. Reuse immediately preceding final15full hashes after identity checks;rehash after process11.",
+      "decision": "Keep every sample and all three paired C/R prompt-time and TTFT ratios per length/first/warmed scope. The eight-series median preservation screen passes only if every candidate median is no slower;report all-pair directions and geometric means separately. No tolerated regression,extra samples,posthoc criteria or speed-based exclusion. A failure keeps the faster owned prefill reference eligible. Neither outcome changes the failed same-binary KVflag screen or adopts inference.",
+      "stopping": "Stop at the first source/build/owner/provider/count/clock/route/validation/fault/budget/eligibility failure;exclusive attempt before admission,no retry or refreshed pins.",
+      "retention": "No third native generation. Keep compact36samples/configuration/source/decision evidence;retire successful raw output/cache at verified closure. Keep both engines through this imminent comparison;separate three legacy provenance holds remain. No sustainedTG,agent/task,physical262144/RESTORE,ordinary teardown,hardware saturation or whole-goal qualification."
+    },
+    "invariant_signature": "22fb0e2ee086fc753ce54b0f09710017bb94b705420675a140e112be19bbc594",
+    "source_inputs": {
+      "files": 739,
+      "sha256": "2ce4c50e6df222982ab5cda4242f4d3ea2e42932833d2669165b25255da940f8"
+    },
+    "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
