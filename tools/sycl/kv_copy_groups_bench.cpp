@@ -463,6 +463,21 @@ std::unique_ptr<ExecGraph> capture(Fixture &f, Input &in, int groups) {
   graph.begin_recording(f.q); in.submit(f,groups); graph.end_recording(f.q);
   return std::make_unique<ExecGraph>(graph.finalize());
 }
+void planner_smoke(std::shared_ptr<Runtime> rt,sycl::queue &q) {
+  Shape shape{1043,1031,4,1,64,kKvInt8}; Fixture f(shape,rt,q);
+  const auto cases=semantics(shape);
+  size_t checked=0;
+  for(const auto &c:cases) {
+    Input in(f,c); const auto expected=resolve(shape,c);
+    f.put(c.before,initial_payload(shape,c.before));
+    pending_or_hold("planner bounded smoke",[&] { in.submit(f,0,true); });
+    checked_all(rt,q,"planner bounded smoke completion");
+    (void)check(f,in,expected,expected_payload(shape,c.before,expected)); ++checked;
+  }
+  reject_and_sync_contracts(f,0,true);graph_contract(f,true);f.source_exact();
+  require(checked==14,"all fourteen bounded planner semantics required");
+  std::cout << "planner_smoke=PASS direct_cases=" << checked << " graph_replays=20\n";
+}
 void benchmark(std::shared_ptr<Runtime> rt,sycl::queue &q,int candidate,int samples,bool events,bool graph) {
   require(candidate!=0 && samples>=40 && samples<=80 && samples%4==0,"40..80 samples, multiple of 4");
   check_groups(candidate);
@@ -507,13 +522,14 @@ int main(int argc,char **argv) {
     }
     if(mode=="--help") {
       require(argc<=2,"help takes no extra args");
-      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-validate|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
+      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
       return 0;
     }
     const bool graph=mode=="--graph-benchmark"||mode=="--graph-event-benchmark";
     const bool events=mode=="--event-benchmark"||mode=="--graph-event-benchmark";
     const bool bench=mode=="--benchmark"||mode=="--event-benchmark"||graph;
-    const bool planner=mode=="--planner-validate";
+    const bool smoke=mode=="--planner-smoke";
+    const bool planner=mode=="--planner-validate"||smoke;
     require((bench&&argc==4)||((mode=="--validate"||mode=="--validate-exhaustive"||planner)&&argc==2),"invalid arguments");
     int candidate=0,samples=0;
     if(bench) { candidate=std::stoi(argv[2]); samples=std::stoi(argv[3]); check_groups(candidate);
@@ -529,7 +545,8 @@ int main(int argc,char **argv) {
         rt->device().get_info<sycl::info::device::name>().find("B570")!=std::string::npos,
         "planner screen requires the qualified B570/in-order/workgroup256 setup");
     std::cerr << "device=" << rt->device().get_info<sycl::info::device::name>() << "\n";
-    if(bench) benchmark(rt,q,candidate,samples,events,graph);
+    if(smoke) planner_smoke(rt,q);
+    else if(bench) benchmark(rt,q,candidate,samples,events,graph);
     else validate(rt,q,mode=="--validate-exhaustive",startup_groups,planner);
     checked_all(rt,q,"final completion");
     if(planner) {
