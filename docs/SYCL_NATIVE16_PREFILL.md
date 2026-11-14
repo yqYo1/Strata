@@ -812,12 +812,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its76-test host suite has75passes and one optional-tokenizer skip;all15full
   asset hashes match and both actual benchmark/server frontend probes pass.
   The pinned tokenizer independently gives3close and18wrap-up IDs. The
-  comparison is underway;its first matched pair closes normally with both
-  workloads eligible,closed ownership and no fresh fault. Code TG changes
-  14.059052->15.001873tok/s and prose8.860578->9.446893tok/s,with identical
-  request/output/reasoning hashes and draft counts in this pair. Prompt time
-  and TTFT do not worsen. These are single-pair observations;two further
-  pairs and dedicated preservation checks remain. No candidate adoption follows;
+  comparison is underway;two matched pairs close normally with both workloads
+  eligible,closed ownership and no fresh fault. Code C/R TG ratios are
+  1.067062/1.073229 and prose1.066171/1.076062,with identical request/output/
+  reasoning hashes and draft counts in each pair. In the second code pair,
+  candidate first-use prompt time54.211s exceeds reference52.0236s by4.2%,and
+  TTFT55.627s exceeds53.315s by4.3%;other observed pair intervals do not worsen.
+  Preserve this unresolved first-use result rather than dismissing it as noise.
+  One further pair and dedicated prefill/TTFT preservation checks remain.
+  No candidate adoption follows;
   dedicated prefill/TTFT preservation and broader adoption gates remain open. See
   `long_generation_segment_metrology_v1`in the linked result. The model's
   successful raw output/cache is retired after source/recipe recovery:
