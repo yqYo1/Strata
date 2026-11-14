@@ -5,10 +5,13 @@
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <cstdlib>
 #include <stdexcept>
+#include <type_traits>
 #include <sycl/ext/intel/math.hpp>
 
 namespace strata::prefill::native16::qsa {
@@ -35,6 +38,85 @@ void shape(int64_t tokens, int64_t ld, int64_t width) {
     need(tokens > 0 && tokens <= 8192 && ld >= width,
          "QSA16 unsupported tokens or stride");
 }
+struct StreamedStorage {
+    int64_t cells;
+    Span resident[4], host[4], stage[4], table;
+};
+StreamedStorage streamed_storage(const Q8WritePools& resident,
+                                 const Q8MirrorPools& host, const Q8MirrorPools& stage,
+                                 const strata::kernels::QsaShapes& s,
+                                 const strata::kernels::QsaPromptBf16Bounds& bounds,
+                                 sycl::queue& queue) {
+    need(s.n_head == NH && s.n_head_kv == KH && s.head_dim == HD &&
+         s.page_size > 0 && s.page_size <= 262144 &&
+         bounds.logical_pages > 0 && bounds.logical_pages <= 262144 &&
+         bounds.physical_pages > 0 && bounds.physical_pages < bounds.logical_pages,
+         "QSA16 streamed append requires a smaller resident INT8 pool");
+    const int64_t cells = int64_t(checked_count(bounds.logical_pages, s.page_size));
+    need(cells <= 262144, "QSA16 streamed logical capacity exceeds262144");
+    const int64_t rows = int64_t(checked_count(checked_count(bounds.physical_pages, KH), s.page_size));
+    const int64_t full_rows = int64_t(checked_count(cells, KH));
+    const StreamedStorage result{cells,
+        {{resident.k_q, bytes(rows, HD, 1)}, {resident.v_q, bytes(rows, HD, 1)},
+         {resident.k_scale, bytes(rows, 4, 2)}, {resident.v_scale, bytes(rows, 4, 2)}},
+        {{host.k_q, bytes(full_rows, HD, 1)}, {host.v_q, bytes(full_rows, HD, 1)},
+         {host.k_scale, bytes(full_rows, 4, 2)}, {host.v_scale, bytes(full_rows, 4, 2)}},
+        {{stage.k_q, bytes(full_rows, HD, 1)}, {stage.v_q, bytes(full_rows, HD, 1)},
+         {stage.k_scale, bytes(full_rows, 4, 2)}, {stage.v_scale, bytes(full_rows, 4, 2)}},
+        {resident.page_table, bytes(bounds.logical_pages, 1, 4)}};
+    const auto& rp=result.resident; const auto& hp=result.host; const auto& sp=result.stage;
+    validate_spans({rp[0],rp[1],rp[2],rp[3], hp[0],hp[1],hp[2],hp[3],
+                    sp[0],sp[1],sp[2],sp[3]}, {result.table}, 1);
+    validate_spans({}, {rp[2],rp[3],hp[2],hp[3],sp[2],sp[3]}, 2);
+    validate_spans({}, {result.table}, 4);
+    for (const auto& p : rp) validate_device_span(p.pointer, p.bytes, queue);
+    for (const auto& p : sp) validate_device_span(p.pointer, p.bytes, queue);
+    for (const auto& p : hp) validate_host_span(p.pointer, p.bytes, queue);
+    validate_device_span(result.table.pointer, result.table.bytes, queue);
+    return result;
+}
+bool bulk_host_mirror_requested() {
+    static const bool result = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_QSA_BULK_HOST_MIRROR");
+        if (!value || !std::strcmp(value, "0")) return false;
+        if (!std::strcmp(value, "1")) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_QSA_BULK_HOST_MIRROR must be 0 or 1");
+    }();
+    return result;
+}
+struct MirrorRanges {
+    struct Range { size_t first_row, rows; };
+    std::array<Range, 2 * KH + 1> ranges{};
+    size_t count = 0;
+};
+// Validated logical extents use [page,KV head,cell within page]. Whole pages
+// are contiguous; partial pages need one exact span per head. Copying an
+// entire partial page would publish unwritten cells from the Device stage.
+MirrorRanges mirror_ranges(int64_t pos0, int64_t tokens, int64_t page_size) {
+    MirrorRanges result;
+    const int64_t end = pos0 + tokens;
+    auto partial = [&](int64_t pos, int64_t cells) {
+        for (int64_t h = 0; h < KH; ++h) {
+            need(result.count < result.ranges.size(), "QSA16 mirror segment overflow");
+            result.ranges[result.count++] = {
+                size_t((pos / page_size * KH + h) * page_size + pos % page_size), size_t(cells)};
+        }
+    };
+    int64_t cursor = pos0;
+    if (cursor % page_size) {
+        const int64_t cells = std::min(page_size - cursor % page_size, end - cursor);
+        partial(cursor, cells); cursor += cells;
+    }
+    const int64_t pages = (end - cursor) / page_size;
+    if (pages) {
+        need(result.count < result.ranges.size(), "QSA16 mirror segment overflow");
+        result.ranges[result.count++] = {size_t(cursor / page_size * KH * page_size),
+                                        size_t(pages * KH * page_size)};
+        cursor += pages * page_size;
+    }
+    if (cursor < end) partial(cursor, end - cursor);
+    return result;
+}
 } // namespace
 
 bool requested() {
@@ -45,6 +127,23 @@ bool requested() {
         throw std::invalid_argument("STRATA_SYCL_PREFILL_NATIVE16_QSA must be 0 or 1");
     }();
     return result;
+}
+bool streaming_requested() {
+    static const bool result = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_QSA_STREAM");
+        if (!value || !std::strcmp(value, "0")) return false;
+        if (!std::strcmp(value, "1")) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_QSA_STREAM must be 0 or 1");
+    }();
+    return result;
+}
+void validate_streamed_storage(const Q8WritePools& resident,
+                               const Q8MirrorPools& host, const Q8MirrorPools& stage,
+                               const strata::kernels::QsaShapes& shapes,
+                               const strata::kernels::QsaPromptBf16Bounds& bounds,
+                               void* stream) {
+    validate_device(stream);
+    (void)streamed_storage(resident,host,stage,shapes,bounds,queue_for(stream));
 }
 AttentionMath attention_math() {
     static const AttentionMath result = [] {
@@ -57,9 +156,10 @@ AttentionMath attention_math() {
         if (!std::strcmp(value, "bf16-prefix-kvec4")) return AttentionMath::bf16_prefix_kvec4;
         if (!std::strcmp(value, "bf16-prefix-kvvec4")) return AttentionMath::bf16_prefix_kvvec4;
         if (!std::strcmp(value, "bf16-prefix-ordered-exp")) return AttentionMath::bf16_prefix_ordered_exp;
+        if (!std::strcmp(value, "bf16-prefix-cached-subgroup")) return AttentionMath::bf16_prefix_cached_subgroup;
         if (!std::strcmp(value, "bf16-prefix-tilepack")) return AttentionMath::bf16_prefix_tilepack;
         if (!std::strcmp(value, "bf16-prefix-subgroup")) return AttentionMath::bf16_prefix_subgroup;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_QSA_MATH must be existing, bf16, bf16-prefix, bf16-prefix-optimized, bf16-prefix-qcache, bf16-prefix-kvec4, bf16-prefix-kvvec4, bf16-prefix-ordered-exp, bf16-prefix-tilepack or bf16-prefix-subgroup");
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_QSA_MATH must be existing, bf16, bf16-prefix, bf16-prefix-optimized, bf16-prefix-qcache, bf16-prefix-kvec4, bf16-prefix-kvvec4, bf16-prefix-ordered-exp, bf16-prefix-cached-subgroup, bf16-prefix-tilepack or bf16-prefix-subgroup");
     }();
     return result;
 }
@@ -198,5 +298,102 @@ void append_q8(const uint16_t* k, const uint16_t* v, int64_t tokens,
             }
         });
     finish(stream, event);
+}
+void append_q8_streamed(const uint16_t* k, const uint16_t* v, int64_t tokens,
+                        int64_t input_ld, int64_t pos0,
+                        const Q8WritePools& resident,
+                        const Q8MirrorPools& host, const Q8MirrorPools& stage,
+                        const strata::kernels::QsaShapes& s,
+                        const strata::kernels::QsaPromptBf16Bounds& bounds,
+                        void* stream) {
+    shape(tokens, input_ld, KH * HD);
+    validate_device(stream);
+    auto& queue = queue_for(stream);
+    const auto storage=streamed_storage(resident,host,stage,s,bounds,queue);
+    need(pos0 >= 0 && pos0 <= storage.cells && tokens <= storage.cells - pos0,
+         "QSA16 streamed append exceeds logical extent");
+    const auto& rp=storage.resident; const auto& hp=storage.host; const auto& sp=storage.stage;
+    const Span inputs[] = {{k, bytes(tokens, input_ld, 2)}, {v, bytes(tokens, input_ld, 2)},
+        storage.table};
+    // Reject every alias, short owner and wrong domain before the first submit.
+    // Unlike Mode0, exactly the host mirror uses Host allocations.
+    validate_spans({rp[0],rp[1],rp[2],rp[3], hp[0],hp[1],hp[2],hp[3],
+                    sp[0],sp[1],sp[2],sp[3]}, {inputs[0],inputs[1],inputs[2]}, 1);
+    validate_spans({}, {inputs[0],inputs[1],rp[2],rp[3],hp[2],hp[3],sp[2],sp[3]}, 2);
+    validate_spans({}, {inputs[2]}, 4);
+    validate_device_span(inputs[0].pointer, inputs[0].bytes, queue);
+    validate_device_span(inputs[1].pointer, inputs[1].bytes, queue);
+    const auto pools = resident; const auto shapes = s; const auto b = bounds;
+    const bool bulk = bulk_host_mirror_requested();
+    const auto copies = bulk ? mirror_ranges(pos0, tokens, s.page_size) : MirrorRanges{};
+    if (bulk) {
+        const size_t full_rows = size_t(storage.cells) * KH;
+        size_t written_rows = 0;
+        for (size_t i = 0; i < copies.count; ++i) {
+            const auto range = copies.ranges[i];
+            need(range.rows && range.first_row <= full_rows &&
+                 range.rows <= full_rows - range.first_row, "QSA16 mirror segment exceeds owner");
+            written_rows += range.rows;
+        }
+        need(written_rows == size_t(tokens) * KH, "QSA16 mirror segment coverage differs");
+    }
+    auto launch = [&](auto direct_host_mirror) {
+        return queue.parallel_for(
+        sycl::nd_range<1>(size_t(tokens) * 2 * KH * 4 * 64, 64),
+        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+            const size_t group = it.get_group_linear_id();
+            const int lane = it.get_local_linear_id(), g = group % 4;
+            const size_t h = group / 4 % KH, which = group / (4 * KH) % 2,
+                         t = group / (4 * KH * 2);
+            const float x = load((which ? v : k)[t * input_ld + h * HD + g * 64 + lane]);
+            const int bad = sycl::reduce_over_group(it.get_group(),
+                sycl::isfinite(x) ? 0 : 1, sycl::maximum<int>());
+            const float maximum = sycl::reduce_over_group(it.get_group(),
+                sycl::isfinite(x) ? sycl::fabs(x) : 0.f, sycl::maximum<float>());
+            const uint16_t scale_bits = bad ? uint16_t(0x7e00) :
+                strata::kernels::f16_from_f32(sycl::ext::intel::math::fdiv_rn(maximum, 127.f));
+            const float scale = strata::kernels::f32_from_f16(scale_bits);
+            const int code = !bad && sycl::isfinite(scale) && scale > 0.f ?
+                int(sycl::clamp(sycl::rint(sycl::ext::intel::math::fdiv_rn(x, scale)), -127.f, 127.f)) : 0;
+            const int64_t pos = pos0 + t, logical = pos / shapes.page_size;
+            const int64_t physical = pools.page_table[logical];
+            const size_t logical_row = (logical * KH + h) * shapes.page_size + pos % shapes.page_size;
+            auto write = [&](const Q8MirrorPools& p, size_t row) {
+                (which ? p.v_q : p.k_q)[row * HD + g * 64 + lane] = int8_t(code);
+                if (!lane) (which ? p.v_scale : p.k_scale)[row * 4 + g] = scale_bits;
+            };
+            if constexpr (decltype(direct_host_mirror)::value) write(host, logical_row);
+            write(stage, logical_row);
+            // Resident absence is a normal Mode1 condition. All collectives
+            // have already completed, and both authoritative mirrors are kept.
+            if (physical >= 0 && physical < b.physical_pages) {
+                const size_t row = (physical * KH + h) * shapes.page_size + pos % shapes.page_size;
+                write({pools.k_q,pools.v_q,pools.k_scale,pools.v_scale}, row);
+            }
+        });
+    };
+    auto event = bulk ? launch(std::false_type{}) : launch(std::true_type{});
+    finish(stream, event);
+    if (bulk) {
+        // Every copy follows the quantizer on its validated in-order queue.
+        // The caller's existing checked drain covers publication and all mirror
+        // owners. No host conversion, new allocation or whole-page overcopy.
+        for (size_t i = 0; i < copies.count; ++i) {
+            const auto range = copies.ranges[i];
+            finish(stream, queue.memcpy(host.k_q + range.first_row * HD,
+                stage.k_q + range.first_row * HD, range.rows * HD));
+            finish(stream, queue.memcpy(host.v_q + range.first_row * HD,
+                stage.v_q + range.first_row * HD, range.rows * HD));
+            finish(stream, queue.memcpy(host.k_scale + range.first_row * 4,
+                stage.k_scale + range.first_row * 4, range.rows * 4 * sizeof(uint16_t)));
+            finish(stream, queue.memcpy(host.v_scale + range.first_row * 4,
+                stage.v_scale + range.first_row * 4, range.rows * 4 * sizeof(uint16_t)));
+        }
+        if (std::getenv("STRATA_TRACE"))
+            std::fprintf(stderr, "strata QSA mirror bulk: tokens=%lld pos0=%lld segments=%zu "
+                "copies=%zu requested_D2H_bytes=%llu queue=same accepted=1 host_quantization=0\n",
+                (long long)tokens, (long long)pos0, copies.count, copies.count * 4,
+                (unsigned long long)(uint64_t(tokens) * KH * (2 * HD + 2 * 4 * sizeof(uint16_t))));
+    }
 }
 } // namespace strata::prefill::native16::qsa

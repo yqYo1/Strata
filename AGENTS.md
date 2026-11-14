@@ -28,6 +28,10 @@ do not introduce another license through a copied header or template. Hold an
 uncertain proposal out of the active implementation until its origin is resolved.
 Upstream contributions are not currently planned. CUDA/HIP implementation and
 validation are outside this work's scope.
+DeepSeek and 35B-model execution support are also outside scope until the user
+explicitly requests them. Exclude their model choices, installation and launch
+paths from upstream imports; adapt shared functional changes without enabling
+these models. This exception applies to future sync rounds too.
 
 ## Installing Strata for a user
 
@@ -45,8 +49,10 @@ These are durable operating rules for Main and delegated work. Use the
 for upstream evaluation; the user's project-specific rules here take precedence
 over generic workflow examples.
 
-At session start, resume and after context compaction, perform these checks in
-order before launching work:
+Main performs these checks in order at session start, resume and after context
+compaction. Report-only workers instead resume their named Task, pinned inputs
+and report contract under [Parallel research](#parallel-research); Main's tuning,
+Git and measurement duties do not expand their assignment.
 
 1. Reread the checked-out version of this file and
    [the artifact retention policy](docs/ARTIFACT_RETENTION.md), rather than a
@@ -77,8 +83,8 @@ historical logs or the research library wholesale.
 
 | Action | Required check | Detailed rules |
 | --- | --- | --- |
-| Choose an optimization | Identify the measured limiting resource, proposed mechanism and comparison that can accept or reject it. Distinguish an attribution improvement from a throughput gain. | [Tuning](#git-integration-and-tuning), [measurement](#measurement-and-gpu-execution) |
-| Build | Commit the exact engine, benchmark, controller, generated inputs and recipe first; pin compiler, dependencies and environment. Identify retained generations across worktrees and preserve the validated fallback before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
+| Choose an optimization | Identify measured cost/resource evidence, or a previously faster owned path to revalidate, and the comparison that can accept or reject it. Distinguish attribution from throughput. | [Tuning](#git-integration-and-tuning), [measurement](#measurement-and-gpu-execution) |
+| Build | Commit the exact engine, benchmark, controller, generated inputs and recipe first; pin compiler, dependencies and environment. Rebuild all affected translation units after a class/header definition change; ABI/layout equality alone does not prove C++ ODR coherence. Preserve the validated fallback and check retained generations before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Run or compare | Verify committed inputs against the build record and actual executable hash. Check job ownership and the frozen comparison plan; keep first-use, subsequent-request and independent-process samples distinct. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
 | Check upstream | Compare the last actual check with the approximately 48-hour cadence, then use the project-only skill. Evaluate unmodified, hardware-tuned Niko upstream and record required functional imports and component decisions. | [Integration](#git-integration-and-tuning), [upstream sync skill](.agents/skills/strata-upstream-sync/SKILL.md) |
@@ -158,10 +164,33 @@ integration and testing.
   When progress stalls, identify the next evidence gap and investigate applicable
   methods from other engines or hardware before selecting another bounded test.
   Keep short-input prefill through the decode weight/cache layout available.
-  Defer its dispatch threshold and new decode optimization until the prefill
-  milestone; this does not defer long-prefill
-  chunk-size, placement or scheduling tuning. Preserve shared state and the
+  Retain two useful prefill strategies initially:TTFT-oriented and long-input
+  throughput-oriented. Select them explicitly with one simple argument or
+  variable in the same binary; adopting one must not discard the other.
+  Keep strategy selection distinct from the independently tuned decode path.
+  Design an explicit policy boundary that can later select by request length;
+  keep process environment immutable after runtime initialization. Defer automatic
+  length thresholds and additional strategy levels until after long-prefill
+  and decode tuning. This does not defer long-prefill chunk-size, placement or
+  scheduling tuning. Preserve shared state and the
   physical 262144-context correctness requirements.
+  Keep further detailed regression root-cause investigation delegated to the
+  specified Luna researchers; Main prioritizes performance implementation and
+  serialized measurements. Preserve regression/adoption gates without turning
+  each observed decrease into another extended Main investigation. Continue
+  measured input-length/time approximations and route/boundary characterization
+  alongside tuning; do not assume one fixed-plus-linear law.
+- Start development from the fastest credible owned prefill candidates and
+  satisfy their remaining numerical, safety, decode-preservation and full-context
+  requirements. Consult the performance CSV and its original evidence first;
+  a slower currently qualified reference need not be the development base.
+  Preserve independent safety fixes and runtime controls while recovering faster
+  components. A complete hardware-ceiling inventory or profiler setup is not a
+  prerequisite to revalidating an already measured faster path.
+  Use repeated matched comparisons to judge reproducible gains; a blanket
+  minimum such as0.5% improvement is not a required adoption condition. Keep
+  small credible gains eligible for follow-up. Preserve original failed screens
+  and commit a new plan before changing criteria or gathering new evidence.
 - Prefer GPU-local long-prefill data and control when added GPU work costs less
   than the removed CPU work, transfers and synchronization. Measure the whole
   dependency path. FP16 and BF16 storage both use two bytes; select format from
@@ -206,11 +235,20 @@ integration and testing.
 - Integrate completed child source, tests, skills and reports into the actual
   `feature/sycl` tree, then push. Update the fork's remote default through a PR
   at each completed boundary; the ghq root remains the default mirror and only pulls.
-  Use a merge commit for PRs containing original source revisions referenced by
-  measurements, and verify those revisions remain reachable from the retained
-  default branch before retiring their branches. Do not squash, rebase away or
+  Use a merge commit when integrating measured child work into `feature/sycl`.
+  Before retiring a finished child, verify its original revisions and
+  needed reports are reachable from the pushed, retained `feature/sycl` or the
+  fork default. Continue default integration through its PR separately; a blocked
+  PR does not justify retaining a finished child. Do not squash, rebase away or
   force-push measured source revisions that retained results reference; preserve
   their original commit identities and recoverable inputs.
+  When protected main permits only squash, its PR may publish a content snapshot
+  after verifying every retained measured source/evidence commit remains an
+  ancestor of the pushed, permanent `feature/sycl` and automatic head deletion
+  is disabled. Keep that primary branch, merge the updated default back into it
+  normally, verify original identities again, and open the next PR from it.
+  This exception never squashes/rebases the measured primary or child history
+  and never bypasses repository protection. The ghq default mirror still only pulls.
 - Pin delegated source proposals to an immutable commit or a fully hashed source
   snapshot. Generate the patch against that same base, even if the main worktree
   changes during implementation. Review the complete patch and preservation of
@@ -226,11 +264,38 @@ integration and testing.
   independent correctness fixes. A numerical pass alone does not justify keeping
   an unused performance prototype in the active implementation.
 - Import all Niko non-inference functions, including server, API, CLI, web UI,
-  settings and setup. Track any unfinished port explicitly. Choose inference changes
+  settings and setup. Track any unfinished port explicitly. When upstream retires
+  a function, compare the cost of removing it with its ongoing maintenance cost;
+  remove it only when that tradeoff justifies removal. An unused function with
+  negligible maintenance may remain when removal costs more. Record the decision
+  in the function ledger rather than assuming either perpetual compatibility or
+  automatic deletion. Choose inference changes
   per component, including prefill and decode separately; retain the faster
   existing fork implementation. Measure unmodified upstream without local
   patches, including a configuration tuned for this hardware; default settings
   alone are insufficient. A prefill gain does not justify a decode regression.
+  Conversely, assess a decode improvement independently of prefill. Design,
+  tune and select independent prefill and decode execution paths by default,
+  including kernels, scheduling and placement. Identical current implementations
+  are coincidental selections, not a reason to couple the paths. Share inference
+  processing only when a matched measurement demonstrates that sharing is faster
+  than independent paths; record the benefiting shapes/phases and retain separate
+  selection outside that scope. Existing shared processing without this evidence
+  is a legacy arrangement to audit, not a qualified design decision.
+  When isolating a candidate in a legacy shared dispatcher, keep the existing
+  prefill implementation and use an explicit phase/job policy for decode. This
+  containment does not establish that sharing is faster. Do not mutate process
+  environment variables between phases. For a prefill-only restoration or change,
+  preserve the current decode implementation, configuration and placement, and
+  verify its state handoff and repeated decode performance. Any decode impact
+  from a prefill-only change is a separation defect to resolve, including
+  handoff, configuration, placement or throughput changes; do not accept it as
+  a cost of faster prefill. Do not
+  declare the restoration complete or adopt it while that defect remains.
+  Verify the actual
+  call paths before attributing a regression. A failed whole-process comparison
+  remains failed, but does not permanently reject a separately scoped component;
+  commit a new phase-specific plan and criteria before gathering new evidence.
   XeStrata remains excluded from implementation adoption even if its
   measurements are faster.
 - Trace the configured SYCL build's actual source resolver and entrypoint.
@@ -287,6 +352,19 @@ integration and testing.
   needed. Keep individual samples and spread; do not dismiss a slower result as
   noise without repeated evidence. Check past verified best results and their
   source/configuration when investigating a regression.
+  Characterize input-length scaling before treating one length as representative.
+  Retain actual token counts, total prefill time, pp and client TTFT over several
+  short and long lengths. Separate first-use and warmed samples and execution
+  routes. Compare simple approximate time models using residuals, held-out
+  lengths and adjacent slopes; a fixed-plus-per-token model is only one
+  hypothesis. Do not assume linear scaling or interpret a mixed-route intercept as
+  a physical fixed cost. Revisit the curve after changes to placement, chunking,
+  scheduling or context-dependent kernels; a full sweep is not required for every
+  local experiment. Decode comparisons also state starting context, generated
+  length and MTP acceptance, and characterize context/length dependence rather
+  than generalizing one point. TTFT starts at the client request and ends at the
+  first nonempty reasoning or content output, including thinking; ignore keepalive
+  and empty/role-only stream events. Report it separately from pp and tg.
   Before collecting adoption evidence, commit the comparison order, repetition
   plan, acceptance criteria and stopping rules. Assess the proposed mechanism's
   gain separately from the throughput target and broader correctness gates;
@@ -320,7 +398,15 @@ integration and testing.
 - Freeze the source, executable, helpers, fixtures, generated workloads and
   configuration pinned by an active measurement or A/B plan. Review planned
   edits against those inputs first; documentation outside the pinned inputs may
-  proceed. If an input must change, close the existing run honestly and commit
+  proceed. Include transitive qualification readers: a metadata file is not
+  independent merely because it is outside the benchmark source fingerprint.
+  Edit research metadata during a run only when its qualification reader
+  explicitly checks the consumed committed fields and isolates unrelated rows;
+  otherwise defer the edit until closure. Returning one row does not isolate
+  edits if the reader first requires the entire worktree file to equal HEAD;
+  that still freezes the file during edits. Changes or missing fields in the
+  actual qualification evidence must still fail admission.
+  If an input must change, close the existing run honestly and commit
   a new plan before using it. Never update hashes to disguise a changed arm.
 - Set SYCL, Level Zero, driver, profiler and experiment environment variables in
   the native child's environment before `exec`. Keep the process environment
@@ -329,6 +415,9 @@ integration and testing.
   `setenv`/`unsetenv` while runtime or collector threads may read the environment.
   Review legacy fixtures that switch variables before reusing them. Floating-point
   state operations such as `std::fesetenv` are separate from process environment variables.
+  Read each fixture's committed source and the startup settings required by its
+  called production path before preparing its case; pair CLI arguments with
+  their matching pre-exec settings and layout assumptions.
 - Preserve the current workstation's qualified runtime safety settings from
   [the shared measurement environment](tools/sycl/measurement_environment.json),
   including copy-offload avoidance, disabled direct submission and the qualified
@@ -361,6 +450,9 @@ integration and testing.
   continues implementation, analysis and serialized measurement. Respect
   actual concurrency/resource limits; aim for roughly five researchers only
   when capacity permits, otherwise fill the available slots.
+  Select medium reasoning for ordinary Luna collection and finite source audits;
+  keep native report review at the required max reasoning. State a different
+  research effort explicitly when the bounded question warrants it.
 - Shift scopes and share `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`
   and relevant previous reports in every assignment. Prioritize this engine's
   measured bottlenecks, but also investigate general SYCL and transferable
@@ -376,9 +468,16 @@ integration and testing.
   into trivial fact lookups or fill reports with known context. Treat report
   length as a working budget, allowing enough room for substantive findings;
   review novelty and depth after completion before choosing the next scope.
-  Before dispatch, verify that the worker's startup permissions allow its named
-  report directory. For a report outside its workspace, pass that directory as
-  an additional writable root at launch; do not rely on a later save approval.
+  Give a report-only worker an isolated report workspace and enforce read-only
+  access to product checkouts at launch. Its writable scope is the named report
+  directory, not the shared product worktree. Keep the bounded Task/spec and
+  pinned inputs available there; after compaction the worker reloads that Task
+  and returns its report or failure, rather than resuming Main's tuning work.
+  Verify the actual submitted Task and write scope, not just terminal readiness.
+  Include permissions for Orca lifecycle IPC; a custom workspace-write Codex
+  launch must explicitly enable sandbox network access. Require a successful
+  worker-side Orca status check before investigation; Main's connection alone
+  does not establish that the worker can send its completion message.
   Preserve the normal filesystem protections and report-only task scope.
   Apply scope corrections to new tasks, without steering running researchers.
   Research may write only its named report, with sources, applicability and evidence
@@ -444,6 +543,12 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   resume from committed decisions without separate checkpoints or progress backups.
   Promote reusable fixtures/tooling into maintained source locations instead of
   retaining duplicate proposals or one-run controllers beside results.
+- After a superior performance result or a useful comparison milestone, update
+  the single [performance CSV](bench/performance-records.csv) in addition to the
+  detailed result. Preserve earlier milestones through compaction and later
+  improvements. Follow [the CSV rules](docs/ARTIFACT_RETENTION.md#performance-record-csv)
+  for committed evidence, metrics, conditions and qualification; check it before
+  reporting the best known performance or choosing a speed reference.
 - Decide the minimum retained result fields before collection. A single large
   JSON or report containing full parser output, per-layer arrays, repeated
   diagnostics or full histograms is still raw evidence; combining it into one
@@ -491,7 +596,11 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Retrieve the recorded source/recipe from reachable Git history and compare it
   with the exact final build's source identities before deleting its last copy.
   Preserve original measured commits and referenced inputs through integration
-  into the fork default. A matching binary/receipt hash proves artifact continuity,
+  into the fork default. Build retirement may use exact inputs recovered from
+  the pushed, retained `feature/sycl` branch; verify its remote ref and keep the
+  measured commits reachable until default integration. A blocked PR alone
+  does not justify unused binaries. Branch retirement still requires the
+  integration checks above. A matching binary/receipt hash proves artifact continuity,
   not source recovery; a seed, similarly named or later build is not proof.
   Reconcile uncommitted measured inputs before removing their last source/build copy.
   If recovery remains unresolved, record a temporary provenance hold with exact

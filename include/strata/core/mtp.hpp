@@ -24,6 +24,9 @@
 #include "strata/kernels/sampler.hpp"
 
 #include <cuda_runtime.h>
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/sycl/mtp_graph_observer.hpp"
+#endif
 
 #include <array>
 #include <cstdint>
@@ -60,7 +63,7 @@ public:
     void kv_restore(int64_t upto);
     /// The VRAM bind() will allocate for a native head of `head_row_bytes` per vocabulary row: the draft logits and
     /// the draft head over rt/draft_vocab.bin's subset.  The expert cache is sized before bind(), so it reserves this.
-    uint64_t bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const;
+    uint64_t bind_bytes(uint64_t head_row_bytes, int64_t n_vocab, bool primary_packed=false) const;
     /// The main model's embedding and head, and the verify window's final residuals (T rows, hc*n_embd each).
     bool bind(const WeightTable& wt, const NativeHead* head, const float* window_R, std::string& err);
 
@@ -110,6 +113,12 @@ public:
 
     double ms_draft = 0, ms_prefill = 0;
     int64_t rounds = 0;
+#ifdef STRATA_ENABLE_SYCL
+    // Explicit request lifetime; destruction on an error emits incomplete data.
+    auto observe_draft_request(uint64_t id, bool single_request = false) noexcept {
+        return graph_observer_.request(id, single_request);
+    }
+#endif
 
     /// E-9: the prompt path computes this layer's prompt K/V in batches (Prefill::draft_kv): its tensors, its K/V
     /// state, the first cell a round can still read, its device, and a wait for its own stream.
@@ -125,8 +134,13 @@ public:
     }
 
 private:
+#ifdef STRATA_ENABLE_SYCL
+    strata::sycl_backend::MtpGraphObserver graph_observer_;
+    cudaEvent_t graph_observer_completion_ = nullptr;
+#endif
     bool head_prepared_=false,head_detached_=false,head_restored_=false;
     bool head_release_used_=false,head_owner_retired_=false,head_had_subset_=false,head_storage_released_=false;
+    bool head_primary_packed_=false;
     uint64_t head_release_bytes_=0,head_full_bytes_=0;
     size_t head_row_bytes_=0;
     int head_type_=-1;
@@ -216,6 +230,7 @@ private:
     float* sh_scratch_ = nullptr;
     uint16_t* x_bf16_ = nullptr;
     float* head_logits_ = nullptr;
+    float* subset_logits_ = nullptr; // sole-packed head:one full-forward row,no duplicate Q6 weights
     float* dummy_inj_ = nullptr;
     int64_t cap_ = 0, attn_scratch_floats_ = 0;
 };

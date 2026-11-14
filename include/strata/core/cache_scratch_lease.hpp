@@ -36,6 +36,17 @@ private:
 
 namespace detail {
 
+enum class CacheScratchDrafter { unsupported, mtp4, absent_mtp_dflash2 };
+
+// This selects an optional draft reader, not a replacement for the target's
+// mask/retire/drain/refill transaction. DFlash2 owns separate buffers and has
+// no MTP callback queue; its owner may remain live when no head is released.
+inline CacheScratchDrafter cache_scratch_drafter(int spec, bool has_mtp,
+                                                bool uses_dflash2) noexcept {
+    if (spec != 4 || has_mtp == uses_dflash2) return CacheScratchDrafter::unsupported;
+    return has_mtp ? CacheScratchDrafter::mtp4 : CacheScratchDrafter::absent_mtp_dflash2;
+}
+
 // Host admission only. activate()'s callback MUST actually retire all GPU,
 // graph, callback and producer readers; Reader only counts host entry scopes.
 // Likewise refill/publish callbacks must check transfer completion and every

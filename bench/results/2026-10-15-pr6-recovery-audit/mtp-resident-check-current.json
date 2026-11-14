@@ -1,0 +1,107 @@
+{
+  "schema": "strata-resident-mtp-native-closed-v1",
+  "stage": "closed",
+  "archive": {
+    "commit": "5c7bde19c7c2c7c29b8e5c0d115636936cd00af6",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-check-current.json"
+  },
+  "controller_source_commit": "227bcf9fd7bad6839ca198ce6b5bb1ac785fc800",
+  "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
+  "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
+    "bytes": 22194216,
+    "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
+  },
+  "native_build_reference": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json",
+    "sha256": "d88dc76f6f648640ace0a2715ac492d4e9b8b0c9f864afe9bc0b713ac40ab7dd",
+    "commit": "5c7bde19c7c2c7c29b8e5c0d115636936cd00af6"
+  },
+  "runtime": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    }
+  },
+  "criteria": "All32 invalid requests exit2 at the exact native pre-device guard with no stdout or UR context/queue/enqueue. Each native child proves qualified preload first-init. Then same-build submission passes10 cases and ordinary graph replay passes numerical/guards/alias/checked owner cleanup. Require owned normal exits,empty validation warnings,unchanged boot/driver/runtime and no fresh fault. No model,full-context,speed,ordinary runtime teardown or adoption qualification.",
+  "refusals": {
+    "cases": 32,
+    "passed": 32,
+    "exit_code": 2,
+    "stdout_bytes": 0,
+    "all_pre_device": true,
+    "all_preload_activated": true,
+    "all_validation_warning_bytes": 0,
+    "all_ownership_closed": true,
+    "case_recipe": "tools/sycl/check_mtp_resident_control.py:cases at 227bcf9fd7bad6839ca198ce6b5bb1ac785fc800"
+  },
+  "fixtures": [
+    {
+      "name": "submission",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "preload_activated": true,
+      "validation_warning_bytes": 0
+    },
+    {
+      "name": "graph",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "preload_activated": true,
+      "validation_warning_bytes": 0
+    }
+  ],
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_unchanged": true,
+  "model_executed": false,
+  "model_adoption_qualified": false,
+  "prior_failed_operation": {
+    "commit": "227bcf9fd7bad6839ca198ce6b5bb1ac785fc800",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-check-current.json",
+    "outcome": "V1 remains failed: removal of --no-token-graph cannot enable the SYCL default-off token graph.12 native refusals passed;13th returned later model-argument validation. No device fixture/GPU work. New v2 replaces this unreachable case with missing-MTP;no native/source change."
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "files": 292,
+    "bytes": 83154580,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-native-checks-20261024.jsonl",
+    "manifest_sha256": "60d012ee32c9af167c49b9b38000e417668d1823e60a4e6e0ae3285fa14ff940",
+    "archive_commit": "5c7bde19c7c2c7c29b8e5c0d115636936cd00af6",
+    "source_proof": "Full original9853-input fallback and private551-file transformed source/recipe/toolchain recovered;1410 actual compiled inputs replayed identically from original dependency census before retirement;all26 current native assets hash-checked before/after.",
+    "consumers": "Keep original selected13 plus private13 for imminent short serve/MTP attribution. Private generated551-source/actual compiled closure receipt remain live qualification readers;normal objects,build logs and successful native test traces have no execution reader.",
+    "post_retirement_admission_passed": true,
+    "post_retirement_admission_scope": "Actual original/private source,compiler,metadata seal and all required native assets still accepted by current_build after retirement;CPU/read-only admission,not a new GPU/model qualification."
+  },
+  "next_gate": "Private short fresh serve at cap0/1 must prove ordinary MTP4/nonzero rounds and resident-no-decode-draft T1/zero rounds,unchanged prefill and valid output. Thinking-on long/agent-session and independent prefill/decode preservation remain required. No selected implementation change."
+}

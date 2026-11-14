@@ -129,6 +129,44 @@ int main() try {
     need(one.permanent_used() == 0);
     need(negative == 18);
     std::printf("expert_bank_slots uploads=%d hits=%d negative_checks=%zu PASS\n",uploads,hits,negative);
+    const size_t packed_negative_begin = negative;
+    const uint64_t bank_bytes = 384 * Stride;
+    const std::array<uint64_t,7> layer_strides{2176000,1510400,1971200,1715200,2329600,1868800,2662400};
+    const std::array<int,7> capacities{469,512,512,512,438,512,384};
+    for (size_t i = 0; i < layer_strides.size(); ++i) {
+        const auto geometry = ExpertBankLayout::packed(bank_bytes, layer_strides[i]);
+        need(geometry.slots == capacities[i] && geometry.stride == layer_strides[i]);
+        need(geometry.used_bytes <= bank_bytes && geometry.backing_bytes == bank_bytes);
+        need(geometry.offset(geometry.slots - 1) + geometry.stride == geometry.used_bytes);
+        rejects([&] { (void)geometry.offset(-1); });
+        rejects([&] { (void)geometry.offset(geometry.slots); });
+        ExpertBankSlots mapped(geometry.slots, geometry.full_fit());
+        std::array<int,512> oracle{}; oracle.fill(-1);
+        unsigned copied = 0, reused = 0;
+        for (int layer = 0; layer < 2; ++layer) {
+            mapped.reset();
+            for (int round = 0; round < 2; ++round) for (int expert = 0; expert < 512; ++expert) {
+                const auto t = mapped.begin(expert);
+                if (t.upload) { oracle[size_t(t.slot)] = expert; mapped.queued(t); ++copied; }
+                else ++reused;
+                need(oracle[size_t(t.slot)] == expert);
+                need(geometry.offset(t.slot) + geometry.stride <= bank_bytes);
+            }
+        }
+        const auto permanent = unsigned(geometry.slots - (geometry.full_fit() ? 0 : 1));
+        need(copied == 2 * (1024 - permanent) && reused == 2 * permanent);
+    }
+    const auto one_exact = ExpertBankLayout::packed(256,256);
+    need(one_exact.slots == 1 && one_exact.used_bytes == 256 && !one_exact.full_fit());
+    need(ExpertBankLayout::packed(512*256-1,256).slots == 511);
+    need(ExpertBankLayout::packed(512*256,256).full_fit());
+    rejects([] { (void)ExpertBankLayout::packed(0,256); });
+    rejects([] { (void)ExpertBankLayout::packed(256,0); });
+    rejects([] { (void)ExpertBankLayout::packed(255,256); });
+    rejects([] { (void)ExpertBankLayout::packed(512,255); });
+    rejects([] { ExpertBankSlots invalid(511,true); });
+    std::printf("expert_bank_packed formats=7 layers_each=2 full_fit512=PASS boundary=PASS negative_checks=%zu PASS\n",
+        negative - packed_negative_begin);
     std::puts("expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED");
     return 0;
 } catch (const std::exception& e) {

@@ -1,5 +1,5 @@
 {
-  "source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
+  "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -79,17 +79,6 @@
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
-  "replaces": {
-    "source_commit": "87ce707df2a3cfbdbf88f2753c50feef78fb1efe",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22127152,
-      "sha256": "02a61db21c50f5824f3af748ec6e89fbe05db04c7cacc0454c6b7c435d0e5bc6"
-    },
-    "source_build_passed": true,
-    "retained_binary_source_commit": "87ce707df2a3cfbdbf88f2753c50feef78fb1efe",
-    "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
-  },
   "targets": [
     "strata",
     "sycl_verifier_retirement_test",
@@ -99,59 +88,29 @@
     "residency_publication_host_test",
     "cache_tail_host_test",
     "prefill_scratch_host_test",
-    "sycl_prefill_scratch_test"
+    "sycl_prefill_scratch_test",
+    "sycl_expert_bank_test",
+    "cpu_work_census_host_test",
+    "sycl_graph_envelope_test",
+    "iq2_phase_host_test"
   ],
-  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_verifier_retirement_test, sycl_submission_test, file_expert_source_test, sycl_mmvq_test, residency_publication_host_test, cache_tail_host_test, prefill_scratch_host_test, sycl_prefill_scratch_test; select the validated generation and retire the extra after qualification/comparison closure.",
-  "retained_validation_reference": {
-    "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
-    "binary_origin_source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
-      "bytes": 22079288,
-      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
-    },
-    "fixtures": {
-      "sycl_moe_down_scatter_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/sycl_moe_down_scatter_bench",
-        "bytes": 13183544,
-        "sha256": "93248e2799e154b785e025cdd87ae03ab9f18d0700eb2b9cb13a747d8035b802"
-      },
-      "sycl_moe_gu_swiglu_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/sycl_moe_gu_swiglu_bench",
-        "bytes": 1927960,
-        "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
-      },
-      "sycl_moe_accum_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/sycl_moe_accum_test",
-        "bytes": 2302728,
-        "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
-      },
-      "sycl_expert_bank_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/sycl_expert_bank_test",
-        "bytes": 1818200,
-        "sha256": "d57bab3a858a6ee4f75cd4b6083f465f31f0b9c5838756e37ae69ba201374f53"
-      },
-      "file_expert_source_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/file_expert_source_test",
-        "bytes": 14523928,
-        "sha256": "b484ba5461f6b3de0deac892810580724ebc7237253ca5478368fb348e9b209e"
-      }
-    },
-    "source_build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/source-build.json",
-      "sha256": "8779b7630658308aed00ad38cfef38c023f7d5875a7154f1d141b2c6f445d221"
-    },
-    "recipe_reference": {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
-      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
-    },
-    "original_source_blobs_recovered_and_verified": 9813,
-    "model_evidence_commits": {
-      "prefill-long-input-current.json": "01c49a93e2091670f9c777b08a919d8d7ab6e054",
-      "decode-long-generation-current.json": "e77aab191dbe848776f4f4f678909d612dcefcfe"
-    },
-    "qualification": "Current opt-in engine passed component checks, repeated117K prefill and three independent long-generation processes without fresh GPU faults. Broad quality,physical262144/RESTORE and70tok/s remain unqualified.",
-    "consumer": "Qualified117K/long-generation fallback and imminent matched comparison of owned small cache against checked borrowed larger cache on the current engine. Select retained generation after long-input/long-generation comparison;14 legacy provenance holds remain separate."
+  "retention_consumer": "Historical source/recipe evidence;unchanged external record remains the current official-source constructor input. All13legacy executables retired;not a runnable comparison reference.",
+  "fixture_external_headers": {
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph.hpp": "f7a91295612dab140b9b30a87875deaed39667ecda72562fa20070b6e54774e0",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph/command_graph.hpp": "199964835c014cd9c4c83f21e2d8f622bb4c7e5d642de6a0401e8bef7ae7eeaa",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph/common.hpp": "0de5fc20d4622dc13f4e14f038d310f3f3725a77cb5e5210b0b1bc9e8b0560b6",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph/dynamic.hpp": "5ba436beedf7800ad649da15980449d6a999831e0638bbc2da01ad5b62bbe028",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph/executable_graph.hpp": "34fd24537768454444734a5e6a05e21028815f69cc193e78aa997772c3c20653",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph/modifiable_graph.hpp": "f16acf95fa54d45947700f4ece19f2cad81dc35ebcc38d8ef356f5f706a7b3de",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph/node.hpp": "f02511e4eabc0a7d8e6f9e28437568aa310bf684c411cc333e16958d4d0ba369"
+  },
+  "fixture_external_header_origin": {
+    "sycl": "Installed original Intel LLVM compiler headers; no XeStrata application source",
+    "compiler_version": "DPC++ compiler 7.1.0 (pre-release) build based on:\nclang version 22.1.0 (https://github.com/intel/llvm 504366f4b82ff00bbac7b0c956635eed8bc599d8)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin",
+    "packages": [
+      "libze-dev 1.32.0-1~24.04~ppa1",
+      "libze1 1.32.0-1~24.04~ppa1"
+    ]
   },
   "legacy_provenance_exception": {
     "state": "Six obsolete unqualified native-product roots retired; original source/recipe gaps remain failures, not comparison generations.",
@@ -305,31 +264,625 @@
       "qualification_unchanged": true,
       "unique_evidence": "Original six small receipts and the newly located old controllers/exact335433-byte source remain outside these product payloads. No executable is held indefinitely as a substitute for missing source.",
       "next_review": "At selective Down comparison closure, review these remaining unique provenance receipts/source against realistic retrieval need; retire redundant transaction details without claiming source recovery."
+    },
+    "untracked_prebuild_review": {
+      "complete": true,
+      "reviewed_old_paths": 14,
+      "reviewed_old_files": 43,
+      "reviewed_old_bytes": 652727,
+      "retired_untracked_files": 41,
+      "retired_untracked_bytes": 647187,
+      "retired_tracked_source_and_recipe_files": 5,
+      "archive_commit": "228b85f133ad4a64393838c28f6391afb0f1089f",
+      "preserved_partial_measured_source_paths": [
+        "bench/results/2026-10-15-pr6-recovery-audit/own-gdn-chunk64-v1/candidate.cpp",
+        "bench/results/2026-10-15-pr6-recovery-audit/own-gdn-chunk64-v1/manifest.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/own-gdn-chunk64-v2/manifest.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/build_gdn_chunk64_v1.py",
+        "bench/results/2026-10-15-pr6-recovery-audit/build_gdn_chunk64_v2.py"
+      ],
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-untracked-proposal-retirement-20261021.jsonl",
+      "manifest_sha256": "a29183107d38fb74d511d2211b6e0e9e3305ba67868a4680af3d6a589d86fa69",
+      "original_outcomes_preserved": true,
+      "native_input_or_live_consumer_matches": 0,
+      "original_failed_GDN_full_snapshot_recovered": false,
+      "missing_GDN_source": "v1 candidate.hpp/fixture.cpp and v2 candidate.cpp/candidate.hpp/fixture.cpp absent; never substitute v1 for v2. Original closed failed-compilation B receipts remain. No GPU/model performance ran.",
+      "scope": "Review actual paths/hashes against pushed reachable Git,current9836 input pins,live scripts and retained process receipts. These14 paths were partial proposals/metadata,not14 binary generations. Unique available failed-compile source/recipes are archived without claiming complete recovery. Two obsolete specification JSONs are metadata,not compiler inputs; installed official assets remain. Separate six legacy product/source-recovery exceptions are unchanged."
+    },
+    "additional_old_product_review": {
+      "state": "Both primary and PR6 final-input recovery closed as unavailable;unused products retired. Neither is a qualified comparison generation. Separate older unique source/receipt evidence and Orca ownership holds remain explicit.",
+      "inventory_scope": "rg --files over post-reboot state for strata,*.o,*.a,*.so,cpu_iq2*;filter ELF/archive headers. Counts are selected products,not complete engine generations.",
+      "bounded_review_roots": [
+        {
+          "root": "main-primary-native-build-root-v1",
+          "selected_files": 132,
+          "selected_bytes": 85087432,
+          "finding": "Exact final strata and compile database match the later GU-reuse receipt. All262 project inputs recover as257 original Git blobs plus5 exact overlay blobs. The recipe also recovers exactly. The named receipts/recipe do not bind the final external dependency closure or resolver-selected quoted-header bytes; current names/hashes cannot establish their build-time identities. This is not a qualified comparison engine.",
+          "next_action": "Closed. Original initial source8/8 and final project262/262 recover;final dependencies remain unqualified. No primary products or duplicate initial receipt retained.",
+          "bounded_receipt_join": {
+            "scope": "75 top-level Main primary/PR6-harness/native-GDN receipts,12237569bytes;initial wider1938-receipt/582470885B scope rejected before body reads.",
+            "receipt": "main-primary-cpu-gu-reuse-build-root-v3/record.json",
+            "receipt_sha256": "4ee948d22074ec5e372afd1cb13fd73925b87fac0857a5bd23a0c26de946201d",
+            "actual_strata_sha256": "92acf71e6b4fd914f68c8cefcae7e03f170adf62b5e3b94cf31af747344183f7",
+            "source_revision": "74ebaff3de019aba1b6ab81371166fe78fd68743",
+            "project_pins": 262,
+            "original_revision_mismatches": 5,
+            "exact_five_file_overlay_recovered_at": "bab7bf063bc110558133ec87a1e51fa5720fadb4",
+            "overlay_paths": [
+              "include/strata/core/cpu_gu_reuse_observer.hpp",
+              "include/strata/core/decode_service_budget.hpp",
+              "include/strata/core/expert_source.hpp",
+              "src/core/expert_source.cpp",
+              "tests/cpu/cpu_gu_reuse_observer.cpp"
+            ],
+            "overlay_commit_reachable_from_feature": true,
+            "actual_and_later_receipt_compile_db_sha256": "3a6fa683d3a587f1d709f230b19ac9c3b8363c7e01fc976e5a18a4d34a87a20d",
+            "GGML_revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+            "full_final_input_proof": false
+          },
+          "state": "retired_after_bounded_final_input_recovery_unavailable",
+          "final_input_review": {
+            "project_inputs_recovered": 262,
+            "original_commit": "74ebaff3de019aba1b6ab81371166fe78fd68743",
+            "overlay_commit": "bab7bf063bc110558133ec87a1e51fa5720fadb4",
+            "original_blobs": 257,
+            "overlay_blobs": 5,
+            "source_commits_reachable_from_pushed_feature": true,
+            "recipe": {
+              "commit": "bab7bf063bc110558133ec87a1e51fa5720fadb4",
+              "path": "bench/results/2026-10-15-pr6-recovery-audit/apply_build_cpu_gu_reuse_v3.py",
+              "sha256": "6106e60129874d5551b96b2a55603d629fb71aa9585c71f2a553db30df5250a2"
+            },
+            "seed_receipt": {
+              "path": "main-primary-kv-copy-groups-build-root-v2/record.json",
+              "sha256": "dcbba4076b86e5b018266a7730659df3e6fafbd054961626a0395835aaa2c1f3"
+            },
+            "bounded_receipts_hashed": 64,
+            "compile_database_entries": 160,
+            "external_compile_entries": 26,
+            "dependency_names_only": 752,
+            "forced_header_options_in_recorded_database": 0,
+            "unbound_example": "third_party/ggml/ggml-common.h is a resolver-selected dependency name,without a final build-time byte identity in the named receipts.",
+            "full_final_input_proof": false,
+            "original_passed_build_status_unchanged": true
+          },
+          "ownership_and_consumer_check": {
+            "original_commands_closed": 11,
+            "matching_original_pid_start_identities": [],
+            "current_same_uid_processes_scanned": 230,
+            "root_cmdline_cwd_exe_maps_fd_references": [],
+            "unreadable_same_uid_processes": [
+              3194,
+              61818,
+              2381659
+            ],
+            "scope": "Unprivileged bounded scan; sd-pam/gpg-agent/ssh-agent paths unavailable. No global foreign-client or privileged ownership claim.",
+            "maintained_script_consumers": 0,
+            "selected_native_assets_verified": 13
+          },
+          "retirement": {
+            "complete": true,
+            "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-primary-legacy-product-retirement-20261023.jsonl",
+            "sha256": "85430195bfa832341d75f9983e498b3196f0f22f0b3b08a183acc362fe71303d",
+            "files": 179,
+            "bytes": 153072851,
+            "build_tree_absent": true,
+            "original_receipt": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/record.json",
+              "sha256": "88bf5b9a7e670c2df69747657fdf89d053e171dc5b86f9e2704471ffde18368f",
+              "bytes": 22811,
+              "consumer": "Closed. Initial8source hashes recover as6declared-commit blobs plus2exact test blobs at74ebaff3;no current receipt/body consumer. Final dependency failure unchanged.",
+              "retired": true,
+              "retirement_manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-selection-qualification-retirement-20261023.jsonl",
+              "retirement_manifest_sha256": "46104d59f62b0acc0e0cd212277a1508309c1c6a2b88d6b9beec01516faf2e75"
+            },
+            "final_receipt_archive": {
+              "commit": "bab7bf063bc110558133ec87a1e51fa5720fadb4",
+              "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-gu-reuse-build-v3.json",
+              "sha256": "4ee948d22074ec5e372afd1cb13fd73925b87fac0857a5bd23a0c26de946201d"
+            },
+            "selected_native_assets_verified": 13,
+            "original_outcome_unchanged": true,
+            "entire_root_absent": true
+          }
+        },
+        {
+          "root": "main-pr6-harness-configure-v6",
+          "selected_files": 113,
+          "selected_bytes": 42689278,
+          "finding": "The named v4/configure-v6 receipts and exact preparation snapshot prove receipt continuity and integrity of the prepared vendor/GGML snapshot. They do not identify the final build-time generated commands, complete dependency/archive closure, or resolver-selected quoted/forced-header bytes. Current compile metadata and current header hashes cannot retroactively establish those build-time identities. The v4 executable hash proves binary continuity only; the artifact is not qualified by this evidence.",
+          "next_action": "Closed. Restore original Git evidence only if concrete new final-build inputs appear; do not renew this hold.",
+          "bounded_receipt_join": {
+            "receipt": "main-pr6-harness-build-v4/record.json",
+            "receipt_sha256": "b842d48054338673ca404d99ba0d39719bd6442e1ff3f7169682cf7079632d51",
+            "actual_binary_sha256": "5a299960c109b11078751f9e6b17ba4ce45ab5db8554f61b3229eb6909573cec",
+            "source_commit": "0d659b126efc58763921a069a818f878259d54e4",
+            "configure_receipt_sha256": "aa3e36da8b2f4f26718393271ba595db227835b89738577a54b1b724289e6f27",
+            "generated_command_review_sha256": "a65b589bb6f854e8895dbc317627c75d734e0b7faa9299abf105bff0f569fd7a",
+            "original_project_pins_recovered": 221,
+            "project_pin_mismatches": 0,
+            "source_commit_ancestor_of_feature": false,
+            "dependency_receipt_missing_from_active_tree": "bench/results/2026-10-15-pr6-recovery-audit/own-pr6-dependency-preparation-v1.json",
+            "dependency_receipt_sha256": "9709a3168804ef812073d71b75bdcb35af6a3b7cbe6e604061a2770812152fdd",
+            "full_final_input_proof": false,
+            "dependency_receipt_recovered": {
+              "commit": "b1c0e144988842e66773a71f96940973e5e8dbab",
+              "path": "bench/results/2026-10-15-pr6-recovery-audit/own-pr6-dependency-preparation-v1.json",
+              "sha256": "9709a3168804ef812073d71b75bdcb35af6a3b7cbe6e604061a2770812152fdd",
+              "bytes": 377046,
+              "scope": "49 historical vendor blobs and pinned GGML/cmake/LICENSE hashes; original preparation only, not final compile proof."
+            }
+          },
+          "state": "retired_after_bounded_final_input_recovery_unavailable",
+          "final_dependency_review": {
+            "preparation_sha256": "9709a3168804ef812073d71b75bdcb35af6a3b7cbe6e604061a2770812152fdd",
+            "prepared_vendor_files_matched": 49,
+            "prepared_GGML_files_matched": 1390,
+            "native_review_sha256": "1cf8ffbed0b5afb57b0126ac3988cb82d442a5c53ebf4a28c6e9b20a68a19c5b",
+            "original_final_source_qualified": false,
+            "missing": [
+              "final build-time generated commands",
+              "complete dependency/archive closure",
+              "resolver-selected quoted/forced-header bytes"
+            ]
+          },
+          "retirement": {
+            "complete": true,
+            "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-fixed-heads-pr6-retirement-20261023.jsonl",
+            "manifest_sha256": "e9bcb9b383b11bda96264352c7480d4f17e32890a7f6f6f1f630a761a8e45faf",
+            "files": 152,
+            "bytes": 71770264,
+            "scope": "PR6configure148files/buildreceipt3files/preparationsnapshot1file;combinedmanifestalso separately recordsfixed-head/researchretirement.",
+            "all_three_external_roots_absent": true,
+            "deleted_files": 152,
+            "deleted_bytes": 71770264,
+            "selected_native_assets_after": 13
+          },
+          "actual_ownership_and_consumer_check": {
+            "recorded_commands": "Bothoriginalcommands exit0,directchildreaped,sessionempty;noneoftheirrecordedPID/start_ticks matchescurrentprocess.",
+            "maintained_consumers": "rg acrossallmaintainedcode/config excluding historicalresults/docs/cache foundonlythe now-closed build_qsa_fixed_heads inventorylabel;no executable/fixture/receipt consumer.",
+            "current_same_uid_scan": {
+              "processes": 231,
+              "exact_root_references": [],
+              "scope": "cmdline/cwd/exe/maps/fd where readable. Procpaths for3194,61818,2381659 unavailable;not globalprivilegedownershipproof. No reset/service action.",
+              "uninspectable_processes": [
+                "3194 (sd-pam)",
+                "61818 gpg-agent",
+                "2381659 ssh-agent"
+              ]
+            },
+            "selected_native_assets_verified": 13
+          },
+          "original_selected_inventory_note": "113 files/42689278B was the earlier narrower inventory. Final retirement covered148 configure files (including114 selected .o/.a/strata/pr6_prefill_api products:67217694B),3 build-receipt/log files and1 consumed preparation snapshot."
+        }
+      ],
+      "reviewer": "native Codex gpt-6-luna/max /root/review_cpu_gu_artifact_20261022",
+      "next_action": "Continue the separately qualified checked-readback diagnostic toward real-selection attribution;selected6e40/decode unchanged.",
+      "review_point": "At checked diagnostic qualification,review remaining unique small legacy receipts;no orphan products remain in the closed primary/PR6 build trees.",
+      "retired_by_this_audit": true,
+      "selected_original_engine_and12fixtures_untouched": true,
+      "native_review": {
+        "sha256": "2c82b65932ed569d5623637ce8f82f6408365bf8f14dcf9bf1da672fe27ea732",
+        "bytes": 7440,
+        "main_read_scope": "Short digest and concrete two-variant recovery section only;not unrelated collection bodies.",
+        "artifact_retired": true
+      },
+      "bounded_source_recovery": {
+        "tu": "TU receipt hashes 5a9561ff…/23abeff8… match; exact modified sources 905f4316…/1cf7e911…, objects 17ec1f52…/5f16be55…, command/flags and route/service headers c673382e…/7d473f68… are retained. No TU source revision is recorded. Quoted includes mmq_resident_sort.hpp (2606 B, a9f3302e…) and wmma_gemm.h (3556 B, 57bd2a9c…) are only hash references; files are absent from both TU roots and the named non-Git source directory.",
+        "git": "Prior receipt 9fd762a1… resolves to commits 7c5ad75a45c7e188ecef7a947b49b829dc5c5710 and 7d0105f2a942ac72ca20fef69d4c2e7960653de3; both exist and are ancestors of HEAD. The former's prefill.cpp is baseline SHA-256 f6cbc4ac…, not either modified source; both commits lack the two quoted include paths.",
+        "link": "Both linked receipts name the absent perf-sycl-decode-pool-phase-timing-v0141-20261009 build tree: generate.cpp.o, strata_engine/spec/kernels/core/kernels_cpu archives and ggml-cpu/base archives. Dependency hashes are not recorded. Retained base libstrata_prefill.a matches SHA-256 c296ca20… but cannot recover these link inputs.",
+        "finding": "Full final-product input identities remain incomplete in the named records/pinned revisions. Main preserved all unique TU evidence and retired only four unused linked products after original job/boot and actual consumer checks. This does not resolve source qualification."
+      },
+      "product_retirement": {
+        "products": 4,
+        "bytes": 78510608,
+        "complete_final_source_proof": false,
+        "reason": "Unadopted offline link products;no model/GPU execution or comparison consumer. Required final link identities and two quote-header bytes are unavailable from the named records/pinned revisions. Keeping orphan products does not recover source.",
+        "complete": true,
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-two-unused-linked-products-retirement-20261022.jsonl",
+        "sha256": "06aa885ba69f3498a6022fa5df96a3963e61bcbad97b05b5a4da3b0e110f0d77",
+        "deleted_products": 4,
+        "deleted_product_bytes": 78510608,
+        "review_retired_bytes": 7440,
+        "ownership": {
+          "original_all_commands_exit0": true,
+          "both_original_jobs_finished_before_current_boot": true,
+          "boot_epoch": 1791651235,
+          "current_owner_guard": {
+            "same_uid_model_owners": [],
+            "scope": "bounded read-only cmdline scan; cannot prove hidden foreign GPU use absent"
+          },
+          "no_current_maintained_script_consumer": true,
+          "earlier_broad_fd_scan": "Stopped before writes on PermissionError /proc/3194/exe (sd-pam). New narrower check uses original job closure,boot ordering,actual model-owner scan and consumer trace;no privileged action."
+        },
+        "preserved_unique_source_and_receipt_hashes": true,
+        "original_failed_final_source_qualification_unchanged": true
+      }
+    },
+    "additional_actual_product_roots_review_20261023": {
+      "state": "products_retired_source_qualification_remains_failed",
+      "owner": "Main",
+      "roots": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-selective-iq-native-build-root-v1",
+          "files": 12,
+          "bytes": 32081312,
+          "engine_sha256": "b1cc9cb45554e89c060690420dc77b16fab8f512c55992c5faf367551ad3c8c0",
+          "receipt_sha256": "d92924a478a9f412ffbda9b824453fb58ece2f5a0b819a2c644e69885af2b98e",
+          "bounded_review": {
+            "original_passed": true,
+            "recorded_link_inputs": 15,
+            "recorded_link_input_paths_present": 5,
+            "final_full_source_map_recorded": false,
+            "source_qualification": "unavailable_from_original_final_build_evidence",
+            "native_execution_not_performed": true,
+            "finding": "Ten changed-source pins and link-input hashes do not recover the full original linked sources/dependencies. Most link inputs refer to the retired primary root,whose final-input failure is already recorded. No whole-final-build source revision exists in this receipt."
+          }
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/workspace-reclaim-file-path-audit",
+          "files": 14,
+          "bytes": 28180460,
+          "engine_sha256": "75b66b8ff1dbb765b3996818d61bbde001557d4ba11ab658aefd72c70f58d6c2",
+          "receipt_sha256": "1906d6f694cf7353927f4ba5f37706eed2f9603481dfa99f61d1f56ca0237290",
+          "bounded_review": {
+            "original_passed": false,
+            "recorded_link_inputs": 0,
+            "recorded_link_input_paths_present": 0,
+            "final_full_source_map_recorded": false,
+            "source_qualification": "unavailable_from_original_final_build_evidence",
+            "native_execution_not_performed": true,
+            "finding": "Changed TU hash and argv exist,but link uses relative archives without final-source/dependency versions or a pinned source revision. Its comparison originally failed;do not change it."
+          }
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-prefill-accounting-v0141-private-build-v1",
+          "files": 13,
+          "bytes": 39993533,
+          "engine_sha256": "494cf4be288595f7abf4d56412fb519155cfccf602a2a060093a1f8fcd988123",
+          "receipt_sha256": "88fb31211c098c60791c3f6a9c5fbca77bdf4caf094e9366bb4fc2cbf9139283",
+          "bounded_review": {
+            "original_passed": true,
+            "recorded_link_inputs": 0,
+            "recorded_link_input_paths_present": 0,
+            "final_full_source_map_recorded": false,
+            "source_qualification": "unavailable_from_original_final_build_evidence",
+            "native_execution_not_performed": true,
+            "finding": "Observed HEAD and compiled seed revision differ;changed TU hash and unchanged member assertion do not identify final linked source/dependency versions. Named integrated worktree/link roots are obsolete."
+          }
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1",
+          "files": 25,
+          "bytes": 49067488,
+          "engine_sha256": "1cb39f8ef1dce676cb41d3e86ed161a1b39dc7fad471705b91765697d0fee82f",
+          "receipt_sha256": "9fd762a165f3e431b31b81225604ebad5599cdd8e40c7aa68fcf3d9cc7b54376",
+          "bounded_review": {
+            "original_passed": true,
+            "recorded_link_inputs": 9,
+            "recorded_link_input_paths_present": 0,
+            "final_full_source_map_recorded": false,
+            "source_qualification": "unavailable_from_original_final_build_evidence",
+            "native_execution_not_performed": true,
+            "declared_source_blobs_matched": 8,
+            "declared_source_blobs_unrecovered": [],
+            "finding": "Declared changed-source blobs checked against7c5ad75a. The final cached objects/archives name the absent phase-timing build and lack a full original source map;the already recorded prior receipt9fd762a1 shares this unresolved link-input chain."
+          }
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v7",
+          "files": 5,
+          "bytes": 22564725,
+          "engine_sha256": "6685135337d7538903d6b624bfb5b309ccf0a243d5cfd52b3ccd814ba87685e5",
+          "receipt_sha256": "bb2481bdc97ad7ef04ffb4e04af4cfa1eea072e3668741f3c78c7deb7e1d5ed7",
+          "bounded_review": {
+            "original_passed": true,
+            "recorded_link_inputs": 12,
+            "recorded_link_input_paths_present": 0,
+            "final_full_source_map_recorded": false,
+            "source_qualification": "unavailable_from_original_final_build_evidence",
+            "native_execution_not_performed": true,
+            "finding": "Old XeStrata-derived diagnostic is excluded from implementation use by user policy. Its changed-source/compile receipts and cached binary hashes do not recover the full original linked application sources/dependencies. No source body read or adoption."
+          }
+        }
+      ],
+      "qualified_comparison_generations": false,
+      "maintained_tool_or_compact_result_consumers_found": 0,
+      "scope": "Filename inventory ofpost-reboot state found these five additional ELF engine roots. This is separate from the six already retired roots and the closed primary product retirement;existing receipts lack top-level source_commit/ownership_closed. No execution,source recovery or deletion is claimed.",
+      "consumer": "One bounded final-input/source-recipe recovery review only;none may serve as a speed reference.",
+      "next_action": "No execution or comparison consumer remains for these products. Preserve compact provenance failures and unique original source/recipe evidence;do not restore a binary without a new complete source proof.",
+      "next_review": "No extra generation held;review retained unique receipts with the existing legacy-source evidence at the next artifact boundary.",
+      "product_retirement": {
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/additional-legacy-product-retirement-20261023.jsonl",
+        "sha256": "c038c317bb6e943e19e0caf73daa8265f58eb5d391e258057d68b3e3ce7d8235",
+        "files": 61,
+        "bytes": 171605051,
+        "retained_unique_original_evidence": [
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-selective-iq-native-build-root-v1/record.json",
+            "sha256": "d92924a478a9f412ffbda9b824453fb58ece2f5a0b819a2c644e69885af2b98e",
+            "bytes": 20059
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/workspace-reclaim-file-path-audit/prefill.cpp.o.d",
+            "sha256": "d08e415de14665744a5de95bb4a4213610c0a9cc45a2b0524de08fee47d439a6",
+            "bytes": 64431
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/workspace-reclaim-file-path-audit/record.json",
+            "sha256": "1906d6f694cf7353927f4ba5f37706eed2f9603481dfa99f61d1f56ca0237290",
+            "bytes": 4735
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-prefill-accounting-v0141-private-build-v1/prefill.cpp.o.d",
+            "sha256": "8cef4e64e96403bcaecfe63dd87ec09ccc41108c13ab111e03fcf2f0ad2454c3",
+            "bytes": 65878
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-prefill-accounting-v0141-private-build-v1/record.json",
+            "sha256": "88fb31211c098c60791c3f6a9c5fbca77bdf4caf094e9366bb4fc2cbf9139283",
+            "bytes": 5940
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/record.json",
+            "sha256": "9fd762a165f3e431b31b81225604ebad5599cdd8e40c7aa68fcf3d9cc7b54376",
+            "bytes": 54173
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v7/record.json",
+            "sha256": "bb2481bdc97ad7ef04ffb4e04af4cfa1eea072e3668741f3c78c7deb7e1d5ed7",
+            "bytes": 61084
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v7/prefill.cpp.d",
+            "sha256": "d0801dbc840619f2a9a35b1491c4dc8db74a1f68a3620593028bddb1dda4db9a",
+            "bytes": 6167
+          }
+        ],
+        "all_five_engine_paths_absent": true
+      }
+    },
+    "residual_object_archive_review_20261023": {
+      "state": "closed_objects_and_ELF_retired",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007",
+      "selection": "Recursive regular files ending .o or .a;rg file enumeration exit0. The sole complete engine executable remains main-native-gdn-engine/build/strata.",
+      "files": 255,
+      "bytes": 193406352,
+      "roots": 71,
+      "deleted": 255,
+      "scope": "Older partial project objects/archives and profiler/sanitizer tool builds;not qualified current engine generations. Their original source/recipe identities and possible installed-tool/runtime consumers have not been reconciled.",
+      "next_action": "This residual-product selection is closed. Preserve the sole selected engine generation,current profiler/toolchain/runtime assets and unique source/recipe evidence;use the reviewed full-context diagnostic plan for the next source action.",
+      "next_review": "Next build must preserve selected fallback and name its single imminent diagnostic consumer. No global artifact-retirement claim.",
+      "source_audit": {
+        "source_decision_commit": "f26af8900",
+        "groups": [
+          {
+            "group": "profiler_unitrace",
+            "roots": 4,
+            "files": 16,
+            "bytes": 28946248,
+            "matched_project_blobs": 0,
+            "missing_declared_revision_blobs": 0
+          },
+          {
+            "group": "sanitizer_objects_and_runtime_archives",
+            "roots": 2,
+            "files": 20,
+            "bytes": 32370692,
+            "matched_project_blobs": 0,
+            "missing_declared_revision_blobs": 0
+          },
+          {
+            "group": "observed_regular_launch",
+            "roots": 1,
+            "files": 10,
+            "bytes": 17358524,
+            "matched_project_blobs": 0,
+            "missing_declared_revision_blobs": 0
+          },
+          {
+            "group": "main_pr6_configure_harness",
+            "roots": 6,
+            "files": 117,
+            "bytes": 26415448,
+            "matched_project_blobs": 656,
+            "missing_declared_revision_blobs": 0
+          },
+          {
+            "group": "main_qsa_fixtures",
+            "roots": 14,
+            "files": 14,
+            "bytes": 1462808,
+            "matched_project_blobs": 911,
+            "missing_declared_revision_blobs": 7
+          },
+          {
+            "group": "dequant_experiments",
+            "roots": 7,
+            "files": 9,
+            "bytes": 29387114,
+            "matched_project_blobs": 0,
+            "missing_declared_revision_blobs": 0
+          },
+          {
+            "group": "prefill_and_expert_experiments",
+            "roots": 12,
+            "files": 17,
+            "bytes": 15719160,
+            "matched_project_blobs": 0,
+            "missing_declared_revision_blobs": 0
+          },
+          {
+            "group": "other_partial_host_gpu_and_probe_builds",
+            "roots": 25,
+            "files": 52,
+            "bytes": 41746358,
+            "matched_project_blobs": 1303,
+            "missing_declared_revision_blobs": 0
+          }
+        ],
+        "matched_project_blobs": 2870,
+        "missing_declared_revision_blobs": 7,
+        "missing_pin_scope": "One component receipt at kpitch36 and six controller/provenance/result files at tilepack; not a silent source success.",
+        "final_transitive_recovery": "Incomplete for old project objects: original root receipts lack full final source/dependency/generated-input closure. Recovered project blobs or seed revisions alone do not qualify them. Unique original source/recipe receipts remain intact; no old binary is executed.",
+        "original_outcomes_preserved": true,
+        "installed_runtime_staging": "Ten staging archives are byte-identical to installed IntelLLVM lib/clang/22/lib/linux originals; the installed originals are outside the selection and kept. The original runtime build failure remains failed."
+      },
+      "consumer_check": {
+        "current_maintained_root_readers": [],
+        "compiler_manifest_inputs": 8697,
+        "compiler_manifest_path_overlap": 0,
+        "model_build_and_profiler_owners_absent": true,
+        "selected_assets_unchanged": true
+      },
+      "deletion_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/residual-object-retirement-20261023.jsonl",
+        "sha256": "be51572390ccfb440521334c814cfc130859235017532fff054cc2be88cb1271",
+        "files": 255,
+        "bytes": 193406352
+      },
+      "additional_elf_review": {
+        "state": "retired",
+        "files": 111,
+        "bytes": 213948472,
+        "ELF_types": {
+          "2": 73,
+          "3": 22,
+          "1": 16
+        },
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/residual-elf-retirement-20261023.jsonl",
+          "sha256": "66aaa7d2ddcf4ad7524a55815e71359467c1068c0359c03bd8f994690c656a95"
+        },
+        "current_profiler_assets_verified": 8,
+        "protected_compiler_manifest_inputs": 8697,
+        "protected_path_overlap": 0,
+        "same_uid_loaded_target_mappings": [],
+        "source_recovery": "Same original71root receipts/source maps as object review. Preserve bounded failure of full final transitive source/recipe recovery; keep unique original source/recipe evidence. Includes obsolete probes,compiler-ID executables,16 archive member extracts and four superseded profiler builds;none has a named current consumer.",
+        "installed_runtime_duplicates": "Three staged IntelLLVM sanitizer DSOs match separately retained installed originals byte-for-byte;original failed runtime-build receipt remains failed.",
+        "next_action": "None for this closed selection;preserve source/recipe evidence and installed originals.",
+        "next_review": "Reopen only for new evidence,not another build.",
+        "retirement_complete": true,
+        "deleted": 111,
+        "deleted_bytes": 213948472,
+        "all_manifest_paths_absent": true,
+        "decision_commit": "4f21ae77276a9be9d732f07dfb2b29b068af6540",
+        "decision_remote_verified": "4f21ae77276a9be9d732f07dfb2b29b068af6540",
+        "selected_inputs_verified_after": 9853,
+        "selected_assets_verified_after": 13,
+        "current_profiler_asset_files_verified_after": 8
+      },
+      "deleted_bytes": 193406352,
+      "retirement_complete": true,
+      "all_manifest_paths_absent": true,
+      "selected_inputs_recovered_after": 9853,
+      "selected_assets_verified_after": 13,
+      "decision_commit": "fe43d69086db22c032f31cb3c2675850ccb7e70b",
+      "decision_remote_verified": "fe43d69086db22c032f31cb3c2675850ccb7e70b",
+      "total_deleted_files": 366,
+      "total_deleted_bytes": 407354824
+    },
+    "loose_legacy_engine_review_20261024": {
+      "state": "closed_products_retired_source_qualification_unavailable",
+      "scope": "20 loose legacy engines plus the independently reviewed prior registered-copy snapshot;21files,20ELF identities. No selected engine/fixture or source/recipe receipt is in the payload selection.",
+      "files": 21,
+      "bytes": 565989944,
+      "matched_receipts_inspected": 213,
+      "full_final_source_dependency_recipe_map_found": false,
+      "partial_git_recovery": {
+        "checks": 3,
+        "matching": 3,
+        "mismatching": 0,
+        "unrecoverable": 0
+      },
+      "source_qualification": "Unavailable from retained original final-build evidence:partial-TU/link/reference pins do not recover final objects/archives,quote/generated inputs,external dependencies,compiler/environment and recipe together. Matching partial blobs do not establish full source closure.",
+      "extra_snapshot": {
+        "receipt": "event-ack-registered-copy-v01402-v3-build/record.json",
+        "receipt_sha256": "716d8fe06db4271af600ce5a7df1e3d5570b6691494dde0363eb6d2d8b29c54c",
+        "binary_sha256": "2a010b62f54bb6de9a2c793029371546250fc4211569300d16262b35c299a6b6",
+        "declared_revision": "27b94f06da01c97435cbd02db4fc7806b04af339",
+        "bounded_recovery": "The previous receipt matches the actual snapshot hash. Two declared candidate TUs recover but hash-mismatch;the declared completion header is absent. No complete final dependency/recipe map exists. Do not substitute the later matched candidate."
+      },
+      "native_review_sha256": "be8152715c724207371558d2a3ea5e30d70ac6e23447a19a84d0e35bd8fe1054",
+      "corrections_preserved": "Rows5..8 do have hash-matched build/link receipts;row19 original build passed=false despite exit0. Eager-versus-lazy strict maxabs0.412168 comparison failed;the separate lazy full-context run aborted. None is rewritten to a numerical pass.",
+      "current_consumer": "Main retention reconciliation only;no frozen current comparison names these old ELF hashes. Original selected6e40+12fixtures and current full-context diagnostic remain independent.",
+      "next_action": "No legacy ELF remains in this21-file selection. Preserve unique original source/recipe receipts and failure evidence. Build only the separately pinned current full-context diagnostic alongside the selected6e40 generation. Other legacy raw/fixture payloads remain separately reviewed;no global cleanup claim.",
+      "next_review": "Review the separately retained current diagnostic generation at physical262144 qualification closure. This21-engine selection and its audit paperwork are closed;unique original source/recipe receipts and compact failure remain. Other legacy raw/fixture payloads are not globally qualified or retired.",
+      "retirement": {
+        "complete": true,
+        "files": 21,
+        "bytes": 565989944,
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/loose-legacy-engine-retirement-20261024.jsonl",
+          "sha256": "ec0109b34ca966d2ccba1d4261fd518bb8d3dfb4ba03e9f2dd8d045ee1daddf0"
+        },
+        "selected_original_inputs_recovered": 9853,
+        "selected_original_assets_verified": 13,
+        "SDK_overlap": 0,
+        "current_literal_readers": 0,
+        "current_same_uid_target_mappings": 0
+      },
+      "audit_paperwork_retirement": {
+        "reference": "full-context-current.json:closed_output_retirement",
+        "complete": true
+      }
     }
   },
+  "cpu_census_host_contract": {
+    "cases": 15,
+    "passed": true,
+    "exit_code": 0,
+    "ownership_closed": true,
+    "fixture_sha256": "918e9070581c099af373c890474ad2ec6d6ea3efb0673b2bb03f025df935ffae",
+    "stdout_sha256": "223c1554a798d12f816dccd5ebe8fdb286c7ee2c42977f3d39ea89200cfc2e9c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "GPU_executed": false
+  },
+  "cpu_phase_host_contract": [
+    {
+      "arm": 0,
+      "cases": 12,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "fixture_sha256": "e031d869adfc4ba6389772dd16dd522e9972703ccc27a8103bb9646dc81cf755",
+      "stdout_sha256": "c1de4716a166b8f74b6fe3c67498529390103e200ce3157fa578ee4ffb5dd3ad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "arm": 1,
+      "cases": 12,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "fixture_sha256": "e031d869adfc4ba6389772dd16dd522e9972703ccc27a8103bb9646dc81cf755",
+      "stdout_sha256": "352b62481a028fb129e730b97eb2262c411ca1f96fdbf2243958f22981f71e98",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22127264,
-    "sha256": "33452421e15ad5c5329921c3d12310fd77e198ce7f8af4aa9cb77c9d9d6bab97"
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
   },
-  "compile_database_sha256": "abbbd93299e05cf26f53c0cc41ffc3600d2ed310d91c8c354df5ee6a0dbedbf3",
-  "configured_compile_entries": 228,
+  "compile_database_sha256": "e5c6b39a4066788c9a4a23c75958ffe258d789936ed854f259700889e854810c",
+  "configured_compile_entries": 232,
   "fixtures": {
     "sycl_verifier_retirement_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
-      "sha256": "1f438b71b441eacc3f97a9e077e1d1a753bb7a830a8174697b6600790ef8fa37"
+      "sha256": "499ab6589e2fbf61208816a667c23f56bdc0a1de6d5068479de87c41e6d2bd49"
     },
     "sycl_submission_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
-      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
+      "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
     },
     "file_expert_source_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
-      "sha256": "fcda5ca65dec76bd716ddd4185d6f4cc31848a0a6a3bf876dbcdb989a5cce652"
+      "sha256": "df9fa1d685dfab3ab0d2913b65bcfc12de061e3371c210802e27c3afcb18d04f"
     },
     "sycl_mmvq_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
-      "sha256": "c320b9b6df08a52c2da2ca2c6eca49c1e37da8bca9a55556c0bf8b2fb718384d"
+      "sha256": "ed4737cef1cfa876ec20528f0fb1904c8b87f594b842308d1f789d4096ef2eea"
     },
     "residency_publication_host_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/residency_publication_host_test",
@@ -345,39 +898,33 @@
     },
     "sycl_prefill_scratch_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
-      "sha256": "d249c03a4f9db3a735ccc2dc2fc551459c93d24a9d02a5485a51d7a3d21cc245"
+      "sha256": "30bbb45a520c2203a374ae6ac2be59f81c7b7892f2b8a17db096fe5c73562a22"
+    },
+    "sycl_expert_bank_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
+      "sha256": "ba4ff996072f93f928fcc2079ea79448b1f473b857043b0f9144ccfeb6cb9045"
+    },
+    "cpu_work_census_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/cpu_work_census_host_test",
+      "sha256": "918e9070581c099af373c890474ad2ec6d6ea3efb0673b2bb03f025df935ffae"
+    },
+    "sycl_graph_envelope_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+      "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+    },
+    "iq2_phase_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/iq2_phase_host_test",
+      "sha256": "e031d869adfc4ba6389772dd16dd522e9972703ccc27a8103bb9646dc81cf755"
     }
   },
-  "binary_origin_source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
-  "previous_output_comparison": {
-    "changed_project_inputs": [
-      "include/strata/prefill/prefill.hpp",
-      "src/prefill/layer_major.inc",
-      "src/prefill/prefill.cpp",
-      "tools/sycl/check_verifier_retirement.py"
-    ],
-    "native_and_recipe_inputs_match": false,
-    "engine_bytes_match": false,
-    "fixture_bytes_match": {
-      "sycl_verifier_retirement_test": true,
-      "sycl_submission_test": true,
-      "file_expert_source_test": true,
-      "sycl_mmvq_test": true,
-      "residency_publication_host_test": true,
-      "cache_tail_host_test": true,
-      "prefill_scratch_host_test": true,
-      "sycl_prefill_scratch_test": false
-    },
-    "controller_only_admission": false,
-    "interpretation": "A real configure/build invocation admits the recorded inputs after original source/recipe recovery. Identical engine bytes preserve their known source identity even after fixture edits; qualification reuse separately requires the relevant native/recipe/fixture proof. No new speed result is implied."
-  },
+  "binary_origin_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
-      "count": 520,
-      "aggregate_sha256": "101af6c845428c0720e6222ee79859312347dc48665ca904168e30a5c1ed1c71"
+      "revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "count": 542,
+      "aggregate_sha256": "d2eacd07768333b7893b7781494f735e32b258886097afde924d3b940b6b38a4"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -391,5 +938,129 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "retention_model_kind": "prefill-recovery",
+  "retention_model_reference": {
+    "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
+    "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
+  },
+  "native_source_restoration": {
+    "stage": "identity_reuse_verified",
+    "selected_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "source_restoration_commit": "e88fa626c",
+    "controller_admission_commit": "2e88dd6b7",
+    "original_build_compact_commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+    "original_component_commit": "483dcbb7df39bfd3fd6e4edc98d439dc353d6073",
+    "source_build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+      "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+    },
+    "original_inputs_recovered": 9853,
+    "required_artifacts": 13,
+    "native_input_changes": 0,
+    "controller_only_changes": [
+      "tools/sycl/build_engine.py",
+      "tests/core/test_fresh_build_reference.py",
+      "tests/core/test_resource_engine.py"
+    ],
+    "controller_review": "Build controller delta is recovery_model_evidence plus retain_current evidence/selection only; configure/build recipe and native execution unchanged. Query admission pins exact original/current controller hashes, rejects future edits and preserves original source identity.",
+    "host_tests": {
+      "source_commit": "2e88dd6b7",
+      "command": "python3 -B unittest loader: test_resource_engine, test_fresh_build_reference",
+      "tests": 26,
+      "passed": true,
+      "GPU_executed": false
+    },
+    "recompilation": false,
+    "new_GPU_validation": false,
+    "scope": "Reuse exact original native sources, recipe, engine and12 fixtures. Prior component/model results retain original qualification limits; no new speed or physical-context claim.",
+    "rejected_generation": {
+      "source_commit": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22199736,
+        "sha256": "af0aeb605b756e1ef007bb13cf3bd74b0ec632d3db5608f620232d80e496701b"
+      },
+      "original_inputs_recovered": 9862,
+      "artifacts": 19,
+      "build_record_sha256": "c28cf86bd85929145d267318e8f390967d84c5f12d5a72b268455aee4b0fe77c",
+      "result_commit": "44c7c919cf48d28f827ffb43a7e31fa2bb2ab205",
+      "consumer_closed": true,
+      "retirement_reason": "Closed candidate failed sustained decode preservation; no pending comparison needs its artifacts."
+    },
+    "external_retirement": {
+      "complete": true,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/rejected-canonical-generation-retirement-20261022.jsonl",
+      "sha256": "3efb5d56657c6719cb67beffdf7ca9bfd0ddfa6ed7b2714eb0324b1b456b812f",
+      "files": 222,
+      "bytes": 193099889,
+      "candidate_root_retired": true,
+      "exact_original_artifacts_moved_not_rebuilt": true,
+      "duplicate_fallback_directory_retired": true
+    },
+    "tracked_prototype_retirement": {
+      "archive_commit": "44c7c919cf48d28f827ffb43a7e31fa2bb2ab205",
+      "deletion_commit": "e88fa626c",
+      "files": 19,
+      "bytes": 155924,
+      "reason": "Closed rejected copy/transition experiments and dependent controllers; Git deletion diff supplies exact paths/blob hashes. Preserve independent provenance tests."
+    },
+    "artifact_migration_complete": true,
+    "required_artifacts_verified": 13,
+    "component_groups_reused": 18,
+    "qualification_reuse": {
+      "component_groups": 18,
+      "phase_host_cases": 24,
+      "prefill_requests": 13,
+      "clean_prefill_processes": 3,
+      "prefill_read_tokens": [
+        117489
+      ],
+      "generated_tokens_per_request": 24,
+      "original_inputs_recovered": 9853,
+      "clean117K_speed_observed": true,
+      "sustained_decode_speed_qualified": false,
+      "hardware_saturation_qualified": false,
+      "model_adoption_qualified": false
+    },
+    "host_gate_test_updates": [
+      {
+        "path": "tests/core/test_fresh_build_reference.py",
+        "build_input_sha256": "c70f2f43bafdf6147778ee740964e06bdfc9c261daccf03e425ec8a8b6162180",
+        "committed_sha256": "73faf0325b542e1136d5b93e80bbc6a6a5d35b9ba77115cb7d8434e5c3540905",
+        "source_commit": "c92d08b030197bd622137831d4f4f3bcfd181160"
+      },
+      {
+        "path": "tests/core/test_resource_engine.py",
+        "build_input_sha256": "40386927c7d0aad4e4f1d22254f941b33c6536aaff08ed3624288af489b7185e",
+        "committed_sha256": "5ab364577b104e9a86a8702ad4b1a0c90e4abab6c50cba281e95926dc40c4bdf",
+        "source_commit": "2e88dd6b72d5d18ee44a80b3d3d2891876692d24"
+      }
+    ],
+    "retained_qualified_generations": 1,
+    "consumer_validation": {
+      "source_commit": "9f54b5678",
+      "command": "python3 -B unittest loader: test_sycl_packed_bank, then query_profile.current_build()",
+      "host_tests": 4,
+      "passed": true,
+      "original_inputs_recovered": 9853,
+      "artifacts_verified": 13,
+      "GPU_executed": false
+    }
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-selected6e40-and-strategy-transactions.json",
+    "sha256": "0bb3c27789c7e8109c56fb6bc9e3d323c175e512b789d16672d2b0579ec1e9d5",
+    "files": 16,
+    "bytes": 91471606,
+    "source_inputs_recovered": 9853,
+    "engine_and_fixtures_retired": 13,
+    "retained_provenance_receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+      "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+    },
+    "new_build_admission_after_retirement": true
+  }
 }

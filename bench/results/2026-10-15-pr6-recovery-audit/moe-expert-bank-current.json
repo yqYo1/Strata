@@ -1,12 +1,12 @@
 {
   "mode": "plan",
-  "source_commit": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
+  "source_commit": "cf8ae547a7bcd9fc188ce985d85561295cc2c16d",
   "source_sha256": {
-    "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+    "include/strata/prefill/expert_bank_plan.hpp": "7b3874a8eabd78fa48dac1902ce287f0954a23c98333de9424cd50ea80c7f156",
     "include/strata/core/expert_layer_view.hpp": "5b8c4a6c7a1a1d074fe35ed09c933c10b52e56e609eb86e5a4e7b506d0dc8c8f",
     "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
-    "tests/expert_bank_plan.cpp": "fe62bff89008f7ab1d3acb1a160295651c27544c74ff01d3a5eaa16b00366179",
-    "tools/sycl/check_expert_bank.py": "f633b40f53b021dd9c2203a021cd8b8c7225c5cb30d5b3922371b521c6969555",
+    "tests/expert_bank_plan.cpp": "97c940f8975191dd8958d8eac9b1f2f8f31749fde904614c0fb264530fab6c19",
+    "tools/sycl/check_expert_bank.py": "95fff0b57551f297445730e56dba43a21261ab9c9a8043854930a61ddc1fdeef",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
   },
@@ -27,15 +27,16 @@
         "resident_layer_view valid_cases=4 rejected_extents=10 PASS",
         "expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS short_tail_fallback_cases=3 single_alloc_limit_cases=4",
         "expert_bank_slots uploads=9 hits=3 negative_checks=18 PASS",
+        "expert_bank_packed formats=7 layers_each=2 full_fit512=PASS boundary=PASS negative_checks=19 PASS",
         "expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED"
       ]
     }
   ],
   "limits": "CPU capacity/state planning only. No owner/queue/DMA completion, GPU staging, model speed, physical262144 or RESTORE qualification.",
   "previous_result": {
-    "commit": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
+    "commit": "cf8ae547a7bcd9fc188ce985d85561295cc2c16d",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-expert-bank-current.json",
-    "source_commit": "cb74810ab2e7738d9c7c545727310a70c08c323f",
+    "source_commit": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
     "passed": true
   },
   "device_limits": {
@@ -98,136 +99,103 @@
     }
   },
   "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v4/plan-test",
-    "bytes": 26536,
-    "sha256": "6256f6af3add3278b3bdafbdd2c31b291f013c144f9c527ef57291902bec6587"
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v5/plan-test",
+    "bytes": 30864,
+    "sha256": "bc52639315e339914f9b3bbe7d8f5362a6df73646c65466189f2a4683b77c5e9"
   },
   "ownership_closed": true,
-  "gpu": {
-    "source_commit": "78a119cf7a4ab01cc0cb8342886d5ba182e544b2",
+  "packed_gpu_admission_failure": {
+    "source_commit": "116f02974",
+    "build_source_commit": "44eac4cc02fe2af8af0fffcc3794cbde66f8a675",
+    "complete": false,
+    "passed": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "reason": "Original check stopped before Owner creation/native exec because its strict shared-runtime hash check did not consume the already-qualified Oct19 asset delta.",
+    "mismatched_shared_runtime_paths": [
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8"
+    ],
+    "original_root": "moe-packed-expert-bank-gpu-v1; only empty cache/tmp directories created",
+    "qualified_runtime_reference": {
+      "commit": "ad7191936ba170fee9f8fed9c0272d74f7dbf0cc",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
+      "sha256": "7d12264da26f4c089c9f2c20a16cc95f1c4e98587022a2feca3b243e8f1a70c3"
+    },
+    "next_action": "Commit revised controller and test it; rebuild from its exact input revision, then start a separate v2 root. Preserve this failed admission. Shared baseline hashes stay unchanged."
+  },
+  "runtime_admission_host_tests": {
+    "source_commit": "e0623d4f73e7909d68406ce3addca1fc0b3e348a",
+    "command": "python3 -B tools/test_sycl_query_profile.py",
+    "tests": 7,
+    "passed": true,
+    "GPU_executed": false,
+    "scope": "Exact known asset delta, passed component and scoped diagnostic modes; original failed GPU admission remains failed."
+  },
+  "packed_gpu": {
+    "source_commit": "b62a63744a470a55d7ff9373c2c79c50f55295ae",
     "source_sha256": {
-      "tools/sycl/check_expert_bank.py": "a06bff42d9d7478463eba1f30d83c7ba58b0c41f084b428f734a4e7afbe106aa",
+      "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
       "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/query_profile.py": "a628de1ea3bc405b367d5681ce5e43c6d837801a68c0a129abbee1d5e2563e34",
+      "tools/sycl/generation_engine.py": "1f884753ac5bbf2d391b7d5ee91c03ce466245128e1b830792dd6ef2bb3fad7d",
+      "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
+      "tools/sycl/check_verifier_retirement.py": "09d9f4c13954e74ea46e4b59f08fb66b7349bb2342f33f2140090a4128fec818",
+      "tools/sycl/build_engine.py": "5c5eb8988ae73318e297ea0d9742986a4ac345b14492db17cb4a356fc81beb6c",
       "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
       "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-      "include/strata/prefill/expert_bank_upload.hpp": "3b81da8f15a89306cff9a46982d31fc10ad120a592cf7662c9c2c8b3a2fc7bfe",
-      "tests/sycl/expert_bank.cpp": "c390ac3c9300be9126fa800151d7a6a7d8634b067f452b1a849a7a7afba82322",
+      "include/strata/prefill/expert_bank_upload.hpp": "adeeaa140d138d5ba55050fbaec985fcf238b02468401d4caa2c7811e4bb341f",
+      "tests/sycl/expert_bank.cpp": "f4887a1c75a33a7f49ec65133c965282d4dda509590280c16301048405a7129d",
       "include/strata/core/expert_layer_view.hpp": "5b8c4a6c7a1a1d074fe35ed09c933c10b52e56e609eb86e5a4e7b506d0dc8c8f",
-      "include/strata/core/expert_source.hpp": "cf4b82b76adee8e4bc80173b280f511a04a01a43945c4814c50e8e5464f5aaa3",
-      "src/core/expert_source.cpp": "85fde09cdf17876157ae21ac2bcd5b4ad0aba8d43dc78f39ce3506a8c436e905",
-      "tests/core/file_expert_source_test.cpp": "787d8a49765bdba276c950844bc27965870349a91abb3be7f3da8e279296b393"
+      "include/strata/core/expert_source.hpp": "3e0c332f0bf7fcbc1024bc14ac7f4af81f0d347ec9378c6484c7c289269d44c7",
+      "src/core/expert_source.cpp": "87655233b30eb8de9227ce3e236735d332f701557af46e033a13f05c8f38b4ec",
+      "tests/core/file_expert_source_test.cpp": "d39e3027d63f3ed1bb5a4cd56dfd57e6b28007646b9c5e6318482f242af49c5d"
     },
-    "build_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
+    "build_source_commit": "e0623d4f73e7909d68406ce3addca1fc0b3e348a",
     "fixture": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
-      "sha256": "d57bab3a858a6ee4f75cd4b6083f465f31f0b9c5838756e37ae69ba201374f53"
+      "sha256": "befcc6842aa72a0cec5454afefdf7a99421c538a7f98acbadcb7629f51a9e242"
     },
     "provider_fixture": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
-      "sha256": "b484ba5461f6b3de0deac892810580724ebc7237253ca5478368fb348e9b209e"
+      "sha256": "13b97528fd3cfa6e59f7685f04873d097663df05733da8edfdfd6d979a5aa8c6"
     },
-    "CPU_gate_source": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
+    "CPU_gate_source": "cf8ae547a7bcd9fc188ce985d85561295cc2c16d",
     "checks": [
       {
-        "mode": "smoke",
+        "mode": "packed-smoke",
         "cases": [
           {
-            "slots": "4",
-            "stride": "256",
-            "experts": "6",
+            "backing_slots": "4",
+            "backing_stride": "512",
             "source_stride": "256",
+            "experts": "10",
+            "layers": "3",
+            "uploads": "43",
+            "hits": "17",
+            "consumers": "120",
+            "unwind": "0",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "1",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          },
+          {
+            "backing_slots": "4",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "10",
             "layers": "2",
-            "uploads": "18",
-            "hits": "6",
-            "consumers": "48",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "1",
-            "stride": "256",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "12",
+            "uploads": "10",
             "hits": "0",
-            "consumers": "24",
-            "unwind": "0",
-            "admission_rejections": "7",
+            "consumers": "20",
+            "unwind": "2",
+            "admission_rejections": "11",
             "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "4",
-            "stride": "256",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "5",
-            "hits": "0",
-            "consumers": "10",
-            "unwind": "1",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "4",
-            "stride": "512",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "2",
-            "uploads": "18",
-            "hits": "6",
-            "consumers": "48",
-            "unwind": "0",
-            "admission_rejections": "9",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "1",
-            "stride": "512",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "12",
-            "hits": "0",
-            "consumers": "24",
-            "unwind": "0",
-            "admission_rejections": "9",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "4",
-            "stride": "512",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "5",
-            "hits": "0",
-            "consumers": "10",
-            "unwind": "1",
-            "admission_rejections": "9",
-            "status": "0",
+            "full_copy": "0",
             "immutable_slab": "PASS",
             "guards": "PASS",
             "private_map": "PASS",
@@ -237,105 +205,57 @@
         "passed": true
       },
       {
-        "mode": "validate",
+        "mode": "packed-validate",
         "cases": [
           {
-            "slots": "383",
-            "stride": "256",
-            "experts": "512",
+            "backing_slots": "384",
+            "backing_stride": "512",
             "source_stride": "256",
-            "layers": "1",
-            "uploads": "642",
-            "hits": "382",
-            "consumers": "2048",
+            "experts": "512",
+            "layers": "4",
+            "uploads": "2434",
+            "hits": "1662",
+            "consumers": "8192",
             "unwind": "0",
-            "admission_rejections": "7",
+            "admission_rejections": "11",
             "status": "0",
+            "full_copy": "0",
             "immutable_slab": "PASS",
             "guards": "PASS",
             "private_map": "PASS",
             "checked_drain": "PASS"
           },
           {
-            "slots": "384",
-            "stride": "256",
-            "experts": "512",
-            "source_stride": "256",
-            "layers": "2",
-            "uploads": "1282",
-            "hits": "766",
-            "consumers": "4096",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "512",
-            "stride": "256",
-            "experts": "512",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "513",
-            "hits": "511",
-            "consumers": "2048",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "384",
-            "stride": "2662400",
-            "experts": "512",
+            "backing_slots": "384",
+            "backing_stride": "2662400",
             "source_stride": "2662400",
-            "layers": "1",
-            "uploads": "641",
-            "hits": "383",
-            "consumers": "2048",
+            "experts": "512",
+            "layers": "3",
+            "uploads": "1709",
+            "hits": "1363",
+            "consumers": "6144",
             "unwind": "0",
-            "admission_rejections": "7",
+            "admission_rejections": "11",
             "status": "0",
+            "full_copy": "1",
             "immutable_slab": "PASS",
             "guards": "PASS",
             "private_map": "PASS",
             "checked_drain": "PASS"
           },
           {
-            "slots": "384",
-            "stride": "512",
-            "experts": "512",
+            "backing_slots": "384",
+            "backing_stride": "512",
             "source_stride": "256",
-            "layers": "2",
-            "uploads": "1282",
-            "hits": "766",
-            "consumers": "4096",
-            "unwind": "0",
-            "admission_rejections": "9",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "384",
-            "stride": "2662400",
             "experts": "512",
-            "source_stride": "1382400",
-            "layers": "1",
-            "uploads": "641",
-            "hits": "383",
-            "consumers": "2048",
-            "unwind": "0",
-            "admission_rejections": "9",
+            "layers": "2",
+            "uploads": "10",
+            "hits": "0",
+            "consumers": "20",
+            "unwind": "2",
+            "admission_rejections": "11",
             "status": "0",
+            "full_copy": "0",
             "immutable_slab": "PASS",
             "guards": "PASS",
             "private_map": "PASS",
@@ -346,19 +266,35 @@
       }
     ],
     "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification.",
-    "mode": "validate",
+    "mode": "packed-validate",
     "complete": true,
     "passed": true,
     "GPU_executed": true,
     "environment_reference": "tools/sycl/measurement_environment.json",
     "environment_overrides": {
       "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-gpu-v2/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-gpu-v2/cache"
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-packed-expert-bank-gpu-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-packed-expert-bank-gpu-v2/cache"
     },
     "removed_environment_keys": [
       "UR_LOG_TRACING"
     ],
+    "runtime_asset_delta": {
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+        "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+        "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+      },
+      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+        "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
+        "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
+      }
+    },
+    "runtime_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
+      "sha256": "7d12264da26f4c089c9f2c20a16cc95f1c4e98587022a2feca3b243e8f1a70c3",
+      "source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+      "scope": "Existing passed component runtime identity; not qualification of this changed native route."
+    },
     "provider_checks_passed": true,
     "ownership_closed": true,
     "boot_unchanged": true,
@@ -370,6 +306,39 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
-    }
+    },
+    "smoke_trace_evidence": {
+      "bytes": 341823,
+      "sha256": "6fa199438391bf339754c301037ae55aeddd35318bc8d37b481ee878f5bcab41",
+      "actual_UR_call_output_observed": true,
+      "level_zero_backend_observed": true,
+      "scope": "Trace presence only; no API count or overlap/saturation inference."
+    },
+    "gate": "Private expert-bank upload/layout component passes; model math, actual model work reduction, clean speed, task quality,physical262144/session/RESTORE remain unqualified.",
+    "next_action": "Qualify the current engine through the shared same-build safety suite, then freeze one117K model admission/work-accounting run and a separate matched clean Q8-MTP comparison. Keep current3b fallback and preserve original failed v1 admission."
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "source_commit": "1e92dfecc",
+    "files": 15,
+    "bytes": 433524,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-packed-bank-components-20261021.jsonl",
+    "manifest_sha256": "5521e176692fa5589f7db0ab8c2064db3600ccf1c096c8cf07e37c62f29f5aea",
+    "original_component_inputs_recovered": 22,
+    "original_cpu_compile_argv": [
+      "/usr/bin/c++",
+      "-O2",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/expert_bank_plan.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v5/plan-test"
+    ],
+    "current_and_retained_native_artifacts_unchanged": 19,
+    "consumer": "Next model qualification consumes compact component evidence, not raw output or CPU test executable.",
+    "limits": "Only closed CPUv5/GPUv2 output and empty failed-v1 directories retired. Current candidate engine/nine fixtures, fallback3b/eight fixtures and14 legacy provenance holds are untouched. Original v1 admission remains failed."
   }
 }

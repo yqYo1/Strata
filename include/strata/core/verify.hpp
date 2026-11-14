@@ -25,6 +25,7 @@
 
 #include <cstdio>
 #include "strata/core/watchdog_lifecycle.hpp"
+#include "strata/core/verify_window_policy.hpp"
 
 #include "strata/core/expert_source.hpp"
 #include "strata/core/layer.hpp"
@@ -81,10 +82,19 @@ public:
     bool init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
               const NativeHead* head, int max_t, std::string& err);
 
+#ifdef STRATA_ENABLE_SYCL
+    /// Optional target-layer outputs for DFlash2. Configure only before init;
+    /// run() completes [T][layers.size()][n_embd] on this verifier's device.
+    /// The view remains live until the next run or owner retirement. No tap
+    /// storage or launches are added to the default MTP path.
+    bool set_taps(const std::vector<int>& layers, std::string& err);
+    const float* tap_dev() const { return released_.load() ? nullptr : tap_dev_; }
+#endif
+
     // Head-only retirement. Own the serialized request boundary; this preserves
     // all arenas, commit graph, session/KV/GDN/PLE and sampling state.
-    // Dedicated native projection retirement. Head release combination is
-    // rejected until a single combined owner transaction is implemented.
+    // Dedicated native projection retirement. Individual methods reject a
+    // head lease; the explicit joint transaction below owns both reader sets.
     bool can_retire_prefill_dense(std::string& err) const;
     bool retire_prefill_dense(std::string& err);
     bool resume_prefill_dense(const NativeDense& native, std::string& err);
@@ -94,10 +104,18 @@ public:
     bool can_release_prefill_head(const NativeHead& head,std::string& err) const;
     bool retire_prefill_head(const NativeHead& head,std::string& err);
     bool resume_prefill_head(const NativeHead& head,std::string& err);
+    // One exclusive lease over the union of dense/head graph readers. All
+    // owners must be intact at retirement and fully restored before resume.
+    // Existing individual APIs continue to reject the other detached owner.
+    bool retire_prefill_dense_and_head(const NativeHead& head,std::string& err);
+    bool has_prefill_dense_head_lease(const NativeHead& head) const noexcept;
+    bool resume_prefill_dense_and_head(const NativeDense& native,const NativeHead& head,std::string& err);
 
     /// One window: `tokens[0..T)` at positions pos0.., the pool served per layer; `out[t]` = argmax after token t.
-    /// The PLE rows are gathered here from `ss.ple_prev` and the tokens.  Captures the T-token graph on first use.
-    bool run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool, void* user, int32_t* out, std::string& err);
+    /// The PLE rows are gathered here from `ss.ple_prev` and the tokens. SYCL
+    /// captures independent prompt/decode graphs per T; sampling is independent.
+    bool run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool, void* user, int32_t* out,
+             std::string& err, VerifyInput input = VerifyInput::decode);
     /// Diagnostics: row `t` of the last window's head logits (n_vocab floats) to the host. Valid after run().
     bool copy_logits(int t, float* host) const;
     int64_t vocab() const { return next_ ? next_->vocab() : n_vocab_; }
@@ -213,6 +231,8 @@ public:
     bool query_profile_enabled() const { return query_profile_enabled_; }
     QueryProfile query_profile() const { return query_profile_; }
     void reset_query_profile() { query_profile_ = {}; }
+    // Optional Q6 route/capture/replay snapshot;owner only,after request drain.
+    bool report_q6_routes(std::FILE* file, uint64_t request) const;
 #endif
     int64_t windows = 0;
     /// STRATA_VERIFY_PROFILE=1 - GPU stage times of the windows since the last call (ms per
@@ -222,7 +242,7 @@ public:
 private:
     void signal_gpu_waits();
     bool drain_gpu_waits(int timeout_ms);
-    bool capture(int T, std::string& err);
+    bool capture(int T, std::string& err, VerifyInput input);
     strata::kernels::SamplerParams sampling_ = [] {
         strata::kernels::SamplerParams s;
         s.greedy = true;
@@ -234,6 +254,8 @@ private:
     bool dense_retired_=false;
     bool head_detached_=false,head_recapture_checked_=false;
     uint64_t release_head_bytes_=0;
+    bool release_head_decode_dpas_=false;
+    bool release_head_primary_packed_=false;
     size_t release_head_row_=0;
     int release_head_type_=-1;
     bool head_sampling_ = true;          ///< set_head_sampling
@@ -249,7 +271,7 @@ private:
     void* next_user_ = nullptr;
     bool ple_stage() const { return lb_ <= 1 && 1 < le_; }   ///< holds layer 1, where the PLE block runs
     bool capture_commit(std::string& err);
-    bool record_window(int T, cudaStream_t cs, std::string& err);
+    bool record_window(int T, cudaStream_t cs, std::string& err, VerifyInput input);
     static constexpr int kProfPer = 33;              // stamps per layer (32 left the hc-read second
                                       // half's up-stamp at slot 32 = the next layer's slot 0: D8)
     bool prof_on_ = false;
@@ -264,6 +286,10 @@ private:
     VerifyHits hits_;
     const NativeHead* head_ = nullptr;
     int max_t_ = 0;
+#ifdef STRATA_ENABLE_SYCL
+    std::vector<int> tap_req_, tap_slot_;
+    float* tap_dev_ = nullptr; // part of arena_; same reader retirement lifetime
+#endif
     VerifyWindowSnapshot diag_window_;
     int last_t_ = 0;
     int64_t last_pos0_ = 0;
@@ -274,13 +300,19 @@ private:
 #ifdef STRATA_ENABLE_SYCL
     // Segment k completes the routed host payload for step k. Segment k+1
     // consumes its completed CPU results, after the queued shared/hit work.
-    std::vector<cudaGraphExec_t> segments_[9];
     // Shared experts, activation quantization and VRAM hits are submitted when
     // the CPU publishes its plan, before it computes the missed experts.
-    std::vector<cudaGraphExec_t> work_[9];
     // Enqueued after DMA submission, on cs_ after shared/resident work. The
     // runtime barrier snapshots a freshly recorded copy event outside capture.
-    std::vector<cudaGraphExec_t> pcie_work_[9];
+    VerifyWindowGraphCache<cudaGraphExec_t> window_graphs_;
+    VerifyInput last_input_ = VerifyInput::decode;
+    bool decode_kv_coalesced_ = false; // immutable opt-in; qualified INT8/C2,C4 only
+    bool decode_q6_columns_ = false; // immutable after init; opt-in model candidate
+    bool decode_q6_centering_ = false; // independent opt-in;18 measured column shapes only
+    bool decode_q6_native_half_ = false; // immutable;26-cell incumbent intersection
+    bool decode_q6_dpas_dense_ = false; // immutable;four measured non-head C4 shapes
+    bool q6_route_audit_ = false;
+    uint64_t q6_capture_sequence_ = 0;
     cudaEvent_t pcie_copy_ready_ = nullptr, pcie_done_ = nullptr;
     bool early_pcie_ = false, early_pcie_audit_ = false, pcie_launched_ = false, pcie_copy_recorded_ = false;
     cudaError_t pcie_status_ = cudaSuccess;
@@ -300,7 +332,7 @@ private:
     friend struct VerifierRetirementTestAccess;
     std::atomic<uint32_t> reached_{0};
     enum class SegmentKind { layer, resident, pcie };
-    bool end_segment(int T, std::string& err, SegmentKind kind = SegmentKind::layer);
+    bool end_segment(int T, std::string& err, VerifyInput input, SegmentKind kind = SegmentKind::layer);
     void launch_work();
     void launch_pcie(int groups);
 #endif

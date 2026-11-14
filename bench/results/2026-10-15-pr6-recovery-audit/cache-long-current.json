@@ -1,0 +1,159 @@
+{
+  "mode": "cache-capacity-check",
+  "diagnostic": "1256-slot117K-mixed-tail",
+  "source_commit": "ffa7048915d1474296c7530e28daf2612dd431fe",
+  "build_source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22127264,
+    "sha256": "33452421e15ad5c5329921c3d12310fd77e198ce7f8af4aa9cb77c9d9d6bab97"
+  },
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "ownership_closed": true,
+  "exit_code": 0,
+  "boot_unchanged": true,
+  "fresh_faults": [],
+  "native_identity": {
+    "pid": 3327771,
+    "start_ticks": 84493646,
+    "sid": 3327742
+  },
+  "full_model_hashes_before_and_after_match": true,
+  "original_native_inputs_recovered": 9831,
+  "long_capacity_evidence": {
+    "completed_requests": 2,
+    "exact_payload_and_map_cycles": 2,
+    "loan_generations": [
+      1,
+      2
+    ],
+    "slots": 1256,
+    "long_loan": {
+      "chunk": 8192,
+      "first": 132,
+      "lent": 1124,
+      "capacity": 2321664000,
+      "need": 2319958528,
+      "min_observed_free_bytes": 128106496
+    },
+    "actual_allocation_budget": {
+      "free_gpu_bytes": 4298412032,
+      "fixed_including_headroom_bytes": 4206942336,
+      "shared_arena_bytes": 1180698624
+    },
+    "min_observed_free_bytes": 128106496,
+    "prefill_rows": 117488,
+    "residual_gpu_bytes": 2406154240,
+    "windows_per_layer": [
+      [
+        0,
+        81920
+      ],
+      [
+        81920,
+        35568
+      ]
+    ],
+    "borrowed_ffn_entries": 96,
+    "checked_retirements": 96,
+    "dense_layers": 48,
+    "secondary_bank_windows": 48,
+    "execution_cache_parent_checked": true,
+    "clean_speed_qualified": false
+  },
+  "request_journal": {
+    "successful_warmups": 1,
+    "successful_long_requests": 1,
+    "request_sha256": [
+      "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+      "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+    ],
+    "journal_sha256": "b1b621ccf2f80eb70daddeca046e09704ac240ed29184c9fb8d4dbcd922a6dee",
+    "state_sha256": "c898b9afea3811b3ce856791adf581c85cb4151f6fd3a8651570954c799e18a8"
+  },
+  "schema": "strata-cache-long-admission-v1",
+  "original_plan": {
+    "commit": "385d083564932fd00e416b4d339c2a1178ef91e5",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-long-current.json",
+    "sha256": "d20dfad01aef755a2c760b225b8ceda30c6ce433348f7bcc861e7a2ef8b4d3ab"
+  },
+  "requests": [
+    {
+      "run": 0,
+      "ok": true,
+      "eligible": true,
+      "stream_complete": true,
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "reasoning_chars": 121,
+      "output_chars": 0,
+      "actual_prompt_tokens": 117489,
+      "actual_read_tokens": 117489,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "generated_tokens_source": "usage",
+      "prompt_ms": 127263.2,
+      "prompt_tps": 923.2,
+      "prompt_tps_source": "engine",
+      "decode_ms": 1765.8,
+      "decode_tps": 13.6,
+      "decode_tps_source": "engine",
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2"
+    }
+  ],
+  "parameters": {
+    "expert_cache_slots": 1256,
+    "context": 131072,
+    "kv": "int8",
+    "prefill_chunk": 8192,
+    "residual_dtype": "bf16",
+    "short_read": 0,
+    "thinking": true,
+    "max_output_tokens": 24,
+    "pool_workers": 5,
+    "pcie_frac": 0
+  },
+  "diagnostic_environment": {
+    "parameter_validation_requested": true,
+    "stage_trace": true,
+    "cache_payload_readback": true,
+    "full_API_trace": false,
+    "clean_speed_qualified": false,
+    "positive_layer_activation_proof": false
+  },
+  "retained_builds": {
+    "current": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
+    "old": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+    "consumer": "Imminent retained396-owned128/current-borrowed1256 long-input comparison on current runtime. Retire extra generation after closure."
+  },
+  "decision": "Bounded1256-slot117K admission passed. All residual rows and96 FFN windows were exercised, cache payload/map and dense state restored,24 thought tokens decoded, native exit0 and owned session closed, no matched fresh fault. No clean speed or default adoption decision.",
+  "limits": "One parameter-validated, traced, cache-readback diagnostic; prompt127263.2ms/923.2tok_s.24 output tokens contain thinking only (no answer body), so this is not sustained decode, long-generation, agent/task quality, physical262144 or session/RESTORE qualification.128106496B minimum free is a discrete lend/refill observation, not a continuous peak. Parameter-validation activation was requested, not independently proven by this receipt.",
+  "next_action": "Correct the reviewed comparison-controller activation/loan-binding/final-probe gaps without changing engine inputs, then qualify old-owned check and collect frozen six-process comparison. Keep both engines for that explicit consumer.",
+  "artifact_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-117K-admission-and-research-transactions-20261020.jsonl",
+    "sha256": "6bfbaca16b7a181dd180983e0b87608f710623b663ad86398d4866bf3ace400b",
+    "files": 105,
+    "bytes": 13044809,
+    "admission_files": 70,
+    "consumed_research_and_PR_files": 35,
+    "closed_admission_root_empty": true,
+    "compact_result_commit": "2f177a061973e2156ff086bae4f6451f27a441d9",
+    "original_outcomes_unchanged": true,
+    "post_cleanup_admission": {
+      "passed": true,
+      "old_original_inputs_recovered": 9813,
+      "current_original_inputs_recovered": 9831,
+      "old_fixtures_verified": 5,
+      "current_fixtures_verified": 8,
+      "capacity_original_plan_recovered": true,
+      "GPU_executed": false
+    }
+  }
+}

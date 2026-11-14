@@ -142,6 +142,14 @@ public:
     /// full - **it never evicts**, because eviction policy is a measured question (`R4.1`'s LFU-decay vs LRU
     /// sweep) and a placeholder policy would set the hit rate that everything downstream is then sized against.
     int32_t admit(int64_t layer, int64_t expert);
+#ifdef STRATA_ENABLE_SYCL
+    /// Replace the callback's view at an owned adaptive boundary. Readers must
+    /// be retired; mask victims before overwriting, and publish incoming rows
+    /// only after copy completion. Entries may name only previously claimed,
+    /// unique slots. Masking does not free admission capacity or scratch slots.
+    /// Temporary prefill masks remain governed by CacheScratchLease instead.
+    bool replace_residency(const std::vector<int32_t>& snapshot, std::string& err);
+#endif
 
     /// **R4.2g: GIVE EACH LAYER ITS OWN SLOTS.  ROUND 328 MEASURED WHY THE GLOBAL FORM CANNOT WORK.**
     ///
@@ -233,6 +241,9 @@ private:
     std::vector<uint64_t> off_;         ///< plan v0.3 P6: slot offsets (slots + 1 entries) when sized
     std::vector<int64_t> slot_sizes_;   ///< exact payload sizes, excluding per-slot alignment padding
     int64_t admitted_ = 0;
+#ifdef STRATA_ENABLE_SYCL
+    std::vector<uint8_t> residency_check_; ///< preallocated uniqueness check, not another ownership map
+#endif
 };
 
 }  // namespace strata::core

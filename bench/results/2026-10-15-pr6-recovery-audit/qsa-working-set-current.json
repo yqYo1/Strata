@@ -1,0 +1,686 @@
+{
+  "schema": 2,
+  "stage": "closed-working-set-diagnostic",
+  "native_source_commit": "2d3e948c430f4da4ef3e427c6434262a1ba64b05",
+  "build_recipe": "c30c754fb",
+  "full_build_result": "ddaa3f7e5",
+  "controller_source_commit": "db4d019d59346a09f6ec9a257a722e5f2aea0e91",
+  "frozen_plans": {
+    "smoke": "02f883c71",
+    "component": "12fc19a6e",
+    "resources": "93bcfe728",
+    "perf": "cfba84b43"
+  },
+  "retained_engine": {
+    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4",
+    "unchanged": true,
+    "decode_slots": 1256
+  },
+  "runtime": {
+    "record": "runtime-requalification-current.json",
+    "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+    "safety_environment": "tools/sycl/measurement_environment.json",
+    "unchanged": true
+  },
+  "selected_fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+    "bytes": 53252180,
+    "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+    "header": [
+      0,
+      32768,
+      6491,
+      2051
+    ],
+    "consumer": "Named next same-math QSA barrier-fusion comparison",
+    "review": "Retire at that comparison closure or supersession;maximum64MiB."
+  },
+  "geometry": {
+    "cells": 39259,
+    "width": 2051,
+    "heads": 24,
+    "KV_heads": 2,
+    "dimension": 256,
+    "page_size": 4,
+    "page_identity": "source-derived Mode0;not device-table capture",
+    "tensor_values": "synthetic finite Q/K8/V8/scales;not model tensor contents",
+    "shapes": [
+      {
+        "id": 0,
+        "name": "real1-repeated256",
+        "queries": 256,
+        "mask": "actual first query repeated256times",
+        "repeats": 64
+      },
+      {
+        "id": 1,
+        "name": "real6491",
+        "queries": 6491,
+        "mask": "all actual rows at positions32768..39258",
+        "repeats": 2
+      }
+    ],
+    "arms": "0..3 prepacked with1/2/4/8byte-identical KV copies rotating PER CALL;4full pack+attention with1copy",
+    "rounds": 6,
+    "order": "(process+round+offset)%5",
+    "warmup": "2R calls then drain;all copies initialized/verified outside timing"
+  },
+  "qualification": {
+    "modes": [
+      {
+        "mode": "smoke",
+        "processes": 3,
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "fresh_faults": []
+      },
+      {
+        "mode": "component",
+        "processes": 3,
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "fresh_faults": []
+      },
+      {
+        "mode": "resources",
+        "processes": 1,
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "fresh_faults": []
+      },
+      {
+        "mode": "perf",
+        "processes": 3,
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "fresh_faults": []
+      }
+    ],
+    "exact_original_outputs": true,
+    "guards": true,
+    "inputs_immutable": true,
+    "replicas_identical": true,
+    "alias_rejected": true,
+    "physical262144_final_address_component": true,
+    "full_model_context_qualified": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "queue_properties": "in_order+enable_profiling asserted by fixture;discard_events not requested in pinned Runtime source;no external-event API used"
+  },
+  "resources": {
+    "calls": {
+      "0": 2,
+      "1": 2,
+      "2": 2
+    },
+    "properties": {
+      "0": {
+        "SIMD": 16,
+        "arguments": 18,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 12480,
+        "GRF": 128
+      },
+      "1": {
+        "SIMD": 16,
+        "arguments": 18,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 12480,
+        "GRF": 128
+      },
+      "2": {
+        "SIMD": 16,
+        "arguments": 18,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 12480,
+        "GRF": 128
+      }
+    },
+    "conserved_device_ns": 114782473,
+    "table_rows": 21
+  },
+  "device_properties": {
+    "kind": "properties",
+    "global_cache_bytes": 14155776,
+    "maximum_allocation_bytes": 10132807680,
+    "local_bytes": 131072
+  },
+  "timing": {
+    "observer": "directly retained queue.submit attention events;private pre-main parameter validation;profiling queue",
+    "observer_cost_qualified": false,
+    "batch_floor_ns": 100000000,
+    "timer_ratio_floor": 1000,
+    "checked_event_intervals": 5940,
+    "positive_ordered_nonoverlapping": true,
+    "minimum_batch_ns": 247417353,
+    "service_within_wall_plus_1ms": true,
+    "criterion": "R8/R1>=1.05 in ALL3processes for BOTH wall and service,per shape",
+    "sample_columns": [
+      "process",
+      "shape",
+      "round",
+      "arm",
+      "batch_ns",
+      "attention_device_ns",
+      "timer_floor_ns"
+    ],
+    "samples": [
+      [0,0,0,0,326994756,326763024,10],
+      [0,0,0,1,327735088,327498645,10],
+      [0,0,0,2,321873977,321356665,10],
+      [0,0,0,3,324680265,324023125,10],
+      [0,0,0,4,360226415,322374793,10],
+      [0,0,1,1,326937882,326704272,10],
+      [0,0,1,2,327358663,327109066,10],
+      [0,0,1,3,328995852,328721042,10],
+      [0,0,1,4,363964377,326123753,10],
+      [0,0,1,0,319610893,319130942,10],
+      [0,0,2,2,328772292,328494272,10],
+      [0,0,2,3,326550225,326280408,10],
+      [0,0,2,4,365683041,327845206,10],
+      [0,0,2,0,317785432,317558335,10],
+      [0,0,2,1,321810532,321561350,10],
+      [0,0,3,3,321805993,321560521,10],
+      [0,0,3,4,364628119,326300103,10],
+      [0,0,3,0,319466775,319241565,10],
+      [0,0,3,1,322695507,322461557,10],
+      [0,0,3,2,324212591,323970730,10],
+      [0,0,4,4,362508223,324659273,10],
+      [0,0,4,0,321470044,321230834,10],
+      [0,0,4,1,326835856,326607606,10],
+      [0,0,4,2,325915816,325408428,10],
+      [0,0,4,3,321263406,320978334,10],
+      [0,0,5,0,318769576,318539578,10],
+      [0,0,5,1,329036877,328803751,10],
+      [0,0,5,2,329555032,329312919,10],
+      [0,0,5,3,324257779,323982703,10],
+      [0,0,5,4,361635255,323787087,10],
+      [0,1,0,0,248811634,248661145,10],
+      [0,1,0,1,249438564,249292082,10],
+      [0,1,0,2,248538813,248387187,10],
+      [0,1,0,3,248120838,247976770,10],
+      [0,1,0,4,249349600,248059583,10],
+      [0,1,1,1,247757946,247609584,10],
+      [0,1,1,2,247923850,247772500,10],
+      [0,1,1,3,247912029,247766251,10],
+      [0,1,1,4,249792386,248503959,10],
+      [0,1,1,0,249470822,249015834,10],
+      [0,1,2,2,247986071,247840522,10],
+      [0,1,2,3,249287831,249140624,10],
+      [0,1,2,4,249671973,248382813,10],
+      [0,1,2,0,248569520,247915312,10],
+      [0,1,2,1,248502945,248353750,10],
+      [0,1,3,3,247885085,247737917,10],
+      [0,1,3,4,249974114,248682709,10],
+      [0,1,3,0,247435681,247288855,10],
+      [0,1,3,1,249507879,249084896,10],
+      [0,1,3,2,248568252,248423333,10],
+      [0,1,4,4,248764773,247471875,10],
+      [0,1,4,0,249363198,249199895,10],
+      [0,1,4,1,249149747,249006042,10],
+      [0,1,4,2,247888948,247740626,10],
+      [0,1,4,3,249535616,249388542,10],
+      [0,1,5,0,247964841,247283021,10],
+      [0,1,5,1,247614674,247458646,10],
+      [0,1,5,2,249021341,248873021,10],
+      [0,1,5,3,248326205,248182813,10],
+      [0,1,5,4,249971961,248136042,10],
+      [1,0,0,1,330524828,330290725,10],
+      [1,0,0,2,323225278,323005315,10],
+      [1,0,0,3,327113382,326325207,10],
+      [1,0,0,4,362455936,324566251,10],
+      [1,0,0,0,317206528,316980729,10],
+      [1,0,1,2,327329589,327101355,10],
+      [1,0,1,3,328287170,328041045,10],
+      [1,0,1,4,357740039,319887297,10],
+      [1,0,1,0,315149561,314626774,10],
+      [1,0,1,1,323872157,323366249,10],
+      [1,0,2,3,329951683,329696042,10],
+      [1,0,2,4,360904862,323056984,10],
+      [1,0,2,0,313720374,313486771,10],
+      [1,0,2,1,326738621,326502395,10],
+      [1,0,2,2,331255516,331020629,10],
+      [1,0,3,4,364382816,326286980,10],
+      [1,0,3,0,316530170,316041251,10],
+      [1,0,3,1,325236886,324998646,10],
+      [1,0,3,2,323301097,323068953,10],
+      [1,0,3,3,323528244,323246454,10],
+      [1,0,4,0,317155157,316932400,10],
+      [1,0,4,1,329094655,328857289,10],
+      [1,0,4,2,328435515,327919070,10],
+      [1,0,4,3,326660637,326383330,10],
+      [1,0,4,4,360772208,322923644,10],
+      [1,0,5,1,333140466,332916149,10],
+      [1,0,5,2,322432194,322199063,10],
+      [1,0,5,3,321161234,320896667,10],
+      [1,0,5,4,361637286,323798227,10],
+      [1,0,5,0,317571483,317339372,10],
+      [1,1,0,1,248192532,247559584,10],
+      [1,1,0,2,247615408,247466562,10],
+      [1,1,0,3,248145636,247998230,10],
+      [1,1,0,4,250262819,248961042,10],
+      [1,1,0,0,247885228,247502084,10],
+      [1,1,1,2,247841636,247689062,10],
+      [1,1,1,3,247528018,247381771,10],
+      [1,1,1,4,249326441,248031562,10],
+      [1,1,1,0,247538388,247396875,10],
+      [1,1,1,1,248282248,248131459,10],
+      [1,1,2,3,250496875,250107292,10],
+      [1,1,2,4,248711346,247414687,10],
+      [1,1,2,0,249619785,249457500,10],
+      [1,1,2,1,248865998,248720312,10],
+      [1,1,2,2,247610497,247462291,10],
+      [1,1,3,4,250743842,249448438,10],
+      [1,1,3,0,248863335,248718438,10],
+      [1,1,3,1,248726799,248578021,10],
+      [1,1,3,2,248432376,248284480,10],
+      [1,1,3,3,248288716,248142709,10],
+      [1,1,4,0,247883315,247736770,10],
+      [1,1,4,1,248955090,248803854,10],
+      [1,1,4,2,249205853,249058750,10],
+      [1,1,4,3,248368289,248215520,10],
+      [1,1,4,4,249066793,247766147,10],
+      [1,1,5,1,249668987,249520833,10],
+      [1,1,5,2,248490541,248344792,10],
+      [1,1,5,3,249254259,249103124,10],
+      [1,1,5,4,248784405,247493021,10],
+      [1,1,5,0,248471298,248290001,10],
+      [2,0,0,2,328319522,328076769,20],
+      [2,0,0,3,321830375,321580730,20],
+      [2,0,0,4,362528291,324653337,20],
+      [2,0,0,0,319153330,318922189,20],
+      [2,0,0,1,328731908,328491776,20],
+      [2,0,1,3,323581892,323298961,20],
+      [2,0,1,4,361746070,323893644,20],
+      [2,0,1,0,318382301,318152602,20],
+      [2,0,1,1,329141950,328902811,20],
+      [2,0,1,2,327327177,326991562,20],
+      [2,0,2,4,360014655,322156872,20],
+      [2,0,2,0,320728766,320504484,20],
+      [2,0,2,1,325320593,325072818,20],
+      [2,0,2,2,328803145,328554691,20],
+      [2,0,2,3,324369154,324076767,20],
+      [2,0,3,0,318356785,317571769,20],
+      [2,0,3,1,326770593,326469375,20],
+      [2,0,3,2,328738364,328506245,20],
+      [2,0,3,3,326758260,326466768,20],
+      [2,0,3,4,360133922,322280215,20],
+      [2,0,4,1,329795504,329567813,20],
+      [2,0,4,2,329587272,329352081,20],
+      [2,0,4,3,327750076,327253024,20],
+      [2,0,4,4,361092647,322992078,20],
+      [2,0,4,0,316989866,316760622,20],
+      [2,0,5,2,327295652,327053850,20],
+      [2,0,5,3,328352651,328061354,20],
+      [2,0,5,4,361640198,323797712,20],
+      [2,0,5,0,321001483,320777092,20],
+      [2,0,5,1,324522967,324246767,20],
+      [2,1,0,2,247777717,247633230,20],
+      [2,1,0,3,248335788,248186043,20],
+      [2,1,0,4,249520467,248221562,20],
+      [2,1,0,0,248667543,248525730,20],
+      [2,1,0,1,248818728,248673229,20],
+      [2,1,1,3,248696239,248550312,20],
+      [2,1,1,4,250011333,248716041,20],
+      [2,1,1,0,248088516,247945833,20],
+      [2,1,1,1,247477186,247329584,20],
+      [2,1,1,2,248787151,248633334,20],
+      [2,1,2,4,248604058,247293230,20],
+      [2,1,2,0,247983871,247840208,20],
+      [2,1,2,1,248580213,248431563,20],
+      [2,1,2,2,247971228,247822708,20],
+      [2,1,2,3,248181445,248036041,20],
+      [2,1,3,0,248791333,248644791,20],
+      [2,1,3,1,247633525,247477188,20],
+      [2,1,3,2,249029593,248883333,20],
+      [2,1,3,3,248795383,248647084,20],
+      [2,1,3,4,249290725,247994897,20],
+      [2,1,4,1,247592350,247448125,20],
+      [2,1,4,2,248582574,248433541,20],
+      [2,1,4,3,247963571,247819999,20],
+      [2,1,4,4,248474743,247180000,20],
+      [2,1,4,0,247417353,247273021,20],
+      [2,1,5,2,248118263,247972708,20],
+      [2,1,5,3,248426574,248278959,20],
+      [2,1,5,4,249497258,248204895,20],
+      [2,1,5,0,248165223,248018750,20],
+      [2,1,5,1,248539137,248143020,20]
+    ],
+    "shapes": {
+      "real1-repeated256": {
+        "arms": [
+          {
+            "arm": 0,
+            "metrics": {
+              "wall": {
+                "median_ms": 4.974524109375,
+                "sample_sd_ms": 0.044756085875537845,
+                "process_medians_ms": [
+                  4.992794281249999,
+                  4.950666617187499,
+                  4.9807471171875
+                ]
+              },
+              "attention_service": {
+                "median_ms": 4.9665966484375,
+                "sample_sd_ms": 0.04530491584139697,
+                "process_medians_ms": [
+                  4.9872852109375,
+                  4.9451066484375,
+                  4.9771468046875
+                ]
+              }
+            }
+          },
+          {
+            "arm": 1,
+            "metrics": {
+              "wall": {
+                "median_ms": 5.107607328125,
+                "sample_sd_ms": 0.04513596863663629,
+                "process_medians_ms": [
+                  5.107607328125,
+                  5.1236974687500005,
+                  5.1211132890624995
+                ]
+              },
+              "attention_service": {
+                "median_ms": 5.103999046875,
+                "sample_sd_ms": 0.0455185112901307,
+                "process_medians_ms": [
+                  5.103999046875,
+                  5.11999753125,
+                  5.1168839921875
+                ]
+              }
+            }
+          },
+          {
+            "arm": 2,
+            "metrics": {
+              "wall": {
+                "median_ms": 5.114751968749999,
+                "sample_sd_ms": 0.04299369245168253,
+                "process_medians_ms": [
+                  5.103706867187499,
+                  5.083052234375,
+                  5.133264734375
+                ]
+              },
+              "attention_service": {
+                "median_ms": 5.1110189140625,
+                "sample_sd_ms": 0.04335564666778021,
+                "process_medians_ms": [
+                  5.0977929218749995,
+                  5.07945553125,
+                  5.129554796875
+                ]
+              }
+            }
+          },
+          {
+            "arm": 3,
+            "metrics": {
+              "wall": {
+                "median_ms": 5.087738203125,
+                "sample_sd_ms": 0.04392435276801293,
+                "process_medians_ms": [
+                  5.06982846875,
+                  5.1076095234375,
+                  5.086932921875
+                ]
+              },
+              "attention_service": {
+                "median_ms": 5.080915429687501,
+                "sample_sd_ms": 0.043598052021468166,
+                "process_medians_ms": [
+                  5.0625455312500005,
+                  5.0992854453125,
+                  5.0823713671875
+                ]
+              }
+            }
+          },
+          {
+            "arm": 4,
+            "metrics": {
+              "wall": {
+                "median_ms": 5.65060534375,
+                "sample_sd_ms": 0.03011821329402645,
+                "process_medians_ms": [
+                  5.6755671875,
+                  5.64486053125,
+                  5.6463503515625
+                ]
+              },
+              "attention_service": {
+                "median_ms": 5.0593432734375,
+                "sample_sd_ms": 0.02937629774197656,
+                "process_medians_ms": [
+                  5.0842423906250005,
+                  5.0535563359375,
+                  5.053045234375
+                ]
+              }
+            }
+          }
+        ],
+        "R8_over_R1": {
+          "wall": [
+            1.0154290730121398,
+            1.0317013683985774,
+            1.0213192523509327
+          ],
+          "attention_service": [
+            1.0150904384107506,
+            1.0311780529392052,
+            1.021141542861645
+          ]
+        },
+        "sensitivity_screen_passed": false
+      },
+      "real6491": {
+        "arms": [
+          {
+            "arm": 0,
+            "metrics": {
+              "wall": {
+                "median_ms": 124.15913025,
+                "sample_sd_ms": 0.3405666466588423,
+                "process_medians_ms": [
+                  124.34528850000001,
+                  124.08913150000001,
+                  124.06343475
+                ]
+              },
+              "attention_service": {
+                "median_ms": 123.99114575,
+                "sample_sd_ms": 0.34686628376770573,
+                "process_medians_ms": [
+                  124.14411425,
+                  124.00669275,
+                  123.99114575
+                ]
+              }
+            }
+          },
+          {
+            "arm": 1,
+            "metrics": {
+              "wall": {
+                "median_ms": 124.2798375,
+                "sample_sd_ms": 0.34893719833314985,
+                "process_medians_ms": [
+                  124.413173,
+                  124.39819925,
+                  124.0431655
+                ]
+              },
+              "attention_service": {
+                "median_ms": 124.19632825,
+                "sample_sd_ms": 0.35113350716036007,
+                "process_medians_ms": [
+                  124.33994799999999,
+                  124.32458325,
+                  123.90505200000001
+                ]
+              }
+            }
+          },
+          {
+            "arm": 2,
+            "metrics": {
+              "wall": {
+                "median_ms": 124.13765975000001,
+                "sample_sd_ms": 0.2529318749245592,
+                "process_medians_ms": [
+                  124.13122100000001,
+                  124.06850299999999,
+                  124.17520925
+                ]
+              },
+              "attention_service": {
+                "median_ms": 124.06429700000001,
+                "sample_sd_ms": 0.2529621492763806,
+                "process_medians_ms": [
+                  124.05692725,
+                  123.9933855,
+                  124.10156225
+                ]
+              }
+            }
+          },
+          {
+            "arm": 3,
+            "metrics": {
+              "wall": {
+                "median_ms": 124.16549825,
+                "sample_sd_ms": 0.3599499246045221,
+                "process_medians_ms": [
+                  124.11176075,
+                  124.16425125,
+                  124.1905905
+                ]
+              },
+              "attention_service": {
+                "median_ms": 124.09221400000001,
+                "sample_sd_ms": 0.34076978388842977,
+                "process_medians_ms": [
+                  124.03989575,
+                  124.08955725,
+                  124.1162505
+                ]
+              }
+            }
+          },
+          {
+            "arm": 4,
+            "metrics": {
+              "wall": {
+                "median_ms": 124.7117145,
+                "sample_sd_ms": 0.31362957187418583,
+                "process_medians_ms": [
+                  124.86608975,
+                  124.5983085,
+                  124.69699575
+                ]
+              },
+              "attention_service": {
+                "median_ms": 124.04890625,
+                "sample_sd_ms": 0.3069353013374352,
+                "process_medians_ms": [
+                  124.12971375000001,
+                  123.94942725,
+                  124.049948
+                ]
+              }
+            }
+          }
+        ],
+        "R8_over_R1": {
+          "wall": [
+            0.9981219413070082,
+            1.0006053692945702,
+            1.0010249252751726
+          ],
+          "attention_service": [
+            0.9991605038979928,
+            1.0006682260300825,
+            1.001008981320749
+          ]
+        },
+        "sensitivity_screen_passed": false
+      }
+    }
+  },
+  "decision": {
+    "complete": true,
+    "passed": true,
+    "hardware_saturation_qualified": false,
+    "model_adoption_qualified": false,
+    "advance_to_model": false,
+    "finding": "Both shapes fail the prospective5% sensitivity screen. Full6491R8/R1 wall0.99812..1.00103;repeated-query1.01543..1.03171. No large inter-call reuse effect is established.",
+    "limits": "Flat per-call rotation does not test or exclude intra-launch reuse,memory latency,VRAM/local bandwidth,barrier/compute limits. Synthetic operands,one layer mask and observed event-service are not clean model throughput or a hardware ceiling."
+  },
+  "previous_event_failure": {
+    "result": "117ee9b28",
+    "retirement": "0ecb57d27",
+    "native_source": "bb347ab57",
+    "error": "attention event clock invalid",
+    "cause": "unknown;raw operands were not recorded",
+    "unchanged": true
+  },
+  "retirement": {
+    "status": "complete",
+    "proof": {
+      "original_native_source": "2d3e948c430f4da4ef3e427c6434262a1ba64b05",
+      "original_recipe": "c30c754fb",
+      "original_full_build_result": "ddaa3f7e5",
+      "recovered_project_inputs": 195,
+      "matched_actual_compiled_inputs": 691,
+      "recipe_commands": 10,
+      "source_recovered_from_git": true,
+      "matched_final_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v3/fixture",
+        "sha256": "6d48fddcdc667dbd7bef2d4f80d2714d78f9882052bf2089a423f5fb5f0ca68f",
+        "bytes": 1555568
+      },
+      "compiler_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v3/compiler-inputs.json",
+        "files": 8700,
+        "sha256": "57beb2214cc1b75d8061b70a54eda59ef45033975ec880b26aed6446a548cfb2"
+      },
+      "selected_engine_and_12fixtures_unchanged": true
+    },
+    "consumer": "Closed;no binary/log consumer remains. Keep original source/recipe/results reachable in feature/sycl pending default integration.",
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v3-retirement-20261027.jsonl",
+      "sha256": "be02e8d94af9e27e5effa72cea0c833a9fbc1fd1efcd7879d2b475f208addcbf"
+    },
+    "removed_files": 93,
+    "removed_bytes": 6777612,
+    "component_files": 86,
+    "tracked_one_use_sources_retired": 4,
+    "original_source_remote_verified": true,
+    "selected_engine_and_12fixtures_admission_after_cleanup": true,
+    "current_qsa_component_roots_remaining": 0
+  },
+  "legacy_provenance_holds": {
+    "result": "native-gdn-engine-build.json",
+    "review_sha256": "8c53b900fe9fbcf042e51e96bc6a56778c942a97dd3b0f5ac8b863719ca8efa0",
+    "next_action": "Review exact remaining artifacts and missing original inputs through native-gdn-engine-build.json legacy_provenance_exception and the existing component-provenance audit before another generation. Closed QSA v1/v2/v3 products are gone;this does not clear separate legacy source/recipe holds.",
+    "full_final_input_proof": false
+  },
+  "retired_fixture_executable": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v3/fixture",
+    "sha256": "6d48fddcdc667dbd7bef2d4f80d2714d78f9882052bf2089a423f5fb5f0ca68f",
+    "bytes": 1555568
+  }
+}

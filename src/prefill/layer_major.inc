@@ -1,25 +1,26 @@
 // Included inside strata::prefill after the current chunk implementation's
 // helpers. This is orchestration only; run_impl owns GDN/QSA/PLE/expert math.
-bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err, Strategy strategy) {
+    if (!valid_strategy(strategy)) { err = "prefill: invalid strategy"; return false; }
     if (!impl_ || !impl_->scratch_layout.ready()) {
         err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
     }
 #ifdef STRATA_ENABLE_SYCL
     if (!impl_->cache_scratch_entry(err)) return false;
 #endif
-    const char* requested = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    const bool requested = uses_layer_major(strategy, n, chunk());
     const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
     if (phase_switch && std::strcmp(phase_switch, "1") == 0 &&
-        (!requested || std::strcmp(requested, "1") || !impl_ || n <= impl_->T)) {
+        !requested) {
         err = "prefill phase audit: requires the long-prompt layer-major path"; return false;
     }
     if (activate_native_dense_layer &&
-        (!requested || std::strcmp(requested, "1") || !impl_ || n <= impl_->T)) {
+        !requested) {
         err = "prefill dense bank: hook requires long layer-major request"; return false;
     }
     // Reuse only pays across chunks. Keep short chat/agent turns on the
     // original path even when long-prompt layer reuse is requested.
-    if (requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T) {
+    if (requested) {
 #if defined(STRATA_ENABLE_SYCL)
         // Read on the calling thread before publishing the thread-local scope.
         const char* cpu_wait_switch = std::getenv("STRATA_PREFILL_CPU_WAIT_PROFILE");
@@ -51,12 +52,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const bool native16_on = native16::requested();
     const bool gdn_chunk_on=strata::gdn_chunk64::requested();
     const int gdn_columns = gdn_column_partitions();
+    if (gdn_three_barriers() && gdn_columns != 4) {
+        err="prefill GDN three barriers requires four column partitions"; return false;
+    }
     if (gdn_columns && (gdn_chunk_on || m.T > 8192)) {
         err="prefill GDN columns requires chunk<=8192 and existing GDN (chunk64 off)"; return false;
     }
     if (gdn_columns)
-        std::fprintf(stderr, "strata prefill: GDN columns=%d workgroups=%d lanes=%d epilogue=GPU_FP32_same_order scratch=existing_y\n",
-                     gdn_columns, 48 * gdn_columns, 512 / gdn_columns);
+        std::fprintf(stderr, "strata prefill: GDN columns=%d workgroups=%d lanes=%d barriers=%d epilogue=GPU_FP32_same_order scratch=existing_y\n",
+                     gdn_columns, 48 * gdn_columns, 512 / gdn_columns, gdn_three_barriers() ? 3 : 5);
     if(gdn_chunk_on && !native16_on) {
         err="prefill chunk64 GDN requires native16 BF16";return false;
     }
@@ -64,6 +68,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const int window_requested = moe_window_requested();
     const bool window_on = window_requested && !requires_prefix_checkpoints;
     const bool scratch_mixed_on = moe_scratch_mixed_requested();
+    const bool split_accumulator_requested = moe_split_accumulator_requested();
+    if (split_accumulator_requested && (!window_on || window_requested != 10 ||
+        !scratch_mixed_on || !native16_on)) {
+        err = "prefill split accumulator: requires mode10/native16 and mixed scratch"; return false;
+    }
     if (scratch_mixed_on && (!window_on || window_requested != 10 || !native16_on ||
         m.T != 8192 || !m.scratch_alias || !m.mixed_scratch_owners_ready() || m.copy != m.cs)) {
         err = "prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue";
@@ -109,6 +118,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ||
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_cached_subgroup ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack;
     if (qsa16_on && !native16_on) {
@@ -220,10 +230,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
         }
     }
-    // QSA16 v1 deliberately supports a resident text INT8 cache only. Reject
-    // every unsupported layer/device/domain BEFORE this request submits work.
+    // Mode0 keeps its original typed producer. Streamed text INT8 requires its
+    // own explicit publisher and full-range attention view. Reject unsupported
+    // storage/layers/domains BEFORE this request submits work.
     if (qsa16_on) {
         native16::qsa::validate_device(m.cs);
+        const bool stream_on = native16::qsa::streaming_requested();
         // The legacy OLD switch is presence-based, including a value of 0.
         if (std::getenv("STRATA_PROMPT_ATTN_OLD")) {
             err = "prefill QSA16: leave STRATA_PROMPT_ATTN_OLD unset"; return false;
@@ -239,21 +251,33 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         const auto shapes = strata::kernels::qsa_real_shapes();
         for (int64_t i = 0; i < ss.qsa_alloc; ++i) {
             const auto& q = ss.qsa_states[i];
-            if (q.kv_mode != 0 || !q.kv_int8 || q.kv_rot || q.kv_q4 || q.kv_hybrid || q.host.present() ||
-                q.n_slots != q.n_pages || tab.cos != q.cos_tab || tab.sin != q.sin_tab ||
+            const bool resident = q.kv_mode == 0 && !q.host.present() && q.n_slots == q.n_pages;
+            const bool streamed = stream_on && q.kv_mode == 1 && q.host.present() &&
+                q.n_slots > 0 && q.n_slots < q.n_pages;
+            if ((!resident && !streamed) || !q.kv_int8 || q.kv_rot || q.kv_q4 || q.kv_hybrid ||
+                tab.cos != q.cos_tab || tab.sin != q.sin_tab ||
                 tab.max_pos != q.max_cells) {
-                err = "prefill QSA16: requires resident unrotated INT8 K/V and the owning session RoPE tables";
+                err = stream_on ?
+                    "prefill QSA16: requires resident or mode-1 streamed unrotated INT8 K/V and owning session RoPE tables" :
+                    "prefill QSA16: requires resident unrotated INT8 K/V and the owning session RoPE tables";
                 return false;
             }
             sycl_backend::validate_device_span(q.cos_tab, size_t(q.max_cells) * 32 * sizeof(float),
                                                sycl_backend::queue_for(m.cs));
             sycl_backend::validate_device_span(q.sin_tab, size_t(q.max_cells) * 32 * sizeof(float),
                                                sycl_backend::queue_for(m.cs));
-            // Owner n_slots sizes physical pools, n_pages sizes the table.
-            // max_cells is NOT used to guess allocated physical pages.
-            if (!strata::kernels::qsa_prompt_attn_bf16_validate(m.qsa_q16, core::qsa_attn_pools(q),
+            if (streamed)
+                native16::qsa::validate_streamed_storage(
+                    {q.k_q,q.v_q,q.k_scale,q.v_scale,q.page_table},
+                    {q.host.k_q,q.host.v_q,q.host.k_scale,q.host.v_scale},
+                    {m.stage.k_q,m.stage.v_q,m.stage.k_scale,m.stage.v_scale},
+                    shapes,{q.n_pages,q.n_slots},m.cs);
+            // The streamed attention owner is the FULL stage, not the smaller
+            // resident pool. The table stays sized to logical pages in both.
+            const auto pools = streamed ? pools_of(m.stage,m.ident_table) : core::qsa_attn_pools(q);
+            if (!strata::kernels::qsa_prompt_attn_bf16_validate(m.qsa_q16, pools,
                     m.sel_ids, m.steps_dev, m.cap, shapes, m.qsa_attn16, m.T,
-                    {q.n_pages, q.n_slots}, m.cs)) {
+                    {q.n_pages, streamed ? q.n_pages : q.n_slots}, m.cs)) {
                 err = "prefill QSA16: typed attention capability/geometry unsupported"; return false;
             }
         }
@@ -309,21 +333,76 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const auto max_alloc = sycl_backend::queue_for(m.cs).get_device()
         .get_info<sycl::info::device::max_mem_alloc_size>();
-    const auto bank_plan = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
+    if (prefix_bytes > max_alloc) {
+        err = "prefill BF16 prefix and metadata exceed maximum single allocation"; return false;
+    }
+    auto bank_plan = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
         other_reserved, gpu_headroom, max_alloc,
         detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
         residual_dtype, requested_slots,
         window_on && window_requested == 10 && native16_on && scratch_mixed_on);
+    // The initial candidate deliberately leaves the existing short-tail and
+    // full-context fallback untouched. Only90113..117488 fully GPU-resident
+    // rows may replace two windows with one. Charge the distinct FP32 tail
+    // before residual admission;128 prefill slots do not change decode1256.
+    bool split_accumulator_on = false;
+    uint64_t split_accumulator_bytes = 0;
+    detail::MoeAccumPlan split_accumulator_plan;
+    if (split_accumulator_requested && n > detail::ExpertBankPlan::window_rows + m.T &&
+        n <= detail::MoeAccumPlan::split_maximum_rows &&
+        residual_dtype == detail::LayerMajorResidualDtype::bf16) {
+        try {
+            auto split = detail::MoeAccumPlan::make_split_scratch(n,
+                detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
+            const auto extra = split.accumulator_tail_allocation_bytes();
+            if (extra <= max_alloc) {
+                auto candidate = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
+                    detail::layer_major_add(other_reserved, extra), gpu_headroom, max_alloc,
+                    detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
+                    residual_dtype, 128, true);
+                if (candidate.staged() && candidate.residual.gpu_rows == n) {
+                    bank_plan = std::move(candidate);
+                    split_accumulator_on = true;
+                    split_accumulator_bytes = extra;
+                    split_accumulator_plan = split;
+                }
+            }
+        } catch (const std::invalid_argument&) {
+            // Pure preflight only: no allocation or model mutation has begun.
+            // Preserve the ordinary placement/window plan on a capacity miss.
+        }
+    }
+    if (split_accumulator_on && command_profile_on) {
+        err = "prefill split accumulator: command-service observer is not yet qualified"; return false;
+    }
+    if (split_accumulator_requested)
+        std::fprintf(stderr, "strata MoE split admission: active=%d rows=%lld primary_rows=%lld tail_payload_bytes=%llu extra_allocation_bytes=%llu prefill_slots=%lld max_single_allocation_bytes=%llu decode_changed=0\n",
+            int(split_accumulator_on), (long long)n,
+            (long long)split_accumulator_plan.accumulator_primary_rows,
+            (unsigned long long)split_accumulator_plan.accumulator_tail_bytes(),
+            (unsigned long long)split_accumulator_bytes, (long long)bank_plan.slots,
+            (unsigned long long)max_alloc);
     const auto& plan = bank_plan.residual;
+    const char* packed_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED");
+    if (packed_option && std::strcmp(packed_option, "0") != 0 && std::strcmp(packed_option, "1") != 0) {
+        err = "prefill packed expert bank: expected0 or1"; return false;
+    }
+    // The unchanged512-cache fallback also handles host tails and full context.
+    const bool packed_bank_on = bank_plan.staged() && packed_option && std::strcmp(packed_option, "1") == 0;
     const uint64_t cache_bytes = bank_plan.device_bytes;
-    const uint64_t gpu_reserved = detail::layer_major_add(cache_bytes, other_reserved);
+    if (packed_bank_on)
+        for (int64_t l = 0; l < g.n_layers; ++l)
+            (void)detail::ExpertBankLayout::packed(cache_bytes, layout.blob_bytes(l));
+    const uint64_t gpu_reserved = detail::layer_major_add(cache_bytes,
+        detail::layer_major_add(other_reserved, split_accumulator_bytes));
     // Keep residual placement fixed for the first comparison. Admit an owned
     // FP16 mixed bank only from the remaining budget, retaining 512 MiB.
     int64_t accumulation_rows = 0;
     uint64_t accumulation_bytes = 0;
     detail::MoeAccumPlan borrowed_mixed_plan;
     if (window_on && window_requested >= 8 && plan.gpu_rows > m.T) {
-        const int64_t count = std::min<int64_t>(int64_t(window_requested) * m.T, plan.gpu_rows);
+        const int64_t count = split_accumulator_on ? n :
+            std::min<int64_t>(int64_t(window_requested) * m.T, plan.gpu_rows);
         const uint64_t bytes = detail::layer_major_mul(uint64_t(count), N * 2);
         const uint64_t fixed = detail::layer_major_add(gpu_reserved,
             detail::layer_major_add(plan.gpu_bytes, detail::layer_major_add(plan.staging_bytes, gpu_headroom)));
@@ -338,8 +417,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 if (!m.mixed_scratch_owners_ready()) {
                     err = "prefill mixed scratch: current checked owners required"; return false;
                 }
-                borrowed_mixed_plan = detail::MoeAccumPlan::make_scratch_borrowed(count,
-                    detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
+                borrowed_mixed_plan = split_accumulator_on ? split_accumulator_plan :
+                    detail::MoeAccumPlan::make_scratch_borrowed(count,
+                        detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
                 accumulation_rows = count; // no additional mixed allocation
             } else {
                 (void)detail::MoeAccumPlan::make_contiguous(count, bytes, m.region_bytes);
@@ -353,7 +433,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill command profile: requested accumulator window was not admitted"; return false;
     }
     if (bank_plan.staged() && (!accumulation_rows || plan.gpu_rows != n ||
-        accumulation_rows != std::min<int64_t>(detail::ExpertBankPlan::window_rows, n))) {
+        accumulation_rows != (split_accumulator_on ? n :
+            std::min<int64_t>(detail::ExpertBankPlan::window_rows, n)))) {
         err = "prefill expert bank: every FFN piece must use the all-GPU accumulator"; return false;
     }
     const char* source_view_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW");
@@ -389,8 +470,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     uint64_t host_need = detail::layer_major_add(plan.host_bytes, owned_host_slab_bytes);
     host_need = detail::layer_major_add(host_need, stride);
     host_need = detail::layer_major_add(host_need, detail::layer_major_mul(2, map_bytes));
+    // IDs, immutable source/slot/inverse vectors and bounded jobs.
     if (window_on) host_need = detail::layer_major_add(host_need,
-        accumulation_rows ? 16ull << 20 : 2ull << 20); // IDs, immutable routes/jobs/inverse
+        split_accumulator_on ? 32ull << 20 : accumulation_rows ? 16ull << 20 : 2ull << 20);
     if (command_profile_on) host_need = detail::layer_major_add(host_need, 128ull << 10);
     if (!core::conversation_memory_admit(core::conversation_available_memory(), host_need, host_headroom)) {
         err = "prefill layer-major: residual/upload storage exceeds known available RAM minus 8 GiB headroom";
@@ -405,6 +487,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     std::unique_ptr<uint8_t, decltype(free_device)> device_rows(nullptr, free_device);
     std::unique_ptr<uint8_t, decltype(free_device)> prefix_storage(nullptr, free_device);
     std::unique_ptr<uint8_t, decltype(free_device)> mixed_storage(nullptr, free_device);
+    std::unique_ptr<uint8_t, decltype(free_device)> split_accumulator_storage(nullptr, free_device);
+    std::array<uint8_t, 256> split_accumulator_guard{}; // before the DMA/queue lease
     std::unique_ptr<uint8_t, decltype(free_device)> score_status_storage(nullptr, free_device);
     // DMA destination precedes the checked lease: even a failed copy/drain
     // cannot end its lifetime before the lease's fail-stop retirement.
@@ -639,21 +723,26 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ||
+                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_cached_subgroup ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack) ? 33 : 32,
                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack ? "dense16-vnni" : "row-major",
-                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ? "subgroup" :
+                     (qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
+                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_cached_subgroup) ? "subgroup" :
                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ? "parallel-exp-ascending-sum" : "serial");
     if (qsa_math == native16::qsa::AttentionMath::bf16_prefix_qcache ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
-        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ||
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_cached_subgroup)
         std::fprintf(stderr, "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component\n");
     if (qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
-        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ||
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_cached_subgroup)
         std::fprintf(stderr, "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component\n");
     if (qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
-        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ||
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_cached_subgroup)
         std::fprintf(stderr, "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component\n");
     if (plan.gpu_bytes) {
         uint8_t* p = nullptr;
@@ -676,6 +765,20 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         mixed_storage.reset(p);
     }
+    if (split_accumulator_on) {
+        uint8_t* p = nullptr;
+        if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(split_accumulator_bytes)) != cudaSuccess) {
+            err = "prefill split accumulator: extra FP32 allocation failed before model work"; return false;
+        }
+        split_accumulator_storage.reset(p);
+        const auto payload = split_accumulator_plan.accumulator_tail_bytes();
+        if (split_accumulator_bytes - payload != split_accumulator_guard.size())
+            throw std::invalid_argument("prefill split accumulator: unexpected guard extent");
+        sycl_backend::validate_device_span(p, size_t(split_accumulator_bytes), sycl_backend::queue_for(m.cs));
+        if (cudaMemsetAsync(p + size_t(payload), 0xa7, split_accumulator_guard.size(), m.cs) != cudaSuccess) {
+            err = "prefill split accumulator: guard initialization failed"; return false;
+        }
+    }
     m.layer_major_fp16_stage = reinterpret_cast<uint16_t*>(fp16_stage.get());
     m.layer_major_active = true;
     m.native16_active = native16_on;
@@ -687,6 +790,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             window_context->expert_slab = upload.get();
             window_context->expert_slab_bytes = host_slab_bytes;
             window_context->expert_stride = stride;
+            if (packed_bank_on && expert_upload_staging_requested()) {
+                window_context->expert_upload_staging.reset(new detail::ExpertUploadStaging(
+                    layer_cache.device_slot(0), size_t(layer_cache.bytes()), size_t(stride), m.cs));
+                std::fprintf(stderr, "strata prefill expert upload staging: host_usm_slots=4 host_bytes=%zu "
+                    "maximum_blob=%llu queue=same copy_event_before_host_reuse=1 decode_changed=0\n",
+                    window_context->expert_upload_staging->host_bytes(), (unsigned long long)stride);
+            }
         }
         window_context->bank = reinterpret_cast<uint16_t*>(device_rows.get());
         window_context->bank_bytes = plan.gpu_bytes;
@@ -706,6 +816,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 (unsigned long long)borrowed_mixed_plan.region_bytes);
         }
         window_context->accumulation = accumulation_rows != 0;
+        if (split_accumulator_on) {
+            window_context->accumulator_tail = reinterpret_cast<float*>(split_accumulator_storage.get());
+            window_context->accumulator_tail_bytes = split_accumulator_plan.accumulator_tail_bytes();
+            window_context->accumulator_primary_rows = split_accumulator_plan.accumulator_primary_rows;
+        }
         if (accumulation_rows) window_context->maximum_rows = accumulation_rows;
         m.moe_window = window_context.get();
         std::fprintf(stderr, "strata MoE window configuration: requested_mode=%d effective_mode=%d maximum_rows=%lld mixed_fp16_bytes=%llu\n",
@@ -758,9 +873,25 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             std::fflush(stderr);
         }
         std::fill(residency.begin(), residency.end(), -1);
-        if (bank_plan.staged()) window_context->expert_slots->reset(); // previous layer checked above
         const auto load_start = Clock::now();
         const uint64_t bytes = layout.blob_bytes(layer);
+        if (bank_plan.staged()) {
+            // The previous layer's readers and copies retired through drain()
+            // above. Rebind host-only metadata inside the SAME allocation.
+            if (packed_bank_on) {
+                window_context->private_expert_bank.reset(new detail::PrivateExpertBank(layer_cache, bytes));
+                const auto& geometry = window_context->private_expert_bank->layout();
+                window_context->expert_slots.reset(new detail::ExpertBankSlots(geometry.slots, geometry.full_fit()));
+                window_context->expert_stride = geometry.stride;
+                if (std::getenv("STRATA_TRACE"))
+                    std::fprintf(stderr,"strata packed expert bank: layer=%lld slots=%d stride=%llu used_bytes=%llu backing_bytes=%llu full_fit=%d\n",
+                        (long long)layer, geometry.slots, (unsigned long long)geometry.stride,
+                        (unsigned long long)geometry.used_bytes, (unsigned long long)geometry.backing_bytes, int(geometry.full_fit()));
+            } else window_context->expert_slots->reset();
+            // Owned upload slabs retain the original maximum source stride;
+            // immutable source views below replace this with their own stride.
+            window_context->expert_source_stride = stride;
+        }
         // Legacy source_copy observer measures preparation in either arm; the
         // explicit source marker above distinguishes copying from a view.
         sycl_backend::cpu_wait_profile::Host source_copy_profile(sycl_backend::cpu_wait_profile::source_copy);
@@ -831,7 +962,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         cursor = {n, m.T};
         if (window_context) window_context->complete_piece = [&](int64_t row, int64_t count, std::string& error) {
             cursor.accept(row, count);
-            if (layer + 1 != g.n_layers) return true; // bank already written; no self-copy
+            if (layer + 1 != g.n_layers && !on_layer) return true; // bank already written; no self-copy
             const auto span = plan.span(row, count);
             if (!span.device || span.offset_bytes > window_context->bank_bytes ||
                 span.bytes > window_context->bank_bytes - span.offset_bytes) {
@@ -839,6 +970,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             const auto* packed = reinterpret_cast<const uint16_t*>(
                 reinterpret_cast<const uint8_t*>(window_context->bank) + span.offset_bytes);
+            if (on_layer && !on_layer(layer, pos0 + row, count, nullptr, packed, m.cs, error)) return false;
+            if (layer + 1 != g.n_layers) return true;
             native16::restore(packed, m.R, count * D, m.cs);
             if (!drain()) { error = "prefill MoE window: final callback bridge drain"; return false; }
             ++logical_chunks;
@@ -979,6 +1112,30 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill layer-major: incomplete final callback sequence"; return false;
     }
     if (!drain()) { err = "prefill layer-major: final drain failed"; return false; }
+    if (split_accumulator_on) {
+        const auto copied = cudaMemcpyAsync(split_accumulator_guard.data(),
+            split_accumulator_storage.get() + size_t(split_accumulator_plan.accumulator_tail_bytes()),
+            split_accumulator_guard.size(), cudaMemcpyDeviceToHost, m.cs);
+        const bool retired = drain(); // including an ambiguous/rejected copy
+        if (copied != cudaSuccess || !retired) {
+            err = "prefill split accumulator: guard readback/drain failed"; return false;
+        }
+        for (auto byte : split_accumulator_guard)
+            if (byte != 0xa7) { err = "prefill split accumulator: FP32 tail guard changed"; return false; }
+        std::fprintf(stderr, "strata MoE split complete: rows=%lld primary_rows=%lld tail_bytes=%llu guard=checked final_drain=checked decode_changed=0\n",
+            (long long)n, (long long)split_accumulator_plan.accumulator_primary_rows,
+            (unsigned long long)split_accumulator_plan.accumulator_tail_bytes());
+    }
+    if (window_context && window_context->expert_upload_staging) {
+        auto& staging = *window_context->expert_upload_staging;
+        staging.check_guards();
+        if (staging.copies() != window_context->staged_uploads ||
+            staging.copied_bytes() != window_context->staged_upload_bytes)
+            throw std::runtime_error("prefill expert staging upload accounting mismatch");
+        std::fprintf(stderr, "strata prefill expert upload staging complete: copies=%llu bytes=%llu "
+            "host_guards=checked final_drain=checked\n",
+            (unsigned long long)staging.copies(), (unsigned long long)staging.copied_bytes());
+    }
     ss.ple_prev[0] = final_prev[0]; ss.ple_prev[1] = final_prev[1];
     stats_.tokens = old_stats.tokens + n;
     stats_.chunks = old_stats.chunks + logical_chunks;

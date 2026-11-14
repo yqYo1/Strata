@@ -19,6 +19,7 @@ public:
     static constexpr int32_t top_k = 10;
     static constexpr int32_t max_rows = 16384;
     static constexpr int32_t max_accum_rows = 81920;
+    static constexpr int32_t max_split_accum_rows = 117488;
     static constexpr int32_t max_job_rows = 8192;
 
     struct Job {
@@ -54,12 +55,28 @@ public:
             new MoeWindowRoutes(int32_t(rows), ids, routes, true));
     }
 
+    // Explicit factory for the separately qualified two-FP32-bank consumers.
+    // Small plans support bounded component tests; production admission is
+    // narrower and remains in MoeAccumPlan::make_split_scratch(). The legacy
+    // build_accum() rejection contract above is deliberately unchanged.
+    static std::shared_ptr<const MoeWindowRoutes> build_split_accum(
+            int64_t rows, const int32_t* ids, size_t id_count) {
+        if (rows < 2 || rows > max_split_accum_rows)
+            throw std::invalid_argument("MoE split accumulator rows outside [2,117488]");
+        const size_t routes = size_t(rows) * top_k;
+        if (!ids || id_count != routes)
+            throw std::invalid_argument("MoE split accumulator ID span mismatch");
+        return std::shared_ptr<const MoeWindowRoutes>(
+            new MoeWindowRoutes(int32_t(rows), ids, routes, true, true));
+    }
+
     MoeWindowRoutes(const MoeWindowRoutes&) = delete;
     MoeWindowRoutes& operator=(const MoeWindowRoutes&) = delete;
     MoeWindowRoutes(MoeWindowRoutes&&) = delete;
     MoeWindowRoutes& operator=(MoeWindowRoutes&&) = delete;
 
     int32_t rows() const noexcept { return rows_; }
+    bool split_accumulator() const noexcept { return split_accumulator_; }
     const std::array<int32_t, experts>& counts() const noexcept { return counts_; }
     const std::array<int32_t, experts + 1>& offsets() const noexcept { return offsets_; }
     const std::vector<int32_t>& source_rows() const noexcept { return source_; }
@@ -72,7 +89,8 @@ public:
     }
 
 private:
-    MoeWindowRoutes(int32_t rows, const int32_t* ids, size_t routes, bool inverse) : rows_(rows) {
+    MoeWindowRoutes(int32_t rows, const int32_t* ids, size_t routes, bool inverse,
+                    bool split = false) : rows_(rows), split_accumulator_(split) {
         // Validate the COMPLETE router output before publishing any upload view.
         for (int32_t t = 0; t < rows; ++t) {
             for (int32_t k = 0; k < top_k; ++k) {
@@ -113,6 +131,7 @@ private:
     }
 
     int32_t rows_;
+    bool split_accumulator_ = false;
     std::array<int32_t, experts> counts_{};
     std::array<int32_t, experts + 1> offsets_{};
     std::vector<int32_t> source_;

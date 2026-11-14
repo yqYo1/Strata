@@ -1,0 +1,299 @@
+{
+  "schema": "strata-cache-placement-closed-v2",
+  "stage": "closed",
+  "source_commit": "4244f942c86792285092a6aaebf7be755dc27c8e",
+  "build_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "archive": {
+    "commit": "71d0b6e6333ca798f1af13df1fa8c95db2ee0d80",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-placement-current.json",
+    "sha256": "c707daf01f3852b89ec17226721354f7d1c9dc71c4167fd836e3e09775145363"
+  },
+  "previous_screen": {
+    "commit": "eb20952da4bde54018d1ec7e373ba7e3d390ea44",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-placement-current.json",
+    "sha256": "0d41acf9ec37d4ccb858c03b56deff538ec407b00c704cc07003022f00857e74"
+  },
+  "plan_commit": "c67f8cfc3",
+  "controller_commit": "b331bb311",
+  "model_configuration": "Original6e40/configuration and qualified runtime;131072 residentINT8 KV,8192 prefill,spec4,5 pool workers,pcie0,adapt0,caches0. Official bench.sh regular-code long generation,thinking,four warmups then one >=32K request per independent process;existing diagnostics enabled.",
+  "geometry": {
+    "baseline": {
+      "slots": 1256,
+      "payload_bytes": 2575206400,
+      "allocated_bytes": 2575206400,
+      "prefix128_bytes": 245657600,
+      "maximum_loan_bytes": 2329548800,
+      "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+      "slot_map_sha256": "18279301970de96d5888055dcaf239962610506f9fa3b624424b6903d58e6776",
+      "expert_cache_argument": 1256,
+      "per_layer": true
+    },
+    "candidate": {
+      "slots": 1241,
+      "payload_bytes": 2573849600,
+      "allocated_bytes": 2573849600,
+      "prefix128_bytes": 199680000,
+      "maximum_loan_bytes": 2374169600,
+      "membership_sha256": "6ce91c1e2aaca0ecaf9421de8c9ba7bd1aa4e499ab150cd060d17ead22167430",
+      "slot_map_sha256": "08a9ededecec887508ce1bd26d59a521ecb6b423845bc0e7e332d2410eda75c4",
+      "expert_cache_argument": 967,
+      "per_layer": false,
+      "nominal_cap_bytes": 2574540800
+    }
+  },
+  "profile_generation": {
+    "algorithm": "stable ascending aligned blob bytes inside original admitted prefix",
+    "cached_prefix_slots": 1241,
+    "sha256": "229738df5bf5e7b79a43fb91d12e0082293b2a39eac919b1e046bfc12932c89f",
+    "original_prefix128_bytes": 265625600,
+    "per_layer_slot_map_unchanged": true,
+    "global_membership_unchanged": true
+  },
+  "host_tests": {
+    "passed": 20,
+    "source_commit": "b331bb311"
+  },
+  "smoke": {
+    "passed": true,
+    "cases": 2,
+    "ownership_closed": true,
+    "fresh_faults": []
+  },
+  "samples": [
+    {
+      "arm": "per-layer",
+      "request": {
+        "read_tokens": 33214,
+        "generated_tokens": 3611,
+        "prompt_ms": 52288.9,
+        "decode_ms": 243283.6,
+        "drafts_offered": 3102,
+        "drafts_accepted": 2578,
+        "acceptance_rate": 0.8310767246937459,
+        "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+        "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+        "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+        "output_chars": 5496,
+        "reasoning_chars": 4368,
+        "completion_includes_thinking": true,
+        "finish_reason": "stop",
+        "stream_complete": true
+      },
+      "census": {
+        "windows": 1035,
+        "rows": 4137,
+        "cpu_jobs": 1370846,
+        "cpu_entries": 1771839,
+        "vram_entries": 213921,
+        "logical_job_blob_bytes": 2796077900800,
+        "jobs_NT": [
+          1058797,
+          239280,
+          56594,
+          16175,
+          0,
+          0,
+          0,
+          0
+        ],
+        "NT1_fraction": 0.7723675744759075,
+        "pool_ms": 111087.26692,
+        "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43"
+      },
+      "timing_ms_per_window": {
+        "total": 235.06,
+        "verify": 201.85,
+        "GPU_reach_wait": 75.22,
+        "per_layer_host": 109.89,
+        "CPU_pool_run": 107.33,
+        "draft": 33.13
+      },
+      "loans": {
+        "verified_cycles": 5,
+        "all_payload_maps_and_offsets_match": true,
+        "long": {
+          "generation": 5,
+          "chunk": 8192,
+          "first": 132,
+          "lent": 1124,
+          "capacity": 2321664000,
+          "need": 2319958528,
+          "cache_bytes": 2575206400,
+          "payload_and_map_match": true,
+          "restored_dense_layers": 48
+        }
+      },
+      "prefill_private_bank": {
+        "uploads": 19397,
+        "requested_H2D_bytes": 39622784000,
+        "permanent_hits": 0,
+        "permanent_slots": 314,
+        "total_slots": 384
+      },
+      "checks": {
+        "complete": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "effective_environment_verified": true,
+        "fresh_faults": [],
+        "fault_probe_successful": true,
+        "boot_unchanged": true,
+        "full_model_hashes_verified_after_process": 15
+      },
+      "native_identity": {
+        "pid": 1537473,
+        "start_ticks": 101765906,
+        "sid": 1537447
+      }
+    },
+    {
+      "arm": "global-ranked",
+      "request": {
+        "read_tokens": 33214,
+        "generated_tokens": 3088,
+        "prompt_ms": 52145.5,
+        "decode_ms": 209351.3,
+        "drafts_offered": 2670,
+        "drafts_accepted": 2199,
+        "acceptance_rate": 0.8235955056179776,
+        "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+        "output_sha256": "4eacd45dc98dcabd31c005643888becf722dc3d2b761b315a5a5f19539444bbe",
+        "reasoning_sha256": "e694594bf088932a9e1701cd0c76ef8fcd9e0f5bd0c826875f5bceafd9f26b9a",
+        "output_chars": 5575,
+        "reasoning_chars": 3345,
+        "completion_includes_thinking": true,
+        "finish_reason": "stop",
+        "stream_complete": true
+      },
+      "census": {
+        "windows": 891,
+        "rows": 3561,
+        "cpu_jobs": 1191559,
+        "cpu_entries": 1516995,
+        "vram_entries": 192285,
+        "logical_job_blob_bytes": 2429091635200,
+        "jobs_NT": [
+          935681,
+          198644,
+          44910,
+          12324,
+          0,
+          0,
+          0,
+          0
+        ],
+        "NT1_fraction": 0.7852578009146001,
+        "pool_ms": 95759.871455,
+        "membership_sha256": "6ce91c1e2aaca0ecaf9421de8c9ba7bd1aa4e499ab150cd060d17ead22167430"
+      },
+      "timing_ms_per_window": {
+        "total": 234.96,
+        "verify": 201.79,
+        "GPU_reach_wait": 74.86,
+        "per_layer_host": 110.01,
+        "CPU_pool_run": 107.47,
+        "draft": 33.1
+      },
+      "loans": {
+        "verified_cycles": 5,
+        "all_payload_maps_and_offsets_match": true,
+        "long": {
+          "generation": 5,
+          "chunk": 8192,
+          "first": 159,
+          "lent": 1082,
+          "capacity": 2320998400,
+          "need": 2319958528,
+          "cache_bytes": 2573849600,
+          "payload_and_map_match": true,
+          "restored_dense_layers": 48
+        }
+      },
+      "prefill_private_bank": {
+        "uploads": 19397,
+        "requested_H2D_bytes": 39622784000,
+        "permanent_hits": 0,
+        "permanent_slots": 314,
+        "total_slots": 384
+      },
+      "checks": {
+        "complete": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "effective_environment_verified": true,
+        "fresh_faults": [],
+        "fault_probe_successful": true,
+        "boot_unchanged": true,
+        "full_model_hashes_verified_after_process": 15
+      },
+      "native_identity": {
+        "pid": 1560898,
+        "start_ticks": 101830076,
+        "sid": 1560870
+      }
+    }
+  ],
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "ownership_closed": true,
+  "decision": {
+    "logical_bytes_per_row_ratio": 1.009271892610915,
+    "vram_entry_fraction": [
+      0.10772751994198694,
+      0.11249473462510531
+    ],
+    "token_latency_ratio": 1.0062665242712492,
+    "advance_to_new_clean_plan": false,
+    "adoption_qualified": false,
+    "clean_speed_qualified": false
+  },
+  "selected": "Original1256-slot per-layer configuration. Rejected global placement is not adopted;neither native sources nor default configuration changed.",
+  "limits": "Diagnostic one-pair screen,not clean/repeated speed or phase/quality/physical262144/session/RESTORE qualification. Outputs differ;no text identity requirement. Logical job blobs and requested H2D bytes are not physical RAM/PCIe traffic or saturation.",
+  "artifact_retirement": {
+    "archive": {
+      "commit": "71d0b6e6333ca798f1af13df1fa8c95db2ee0d80",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-placement-current.json",
+      "sha256": "c707daf01f3852b89ec17226721354f7d1c9dc71c4167fd836e3e09775145363"
+    },
+    "recovered_controller_inputs": 164,
+    "native_inputs": 9853,
+    "required_artifacts": 13,
+    "full_evidence_fields_per_process": 10,
+    "frozen_plan_commit": "c67f8cfc3",
+    "frozen_plan_byte_exact": true,
+    "owners_closed": true,
+    "model_processes": 2,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-placement-v2-closed-retirement-20261022.jsonl",
+      "sha256": "63a6662c81e0c89a30367a22311016bb3724a1ced066e2cb0789730718f0a3dc",
+      "files": 149,
+      "bytes": 26324682
+    },
+    "complete": true,
+    "tracked_source_retirement": {
+      "commit": "71d0b6e6333ca798f1af13df1fa8c95db2ee0d80",
+      "files": 4,
+      "bytes": 49144,
+      "reason": "Closed rejected planner/controller and matching tests;no current execution consumer;restore exact original source from Git.",
+      "paths": [
+        "tools/sycl/cache_placement.py",
+        "tools/sycl/cache_placement_engine.py",
+        "tests/core/test_cache_placement.py",
+        "tests/core/test_cache_placement_engine.py"
+      ]
+    },
+    "files_deleted": 149,
+    "bytes_deleted": 26324682,
+    "root_absent": true,
+    "review_bodies_absent": true,
+    "consumer_update_commit": "ad9ae8b9115e628841c992786fd9c7fdccb93f89"
+  }
+}

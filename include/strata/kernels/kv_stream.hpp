@@ -83,6 +83,17 @@ void kv_stream_resolve_with_copy_groups(
     const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
     void* stream, uint32_t copy_group_cap);
 
+#ifdef STRATA_ENABLE_SYCL
+/// Opt-in SYCL decode candidate: cooperative reads/hit marks with the exact
+/// serial miss order and clock policy. No additional persistent device storage.
+/// The caller owns phase/shape selection; component qualification alone does
+/// not establish model gain or default adoption.
+void kv_stream_resolve_with_coalesced_plan(
+    const KvStreamMap& m, const QsaAttnPools& slots, const KvHostPools& host, int fmt,
+    const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
+    void* stream, uint32_t copy_group_cap);
+#endif
+
 /// The static ring table `block -> block % n_slots`.
 void kv_ring_table(int32_t* page_table, int64_t n_blocks, int64_t n_slots, void* stream);
 

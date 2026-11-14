@@ -11,10 +11,11 @@ import sys
 sys.dont_write_bytecode = True
 import measurement_guards as guards
 import measurement_owner as supervision
+import query_profile as runtime
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-expert-bank-component-v4'
+ROOT = B / 'moe-expert-bank-component-v5'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-expert-bank-current.json'
 
 
@@ -24,7 +25,10 @@ def digest(path):
 
 
 def gpu_check(mode):
-    root = B/'moe-expert-bank-gpu-v2'
+    packed = mode.startswith('packed-')
+    smoke = mode.endswith('smoke')
+    field = 'packed_gpu' if packed else 'gpu'
+    root = B/('moe-packed-expert-bank-gpu-v2' if packed else 'moe-expert-bank-gpu-v2')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -48,6 +52,9 @@ def gpu_check(mode):
         guards.require(digest(provider_fixture['path'])==provider_fixture['sha256'], 'provider fixture changed')
         revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
         names = ('tools/sycl/check_expert_bank.py','tools/sycl/measurement_guards.py',
+            'tools/sycl/query_profile.py',
+            'tools/sycl/generation_engine.py','tools/sycl/bench_engine.py',
+            'tools/sycl/check_verifier_retirement.py','tools/sycl/build_engine.py',
             'tools/sycl/measurement_owner.py','tools/sycl/measurement_environment.json',
             'include/strata/prefill/expert_bank_upload.hpp','tests/sycl/expert_bank.cpp',
             'include/strata/core/expert_layer_view.hpp','include/strata/core/expert_source.hpp',
@@ -57,25 +64,31 @@ def gpu_check(mode):
             raw = subprocess.check_output(['git','show',revision+':'+name],cwd=P)
             guards.require(raw==(P/name).read_bytes(), 'commit exact GPU check input: '+name)
             pins[name] = hashlib.sha256(raw).hexdigest()
-        if mode == 'smoke':
-            guards.require(not root.exists() and 'gpu' not in record, 'inspect existing bank GPU owner')
+        if smoke:
+            guards.require(not root.exists() and field not in record, 'inspect existing bank GPU owner')
             root.mkdir(mode=0o700)
             for name in ('tmp','cache'): (root/name).mkdir()
             gpu = dict(source_commit=revision,source_sha256=pins,build_source_commit=build['source_commit'],
                 fixture=fixture,provider_fixture=provider_fixture,CPU_gate_source=record['source_commit'],checks=[],
                 limits='Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification.')
         else:
-            gpu = record['gpu']
-            guards.require(gpu['mode']=='smoke' and gpu['passed'] and gpu['ownership_closed'] and
+            gpu = record[field]
+            guards.require(gpu['mode']==('packed-smoke' if packed else 'smoke') and gpu['passed'] and gpu['ownership_closed'] and
                 gpu['build_source_commit']==build['source_commit'] and gpu['fixture']==fixture and
                 gpu['provider_fixture']==provider_fixture and gpu.get('provider_checks_passed') is True and
                 gpu['source_sha256']==pins, 'same-source passed smoke required')
         guards.require(not (root/('owned-'+mode)).exists(), 'inspect existing GPU command')
         settings = json.loads((P/'tools/sycl/measurement_environment.json').read_text())
-        for name,item in settings['runtime_elfs'].items():
-            guards.require(digest(name)==item['sha256'], 'runtime changed: '+name)
+        runtime_evidence = runtime.gen.committed(runtime.COMPONENT) if packed else None
+        runtime_admission = dict(mode='packed-expert-bank-'+('smoke' if smoke else 'validate'),
+            runtime_asset_delta=runtime_evidence['runtime_asset_delta']) if packed else None
+        if packed:
+            runtime.runtime_assets_unchanged(runtime_admission)
+        else:
+            for name,item in settings['runtime_elfs'].items():
+                guards.require(digest(name)==item['sha256'], 'runtime changed: '+name)
         env = dict(settings['environment'],TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'))
-        if mode == 'validate':
+        if not smoke:
             env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
             env.pop('UR_LOG_TRACING',None)
         guards.driver_guard()
@@ -86,6 +99,11 @@ def gpu_check(mode):
             environment_reference='tools/sycl/measurement_environment.json',
             environment_overrides={k:v for k,v in env.items() if settings['environment'].get(k)!=v},
             removed_environment_keys=[k for k in settings['environment'] if k not in env])
+        if packed:
+            gpu['runtime_asset_delta'] = runtime_admission['runtime_asset_delta']
+            gpu['runtime_reference'] = dict(path=str(runtime.COMPONENT.relative_to(P)),
+                sha256=digest(runtime.COMPONENT), source_commit=runtime_evidence['source_commit'],
+                scope='Existing passed component runtime identity; not qualification of this changed native route.')
         owner = None
 
         def persist():
@@ -95,7 +113,7 @@ def gpu_check(mode):
 
         owner = supervision.Owner(root/('owned-'+mode),persist)
         try:
-            if mode == 'smoke':
+            if smoke:
                 entry,out,err = owner.run('arena-provider-smoke',[provider_fixture['path']],env,P,
                     wall=60,cpu=180,rss_cap=2<<30,file_cap=64<<20,text_cap=64<<20,total_cap=128<<20)
                 stdout,stderr = out.read_text(),err.read_text()
@@ -111,25 +129,9 @@ def gpu_check(mode):
             guards.require(supervision.closed(entry) and entry.get('exit_code')==0 and
                 not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed',stderr),
                 'GPU fixture failed: '+(stderr+stdout)[-5000:])
-            cases = [dict(token.split('=',1) for token in line.split()[1:])
-                for line in stdout.splitlines() if line.startswith('expert_bank_case ')]
-            expected = ([(4,256,6,2,18,6,48,0),(1,256,6,1,12,0,24,0),(4,256,6,1,5,0,10,1),
-                (4,512,6,2,18,6,48,0),(1,512,6,1,12,0,24,0),(4,512,6,1,5,0,10,1)]
-                if mode=='smoke' else [(383,256,512,1,642,382,2048,0),
-                (384,256,512,2,1282,766,4096,0),(512,256,512,1,513,511,2048,0),
-                (384,2662400,512,1,641,383,2048,0),
-                (384,512,512,2,1282,766,4096,0),(384,2662400,512,1,641,383,2048,0)])
-            source_strides = ([256]*6 if mode=='smoke' else [256,256,256,2662400,256,1382400])
-            guards.require(len(cases)==len(expected) and 'expert_bank_fixture PASS' in stdout,
-                'incomplete bank fixture cases')
-            for case,values,source_stride in zip(cases,expected,source_strides):
-                keys=('slots','stride','experts','layers','uploads','hits','consumers','unwind')
-                guards.require(tuple(int(case[k]) for k in keys)==values and
-                    int(case['source_stride'])==source_stride and int(case['status'])==0 and
-                    int(case['admission_rejections'])==7+2*(source_stride!=int(case['stride'])) and all(
-                    case[k]=='PASS' for k in ('immutable_slab','guards','private_map','checked_drain')),
-                    'wrong bank case evidence: '+str(case))
+            cases = (check_packed_cases if packed else check_legacy_cases)(stdout,mode)
             gpu['checks'].append(dict(mode=mode,cases=cases,passed=True))
+            if packed: runtime.runtime_assets_unchanged(runtime_admission)
             guards.require(all(digest(P/n)==h for n,h in pins.items()), 'GPU-check inputs changed')
             gpu.update(complete=True,passed=True)
         except BaseException as error:
@@ -144,10 +146,53 @@ def gpu_check(mode):
             except Exception as error:
                 gpu['driver_error'] = str(error);gpu['passed'] = False
             gpu['passed'] = bool(gpu['passed'] and gpu['ownership_closed'] and gpu['boot_unchanged'] and not gpu['fresh_faults'])
-            persist();record['gpu'] = gpu
+            persist();record[field] = gpu
             RESULT.write_text(json.dumps(record,indent=2)+'\n')
         print(json.dumps({k:gpu.get(k) for k in ('mode','complete','passed','ownership_closed','error')}))
         return 0 if gpu['passed'] else 1
+
+
+def check_legacy_cases(stdout,mode):
+    cases = [dict(token.split('=',1) for token in line.split()[1:])
+        for line in stdout.splitlines() if line.startswith('expert_bank_case ')]
+    expected = ([(4,256,6,2,18,6,48,0),(1,256,6,1,12,0,24,0),(4,256,6,1,5,0,10,1),
+        (4,512,6,2,18,6,48,0),(1,512,6,1,12,0,24,0),(4,512,6,1,5,0,10,1)]
+        if mode=='smoke' else [(383,256,512,1,642,382,2048,0),
+        (384,256,512,2,1282,766,4096,0),(512,256,512,1,513,511,2048,0),
+        (384,2662400,512,1,641,383,2048,0),
+        (384,512,512,2,1282,766,4096,0),(384,2662400,512,1,641,383,2048,0)])
+    source_strides = ([256]*6 if mode=='smoke' else [256,256,256,2662400,256,1382400])
+    guards.require(len(cases)==len(expected) and 'expert_bank_fixture PASS' in stdout,
+        'incomplete bank fixture cases')
+    for case,values,source_stride in zip(cases,expected,source_strides):
+        keys=('slots','stride','experts','layers','uploads','hits','consumers','unwind')
+        guards.require(tuple(int(case[k]) for k in keys)==values and
+            int(case['source_stride'])==source_stride and int(case['status'])==0 and
+            int(case['admission_rejections'])==7+2*(source_stride!=int(case['stride'])) and all(
+            case[k]=='PASS' for k in ('immutable_slab','guards','private_map','checked_drain')),
+            'wrong bank case evidence: '+str(case))
+    return cases
+
+
+def check_packed_cases(stdout,mode):
+    cases = [dict(token.split('=',1) for token in line.split()[1:])
+        for line in stdout.splitlines() if line.startswith('expert_bank_private_case ')]
+    expected = ([(4,512,256,10,3,43,17,120,0), (4,512,256,10,2,10,0,20,2)]
+        if mode=='packed-smoke' else [(384,512,256,512,4,2434,1662,8192,0),
+        (384,2662400,2662400,512,3,1709,1363,6144,0), (384,512,256,512,2,10,0,20,2)])
+    guards.require(len(cases)==len(expected) and 'expert_bank_fixture PASS' in stdout,
+        'incomplete packed bank fixture cases')
+    keys=('backing_slots','backing_stride','source_stride','experts','layers','uploads','hits','consumers','unwind')
+    guards.require('expert_bank_private_enqueue_failure attempts=1 published=0 pending_rejected=PASS checked_drain=PASS' in stdout,
+        'missing private enqueue failure/unwind case')
+    full_copies = [1,0] if mode=='packed-smoke' else [0,1,0]
+    for case,values,full_copy in zip(cases,expected,full_copies):
+        guards.require(tuple(int(case[k]) for k in keys)==values and
+            int(case['status'])==0 and int(case['admission_rejections'])==11 and
+            int(case['full_copy'])==full_copy and all(
+            case[k]=='PASS' for k in ('immutable_slab','guards','private_map','checked_drain')),
+            'wrong private bank case evidence: '+str(case))
+    return cases
 
 
 def query_limits():
@@ -245,7 +290,7 @@ def query_limits():
 
 
 def main():
-    if sys.argv[1:] in (['smoke'],['validate']):
+    if sys.argv[1:] in (['smoke'],['validate'],['packed-smoke'],['packed-validate']):
         return gpu_check(sys.argv[1])
     if sys.argv[1:] == ['limits']:
         return query_limits()
@@ -311,6 +356,7 @@ def main():
                         'short_tail_fallback_cases=3' in text and
                         'single_alloc_limit_cases=4' in text and
                         'uploads=9 hits=3 negative_checks=18 PASS' in text and
+                        'expert_bank_packed formats=7 layers_each=2 full_fit512=PASS boundary=PASS negative_checks=19 PASS' in text and
                         'expert_bank_plan PASS GPU=UNRUN' in text,'incomplete expert-bank coverage')
                     record['checks']=[dict(case='admission_and_tickets',passed=True,
                         result_lines=text.splitlines())]

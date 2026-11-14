@@ -1,0 +1,299 @@
+#!/usr/bin/env python3
+"""One bounded traced DFlash2 kernel gate; Main only, no model or reset.
+
+Verify committed source, executable and qualified runtime before launch. Inspect
+the actual child's executable mappings at its post-compute retirement gate.
+"""
+import fcntl
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+sys.dont_write_bytecode = True
+import build_upstream_features as build
+import build_engine as source
+import measurement_guards as guards
+import measurement_owner as ownership
+
+P, B, STATUS = build.P, build.B, build.STATUS
+ROOT = B / 'dflash2-kernel-contract-v4'
+KEY = 'dflash2_device_check'
+PREVIOUS = B / 'dflash2-kernel-contract-v3'
+REFERENCE = B / 'decode-iq3-audit-speed-v2'
+INPUTS = ['tools/sycl/check_dflash2.py', 'tools/sycl/build_upstream_features.py',
+          'tools/sycl/build_engine.py', 'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py']
+ENV_KEYS = ['PATH', 'HOME', 'LANG', 'LC_ALL', 'PYTHONDONTWRITEBYTECODE', 'LD_LIBRARY_PATH', 'MKLROOT',
+            'ONEAPI_DEVICE_SELECTOR', 'UR_ADAPTERS_FORCE_LOAD', 'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD',
+            'NEOReadDebugKeys', 'EnableDirectSubmission', 'STRATA_SYCL_VERIFY_NATIVE_CAPTURE',
+            'STRATA_SYCL_PREFILL_SAME_QUEUE', 'SYCL_CACHE_PERSISTENT', 'ZES_ENABLE_SYSMAN', 'ZE_ENABLE_ALT_DRIVERS']
+require, write = guards.require, build.write
+
+
+def public():
+    return json.loads(source.git(P, 'show', 'HEAD:' + str(STATUS.relative_to(P))))['current_sync'][KEY]
+
+
+def compact(row):
+    out = {k: v for k, v in row.items() if k not in ['commands', 'runtime_files', 'controller', 'native_build']}
+    out['controller_source'] = dict(commit=row['controller']['revision'],
+        aggregate_sha256=row['controller']['aggregate_sha256'], files=row['controller']['count'])
+    native = row['native_build']
+    out['native_build'] = {k: native[k] for k in ['source_commit', 'project_source_sha256', 'record', 'passed', 'ownership_closed']}
+    out['commands'] = [dict(label=c['label'], exit_code=c.get('exit_code'), error=c.get('error'), ownership_closed=ownership.closed(c),
+                            errors=c.get('errors', []), cleanup=c.get('cleanup', [])) for c in row.get('commands', [])]
+    return out
+
+
+def save(row):
+    write(ROOT / 'record.json', row)
+    status = json.loads(STATUS.read_text())
+    status['current_sync'][KEY] = compact(row)
+    write(STATUS, status)
+
+
+def verify(row):
+    require(public() == compact(json.loads((ROOT / 'record.json').read_text())), 'commit exact device plan/result')
+    if not row.get('candidate_scope'):
+        require(source.digest(row['previous_gate']['path']) == row['previous_gate']['sha256'], 'original component gate changed')
+    for pin in [row['controller']]:
+        require(build.signature(pin['source_sha256']) == pin['aggregate_sha256'], 'controller aggregate changed')
+        require({n: source.digest(P / n) for n in pin['source_sha256']} == pin['source_sha256'], 'controller changed')
+        require({n: hashlib.sha256(v).hexdigest() for n, v in
+                 source.blobs(P, pin['revision'], pin['source_sha256'])} == pin['source_sha256'], 'controller not recoverable')
+    if row.get('candidate_scope'):
+        import check_cache_loan_cli as loan
+        native, proof = loan.native()
+        require(proof == row['native_build'], 'candidate build changed')
+        require(loan.build.signature(loan.validation.committed(loan.STATUS,
+            ('dflash2_cache_loan_cli_v3',))) == row['CLI_evidence_sha256'], 'closed candidate CLI evidence changed')
+        probe, reuse = loan.current_probe()
+        require(probe == row['native_validation_probe'] and reuse == row['runtime_reuse'], 'current-runtime probe changed')
+        require(source.digest(row['actual_inputs']['path']) == row['actual_inputs']['sha256'] and
+            row['actual_inputs']['uncovered'] == 0, 'actual compile/link census changed')
+    else:
+        native = json.loads((build.ROOT / 'record.json').read_text())
+        require(build.compact(native) == row['native_build'], 'native build changed')
+    require(native['passed'] and native['ownership_closed'], 'native build not closed')
+    build.check_inputs(native)
+    for value in native['binaries'].values():
+        require(source.digest(value['path']) == value['sha256'], 'native binary changed')
+    require(source.digest(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
+            json.loads(Path(row['runtime_manifest']['path']).read_text()) == row['runtime_files'], 'runtime map changed')
+    for path, value in row['runtime_files'].items():
+        require(source.digest(path) == value, 'runtime ELF changed: ' + path)
+    require(guards.driver_guard() == row['driver'] and
+            Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'boot/driver changed')
+    guards.no_model_owners([])
+
+
+def prepare_loan():
+    """Fresh same-build device execution; unchanged fixture bytes alone are no reuse."""
+    import check_cache_loan_cli as loan
+    require(not ROOT.exists(), 'fresh finite candidate device gate;no automatic retry')
+    native, proof = loan.native()
+    previous = loan.validation.committed(loan.STATUS, ('dflash2_cache_loan_cli_v3',))
+    require(previous['stage'] == 'passed' and previous['passed'] and previous['ownership_closed'] and
+        len(previous['case_results']) == 12 and previous['fresh_faults'] == [] and
+        previous['native_build']['record'] == proof['record'] and previous['actual_inputs']['uncovered'] == 0,
+        'candidate CLI and actual compiler/link census must pass first')
+    require(source.digest(previous['actual_inputs']['path']) == previous['actual_inputs']['sha256'],
+        'actual compiler/link input evidence changed')
+    reference = json.loads((REFERENCE / 'record.json').read_text())
+    environment = {k: reference['environment_template'][k] for k in ENV_KEYS}
+    environment.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
+        CUDA_MODULE_LOADING='EAGER', UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+        UR_LOG_TRACING='level:info;flush:info;output:stderr',
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:stderr',
+        UR_LOG_LOADER='level:warning;flush:warning;output:stderr',
+        UR_LOG_LEVEL_ZERO='level:warning;flush:warning;output:stderr')
+    probe, reuse = loan.current_probe()
+    manifest = dict(path=str(REFERENCE / 'runtime-inputs.json'), sha256=source.digest(REFERENCE / 'runtime-inputs.json'))
+    row = dict(stage='prepared', passed=False, ownership_closed=True, commands=[], candidate_scope=True,
+        controller=source.pin(P, list(dict.fromkeys([*INPUTS, *loan.INPUTS]))), native_build=proof,
+        CLI_evidence_key='dflash2_cache_loan_cli_v3', CLI_evidence_sha256=loan.build.signature(previous),
+        actual_inputs=previous['actual_inputs'], native_validation_probe=probe, runtime_reuse=reuse,
+        runtime_manifest=manifest, runtime_files=json.loads(Path(manifest['path']).read_text()),
+        environment=environment, driver=guards.driver_guard(),
+        boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+        budgets=dict(wall=180, cpu=180, text_cap=64 << 20, file_cap=64 << 20, total_cap=96 << 20, rss_cap=8 << 30),
+        cases=16, fixture=native['binaries']['sycl_dflash2_test'],
+        required_executable_mappings=[str(Path(p).resolve()) for p in [
+            '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0',
+            environment['UR_ADAPTERS_FORCE_LOAD'], environment['ZE_ENABLE_ALT_DRIVERS'],
+            probe['library']['path'], probe['loader']['path']]],
+        meaning='Repeat all16 GEMM/tap/prompt-tail cases on the new candidate same-build fixture with pre-main validation,'
+            'actual runtime maps at supervised retirement,and qualified immutable safety settings. Normal0/reap/empty session,'
+            'all signed GEMM widths1..8 and7production tap cases,quiet UR aside from the intentional null-handle canary,'
+            'unchanged runtime/source/5fixtures,no fresh fault required. First failure stops;no reset/retry/model.'
+            'This is not cache-loan lifecycle,task quality,speed,ordinary teardown or physical262144 qualification.',
+        retention='Keep compact numerical/ownership/fault result and original source/recipe. Retire successful full API trace'
+            'after evidence commit. Preserve90f/f633/552b/e1b for imminent feature-generation decision;all5same-build fixtures retained.')
+    require(row['driver'] == reference['driver'] and row['boot'] == reference['boot'], 'runtime safety qualification boot/driver differs')
+    require(environment['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and environment['EnableDirectSubmission'] == '0' and
+        environment['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0' and environment['ZES_ENABLE_SYSMAN'] == '0', 'qualified safety settings')
+    ROOT.mkdir(mode=0o700)
+    for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700)
+    save(row)
+    print('Prepared new-engine same-build16case traced fixture;commit before GPU execution.', flush=True)
+
+
+def prepare():
+    require(not ROOT.exists(), 'one fresh finite device gate; no automatic retry')
+    previous = json.loads((PREVIOUS / 'record.json').read_text())
+    prior_public = public()
+    require(prior_public == compact(previous), 'commit the exact previous component outcome first')
+    require(previous['stage'] == prior_public['stage'] == 'passed' and previous['passed'] and
+            previous['ownership_closed'] and prior_public['ownership_closed'] and
+            all(ownership.closed(c) for c in previous['commands']), 'commit and close prior component gate first')
+    require(not json.loads((PREVIOUS / 'active.json').read_text())['active'], 'previous owner still active')
+    native = json.loads((build.ROOT / 'record.json').read_text())
+    require(native['passed'] and native['stage'] == 'built' and native['ownership_closed'] and
+            build.committed_plan() == build.compact(native), 'commit completed feature build first')
+    build.check_inputs(native)
+    reference = json.loads((REFERENCE / 'record.json').read_text())
+    environment = {k: reference['environment_template'][k] for k in ENV_KEYS}
+    environment.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
+        UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+        UR_LOG_TRACING='level:info;flush:info;output:stderr',
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:stderr',
+        UR_LOG_LOADER='level:warning;flush:warning;output:stderr',
+        UR_LOG_LEVEL_ZERO='level:warning;flush:warning;output:stderr')
+    runtime_manifest = dict(path=str(REFERENCE / 'runtime-inputs.json'), sha256=source.digest(REFERENCE / 'runtime-inputs.json'))
+    row = dict(stage='prepared', controller=source.pin(P, INPUTS), native_build=build.compact(native),
+        runtime_manifest=runtime_manifest, runtime_files=json.loads(Path(runtime_manifest['path']).read_text()),
+        environment=environment, driver=guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+        environment_origin=dict(path=str(REFERENCE / 'record.json'), sha256=source.digest(REFERENCE / 'record.json')),
+        budgets=dict(wall=180, cpu=180, text_cap=64 << 20, file_cap=64 << 20, total_cap=96 << 20, rss_cap=8 << 30),
+        cases=16, fixture=native['binaries']['sycl_dflash2_test'], commands=[], passed=False, ownership_closed=True,
+        meaning='Eight signed Q4 GEMMs,FP32 row/GR tap and seven production FP32/BF16 prompt-tail cases including sparse runs,clipped positions,tail physical extent,admission and retirement. No model,ring recovery,task quality,performance or physical full-context qualification.')
+    # libsycl may statically include UR. Requiring a separate libur_loader mapping
+    # rejects that supported linkage. Check all actual executable files plus the
+    # exact SYCL, forced adapter and GPU driver providers instead. Keep the UR
+    # tracing requirement; do not load another loader just to satisfy an observer.
+    row['required_executable_mappings'] = [str(Path(p).resolve()) for p in [
+        '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0',
+        environment['UR_ADAPTERS_FORCE_LOAD'], environment['ZE_ENABLE_ALT_DRIVERS']]]
+    require(set(row['required_executable_mappings']) <= {str(Path(p).resolve()) for p in row['runtime_files']},
+            'required provider is not in the qualified runtime pins')
+    row['previous_gate'] = dict(path=str(PREVIOUS / 'record.json'), sha256=source.digest(PREVIOUS / 'record.json'),
+        evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(), stage='passed',
+        reason='Original sixteen-case gate passed normally.This rebuild includes the corrected drafter output API;repeat all16cases,not reuse of prior qualification.Retain pinned SYCL/staticUR,forced adapter and GPU driver checks.',
+        source='https://github.com/intel/llvm/blob/sycl/sycl/source/CMakeLists.txt')
+    require(row['driver'] == reference['driver'] and row['boot'] == reference['boot'], 'requalify changed boot/driver before reuse')
+    require(environment['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and environment['EnableDirectSubmission'] == '0' and
+            environment['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0' and environment['ZES_ENABLE_SYSMAN'] == '0', 'qualified safety settings')
+    ROOT.mkdir(mode=0o700)
+    for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700)
+    save(row)
+    print('Prepared sixteen-case traced device check; commit before run.', flush=True)
+
+
+def kernel_log(*args):
+    proc = subprocess.run(['/usr/bin/journalctl', '-k', '-b', *args, '--no-pager'], capture_output=True, text=True, timeout=15)
+    require(proc.returncode == 0 and len(proc.stdout) < 1 << 20 and
+            'permission' not in proc.stderr.lower(), 'kernel journal unavailable or oversized')
+    return proc.stdout
+
+
+def run():
+    row = json.loads((ROOT / 'record.json').read_text())
+    require(row['stage'] == 'prepared', 'no duplicate or automatic retry')
+    verify(row)
+    before = kernel_log('-n', '0', '--show-cursor')
+    cursor = next(line.split(': ', 1)[1] for line in before.splitlines() if line.startswith('-- cursor: '))
+    monitor = None
+    def persist():
+        write(ROOT / 'active.json', dict(active=bool(monitor and monitor.active), commands=monitor.commands if monitor else []))
+    try:
+        monitor = ownership.Owner(ROOT / 'owned', persist)
+        def inspect(io, entry):
+            lines = []
+            while True:
+                line = io.line(seconds=170); lines.append(line)
+                require(len(lines) <= 24, 'unexpected fixture stdout')
+                if line == 'DF2_WAIT': break
+            require('dflash2 fixture cases=16 PASS' in lines and
+                    all(f'dflash2 gemm columns={n} matrices=3 PASS' in lines for n in range(1,9)) and
+                    'dflash2 taps rows=3 fp32,pending_GR,interleaved_guards PASS' in lines and
+                    all('dflash2 prompt ' + case + ' PASS' in lines for case in [
+                        'empty_anchor', 'mixed_fp32_bf16', 'sparse_complete_runs', 'long_tail_clipping',
+                        'physical_tail_extent', 'rejected_spans_formats', 'release_rebegin']), 'fixture result incomplete')
+            actual = set()
+            for line in Path('/proc', str(entry['pid']), 'maps').read_text().splitlines():
+                fields = line.split(maxsplit=5)
+                if len(fields) == 6 and 'x' in fields[1] and fields[5].startswith('/'):
+                    require(not fields[5].endswith(' (deleted)'), 'mapped executable removed')
+                    actual.add(str(Path(fields[5]).resolve()))
+            allowed = {str(Path(p).resolve()): h for p,h in row['runtime_files'].items()}
+            allowed[str(Path(row['fixture']['path']).resolve())] = row['fixture']['sha256']
+            if row.get('candidate_scope'):
+                for artifact in row['native_validation_probe'].values():
+                    allowed[str(Path(artifact['path']).resolve())] = artifact['sha256']
+            unknown = sorted(actual - allowed.keys())
+            row['unqualified_executable_mappings'] = unknown
+            row['actual_executable_mappings'] = {p: source.digest(p) for p in sorted(actual)}
+            row['missing_executable_providers'] = sorted(set(row['required_executable_mappings']) - actual)
+            require(not unknown and len(actual) >= 8 and not row['missing_executable_providers'],
+                    'unexpected/incomplete executable mappings: ' + repr(dict(
+                        unknown=unknown, count=len(actual), missing=row['missing_executable_providers'])))
+            require(all(source.digest(p) == allowed[p] for p in actual), 'actual mapped ELF changed')
+            row['verified_executable_mappings'] = len(actual)
+            io.send(b'QUIT\n'); io.exit(20)
+        environment = row['environment']
+        if row.get('candidate_scope'):
+            import engine_once
+            environment = engine_once.native_environment(row, environment)
+        entry, stdout, stderr = monitor.run('dflash2', [row['fixture']['path'], '--supervised'],
+            environment, P, interaction=inspect, **row['budgets'])
+        row['commands'] = monitor.commands
+        text = stderr.read_text(errors='replace')
+        require(ownership.closed(entry) and entry['exit_code'] == 0,
+                'device process did not close normally: ' + str(entry.get('error')))
+        allowed_errors = set()
+        if row.get('candidate_scope'):
+            import ur_validation
+            row['pre_main_validation'] = ur_validation.preload_evidence(text, entry['pid'])
+            require(Path(row['pre_main_validation']['loader']).resolve() ==
+                Path(row['native_validation_probe']['loader']['path']).resolve(), 'actual pre-main loader differs')
+            before_main, body = text.split(' phase=before-main ', 1)
+            body = body.split('\n', 1)[1]
+            require(re.findall(r'UR_RESULT_ERROR_[A-Z_]+', before_main) == ['UR_RESULT_ERROR_INVALID_NULL_HANDLE'] and
+                not re.search(r'UR_RESULT_ERROR_[A-Z_]+', body), 'unexpected before-main/body UR error')
+            allowed_errors.add('UR_RESULT_ERROR_INVALID_NULL_HANDLE')
+        require('urEnqueueKernelLaunch' in text and
+                set(re.findall(r'UR_RESULT_ERROR_[A-Z_]+', text)) <= allowed_errors,
+                'missing tracing or UR error')
+        verify(row)
+        row.update(stage='passed', passed=True, numerical_cases_passed=16)
+    except BaseException as error:
+        row.update(stage='failed', error=repr(error))
+    finally:
+        row['commands'] = monitor.commands if monitor else []
+        row['ownership_closed'] = not monitor or monitor.active is None and all(ownership.closed(c) for c in monitor.commands)
+        try:
+            after = kernel_log('--after-cursor', cursor, '-n', '2048')
+            require(len(after.splitlines()) < 2048, 'incomplete kernel window')
+            row['fresh_faults'] = [line for line in after.splitlines() if re.search(
+                r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', line)]
+            row['boot_unchanged'] = Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot']
+            row['fault_probe_successful'] = True
+            require(guards.driver_guard() == row['driver'] and not row['fresh_faults'] and row['boot_unchanged'], 'fresh device fault or boot change')
+        except BaseException as error:
+            row.update(passed=False, stage='failed', fault_error=repr(error))
+        if not row['ownership_closed']: row.update(passed=False, stage='failed')
+        save(row)
+    require(row['passed'] and row['ownership_closed'], row.get('error', row.get('fault_error', 'device gate failed')))
+    print('DFlash2 kernel/prompt gate passed16cases with normal exit,qualified executable maps and no fresh fault.', flush=True)
+
+
+if __name__ == '__main__':
+    require(len(sys.argv) == 2 and sys.argv[1] in ['prepare', 'run', 'prepare-loan', 'run-loan'],
+        'use prepare/run or prepare-loan/run-loan')
+    if sys.argv[1].endswith('-loan'):
+        ROOT, KEY = B / 'dflash2-cache-loan-device-v1', 'dflash2_cache_loan_device_check'
+    with (B / 'owned-v0141-measurement.lock').open('a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        {'prepare': prepare, 'run': run, 'prepare-loan': prepare_loan, 'run-loan': run}[sys.argv[1]]()

@@ -1,0 +1,1268 @@
+{
+  "stage": "closed",
+  "source_commit": "758259ac3bdce0d107f675fb935c839c9de4d936",
+  "native_source": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22199736,
+    "sha256": "af0aeb605b756e1ef007bb13cf3bd74b0ec632d3db5608f620232d80e496701b"
+  },
+  "previous_attempt": {
+    "commit": "9555a7bd2",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-model-current.json",
+    "reason": "Closed failed parser scope:three warmup plus three long-request dense records were mistaken for three whole-process records. The original sample and failure remain unchanged in Git. Fresh two-arm evidence uses the committed corrected parser;no replacement in the original cohort.",
+    "diagnostic": {
+      "original_status": "failed",
+      "original_error": "missing/extra strata prefill dense",
+      "warmup_dense_records": 3,
+      "long_dense_records": 3,
+      "old_whole_process_expected": 3,
+      "engine_stderr_sha256": "52a39e9d0bdf4202e3e109b792fcd02d4cfac08c7bb4e49ac4dfcb9d1c4f5b9b",
+      "complete_native_requests": 2
+    }
+  },
+  "native_inputs_recovered": 9862,
+  "build_sha256": "c28cf86bd85929145d267318e8f390967d84c5f12d5a72b268455aee4b0fe77c",
+  "component_sha256": "d59490baed2e60c48fb303cb21883cbca1432bd8896eb88d0b34ddeee0d047d0",
+  "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+  "device_gate_sha256": "3ebb6a525efea44a1aeae3dddfe3b79b2da9f5ec60c39a87b245ab2784f10ae7",
+  "controller_fingerprint": "295e102b0de6fef5abb87c7469c4fbf6fda76ea258ce08655060220bc7ab173f",
+  "machine": {
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "device": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+  },
+  "models": {
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "dev": 40,
+        "ino": 2640848,
+        "bytes": 54817524224,
+        "mtime_ns": 1791009083688077826,
+        "ctime_ns": 1791009083692077878
+      },
+      "sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3"
+    },
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "dev": 40,
+        "ino": 2623800,
+        "bytes": 28800138432,
+        "mtime_ns": 1790924461554234294,
+        "ctime_ns": 1791008604221189761
+      },
+      "sha256": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113"
+    },
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin",
+        "dev": 40,
+        "ino": 2878806,
+        "bytes": 116099072,
+        "mtime_ns": 1790947194721370688,
+        "ctime_ns": 1790947194721370688
+      },
+      "sha256": "c724dc0b0822ada5d2977bf5bde821605feabaa64ea2e0045b67ca656329070a"
+    },
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt",
+        "dev": 40,
+        "ino": 2878822,
+        "bytes": 1851,
+        "mtime_ns": 1790947194721370688,
+        "ctime_ns": 1790947194721370688
+      },
+      "sha256": "991456cf4eb266eb8a888c349e548d11bc640f5dbd9149439aa9786af0f732fd"
+    },
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+        "dev": 40,
+        "ino": 2878820,
+        "bytes": 425196,
+        "mtime_ns": 1790947268196150153,
+        "ctime_ns": 1790947268196150153
+      },
+      "sha256": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+    },
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin",
+        "dev": 40,
+        "ino": 2878804,
+        "bytes": 707788800,
+        "mtime_ns": 1790947193902361950,
+        "ctime_ns": 1790947193902361950
+      },
+      "sha256": "09398406be61f1f54c93861f449e48b8df0bfccbc9ec9b2b7636775a6ea9244f"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json",
+        "dev": 40,
+        "ino": 2654126,
+        "bytes": 306,
+        "mtime_ns": 1791009279665519972,
+        "ctime_ns": 1791009279665519972
+      },
+      "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin",
+        "dev": 40,
+        "ino": 2652886,
+        "bytes": 1538035200,
+        "mtime_ns": 1791009279664519959,
+        "ctime_ns": 1791009279665519972
+      },
+      "sha256": "d2af3d8331e5c7a1985d1d589747230f9d56719a6d33c7cddc9ee6b81cde6b13"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt",
+        "dev": 40,
+        "ino": 2654124,
+        "bytes": 93685,
+        "mtime_ns": 1791009279665519972,
+        "ctime_ns": 1791009279665519972
+      },
+      "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+        "dev": 40,
+        "ino": 2653896,
+        "bytes": 3304,
+        "mtime_ns": 1791009280472529749,
+        "ctime_ns": 1791009280472529749
+      },
+      "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+        "dev": 40,
+        "ino": 2653772,
+        "bytes": 9993,
+        "mtime_ns": 1791009280442529386,
+        "ctime_ns": 1791009280442529386
+      },
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+        "dev": 40,
+        "ino": 2785432,
+        "bytes": 3353258,
+        "mtime_ns": 1791009280259527169,
+        "ctime_ns": 1791009280259527169
+      },
+      "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+        "dev": 40,
+        "ino": 2785434,
+        "bytes": 744960,
+        "mtime_ns": 1791009280269527290,
+        "ctime_ns": 1791009280269527290
+      },
+      "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+        "dev": 40,
+        "ino": 2785438,
+        "bytes": 541,
+        "mtime_ns": 1791009280269527290,
+        "ctime_ns": 1791009280269527290
+      },
+      "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+        "dev": 40,
+        "ino": 2785430,
+        "bytes": 5737005,
+        "mtime_ns": 1791009280185526273,
+        "ctime_ns": 1791009280185526273
+      },
+      "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+    }
+  },
+  "host_contract": {
+    "source_commit": "7ba990e1624d820cee7e532a0704222b70aadad8",
+    "tests": 7,
+    "passed": true,
+    "GPU_executed": false,
+    "controller_sha256": "dde799c1d23e6232cb880cd10faf95e3ec1b696acb102d9fd79e1d413e4c3793",
+    "test_sha256": "2c0a5ac3a2a3ba0b08ac9371381e48c282cfffd7406e161a0b2468c88f4c7441",
+    "ownership_closed": true
+  },
+  "expected_request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+  "plans": [
+    {
+      "arm": 0,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0",
+      "environment": {
+        "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONUNBUFFERED": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_MMQ_XMX": "1",
+        "STRATA_SYCL_MMQ_XMX_TILE": "8",
+        "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+        "STRATA_SYCL_MMQ_XMX_PACK": "0",
+        "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_WATCHDOG_S": "480",
+        "STRATA_SYCL_PROMPT_DIRECT": "1",
+        "STRATA_PREFILL_LAYER_MAJOR": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+        "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+        "STRATA_SYCL_KV_COPY_GROUPS": "0",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+        "STRATA_IQ_TIMING_PROGRESS": "0",
+        "STRATA_PREFILL_RELEASE_HEADS": "0",
+        "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+        "STRATA_GR_UNFUSED": "0",
+        "STRATA_PREFILL_BF16X2": "0",
+        "STRATA_PF_FUSED": "0",
+        "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+        "STRATA_SYCL_SELECT_RADIX4": "1",
+        "STRATA_SYCL_SELECT_CYCLIC": "0",
+        "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+        "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/cache",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+        "STRATA_ROPE_TABLE": "1",
+        "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+        "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+        "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+        "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+        "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+        "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+        "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+        "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+        "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+        "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+        "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
+        "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+        "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+        "CUDA_MODULE_LOADING": "EAGER",
+        "STRATA_MTP_BATCH_F16": "0",
+        "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+        "STRATA_IQ2_PAIR": "1",
+        "STRATA_SYCL_MTP_OBSERVER": "0",
+        "STRATA_TRACE": "1",
+        "STRATA_SNAPSHOT_VERIFY": "1",
+        "STRATA_SYCL_CACHE_LOAN_AUDIT": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "STRATA_PREFILL_TRANSITION_PROFILE": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
+        "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+        "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "1"
+      },
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/config.json": "0c79c2d531a3dee75cea51bb952b477f1322c53bba8579cf1063d3aa7dcda3d0",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/plan.json": "736a408ce91e1fb1a6f1dc3dad88e75c3aa7224a3e815dff62e8cb6eb9a51cc7",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/config.json",
+        "--port",
+        "41305",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "1",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/bench"
+      ]
+    },
+    {
+      "arm": 1,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1",
+      "environment": {
+        "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONUNBUFFERED": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_MMQ_XMX": "1",
+        "STRATA_SYCL_MMQ_XMX_TILE": "8",
+        "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+        "STRATA_SYCL_MMQ_XMX_PACK": "0",
+        "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_WATCHDOG_S": "480",
+        "STRATA_SYCL_PROMPT_DIRECT": "1",
+        "STRATA_PREFILL_LAYER_MAJOR": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+        "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+        "STRATA_SYCL_KV_COPY_GROUPS": "0",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+        "STRATA_IQ_TIMING_PROGRESS": "0",
+        "STRATA_PREFILL_RELEASE_HEADS": "0",
+        "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+        "STRATA_GR_UNFUSED": "0",
+        "STRATA_PREFILL_BF16X2": "0",
+        "STRATA_PF_FUSED": "0",
+        "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+        "STRATA_SYCL_SELECT_RADIX4": "1",
+        "STRATA_SYCL_SELECT_CYCLIC": "0",
+        "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+        "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/cache",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+        "STRATA_ROPE_TABLE": "1",
+        "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+        "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+        "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+        "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+        "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+        "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+        "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+        "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+        "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+        "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+        "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
+        "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+        "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+        "CUDA_MODULE_LOADING": "EAGER",
+        "STRATA_MTP_BATCH_F16": "0",
+        "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+        "STRATA_IQ2_PAIR": "1",
+        "STRATA_SYCL_MTP_OBSERVER": "0",
+        "STRATA_TRACE": "1",
+        "STRATA_SNAPSHOT_VERIFY": "1",
+        "STRATA_SYCL_CACHE_LOAN_AUDIT": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "STRATA_PREFILL_TRANSITION_PROFILE": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
+        "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "1",
+        "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "1"
+      },
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/config.json": "7a28a12672f1736f8cba9c8a3e5f2345f0073165afde721168921e8d8d162e08",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/plan.json": "736a408ce91e1fb1a6f1dc3dad88e75c3aa7224a3e815dff62e8cb6eb9a51cc7",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/config.json",
+        "--port",
+        "42137",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "1",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/bench"
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 127.286,
+          "total_s": 128.9,
+          "prompt_tokens": 117489,
+          "reused_tokens": 0,
+          "read_tokens": 117489,
+          "generated_tokens": 24,
+          "prompt_tps": 924.2,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.0,
+          "decode_tps_source": "engine",
+          "prompt_ms": 127124.1,
+          "decode_ms": 1708.3,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "truncated": true,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 970057114274503,
+            "first_output_monotonic_ns": 970184400473225,
+            "request_end_monotonic_ns": 970186014588812
+          },
+          "output_chars": 0,
+          "reasoning_chars": 121,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+          "eligible": true,
+          "eligibility_errors": [],
+          "requested_min_tokens": 98304,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "reuse_counts_reported": {
+            "usage": 0,
+            "timings": 0
+          },
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "reasoning_tokens_reported": null,
+          "run": 0
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 1,
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+        ],
+        "journal_sha256": "ce9f6b22f8277213a106f4d9e89c143645b2fa2fde57b8c52cfb6400003bd745",
+        "state_sha256": "29aaaba0c6aadd77dab33407d80eaee3d79e027488a7e6b37f9f795b43c3750b"
+      },
+      "route": {
+        "completed_requests": 2,
+        "exact_payload_and_map_cycles": 2,
+        "loan_generations": [
+          1,
+          2
+        ],
+        "slots": 1256,
+        "long_loan": {
+          "chunk": 8192,
+          "first": 132,
+          "lent": 1124,
+          "capacity": 2321664000,
+          "need": 2319958528,
+          "min_observed_free_bytes": 128114688
+        },
+        "actual_allocation_budget": {
+          "free_gpu_bytes": 4298420224,
+          "fixed_including_headroom_bytes": 4206942336,
+          "shared_arena_bytes": 1180698624
+        },
+        "min_observed_free_bytes": 128114688,
+        "prefill_rows": 117488,
+        "residual_gpu_bytes": 2406154240,
+        "windows_per_layer": [
+          [
+            0,
+            81920
+          ],
+          [
+            81920,
+            35568
+          ]
+        ],
+        "borrowed_ffn_entries": 96,
+        "checked_retirements": 96,
+        "dense_layers": 48,
+        "secondary_bank_windows": 48,
+        "execution_cache_parent_checked": true,
+        "clean_speed_qualified": false
+      },
+      "canonical_restore": {
+        "bytes": 1538035200,
+        "copies": 1,
+        "chunk": 0,
+        "between_warmup_and_long_prompt_footer": true
+      },
+      "profiles": [
+        {
+          "scope": "dense_restore",
+          "wall_s": 0.000187964,
+          "thread_cpu_s": 0.000187331,
+          "wait_wall_s": 3.117e-06,
+          "wait_cpu_s": 3.116e-06,
+          "other_wall_s": 6.344e-05,
+          "other_cpu_s": 6.2848e-05,
+          "parts": {
+            "retire": {
+              "calls": 1,
+              "wall_s": 7.233e-06,
+              "thread_cpu_s": 7.133e-06,
+              "wait_wall_s": 3.117e-06,
+              "wait_cpu_s": 3.116e-06
+            },
+            "canonical": {
+              "calls": 1,
+              "wall_s": 7.91e-07,
+              "thread_cpu_s": 7.91e-07,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "graph_resume": {
+              "calls": 1,
+              "wall_s": 0.0001165,
+              "thread_cpu_s": 0.000116559,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            }
+          }
+        },
+        {
+          "scope": "cache_refill",
+          "wall_s": 0.735780205,
+          "thread_cpu_s": 0.730260951,
+          "wait_wall_s": 0.02530707,
+          "wait_cpu_s": 0.024839911,
+          "other_wall_s": 1.4297e-05,
+          "other_cpu_s": 1.3414e-05,
+          "parts": {
+            "submit": {
+              "calls": 1,
+              "items": 101,
+              "logical_bytes": 242611200,
+              "wall_s": 0.030533735,
+              "thread_cpu_s": 0.029904896,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.704991079,
+              "thread_cpu_s": 0.700106066,
+              "wait_wall_s": 0.025245014,
+              "wait_cpu_s": 0.024777944
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.000241094,
+              "thread_cpu_s": 0.000236575,
+              "wait_wall_s": 6.2056e-05,
+              "wait_cpu_s": 6.1967e-05
+            }
+          }
+        },
+        {
+          "scope": "native_owner_entry",
+          "wall_s": 0.033863166,
+          "thread_cpu_s": 0.01206799,
+          "wait_wall_s": 0.002801563,
+          "wait_cpu_s": 0.00281021,
+          "other_wall_s": 6.15e-06,
+          "other_cpu_s": 4.919e-06,
+          "parts": {
+            "preflight": {
+              "calls": 1,
+              "wall_s": 0.000131378,
+              "thread_cpu_s": 0.000131406,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "allocate": {
+              "calls": 1,
+              "wall_s": 3.5367e-05,
+              "thread_cpu_s": 3.5397e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "publish": {
+              "calls": 1,
+              "items": 300,
+              "wall_s": 3.3794e-05,
+              "thread_cpu_s": 3.3804e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "release": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.033656477,
+              "thread_cpu_s": 0.011862464,
+              "wait_wall_s": 0.002801563,
+              "wait_cpu_s": 0.00281021
+            }
+          }
+        },
+        {
+          "scope": "dense_restore",
+          "wall_s": 0.817254255,
+          "thread_cpu_s": 0.77945788,
+          "wait_wall_s": 0.460722717,
+          "wait_cpu_s": 0.460427552,
+          "other_wall_s": 7.4578e-05,
+          "other_cpu_s": 7.2245e-05,
+          "parts": {
+            "preflight": {
+              "calls": 1,
+              "wall_s": 0.000134133,
+              "thread_cpu_s": 0.000134192,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "retire": {
+              "calls": 2,
+              "wall_s": 1.1653e-05,
+              "thread_cpu_s": 1.1572e-05,
+              "wait_wall_s": 5.218e-06,
+              "wait_cpu_s": 5.248e-06
+            },
+            "allocate": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.034022498,
+              "thread_cpu_s": 0.011508543,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "submit": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.250237681,
+              "thread_cpu_s": 0.244318986,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.101011404,
+              "thread_cpu_s": 0.101001441,
+              "wait_wall_s": 0.10100914,
+              "wait_cpu_s": 0.100999487
+            },
+            "publish": {
+              "calls": 1,
+              "items": 300,
+              "wall_s": 0.000165933,
+              "thread_cpu_s": 0.000166041,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "release": {
+              "calls": 1,
+              "items": 1,
+              "logical_bytes": 50918400,
+              "wall_s": 0.000258307,
+              "thread_cpu_s": 9.4827e-05,
+              "wait_wall_s": 1.2896e-05,
+              "wait_cpu_s": 1.3006e-05
+            },
+            "canonical": {
+              "calls": 1,
+              "wall_s": 0.431273206,
+              "thread_cpu_s": 0.422085161,
+              "wait_wall_s": 0.359695463,
+              "wait_cpu_s": 0.359409811
+            },
+            "graph_resume": {
+              "calls": 1,
+              "wall_s": 6.4862e-05,
+              "thread_cpu_s": 6.4872e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            }
+          }
+        },
+        {
+          "scope": "cache_refill",
+          "wall_s": 1.074272668,
+          "thread_cpu_s": 1.064489924,
+          "wait_wall_s": 0.127833759,
+          "wait_cpu_s": 0.127419913,
+          "other_wall_s": 1.7943e-05,
+          "other_cpu_s": 1.6731e-05,
+          "parts": {
+            "submit": {
+              "calls": 1,
+              "items": 1124,
+              "logical_bytes": 2321664000,
+              "wall_s": 0.27473171,
+              "thread_cpu_s": 0.269256291,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.799262915,
+              "thread_cpu_s": 0.794961874,
+              "wait_wall_s": 0.127769588,
+              "wait_cpu_s": 0.127356001
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.0002601,
+              "thread_cpu_s": 0.000255028,
+              "wait_wall_s": 6.4171e-05,
+              "wait_cpu_s": 6.3912e-05
+            }
+          }
+        }
+      ],
+      "dense_memory": [
+        {
+          "phase": "retired",
+          "free_bytes": "1507438592",
+          "total_bytes": "10666115072",
+          "full_bytes": "2116951040",
+          "bank_bytes": "50918400"
+        },
+        {
+          "phase": "bank",
+          "free_bytes": "3590627328",
+          "total_bytes": "10666115072",
+          "full_bytes": "2116951040",
+          "bank_bytes": "50918400"
+        },
+        {
+          "phase": "restored",
+          "free_bytes": "131956736",
+          "total_bytes": "10666115072",
+          "full_bytes": "2116951040",
+          "bank_bytes": "50918400"
+        }
+      ],
+      "native_identity": {
+        "pid": 3866461,
+        "start_ticks": 96995052,
+        "sid": 3866437
+      },
+      "native_exit_code": 0,
+      "prompt_tok_s": 924.2071330298503,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true
+    },
+    {
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 127.177,
+          "total_s": 128.701,
+          "prompt_tokens": 117489,
+          "reused_tokens": 0,
+          "read_tokens": 117489,
+          "generated_tokens": 24,
+          "prompt_tps": 925.0,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.8,
+          "decode_tps_source": "engine",
+          "prompt_ms": 127009.0,
+          "decode_ms": 1625.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "truncated": true,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 970448231818524,
+            "first_output_monotonic_ns": 970575408646305,
+            "request_end_monotonic_ns": 970576932708935
+          },
+          "output_chars": 0,
+          "reasoning_chars": 121,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+          "eligible": true,
+          "eligibility_errors": [],
+          "requested_min_tokens": 98304,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "reuse_counts_reported": {
+            "usage": 0,
+            "timings": 0
+          },
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "reasoning_tokens_reported": null,
+          "run": 0
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 1,
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+        ],
+        "journal_sha256": "f365a320c4f29d972125f248634db1d66ce97a2d0ae97e3b91cbccaffbab9bc7",
+        "state_sha256": "207d4a808df490b3d1d58641bf0a3975c25bdca8263571c0cfe3740f13abda22"
+      },
+      "route": {
+        "completed_requests": 2,
+        "exact_payload_and_map_cycles": 2,
+        "loan_generations": [
+          1,
+          2
+        ],
+        "slots": 1256,
+        "long_loan": {
+          "chunk": 8192,
+          "first": 132,
+          "lent": 1124,
+          "capacity": 2321664000,
+          "need": 2319958528,
+          "min_observed_free_bytes": 128114688
+        },
+        "actual_allocation_budget": {
+          "free_gpu_bytes": 4298420224,
+          "fixed_including_headroom_bytes": 4206942336,
+          "shared_arena_bytes": 1180698624
+        },
+        "min_observed_free_bytes": 128114688,
+        "prefill_rows": 117488,
+        "residual_gpu_bytes": 2406154240,
+        "windows_per_layer": [
+          [
+            0,
+            81920
+          ],
+          [
+            81920,
+            35568
+          ]
+        ],
+        "borrowed_ffn_entries": 96,
+        "checked_retirements": 96,
+        "dense_layers": 48,
+        "secondary_bank_windows": 48,
+        "execution_cache_parent_checked": true,
+        "clean_speed_qualified": false
+      },
+      "canonical_restore": {
+        "bytes": 1538035200,
+        "copies": 23,
+        "chunk": 67108864,
+        "between_warmup_and_long_prompt_footer": true
+      },
+      "profiles": [
+        {
+          "scope": "dense_restore",
+          "wall_s": 0.000195018,
+          "thread_cpu_s": 0.000194465,
+          "wait_wall_s": 3.635e-06,
+          "wait_cpu_s": 3.658e-06,
+          "other_wall_s": 7.1244e-05,
+          "other_cpu_s": 7.0714e-05,
+          "parts": {
+            "retire": {
+              "calls": 1,
+              "wall_s": 7.845e-06,
+              "thread_cpu_s": 7.805e-06,
+              "wait_wall_s": 3.635e-06,
+              "wait_cpu_s": 3.658e-06
+            },
+            "canonical": {
+              "calls": 1,
+              "wall_s": 8.22e-07,
+              "thread_cpu_s": 8.21e-07,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "graph_resume": {
+              "calls": 1,
+              "wall_s": 0.000115107,
+              "thread_cpu_s": 0.000115125,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            }
+          }
+        },
+        {
+          "scope": "cache_refill",
+          "wall_s": 0.7356285,
+          "thread_cpu_s": 0.730193589,
+          "wait_wall_s": 0.02433701,
+          "wait_cpu_s": 0.024065729,
+          "other_wall_s": 1.4335e-05,
+          "other_cpu_s": 1.3315e-05,
+          "parts": {
+            "submit": {
+              "calls": 1,
+              "items": 101,
+              "logical_bytes": 242611200,
+              "wall_s": 0.031539302,
+              "thread_cpu_s": 0.030946329,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.703829901,
+              "thread_cpu_s": 0.698993484,
+              "wait_wall_s": 0.02427371,
+              "wait_cpu_s": 0.024002431
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.000244962,
+              "thread_cpu_s": 0.000240461,
+              "wait_wall_s": 6.33e-05,
+              "wait_cpu_s": 6.3298e-05
+            }
+          }
+        },
+        {
+          "scope": "native_owner_entry",
+          "wall_s": 0.033371452,
+          "thread_cpu_s": 0.0120303,
+          "wait_wall_s": 0.002833409,
+          "wait_cpu_s": 0.002836381,
+          "other_wall_s": 5.499e-06,
+          "other_cpu_s": 4.65e-06,
+          "parts": {
+            "preflight": {
+              "calls": 1,
+              "wall_s": 0.000127621,
+              "thread_cpu_s": 0.000127669,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "allocate": {
+              "calls": 1,
+              "wall_s": 3.5677e-05,
+              "thread_cpu_s": 3.5697e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "publish": {
+              "calls": 1,
+              "items": 300,
+              "wall_s": 3.3613e-05,
+              "thread_cpu_s": 3.3633e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "release": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.033169042,
+              "thread_cpu_s": 0.011828651,
+              "wait_wall_s": 0.002833409,
+              "wait_cpu_s": 0.002836381
+            }
+          }
+        },
+        {
+          "scope": "dense_restore",
+          "wall_s": 0.650307136,
+          "thread_cpu_s": 0.614268147,
+          "wait_wall_s": 0.211324719,
+          "wait_cpu_s": 0.211306075,
+          "other_wall_s": 7.4639e-05,
+          "other_cpu_s": 7.2226e-05,
+          "parts": {
+            "preflight": {
+              "calls": 1,
+              "wall_s": 0.000136017,
+              "thread_cpu_s": 0.000136056,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "retire": {
+              "calls": 2,
+              "wall_s": 1.1111e-05,
+              "thread_cpu_s": 1.106e-05,
+              "wait_wall_s": 5.149e-06,
+              "wait_cpu_s": 5.16e-06
+            },
+            "allocate": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.033169252,
+              "thread_cpu_s": 0.010738939,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "submit": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.248050611,
+              "thread_cpu_s": 0.244972132,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.103246489,
+              "thread_cpu_s": 0.103239297,
+              "wait_wall_s": 0.103243613,
+              "wait_cpu_s": 0.103236772
+            },
+            "publish": {
+              "calls": 1,
+              "items": 300,
+              "wall_s": 0.000166143,
+              "thread_cpu_s": 0.000166212,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "release": {
+              "calls": 1,
+              "items": 1,
+              "logical_bytes": 50918400,
+              "wall_s": 0.000269288,
+              "thread_cpu_s": 0.000112921,
+              "wait_wall_s": 1.3607e-05,
+              "wait_cpu_s": 1.3694e-05
+            },
+            "canonical": {
+              "calls": 1,
+              "wall_s": 0.26511679,
+              "thread_cpu_s": 0.254752489,
+              "wait_wall_s": 0.10806235,
+              "wait_cpu_s": 0.108050449
+            },
+            "graph_resume": {
+              "calls": 1,
+              "wall_s": 6.6796e-05,
+              "thread_cpu_s": 6.6815e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            }
+          }
+        },
+        {
+          "scope": "cache_refill",
+          "wall_s": 1.110171378,
+          "thread_cpu_s": 1.066248533,
+          "wait_wall_s": 0.132170281,
+          "wait_cpu_s": 0.131636529,
+          "other_wall_s": 1.7612e-05,
+          "other_cpu_s": 1.6261e-05,
+          "parts": {
+            "submit": {
+              "calls": 1,
+              "items": 1124,
+              "logical_bytes": 2321664000,
+              "wall_s": 0.270039423,
+              "thread_cpu_s": 0.262715157,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.839881374,
+              "thread_cpu_s": 0.803288457,
+              "wait_wall_s": 0.132109287,
+              "wait_cpu_s": 0.131575624
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.000232969,
+              "thread_cpu_s": 0.000228658,
+              "wait_wall_s": 6.0994e-05,
+              "wait_cpu_s": 6.0905e-05
+            }
+          }
+        }
+      ],
+      "dense_memory": [
+        {
+          "phase": "retired",
+          "free_bytes": "1507438592",
+          "total_bytes": "10666115072",
+          "full_bytes": "2116951040",
+          "bank_bytes": "50918400"
+        },
+        {
+          "phase": "bank",
+          "free_bytes": "3590627328",
+          "total_bytes": "10666115072",
+          "full_bytes": "2116951040",
+          "bank_bytes": "50918400"
+        },
+        {
+          "phase": "restored",
+          "free_bytes": "131956736",
+          "total_bytes": "10666115072",
+          "full_bytes": "2116951040",
+          "bank_bytes": "50918400"
+        }
+      ],
+      "native_identity": {
+        "pid": 3881252,
+        "start_ticks": 97035025,
+        "sid": 3881228
+      },
+      "native_exit_code": 0,
+      "prompt_tok_s": 925.0446818729381,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true
+    }
+  ],
+  "plan": {
+    "order": [
+      0,
+      1
+    ],
+    "question": "Does canonical chunk64 restore exact current decode state under the actual117K memory admission?",
+    "constants": "Same native binary,1256 expert slots,131072 resident INT8 context,8192 prefill,5 workers+host,packed1,IQ2pair1,Q8 MTP,greedy,pcie0,adapt0,spec4,suffix0,caches0,no coupled draft/token graph. Only pre-exec canonical chunk flag differs.",
+    "execution": "Two independent checked native processes,flag0 then1. Each uses pinned upstream bench.sh --prefill-only --prefill-tokens98304 --think --runs1,one short warmup then117489 fresh input and<=24 thinking output. Parameter validation,warnings,stage trace,snapshot/cache audit and transition observers identical in both arms;no full API trace.",
+    "correctness": "Actual1/23 canonical copies between warmup and long prompt footer. Require full GPU BF16 residual admission,all48 dense layers restored,two exact cache payload/map cycles,complete disjoint wall/thread CPU/wait accounting,same model hashes and normal native/process/driver closure. Preserve each sample before any rejecting validator.",
+    "next_comparison": "After both checked arms pass,commit a separate clean plan:three fixed process pairs off/on/on/off/off/on,four117K requests/process,first separate from three subsequent requests. Expected copy-only gain about0.14% of prompt;keep individual samples and require prospective mechanism/target gates. Repeated>=1K thinking generation for both observed MTP classes and agent/full-context/session checks remain required;no decode impact is acceptable.",
+    "stopping": "Stop on first source/model/runtime/route/owner/fault/budget/accounting failure. No retry/replaced sample,no inference adoption or causal speed conclusion from these two observed first-use samples.",
+    "budgets": {
+      "wall_s": 2400,
+      "cpu_s": 72000,
+      "rss_bytes": 103079215104,
+      "text_bytes": 67108864,
+      "total_bytes": 67108864
+    },
+    "retention": "Keep samples,compact individual scope/phase clocks,actual route/memory/copy/owner/fault/source proof. Retire successful full logs/JIT after verified committed closure;frozen inputs last through this two-arm admission only."
+  },
+  "closed_analysis": {
+    "actual_model_handoff_passed": true,
+    "first_use_prompt_tok_s": [
+      924.2071330298503,
+      925.0446818729381
+    ],
+    "canonical_restore_wall_ms": [
+      431.273206,
+      265.11679
+    ],
+    "canonical_restore_reduction_ms": 166.15641600000004,
+    "canonical_restore_ratio": 1.6267291332246443,
+    "dense_restore_wall_ms": [
+      817.2542550000001,
+      650.307136
+    ],
+    "all_models_unchanged": true,
+    "no_fresh_faults": true,
+    "interpretation": "Two separate checked first-use requests prove actual1/23-copy dispatch and exact current1256-slot/48-layer restoration under117K pressure. About166ms canonical wrapper reduction agrees with the component mechanism,but one observed pair is not repeated clean speed,sustained decode independence,task/agent quality,physical262144/session/RESTORE or adoption.",
+    "next_action": "Freeze repeated clean prefill and sustained-decode comparisons. Include retained6e40 baseline to expose any package-level decode impact from the intervening observer/copy build,besides the same-native copy schedule discriminator. Current decode implementation/settings/1256-slot placement remain fixed;any impact is a separation defect."
+  },
+  "normal_output_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-canonical-model-support-20261022.jsonl",
+    "sha256": "be1dfa1f431b8e117d22d501be49a8eeb0286c4d56480a60868893a1e58ec09d",
+    "files": 221,
+    "bytes": 39243457,
+    "verified_absent": true,
+    "retained_generated_inputs": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/config.json",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/plan.json",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/config.json",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/plan.json"
+    ],
+    "retained_input_consumer": "Six small config/plan/profile files remain for c.current admission proof through the next frozen comparison;review and retire after that comparison closes.",
+    "build_generations_unchanged": true,
+    "original_failed_status_preserved_at": "9555a7bd2"
+  }
+}

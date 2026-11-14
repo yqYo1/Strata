@@ -5,6 +5,83 @@
 #include <cstdint>
 
 namespace strata::core::detail {
+enum class PrefillHeadDrafter { unsupported, mtp4, absent_dflash2 };
+
+// Absence is an ownership fact at this serialized request boundary, not an
+// instruction to retire an unloaded MTP owner. A live DFlash2 owner may still
+// borrow the target head, even though eager mode has no recorded graph.
+inline PrefillHeadDrafter prefill_head_drafter(bool single_native,int spec,
+        bool has_mtp,bool uses_dflash2,bool dflash2_live) noexcept {
+    if(!single_native || spec!=4 || dflash2_live || (has_mtp && uses_dflash2))
+        return PrefillHeadDrafter::unsupported;
+    if(has_mtp)return PrefillHeadDrafter::mtp4;
+    if(uses_dflash2 && !dflash2_live)return PrefillHeadDrafter::absent_dflash2;
+    return PrefillHeadDrafter::unsupported;
+}
+
+// The target always participates. MTP's duplicate head and its readers are an
+// optional, separate participant; its existing prepare/retire order is retained.
+// Used by the real generator boundary and the host ownership/failure fixture.
+template<class Head,class Drafter>
+struct PrefillHeadWeights {
+    Head& head;
+    Drafter* mtp;
+    bool prepare(std::string& err) {
+        if(mtp && !mtp->prepare_prefill_head(head,err))return false;
+        try {
+            if(!head.prepare_prefill_weights(err)) {
+                if(mtp)mtp->cancel_prefill_head();
+                return false;
+            }
+        } catch(...) {
+            if(mtp)mtp->cancel_prefill_head();
+            throw;
+        }
+        return true;
+    }
+    void cancel_prepared() noexcept {
+        head.cancel_prefill_weights();
+        if(mtp)mtp->cancel_prefill_head();
+    }
+    void retire_draft_readers() noexcept {if(mtp)mtp->retire_prefill_head_readers();}
+    void detach() noexcept {
+        head.detach_prefill_weights();
+        if(mtp)mtp->detach_prefill_head();
+    }
+    void restore() noexcept {
+        head.restore_prefill_weights();
+        if(mtp)mtp->restore_prefill_head();
+    }
+    void resume() noexcept {
+        head.resume_prefill_weights();
+        if(mtp)mtp->resume_prefill_head();
+    }
+};
+
+// Commit only an already prepared boundary. A cache-loan activation callback
+// must use this no-fail part: callback refusal/throw poisons the parent loan,
+// even when no device reader was retired. Prepare before entering that callback.
+template<class Backend,class RetireOtherReaders>
+void finish_prepared_prefill_head_release(Backend& b,RetireOtherReaders&& retire_other) noexcept {
+    static_assert(noexcept(b.require_prepared()) &&
+                  noexcept(std::forward<RetireOtherReaders>(retire_other)()) &&
+                  noexcept(b.retire_readers()) && noexcept(b.detach()),
+                  "prepared reader retirement must not unwind runtime owners");
+    b.require_prepared();
+    std::forward<RetireOtherReaders>(retire_other)();
+    b.retire_readers();
+    b.detach();
+}
+
+// Standalone composition owns its fallible preparation. Enclosing transactions
+// instead prepare before loan activation and cancel if preflight refuses.
+template<class Backend,class RetireOtherReaders>
+bool begin_prefill_head_release(Backend& b,RetireOtherReaders&& retire_other,std::string& err) {
+    if(!b.prepare(err))return false;
+    finish_prepared_prefill_head_release(b,std::forward<RetireOtherReaders>(retire_other));
+    return true;
+}
+
 // The backend owns all buffers and runtime handles. After prepare(), every
 // retirement/detach/restore/resume operation MUST be noexcept and fail-stop on
 // unknown completion. The only operation allowed to throw is the prompt itself.
@@ -14,9 +91,7 @@ bool with_prefill_head_release(Backend& b,Prompt&& prompt,std::string& err) {
     static_assert(noexcept(b.retire_readers()) && noexcept(b.detach()) &&
                   noexcept(b.restore()) && noexcept(b.resume()),
                   "head transition operations must never unwind runtime owners");
-    if(!b.prepare(err))return false;
-    b.retire_readers();
-    b.detach();
+    if(!begin_prefill_head_release(b,[]() noexcept {},err))return false;
     bool ok=false;
     try { ok=std::forward<Prompt>(prompt)(); }
     catch (...) { b.restore();b.resume();throw; }
@@ -44,6 +119,12 @@ public:
             (expected==Phase::restored && next==Phase::ready);
         if(phase_!=expected || !edge)return false;
         phase_=next;return true;
+    }
+    // Only preparation can be cancelled: no reader or device owner changed.
+    // Keep this distinct from normal restoration and forbid all retired phases.
+    bool cancel_prepared() noexcept {
+        if(phase_!=Phase::prepared)return false;
+        phase_=Phase::ready;return true;
     }
     Phase phase() const noexcept{return phase_;}
     bool readable() const noexcept{return phase_==Phase::ready;}

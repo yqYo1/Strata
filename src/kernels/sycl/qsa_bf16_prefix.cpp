@@ -500,6 +500,14 @@ bool qsa_bf16_prefix_subgroup_batch(const uint16_t *query, const QsaAttnPools &p
   return prefix_batch_impl<Cells + 1, false, true>(query, pools, ids, steps, cap, shape,
       output, queries, bounds, live_cells, scratch, stream);
 }
+// Existing subgroup reduction with independently qualified operand staging.
+bool qsa_bf16_prefix_cached_subgroup_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<Cells + 1, false, true, true, true, true>(query,
+      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
+}
 // Dense16 A tiles and BF16 pair-packed B tiles; same numerical contract.
 bool qsa_bf16_prefix_tilepack_batch(const uint16_t *query, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,

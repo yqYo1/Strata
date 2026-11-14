@@ -1,0 +1,1183 @@
+#!/usr/bin/env python3
+"""Clean bench.sh input-length characterization of the admitted streamed route.
+
+Main-authored from this fork's owned benchmark controls; repository LICENSE.
+Source, original native build, workload and individual samples remain distinct.
+This curve is not a matched speedup, sustained decode or model-adoption test.
+"""
+import ast
+import copy
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import socket
+import statistics
+import sys
+from types import SimpleNamespace
+
+sys.dont_write_bytecode = True
+import qsa16_stream_profile as source
+import compare_official_prefill as comparison
+import check_prefill_strategy_model as frontend
+from prefill_scaling_bench import approximation_models, linear_fit
+
+P, B, RESULT = source.P, source.B, source.RESULT
+THIS = 'tools/sycl/qsa16_stream_bench.py'
+ROOT, KEY = B / 'qsa16-stream-prefill-curve-v1', 'qsa16_stream_prefill_curve_v1'
+READS, RUNS = (32769, 49153, 65537, 81921, 98305), 4
+ORDER = [(n, 1) for n in READS]
+REFERENCE = B / 'decode-iq3-audit-speed-v2/record.json'
+require, digest, write = source.require, source.sha, source.device.write
+shared, build = comparison.shared, comparison.build
+FAST_ROOT, FAST_KEY = B / 'qsa16-stream-fast-entry-v1', 'qsa16_stream_fast_entry_v1'
+CLEAN_FAST = False
+FIT_POINT = False
+MODEL_PROFILE = False
+COLLECTOR_ROOT = B / 'qsa16-stream-collector-active-v2'
+COLLECTOR_KEY = 'qsa16_stream_collector_active_v2'
+FAST = dict(STRATA_PREFILL_RELEASE_MTP_EXPERTS='1', STRATA_SYCL_PREFILL_MOE_WINDOW='10',
+    STRATA_SYCL_PREFILL_SCORE_GEMM='1', STRATA_SYCL_PREFILL_MIXED_SCRATCH='1',
+    STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS='384', STRATA_SYCL_CACHE_SCRATCH_LEASE='1',
+    STRATA_MTP_BATCH_F16='1', STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED='1',
+    STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR='1')
+
+
+def configure_baseline():
+    global ROOT, KEY, READS, ORDER
+    ROOT, KEY = B / 'qsa16-stream-prefill-baseline-v2', 'qsa16_stream_prefill_baseline_v2'
+    READS = (32769,)
+    ORDER = [(32769, 1)]
+
+
+def configure_fast_clean():
+    global ROOT, KEY, READS, ORDER, CLEAN_FAST
+    ROOT, KEY = B / 'qsa16-stream-fast-prefill-v1', 'qsa16_stream_fast_prefill_v1'
+    READS, ORDER, CLEAN_FAST = (32769,), [(32769, 1)], True
+
+
+def configure_fast_curve():
+    global ROOT, KEY, READS, ORDER, CLEAN_FAST
+    ROOT, KEY = B / 'qsa16-stream-fast-curve-v1', 'qsa16_stream_fast_curve_v1'
+    READS = (32769, 49153, 65537, 81921, 98305)
+    ORDER, CLEAN_FAST = [(n, 1) for n in READS], True
+
+
+def configure_fast_fit_point():
+    global ROOT, KEY, READS, ORDER, CLEAN_FAST, FIT_POINT
+    ROOT, KEY = B / 'qsa16-stream-fast-fit-point-v1', 'qsa16_stream_fast_fit_point_v1'
+    READS, ORDER, CLEAN_FAST, FIT_POINT = (57345,), [(57345, 1)], True, True
+
+
+def configure_model_profile():
+    global ROOT, KEY, READS, ORDER, RUNS, CLEAN_FAST, MODEL_PROFILE
+    ROOT, KEY = B / 'qsa16-stream-fast-profile-v2', 'qsa16_stream_fast_profile_v2'
+    READS, ORDER, RUNS = (32769,) * 3, [(32769, 1)] * 3, 2
+    CLEAN_FAST, MODEL_PROFILE = True, True
+
+
+def pins(revision):
+    values = shared.pins(revision)
+    values.update(build.controls(revision, controller=P / THIS))
+    # The imported Niko server now uses Control outside serve/tools. Pin its
+    # complete packages, including deferred imports; keep the failed old
+    # serve/tools-only host admission in V1 rather than refreshing its hashes.
+    values.update(source.device.common.source.pin(P,
+        ['strata_control', 'strata_cli', 'packaging', 'setup.py'])['source_sha256'])
+    return values
+
+
+def compact(row):
+    value = {k: v for k, v in row.items()
+             if k not in ('sources', 'model_assets', 'environment_template')}
+    value['source_inputs'] = dict(files=len(row['sources']),
+        sha256=source.signature(row['sources']))
+    value['environment_template_sha256'] = source.signature(row['environment_template'])
+    value['model_assets_sha256'] = source.signature(row['model_assets'])
+    return value
+
+
+def save(row):
+    write(ROOT / 'record.json', row)
+    data = json.loads(RESULT.read_text()); data[KEY] = compact(row); write(RESULT, data)
+
+
+def basis():
+    # The clean benchmark is independent of collector admission. Check the
+    # native reader and closed original model directly; do not call an earlier
+    # profiler's frozen controller or inherit its successful/failed result.
+    model, device = source.model, source.device
+    native = device.native(observers={device.THIS, model.THIS, source.THIS, THIS})
+    prior = json.loads((source.MODEL_ROOT / 'record.json').read_text())
+    require(model.validation.committed(RESULT, (source.MODEL_KEY,)) == model.previous.compact(prior)
+        and prior['stage'] == 'closed' and all(prior[k] for k in
+            ('passed', 'complete', 'ownership_closed', 'model_executed'))
+        and not prior['active'] and prior['native_source_commit'] == native['native_source_commit']
+        and prior['native_build']['binaries'] == native['binaries']
+        and digest(prior['native_record']['path']) == prior['native_record']['sha256'],
+        'closed exact same-native model admission required')
+    result, = prior['results']
+    require(result['native_exit_code'] == 0 and result['ownership_closed'] and
+        not result['fresh_faults'] and len(result['requests']) == 3
+        and result['capacity_observation']['actual_chunk'] == 8192
+        and result['routes']['actual_mode'] == 1 and result['routes']['typed_QSA_entry'],
+        'actual8192 streamed typed-attention/handoff proof required')
+    pin = prior['controller']; before = pin['source_sha256']
+    recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
+        device.common.source.blobs(P, pin['revision'], before)}
+    after = device.common.source.pin(P,
+        ['tools/sycl', 'tools/strata_tokenizer.py', 'data/expert-profile.bin'])['source_sha256']
+    require(recovered == before and source.signature(before) == pin['aggregate_sha256']
+        and set(after) - set(before) == {source.THIS, THIS} and not set(before) - set(after)
+        and all(after[p] == h for p, h in before.items()),
+        'only the two committed performance observers may extend original model controls')
+    require(source.signature(model.validation.committed(RESULT, (device.KEY,))) == prior['device_evidence_sha256']
+        and digest(prior['runtime_manifest']['path']) == prior['runtime_manifest']['sha256']
+        and all(digest(p) == h for p, h in prior['runtime_files'].items())
+        and model.guards.driver_guard() == prior['driver']
+        and Path('/proc/sys/kernel/random/boot_id').read_text().strip() == prior['boot'],
+        'original device/runtime/boot/driver changed')
+    model.previous.assets(prior)
+    proof = dict(native=native['observer_admission'], original_model_source=prior['source_commit'],
+        original_model_evidence_sha256=source.signature(model.previous.compact(prior)),
+        original_model_receipt_sha256=digest(source.MODEL_ROOT / 'record.json'),
+        original_model_controls_recovered=len(before),
+        added_observers={p: after[p] for p in (source.THIS, THIS)},
+        collector_qualification_inherited=False, native_recompiled=False)
+    if CLEAN_FAST:
+        proof['fast_configuration_diagnostic'] = fast_diagnostic_proof(native, prior)
+    return native, dict(prior, observer_admission=proof), prior['runtime_files'], None
+
+
+def environment(row, plan):
+    env = comparison.environment(row, plan)
+    require(not env.get('LD_PRELOAD') and not env.get('STRATA_TRACE') and
+        not env.get('STRATA_UR_PROBE_EXPECTED_LOADER') and
+        env['STRATA_KV_STAGE_OWN'] == env['STRATA_SYCL_PREFILL_QSA_STREAM'] == '1'
+        and env['STRATA_MTP_BATCH_F16'] == ('1' if CLEAN_FAST else '0')
+        and env['STRATA_SYCL_DECODE_Q6_DPAS_HEAD'] == '2'
+        and env['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] == '1'
+        and env['STRATA_PREFILL_HEAD_HOST_BACKING'] == '0',
+        'preserve actual admitted placement/math/decode and private preload')
+    if CLEAN_FAST:
+        require(all(env.get(k) == v for k, v in FAST.items()), 'exact qualified fast settings required')
+    if MODEL_PROFILE and plan.get('profile', False):
+        env.update(STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1',
+            UNITRACE_ChromeKernelLogging='1', UNITRACE_ChromeEventBufferSize='128')
+    return env
+
+
+def native_context(row, plan):
+    require(type(plan['index']) is int and 0 <= plan['index'] < len(ORDER)
+        and (plan['read'], plan['heads']) == ORDER[plan['index']], 'unplanned curve point')
+    return {k: row[k] for k in ('binary', 'native_source_commit', 'native_validation_probe', 'boot')}
+
+
+def current(row):
+    require(build.committed(RESULT)[KEY] == compact(row) and
+        pins(row['source_commit']) == row['sources'], 'commit exact curve state and inputs')
+    native, prior, providers, _ = basis()
+    require(row['binary'] == native['binaries']['strata'] and
+        row['native_source_commit'] == native['native_source_commit'] and
+        row['observer_admission'] == prior['observer_admission'] and
+        row['native_validation_probe'] == prior['probe'] and row['boot'] == prior['boot']
+        and row['driver'] == prior['driver'] and row['model_assets'] == prior['models'],
+        'curve native/runtime/asset basis changed')
+    manifest = row['runtime_manifest']
+    require(digest(manifest['path']) == manifest['sha256'] and
+        json.loads(Path(manifest['path']).read_text()) == providers,
+        'runtime manifest changed')
+    require(digest(row['template']['path']) == row['template']['sha256'] and
+        build.supervision.artifact_bytes(ROOT) <= row['whole_bytes'], 'template/output budget differs')
+    contract, python = frontend.python_manifest()
+    require(contract == row['python_contract'] and python['selected'] == row['python_selected'],
+        'benchmark/server Python providers changed')
+    if FIT_POINT:
+        require(curve_fit_basis(row)[1] == row['curve_reference'], 'closed curve basis changed')
+    if MODEL_PROFILE:
+        require(row['collector_control'] == profile_control_proof(native)
+            and row['profile_clock_controls'] == profile_window_controls()
+            and row['profile_cleanup_controls'] == profile_cleanup_controls()
+            and row['profile_previous_failure'] == previous_profile_failure()
+            and row['maximum_observer_ratio'] == 1.2
+            and [p['profile'] for p in row['plans']] == [False, True, False],
+            'committed current-native collector/observer order changed')
+        plan = row['plans'][1]
+        require(plan['native_profile']['mode'] == 'aggregate'
+            and all(plan['native_profile'][k] == v for k, v in row['collector_control']['assets'].items()),
+            'profile mode or exact collector changed')
+        if len(row['processes']) == 1:
+            providers = dict(providers)
+            item = plan['native_profile']['collector']; providers[item['path']] = item['sha256']
+    return providers, python
+
+
+def curve_fit_basis(row):
+    root, key = B / 'qsa16-stream-fast-curve-v1', 'qsa16_stream_fast_curve_v1'
+    old = json.loads((root / 'record.json').read_text())
+    require(build.committed(RESULT)[key] == compact(old) and old['stage'] == 'closed'
+        and old['passed'] and old['complete'] and old['ownership_closed'] and not old['active']
+        and [p['read'] for p in old['processes']] == [32769, 49153, 65537, 81921, 98305]
+        and old['binary'] == row['binary'] and old['native_source_commit'] == row['native_source_commit']
+        and old['model_assets'] == row['model_assets'] and old['configuration'] == row['configuration']
+        and old['boot'] == row['boot'] and old['driver'] == row['driver'],
+        'closed exact five-length native/configuration/model basis required')
+    require(set(old['sources']) == set(row['sources'])
+        and {p for p in old['sources'] if old['sources'][p] != row['sources'][p]} == {THIS}
+        and {k: v.replace(str(root), str(ROOT)) for k, v in old['environment_template'].items()}
+            == row['environment_template'], 'only the prospective observer and private paths may change')
+    return old, dict(key=key, source_commit=old['source_commit'],
+        receipt=dict(path=str(root / 'record.json'), sha256=digest(root / 'record.json')),
+        evidence_sha256=source.signature(compact(old)),
+        unchanged_source_inputs=len(old['sources']) - 1,
+        limits='Reuse the closed final15asset hashes after exact identities;no native rebuild or inherited new-point result.')
+
+
+def extended_approximations(points):
+    row = json.loads((ROOT / 'record.json').read_text())
+    old, proof = curve_fit_basis(row)
+    require(proof == row['curve_reference'], 'immutable prior curve required for analysis')
+    combined = sorted(old['decision']['points'] + points, key=lambda p: p['read'])
+    require([p['read'] for p in combined] == [32769, 49153, 57345, 65537, 81921, 98305]
+        and all(p['placement_unchanged_within_process'] for p in combined),
+        'six distinct lengths with unchanged actual placement required')
+    groups = {}
+    for p in combined:
+        groups.setdefault(p['route_group'], []).append(p)
+    ordinary = groups.get('all_GPU/slots384/staged1/split0', [])
+    require([p['read'] for p in ordinary] == [32769, 49153, 57345, 65537, 81921],
+        'five distinct compatible ordinary-route points required;do not pool96K')
+    scopes = dict(first_prompt_ms=lambda p: p['first_use']['prompt_ms'],
+        warmed_median_prompt_ms=lambda p: p['median_prompt_ms'],
+        first_client_TTFT_ms=lambda p: p['first_use']['ttft_s'] * 1000,
+        warmed_median_client_TTFT_ms=lambda p: p['median_TTFT_s'] * 1000)
+    fits = {}
+    for group, values in groups.items():
+        fits[group] = {}
+        for name, metric in scopes.items():
+            data = [dict(actual_read_tokens=p['read'], prompt_ms=metric(p)) for p in values]
+            fits[group][name] = dict(affine=linear_fit(data), alternatives=approximation_models(data),
+                adjacent_ms_per_token=[(b['prompt_ms']-a['prompt_ms']) /
+                    (b['actual_read_tokens']-a['actual_read_tokens']) for a, b in zip(data, data[1:])])
+    return dict(prior_curve=proof, lengths=[p['read'] for p in combined], route_scoped_fits=fits,
+        within_process_spread=[dict(read=p['read'],
+            subsequent_prompt_range_ms=[min(p['subsequent_prompt_ms']), max(p['subsequent_prompt_ms'])],
+            subsequent_TTFT_range_s=[min(p['subsequent_TTFT_s']), max(p['subsequent_TTFT_s'])]) for p in combined],
+        limits='Five compatible lengths,one process each;first and subsequent timing scopes stay separate. Compare whole-length held-out errors with sample spread. No extrapolation,physical fixed-cost attribution,saturation,paired gain or adoption. The96Ksplit route has one point and no fit.')
+
+
+def compatibility_inventory(events):
+    # Exact types from the unchanged fad954... fixture ELF and compat.cpp.
+    # No-argument execution excludes the two submission-only kernel types.
+    aliases, expected = {}, dict(direct=1, producer=37, consumer=24)
+    for kind, suffix, ordinal in (('direct', '', 1), ('producer', '2', 4), ('consumer', '3', 5)):
+        plain = f'main::{{lambda(sycl::_V1::id<1>)#{ordinal}}}'
+        rounded = f'sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, {plain}>'
+        for name in (plain, rounded, '_ZTSZ4mainEUlN4sycl3_V12idILi1EEEE' + suffix + '_',
+                     '_ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZ4mainEUlNS0_2idILi1EEEE' + suffix + '_EE'):
+            aliases[name] = kind
+    observed, names = dict.fromkeys(expected, 0), {}
+    for event in events:
+        if event.get('ph') != 'X' or event.get('cat') != 'gpu_op': continue
+        name = event.get('name')
+        require(type(name) is str, 'GPU operation name missing')
+        if name.startswith('zeCommandList'): continue
+        base = name.split('[SIMD', 1)[0].strip().removeprefix('typeinfo name for ')
+        require(base in aliases, 'unexpected compatibility kernel type: ' + base)
+        observed[aliases[base]] += 1
+        names[base] = names.get(base, 0) + 1
+    require(observed == expected, 'compatibility kernel class inventory differs: ' + str(observed))
+    return dict(expected=expected, observed=observed, kernel_instances=sum(observed.values()),
+        observed_aliases=names, exact_class_identity=True)
+
+
+def collector_controls():
+    def events(rounded=False, prefix=False, mangled=False):
+        result = []
+        for count, suffix, ordinal in ((1, '', 1), (37, '2', 4), (24, '3', 5)):
+            plain = f'main::{{lambda(sycl::_V1::id<1>)#{ordinal}}}'
+            if mangled:
+                name = ('_ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZ4mainEUlNS0_2idILi1EEEE' + suffix + '_EE'
+                    if rounded else '_ZTSZ4mainEUlN4sycl3_V12idILi1EEEE' + suffix + '_')
+            else:
+                name = f'sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, {plain}>' if rounded else plain
+                if prefix: name = 'typeinfo name for ' + name
+            result.extend(dict(ph='X', cat='gpu_op', name=name + '[SIMD16]') for _ in range(count))
+        return result
+    for rounded, prefix, mangled in ((False, False, False), (True, False, False),
+            (False, True, False), (True, True, False), (False, False, True), (True, False, True)):
+        require(compatibility_inventory(events(rounded, prefix, mangled))['kernel_instances'] == 62,
+            'valid exact fixture inventory rejected')
+    valid = events()
+    invalid = [valid[1:], valid + valid[:1], [dict(e, name='named_but_wrong') for e in valid],
+        [dict(e, name=valid[1]['name']) for e in valid],
+        [dict(e, name=e['name'].replace('#4}', '#2}')) for e in valid],
+        [dict(e, name=valid[1]['name']) if i == 0 else e for i, e in enumerate(valid)]]
+    for case in invalid:
+        try: compatibility_inventory(case)
+        except RuntimeError: pass
+        else: raise RuntimeError('corrupt/misclassified compatibility inventory accepted')
+    return dict(passed=True, valid_inventories=6, rejected_inventories=6,
+        scope='CPU class-inventory controls only;no native/GPU/clock/join/collector qualification.')
+
+
+def collector_context():
+    ctx = source.device.load_module('qsa16_stream_collector_v2', source.compatibility.__file__)
+    ctx.ROOT = ctx.CONTROL_ROOT = COLLECTOR_ROOT
+    ctx.KEY = ctx.CONTROL_KEY = COLLECTOR_KEY
+    ctx.SOURCE, ctx.ACTIVE_FROM_EXEC = P / THIS, True
+    ctx.profile = source.device.load_module('qsa16_stream_collector_v2_profile', ctx.profile.__file__)
+    ctx.inventory = None
+
+    def admission():
+        n, prior, providers, _ = basis()
+        require(n['binaries']['sycl_submission_test']['sha256'] ==
+            'fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7',
+            'exact source-derived compatibility fixture required')
+        assets = ctx.profile.collector_assets(json.loads(RESULT.read_text()))
+        return dict(n, source_commit=n['native_source_commit']), dict(prior,
+            native_validation_probe=prior['probe']), providers, assets
+
+    def current(row):
+        require(ctx.base.committed(RESULT)[COLLECTOR_KEY] == ctx.compact(row)
+            and ctx.base.controls(row['source_commit'], controller=P / THIS) == row['sources'],
+            'commit exact prospective collector inputs and plan')
+        n, prior, providers, assets = admission()
+        require(row['native_source_commit'] == n['native_source_commit']
+            and row['engine'] == n['binaries']['strata'] and row['binary'] == n['binaries']['sycl_submission_test']
+            and row['observer_admission'] == prior['observer_admission']
+            and row['native_validation_probe'] == prior['probe'] and row['environment_template'] == prior['environment']
+            and row['boot'] == prior['boot'] and row['driver'] == prior['driver']
+            and row['assets'] == assets and all(row['profile'][k] == v for k, v in assets.items())
+            and row['profile']['mode'] == 'aggregate'
+            and row['profile']['environment']['UNITRACE_TraceOutputDir'] == str(COLLECTOR_ROOT / 'trace')
+            and row['budgets'] == ctx.BUDGET and row['whole_bytes'] == 128 << 20
+            and row['host_controls'] == collector_controls(), 'collector native/runtime/envelope changed')
+        return providers
+
+    original_environment, original_summary, original_save = ctx.environment, ctx.profile.trace_summary, ctx.save
+
+    def environment(row):
+        env = original_environment(row)
+        require(env.get('LD_PRELOAD') == row['native_validation_probe']['library']['path']
+            and env.get('STRATA_UR_PROBE_EXPECTED_LOADER') ==
+                str(Path(row['native_validation_probe']['loader']['path']).resolve()),
+            'only the exact previously qualified private preload may be detached')
+        env.pop('LD_PRELOAD'); env.pop('STRATA_UR_PROBE_EXPECTED_LOADER')
+        return env
+
+    def summary(events, native, begin, end):
+        value = original_summary(events, native, begin, end)
+        ctx.inventory = compatibility_inventory(events)
+        return value
+
+    def save(row):
+        if row.get('cases') and ctx.inventory is not None:
+            row['cases'][-1].setdefault('trace', {})['class_inventory'] = ctx.inventory
+        original_save(row)
+
+    ctx.basis, ctx.current, ctx.environment = admission, current, environment
+    ctx.profile.trace_summary, ctx.save = summary, save
+    return ctx
+
+
+def collector_prepare():
+    controls = collector_controls()
+    ctx = collector_context(); ctx.prepare()
+    row = json.loads((COLLECTOR_ROOT / 'record.json').read_text())
+    _, prior, _, _ = ctx.basis()
+    row.update(host_controls=controls, observer_admission=prior['observer_admission'])
+    row['plan'].update(question='Does the unchanged owned Sysman0 indexed collector cover exact current b9aa fixture kernel classes,flow joins and graph lifecycle?',
+        native='Same b9aa/1e598 engine and fad954 compatibility fixture,all five original native ELFs/recipe/runtime exact. Existing MIT collector/launcher;no native rebuild. No arguments:ordinary graph recording/replay,not --native or --submission.',
+        order='CPU6valid/6refusal inventory controls,then one fresh finite active-from-exec aggregate/kernel-only collection with original two native gates. Detach only the exact qualified inherited probe fields before the native wrapper attaches its private preload. All runtime safety remains immutable before exec.',
+        acceptance='Require1direct/37producer/24consumer exact kernel types,62unique native host-flow joins,finite contained clocks,original numerical/copy/event/graph/lifetime pass,pre-main parameter validation,normal0,closed owners,unchanged boot/no fresh fault and removed collector session. Stop first failure;no retry,pin refresh or count-only replacement.',
+        limits='Current-build collector control only. No model trace/overhead,physical traffic,saturation,clean PP/TG,task quality,physical262144/RESTORE,ordinary-provider teardown or inference adoption.',
+        next='Commit representative32K+ current fast-route capture and matched observer-overhead plan before attributing model resources. Keep service coverage,wall critical path and hardware saturation distinct.')
+    ctx.save(row)
+    print('Prepared corrected current-build collector V2;commit before GPU.', flush=True)
+
+
+def profile_control_proof(native):
+    ctx = collector_context()
+    row = json.loads((COLLECTOR_ROOT / 'record.json').read_text())
+    require(ctx.base.committed(RESULT)[COLLECTOR_KEY] == ctx.compact(row)
+        and row['stage'] == 'closed' and row['passed'] and row['complete']
+        and row['ownership_closed'] and not row['active'] and len(row['cases']) == 1
+        and row['native_source_commit'] == native['native_source_commit']
+        and row['engine'] == native['binaries']['strata']
+        and row['binary'] == native['binaries']['sycl_submission_test'],
+        'closed exact same-native class-qualified collector required')
+    case, = row['cases']; trace = case['trace']
+    require(case['passed'] and case['native_exit_code'] == 0 and case['ownership_closed']
+        and case['fresh_faults'] == [] and trace['collection_active_from_exec']
+        and trace['native_host_flow_joins_unique']
+        and trace['class_inventory']['observed'] == dict(direct=1, producer=37, consumer=24),
+        'actual exact-class native collector proof required')
+    head = source.device.common.source.git(P, 'rev-parse', 'HEAD').decode().strip()
+    recovered = ctx.base.controls(row['source_commit'], reuse_revision=head,
+        controller_changes=(THIS,), controller=P / THIS)
+    require(recovered == row['sources'], 'original collector controls not recoverable')
+    original = source.device.common.source.git(P, 'show', row['source_commit'] + ':' + THIS)
+    def functions(raw):
+        return {n.name: ast.dump(n, include_attributes=False) for n in ast.parse(raw).body
+                if isinstance(n, ast.FunctionDef)}
+    before, after = functions(original), functions((P / THIS).read_bytes())
+    require(all(before[k] == after[k] for k in
+        ('compatibility_inventory', 'collector_controls', 'collector_context', 'collector_prepare')),
+        'qualified collector/class/environment functions changed')
+    assets = ctx.profile.collector_assets(json.loads(RESULT.read_text()))
+    require(assets == row['assets'], 'collector native assets changed')
+    return dict(key=COLLECTOR_KEY, source_commit=row['source_commit'],
+        evidence_commit='710bb481d3acb467de47c6d0b8ec2518dad079d2',
+        receipt_sha256=digest(COLLECTOR_ROOT / 'record.json'),
+        original_control_files_recovered=len(recovered), changed_observers=[THIS],
+        critical_collector_functions_unchanged=True, assets=assets,
+        limits='Same five native ELFs/recipe/runtime;only prospective model observer changes. No inherited model coverage,overhead,speed or saturation.')
+
+
+def profile_prepare():
+    controls = profile_window_controls()
+    native, _, _, _ = basis(); proof = profile_control_proof(native)
+    previous = previous_profile_failure()
+    cleanup_controls = profile_cleanup_controls()
+    prepare()
+    row = json.loads((ROOT / 'record.json').read_text())
+    row.update(collector_control=proof, profile_clock_controls=controls, maximum_observer_ratio=1.2,
+        profile_previous_failure=previous, profile_cleanup_controls=cleanup_controls,
+        budgets=dict(row['budgets'], file_cap=1 << 30, total_cap=1536 << 20), whole_bytes=2 << 30)
+    row['plan'] = dict(question='Which device services and disjoint main-thread wait/host regions dominate current fast streamed32K prefill,and how much does whole-process observation perturb it?',
+        order='Three fresh immutable processes:clean-before,profile,clean-after. Each runs identical bench.sh fixed-workload bodies,two distinct-nonce exact32769-input thinking-on requests,24outputs. First-use and second-request scopes separate. Commit each closed result before next;no speed-based early stop.',
+        settings='Same b9aa/1e598 five-ELF native generation,nine FAST values,logical262144/resident20480,owned264MiBstage,8192chunks,packed384bank,1256decode slots,5workers,spec4,head2/dense1/Hostbacking0. Decode implementation/placement and qualified runtime safety unchanged. Only middle process enables STRATA_TRACE1,CPU_WAIT_PROFILE1 and the current qualified Sysman0 active-from-exec aggregate/kernel-only collector.',
+        acceptance='Fresh current-source frontend probes,original native/recipe/fiveELFs/collector/runtime/Python/model identities,exact bodies/counts/reuse,actual all-GPU384bank routes and journal,quiet pre-main validation,normal native/benchmark0,closed ownership and unchanged boot/no fresh fault. Require complete conserved CPUv4/status partitions,flushed timeline,finite contained clocks and unique native host-flow joins on PCI05:00.0. Stop first correctness/source/owner/fault/budget failure;no retry or pin refresh.',
+        observer='Per request position,profile prompt time and clientTTFT must each be<=1.2times BOTH bracketing clean values to qualify normal-route attribution. Preserve individual ratios and mixed/failing results. Finish the bracket even if latency exceeds the screen. Two clean processes are a bounded admission screen,not precise process variance or an engine speedup.',
+        clocks='Sample RAW/MONOTONIC before launch,at both client gates,and after native exit. Same native/controller time namespace;existing BOOTTIME continuity check. Require<=1ms individual brackets and<=5ms observed offset span. Slice request-start through first nonempty thinking/content using midpoint observed offset;retain the sampled envelope and boundary-command count. This includes first-token/handoff work,not an exact engine-prefill endpoint or a bound on unsampled clock error.',
+        retention='Main owns the full active trace because paused graph construction loses later kernels. Finite1GiB/file,1.5GiB/job,2GiBwhole,2400s/104GiBRSS. V1 hit its256MiB file limit during layer37 of the first request;two complete requests need a larger prospective budget. Keep that original SIGXFSZ/failed ownership outcome. After all captured native/session identities are confirmed gone,close only this named collector session,including incomplete exits. Isolate the8MiB control budget from the model trace. Reduce immediately after native exit;retain compact samples,CPU partitions,top families/gaps,clocks,joins and decision. Retire raw traces/logs/JIT after verified reduction and bracket decision. Existing three named engine generations unchanged.',
+        limits='Diagnostic only. Device services/API-request payloads and observed gaps do not establish arithmetic utilization,physical PCIe/RAM/VRAM traffic,complete critical-path dependencies or saturation. No sustainedTG,task/agent quality,physical262144/RESTORE,ordinary-provider teardown,1000PP target qualification or adoption.')
+    for plan in row['plans']:
+        plan['profile'] = plan['trace_progress'] = plan['index'] == 1
+        root = Path(plan['root'])
+        if plan['profile']:
+            (root / 'trace').mkdir(mode=0o700)
+            plan['native_profile'] = dict(source.compatibility.profile.profiling(root, proof['assets']), mode='aggregate')
+            generated = json.loads((root / 'plan.json').read_text())
+            generated['native_profile'] = plan['native_profile']; write(root / 'plan.json', generated)
+            plan['generated']['plan.json'] = digest(root / 'plan.json')
+        plan['environment_sha256'] = comparison.fingerprint(environment(row, plan))
+    save(row); print('Prepared matched current-route32K observer bracket;commit before host/native.', flush=True)
+
+
+def profile_decision(processes):
+    require(len(processes) == 3 and all(p['passed'] for p in processes), 'complete three-process bracket required')
+    ratios = []
+    for position in range(RUNS):
+        observed = processes[1]['samples'][position]
+        refs = [processes[i]['samples'][position] for i in (0, 2)]
+        ratios.append(dict(request=position, scope='first-use' if position == 0 else 'second-request',
+            prompt=[observed['prompt_ms'] / p['prompt_ms'] for p in refs],
+            client_TTFT=[observed['ttft_s'] / p['ttft_s'] for p in refs]))
+    passed = all(v <= 1.2 for p in ratios for k in ('prompt', 'client_TTFT') for v in p[k])
+    return dict(observer_ratios=ratios, maximum_observer_ratio=1.2,
+        observer_cost_qualified=passed, normal_route_attribution_qualified=passed,
+        clean_speedup_qualified=False, hardware_saturation_known=False, inference_adopted=False,
+        limits='Two bracketing clean processes,one profile;request positions separate. A failed observer screen leaves instrumented services diagnostic only. Services and API payloads are not saturation or physical traffic.')
+
+
+def profile_window(interval, clocks):
+    require(type(interval) is dict and type(clocks) is list and len(clocks) >= 4, 'missing client clocks')
+    begin, end = [interval.get(k) for k in ('request_begin_monotonic_ns', 'first_output_monotonic_ns')]
+    require(type(begin) is int and type(end) is int and 0 < begin < end, 'invalid first-output interval')
+    offsets, previous = [], 0
+    for c in clocks:
+        lo, mid, hi = [c[k] for k in ('raw_before_ns', 'monotonic_ns', 'raw_after_ns')]
+        require(all(type(v) is int and v > 0 for v in (lo, mid, hi)) and mid > previous
+            and 0 <= hi - lo <= 1000000,
+            'invalid clock bracket')
+        offsets.extend((lo - mid, hi - mid))
+        previous = mid
+    low, high = min(offsets), max(offsets)
+    require(high - low <= 5000000 and clocks[0]['monotonic_ns'] < begin < end < clocks[-1]['monotonic_ns'],
+        'client interval outside finite sampled clock envelope')
+    offset = (low + high) // 2
+    return dict(begin_raw_ns=begin + offset, end_raw_ns=end + offset,
+        sampled_offset_range_ns=[low, high], sampled_offset_span_ns=high - low,
+        client_interval=interval, limits='Observed clock envelope,not an unsampled bound;request-to-first-output includes handoff/first-token work.')
+
+
+def profile_window_controls():
+    clocks = [dict(monotonic_ns=v, raw_before_ns=v + 999900, raw_after_ns=v + 1000100)
+        for v in (1000000000, 1100000000, 1200000000, 1300000000)]
+    interval = dict(request_begin_monotonic_ns=1110000000, first_output_monotonic_ns=1190000000)
+    valid = profile_window(interval, clocks)
+    require((valid['begin_raw_ns'], valid['end_raw_ns'], valid['sampled_offset_span_ns']) ==
+        (1111000000, 1191000000, 200), 'known RAW window differs')
+    bad_clock = copy.deepcopy(clocks); bad_clock[1]['raw_after_ns'] += 1000001
+    bad_drift = copy.deepcopy(clocks); bad_drift[1]['raw_before_ns'] += 6000000; bad_drift[1]['raw_after_ns'] += 6000000
+    bad_order = copy.deepcopy(clocks); bad_order[1:3] = reversed(bad_order[1:3])
+    invalid = [(dict(interval, first_output_monotonic_ns=1110000000), clocks),
+        (dict(interval, first_output_monotonic_ns=float('nan')), clocks),
+        (dict(interval, request_begin_monotonic_ns=1), clocks), (interval, clocks[:3]),
+        (interval, bad_clock), (interval, bad_drift), (interval, bad_order)]
+    for args in invalid:
+        try: profile_window(*args)
+        except RuntimeError: pass
+        else: raise RuntimeError('corrupt client/RAW clock window accepted')
+    return dict(passed=True, valid_windows=1, rejected_windows=7,
+        limits='CPU clock-window controls only;not a runtime/provider/trace or overhead result.')
+
+
+def profile_executor_closure(execution, inspect=build.supervision.identity):
+    """Permit named-session cleanup after physical exit, without qualifying a run."""
+    require(execution.get('active') is False and len(execution.get('commands', [])) == 1,
+        'one inactive owned model command required')
+    command, = execution['commands']
+    require(command.get('direct_child_reaped') is True and command.get('session_empty') is True
+        and command.get('survivors') == [] and command.get('errors') == []
+        and command.get('ownership_status') == 'observed', 'physical owner closure not established')
+    owners, direct = command.get('owners', []), command.get('direct_identity', {})
+    require(owners and all(type(o.get(k)) is int and o[k] > 0 for o in owners
+        for k in ('pid', 'start_ticks', 'sid')) and all(o['sid'] == direct.get('pid') for o in owners),
+        'captured owner identities required')
+    identities = {(o['pid'], o['start_ticks']) for o in owners}
+    native = execution.get('native_identity', {})
+    require((direct.get('pid'), direct.get('start_ticks')) in identities and
+        (native.get('pid'), native.get('start_ticks')) in identities, 'direct/native identity not captured')
+    for pid, ticks in identities:
+        now = inspect(pid)
+        require(now is None or now['start_ticks'] != ticks, 'captured executor still exists')
+    return dict(captured_identities=len(identities), physical_executors_gone=True,
+        original_ownership_closed=execution.get('ownership_closed') is True,
+        original_observation_complete=command.get('observation_complete') is True,
+        limits='Physical absence permits named-session cleanup only;original validation/outcome stays unchanged.')
+
+
+def profile_cleanup_controls():
+    owner = dict(pid=11, start_ticks=22, sid=11)
+    case = dict(active=False, ownership_closed=False, native_identity=owner,
+        commands=[dict(direct_child_reaped=True, session_empty=True, survivors=[], errors=[],
+            ownership_status='observed', owners=[owner], direct_identity=owner, observation_complete=False)])
+    accepted = [profile_executor_closure(case, lambda pid: None),
+        profile_executor_closure(case, lambda pid: dict(start_ticks=23))]
+    require(all(not p['original_ownership_closed'] and not p['original_observation_complete']
+        for p in accepted), 'cleanup must not qualify an incomplete original observation')
+    invalid = []
+    for key, value in [('direct_child_reaped', False), ('session_empty', False),
+        ('survivors', [owner]), ('errors', ['unknown']), ('ownership_status', 'unknown'),
+        ('owners', []), ('direct_identity', dict(pid=12, start_ticks=22))]:
+        bad = copy.deepcopy(case); bad['commands'][0][key] = value; invalid.append(bad)
+    invalid += [dict(case, active=True), dict(case, commands=[]),
+        dict(case, native_identity=dict(pid=12, start_ticks=22))]
+    for bad in invalid:
+        try: profile_executor_closure(bad, lambda pid: None)
+        except RuntimeError: pass
+        else: raise RuntimeError('unsafe physical closure accepted')
+    try: profile_executor_closure(case, lambda pid: dict(start_ticks=22))
+    except RuntimeError: pass
+    else: raise RuntimeError('live captured executor accepted')
+    return dict(passed=True, accepted=2, refused=len(invalid) + 1,
+        scope='CPU authorization controls only;PID reuse is absence of the original,not a new owner.')
+
+
+def close_profile_session(row, plan):
+    root, prof = Path(plan['root']), plan['native_profile']
+    execution = json.loads((root / 'execution.json').read_text())
+    physical = profile_executor_closure(execution)
+    start = json.loads((root / 'engine-start.json').read_text())
+    profile = source.compatibility.profile
+    require(start['native_profile'] == prof and start['boot_id'] == row['boot'] ==
+        Path('/proc/sys/kernel/random/boot_id').read_text().strip(), 'original session/boot differs')
+    for item in (prof['launcher'], prof['collector']):
+        require(digest(item['path']) == item['sha256'] and Path(item['path']).stat().st_size == item['bytes'],
+            'original collector executable changed')
+    control_root = root / 'collector-controls'; control_root.mkdir(exist_ok=True)
+    receipt = control_root / 'execution.json'
+    require(not receipt.exists(), 'existing collector-control receipt must be reconciled,not retried')
+    outcome, owner = dict(session=prof['session'], physical_closure=physical,
+        source_commit=source.device.common.source.git(P, 'rev-parse', 'HEAD').decode().strip()), None
+
+    def persist():
+        write(receipt, dict(outcome, active=bool(owner and owner.active),
+            commands=owner.commands if owner else []))
+
+    owner = build.supervision.Owner(control_root / 'owned', persist)
+    try:
+        if profile.session_path(prof['session']).exists():
+            command, _, _ = owner.run('stop', [prof['launcher']['path'], '--stop', prof['session']],
+                environment(row, plan), P, wall=15, cpu=15, rss_cap=2 << 30,
+                text_cap=1 << 20, file_cap=2 << 20, total_cap=8 << 20)
+            require(build.supervision.closed(command) and command['exit_code'] == 0, 'collector stop failed')
+        require(not profile.session_path(prof['session']).exists(), 'collector session remains')
+        outcome['session_removed'] = True
+    except BaseException as error:
+        outcome['error'] = repr(error)
+    finally:
+        outcome.update(control_closed=owner.active is None and all(build.supervision.closed(c) for c in owner.commands),
+            active=bool(owner.active), session_removed=not profile.session_path(prof['session']).exists())
+        persist()
+    return outcome
+
+
+def reconcile_profile_v1():
+    key, root = 'qsa16_stream_fast_profile_v1', B / 'qsa16-stream-fast-profile-v1'
+    row = json.loads((root / 'record.json').read_text())
+    require(build.committed(RESULT)[key] == compact(row) and row['stage'] == 'failed'
+        and not row['passed'] and not row['complete'] and not row['active']
+        and len(row['processes']) == 2 and row['processes'][0]['passed']
+        and row['processes'][1]['ownership_closed'] is False, 'original failed V1 required')
+    controls = profile_cleanup_controls()
+    cleanup = close_profile_session(row, row['plans'][1])
+    p = row['processes'][1]; p['collector_cleanup'] = cleanup
+    r = row['post_failure_reconciliation']
+    r.pop('original_ownership_result_preserved', None)
+    r.update(stage='physical_executors_gone_named_session_removed' if cleanup.get('session_removed') else 'cleanup_failed',
+        original_ownership_closed=False, named_session_removed=cleanup.get('session_removed', False),
+        cleanup_controls=controls)
+    write(root / 'record.json', row)
+    data = json.loads(RESULT.read_text()); data[key] = compact(row); write(RESULT, data)
+    require(cleanup.get('session_removed') and cleanup['control_closed'] and not cleanup['active']
+        and not cleanup.get('error'), 'failed V1 collector cleanup remains pending')
+    print('V1 named collector session removed;original failed/incomplete ownership result preserved.', flush=True)
+
+
+def previous_profile_failure():
+    row = json.loads((B / 'qsa16-stream-fast-profile-v1/record.json').read_text())
+    require(build.committed(RESULT)['qsa16_stream_fast_profile_v1'] == compact(row)
+        and row['stage'] == 'failed' and not row['passed'] and not row['complete'] and not row['active']
+        and len(row['processes']) == 2, 'committed original failed V1 required')
+    p = row['processes'][1]; r = row['post_failure_reconciliation']; cleanup = p['collector_cleanup']
+    require(p['ownership_closed'] is False and not p['passed'] and r['observed_native_exit_code'] == -25
+        and r['incomplete_timeline']['bytes'] == row['budgets']['file_cap'] == 256 << 20
+        and cleanup['session_removed'] and cleanup['control_closed'] and not cleanup['active']
+        and not cleanup.get('error') and not source.compatibility.profile.session_path(cleanup['session']).exists(),
+        'exact SIGXFSZ cause and closed named session required')
+    physical = profile_executor_closure(json.loads((B / 'qsa16-stream-fast-profile-v1/1/execution.json').read_text()))
+    return dict(key='qsa16_stream_fast_profile_v1', source_commit=row['source_commit'],
+        original_failure_evidence='057f7103feb6e413eca04d536a3e0f1ea117c780',
+        native_exit_code=-25, original_file_cap=256 << 20, original_passed=False,
+        original_ownership_closed=False, physical_closure=physical,
+        cleanup_receipt_sha256=digest(B / 'qsa16-stream-fast-profile-v1/1/collector-controls/execution.json'),
+        limits='Only output budget and forced-exit cleanup change;all three V2processes are fresh. No V1failure relabel or hash refresh.')
+
+
+def profile_run(index):
+    row = json.loads((ROOT / 'record.json').read_text()); plan = row['plans'][index]
+    root, prof = Path(plan['root']), plan.get('native_profile')
+    module = source.device.load_module('qsa16_model_profile_comparison', comparison.__file__)
+    module.engine_once = source.device.load_module('qsa16_model_profile_native_environment', comparison.engine_once.__file__)
+    original_environment = module.engine_once.native_environment
+    profile = source.compatibility.profile
+    clocks, capture = [profile.clock_pair()], {}
+
+    def native_context_for_profile(value, selected):
+        n = native_context(value, selected)
+        if prof: n['native_profile'] = prof
+        return n
+
+    def expected(n, env):
+        claim = json.loads((root / 'engine-start.json').read_text())['native']
+        require(os.readlink('/proc/' + str(claim['pid']) + '/ns/time') == os.readlink('/proc/self/ns/time'),
+            'native/controller time namespace differs')
+        clocks.append(profile.clock_pair())
+        if not prof: return original_environment(n, env)
+        profile.session_state(prof['session'], 0)
+        require(prof['collector']['path'] in shared.runtime.executable_mappings(
+            Path('/proc', str(claim['pid']), 'maps').read_text()), 'collector not mapped at native gate')
+        value = profile.expected_target_environment(n, env, prof)
+        for key in ('UNITRACE_StartPaused', 'UNITRACE_HostTiming', 'UNITRACE_ChromeCallLogging'): value.pop(key)
+        value['UNITRACE_Verbose'] = '1'
+        return value
+
+    def route(text, selected):
+        value = request_route(text, selected)
+        if prof:
+            value['cpu_partition'] = profile.d.gen.common.extract_cpu_observers(text, 4)
+            value['status_partition'] = profile.status_summary(text)
+            require(value['status_partition']['scopes'] == 48, 'actual48window CPU/status coverage required')
+        return value
+
+    def analyze(text, selected):
+        if not prof:
+            require('strata prefill cpu wait:' not in text and 'strata prefill status:' not in text,
+                'clean control contains CPU observer')
+            return
+        require(not any(x in text for x in ('[WARNING]', '[ERROR]')), 'collector warning/error')
+        clocks.append(profile.clock_pair())
+        native = json.loads((root / 'engine-exit.json').read_text())['native']
+        paths = list((root / 'trace').rglob('*.json'))
+        require(len(paths) == 1 and paths[0].stat().st_size <= row['budgets']['file_cap'],
+            'one bounded fully flushed timeline required')
+        events = json.loads(paths[0].read_text())['traceEvents']
+        full = profile.trace_summary(events, native['pid'], clocks[0]['raw_before_ns'], clocks[-1]['raw_after_ns'])
+        files = list((root / 'bench').glob('*/results.json')); require(len(files) == 1, 'one client result required')
+        samples = json.loads(files[0].read_text())['results']['prefill_only']['requests']
+        require(len(samples) == RUNS and len(clocks) == 2 + 2 * RUNS, 'complete request/clock samples required')
+        windows = []
+        for sample in samples:
+            window = profile_window(sample['client_interval'], clocks)
+            begin, end = window['begin_raw_ns'] / 1000, window['end_raw_ns'] / 1000
+            clipped, boundary = [], 0
+            for e in events:
+                if e.get('ph') != 'X' or e.get('cat') not in ('gpu_op', 'cpu_op'): continue
+                if not (e['ts'] < end and e['ts'] + e['dur'] > begin): continue
+                start, finish = max(begin, e['ts']), min(end, e['ts'] + e['dur'])
+                boundary += int(e.get('cat') == 'gpu_op' and (start != e['ts'] or finish != e['ts'] + e['dur']))
+                clipped.append(dict(e, ts=start, dur=finish - start))
+            reduced = profile.family_summary(clipped, window['begin_raw_ns'], window['end_raw_ns'])
+            windows.append(dict(clock=window, GPU_boundary_commands=boundary, services=reduced))
+        capture.update(complete=True, native_PID=native['pid'], clocks=clocks, full_capture=full,
+            windows=windows, timeline=dict(path=str(paths[0]),sha256=digest(paths[0]),bytes=paths[0].stat().st_size),
+            limits='Window service is clipped;payload counts are complete API-request bytes for touching commands,not proportional boundary or physical wire traffic. Native startup/warmups excluded by client windows. No resource saturation or complete dependency-path proof.')
+
+    def finish(value):
+        p = value['processes'][-1]
+        if prof:
+            cleanup = None
+            try:
+                cleanup = close_profile_session(value, plan)
+                p['collector_cleanup'] = cleanup
+                require(cleanup['session_removed'] and cleanup['control_closed'] and not cleanup.get('error'),
+                    'collector cleanup failed')
+                p['resource_observation'] = capture
+                require(capture.get('complete'), 'model trace reduction incomplete')
+                p['collector_session_removed'] = True
+            except BaseException as error:
+                p.update(passed=False, error=p.get('error', repr(error)), resource_observation=capture)
+                value.update(stage='failed', passed=False, complete=False)
+                value.pop('decision', None)
+            finally:
+                closed = bool(cleanup and cleanup['control_closed'] and cleanup['session_removed'])
+                p['ownership_closed'] = bool(p.get('ownership_closed') and closed)
+                value['ownership_closed'] = bool(value['ownership_closed'] and closed)
+                value['active'] = bool(value['active'] or (cleanup and cleanup['active']))
+        save(value)
+
+    module.engine_once.native_environment = expected
+    policy = SimpleNamespace(ROOT=ROOT, ORDER=ORDER, RUNS=RUNS, current=current,
+        environment=environment, native_context=native_context_for_profile, request_route=route,
+        validate_model_text=analyze, decision=profile_decision, save=finish,
+        check_sample=globals().get('check_sample', comparison.check_sample))
+    if prof: require(not profile.session_path(prof['session']).exists(), 'fresh owned collector session required')
+    module.run(index, policy)
+
+
+def request_route(text, plan):
+    headers = [line for line in text.splitlines()
+               if line.startswith('strata prefill: layer-major candidate, ')]
+    require(len(headers) == 1, 'one actual layer-major entry required')
+    pairs = re.findall(r'([A-Za-z_][A-Za-z_0-9-]*)=([^\s;]+)', headers[0].split(';', 1)[0])
+    require(len({k for k, _ in pairs}) == len(pairs), 'duplicate placement field')
+    f = dict(pairs); rows = plan['read'] - 1
+    require(f['tokens'] == str(rows) and f['chunk'] == '8192' and
+        f['residual_dtype'] == 'bf16' and f['residual_element_bytes'] == '2',
+        'actual native16 shape/chunk differs')
+    gpu = int(f['residual_gpu_rows'])
+    require(0 < gpu <= rows and int(f['residual_total']) == rows * 10240 * 2 and
+        int(f['residual_gpu']) == gpu * 10240 * 2 and
+        int(f['residual_host']) == (rows - gpu) * 10240 * 2,
+        'GPU/Host residual row/byte conservation differs')
+    require(text.count('QSA tensor IO=BF16, indexer/GDN internals FP32;') == 1,
+        'actual typed-QSA entry required')
+    target = re.findall(r'^strata prefill heads: target detached bytes=(\d+) source=owned-RAM D2H=(\d+) H2D-on-restore=(\d+)$', text, re.M)
+    draft = re.findall(r'^strata prefill heads: draft detached bytes=(\d+) retained-map-bytes=(\d+)$', text, re.M)
+    require(target == [('521472000',) * 3] and draft == [('0', '425196')],
+        'admitted target/sole-packed-draft handoff differs')
+    result = dict(rows=rows, actual_chunk=8192, residual_dtype='bf16',
+        residual_gpu_rows=gpu, residual_gpu_bytes=int(f['residual_gpu']),
+        residual_host_bytes=int(f['residual_host']), layer_cache_bytes=int(f['layer_cache']),
+        actual_typed_QSA=True, configured_context=262144, configured_resident=20480,
+        owned_stage=True, stage_payload_bytes=276824064, target_requested_D2H=521472000,
+        target_requested_H2D_restore=521472000, draft_requested_D2H=0,
+        scope='Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.')
+    if CLEAN_FAST:
+        # A private policy copy keeps the comparator's old joint-head contract
+        # intact. This build's sole packed draft head retires zero device bytes.
+        policy = source.device.load_module('qsa16_stream_clean_window_policy', comparison.__file__)
+        policy.DRAFT_BYTES = 0
+        result['fast_window'] = policy.route(text, plan['read'], plan['heads'], expected_rows=rows)
+        phases = re.findall(r'^strata mtp: prompt expert phase=(\S+) ', text, re.M)
+        require(phases == ['before-detach', 'after-detach', 'after-prompt-before-restore', 'after-restore']
+            and re.findall(r'^strata mtp: experts restored bytes=(\d+),', text, re.M) == ['707788800'],
+            'actual fast-prefill MTP expert handoff required')
+        result['MTP_expert_restore_bytes'] = 707788800
+    return result
+
+
+def decision(processes):
+    require(len(processes) == len(ORDER) and all(p['passed'] and p['complete'] and
+        p['ownership_closed'] and p['native_exit_code'] == 0 and not p['fresh_faults']
+        and (p['read'], p['heads']) == ORDER[i] and len(p['samples']) == RUNS
+        for i, p in enumerate(processes)), 'complete ordered curve required')
+    points = []
+    def placement(value):
+        # Work/copy counts legitimately change with nonce-token routing. Keep
+        # them as evidence, but compare actual placement rather than all fields.
+        keys = ('rows', 'actual_chunk', 'residual_dtype', 'residual_gpu_rows',
+            'residual_gpu_bytes', 'residual_host_bytes', 'layer_cache_bytes',
+            'configured_context', 'configured_resident', 'owned_stage')
+        result = {k: value[k] for k in keys}
+        if 'fast_window' in value:
+            result['window'] = {k: value['fast_window'][k] for k in
+                ('prefill_slots', 'staged', 'split', 'maximum_window_rows')}
+        return result
+    for p in processes:
+        samples, routes = p['samples'], p['routes']
+        points.append(dict(read=p['read'], first_use=samples[0],
+            subsequent_prompt_ms=[s['prompt_ms'] for s in samples[1:]],
+            subsequent_TTFT_s=[s['ttft_s'] for s in samples[1:]],
+            median_prompt_ms=p['subsequent_median_ms'],
+            median_PP=p['read'] * 1000 / p['subsequent_median_ms'],
+            median_TTFT_s=statistics.median(s['ttft_s'] for s in samples[1:]),
+            residual_GPU_rows=routes[0]['residual_gpu_rows'],
+            placement=placement(routes[0]),
+            placement_unchanged_within_process=all(placement(r) == placement(routes[0]) for r in routes)))
+    groups = {}
+    for point in points:
+        key = 'all_GPU' if point['residual_GPU_rows'] == point['read'] - 1 else (
+            'partial_GPU_' + str(point['residual_GPU_rows']))
+        window = point['placement'].get('window')
+        if window:
+            key += f'/slots{window["prefill_slots"]}/staged{int(window["staged"])}/split{int(window["split"])}'
+        point['route_group'] = key
+        groups.setdefault(key, []).append(dict(actual_read_tokens=point['read'],
+            prompt_ms=point['median_prompt_ms']))
+    fits = {key: dict(affine=linear_fit(values), alternatives=approximation_models(values),
+        adjacent_ms_per_token=[(b['prompt_ms']-a['prompt_ms']) /
+            (b['actual_read_tokens']-a['actual_read_tokens']) for a, b in zip(values, values[1:])])
+        for key, values in groups.items()}
+    value = dict(points=points, route_group_approximations=fits,
+        single_process_per_length=True, clean_speed=True,
+        input_length_curve_complete=len(READS) > 1,
+        next='Fit only compatible route groups using actual n and retained individual times;compare affine,nlogn and quadratic residuals/held-out errors with sample spread. Gather independent-process repeats for promising points before claiming a gain or target.',
+        matched_speedup=False, resource_saturation_qualified=False,
+        sustained_decode_qualified=False, physical262144_qualified=False, inference_adopted=False)
+    if FIT_POINT:
+        value['extended_curve_approximation'] = extended_approximations(points)
+    return value
+
+
+def prepare():
+    require(not ROOT.exists() and KEY not in build.committed(RESULT), 'fresh curve only;no retry')
+    native, prior, providers, _ = basis()
+    reference = json.loads(REFERENCE.read_text())
+    contract, python = frontend.python_manifest()
+    previous_attempt = None
+    if CLEAN_FAST:
+        # The preceding diagnostic fully hashed these exact assets after its
+        # normal closed native process; identities are rechecked by basis().
+        previous_attempt = prior['observer_admission']['fast_configuration_diagnostic']
+    elif len(READS) == 1:
+        old_root = B / 'qsa16-stream-prefill-baseline-v1'
+        old = json.loads((old_root / 'record.json').read_text())
+        require(build.committed(RESULT)['qsa16_stream_prefill_baseline_v1'] == compact(old)
+            and old['stage'] == 'failed' and not old['passed'] and old['ownership_closed']
+            and not old['active'] and not old['processes']
+            and old['error'] == "RuntimeError('unfrozen project import')"
+            and old['model_assets'] == prior['models'],
+            'preserve closed pre-GPU host-source failure and exact model assets')
+        recovered = source.device.common.source.git(P, 'show', old['source_commit'] + ':' + THIS)
+        require(hashlib.sha256(recovered).hexdigest() == old['sources'][THIS]
+            and b'source.model.previous.assets(prior, full=True)' in recovered,
+            'recover the exact V1 preparation that fully hashed all assets')
+        source.model.previous.assets(prior)
+        previous_attempt = dict(key='qsa16_stream_prefill_baseline_v1',
+            source_commit=old['source_commit'], receipt_sha256=digest(old_root / 'record.json'),
+            passed=False, native_execution_attempted=False,
+            model_hash_reuse='The exact recovered V1 prepare fully hashed all15assets before its CPU/mock host refusal. Every full file identity and manifest still matches;no native ran. Reuse these before-cohort hashes,not a fresh full-hash claim. Hash all15again after the V2 cohort.',
+            correction='Pin complete current Control/CLI/packaging/setup source packages in addition to serve/tools. Keep native,config,workloads,environment and all acceptance criteria unchanged.')
+    else:
+        source.model.previous.assets(prior, full=True)
+    config = copy.deepcopy(reference['configuration'])
+    args = list(prior['argv'][1:]); require(args.count('--serve') == 1, 'one native serve selector')
+    args.remove('--serve')
+    config.update(exe=str(P / 'tools/sycl/engine_once.py'), args=args, family='qwen',
+        backend='sycl', env={}, cwd=str(P), tokenizer=prior['tokenizer'])
+    old = prior['environment']['STRATA_MEASUREMENT_ROOT']
+    env = {k: v.replace(old, str(ROOT)) for k, v in prior['environment'].items()}
+    for key in ('STRATA_TRACE', 'LD_PRELOAD', 'STRATA_UR_PROBE_EXPECTED_LOADER',
+                'STRATA_DECODE_TIMING', 'STRATA_DRAFT_TIMING', 'STRATA_SNAPSHOT_VERIFY',
+                'STRATA_IQ_TIMING_PROGRESS', 'UR_LOG_TRACING'):
+        env.pop(key, None)
+    for key in env:
+        if '_AUDIT' in key or '_PROFILE' in key: env[key] = '0'
+    env.update(PATH=str(Path(python['selected']['path']).parent) + ':/usr/bin:/bin')
+    if CLEAN_FAST:
+        env.update(FAST)
+    ROOT.mkdir(mode=0o700); write(ROOT / 'runtime-inputs.json', providers)
+    revision = source.device.common.source.git(P, 'rev-parse', 'HEAD').decode().strip()
+    row = dict(stage='prepared', source_commit=revision, sources=pins(revision),
+        binary=native['binaries']['strata'], native_source_commit=native['native_source_commit'],
+        native_validation_probe=prior['probe'], observer_admission=prior['observer_admission'],
+        configuration=config, environment_template=env, model_assets=prior['models'],
+        template=reference['template'], python_contract=contract, python_selected=python['selected'],
+        boot=prior['boot'], driver=prior['driver'],
+        runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'),
+            sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
+        plans=[], processes=[], request_hashes={}, host_passed=False,
+        passed=False, complete=False, active=False, ownership_closed=True,
+        budgets=dict(wall=2400, cpu=28800, rss_cap=104 << 30, text_cap=16 << 20,
+            file_cap=32 << 20, total_cap=128 << 20), whole_bytes=640 << 20,
+        plan=dict(question=('How do actual input length and memory placement affect clean PP and client TTFT on the current owned-stage streamed-QSA16 route?' if len(READS) > 1 else
+            'Establish the current clean32K PP/clientTTFT baseline before a separately qualified model-profiler overhead comparison.'),
+            order=f'{len(READS)}fresh processes at{list(READS)}actual input tokens. Four distinct-nonce thinking-on bench.sh exact-count requests each,24outputs. First request separate;all subsequent3samples retained. Commit each closed process before advancing. The separately named single-length baseline supplies the clean32K point before profiler work;it cannot qualify an input-length curve.',
+            settings='Original native b9aa/1e598,logical262144/resident20480INT8KV,actual8192chunks,own264MiBstage,1256decode expert slots,5workers,spec4,throughput,packedhead2,dense1,Hostbacking0,MTP_BATCH_F16=0. Independent decode algorithm/placement unchanged. Immutable qualified runtime safety retained;remove trace/timing/audit observers and keep the exact private pre-main validation.',
+            acceptance='Current-source host probes before native. Require source/recipe/fiveELFs/runtime/model identities,owned single launch,normal SSE completion,exact prompt/read count,zero reuse,thinking,24outputs,valid clocks/clientTTFT,journal,actual8192BF16QSA route and residual byte conservation/head restoration,quiet validation,normal0,closed owner,unchanged boot/no fresh fault. A capacity-dependent GPU residual fraction is retained as a separate route,not discarded or pooled silently.',
+            stopping='Stop first source,provider,owner,clock,count,route,validation,fault or finite budget failure. No retry,hash refresh,performance-based early stop or retrospective exclusion. Full15asset hashes before and after the cohort.',
+            limits='Characterization only:one process per length,not a paired engine speedup,independent-process reproducibility,1000PP target qualification,sustainedTG,agent/task quality,full262144fill/RESTORE,ordinary-provider teardown or adoption. Fit by actual route only;no assumed fixed-plus-linear law.',
+            retention=f'Keep all{len(READS)*RUNS}compact samples/TTFT,placement and source/native/environment/workload identity. Retire verified successful full logs/journals/cache/ownership output after extraction. Existing current native plus a347/552b imminent phase references unchanged.'))
+    if previous_attempt is not None: row['previous_attempt'] = previous_attempt
+    if CLEAN_FAST:
+        row['plan'].update(question=('Measure clean32K PP/clientTTFT for the admitted fastest-setting composition on streamed QSA16 before longer shapes and independent-process repeats.' if len(READS) == 1 else
+                'Characterize clean32/48/64/80/96K PP/clientTTFT and time scaling for the admitted fast-setting composition;repeat32K in a fresh process and separate actual bank/split routes.'),
+            order=f'{len(READS)}fresh processes in fixed input order{list(READS)}. Four distinct-nonce thinking-on exact-count bench.sh requests per process;first separate,retain all subsequent3. Commit each closed process before advancing. No speed-based stop or replacement. One process per length in this cohort;the earlier32Kpoint is a separately scoped independent process.',
+            settings=row['plan']['settings'].replace('MTP_BATCH_F16=0', 'MTP_BATCH_F16=1') +
+                ' Restore exactly the nine FAST values from the owned552b reference before exec;qualified by the closed3d2a diagnostic. No native rebuild or decode-selector change.',
+            acceptance=row['plan']['acceptance'] +
+                ' Require all actual prefill rows on GPU,window10,checked bank drains and complete675MiB MTP expert restoration. At32/48/56/64/80K require staged384bank and ordinary accumulation;96K requires the actual staged128/split route with checked tail guard/drain. Keep observed jobs/copy counts;compare placement separately from these counters.',
+            stopping=row['plan']['stopping'].replace('Full15asset hashes before and after the cohort.',
+                'Reuse the exact closed fast-diagnostic final full hashes after identity/source recovery;hash all15assets again after this cohort.'),
+            limits=row['plan']['limits'] +
+                ' The old baseline is one earlier process,not a prospective repeated pair. Retain that distinction;no gain/target/adoption claim from one process per length. Group fits by actual GPU residency AND bank/split route;do not fit the96Ksplit point with the ordinary384-bank points. Compare affine,nlogn,quadratic models using residuals/held-out errors and adjacent slopes,without assigning a mixed-route intercept to physical fixed work.')
+    if FIT_POINT:
+        row['curve_reference'] = curve_fit_basis(row)[1]
+        row['plan'].update(question='Add the prospectively declared57345-input ordinary384-slot point after the closed original five-process curve;compare time models without mixing the96Ksplit route.',
+            order='One fresh process,four distinct-nonce thinking-on bench.sh requests,24outputs each. First use separate from subsequent3. Original five-process outcome and source identities remain unchanged.',
+            analysis='Combine only the five distinct ordinary384-slot lengths32769/49153/57345/65537/81921. Separate first/warmed prompt and clientTTFT series. Compare affine,quadratic,nlogn residuals,whole-length held-out errors,adjacent slopes and retained within-process spread. Keep96Ksplit as a separate one-point route. No selected law,extrapolation,physical fixed-cost interpretation,paired gain or target/adoption claim.',
+            stopping='Stop first source,provider,owner,clock,count,route,validation,fault or finite budget failure. No retry,pin refresh or speed-based exclusion. Reuse the immediately preceding closed curve final15asset hashes with exact identities;hash all15again after this process.')
+    for index, (read, heads) in enumerate(ORDER):
+        root = ROOT / str(index); root.mkdir(mode=0o700)
+        for part in ('tmp', 'cache'): (root / part).mkdir()
+        cfg = copy.deepcopy(config); cfg['log'] = str(root / 'engine.stderr')
+        write(root / 'config.json', cfg)
+        write(root / 'plan.json', dict(binary=row['binary'], native_validation_probe=row['native_validation_probe']))
+        with socket.socket() as sock: sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
+        plan = dict(index=index, read=read, heads=heads, root=str(root),
+            generated={n: digest(root / n) for n in ('config.json', 'plan.json')},
+            command=['/bin/sh', str(P / 'bench.sh'), '--config', str(root / 'config.json'), '--port', str(port),
+                '--prefill-exact-tokens', str(read), '--think', '--runs', str(RUNS), '--profile-request-gates',
+                '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error', '--ready-timeout', '600',
+                '--out', str(root / 'bench')])
+        plan['environment_sha256'] = comparison.fingerprint(environment(row, plan))
+        row['plans'].append(plan)
+    save(row); print(f'Prepared{len(READS)}clean streamed-route processes;commit before host/native.', flush=True)
+
+
+def fast_diagnostic_proof(native, prior):
+    """Reuse closed composition evidence without relabeling its native/source."""
+    path = FAST_ROOT / 'record.json'; row = json.loads(path.read_text())
+    require(build.committed(RESULT)[FAST_KEY] == source.model.previous.compact(row)
+        and row['stage'] == 'closed' and all(row[k] for k in
+            ('passed', 'complete', 'ownership_closed', 'model_executed')) and not row['active']
+        and row['native_source_commit'] == native['native_source_commit']
+        and row['native_build']['binaries'] == native['binaries'] and row['models'] == prior['models']
+        and row['fast_configuration']['settings'] == FAST, 'closed exact fast-composition proof required')
+    result, = row['results']; route = result['routes']
+    require(result['native_exit_code'] == 0 and result['ownership_closed'] and not result['fresh_faults']
+        and len(result['requests']) == 3 and route['actual_mode'] == 1 and route['typed_QSA_entry']
+        and route['packed_layer_entries'] == 96 and route['staged_bank_headers'] == 2
+        and route['actual_batched_ring_callbacks'] == 8 and route['cache_binding_and_final_drains']
+        and route['MTP_expert_restore_bytes'] == [707788800] * 2
+        and route['MTP_round_recaptures'] >= 2 and route['decode_routes']['head']['actual_decode_C4_replays'] > 0,
+        'actual composed prefill and restored decode proof required')
+    pin = row['controller']; before = pin['source_sha256']
+    recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
+        source.device.common.source.blobs(P, pin['revision'], before)}
+    after = source.device.common.source.pin(P,
+        ['tools/sycl', 'tools/strata_tokenizer.py', 'data/expert-profile.bin'])['source_sha256']
+    require(recovered == before and source.signature(before) == pin['aggregate_sha256']
+        and before.keys() == after.keys() and {p for p in before if before[p] != after[p]} == {THIS},
+        'only this prospective clean controller may change after the fast diagnostic')
+    source.model.previous.assets(row)
+    return dict(key=FAST_KEY, evidence_commit='7851bc6de0c1d0398cc333d27b861a2efca3fa51',
+        original_controller_source=row['source_commit'], original_native_source=row['native_source_commit'],
+        receipt_sha256=digest(path), recovered_controller_inputs=len(recovered), changed_controller=[THIS],
+        model_assets_sha256=source.signature(row['models']),
+        meaning='Closed original fast diagnostic source/ELFs/recipe/runtime/models recovered. Reuse its final full hashes with exact asset identities;rehash all15after this clean cohort. No inherited clean speed,sustainedTG or adoption.')
+
+
+def baseline_proof(native, prior):
+    """Recover the exact closed benchmark; allow only this new controller delta."""
+    root = B / 'qsa16-stream-prefill-baseline-v2'
+    old = json.loads((root / 'record.json').read_text())
+    require(build.committed(RESULT)['qsa16_stream_prefill_baseline_v2'] == compact(old)
+        and old['stage'] == 'closed' and all(old[k] for k in ('passed', 'complete', 'ownership_closed'))
+        and not old['active'] and len(old['processes']) == 1
+        and old['processes'][0]['native_exit_code'] == 0 and not old['processes'][0]['fresh_faults']
+        and old['binary'] == native['binaries']['strata']
+        and old['native_source_commit'] == native['native_source_commit']
+        and old['model_assets'] == prior['models'], 'closed same-engine clean32K baseline required')
+    recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
+        source.device.common.source.blobs(P, old['source_commit'], old['sources'])}
+    revision = source.device.common.source.git(P, 'rev-parse', 'HEAD').decode().strip()
+    current = pins(revision)
+    require(recovered == old['sources'] and current.keys() == recovered.keys()
+        and {p for p in current if current[p] != recovered[p]} == {THIS},
+        'only this explicitly committed prospective controller may change')
+    source.model.previous.assets(prior)
+    return old, dict(key='qsa16_stream_prefill_baseline_v2',
+        evidence_commit='55f4a341ffcb4a8849c1056f3bd4bb4e5dd4985a',
+        original_source_commit=old['source_commit'], receipt_sha256=digest(root / 'record.json'),
+        source_files_recovered=len(recovered), changed_controller=[THIS],
+        model_assets_sha256=source.signature(old['model_assets']),
+        meaning='Original closed source recovered;all15full final model hashes precede this new plan and every identity remains exact. Reuse before-run hashes,rehash all15after the new process. No native rebuild or inherited fast-setting GPU result.')
+
+
+def fast_native(expected=None):
+    native, prior, _, _ = basis()
+    proof = prior['observer_admission']
+    require(expected is None or proof == expected, 'prospective fast native admission changed')
+    return dict(native, model_observer_admission=proof)
+
+
+def fast_route(text):
+    result = source.model.route(text)
+    def records(prefix, fields):
+        values = []
+        for line in text.splitlines():
+            if not line.startswith(prefix): continue
+            pairs = [p.split('=', 1) for p in line[len(prefix):].split()]
+            require(line.isascii() and all(len(p) == 2 and p[0] and p[1] for p in pairs)
+                and len(pairs) == len(fields) == len({p[0] for p in pairs})
+                and {p[0] for p in pairs} == fields, 'exact fast-route producer schema required')
+            values.append(dict(pairs))
+        return values
+    packed = records('strata packed expert bank: ',
+        {'layer', 'slots', 'stride', 'used_bytes', 'backing_bytes', 'full_fit'})
+    require(len(packed) == 96 and [int(v['layer']) for v in packed] == list(range(48)) * 2
+        and all(384 <= int(v['slots']) <= 512 and int(v['stride']) > 0
+            and int(v['used_bytes']) == int(v['slots']) * int(v['stride'])
+            and int(v['used_bytes']) <= int(v['backing_bytes'])
+            and int(v['full_fit']) == int(v['slots'] == '512') for v in packed),
+        'actual packed bank geometry/48layer entries required in each long prefill')
+    banks = records('strata MoE expert bank: ', {'requested_slots', 'effective_slots', 'staged',
+        'host_slab_bytes', 'device_bytes', 'residual_gpu_rows', 'allocation_limit_bytes', 'general_map'})
+    require(len(banks) == 2 and all(v['requested_slots'] == v['effective_slots'] == '384'
+        and v['staged'] == '1' and v['residual_gpu_rows'] == '32768'
+        and v['general_map'] == 'private_scratch_never_published' for v in banks),
+        'actual staged384/private-map route required')
+    phases = re.findall(r'^strata mtp: prompt expert phase=(\S+) ', text, re.M)
+    require(phases == ['before-detach', 'after-detach', 'after-prompt-before-restore', 'after-restore'] * 2
+        and re.findall(r'^strata mtp: experts restored bytes=(\d+),', text, re.M) == ['707788800'] * 2,
+        'both complete actual675MiB MTP expert retirement/restores required')
+    require(len(re.findall(r'^strata prefill cache binding: generation=\d+ parent_match=1 execution_distinct=1$', text, re.M)) == 2
+        and len(re.findall(r'^strata MoE expert bank complete: .* final_drain=checked$', text, re.M)) == 2,
+        'bound lease/private execution and final bank drains required')
+    recaptures = re.findall(r'^strata mtp: expert decode recapture kind=round coupled=(\d+) ok=(\d+) ', text, re.M)
+    require(len(recaptures) >= 2 and all(v == ('0', '1') for v in recaptures),
+        'successful independent MTP round recapture after restoration required')
+    callbacks = re.findall(r'^strata serve: DRAFT_PREFILL path=(\w+) mode=(\d+) cells=(\d+)$', text, re.M)
+    require(callbacks == [('batched', '2', '8192')] * 8,
+        'actual32Kring callbacks must reach the immutable FP16batch selector')
+    result.update(packed_layer_entries=96, bank_slots_min=min(int(v['slots']) for v in packed),
+        bank_slots_max=max(int(v['slots']) for v in packed), staged_bank_headers=2,
+        MTP_expert_restore_bytes=[707788800, 707788800], MTP_round_recaptures=len(recaptures),
+        actual_batched_ring_callbacks=8, cache_binding_and_final_drains=True,
+        precision='Immutable MTP_BATCH_F16=1 plus actual batched mode2 callbacks selects the pinned FP16projection branch. No per-launch projector telemetry or task-quality claim.')
+    return result
+
+
+def fast_context(before_hashes=None):
+    ctx = source.device.load_module('qsa16_stream_fast_model_context', source.model.__file__)
+    ctx.ROOT, ctx.KEY, ctx.ATTEMPT = FAST_ROOT, FAST_KEY, 'v2'
+    ctx.native, ctx.route = fast_native, fast_route
+    original_context = ctx.context
+
+    def private_context(admission=None):
+        value = original_context(admission)
+        if before_hashes is not None:
+            original_assets = value.assets
+
+            def assets(row, full=False):
+                require(row['models'] == before_hashes['model_assets'], 'reused before-run assets changed')
+                original_assets(row, full=False)
+
+            value.assets = assets
+        return value
+
+    ctx.context = private_context
+    return ctx
+
+
+def fast_prepare():
+    native, prior, _, _ = basis(); old, proof = baseline_proof(native, prior)
+    best = build.committed(RESULT)['cache_map_prefill_speed117489_v1']
+    require(all(best['environment_template'].get(k) == v for k, v in FAST.items()),
+        'recover exact owned fastest-prefill settings,not an invented configuration')
+    ctx = fast_context(old); ctx.prepare()
+    row = json.loads((FAST_ROOT / 'record.json').read_text())
+    require(row['stage'] == 'prepared' and not row['results'], 'fresh unexecuted generated plan only')
+    row['environment'].update(FAST)
+    row['fast_configuration'] = dict(settings=FAST, baseline=proof,
+        fastest_reference_source=best['source_commit'], fastest_native_source=best['native_source_commit'],
+        fastest_binary=best['binary']['sha256'], original_native_and_decode_implementation_unchanged=True)
+    row['plan'] = ('New configuration diagnostic,not a clean speed comparison. Same b9aa/1e598 native/five fixtures,'
+        'logical262144/resident20480INT8,own264MiBstage,8192chunks,1256decode slots,spec4,'
+        'head2/dense1/Hostbacking0 and immutable safety. Restore exactly nine owned552b prefill settings'
+        'before exec:window10,scoreGEMM,mixed scratch,packed384bank,lease,splitacc,MTPFP16batch,'
+        'release675MiBMTPexperts. Thinking32769/82/32769input,32outputs each. Require existing exact'
+        'READY/fullINFO/source/runtime/protocol/handoff/quiet validation/normal0/closure/no-fault gates,'
+        '96actual packed-layer entries,staged384private bank,checked final drains,bound current leases,'
+        'two full MTP expert restores,successful uncoupled round recaptures and8actual8192mode2batch callbacks.'
+        'Original FP16branch is selected from immutable environment and actual callback,not extra telemetry.'
+        'Reuse the closed clean baseline final full model hashes with exact identities;rehash all15after'
+        'this process. Stop first failure;no retry,hash refresh or output-equality requirement.')
+    row['limits'] = ('Prospective fast-setting composition/ownership/route check only. No clean speed,gain,'
+        'sustainedTG,task quality,physical262144fill/RESTORE or adoption. The following clean bench.sh'
+        'comparison must preserve actual bodies/configuration,repeat promising points and characterize length.')
+    ctx.context().save(row)
+    print('Prepared owned fast-prefill configuration diagnostic;commit before host/native.', flush=True)
+
+
+def fast_execute(action):
+    ctx = fast_context(); row = json.loads((FAST_ROOT / 'record.json').read_text())
+    native, prior, _, _ = basis(); _, proof = baseline_proof(native, prior)
+    require(row['fast_configuration']['baseline'] == proof and
+        all(row['environment'].get(k) == v for k, v in FAST.items()), 'frozen fast configuration changed')
+    if action == 'host':
+        require(row['stage'] == 'prepared', 'one fresh configuration check only')
+        ctx.context(row['native_observer_admission']).verify(row)
+        args = row['argv']
+        require(all(args.count(k) == 1 and args[args.index(k)+1] == v for k, v in
+            {'--max-context':'262144', '--kv-resident':'20480', '--prefill':'8192', '--expert-cache':'1256',
+             '--kv':'int8', '--spec':'4'}.items()) and '--no-token-graph' in args
+            and '--no-coupled-draft' in args and '--mtp' in args and '--draft' not in args,
+            'single-GPU native MTP4/lease configuration required')
+        row.update(stage='host_passed', host_controls=dict(configuration_checked=True,
+            original_INFO_controls_reused_from='qsa16_stream_model_entry_v2',
+            INFO_source_commit='48e4a5e02f15b48b5f75a91e341bca4dc3dc53f9',
+            new_numerical_tests_executed=False, GPU_executed=False))
+        ctx.context().save(row); print('Fast configuration/native input checks pass;commit before GPU.', flush=True)
+    else:
+        require(action == 'run', 'use fast prepare|host|run')
+        ctx.execute('run')
+
+
+if __name__ == '__main__':
+    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); source.model.guards.no_model_owners([])
+        action = sys.argv[1:]
+        if action[:1] == ['collector']:
+            require(len(action) == 2 and action[1] in ('prepare', 'check'), 'use collector prepare|check')
+            collector_prepare() if action[1] == 'prepare' else collector_context().check()
+            raise SystemExit(0)
+        if action[:1] == ['fast']:
+            require(len(action) == 2 and action[1] in ('prepare', 'host', 'run'), 'use fast prepare|host|run')
+            fast_prepare() if action[1] == 'prepare' else fast_execute(action[1])
+            raise SystemExit(0)
+        if action[:1] == ['baseline']:
+            configure_baseline(); action = action[1:]
+        elif action[:1] == ['fast-clean']:
+            configure_fast_clean(); action = action[1:]
+        elif action[:1] == ['fast-curve']:
+            configure_fast_curve(); action = action[1:]
+        elif action[:1] == ['fast-fit-point']:
+            configure_fast_fit_point(); action = action[1:]
+        elif action[:1] == ['fast-profile']:
+            configure_model_profile(); action = action[1:]
+            if action == ['reconcile-v1']:
+                reconcile_profile_v1(); raise SystemExit(0)
+        if action == ['prepare']: profile_prepare() if MODEL_PROFILE else prepare()
+        elif action == ['host']: comparison.host(sys.modules[__name__])
+        elif len(action) == 1 and action[0].isdigit() and int(action[0]) < len(ORDER):
+            profile_run(int(action[0])) if MODEL_PROFILE else comparison.run(int(action[0]), sys.modules[__name__])
+        else: raise RuntimeError('use prepare|host|INDEX0..4')

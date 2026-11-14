@@ -1,0 +1,1306 @@
+{
+  "stage": "closed_rejected_speed",
+  "source_commit": "9b59e9b511b60941c4d5dd06fb3dae91a83bcac0",
+  "execution_passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": true,
+  "model_adoption_qualified": false,
+  "archive": {
+    "commit": "4f2fffe03002261617a8bc86df4b1c083c8d49c3",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-cell64-current.json",
+    "scope": "Full original source/build/runtime dependencies,numerical cohorts,actual-IDsmoke and frozen108-sample comparison plan. Final timing samples and decision are retained once below."
+  },
+  "native_harness": {
+    "source_commit": "20927a11e224fccf4cc5b654dce50939db6df11f",
+    "recipe_commit": "d05e23ca3",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/actual-id-bench",
+      "bytes": 1590544,
+      "sha256": "50495869acf82f88d29f81b64abe3508c6b2b3a99fc60bef17d1f58377174f06"
+    },
+    "source_origin": "OwnMIT208c/9b59component;no XeStrata application source.",
+    "binary_retired": true
+  },
+  "controller": {
+    "source_commit": "b8a4b7d6c63b9c2c0fcc5c6f8b537bb72e709194",
+    "implementation_commit": "e87dd625a",
+    "plan_commit": "4f2fffe03002261617a8bc86df4b1c083c8d49c3",
+    "host_controls": 9,
+    "host_controls_passed": true
+  },
+  "selected_engine": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "selected_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "selected_fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+    "bytes": 53252180,
+    "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+    "header": [
+      0,
+      32768,
+      6491,
+      2051
+    ],
+    "consumer": "Committed source-only32/64-cell proposal52947b6b4 after contract review and committed qualification. Actual-ID512/6491 comparison;synthetic Q/K/V remain explicit.",
+    "review": "Retire at cell64 closure/supersession;no duplicate capture. API-spelling GRF proposal needs no further GPU trial."
+  },
+  "numerical": {
+    "extended_cases": 51,
+    "extended_max_abs": 0,
+    "physical262144_final_address_component": true,
+    "full_model262144_qualified": false,
+    "actual_id_smoke_processes": 3,
+    "actual_id_perf_processes": 3,
+    "scalar_reference": "Own32/64cadence,FP64dot/PV terms,FP32online states,BF16probabilities/final output;one BF16spacing+2e-6 per checked output. Source-bound vLLMcontract only;no CUDA parity execution.",
+    "perf_spot_queries": {
+      "512": 6,
+      "6491": 8
+    },
+    "perf_spot_results": 18,
+    "perf_spot_max_abs": 0,
+    "perf_spot_max_budget_ratio": 0,
+    "guards": true,
+    "inputs_immutable": true,
+    "cell32_exact": true,
+    "candidate_old32_bits_required": false,
+    "full_output_deltas": [
+      {
+        "kind": "delta",
+        "queries": 512,
+        "elements": 3145728,
+        "changed_from32": 16359,
+        "max_abs": 1.525878906e-05,
+        "relative_l2": 0.0002060031643
+      },
+      {
+        "kind": "delta",
+        "queries": 6491,
+        "elements": 39880704,
+        "changed_from32": 171881,
+        "max_abs": 1.525878906e-05,
+        "relative_l2": 0.0001828117462
+      }
+    ],
+    "deltas_identical_across_processes": true,
+    "limits": "Sparse spots and finite full-output deltas do not qualify untested rows or model/task quality."
+  },
+  "original_observer_failure": {
+    "status": "failed_preserved",
+    "source_commit": "f755227f8",
+    "plan_commit": "659384563",
+    "mechanism": "Wrong local argument index:score is15,not3. Native exit0,no fresh fault. Host replay and separately planned smoke-v2/extended stages pass;raw retired. Detailed original failure remains in archive."
+  },
+  "resource_descriptors": {
+    "work_group": 128,
+    "sub_group": 16,
+    "arguments": 18,
+    "active_dynamic_local_bytes_by_arm": [
+      20032,
+      20032,
+      39744
+    ],
+    "reported_local_bytes": 32,
+    "per_group_local_max": 131072,
+    "spill_descriptor_bytes_by_arm": [
+      12480,
+      12480,
+      13952
+    ],
+    "limits": "Source/compiled/query descriptors;not physical traffic,per-core residency or hardware occupancy. Heuristic reserve4096B is not a hardware bound."
+  },
+  "comparison_plan": {
+    "processes": 3,
+    "rounds": 6,
+    "shapes": [
+      512,
+      6491
+    ],
+    "arms": [
+      "original32",
+      "private32",
+      "private64"
+    ],
+    "order": "(process+round+offset)%3",
+    "repeats": {
+      "512": 64,
+      "6491": 4
+    },
+    "minimum_batch_ns": 100000000,
+    "minimum_clock_multiple": 1000,
+    "control_original_ratio_bounds": [
+      0.99,
+      1.01
+    ],
+    "candidate_control_ratio_max": 0.99,
+    "decision": "All six process/shape medians must pass control/original wall calibration and candidate/control wall plus attention-service ratio gates. Preserve every eligible sample. Failed speed gate stops model advancement;no adaptive retry or changed thresholds.",
+    "scope": "Actual selected-ID geometry with synthetic finite Q/K/V;pack+attention wrapper wall and private attention-only service. Not PCIe traffic,hardware saturation,production speed,model quality or1000/70qualification."
+  },
+  "samples": {
+    "columns": [
+      "process",
+      "queries",
+      "round",
+      "arm",
+      "batch_ns",
+      "attention_device_ns"
+    ],
+    "rows": [
+      [
+        0,
+        512,
+        0,
+        0,
+        663505270,
+        null
+      ],
+      [
+        0,
+        512,
+        0,
+        1,
+        664364238,
+        627028957
+      ],
+      [
+        0,
+        512,
+        0,
+        2,
+        1065961238,
+        1028688025
+      ],
+      [
+        0,
+        512,
+        1,
+        1,
+        663753449,
+        626431871
+      ],
+      [
+        0,
+        512,
+        1,
+        2,
+        1065886578,
+        1028587394
+      ],
+      [
+        0,
+        512,
+        1,
+        0,
+        664704039,
+        null
+      ],
+      [
+        0,
+        512,
+        2,
+        2,
+        1065703803,
+        1028432503
+      ],
+      [
+        0,
+        512,
+        2,
+        0,
+        665221082,
+        null
+      ],
+      [
+        0,
+        512,
+        2,
+        1,
+        663112692,
+        625757706
+      ],
+      [
+        0,
+        512,
+        3,
+        0,
+        663226347,
+        null
+      ],
+      [
+        0,
+        512,
+        3,
+        1,
+        664260383,
+        626922608
+      ],
+      [
+        0,
+        512,
+        3,
+        2,
+        1065949226,
+        1028685731
+      ],
+      [
+        0,
+        512,
+        4,
+        1,
+        663678187,
+        626365004
+      ],
+      [
+        0,
+        512,
+        4,
+        2,
+        1065593938,
+        1028280422
+      ],
+      [
+        0,
+        512,
+        4,
+        0,
+        663503940,
+        null
+      ],
+      [
+        0,
+        512,
+        5,
+        2,
+        1066150867,
+        1028875421
+      ],
+      [
+        0,
+        512,
+        5,
+        0,
+        663293403,
+        null
+      ],
+      [
+        0,
+        512,
+        5,
+        1,
+        664432179,
+        627120413
+      ],
+      [
+        0,
+        6491,
+        0,
+        0,
+        500077323,
+        null
+      ],
+      [
+        0,
+        6491,
+        0,
+        1,
+        499351236,
+        496884895
+      ],
+      [
+        0,
+        6491,
+        0,
+        2,
+        776788891,
+        774308437
+      ],
+      [
+        0,
+        6491,
+        1,
+        1,
+        497924539,
+        495454271
+      ],
+      [
+        0,
+        6491,
+        1,
+        2,
+        777096700,
+        774618750
+      ],
+      [
+        0,
+        6491,
+        1,
+        0,
+        499017778,
+        null
+      ],
+      [
+        0,
+        6491,
+        2,
+        2,
+        777299492,
+        774821770
+      ],
+      [
+        0,
+        6491,
+        2,
+        0,
+        499376203,
+        null
+      ],
+      [
+        0,
+        6491,
+        2,
+        1,
+        497699877,
+        495233333
+      ],
+      [
+        0,
+        6491,
+        3,
+        0,
+        498997750,
+        null
+      ],
+      [
+        0,
+        6491,
+        3,
+        1,
+        498752279,
+        496267084
+      ],
+      [
+        0,
+        6491,
+        3,
+        2,
+        777068378,
+        774592605
+      ],
+      [
+        0,
+        6491,
+        4,
+        1,
+        497905033,
+        495437604
+      ],
+      [
+        0,
+        6491,
+        4,
+        2,
+        777046628,
+        774568230
+      ],
+      [
+        0,
+        6491,
+        4,
+        0,
+        498027414,
+        null
+      ],
+      [
+        0,
+        6491,
+        5,
+        2,
+        777678758,
+        775181251
+      ],
+      [
+        0,
+        6491,
+        5,
+        0,
+        499540123,
+        null
+      ],
+      [
+        0,
+        6491,
+        5,
+        1,
+        497740455,
+        495272916
+      ],
+      [
+        1,
+        512,
+        0,
+        1,
+        666230729,
+        628919266
+      ],
+      [
+        1,
+        512,
+        0,
+        2,
+        1065982296,
+        1028694584
+      ],
+      [
+        1,
+        512,
+        0,
+        0,
+        663710462,
+        null
+      ],
+      [
+        1,
+        512,
+        1,
+        2,
+        1066045096,
+        1028761043
+      ],
+      [
+        1,
+        512,
+        1,
+        0,
+        663564559,
+        null
+      ],
+      [
+        1,
+        512,
+        1,
+        1,
+        663430827,
+        626060622
+      ],
+      [
+        1,
+        512,
+        2,
+        0,
+        664975897,
+        null
+      ],
+      [
+        1,
+        512,
+        2,
+        1,
+        664407146,
+        627080934
+      ],
+      [
+        1,
+        512,
+        2,
+        2,
+        1065973020,
+        1028718536
+      ],
+      [
+        1,
+        512,
+        3,
+        1,
+        664539535,
+        627222712
+      ],
+      [
+        1,
+        512,
+        3,
+        2,
+        1065772794,
+        1028486982
+      ],
+      [
+        1,
+        512,
+        3,
+        0,
+        664748158,
+        null
+      ],
+      [
+        1,
+        512,
+        4,
+        2,
+        1066000552,
+        1028716667
+      ],
+      [
+        1,
+        512,
+        4,
+        0,
+        663531737,
+        null
+      ],
+      [
+        1,
+        512,
+        4,
+        1,
+        664640926,
+        627283022
+      ],
+      [
+        1,
+        512,
+        5,
+        0,
+        664346472,
+        null
+      ],
+      [
+        1,
+        512,
+        5,
+        1,
+        664295516,
+        626947396
+      ],
+      [
+        1,
+        512,
+        5,
+        2,
+        1065916395,
+        1028602807
+      ],
+      [
+        1,
+        6491,
+        0,
+        1,
+        498204390,
+        495724896
+      ],
+      [
+        1,
+        6491,
+        0,
+        2,
+        777542386,
+        774825417
+      ],
+      [
+        1,
+        6491,
+        0,
+        0,
+        501005415,
+        null
+      ],
+      [
+        1,
+        6491,
+        1,
+        2,
+        777267518,
+        774788959
+      ],
+      [
+        1,
+        6491,
+        1,
+        0,
+        498162411,
+        null
+      ],
+      [
+        1,
+        6491,
+        1,
+        1,
+        499025236,
+        496557604
+      ],
+      [
+        1,
+        6491,
+        2,
+        0,
+        498189443,
+        null
+      ],
+      [
+        1,
+        6491,
+        2,
+        1,
+        496816507,
+        494354895
+      ],
+      [
+        1,
+        6491,
+        2,
+        2,
+        777249846,
+        774771562
+      ],
+      [
+        1,
+        6491,
+        3,
+        1,
+        497856436,
+        495135729
+      ],
+      [
+        1,
+        6491,
+        3,
+        2,
+        777255516,
+        774774895
+      ],
+      [
+        1,
+        6491,
+        3,
+        0,
+        497774561,
+        null
+      ],
+      [
+        1,
+        6491,
+        4,
+        2,
+        777560742,
+        775079895
+      ],
+      [
+        1,
+        6491,
+        4,
+        0,
+        497781565,
+        null
+      ],
+      [
+        1,
+        6491,
+        4,
+        1,
+        499694688,
+        497020416
+      ],
+      [
+        1,
+        6491,
+        5,
+        0,
+        498985693,
+        null
+      ],
+      [
+        1,
+        6491,
+        5,
+        1,
+        501324246,
+        498845105
+      ],
+      [
+        1,
+        6491,
+        5,
+        2,
+        777319287,
+        774818334
+      ],
+      [
+        2,
+        512,
+        0,
+        2,
+        1065857670,
+        1028592399
+      ],
+      [
+        2,
+        512,
+        0,
+        0,
+        663820956,
+        null
+      ],
+      [
+        2,
+        512,
+        0,
+        1,
+        662917315,
+        625620935
+      ],
+      [
+        2,
+        512,
+        1,
+        0,
+        663475926,
+        null
+      ],
+      [
+        2,
+        512,
+        1,
+        1,
+        663427315,
+        626010835
+      ],
+      [
+        2,
+        512,
+        1,
+        2,
+        1065758083,
+        1028495834
+      ],
+      [
+        2,
+        512,
+        2,
+        1,
+        663690981,
+        626356143
+      ],
+      [
+        2,
+        512,
+        2,
+        2,
+        1066402718,
+        1028866246
+      ],
+      [
+        2,
+        512,
+        2,
+        0,
+        664586017,
+        null
+      ],
+      [
+        2,
+        512,
+        3,
+        2,
+        1065875505,
+        1028610832
+      ],
+      [
+        2,
+        512,
+        3,
+        0,
+        664289779,
+        null
+      ],
+      [
+        2,
+        512,
+        3,
+        1,
+        664444481,
+        627122502
+      ],
+      [
+        2,
+        512,
+        4,
+        0,
+        663847106,
+        null
+      ],
+      [
+        2,
+        512,
+        4,
+        1,
+        663557301,
+        625993855
+      ],
+      [
+        2,
+        512,
+        4,
+        2,
+        1065913577,
+        1028639372
+      ],
+      [
+        2,
+        512,
+        5,
+        1,
+        663501195,
+        626176775
+      ],
+      [
+        2,
+        512,
+        5,
+        2,
+        1066065995,
+        1028746568
+      ],
+      [
+        2,
+        512,
+        5,
+        0,
+        663434820,
+        null
+      ],
+      [
+        2,
+        6491,
+        0,
+        2,
+        777044934,
+        774523021
+      ],
+      [
+        2,
+        6491,
+        0,
+        0,
+        498374895,
+        null
+      ],
+      [
+        2,
+        6491,
+        0,
+        1,
+        497748325,
+        495271249
+      ],
+      [
+        2,
+        6491,
+        1,
+        0,
+        498183795,
+        null
+      ],
+      [
+        2,
+        6491,
+        1,
+        1,
+        498501724,
+        496035416
+      ],
+      [
+        2,
+        6491,
+        1,
+        2,
+        777740775,
+        775258542
+      ],
+      [
+        2,
+        6491,
+        2,
+        1,
+        498864758,
+        496384063
+      ],
+      [
+        2,
+        6491,
+        2,
+        2,
+        777501345,
+        775017084
+      ],
+      [
+        2,
+        6491,
+        2,
+        0,
+        498343366,
+        null
+      ],
+      [
+        2,
+        6491,
+        3,
+        2,
+        777204486,
+        774722500
+      ],
+      [
+        2,
+        6491,
+        3,
+        0,
+        498959407,
+        null
+      ],
+      [
+        2,
+        6491,
+        3,
+        1,
+        499480678,
+        497014688
+      ],
+      [
+        2,
+        6491,
+        4,
+        0,
+        496686737,
+        null
+      ],
+      [
+        2,
+        6491,
+        4,
+        1,
+        499249603,
+        496778646
+      ],
+      [
+        2,
+        6491,
+        4,
+        2,
+        776889213,
+        774405520
+      ],
+      [
+        2,
+        6491,
+        5,
+        1,
+        498591814,
+        496118646
+      ],
+      [
+        2,
+        6491,
+        5,
+        2,
+        777526354,
+        774820000
+      ],
+      [
+        2,
+        6491,
+        5,
+        0,
+        497036646,
+        null
+      ]
+    ],
+    "repeats_by_queries": {
+      "512": 64,
+      "6491": 4
+    },
+    "timer_floor_columns": [
+      "process",
+      "queries",
+      "timer_floor_ns"
+    ],
+    "timer_floor_rows": [
+      [
+        0,
+        512,
+        20
+      ],
+      [
+        0,
+        6491,
+        20
+      ],
+      [
+        1,
+        512,
+        10
+      ],
+      [
+        1,
+        6491,
+        20
+      ],
+      [
+        2,
+        512,
+        20
+      ],
+      [
+        2,
+        6491,
+        20
+      ]
+    ],
+    "eligible_samples": 108,
+    "minimum_batch_ns": 496686737,
+    "positive_ordered_direct_event_intervals": 2448
+  },
+  "decision": {
+    "performance_gate_passed": false,
+    "advance_to_model": false,
+    "groups": [
+      {
+        "process": 0,
+        "queries": 512,
+        "arms": [
+          {
+            "wall_median_ns": 10367259.453125,
+            "wall_min_ns": 10362911.671875,
+            "wall_max_ns": 10394079.40625,
+            "service_median_ns": null
+          },
+          {
+            "wall_median_ns": 10375108.0625,
+            "wall_min_ns": 10361135.8125,
+            "wall_max_ns": 10381752.796875,
+            "service_median_ns": 9791831.8671875
+          },
+          {
+            "wall_median_ns": 16654967.21875,
+            "wall_min_ns": 16649905.28125,
+            "wall_max_ns": 16658607.296875,
+            "service_median_ns": 16072446.2890625
+          }
+        ],
+        "control_original_wall_ratio": 1.0007570572927673,
+        "candidate_control_wall_ratio": 1.6052813251119813,
+        "candidate_control_service_ratio": 1.6414136299583926,
+        "performance_gate_passed": false
+      },
+      {
+        "process": 0,
+        "queries": 6491,
+        "arms": [
+          {
+            "wall_median_ns": 124799247.625,
+            "wall_min_ns": 124506853.5,
+            "wall_max_ns": 125019330.75,
+            "service_median_ns": null
+          },
+          {
+            "wall_median_ns": 124478696.5,
+            "wall_min_ns": 124424969.25,
+            "wall_max_ns": 124837809.0,
+            "service_median_ns": 123861484.375
+          },
+          {
+            "wall_median_ns": 194270634.75,
+            "wall_min_ns": 194197222.75,
+            "wall_max_ns": 194419689.5,
+            "service_median_ns": 193651419.375
+          }
+        ],
+        "control_original_wall_ratio": 0.9974314658854099,
+        "candidate_control_wall_ratio": 1.560673755528923,
+        "candidate_control_service_ratio": 1.5634514663872887,
+        "performance_gate_passed": false
+      },
+      {
+        "process": 1,
+        "queries": 512,
+        "arms": [
+          {
+            "wall_median_ns": 10375444.796875,
+            "wall_min_ns": 10367683.390625,
+            "wall_max_ns": 10390248.390625,
+            "service_median_ns": null
+          },
+          {
+            "wall_median_ns": 10382395.9453125,
+            "wall_min_ns": 10366106.671875,
+            "wall_max_ns": 10409855.140625,
+            "service_median_ns": 9799247.234375
+          },
+          {
+            "wall_median_ns": 16655900.90625,
+            "wall_min_ns": 16652699.90625,
+            "wall_max_ns": 16656954.625,
+            "service_median_ns": 16073525.3984375
+          }
+        ],
+        "control_original_wall_ratio": 1.0006699614882626,
+        "candidate_control_wall_ratio": 1.6042444339420416,
+        "candidate_control_service_ratio": 1.6402816475588877,
+        "performance_gate_passed": false
+      },
+      {
+        "process": 1,
+        "queries": 6491,
+        "arms": [
+          {
+            "wall_median_ns": 124543981.75,
+            "wall_min_ns": 124443640.25,
+            "wall_max_ns": 125251353.75,
+            "service_median_ns": null
+          },
+          {
+            "wall_median_ns": 124653703.25,
+            "wall_min_ns": 124204126.75,
+            "wall_max_ns": 125331061.5,
+            "service_median_ns": 124035312.5
+          },
+          {
+            "wall_median_ns": 194323350.625,
+            "wall_min_ns": 194312461.5,
+            "wall_max_ns": 194390185.5,
+            "service_median_ns": 193700911.625
+          }
+        ],
+        "control_original_wall_ratio": 1.0008809859654257,
+        "candidate_control_wall_ratio": 1.558905556421967,
+        "candidate_control_service_ratio": 1.5616593994149852,
+        "performance_gate_passed": false
+      },
+      {
+        "process": 2,
+        "queries": 512,
+        "arms": [
+          {
+            "wall_median_ns": 10372406.734375,
+            "wall_min_ns": 10366169.0625,
+            "wall_max_ns": 10384156.515625,
+            "service_median_ns": null
+          },
+          {
+            "wall_median_ns": 10367644.5,
+            "wall_min_ns": 10358083.046875,
+            "wall_max_ns": 10381945.015625,
+            "service_median_ns": 9782715.703125
+          },
+          {
+            "wall_median_ns": 16654602.203125,
+            "wall_min_ns": 16652470.046875,
+            "wall_max_ns": 16662542.46875,
+            "service_median_ns": 16072267.21875
+          }
+        ],
+        "control_original_wall_ratio": 0.9995408746979408,
+        "candidate_control_wall_ratio": 1.606401743725395,
+        "candidate_control_service_ratio": 1.6429249000475257,
+        "performance_gate_passed": false
+      },
+      {
+        "process": 2,
+        "queries": 6491,
+        "arms": [
+          {
+            "wall_median_ns": 124565895.125,
+            "wall_min_ns": 124171684.25,
+            "wall_max_ns": 124739851.75,
+            "service_median_ns": null
+          },
+          {
+            "wall_median_ns": 124682071.5,
+            "wall_min_ns": 124437081.25,
+            "wall_max_ns": 124870169.5,
+            "service_median_ns": 124062838.625
+          },
+          {
+            "wall_median_ns": 194338228.875,
+            "wall_min_ns": 194222303.25,
+            "wall_max_ns": 194435193.75,
+            "service_median_ns": 193692812.5
+          }
+        ],
+        "control_original_wall_ratio": 1.0009326499430957,
+        "candidate_control_wall_ratio": 1.558670196420341,
+        "candidate_control_service_ratio": 1.5612476277885907,
+        "performance_gate_passed": false
+      }
+    ],
+    "model_adopted": false,
+    "hardware_saturation_qualified": false,
+    "reason": "All six process/shape groups pass control/original calibration but64is55.87..60.64percent slower in wrapper wall,and56.12..64.29percent slower in attention service. No model trial/adoption;selected prefill/decode unchanged."
+  },
+  "faults_and_closure": {
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "all_six_smoke_perf_native_processes_closed": true,
+    "validation": "Qualified pre-main UR layer proof;silent validation;runtime/provider mappings and fixed pre-exec safety settings match. Retained-UR preload does not qualify ordinary provider destruction."
+  },
+  "source_work": [
+    {
+      "queries": 512,
+      "valid_KV_source_value_bytes": 2150629376,
+      "real_head_QK_PV_flops": 25807552512,
+      "padded_QK_PV_flops_32": 34896609280,
+      "padded_QK_PV_flops_64": 35433480192
+    },
+    {
+      "queries": 6491,
+      "valid_KV_source_value_bytes": 27265107968,
+      "real_head_QK_PV_flops": 327181295616,
+      "padded_QK_PV_flops_32": 442409943040,
+      "padded_QK_PV_flops_64": 449216249856
+    }
+  ],
+  "work_limits": "Source-issued valid BF16K/V value bytes and logical/shape-padded matrix work only;cache hits,transactions,SLMtraffic,exp/reduction work and hardware saturation remain unmeasured. Byte rates are not measured PCIe/GDDRtraffic.",
+  "retention": {
+    "component_binary_consumer": "None;all component executables,objects,dependency/build/raw outputs retired. Four frozen source/IRassets only remain for the live pitch-contract audit.",
+    "source_IR_consumer": "Ended;all four text assets retired after source/SDK audit closure. Restore original source/recipe from4f2fffe03 only if a new concrete consumer appears.",
+    "selected_ID_fixture_consumer": "Prospective original32/padded-SLM comparison if exact configured SDK admits the layout;review at that source audit decision. One fixture only.",
+    "legacy_holds": "Separate original-source/recipe exceptions in native-gdn-engine-build.json remain unresolved;not global cleanup.",
+    "retirement": {
+      "complete": true,
+      "files": 53,
+      "bytes": 9844598,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-rejected-build-retirement-20261027.jsonl",
+        "sha256": "6b47981c7ec5fa1ddeb32c98aa3ece9f3647494209c5489ef16a8ba2d64c1d80"
+      },
+      "original_inputs_recovered": 197,
+      "compiler_assets_verified": 8700,
+      "actual_original_dependencies_verified": 698,
+      "harness_dependencies_verified": 664,
+      "source_archive_commit": "4f2fffe03002261617a8bc86df4b1c083c8d49c3",
+      "remote_verified": "8fea1695d0fe67d175a1cb72f0eef34b1fba0320",
+      "prototype_sources_retired": {
+        "files": 8,
+        "bytes": 118538,
+        "restoration": "git show 4f2fffe03002261617a8bc86df4b1c083c8d49c3:PATH;Git deletion diff records exact paths/blob hashes."
+      },
+      "post_retirement_selected_artifacts_verified": 13,
+      "selected_fixture_preserved": true,
+      "remaining_component_files": 0,
+      "remaining_component_bytes": 0,
+      "GPU_executed": false
+    },
+    "source_audit_retirement": {
+      "files": 5,
+      "bytes": 202797,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-source-audit-retirement-20261027.jsonl",
+        "sha256": "7a314955f802c6769a02409c330c46aeba0bbd60a32f5bc1ee7ab736b269e540"
+      },
+      "generated_sources_recovered_from": "4f2fffe03:tools/sycl/qsa_cell64_sources.py",
+      "original_recipe_recovered": true,
+      "source_IR_bytes": 200572,
+      "remaining_old_generation_files": 0
+    }
+  }
+}
