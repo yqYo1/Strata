@@ -346305,7 +346305,7 @@
     }
   },
   "decode_kv_policy_host_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "ba7715d0025441f3607474e4714452e222ae5b97",
@@ -346508,9 +346508,30 @@
       "file_cap": 33554432,
       "total_cap": 67108864
     },
-    "outcomes": [],
-    "passed": false,
-    "complete": false,
+    "outcomes": [
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "syntax",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "link",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "run",
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -346522,6 +346543,26 @@
       "qualification": "failed;all4CPUcommands0but wrong controller marker;no retroactive pass"
     },
     "acceptance": "Exact committed source/controller/recipe/compiler/SDK/header/link inputs;actual policy fixture0andPASS;actual SYCL verifier syntax0;all owned processes normally reaped with empty sessions. No native engine build,ODR/model/physical-context or performance qualification.",
-    "consumer": "Current explicit decode KVhook;retire this temporary CPUELF after result/source recovery. Full engine rebuild remains mandatory before runtime tests."
+    "consumer": "Current explicit decode KVhook;retire this temporary CPUELF after result/source recovery. Full engine rebuild remains mandatory before runtime tests.",
+    "object": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-policy-host-v2/policy.o",
+      "sha256": "b010a057ad7340632e2955fdec8048b4e290ad06b0a335c38310b8ece6f2ec9b",
+      "bytes": 33784
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-policy-host-v2/policy",
+      "sha256": "b51fffdca4e2c5b569c54c992d299b1d2a3e94597494cae99c76ee7eab2238e4",
+      "bytes": 109552
+    },
+    "actual_inputs": {
+      "compiled": {
+        "files": 874,
+        "sha256": "4f47763555cbca231df5a6a6e6a37c44aad18c102ff84e3a609b36579e0aebc4"
+      },
+      "links": {
+        "files": 23,
+        "sha256": "eb14383afbd43a8680e9c7c09cb6347a37470750de19c81a26f287c550c4d333"
+      }
+    }
   }
 }

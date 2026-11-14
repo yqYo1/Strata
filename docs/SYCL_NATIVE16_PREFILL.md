@@ -768,7 +768,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `STRATA_SYCL_DECODE_KV_COALESCED=0|1`,default0,with copy geometry0required.
   Captured phase caches retain separate scalar/cooperative call counts and
   print the actual selected calls. New policy/cache/Verifier fields require
-  a fresh full engine build,not a partial relink. Next qualify that build and
+  a fresh full engine build,not a partial relink. The corrected
+  `decode_kv_policy_host_v2`check from`ba7715d00`passes all four CPUcommands:
+  actual policy compilation,actual SYCL Verifier syntax,link and fixture
+  execution,with874compiler/23link inputs and closed ownership. V1's incorrect
+  success-marker gate remains failed. This is no engine build,GPU/model or
+  ODRqualification;recover and retire both temporary host products before
+  preparing the engine generation. Next qualify that build and
   commit a separate model comparison with prefill-preservation and
   sustained-thinking gates. This
   component result alone is no model TGgain or default adoption.
