@@ -806,9 +806,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   two positive/five negative source/recipe/census/13-ELF checks, preserving the
   original admission refusal. It recovers original build evidence`6c05d9a4`
   and allows only explicitly pinned uncompiled Python deltas;it does not
-  rebuild or repeat GPU qualification. Next wire these checks into a fresh
-  committed six-process flag0/1comparison,including actual tokenizer-derived
-  insertion lengths, thinking and prefill preservation. See
+  rebuild or repeat GPU qualification. The new controller`e0e916140`now wires
+  these checks into`decode_kv_speed_v1`:six fresh flag0/1processes R,C,C,R,R,C,
+  each with the official warmups and both thinking-enabled long workloads.
+  Its76-test host suite has75passes and one optional-tokenizer skip;all15full
+  asset hashes match and both actual benchmark/server frontend probes pass.
+  The pinned tokenizer independently gives3close and18wrap-up IDs. The
+  comparison is prepared and host-ready,not a completed model speed result;
+  dedicated prefill/TTFT preservation and broader adoption gates remain open. See
   `long_generation_segment_metrology_v1`in the linked result. The model's
   successful raw output/cache is retired after source/recipe recovery:
   58 files, 11231037 regular bytes. Individual request/capture evidence and
