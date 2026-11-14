@@ -1009,6 +1009,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are unchanged. The independent expert-dispatch bounds fix is preserved.
   The naming-only unit is merged into the primary with its original identity;
   B1remains unbuilt on the child and B2is not applied. Neither is an adopted model route.
+  Child`25b9c5113`prepares the same builder's explicit`split`selection for B1,
+  with fresh production/fixture objects and separate scalar-restoration exclusion.
+  Its five source-pinned host controls pass normally0with reaped empty ownership;
+  they test unit selection and refusal of an unfinished/failed naming gate,
+  not the new kernel. Building B1still requires both original Aphase controls
+  and retirement of the old1eecgeneration after exact source/recipe recovery.
+  The prospective reader recovers A's original compiler/class/SDKclosure and
+  retains fast14508/12ELFs plus A/14ELFs,without reviving retired old binaries.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
