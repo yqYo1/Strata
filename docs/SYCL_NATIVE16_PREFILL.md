@@ -855,8 +855,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   flag0and preservation unresolved;no criterion change or extra cohort sample.
   After735original controller-input and native source/recipe/census checks,
   835ended raw/cache/transaction files(126546171regular bytes)are retired.
-  Keep the receipt and24config/plan files;all25fallback/candidate ELFs and
-  original36samples/failed decision are unchanged.
+  The cross-build consumer has now ended;the24config/plan files are retired
+  after exact reconstruction,keeping the receipt. All25fallback/candidate
+  ELFs and original36samples/failed decision are unchanged.
   This campaign isolates the flag within330405. A matched cross-build
   prefill/TTFT comparison with the retained coherent14508fallback closes
   below with failed preservation;no whole-engine adoption follows. Its older
@@ -903,14 +904,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   its decode-only KVgain and failed same-binary flag screen remain distinct.
   These matched bodies differ from the older`native_gdn_20261018`speed
   reference;their absolute PP cannot establish that historical regression.
-  No third engine is built. Raw/configuration retirement is pending before
-  preparing the independent CPUcomparison;physical262144/RESTORE,agent/task
-  and ordinary runtime teardown remain unqualified.
+  No third engine is built. After recovering734/735/739original controller
+  inputs from Git and reproducing all60generated configuration/launcher
+  files,the three ended cohorts retire896files/126435673regular bytes and
+  their469184-byte temporary manifest. Each root now retains only its record;
+  all25ELFs,samples and original decisions are unchanged. The historical
+  admission CLIs remain archive-only;the next CPUquestion consumes compact
+  records. Physical262144/RESTORE,agent/task and ordinary runtime teardown
+  remain unqualified;three legacy build-provenance holds are separate.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
   checks,the six-process cohort retires424successful raw/cache files
-  (78601580bytes)and its75376-byte temporary manifest. All12config/plan hashes,
-  both engines,individual samples and original outcomes are unchanged. See
+  (78601580bytes)and its75376-byte temporary manifest. Its final12config/plan
+  files and ended host-attempt receipt are also retired above;their hashes,
+  both engines,individual samples and original outcomes remain recorded. See
   `long_generation_segment_metrology_v1`in the linked result. The model's
   successful raw output/cache is retired after source/recipe recovery:
   58 files, 11231037 regular bytes. Individual request/capture evidence and
@@ -964,10 +971,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   change. Separate any CPUcensus/service observer and its overhead from clean
   speed. Existing decode timing counters alone are wall-time regions.
   The short review transaction`existing-decode-resource-review-r-20261114`
-  remains outside Git for the next index-curation boundary:preserve its
-  GGMLtype42=Q2_0correction and the old workload's zero NT1cache bindings in
-  the existing report entries after the frozen comparison closes,then retire
-  the transaction. Its digest hash is`1ee8e7c8fc6458888c32ca9f6728f8b58c70aa6e772ebb27472847796038046b`.
+  is now retired(2files/7309bytes). Its GGMLtype42=Q2_0correction and the old
+  workload's zero NT1cache bindings were already present in the existing
+  report entries;both are checked before deletion. The consumed digest hash
+  is`1ee8e7c8fc6458888c32ca9f6728f8b58c70aa6e772ebb27472847796038046b`
+  and Task hash`b5bec75432645ab661c6e045535e5ce3210840f2e9b4d2efa36b8f904d75ac8b`.
   No default adoption or hardware-saturation claim follows. The opt-in hook
   has a named prefill-preservation consumer;the standalone timing fixture's
   generation is retired after exact original source/recipe recovery. Active
@@ -1489,39 +1497,31 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   compiler inputs or system-only ELF dependency list. The current control
   constructs loader expectations from its selected native validation probe;
   actual current provider mappings pass the closed active-fixture gate.
-  New Orca research remains on hold. The bounded workspace-profile status
-  probe exits0 but reports `runtime.reachable=false`,disconnected and
-  `stale_bootstrap`;this is not a successful worker IPC check. Main's ordinary
-  status independently reaches the ready runtime. No new researcher,task,
-  dispatch or terminal was launched from that failed capability result.
-  A new bounded exact-socket probe distinguishes the failure:metadata is
-  readable and names the expected0600/UID1000Unix socket,but `socket(AF_UNIX,
-  SOCK_STREAM)` itself returns EPERM before `connect()` can run. The target
-  PID probe returns ESRCH in that sandbox. This does not test the socket path's
-  connect permission or Orca RPC. Keep its small diagnostic under external
-  `orca-narrow-ipc-connect-probe-20261106` for the current narrow sandbox-policy
-  question,with a256KiB total budget and review after that question. The older
-  status diagnostic is superseded and retired. A fresh
-  finite native Luna-max review identifies a macOS-only Unix-socket proxy
-  limitation in the local Codex0.162.1binary,consistent with the Linux denial.
-  Read-only follow-up now finds no environment store in either the default
-  Orca data root or its mapped active-profile root. Installed Orca1.4.229has
-  a paired WebSocket RPC client,but its supported `serve` path binds all
-  interfaces and starts a separate runtime sharing the desktop profile lock.
-  `--pairing-address` changes only the advertised address;it cannot provision
-  an in-place loopback-only listener. The raw-json-v1 hook is notification,
-  not status/lifecycle RPC. No app,profile,listener or worker sandbox changed.
-  The installed-source decision is curated at
-  `b1d255bde0c282b494c44aa7bdf8311e4ade0547`and here. Three superseded
-  coordination bodies are retired after curation(12115bytes);external
-  manifest`orca-transport-review-retirement-20261107.json`has SHA256
-  `0d866c8b5f0cfdb3b686bfb10afdc09957694f9c7704aeb0251e5d69841b009f`.
-  Its installed-source references are `cli/specs/serve.js`and
-  `cli/runtime/serve-orcad-launch.js`in the immutable Orca1.4.229Nix package.
-  Keep dispatch pending until a supported narrow worker transport exists;
-  review on an Orca transport/version change,not another identical socket or
-  missing-store probe. Worker-side connectivity and lifecycle settlement must
-  still pass before research resumes. Main's tuning continues independently.
+  New Orca source research remains on hold;Main's ordinary CLI reaches the
+  ready runtime. T/V/Wstay failed. Wnow proves the sacrificial read-only
+  control structurally(errno30/EROFS,target absent),but Orca rejects its
+  wrapped Codex as`agent_unconfigured`/`no_agent_detected`before Dispatch.
+  Its owned helper closes and Main remains unchanged. No actual worker
+  product/report mount,IPC,done or parent-publication gate is qualified.
+  Native Luna-max Y/Zreview finds no documented combined contract in the
+  checked worker-start,terminal-create and low-level-topology interfaces;
+  this does not prove that every supported managed-launch interface lacks it.
+  The next bounded action is a read-only managed-launch/configuration audit,
+  before any new canary. Xtraces Tto N's supervisor,whose ancestry/license
+  remain unresolved;do not reuse T/N/Wcode as an implementation basis.
+  Current readiness and the two conditional source scopes are curated in
+  `research-index.json`under`orca_research_wave_o_20261114.launch_review`.
+  Its latest short digest hash is
+  `cbf9853f2750327cf9ebc85d85658423ed35d61a79ccccb5f84313f309869023`;
+  Wproof hash is`2567c4e8fd73fdab3f846be55b7fe99591b4d7daaae4ec64e45734bb5d00044b`.
+  Keep only needed W/Zevidence through that next contract decision,then
+  retire superseded startup/review transactions. The prior exact NTrash/
+  credential-cleanup hold stays under`orca_deterministic_startup_n_20261114`.
+  At that next boundary,check the superseded external
+  `orca-narrow-ipc-connect-probe-20261106`for retirement using archived
+  decision`b1d255bde0c282b494c44aa7bdf8311e4ade0547`;its old EPERM result
+  does not describe W's recognition failure. No credential bytes are read or purged.
+  No ordinary source researcher is active. Main's tuning continues independently.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
