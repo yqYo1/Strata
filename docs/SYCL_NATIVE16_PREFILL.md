@@ -1015,6 +1015,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de;
   source remains9849e3580and all25phase-reference ELFs are unchanged.
   No GPU/model/performance qualification follows from compilation.
+  Main`8a1d10d28`integrates the reviewed`bbc8a6c00`qualification proposal and
+  prepares`phase_kv_naming_device_v1`:11fresh host/submission/phase/head/
+  attention/producer/GUstages on this generation,without copying old results.
+  Actual numerical/device execution remains pending;KVoracle,model handoff
+  and per-unit speed comparison still follow only after their prerequisite gates.
   Its temporary-third-generation
   consumer is the sole-change naming comparison,preserving both phase references.
   CPUcapacity is closed and the three legacy build holds are reconciled and
