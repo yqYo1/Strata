@@ -10,7 +10,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <stdexcept>
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
@@ -537,48 +536,6 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
             const int e = (int) i / parts_b_, part = (int) i % parts_b_;
             const int r0 = H * part / parts_b_, r1 = H * (part + 1) / parts_b_;
             s2_expert_down_rows(jobs_[e].blob, split_[(size_t) e].a2, jobs_[e].out, r0, r1);
-        } else if (mode_ == 7) {
-            // Complete one independently routed expert on its claiming worker.
-            // The synchronous batch keeps all jobs/activations and split buffers
-            // alive until every worker parks. No peer accesses this expert's
-            // intermediate before it is consumed here.
-            const auto& job = mjobs_[i];
-            auto& sb = split_multi_[i];
-            float* ff[MAXT];
-            for (int t = 0; t < job.nt; ++t) ff[t] = sb.ff[t];
-            {
-#ifdef STRATA_CPU_SERVICE_PROFILE
-                service::Profile::Scope cpu_service(service_profile_,id,*nfmt_,
-                    service::Op::Gu,job.nt,FF,native_gu_phase_);
-#endif
-                native_gu_rows(*nfmt_,job.blob,job.nact,job.nt,ff,0,FF,native_gu_phase_);
-            }
-            {
-#ifdef STRATA_CPU_SERVICE_PROFILE
-                service::Profile::Scope cpu_service(service_profile_,id,*nfmt_,
-                    service::Op::HiddenQuant,job.nt,FF,native_gu_phase_);
-#endif
-                for (int t = 0; t < job.nt; ++t) {
-                    if (nfmt_->d_type == 42) act_quant_any(sb.ff[t],FF,sb.a2[t]);
-                    else native_quant_h(*nfmt_,sb.ff[t],sb.hq[t]);
-                }
-            }
-            {
-#ifdef STRATA_CPU_SERVICE_PROFILE
-                service::Profile::Scope cpu_service(service_profile_,id,*nfmt_,
-                    service::Op::Down,job.nt,H,native_gu_phase_);
-#endif
-                if (nfmt_->d_type == 42) {
-                    const ActQ* a2[MAXT];
-                    for (int t = 0; t < job.nt; ++t) a2[t] = &sb.a2[t];
-                    q2_rows_any(job.blob+nfmt_->down_off,nfmt_->d_row,
-                        int(nfmt_->n_ff/64),a2,job.nt,job.out,0,H);
-                } else {
-                    const void* hq[MAXT];
-                    for (int t = 0; t < job.nt; ++t) hq[t] = sb.hq[t];
-                    native_down_rows(*nfmt_,job.blob,hq,job.nt,job.out,0,H);
-                }
-            }
         } else if (mode_ >= 5) {
             // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows
             const int per = mode_ == 5 ? FF : H;
@@ -606,14 +563,6 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 } else if (mode_ == 5) {
                     float* ff[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) ff[t] = sb.ff[t];
-#ifdef STRATA_NATIVE_EXPERTS
-                    const bool compact = compact_gu_views_ && native_gu_phase_ == NativeGuPhase::Decode &&
-                        mjobs_[e].nt == 1 && compact_gu_views_[e].matches(*nfmt_) &&
-                        compact_gu_views_[e].gu_rows(native_gu_phase_, 1,
-                            {static_cast<const uint8_t*>(mjobs_[e].nact[0]), nfmt_->act_bytes},
-                            {ff[0], FF}, r0, r1);
-                    if (!compact)
-#endif
                     native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1, native_gu_phase_);
                 } else if (nfmt_->d_type == 42) {
                     // Q2_0 down: q2_rows_any selects AVX-512 or AVX2 on the current CPU.
@@ -719,34 +668,16 @@ void ExpertPool::run_split_multi(ExpertJobMulti* jobs, int n) {
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 }
 
-void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n, NativeGuPhase phase,
-                                      std::span<const compact_gu::Lease> gu_views,
-                                      compact_gu::BatchPolicy cache_policy) {
+void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n, NativeGuPhase phase) {
 #ifdef STRATA_CPU_SERVICE_PROFILE
     service::Profile::BatchScope service_batch(service_profile_,phase);
 #endif
     if (n <= 0) return;
-    if (!gu_views.empty() && gu_views.size() < size_t(n))
-        throw std::invalid_argument("compact GU lease span is shorter than the expert batch");
-    bool use_compact = !gu_views.empty() && compact_gu::batch_eligible(phase, n, cache_policy);
-    if (use_compact && cache_policy == compact_gu::BatchPolicy::MixedNt) {
-        if (!jobs) throw std::invalid_argument("mixed compact GU requires an expert batch");
-        int rows = 0;
-        for (int e = 0; e < n; ++e) {
-            const int nt = jobs[e].nt;
-            if (nt < 1 || nt > 4 || nt > compact_gu::max_mixed_rows - rows) {
-                use_compact = false;
-                break;
-            }
-            rows += nt;
-        }
-    }
     const auto t0 = std::chrono::steady_clock::now();
     // more distinct experts than buffers: run them in batches
     for (int b0 = 0; b0 < n; b0 += kMaxSplitMulti) {
         const int nb = (std::min)(kMaxSplitMulti, n - b0);
         mjobs_ = jobs + b0;
-        compact_gu_views_ = use_compact ? gu_views.data() + b0 : nullptr;
         nfmt_ = &f;
         // Published by the same run_phase release/acquire protocol as mjobs_
         // and nfmt_; unchanged until every worker has parked on return.
@@ -777,60 +708,8 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         ms_multi_down += std::chrono::duration<double, std::milli>(d - c).count();
     }
     multi_bytes += (int64_t) n * (int64_t) f.bytes;
-    compact_gu_views_ = nullptr;
     mode_ = 0;
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
-}
-
-void ExpertPool::run_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,
-                                 int n, NativeGuPhase phase, bool whole_decode,
-                                 std::span<const compact_gu::Lease> gu_views,
-                                 compact_gu::BatchPolicy cache_policy) {
-    bool eligible = whole_decode && phase == NativeGuPhase::Decode &&
-        n_ == 5 && host_works_ && (n == 24 || n == 36) && jobs &&
-        gu_views.empty() && cache_policy == compact_gu::BatchPolicy::SmallJobs &&
-        f.gu_type == 18 && f.d_type == 42 &&
-        f.n_embd == H && f.n_ff == FF;
-    bool single = false, multiple = false;
-    if (eligible) for (int e = 0; e < n; ++e) {
-        const int nt = jobs[e].nt;
-        if (nt < 1 || nt > 4) { eligible = false; break; }
-        single |= nt == 1;
-        multiple |= nt > 1;
-    }
-    if (eligible && single && multiple)
-        run_whole_multi_native(f, jobs, n, phase);
-    else
-        run_split_multi_native(f, jobs, n, phase, gu_views, cache_policy);
-}
-
-void ExpertPool::run_whole_multi_native(const NativeFmt& f, ExpertJobMulti* jobs,
-                                      int n, NativeGuPhase phase) {
-    bool eligible = phase == NativeGuPhase::Decode && n >= 7 && n <= 36 &&
-        jobs && f.gu_type == 18 && (f.d_type == 20 || f.d_type == 42) &&
-        f.n_embd == H && f.n_ff == FF;
-    if (eligible) for (int e = 0; e < n; ++e)
-        eligible = eligible && jobs[e].nt >= 1 && jobs[e].nt <= 4;
-    if (!eligible) {
-        run_split_multi_native(f,jobs,n,phase);
-        return;
-    }
-#ifdef STRATA_CPU_SERVICE_PROFILE
-    service::Profile::BatchScope service_batch(service_profile_,phase);
-#endif
-    const auto start = std::chrono::steady_clock::now();
-    mjobs_ = jobs;
-    nfmt_ = &f;
-    native_gu_phase_ = phase;
-    compact_gu_views_ = nullptr;
-    run_phase(7,n);
-    mode_ = 0;
-    const double elapsed = std::chrono::duration<double,std::milli>(
-        std::chrono::steady_clock::now()-start).count();
-    ms_multi_whole += elapsed;
-    ms_drain_ += elapsed;
-    multi_bytes += int64_t(n)*int64_t(f.bytes);
-    ++native_whole_calls;
 }
 
 void ExpertPool::run(ExpertJob* jobs, int n) {

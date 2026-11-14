@@ -29,7 +29,6 @@
 
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
-#include "strata/kernels/cpu/compact_gu.hpp"
 #include "strata/kernels/cpu/service_profile.hpp"
 
 #include <atomic>
@@ -164,30 +163,10 @@ public:
     void run_split_multi(ExpertJobMulti* jobs, int n);
     /// Plan v0.3 P6: the same for a native pack's layer (ggml-cpu arithmetic, `nact` activations).
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
-                                NativeGuPhase phase = NativeGuPhase::Decode,
-                                std::span<const compact_gu::Lease> gu_views = {},
-                                compact_gu::BatchPolicy cache_policy = compact_gu::BatchPolicy::SmallJobs);
-    /// Explicit decode experiment. Only the measured Down42 24/36-job mixed-NT
-    /// geometry in a five-worker+host pool may use whole-expert scheduling.
-    /// Prefill, cached leases and all other shapes retain the row path.
-    void run_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
-                          NativeGuPhase phase, bool whole_decode,
-                          std::span<const compact_gu::Lease> gu_views = {},
-                          compact_gu::BatchPolicy cache_policy = compact_gu::BatchPolicy::SmallJobs);
-    /// Experimental Decode scheduling: each claimed expert completes GU,
-    /// hidden quantization and Down on one worker. Only IQ3_XXS GU with the
-    /// tested Down20/42 geometry,7..36 jobs and NT1..4 is admitted. Other
-    /// phases/shapes keep the existing row-split path. No cached GU leases.
-    /// The opt-in production selector above further restricts this admission.
-    void run_whole_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode);
     static constexpr int kMaxSplitMulti = 96;
     /// run_split_multi's phases, accumulated ms: gate/up rows, the intermediate quantization, down rows.
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
-    // Whole-expert time includes overlapping per-job stages;do not add it to
-    // row-split GU/quant/Down service times or infer hardware saturation.
-    double ms_multi_whole = 0;
-    uint64_t native_whole_calls = 0;
     int64_t multi_bytes = 0;
 
     /// Total `_mm_pause` iterations spent waiting, over all workers, is no longer counted - see the note on the
@@ -299,9 +278,6 @@ private:
     };
     const NativeFmt* nfmt_ = nullptr;
     NativeGuPhase native_gu_phase_ = NativeGuPhase::Prefill;
-    // Borrowed from the serialized caller until all phase workers park. Each
-    // lease owns GU bytes; mjobs_ still owns the original Down input contract.
-    const compact_gu::Lease* compact_gu_views_ = nullptr;
     std::vector<SplitBufMulti> split_multi_;
     PoolAffinity affinity_ = PoolAffinity::All;
     CpuTopology topo_;

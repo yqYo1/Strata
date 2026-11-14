@@ -643,9 +643,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   attribution requests used8target windows/29rows. The first window isT1 and
   the maximum isT4,so each remaining window isT4;none exercises the qualifying
   T2/20-row shape. Do not wire it into the measured hot path on that evidence.
-  Next compare explicit MTPwindow2/4 configurations in the existing clean14508
-  engine with matched long thinking/strong-and-weak-MTP workloads,before paying
-  for a new engine integration. The prospective`decode_window_speed_v3`controller
+  The explicit MTPwindow2/4 comparison in the existing clean14508engine used
+  matched long thinking/strong-and-weak-MTP workloads. Its`decode_window_speed_v3`controller
   keeps allocation spec4and the prefill cache loan in both arms;only existing
   --mtp-max-t0/2changes the actual MTPwindow. Its plan and both frontend probes
   pass with closed owners. Cap/base,copy/draft,two positive/six negative phase
@@ -696,11 +695,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with the KVplanner component without another long MTPcohort now.
   Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
-  changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
-  model plan;otherwise retire the unused prototype to its original Git source.
-  Retain the current standalone89401e6b fixture only through that immediate
-  configuration decision. Keep its engine siblings until the existing component
-  admission's13-ELF guards are updated before an engine-generation transition.
+  changing window width can change the observed rate. No useful T2model route
+  qualified in that failed configuration comparison. The unused row-copy
+  source/fixture/controller and ended13-ELF observer consumers are now retired
+  to`644412c8e`;eight unchanged build/admission helpers remain in
+  `tools/sycl/fixture_build.py`for the active KVwork. Recover the original
+  89401/e8source,recipes and final inputs before retiring their remaining
+  binaries;this is the next prerequisite before a new engine generation.
   Original unexecuted V1preparation and V2protocol/V3API-name/V4timer failures
   stay in Git at245eecc93/bf67e3a0b/67d28b364/8b40f5c84. V5increases warmup/
   calibration rather than relaxing the250ms/1%bounds. No prior failure is
@@ -709,12 +710,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   134files/7432029regular bytes. Current component admission and all retained
   engine/fixture guards pass after deletion. Four obsolete active result copies
   are retired to the exact history references above;current samples stay intact.
-  The current engine remains for the ensuing named mechanism/model decision;retire the
-  unused cache prototype at the next engine change,keeping independent bounds
-  guards. Clean14508remains the speed reference. No candidate clean-speed,
+  The closed CPUcache/whole-job and mapped-row prototypes'46source/controller
+  files(724140bytes)are retired to`644412c8e`. CPUdispatch/pool/generator and
+  original elementwise processing are restored from clean14508,while the
+  independent native-job MAXTguard and its regression test remain. Old e8/
+  mapped binary recovery/deletion is still pending. Clean14508remains the speed reference. No candidate clean-speed,
   dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
   teardown qualification follows. See mixed_nt_model_v1.
-  The separate cooperative KVplanner remains unselected in production. Its
+  The separate cooperative KVplanner has component qualification and an
+  unbuilt,opt-in decode hook from`644412c8e`;default selection stays scalar. Its
   standalone timing fixture now builds from`79ed58840`:five fresh TUs,718compiler
   inputs/24external links,zero uncovered/reused objects and36passing host
   controls. Binary`1e7765b60`first passes14bounded semantics and20traced graph
@@ -758,9 +762,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.372557/0.672889/0.806724forT4(zero/quarter/all selected pages missing).
   The shortest batch sum is545.887ms;maximum estimated clock fraction is
   0.000280246. Individual samples and all paired ratios remain in the result.
-  Next isolate the production hook with`VerifyInput::decode`,keeping prompt
-  and T1/other widths on their existing path,then commit a separate model
-  comparison with prefill-preservation and sustained-thinking gates. This
+  The authored hook selects only`VerifyInput::decode`,INT8,65536logical/
+  5120resident pages,page4,2KVheads,dim256,cap2051andT2/4. Prompt,T1and
+  other shapes keep their existing path. Its pre-exec control is
+  `STRATA_SYCL_DECODE_KV_COALESCED=0|1`,default0,with copy geometry0required.
+  Captured phase caches retain separate scalar/cooperative call counts and
+  print the actual selected calls. New policy/cache/Verifier fields require
+  a fresh full engine build,not a partial relink. Next qualify that build and
+  commit a separate model comparison with prefill-preservation and
+  sustained-thinking gates. This
   component result alone is no model TGgain or default adoption.
   Actual request overlap/hit distribution and physical bus traffic remain
   unknown. The161ms observer service is still

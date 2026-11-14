@@ -231,17 +231,8 @@ struct ExpertDispatch {
     // Prompt/window reads keep the baseline CPU producer. Generation enters a
     // host-owned scope after prefill; each pool batch copies this selection.
     strata::kernels::cpu::NativeGuPhase native_gu_phase = strata::kernels::cpu::NativeGuPhase::Prefill;
-    // Fixed before runtime initialization;only Decode may select this experiment.
-    bool cpu_decode_whole_mixed = false;
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
-    // Prepared once from this immutable model/source role before READY.
-    // Source identity is retained beside the explicit layer/expert coordinates.
-    std::shared_ptr<const strata::kernels::cpu::compact_gu::Cache> compact_gu_cache;
-    const ExpertSource* compact_gu_source = nullptr;
-    // Explicit experimental decode selection; cache0 and SmallJobs stay default.
-    strata::kernels::cpu::compact_gu::BatchPolicy compact_gu_policy =
-        strata::kernels::cpu::compact_gu::BatchPolicy::SmallJobs;
     RouterLookahead* lookahead = nullptr;   ///< CS-T: warms the next layer's predicted file-tier experts
     RemoteExperts* remote[3] = {}; ///< optional CUDA1..3 tiers for otherwise CPU-served rows
     int remote_count = 0;
@@ -368,8 +359,6 @@ struct ExpertDispatch {
     /// Plan v0.3 P6: a native pack's per-token activations (MAXT x kNativeActBytes).
     std::vector<uint8_t> nact_multi;
     std::vector<strata::kernels::cpu::ExpertJobMulti> jobs_multi;
-    std::vector<size_t> compact_gu_experts;
-    std::vector<strata::kernels::cpu::compact_gu::Lease> compact_gu_views;
     std::vector<int16_t> job_of;
     CpuWorkCensus* cpu_work_census = nullptr; ///< owned by the serialized decode request; never a worker/GPU owner
     /// Plan v0.3 P6: the verify window's GPU plan (VRAM hits + the PCIe share of the misses); `pcie_num`/256 of

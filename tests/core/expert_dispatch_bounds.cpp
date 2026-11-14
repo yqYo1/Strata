@@ -49,9 +49,7 @@ void check(cpu::NativeGuPhase phase, int k, bool overflow) {
     d.src = &source;
     d.n_expert = 1;
     d.native_gu_phase = phase;
-    // No cache was admitted: even an explicit experimental policy must retain
-    // the existing native path. This test never initializes a GPU owner.
-    d.compact_gu_policy = cpu::compact_gu::BatchPolicy::MixedNt;
+    // Exercise the native path without initializing a GPU owner.
     std::array<float, cpu::H> x{};
     std::vector<int32_t> ids(size_t(k), 0);
     constexpr float guard = 12345.25f;

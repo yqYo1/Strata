@@ -2,7 +2,6 @@
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/launch.hpp"
-#include <climits>
 
 namespace strata::kernels {
 using namespace sycl_backend;
@@ -109,66 +108,6 @@ void copy_rows_from_mapped(float *dst, const float *src, int64_t rows,
       hit |= hit_rows[j] == int64_t(i / width);
     dst[i] = hit ? 0.f : src[i];
   });
-}
-
-bool copy_rows_from_mapped_subgroup(float *dst, const float *src, int64_t rows,
-                                   int64_t width, const int32_t *hit_rows,
-                                   const int32_t *count, void *stream) {
-  const size_t elements = checked_count(rows, width);
-  if (!elements)
-    return false;
-  const size_t data_bytes = checked_count(elements, sizeof(float));
-  validate_spans({{dst, data_bytes}},
-                 {{src, data_bytes}, {hit_rows, checked_count(rows, sizeof(int32_t))},
-                  {count, sizeof(int32_t)}});
-  auto &queue = queue_for(stream);
-  validate_device_span(dst, data_bytes, queue);
-  validate_host_span(src, data_bytes, queue);
-  validate_device_span(hit_rows, checked_count(rows, sizeof(int32_t)), queue);
-  validate_device_span(count, sizeof(int32_t), queue);
-  if (rows > INT_MAX || width % 128 ||
-      ((uintptr_t(dst) | uintptr_t(src)) & 15)) {
-    copy_rows_from_mapped(dst, src, rows, width, hit_rows, count, stream);
-    return false;
-  }
-  const size_t vectors = elements / 4;
-  const size_t row_vectors = size_t(width) / 4;
-  const size_t rounded = ((vectors + 255) / 256) * 256;
-  auto event = queue.parallel_for(
-      sycl::nd_range<1>(rounded, 256),
-      [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
-        const auto subgroup = item.get_sub_group();
-        // Build the logical index from subgroup IDs rather than assuming the
-        // implementation assigns consecutive global IDs to subgroup lanes.
-        const size_t v =
-            (item.get_group_linear_id() * 8 + subgroup.get_group_id()[0]) * 32 +
-            subgroup.get_local_linear_id();
-        // width/4 and vectors are multiples of 32. A subgroup stays in one
-        // row and the padded tail contains only wholly inactive subgroups.
-        // Every active lane therefore reaches the same broadcast, as required
-        // by https://github.khronos.org/SYCL_Reference/iface/group-functions.html.
-        if (v >= vectors)
-          return;
-        uint32_t hit = 0;
-        if (subgroup.get_local_linear_id() == 0) {
-          const int64_t row = int64_t(v / row_vectors);
-          // Production plans require this bound. Also keep malformed counts
-          // from causing an unbounded device scan beyond the admitted span.
-          const int n = sycl::clamp(*count, 0, int(rows));
-          for (int j = 0; j < n; ++j)
-            hit |= hit_rows[j] == row;
-        }
-        hit = sycl::group_broadcast(subgroup, hit);
-        // Scalar float accesses preserve C++ aliasing/lifetime rules; four
-        // adjacent values per lane allow coalescing without vector type-puns.
-#pragma unroll
-        for (size_t k = 0; k < 4; ++k) {
-          const size_t i = 4 * v + k;
-          dst[i] = hit ? 0.f : src[i];
-        }
-      });
-  finish(stream, event);
-  return true;
 }
 
 // These publish only data. CPU readers must wait for the producing event; no

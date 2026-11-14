@@ -156,13 +156,6 @@ add_executable(sycl_graph_envelope_test EXCLUDE_FROM_ALL tests/sycl/graph_envelo
 target_link_libraries(sycl_graph_envelope_test PRIVATE strata_sycl_runtime)
 add_executable(sycl_profile_compat_window EXCLUDE_FROM_ALL tests/sycl/profile_compat_window.cpp)
 target_link_libraries(sycl_profile_compat_window PRIVATE strata_sycl_runtime)
-add_executable(sycl_mapped_rows_bench EXCLUDE_FROM_ALL
-  bench/sycl/mapped_rows.cpp src/kernels/sycl/elementwise.cpp)
-target_link_libraries(sycl_mapped_rows_bench PRIVATE strata_sycl_runtime)
-# Match the production elementwise target's contraction setting. Runtime and
-# fixture/kernel translation units are built fresh; no engine is built here.
-target_compile_options(sycl_mapped_rows_bench PRIVATE -ffp-contract=off)
-target_compile_features(sycl_mapped_rows_bench PRIVATE cxx_std_20)
 add_executable(iq2_phase_host_test EXCLUDE_FROM_ALL tests/cpu/iq2_phase.cpp)
 target_include_directories(iq2_phase_host_test PRIVATE ${PROJECT_SOURCE_DIR}/third_party/ggml)
 target_link_libraries(iq2_phase_host_test PRIVATE strata_kernels_cpu)

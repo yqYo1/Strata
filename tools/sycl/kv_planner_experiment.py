@@ -17,7 +17,7 @@ import sys
 import time
 
 sys.dont_write_bytecode = True
-import mapped_rows_experiment as common
+import fixture_build as common
 import decode_window_bench as retained
 import runtime_probe
 

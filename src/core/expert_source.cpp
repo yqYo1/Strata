@@ -1894,18 +1894,6 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     if ((int64_t) d.act_multi.size() < n_tok) d.act_multi.resize((size_t) MAXT);
     const ExpertLayout& lay = expert_layout();
     const bool native = lay.native;
-    bool compact_gu = false;
-#ifdef STRATA_NATIVE_EXPERTS
-    compact_gu = native && d.native_gu_phase == NativeGuPhase::Decode && d.compact_gu_cache &&
-        d.compact_gu_source == d.src && d.layers >= 0 && size_t(d.layers) < lay.fmt.size() &&
-        strata::kernels::cpu::compact_gu::supported(lay.fmt[size_t(d.layers)]);
-    if (compact_gu && (d.compact_gu_experts.size() < size_t(d.n_expert) ||
-                       d.compact_gu_views.size() < size_t(d.n_expert))) {
-        // Production reserves these before READY. Refuse the optional path for
-        // a custom/unprepared adapter; never allocate it inside GPU dispatch.
-        compact_gu = false;
-    }
-#endif
     if (native && d.nact_multi.size() < (size_t) MAXT * kNativeActBytes) d.nact_multi.resize((size_t) MAXT * kNativeActBytes);
     if (d.job_of.size() != (size_t) d.n_expert) d.job_of.assign((size_t) d.n_expert, (int16_t) -1);
     if (d.jobs_multi.size() < (size_t) (n_tok * k)) d.jobs_multi.resize((size_t) (MAXT * k));
@@ -2112,7 +2100,6 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                 ExpertJobMulti& nj = d.jobs_multi[(size_t) jo];
                 nj.blob = b;
                 nj.nt = 0;
-                if (compact_gu) d.compact_gu_experts[size_t(jo)] = size_t(e);
             }
             ExpertJobMulti& jb = d.jobs_multi[(size_t) jo];
             if (jb.nt >= MAXT) {
@@ -2128,51 +2115,12 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             ++jb.nt;
             ++d.multi_entries;
         }
-    std::span<const strata::kernels::cpu::compact_gu::Lease> views;
-    auto cache_policy = strata::kernels::cpu::compact_gu::BatchPolicy::SmallJobs;
-    int cache_bindings = 0;
-#ifdef STRATA_NATIVE_EXPERTS
-    // Keep the existing small-job selection unless a separately planned model
-    // trial explicitly requests MixedNt. The latter caches NT1 only; native
-    // NT2..4 and Prefill retain their own arithmetic and row scheduling.
-    const bool measured_pool = compact_gu && d.pool &&
-        d.pool->workers() == 5 && d.pool->host_works();
-    using CachePolicy = strata::kernels::cpu::compact_gu::BatchPolicy;
-    bool measured_jobs = (njobs == 3 || njobs == 6) &&
-        d.compact_gu_policy == CachePolicy::SmallJobs;
-    if (measured_pool && d.compact_gu_policy == CachePolicy::MixedNt &&
-        strata::kernels::cpu::compact_gu::batch_eligible(d.native_gu_phase, njobs, CachePolicy::MixedNt)) {
-        measured_jobs = true;
-        int rows = 0;
-        for (int j = 0; j < njobs; ++j) {
-            const int nt = d.jobs_multi[size_t(j)].nt;
-            if (nt < 1 || nt > 4 || nt > strata::kernels::cpu::compact_gu::max_mixed_rows - rows) {
-                measured_jobs = false;
-                break;
-            }
-            rows += nt;
-        }
-    }
-    if (compact_gu && measured_pool && measured_jobs &&
-        strata::kernels::cpu::compact_gu::batch_eligible(d.native_gu_phase, njobs, d.compact_gu_policy)) {
-        for (int j = 0; j < njobs; ++j) {
-            d.compact_gu_views[size_t(j)] = d.compact_gu_cache->lookup(
-                {size_t(d.layers), d.compact_gu_experts[size_t(j)]}, lay.fmt[size_t(d.layers)],
-                d.native_gu_phase, d.jobs_multi[size_t(j)].nt);
-            if (d.cpu_work_census && d.compact_gu_views[size_t(j)]) ++cache_bindings;
-        }
-        views = {d.compact_gu_views.data(), size_t(njobs)};
-        cache_policy = d.compact_gu_policy;
-    }
-#endif
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
-    const uint64_t whole_before = native ? d.pool->native_whole_calls : 0;
     if (native) {
         // Native jobs borrow dispatch-owned buffers. Do not unwind them if completion throws.
         try {
-            d.pool->run_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs,
-                d.native_gu_phase, d.cpu_decode_whole_mixed, views, cache_policy);
+            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs, d.native_gu_phase);
         } catch (...) {
             std::fprintf(stderr, "strata: native expert pool failed before completion; retaining owners and aborting\n");
             strata::core::release_gpu_waits(stderr);
@@ -2211,21 +2159,6 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             lay.fmt[(size_t)d.layers], ids, kind, d.job_of.data(), d.jobs_multi.data(), njobs,
             std::chrono::duration_cast<std::chrono::nanoseconds>(c4 - c3).count());
         else d.cpu_work_census->invalidate("non_native_dispatch");
-        if (native) {
-            int nt[5] = {};
-            for (int j = 0; j < njobs; ++j) {
-                const int t = d.jobs_multi[size_t(j)].nt;
-                ++nt[t >= 1 && t <= 4 ? t : 0];
-            }
-            std::fprintf(stderr, "strata cpu schedule: layer=%lld gu=%d down=%d jobs=%d "
-                "nt1=%d nt2=%d nt3=%d nt4=%d other=%d whole_calls=%llu "
-                "cache_policy=%s bound_nt1=%d\n",
-                (long long)d.layers, lay.fmt[size_t(d.layers)].gu_type,
-                lay.fmt[size_t(d.layers)].d_type, njobs, nt[1], nt[2], nt[3], nt[4], nt[0],
-                (unsigned long long)(d.pool->native_whole_calls - whole_before),
-                cache_policy == strata::kernels::cpu::compact_gu::BatchPolicy::MixedNt ? "mixed" : "small",
-                cache_bindings);
-        }
     }
     for (int64_t i = 0; i < n_tok * k; ++i) {
         const int64_t e = ids[i];

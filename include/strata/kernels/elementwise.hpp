@@ -116,14 +116,6 @@ void copy_from_mapped(float* dst, const float* src, int64_t n, void* stream);
 void scatter_rows_f32(const float* src, float* dst, const int32_t* rows, int64_t n, int64_t width, void* stream);
 void copy_rows_from_mapped(float* dst, const float* src, int64_t rows, int64_t width, const int32_t* hit_rows,
                            const int32_t* count, void* stream);
-#ifdef STRATA_ENABLE_SYCL
-/// Component candidate: share the row-mask scan within each 32-lane subgroup.
-/// Valid hit count is in [0, rows]; hit_rows has room for rows entries. Returns
-/// true for the subgroup path, false for the unchanged scalar/empty fallback.
-/// The production verifier keeps its existing entry until comparison qualifies.
-bool copy_rows_from_mapped_subgroup(float* dst, const float* src, int64_t rows, int64_t width,
-                                   const int32_t* hit_rows, const int32_t* count, void* stream);
-#endif
 
 /// Plan v0.3 P3: the doorbell's payload and its ring in ONE kernel.  Copies `x` (n floats), `ids` and `weights`
 /// (k each) into the mapped host regions, fences, and increments the mapped sequence number - replacing three
