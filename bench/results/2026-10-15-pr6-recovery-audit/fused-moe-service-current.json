@@ -357602,7 +357602,7 @@
       "docs/ARTIFACT_RETENTION.md": "90d6b06b141f2285bbb537490e1c702d964c56d23c4c94570515c3c2b6fc62fd"
     },
     "prior_comparison_sha256": "2ecf9d37ffd096358a39ce8c30f9b41a96e1d68fccb5e546b6eadad28d2b2f2e",
-    "stage": "running",
+    "stage": "closed",
     "plans": [
       {
         "index": 0,
@@ -361245,6 +361245,320 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 11,
+        "read": 65537,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "candidate",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata",
+          "sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+          "bytes": 26476224,
+          "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+        },
+        "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+        "native_identity": {
+          "pid": 1806467,
+          "start_ticks": 301642194,
+          "sid": 1806404
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1806467,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 65536,
+              "residual_gpu_rows": 65536,
+              "residual_gpu_bytes": 1342177280,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20536,
+              "fused_down_jobs": 4212,
+              "maximum_window_rows": 65536,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 37051980800,
+              "requested_dequant_H2D_bytes": 125829120,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 4212,
+                "fused_rows": 27989990,
+                "separate_jobs": 16324
+              },
+              "down": {
+                "fused_jobs": 4212,
+                "fused_rows": 27989990,
+                "separate_jobs": 16324
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20536,
+              "windows": 48,
+              "dequants": 18137,
+              "maximum_physical_window_rows": 65536,
+              "requested_source_map_bytes": 125829120,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "KV_captures": [
+              {
+                "phase": "decode",
+                "width": 1,
+                "scalar_calls": 12,
+                "coalesced_calls": 0
+              },
+              {
+                "phase": "decode",
+                "width": 4,
+                "scalar_calls": 12,
+                "coalesced_calls": 0
+              }
+            ]
+          },
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 65536,
+              "residual_gpu_rows": 65536,
+              "residual_gpu_bytes": 1342177280,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20577,
+              "fused_down_jobs": 4203,
+              "maximum_window_rows": 65536,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 37149491200,
+              "requested_dequant_H2D_bytes": 125829120,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 4203,
+                "fused_rows": 27959852,
+                "separate_jobs": 16374
+              },
+              "down": {
+                "fused_jobs": 4203,
+                "fused_rows": 27959852,
+                "separate_jobs": 16374
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20577,
+              "windows": 48,
+              "dequants": 18189,
+              "maximum_physical_window_rows": 65536,
+              "requested_source_map_bytes": 125829120,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "KV_captures": [
+              {
+                "phase": "decode",
+                "width": 1,
+                "scalar_calls": 12,
+                "coalesced_calls": 0
+              },
+              {
+                "phase": "decode",
+                "width": 4,
+                "scalar_calls": 12,
+                "coalesced_calls": 0
+              }
+            ]
+          },
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 65536,
+              "residual_gpu_rows": 65536,
+              "residual_gpu_bytes": 1342177280,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20608,
+              "fused_down_jobs": 4214,
+              "maximum_window_rows": 65536,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 37212057600,
+              "requested_dequant_H2D_bytes": 125829120,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 4214,
+                "fused_rows": 27985216,
+                "separate_jobs": 16394
+              },
+              "down": {
+                "fused_jobs": 4214,
+                "fused_rows": 27985216,
+                "separate_jobs": 16394
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20608,
+              "windows": 48,
+              "dequants": 18223,
+              "maximum_physical_window_rows": 65536,
+              "requested_source_map_bytes": 125829120,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "KV_captures": [
+              {
+                "phase": "decode",
+                "width": 1,
+                "scalar_calls": 12,
+                "coalesced_calls": 0
+              },
+              {
+                "phase": "decode",
+                "width": 4,
+                "scalar_calls": 12,
+                "coalesced_calls": 0
+              }
+            ]
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 83283.7,
+            "prompt_tps": 786.9,
+            "ttft_s": 83.487,
+            "total_s": 85.566,
+            "generated_tokens": 24,
+            "request_sha256": "83c6b33d1b3bf1ba1e352455b677e90b3160291a5d2aed9db9f5da83f1d7d513",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 72040.1,
+            "prompt_tps": 909.7,
+            "ttft_s": 72.225,
+            "total_s": 73.978,
+            "generated_tokens": 24,
+            "request_sha256": "dfec833b215f0f4cbb9ea6bda3d07dade25133ec496e5040c12700b0e7fc3aa0",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 72093.9,
+            "prompt_tps": 909.1,
+            "ttft_s": 72.394,
+            "total_s": 74.671,
+            "generated_tokens": 24,
+            "request_sha256": "e5c7cd765c73054a1fbd4ee083f4c848ac4690c8876ca740db18418d83e32c89",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 72067.0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "request_hashes": {
@@ -361260,8 +361574,8 @@
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "whole_bytes": 872415232,
@@ -361303,6 +361617,203 @@
       ],
       "exit_code": 0,
       "ownership_closed": true
+    },
+    "decision": {
+      "points": [
+        {
+          "read": 32769,
+          "scopes": {
+            "first": {
+              "prompt_ms": {
+                "reference": [
+                  55217.3,
+                  60784.7,
+                  53642.9
+                ],
+                "candidate": [
+                  54520.5,
+                  53557.0,
+                  53527.0
+                ],
+                "paired_ratios": [
+                  0.9873807665351257,
+                  0.8810934330514094,
+                  0.9978394158406797
+                ],
+                "median_ratio": 0.9699315250836241,
+                "paired_geometric_mean": 0.9539430044970181,
+                "median_not_slower": true,
+                "every_pair_not_slower": true
+              },
+              "ttft_s": {
+                "reference": [
+                  55.381,
+                  60.998,
+                  53.798
+                ],
+                "candidate": [
+                  54.785,
+                  53.835,
+                  53.694
+                ],
+                "paired_ratios": [
+                  0.989238186381611,
+                  0.8825699203252566,
+                  0.9980668426335552
+                ],
+                "median_ratio": 0.9720842888355212,
+                "paired_geometric_mean": 0.955146248090622,
+                "median_not_slower": true,
+                "every_pair_not_slower": true
+              }
+            },
+            "warmed": {
+              "prompt_ms": {
+                "reference": [
+                  43398.3,
+                  43492.149999999994,
+                  42904.15
+                ],
+                "candidate": [
+                  43053.65,
+                  42939.05,
+                  43145.95
+                ],
+                "paired_ratios": [
+                  0.9920584446856213,
+                  0.9872827625215127,
+                  1.005635818446467
+                ],
+                "median_ratio": 0.9920584446856213,
+                "paired_geometric_mean": 0.9949620484267755,
+                "median_not_slower": true,
+                "every_pair_not_slower": false
+              },
+              "ttft_s": {
+                "reference": [
+                  43.5625,
+                  43.653000000000006,
+                  43.089
+                ],
+                "candidate": [
+                  43.267,
+                  43.106,
+                  43.3655
+                ],
+                "paired_ratios": [
+                  0.9932166427546629,
+                  0.9874693606395893,
+                  1.0064169509619625
+                ],
+                "median_ratio": 0.9932166427546629,
+                "paired_geometric_mean": 0.995669461046719,
+                "median_not_slower": true,
+                "every_pair_not_slower": false
+              }
+            }
+          }
+        },
+        {
+          "read": 65537,
+          "scopes": {
+            "first": {
+              "prompt_ms": {
+                "reference": [
+                  82577.0,
+                  82022.8,
+                  81800.0
+                ],
+                "candidate": [
+                  83200.7,
+                  82356.6,
+                  83283.7
+                ],
+                "paired_ratios": [
+                  1.0075529505794592,
+                  1.0040696001599556,
+                  1.018138141809291
+                ],
+                "median_ratio": 1.014360641187572,
+                "paired_geometric_mean": 1.0099025488539906,
+                "median_not_slower": false,
+                "every_pair_not_slower": false
+              },
+              "ttft_s": {
+                "reference": [
+                  82.757,
+                  82.205,
+                  81.977
+                ],
+                "candidate": [
+                  83.376,
+                  82.541,
+                  83.487
+                ],
+                "paired_ratios": [
+                  1.0074797298113756,
+                  1.0040873426190622,
+                  1.0184198006757992
+                ],
+                "median_ratio": 1.0142448756158384,
+                "paired_geometric_mean": 1.0099771493138912,
+                "median_not_slower": false,
+                "every_pair_not_slower": false
+              }
+            },
+            "warmed": {
+              "prompt_ms": {
+                "reference": [
+                  71349.15,
+                  71172.85,
+                  71230.4
+                ],
+                "candidate": [
+                  71416.1,
+                  71542.54999999999,
+                  72067.0
+                ],
+                "paired_ratios": [
+                  1.0009383433439643,
+                  1.0051943964587617,
+                  1.011744985287181
+                ],
+                "median_ratio": 1.0043822581369752,
+                "paired_geometric_mean": 1.0059494292312543,
+                "median_not_slower": false,
+                "every_pair_not_slower": false
+              },
+              "ttft_s": {
+                "reference": [
+                  71.53200000000001,
+                  71.3545,
+                  71.416
+                ],
+                "candidate": [
+                  71.62950000000001,
+                  71.7195,
+                  72.3095
+                ],
+                "paired_ratios": [
+                  1.0013630263378628,
+                  1.0051153045708399,
+                  1.012511201971547
+                ],
+                "median_ratio": 1.0042497479556403,
+                "paired_geometric_mean": 1.006319198323684,
+                "median_not_slower": false,
+                "every_pair_not_slower": false
+              }
+            }
+          }
+        }
+      ],
+      "median_preservation_screen_passed": false,
+      "inference_adopted": false,
+      "proof_of_zero_effect_or_physical_saturation": false,
+      "task_agent_physical262144_RESTORE_ordinary_teardown_pending": true,
+      "question": "Coherent330405 scalar0 versus original coherent14508,matched PP/TTFT.",
+      "old_KV_flag_screen_revised": false,
+      "decoder_gain_or_preservation_qualified": false
     },
     "source_inputs": {
       "files": 739,
