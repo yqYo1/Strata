@@ -32983,7 +32983,7 @@
   },
   "spec2_spec4_decode_route_audit_20261114o": {
     "classification": "decision_support",
-    "stage": "eligible_fresh_pinned_source_audit",
+    "stage": "closed_unqualified_source_not_started",
     "title": "Spec2/spec4 decode route,cost and numerical/admission differences",
     "source_packet": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-research-wave-o-20261114/source-manifest.json",
     "source_commits": [
@@ -32993,35 +32993,59 @@
     "question": "Compare actual fastest14508 and current8b serve/MTP/spec2-versus4 paths:where width changes and whether Q6head/dense dispatch,CPUexpert NTs,cache placement,context/output admission,state handoff or BF16rounding differ. Distinguish firstT1anchor from later windows. Identify fair configuration-screen controls and counterevidence;no implementation or speed claim.",
     "prior_evidence": "mapped_rows_subgroup_v5 at84bdffd85 passes row20/T2only;all six retained32Kdiagnostic requests atd2016f730 have8windows/29rows and firstT1,maxT4,so all other windowsT4. Source-only question supports an actual spec2/spec4 model comparison,not current-route adoption.",
     "scope_eligibility": {
-      "schedulable_now": true,
-      "prerequisite_evidence": "Exact14508/8bsource snapshot manifest and committed component/caller logical evidence exist. Actual deterministic Nstartup canary passes13/13FS,posthash,IPC/done andclosure. FreshTask after fixed entry gate;old failures remain failed.",
-      "missing_prerequisites": []
+      "schedulable_now": false,
+      "prerequisite_evidence": "Original source snapshots are recoverable from14508/8bGit. Deterministic Ncanary passes,but Osource packet failed before that gate because bwrap could not bind symlinked worker-root/report. No report or source qualification;do not retry failed Tasks.",
+      "missing_prerequisites": [
+        "Correct physical report-directory/mount construction and qualify the actual full source-worker startup before a new bounded Task."
+      ]
     },
     "assignment": {
       "model": "gpt-6-luna",
       "effort": "medium",
       "via": "Orca",
       "report_words": 1100
-    }
+    },
+    "source_packet_retired": true,
+    "review_point": "Use native Luna-max operational review at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-source-launch-review-p-20261114/digest.md when available;Main implements/qualifies launch fix separately from GPU tuning."
   },
   "kv_stream_gpu_resolver_design_20261114o": {
     "classification": "decision_support",
-    "stage": "eligible_fresh_pinned_source_audit",
+    "stage": "closed_unqualified_source_not_started",
     "title": "Serial GPU KVresolution dependencies and bounded parallel alternatives",
     "source_packet": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-research-wave-o-20261114/source-manifest.json",
     "source_commit": "8b40f5c84133378a50002dc4a5b0707b6ebdb9fa",
     "question": "Map exact single_task scans/mutations,hit marking,miss deduplication,clock victim order,ownership/alias/epoch/262144boundaries and context complexity;compare bounded GPU-parallel lookup/scan/planning alternatives from checked primary engine/SYCL references. Keep resolver distinct from following RAMpagecopy. No implementation/patch/runtime or saturation claim.",
     "prior_evidence": "No prior qualified report on this scope;K/MKVscope never dispatched. Rejected-overhead d2016f730 profile observes161.75/162.20ms resolver service across80calls;hypothesis only,not critical-path or PCIebottleneck proof.",
     "scope_eligibility": {
-      "schedulable_now": true,
-      "prerequisite_evidence": "Exact8bKVstream map and caller sources are pinned. Deterministic Nstartup passes13/13FS,posthash,realworkerIPC/done andclosure;the failed generic first-command launch is not retried.",
-      "missing_prerequisites": []
+      "schedulable_now": false,
+      "prerequisite_evidence": "Original source snapshots are recoverable from14508/8bGit. Deterministic Ncanary passes,but Osource packet failed before that gate because bwrap could not bind symlinked worker-root/report. No report or source qualification;do not retry failed Tasks.",
+      "missing_prerequisites": [
+        "Correct physical report-directory/mount construction and qualify the actual full source-worker startup before a new bounded Task."
+      ]
     },
     "assignment": {
       "model": "gpt-6-luna",
       "effort": "medium",
       "via": "Orca",
       "report_words": 1100
-    }
+    },
+    "source_packet_retired": true,
+    "review_point": "Use native Luna-max operational review at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-source-launch-review-p-20261114/digest.md when available;Main implements/qualifies launch fix separately from GPU tuning."
+  },
+  "orca_research_wave_o_20261114": {
+    "stage": "closed_failed_before_Codex_exec",
+    "qualified_reports": 0,
+    "worker_filesystem_proof": false,
+    "worker_IPC_proof": false,
+    "source_investigation": false,
+    "first_child_exit": 1,
+    "child_seconds": 0.024,
+    "output_bytes": 386,
+    "reason": "bwrap could not bind symlinked worker-root/report target. The actual source-workspace constructor differs from successful Ncanary.",
+    "second_task_dispatched": false,
+    "both_tasks_failed": true,
+    "ownership_closed": true,
+    "lifecycle_proof_sha256": "7a104702606e77763a770b26fc160701653c895e273d658ebf9ebbfb3ecf4640",
+    "cleanup": "Owned temporary worker roots/auth/cache/source snapshots/transactions retired after verified terminal and host-process exit. Original outcome is not retried or relabelled."
   }
 }
