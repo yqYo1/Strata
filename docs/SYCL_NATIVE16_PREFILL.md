@@ -1000,13 +1000,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The new decode source is extracted from the owned1eec implementation;
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
   are unchanged. The independent expert-dispatch bounds fix is preserved.
-  These are prepared source,not tested kernels or adopted model routes.
-  Child`1d0beb514`prepares`build_named_kv.py`for the first unit only:
+  The naming-only unit is merged into the primary with its original identity;
+  the TU split remains on the child. Neither is a tested/adopted model route.
+  Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
+  (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
   set/bytes,refuses the later TU split,and requires legacy retirement before
-  a fresh14-target coherent build. The controller is committed but not yet
-  executed or qualified;its explicit temporary-third-generation consumer is
-  the sole-change naming comparison,preserving both phase references.
+  a fresh14-target coherent build. Its source/unit/recipe/provider admission
+  prepares`phase_kv_naming_native_v1`;configure/compile and all device/model
+  qualification remain pending. Its explicit temporary-third-generation
+  consumer is the sole-change naming comparison,preserving both phase references.
   CPUcapacity is closed and the three legacy build holds are reconciled and
   retired. Qualify and compare the original units separately before combination;
   the second unit must not inherit an unpassed first-unit gate. Rebuild every
