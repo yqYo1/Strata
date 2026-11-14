@@ -1042,8 +1042,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   records and12timing-shape correctness cases. All provider/validation/owner
   and unchanged-boot gates pass without fresh GPUfaults. This is component
   correctness only;the final physical context cell in a fixture does not
-  qualify a full model fill. Actual model handoff and per-unit speed
-  comparison still follow only after their prerequisite gates.
+  qualify a full model fill. The naming-only production handoff now also
+  closes normally0with32769/82/32769thinking-on inputs and32outputs each.
+  Both long entries complete all48layers,restore the decode heads/MTPstate
+  and actually capture cooperative decode4;the short prefill captures only
+  scalar KV. Placement,typed QSA/GU/Down and cache/drain checks,15full asset
+  hashes,provider/owner/unchanged-boot checks all pass without fresh faults.
+  The public model gate keeps work totals and source hashes while retiring
+  full first-job row histograms after validation;it is intentionally curated,
+  not input for resuming the closed full-parser reader. This diagnostic's
+  32outputs do not qualify sustainedTG or clean PP/TTFT. The original
+  per-unit speed comparison and broader model gates remain pending.
   The independent naming-image checks now compare the exact330405and6d2b4f
   production ELFs. V1`f6da849ab`passes36ordinary sections(22974831bytes),
   load layout and24645normalized non-file symbols;AMreview identifies its
