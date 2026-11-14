@@ -838,7 +838,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   series must be no slower for the median screen;all paired ratios remain.
   This screen does not prove zero effect or adopt the model. The same330405
   native13-ELF generation is reused with an explicit new uncompiled observer;
-  no native build or runtime setting changes.
+  no native build or runtime-safety changes. Both actual frontend probes and
+  two CPU preservation-policy tests pass normally with closed ownership.
+  These controls cover ten invalid cohorts and keep first-use,warmed and
+  TTFT-only regressions separate;they do not execute a model or establish PP.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
   checks,the six-process cohort retires424successful raw/cache files

@@ -352533,7 +352533,7 @@
         "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
       }
     },
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "9269a3cefe67e4e87af386a960698a8ee525d80f",
     "policies": {
       "AGENTS.md": "f8d233a805cfff41d06605490300f1d323447b036f0e7a7d8a0b32ea56cf212d",
@@ -353065,7 +353065,7 @@
     ],
     "processes": [],
     "request_hashes": {},
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -353090,6 +353090,26 @@
       "retention": "No new native build;retain14508fallback and330405candidate through the immediate phase-preservation decision. Keep compact36samples and source/configuration/route evidence;retire successful raw output/cache at verified closure. Legacy provenance holds remain separate. No TG,agent/task,physical262144/RESTORE,ordinary teardown or hardware ceiling follows."
     },
     "invariant_signature": "ebcd241d8729ed3734aee5f8937880ff636847e94a82a4fe28a6f2ca6d49503e",
+    "host_results": [
+      {
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "role": "server",
+        "passed": true
+      }
+    ],
+    "host_unit_evidence": {
+      "passed": true,
+      "source_commit": "9269a3cefe67e4e87af386a960698a8ee525d80f",
+      "tests": [
+        "tools.test_benchmark_evidence.EvidenceTests.test_kv_prefill_medians_keep_first_and_warmed_independent",
+        "tools.test_benchmark_evidence.EvidenceTests.test_kv_prefill_refuses_incomplete_or_nonfinite_cohorts"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true
+    },
     "source_inputs": {
       "files": 735,
       "sha256": "539b53f251247ff586b47efa2bf3438c2d6622b5e01d72cb3b021669b11b998a"
