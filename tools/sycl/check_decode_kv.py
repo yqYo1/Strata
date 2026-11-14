@@ -116,6 +116,35 @@ def native(expected=None, *, observers=None, retained_frontend=None):
     return dict(row, observer_admission=proof)
 
 
+def retained_controls():
+    """Source/recipe/ELF reuse checks only; never run the native executables."""
+    observers = {THIS, 'tools/sycl/decode_kv_model.py'}
+    frontend = dict(build_evidence_commit='6c05d9a4dd6d813627672d9c9badd61daa173b90', changes={
+        'tools/sycl/generation_engine.py': [
+            'eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9',
+            '741e854a1954269b9c5419a5007e223ef70b30d3c9b291382462d30996485d43']})
+    row = native(observers=observers, retained_frontend=frontend)
+    frozen = json.loads(json.dumps(row['observer_admission']))
+    native(frozen, observers=observers, retained_frontend=frontend)
+    cases = [None, dict(frontend, build_evidence_commit='0'*40), dict(frontend, changes={}),
+        dict(frontend, changes={'src/core/verify.cpp': ['0'*64, '1'*64]}),
+        dict(frontend, changes={'tools/sycl/generation_engine.py': ['0'*64, '1'*64]})]
+    for wrong in cases:
+        try:
+            native(observers=observers, retained_frontend=wrong)
+        except RuntimeError:
+            continue
+        raise RuntimeError('unqualified observer/native delta accepted')
+    return dict(passed=True, positive=2, negative=len(cases), GPU_executed=False,
+        native_source_commit=row['native_source_commit'], binary=row['binaries']['strata'],
+        actual_compiler_census_sha256=row['actual_inputs']['sha256'],
+        coherent_objects=len(row['planned_compilation']), translation_units=row['actual_inputs']['translation_units'],
+        same_build_ELFs=len(row['binaries']), native_recompiled=False,
+        original_build_evidence_commit=frontend['build_evidence_commit'],
+        frontend_changes=frontend['changes'], proof_sha256=signature(frozen),
+        legacy_refusal_preserved=True, qualification_scope='Existing build reuse,not new GPU/model qualification.')
+
+
 def controller():
     spec = importlib.util.spec_from_file_location('decode_kv_coherent_checks', previous.__file__)
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
@@ -190,10 +219,13 @@ def prepare():
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', *STAGES), 'prepare|' + '|'.join(STAGES))
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'retained-host', *STAGES),
+        'prepare|retained-host|' + '|'.join(STAGES))
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); common.guards.no_model_owners([])
-        if sys.argv[1] == 'prepare':
+        if sys.argv[1] == 'retained-host':
+            print(json.dumps(retained_controls()), flush=True)
+        elif sys.argv[1] == 'prepare':
             prepare()
         elif sys.argv[1].startswith('gu-'):
             controller().gu_stage(sys.argv[1])
