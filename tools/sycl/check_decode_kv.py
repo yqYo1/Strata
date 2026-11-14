@@ -25,7 +25,13 @@ STAGES = previous.STAGES
 require, sha, signature = build.require, build.sha, build.signature
 
 
-def native(expected=None, *, observers=None):
+def native(expected=None, *, observers=None, retained_frontend=None):
+    """Default preserves the original admission; a new plan may pin Python deltas.
+
+    Retained mode verifies the original closed build evidence rather than
+    re-evaluating unrelated, later cleanup state in the build prerequisite.
+    Every changed observer must remain outside the actual compiler census.
+    """
     observers = {THIS} if observers is None else set(observers)
     require(THIS in observers and all(p.startswith('tools/sycl/') and p.endswith('.py')
         for p in observers), 'declare exact uncompiled Python observers')
@@ -38,9 +44,23 @@ def native(expected=None, *, observers=None):
     recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
         common.source.blobs(P, row['project']['revision'], before)}
     after = common.source.pin(P, common.PREFIXES)['source_sha256']
+    changes = {p: [h, after[p]] for p, h in before.items() if p in after and after[p] != h}
+    declared = {}
+    if retained_frontend is not None:
+        require(set(retained_frontend) == {'build_evidence_commit', 'changes'}
+            and retained_frontend['build_evidence_commit'] == '6c05d9a4dd6d813627672d9c9badd61daa173b90',
+            'pin the original closed build evidence for prospective reuse')
+        declared = retained_frontend['changes']
+        require(type(declared) is dict and declared and all(p.startswith('tools/sycl/')
+            and p.endswith('.py') and type(v) is list and len(v) == 2
+            and all(type(h) is str and len(h) == 64 for h in v) for p, v in declared.items()),
+            'only explicitly pinned uncompiled Python deltas are eligible')
+        original = json.loads(common.source.git(P, 'show', retained_frontend['build_evidence_commit']
+            + ':' + str(RESULT.relative_to(P))))[build.KEY]
+        require(original == build.context().compact(row), 'original closed build evidence changed')
     require(recovered == before and set(after) - set(before) == observers
-        and not set(before) - set(after) and all(after[p] == h for p, h in before.items()),
-        'only this committed observer may extend the exact native snapshot')
+        and not set(before) - set(after) and changes == declared,
+        'native snapshot changed outside explicitly pinned Python observers/deltas')
     for pin in row['dependencies']:
         found = {p: hashlib.sha256(raw).hexdigest() for p, raw in
             common.source.blobs(Path(pin['root']), pin['revision'], pin['source_sha256'])}
@@ -59,7 +79,8 @@ def native(expected=None, *, observers=None):
     recipe['environment'] = {k: v.replace(old, str(build.ROOT)) for k, v in recipe['environment'].items()}
     recipe['environment']['STRATA_SYCL_DECODE_KV_COALESCED'] = '0'
     recipe['targets'] = recipe['build_targets'] = build.TARGETS
-    require(recipe == row['recipe'] and build.prerequisite() == row['build_prerequisite'],
+    require(recipe == row['recipe'] and (retained_frontend is not None
+        or build.prerequisite() == row['build_prerequisite']),
         'exact native recipe or prospective component decision changed')
     actual = row['actual_inputs']
     require(actual['source_commit'] == row['native_source_commit'] == row['project']['revision']
@@ -77,6 +98,8 @@ def native(expected=None, *, observers=None):
     census = json.loads(Path(actual['path']).read_text())
     require(all(sha(p) == h for family in ('compiled', 'generated', 'links')
         for p, h in census[family].items()), 'actual compiler/link input changed')
+    require(not any(str(P / p) in census[family] for p in set(declared) | observers
+        for family in ('compiled', 'generated', 'links')), 'observer delta is an actual native build input')
     for image in (*row['preserved_binaries'], *row['binaries'].values()):
         require(Path(image['path']).stat().st_size == image['bytes']
             and sha(image['path']) == image['sha256'], 'candidate/reference executable changed')
@@ -87,6 +110,8 @@ def native(expected=None, *, observers=None):
         added_observers={p: after[p] for p in sorted(observers)}, actual_census_sha256=actual['sha256'],
         class_coherence=coherence, exact_thirteen_ELFs_census_recipe=True,
         exact_seed_recipe_sha256=signature(recipe), native_recompiled=False, GPU_result_inherited=False)
+    if retained_frontend is not None:
+        proof['retained_frontend'] = retained_frontend
     require(expected is None or proof == expected, 'frozen native observer admission changed')
     return dict(row, observer_admission=proof)
 
