@@ -710,8 +710,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   guards. Clean14508remains the speed reference. No candidate clean-speed,
   dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
   teardown qualification follows. See mixed_nt_model_v1.
-  The separate cooperative KVplanner source is authored but uncompiled and
-  unselected. One256-work-item group prefetches selection/table data and marks
+  The separate cooperative KVplanner remains unselected in production. Its
+  standalone fixture now builds from`945dea2ee`:five fresh TUs,718compiler
+  inputs/24external links,zero uncovered/reused objects and28passing host
+  controls. Binary`38c667d51`first passes14bounded semantics and20traced graph
+  replays,then795direct oracle records,60graph replays and15physical-tail
+  replays across three KVformats. Both owned processes exit0with quiet
+  validation,closed ownership and no fresh fault;all34actual providers match.
+  This is component numerical evidence,no model performance or physical262144
+  qualification. One256-work-item group prefetches selection/table data and marks
   hits atomically;the leader preserves exact query-order miss discovery and
   the existing clock policy. It adds2KiB local scratch,no persistent allocation
   or CPUround trip. Existing serial selection/clock statements are preserved.
@@ -720,19 +727,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Provenance is the owned1e196a13SYCL policy,Niko's MITf3925cf0CUDA parallel-hit
   design,and the Khronos [group-barrier](https://github.khronos.org/SYCL_Reference/iface/group-functions.html)
   and [atomic-ref](https://github.khronos.org/SYCL_Reference/iface/atomic_ref.html)
-  contracts. The reference LICENSEbytes match this repository. Next consumer,
-  after the serialized window comparison,is the maintained owned
-  `kv_copy_groups_bench.cpp --planner-validate`extension,now authored but
-  uncompiled. Its existing CPUoracle covers all map/control/miss and payload
+  contracts. The reference LICENSEbytes match this repository. The maintained
+  owned`kv_copy_groups_bench.cpp --planner-validate`extension's independent
+  CPUoracle covers all map/control/miss and payload
   bytes,three KVformats and copy geometries. New cases cover invalid gaps
   across256items and dynamic four-query/zero-width/epoch-wrap/invalid-width
   graph replays at the262143last cell. The target compiles its kernel and the
-  three runtime TUs directly,without an engine/library rebuild. Before building,
-  commit the exact recipe/controller and reconcile retained generations. The
-  next comparison must check all map/
-  counter/payload bytes,empty/invalid/overflow/epoch-wrap and262144boundaries,
-  capture/replay and paired graph timings. No engine integration or simultaneous
-  GPUtest is authorized by the source-only prototype;retire it if its screen fails.
+  three runtime TUs directly,without an engine/library rebuild. The committed
+  recipe/controller recovers the original14508foundation and preserves its
+  twelve ELFs. See`kv_planner_validation_v1`for the exact checks and limits.
+  Next commit a separate paired graph-time plan for representative2/4-query
+  shapes,with resets/reference calculations outside timing,eligible batches
+  and clean speed distinct from tracing. The161ms observer service is still
+  only a mechanism hypothesis;the limiting physical resource remains unknown.
+  No engine integration or model-gain claim follows;retire the prototype if
+  its performance screen fails. Keep the standalone fixture only through that
+  immediate decision and reconcile the ended mapped-row/13-ELF consumers
+  before another engine generation.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the

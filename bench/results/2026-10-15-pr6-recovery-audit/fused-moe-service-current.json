@@ -342567,7 +342567,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "kv_planner_validation_v1": {
-    "stage": "built",
+    "stage": "closed",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -342929,12 +342929,58 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "full",
+        "complete": true,
+        "passed": true,
+        "GPU_executed": true,
+        "runtime_maps": {
+          "files": 34,
+          "sha256": "647df89d5d1dd26e84e0c39ae11f3ff68191f539ecbde9c4b88b324ecc342be8",
+          "unknown": 0,
+          "missing": 0
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 396840,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "counts": {
+          "kv_stream_resolve_component": 795,
+          "graph_correctness": 60,
+          "planner_context_graph": 15
+        },
+        "oracle_exact": true,
+        "numerical_only": true,
+        "physical262144_model_qualified": false,
+        "performance_qualified": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "active": false,
     "ownership_closed": true,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "GPU_executed": true,
     "model_executed": false,
     "host_command": [
