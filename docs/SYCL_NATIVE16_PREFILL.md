@@ -966,7 +966,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   compute participants;it does not exercise the canonical single-worker
   inline path. Record the actual startup worker footer and argv;changed row
   partitions/task counts prevent interpreting it as pure memory scaling.
-  Commit its own plan after this prefill comparison. If CPUexpert work is limiting,compare one actual format/
+  Source`85fb654ba4db67eef946c605a9aaaeee6230d307`and plan`72b7ea2bc`
+  now prepare`cpu_pool_capacity_v1`on the same330405engine,with scalar
+  KV0/copy0in both arms. Six fresh processes use5,1,1,5,5,1workers;each runs
+  the two thinking-on long-generation bodies from`decode_kv_20261114`.
+  Both actual frontend probes and three CPUcontrols pass normally with
+  closed ownership(no skips;unit0.003s). They check worker-only settings,
+  required actual pool footer,paired directions/work conservation and
+  invalid-cohort refusals. This is no native rebuild or new GPUqualification;
+  model samples remain pending. The new admission consumes the closed
+  compact records after the old generated configurations are retired.
+  If CPUexpert work is limiting,compare one actual format/
   NT at fixed work over hot and rotating footprints before choosing a kernel
   change. Separate any CPUcensus/service observer and its overhead from clean
   speed. Existing decode timing counters alone are wall-time regions.
