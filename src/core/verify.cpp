@@ -1221,8 +1221,8 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 const VerifyKvShape kv_shape{n, st.map.n_blocks, st.map.n_slots,
                     s.page_size, s.n_head_kv, s.head_dim, cap_,
                     st.kv_mode == 1 && qsa_kv_format(st) == kKvInt8};
-                if (verify_coalesced_kv(decode_kv_coalesced_, input, kv_shape)) {
-                    kv_stream_resolve_with_coalesced_plan(st.map, qsa_attn_pools(st), st.host,
+                if (decode_verify_coalesced_kv(decode_kv_coalesced_, input, kv_shape)) {
+                    decode_kv_stream_resolve_coalesced(st.map, qsa_attn_pools(st), st.host,
                         kKvInt8, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount,
                         n, cap_, s, cs, 0);
                     ++graph_window.kv_coalesced_calls;
