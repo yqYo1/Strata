@@ -793,7 +793,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   model check. This qualifies the observed route/state handoff, not sustained
   TG, clean PP/TTFT, task/agent, physical model 262144/RESTORE, ordinary teardown
   or default adoption. Next repair API/native-segment journal binding and
-  commit a repeated thinking-enabled long-generation comparison. The corrected
+  commit a repeated thinking-enabled long-generation comparison. The model's
+  successful raw output/cache is retired after source/recipe recovery:
+  58 files, 11231037 regular bytes. Individual request/capture evidence and
+  conservation/format/upload totals remain; 256 unused histogram bins are
+  omitted from the maintained result. The corrected
   `decode_kv_policy_host_v2`check from`ba7715d00`passes all four CPUcommands:
   actual policy compilation,actual SYCL Verifier syntax,link and fixture
   execution,with874compiler/23link inputs and closed ownership. V1's incorrect
