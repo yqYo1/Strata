@@ -114,7 +114,11 @@ and its old speed figures remain in [their original document revision](https://g
 they do not describe the current selected engines.
 
 Default-branch promotion remains pending through PR 180. Main ruleset `24638744`
-permits only squash PR merges. Before merging, verify that every original
+permits only squash PR merges. The normal squash attempt for `fbe45f1b1` on
+November 14 UTC is refused by the active update restriction
+(`update_allows_fetch_and_merge=false`). PR 180 remains open; no administrative
+bypass is authorized. All 172 CSV source/evidence references are verified on the
+pushed permanent primary. Before merging, verify that every original
 source/evidence commit referenced by the performance CSV remains an ancestor
 of the pushed, permanent `feature/sycl`, and keep automatic head deletion
 disabled. Under the project workflow, the default may receive the PR content

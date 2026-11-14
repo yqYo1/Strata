@@ -5263,13 +5263,15 @@ their sustained comparison and broader model qualification remain pending.
 Required tracking/recovery/alias/API/CLI imports and hardware-tuned unmodified
 upstream measurements remain incomplete. Source and evidence are published on
 `feature/sycl`. Default integration is pending through PR180 under main's
-squash-only rule24638744. All92CSV source/evidence commits are verified ancestors
+squash-only rule24638744. All 172 CSV source/evidence commits are verified ancestors
 of the pushed permanent primary and automatic head deletion is disabled. The
 project workflow permits a default content snapshot while preserving all those
-original identities on `feature/sycl`. The ordinary squash attempt at `514111ac9`
-was also rejected: the active ruleset restricts updates, with
+original identities on `feature/sycl`. The latest ordinary squash attempt at
+`fbe45f1b1` on November 14 UTC is rejected: the active ruleset restricts updates,with
 `update_allows_fetch_and_merge=false`. Admin merge permission for this concrete
-PR is pending; no protection bypass or rule change was performed. After an
+PR is pending; PR 180 remains open and no protection bypass or rule change was
+performed. Continue tuning on the pushed primary while default publication
+awaits an authorized route. After an
 authorized merge, merge the updated default back normally and verify the original
 identities again. The last
 verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce5c`.
