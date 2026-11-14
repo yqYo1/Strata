@@ -1553,18 +1553,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   command builder consumes supplied args. Its supported existing-terminal
   `worker-start`can own that recognized terminal with matching worktree.
   This conditional composition is supported;cwd is not confinement.
-  Current Codex0.167.1CLI/help/binary is checked. AEprimary-doc findings
-  are under native Luna-max AFreview for a prospective exact-child sandbox
-  canary;actual report-only writes,recognition,worker IPC and handle/Dispatch
-  binding remain unqualified. Xtraces Tto N's supervisor,whose ancestry/license
+  Current Codex0.167.1CLI/help/binary is checked and AFreview is complete.
+  The independent AGTask stops before launch:no supported callable raw
+  client exposing the required arguments/cwd is available in the checked
+  CLI/tool surface. AHnative Luna-max review confirms that prerequisite stop;
+  it does not establish global impossibility. No worker,helper,Task or
+  Dispatch is created. Actual report-only writes,recognition,worker IPC and
+  handle/Dispatch binding remain unqualified. A future documented client is
+  required before another canary;do not retry AG or guess RPC. The current
+  custom workspace-write policy requires sandbox network access for IPC;
+  AF's contrary network=false suggestion is rejected. Xtraces Tto N's supervisor,whose ancestry/license
   remain unresolved;do not reuse T/N/Wcode as an implementation basis.
   Current readiness and the two conditional source scopes are curated in
   `research-index.json`under`orca_research_wave_o_20261114.launch_review`.
-  Its latest APIreview digest hash is
-  `761ae5178037121bd3eef9c0aa03be709c4b046e88dc577bf91b60671c7cea3f`;
+  Its latest short review digest hash is
+  `7eb88accd1dd710e03bc47b2320acaf31fdec4a62dd68a22fa52bfa4db62421f`;
   Wproof hash is`2567c4e8fd73fdab3f846be55b7fe99591b4d7daaae4ec64e45734bb5d00044b`.
-  Keep only needed W/Zevidence through that next contract decision,then
-  retire superseded startup/review transactions. The prior exact NTrash/
+  Curated AG/AH facts are retained in the existing index;retire their ended
+  transaction files and superseded startup/review paperwork at the next
+  serialized CPU-process gap. Keep only substantive reusable findings and
+  the smallest needed W/origin evidence. The prior exact NTrash/
   credential-cleanup hold stays under`orca_deterministic_startup_n_20261114`.
   At that next boundary,check the superseded external
   `orca-narrow-ipc-connect-probe-20261106`for retirement using archived
