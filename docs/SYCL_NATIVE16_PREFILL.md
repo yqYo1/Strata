@@ -649,9 +649,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prepared with six fresh processes R,C,C,R,R,C:reference spec4,candidate spec2,
   four official warmups and both long thinking workloads per process. Native
   source stays14508;the new controller independently recovers its original
-  inputs/recipe and checks the retained engine,12fixtures,SDK/runtime and all15
+  inputs/recipe and checks the retained12ELFs,SDK/runtime and all15
   model assets. Today's native checkout is not substituted for that build.
-  Host/model execution and the comparison decision are pending. Judge reference
+  Both current-source frontend probes and the window/copy/draft host controls
+  pass with closed owners;native execution and the comparison decision remain
+  pending. Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
   changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
   model plan;otherwise retire the unused prototype to its original Git source.
