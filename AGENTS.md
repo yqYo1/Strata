@@ -573,6 +573,8 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   conservation checks, conclusions and limits, with a pinned source/history link.
 - Keep **one latest known-good engine build** by default; retain another only for
   a **named imminent comparison**, normally at most two generations for A/B.
+  If a comparison needs both independent phase references, use the
+  [retention policy's bounded third-generation rule](docs/ARTIFACT_RETENTION.md#rebuildable-binaries).
   The newest build is not known-good merely because it compiled; select the
   retained generation from completed applicable validation.
   Count generations across all project worktrees, output paths and renamed copies.

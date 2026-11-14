@@ -346234,37 +346234,71 @@
         "bytes": 970017769,
         "inventory_retired": true,
         "retained_reference_unchanged": true,
-        "legacy_remaining": {
-          "gu-small-model-native-v2": {
-            "qualification": "Original mixed Gemm-class partial relink remains ineligible;fresh14508rebuild already supersedes it.",
-            "missing": "Recover original213dd wrapper and patched GUcomponent compile recipe against dc645 archive-member source census.",
-            "consumer": "Original-input recovery only;not a runtime or speed reference.",
-            "next": "Bounded recovery of the recorded mixed inputs,then retire;review at new full-engine build closure."
-          },
-          "adaptive-payload-audit-model-v2": {
-            "qualification": "Old audit engine is superseded;its external-inputs.json is still the active SDK manifest.",
-            "missing": "Compare568native/115controller Git maps with1453compiler inputs and29frozen linker inputs.",
-            "consumer": "Source/recipe recovery only;preserve SDK manifest/receipt without old engine outputs.",
-            "next": "Complete that exact input-map comparison and retire build/source while retaining the live SDK manifest;review at new full-engine build closure."
-          },
-          "dflash2-cache-loan-native-v1": {
-            "qualification": "Closed earlier DFlash2route;no imminent comparison uses this executable.",
-            "missing": "Private CLIv3receipt absent;recover its committed actual-census reference before checking591c2fbe native source and final inputs.",
-            "consumer": "Source/recipe recovery only;current engine includes the maintained feature port.",
-            "next": "Recover the pinned CLIcensus from Git/status and retire the old engine;review at new full-engine build closure."
-          }
-        },
+        "legacy_remaining": {},
         "build_closure_review": {
           "candidate_key": "decode_kv_native_v1",
           "candidate_source": "1eec28c77f393d34814dc748502113514973ea8e",
           "normal_retired_roots_still_absent": true,
-          "legacy_engine_roots_still_present": [
+          "legacy_engine_roots_still_present": [],
+          "consumer": "Retain only the actual adaptive SDKmanifest plus source/recipe/census provenance;all13ended original engine/fixture ELFs are retired.",
+          "next_review": "Before the naming-only generation,verify the two live phase references and finite temporary-third-generation consumer;do not retain another candidate before selection/retirement."
+        },
+        "legacy_retirement": {
+          "complete": true,
+          "roots": [
             "gu-small-model-native-v2",
             "adaptive-payload-audit-model-v2",
             "dflash2-cache-loan-native-v1"
           ],
-          "consumer": "Exact original-source recovery only;none is a qualified runtime/speed reference. Preserve the adaptive external-inputs.json SDK map.",
-          "next_review": "Perform the recorded bounded original-input comparisons at the next native-qualification planning boundary;do not count legacy holds as fresh comparison generations or claim global retirement."
+          "files": 933,
+          "regular_bytes": 334847897,
+          "manifest_sha256": "8dab9fda693031823519c6c6fb1270d69ea1b7d7ac94aa46907bf817cc543bf9",
+          "manifest_bytes": 455738,
+          "manifest_retired": true,
+          "retained_provenance_SDK_census": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-small-model-native-v2/record.json",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/compiler-inputs.json",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/record.json",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/record.json"
+          ],
+          "original_source_commits": {
+            "GU": [
+              "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
+              "213dd970f757460d15b13c994ff17a8f42c88d18",
+              "53bd39540ef42ac1e891841d381f676837587c16"
+            ],
+            "adaptive": [
+              "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
+              "a330eb7fbd300d6f2755be51f8419e33ab3fd89e"
+            ],
+            "DFlash2": [
+              "591c2fbe3116c7e6172566646b5ded4a0526b761"
+            ]
+          },
+          "recovery_checks": {
+            "compiler_maps": [
+              1467,
+              698,
+              1453,
+              1461
+            ],
+            "uncovered": 0,
+            "frozen_link_maps": [
+              29,
+              29,
+              29
+            ],
+            "live_SDK_compiler_link_files": 1227,
+            "final_original_ELFs": 13,
+            "all_final_ELF_hashes_matched": true,
+            "adaptive568_native_and115_controller_pure_Git_composition_recovered": true,
+            "original_GU_recipe_composition_recovered": true,
+            "current_qualifier_reads_only_legacy_SDK_manifest": true
+          },
+          "original_partial_GU_relink_still_runtime_and_speed_ineligible": true,
+          "reference_and_current_ELFs_unchanged": 25,
+          "limits": "Only these three ended generations are retired. Original failed outcomes and measured identities remain unchanged;the adaptive SDKmanifest and five provenance/census files remain live. No global artifact-cleanup or new runtime qualification claim."
         }
       },
       "timing_fixture_retirement": {

@@ -128,6 +128,12 @@ Keep one current known-good engine build by default. Retain an additional
 baseline/candidate generation only for a named, imminent comparison; normally
 this means at most two generations. Record their consumer and remove the extra
 build when the comparison closes, rather than waiting for storage pressure.
+If one immediate comparison needs both independently retained phase references
+and a new coherent candidate, declare that temporary third generation and its
+closure/retirement point before building. Preserve both references through its
+applicable validation; select and retire the superseded generation before
+creating the next candidate. This does not renew ended generations or unresolved
+provenance holds.
 Known-good means that the applicable validation completed; the newest build or
 a successful compilation alone does not establish that qualification.
 Close in this order:

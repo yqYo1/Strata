@@ -932,12 +932,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1210files/970017769regular bytes. Original source receipts and still-consumed
   SDK/census metadata remain;the known-good14508engine is unchanged and the
   separate1e776timing fixture is now retired as recorded above. The partial
-  GU,adaptive audit and old DFlash2special-format
-  provenance holds remain separate,with exact recovery actions in
-  `production_preparation.build_retirement`. The build-closure inventory confirms
-  that only those three legacy engine roots remain alongside the validated
-  reference and current candidate among these reviewed paths;no global cleanup
-  is claimed. The fresh native/model handoff stages above are closed;the
+  GU,adaptive audit and old DFlash2special-format provenance holds are also
+  reconciled and retired,as detailed below and in
+  `production_preparation.build_retirement.legacy_retirement`. Among these
+  reviewed engine paths,only the validated reference and current candidate
+  retain executable generations;no global cleanup is claimed.
+  The fresh native/model handoff stages above are closed;the
   separate repeated decode speed comparison and dedicated prefill comparison
   are closed,as is the separate cross-build comparison;both failed
   preservation results remain unresolved. The component alone did not qualify model TG;the
@@ -956,38 +956,41 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   or a hardware ceiling;per-layer job weights and cache reuse are unresolved.
   A bounded native Luna-max review of four existing reports confirms that
   their older source/service data do not qualify current14508/1eec resource
-  limits. The next CPUquestion is a clean5-versus1pool-worker comparison with
-  three independent processes per arm;it tests scheduling/critical-path
+  limits. The clean5-versus1pool-worker comparison closes with three
+  independent processes per arm;it tests scheduling/critical-path
   contribution,not arithmetic versus DRAM. In the current1eec native layout,
   `expert_pool_dispatch`also sends T1through`expert_pool_dispatch_multi`.
   `run_split_multi_native`uses`3*(workers+host)`row tasks for each GU/Down
-  phase,with host-side hidden quantization between them. Thus the proposed
+  phase,with host-side hidden quantization between them. Thus the completed
   5/1worker comparison retains host participation and has six/two potential
   compute participants;it does not exercise the canonical single-worker
   inline path. Record the actual startup worker footer and argv;changed row
   partitions/task counts prevent interpreting it as pure memory scaling.
   Source`85fb654ba4db67eef946c605a9aaaeee6230d307`and plan`72b7ea2bc`
-  now prepare`cpu_pool_capacity_v1`on the same330405engine,with scalar
+  define`cpu_pool_capacity_v1`on the same330405engine,with scalar
   KV0/copy0in both arms. Six fresh processes use5,1,1,5,5,1workers;each runs
   the two thinking-on long-generation bodies from`decode_kv_20261114`.
   Both actual frontend probes and three CPUcontrols pass normally with
   closed ownership(no skips;unit0.003s). They check worker-only settings,
   required actual pool footer,paired directions/work conservation and
-  invalid-cohort refusals. This is no native rebuild or new GPUqualification;
-  first5worker process now closes normally0with quiet validation,no fault
-  and absent/reaped owners. Evidence`6aca06bff`keeps code/prose3548/5485
-  native outputs,TG12.237382/7.718794and MTPacceptance0.803074/0.342952.
-  Both original request hashes and CPUentries/jobs match the earlier long
-  corpus;these are contemporary reference samples,not a speedup or completed
-  capacity decision. The first1worker+host process also closes normally0,
-  with identical output counts,acceptance and CPUentries/jobs for these bodies.
-  Its code/prose TGis7.983899/4.874395;one pair does not settle the prospective
-  three-pair capacity decision. Continue the unchanged5,1,1,5,5,1plan.
-  The741-source cohort also freezes AGENTS.md and the retention policy.
-  Apply the phase naming,separation and smallest-coherent-unit requirements
-  under Qualification and operating constraints immediately;mirror them into
-  AGENTS.md's existing tuning/measurement rules when this cohort closes.
-  Do not refresh its policy hashes to absorb a mid-cohort edit.
+  invalid-cohort refusals. All six processes close normally0with quiet
+  validation,no fresh fault,15matched model assets and absent/reaped owners.
+  Evidence`1325d67fe`preserves every individual sample. For code/prose,
+  5worker+host TGmedians are12.210823/7.617721with ranges7.563689..12.237382
+  and4.732473..7.718794;1worker+host medians are7.983899/4.985458with ranges
+  7.143063..8.003741and4.874395..5.042066. MTPacceptance stays0.803074/0.342952,
+  with3548/5485native outputs and matching request hashes and CPUentries/jobs
+  in every process. The three paired1/5TG ratios are0.652419,0.584978,1.058180
+  for code and0.631497,0.654455,1.065419for prose. Both directions are mixed:
+  the original all-three gate is inconclusive,despite geometric means0.739166/
+  0.760777. Retain the slowed third reference;do not discard it as noise or
+  claim CPUarithmetic,DRAM or scheduling saturation. Four CSVrows index the
+  two worker counts and two bodies. This is no native rebuild,speedup or
+  inference adoption,and does not revise either failed prefill screen.
+  The741-source cohort froze AGENTS.md and the retention policy throughout.
+  Its source/policy hashes remain unchanged in the original receipt. After
+  normal closure,merge`38ecca0ee`integrates original`6b6098593`into the primary:
+  phase ownership,naming and smallest-coherent-unit rules now live in AGENTS.
   The source-only child`tune/phase-kv-isolation`prepares the next two units
   without changing this cohort's primary tree. Its policy commit`6b6098593`
   carries those AGENTS rules. Unit`ae74403d1`only renames the decode KVentry
@@ -1004,8 +1007,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a fresh14-target coherent build. The controller is committed but not yet
   executed or qualified;its explicit temporary-third-generation consumer is
   the sole-change naming comparison,preserving both phase references.
-  After closing CPUcapacity and reconciling the three legacy build holds,
-  qualify and compare the original units separately before their combination;
+  CPUcapacity is closed and the three legacy build holds are reconciled and
+  retired. Qualify and compare the original units separately before combination;
   the second unit must not inherit an unpassed first-unit gate. Rebuild every
   affected TU and require actual production phase routing,component oracles,
   matched prefill/TTFT and sustained decode preservation. A split's result
@@ -1046,11 +1049,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   to their recovered project/dependency sources or the original SDKmanifest,
   with zero uncovered inputs. All three29-file frozen-link maps also match
   that manifest. This is source-census/membership proof,not new execution or
-  qualification. Before another engine generation,check live SDK/link/ELF
-  bytes and current consumers,then retire the ended builds at a serialized
-  safe boundary. The three holds remain pending until those checks and actual
-  cleanup finish;the active SDKmanifest itself must be preserved.
-  Legacy holds remain separate.
+  qualification. Final live checks match1227SDK/compiler/link files and all
+  13original ELFs;the original GUcontroller and one-archive link recipe match
+  their Git/controller records. At the serialized closure,all three ended
+  build/source trees are retired:933files/links,334847897regular bytes.
+  Five original provenance/census/SDKfiles remain,including the actively read
+  adaptive external-inputs.json;all25fast-reference/current ELFs are unchanged.
+  The455738-byte deletion inventory is itself retired after reconciliation,
+  with hash8dab9fda693031823519c6c6fb1270d69ea1b7d7ac94aa46907bf817cc543bf9
+  and compact decision in`production_preparation.build_retirement.legacy_retirement`.
+  `legacy_remaining`is empty;the old mixed GUrelink stays runtime/speed
+  ineligible. This closes these three holds,not global artifact cleanup.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
   verified actual layer/format/jobs/NTcorpus for the next prospective policy.
@@ -5062,9 +5071,11 @@ cannot establish which constituent changes to adopt or conceal a phase loss.
 Preserve the qualified runtime safety settings and immutable pre-exec
 SYCL/Level Zero environment in
 [`measurement_environment.json`](../tools/sycl/measurement_environment.json).
-No provider-teardown claim follows from this setting. Keep exactly one validated
-fallback plus a named imminent candidate while that comparison is active; do
-not infer global cleanup from the current-build inventory. Keep unresolved
+No provider-teardown claim follows from this setting. Normally retain one validated
+fallback plus a named imminent candidate while that comparison is active. When
+both independent phase references are needed, follow the
+[bounded third-generation rule](ARTIFACT_RETENTION.md#rebuildable-binaries).
+Do not infer global cleanup from the current-build inventory. Keep unresolved
 legacy source/recipe recovery holds separate from these two comparison
 executables, with the missing inputs, consumer, next bounded recovery action
 and review point recorded in the retained-build result. Use the current build
