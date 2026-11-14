@@ -1025,8 +1025,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   has a named prefill-preservation consumer;the standalone timing fixture's
   generation is retired after exact original source/recipe recovery. Active
   retained admission does not call the archive-only component prerequisite.
-  The separate legacy provenance holds still require their recorded recovery
-  actions before another engine generation.
+  Legacy source recovery now verifies the GUbaseline's1152project inputs,
+  its four213dd overlay inputs and13actual project headers;the old mixed
+  Gemm definition remains ineligible. DFlash2's841project inputs and both
+  dependency maps are recoverable,and its retired CLIcensus is still present.
+  Adaptive's115controller and568composed native inputs plus exact recipe are
+  recovered using the originalbbd345checkout. Its already-retired558-source
+  prerequisite is expanded from the original Git count/hash scope;no private
+  receipt is rewritten or execution qualification inferred. The temporary
+  `.worktree/retire-adaptive-source`checkout is source-recovery data only.
+  Before another engine generation,finish binding the1467/698GU,1453adaptive
+  and1461DFlash2compiler maps,original link/recipe and final ELF inputs,then
+  retire the ended builds and this checkout at a serialized safe boundary.
+  The three holds remain pending until those checks and actual cleanup finish.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
