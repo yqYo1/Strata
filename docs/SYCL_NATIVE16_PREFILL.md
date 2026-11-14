@@ -747,7 +747,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   twelve ELFs. See`kv_planner_speed_v1`for the exact checks and limits;the prior
   numerical fixture remains recoverable from`945dea2ee`and its committed result.
   Its old build is retired after exact source/recipe/compiler/link recovery;
-  the validated timing fixture is now retained for the immediate comparison.
+  the timing fixture was retained through the immediate comparison. That
+  standalone generation is now retired after1222project/291ggml/906TLA source,
+  718compiler/24link-input,five-object and original recipe recovery:
+  37files/2823683bytes. All25fallback/candidate native ELFs are unchanged.
   The separate paired graph-time plan is committed for2/4-query INT8shapes,
   5120resident pages,full cache and zero/quarter/all selected pages missing.
   It declares R,C,C,R,R,Cfresh processes,500mswarmup,750mscalibration and three
@@ -859,9 +862,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   only a mechanism hypothesis;the limiting physical resource remains unknown.
   No default adoption or hardware-saturation claim follows. The opt-in hook
   has a named prefill-preservation consumer;the standalone timing fixture's
-  comparison consumer has ended. Retire that fixture after exact original
-  source/recipe recovery and reconcile the ended mapped-row/13-ELF consumers
-  before another engine generation.
+  generation is retired after exact original source/recipe recovery. Active
+  retained admission does not call the archive-only component prerequisite.
+  The separate legacy provenance holds still require their recorded recovery
+  actions before another engine generation.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
