@@ -828,7 +828,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Preserve this unresolved first-use result rather than dismissing it as noise.
   Dedicated first/warmed32K/64K prefill/TTFT preservation checks remain.
   The default flag stays0;no candidate adoption follows. Broader adoption
-  gates remain open. See
+  gates remain open. After734original controller-input and native recipe/census
+  checks,the six-process cohort retires424successful raw/cache files
+  (78601580bytes)and its75376-byte temporary manifest. All12config/plan hashes,
+  both engines,individual samples and original outcomes are unchanged. See
   `long_generation_segment_metrology_v1`in the linked result. The model's
   successful raw output/cache is retired after source/recipe recovery:
   58 files, 11231037 regular bytes. Individual request/capture evidence and
