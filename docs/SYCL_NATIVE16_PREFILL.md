@@ -1002,8 +1002,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   (scalar-file SHA34418f3b0b5ae8c2b4e0a217d54413197f60246c9e76299a22298619300bde57).
   Removing the old definition,adding its independently compiled replacement
   and linking both production/fixture targets form one required link unit.
-  B2,the scalar14508restoration,is separate and pending;its original bytes
+  B2,the scalar14508restoration,is a separate pending target;its original bytes
   remain recoverable with SHA4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696.
+  Do not measure its whole-file restoration as one unexplained change:after B1,
+  independently compare removal of the unreachable cooperative branch,restoring
+  the victim-selection body inside the scalar kernel,and removal of its extra
+  scalar adapter,then their combination. Commit the exact unit plans first.
+  Scalar`qsa_kv_resolve`still serves Verifier fallback/width1as well as prefill;
+  B1separates only cooperative decode. Preserve that decode scalar path through
+  an explicit independent selection before changing prefill scalar processing;
+  B1alone does not establish complete phase separation.
   The new decode source is extracted from the owned1eec implementation;
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
   are unchanged. The independent expert-dispatch bounds fix is preserved.
