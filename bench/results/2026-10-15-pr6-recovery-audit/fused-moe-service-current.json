@@ -342873,12 +342873,69 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "cases": [],
+    "cases": [
+      {
+        "mode": "smoke",
+        "complete": true,
+        "passed": true,
+        "GPU_executed": true,
+        "runtime_maps": {
+          "files": 34,
+          "sha256": "647df89d5d1dd26e84e0c39ae11f3ff68191f539ecbde9c4b88b324ecc342be8",
+          "unknown": 0,
+          "missing": 0
+        },
+        "tracing": {
+          "bytes": 621706,
+          "sha256": "2855643652aecc206f44465d9b4c0d9ebb329166b5518a248961aa918ec8f10f",
+          "calls": {
+            "urCommandBufferCreateExp": 5,
+            "urCommandBufferFinalizeExp": 5,
+            "urEnqueueCommandBufferExp": 20,
+            "urCommandBufferReleaseExp": 5
+          }
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 393418,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "counts": {
+          "kv_stream_resolve_component": 0,
+          "graph_correctness": 20,
+          "planner_context_graph": 0
+        },
+        "oracle_exact": true,
+        "numerical_only": true,
+        "physical262144_model_qualified": false,
+        "performance_qualified": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "complete": false,
-    "passed": true,
-    "GPU_executed": false,
+    "passed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "host_command": [
       "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
