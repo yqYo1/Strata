@@ -1021,7 +1021,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The fresh host stage closes normally with all owned children reaped and
   empty sessions:MAXT/physical admission and hash-order guards,reader controls,
   owner/configuration refusals,phase policy and retained1eecselected-head check.
-  Device numerical execution remains pending;KVoracle,model handoff
+  The traced small submission stage also closes normally0with accepted
+  pre-main/provider validation,no fresh fault and absent/reaped owners.
+  Remaining device numerics are pending;KVoracle,model handoff
   and per-unit speed comparison still follow only after their prerequisite gates.
   Its temporary-third-generation
   consumer is the sole-change naming comparison,preserving both phase references.
