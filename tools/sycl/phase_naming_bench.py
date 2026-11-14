@@ -11,6 +11,7 @@ import importlib.util
 import json
 import math
 from pathlib import Path
+import re
 import socket
 import statistics
 import sys
@@ -27,6 +28,7 @@ THIS, TEST = 'tools/sycl/phase_naming_bench.py', 'tools/test_phase_naming_bench.
 PYTHON, RUNS, ARMS, WORKLOAD_ID = kv.PYTHON, prefill.RUNS, kv.ARMS, kv.WORKLOAD_ID
 MODE, ROOT, KEY = None, None, None
 require, sha, signature = model.require, model.sha, model.signature
+UNIT_TESTS = ['tools.test_phase_naming_bench', *prefill.UNIT_TESTS]
 BUILDS = {
     'reference': ('decode-kv-native-v1', 'decode_kv_native_v1',
         '6c05d9a4dd6d813627672d9c9badd61daa173b90',
@@ -254,6 +256,11 @@ def current(row):
                 and kv.runner.comparison.fingerprint(environment(row, plan)) == plan['environment_sha256'],
                 'exact generated launcher/configuration/environment changed')
     kv.shared.models.model_pins(row['configuration'], row['model_assets'], full=False)
+    if row['host_passed']:
+        unit = row.get('host_unit_evidence', {})
+        require(unit.get('passed') and unit.get('ownership_closed') and unit.get('exit_code') == 0
+                and unit.get('tests') == UNIT_TESTS and unit.get('count') == 10
+                and unit.get('source_commit') == row['source_commit'], 'closed frozen controller controls required')
     return files, manifest
 
 
@@ -328,6 +335,29 @@ def context():
             decision=decision, compact=compact, save=save).items(): setattr(ctx, key, value)
     ctx.api_window = lambda text, sample, row, arm: kv.api_window(text, sample, row, 'candidate')
     return ctx
+
+
+def host():
+    kv.runner.comparison.host(context())
+    row = json.loads((ROOT / 'record.json').read_text())
+    owner = kv.build.supervision.Owner(ROOT / 'unit')
+    evidence = dict(passed=False, source_commit=row['source_commit'], tests=UNIT_TESTS, count=10)
+    try:
+        entry, out, err = owner.run('unit', [PYTHON, '-B', '-m', 'unittest', *UNIT_TESTS],
+            environment(row, row['plans'][0]), P, wall=90, cpu=60, rss_cap=1 << 30,
+            text_cap=128 << 10, file_cap=1 << 20, total_cap=4 << 20)
+        text = out.read_text() + err.read_text()
+        require(kv.build.supervision.closed(entry) and entry['exit_code'] == 0
+                and re.search(r'Ran 10 tests in [0-9.]+s', text) and text.rstrip().endswith('OK'),
+                'source-bound benchmark identity/decision controls failed')
+        evidence.update(passed=True, exit_code=0)
+    except BaseException as error: evidence['error'] = repr(error)
+    finally:
+        evidence['ownership_closed'] = owner.active is None and all(kv.build.supervision.closed(v) for v in owner.commands)
+        row.update(host_unit_evidence=evidence, host_passed=bool(evidence['passed'] and evidence['ownership_closed']))
+        if not row['host_passed']: row.update(stage='failed', passed=False, complete=False)
+        save(row)
+    require(row['host_passed'], 'controller tests or ownership failed')
 
 
 def prepare():
@@ -405,7 +435,7 @@ if __name__ == '__main__':
             with (ROOT / ('host-attempt.json' if action == 'host' else action + '/attempt.json')).open('x') as f:
                 json.dump(dict(action=action, result_key=KEY), f)
             try:
-                if action == 'host': kv.runner.comparison.host(context())
+                if action == 'host': host()
                 elif MODE == 'prefill': kv.runner.comparison.run(int(action), context())
                 else: context().run(int(action))
             except BaseException as error:
