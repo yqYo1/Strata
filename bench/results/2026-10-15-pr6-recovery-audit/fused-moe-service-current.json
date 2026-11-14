@@ -340558,7 +340558,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "dad1b54f6edfe5f48972f007d5f540fd72ae569a",
     "native_observer_admission": {
       "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
@@ -341149,6 +341149,27 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "index": 1,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": false,
+        "error": "RuntimeError(\"owned benchmark failed: RuntimeError('protocol EOF before expected line')\")",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_passed": true,
@@ -341197,6 +341218,45 @@
       "rejected_changed_bases": 3,
       "copy_and_draft_controls": true,
       "GPU_executed": false
+    },
+    "post_failure_closure": {
+      "checked_utc": "2026-11-14T01:29:37.405554+00:00",
+      "closed_after_failure": true,
+      "original_failed_owner_observation_preserved": true,
+      "owned_identities": [
+        {
+          "pid": 144418,
+          "start_ticks": 296812692,
+          "sid": 144418,
+          "pgid": 144418
+        },
+        {
+          "pid": 144426,
+          "start_ticks": 296812720,
+          "sid": 144418,
+          "pgid": 144418
+        },
+        {
+          "pid": 144465,
+          "start_ticks": 296812825,
+          "sid": 144418,
+          "pgid": 144465
+        },
+        {
+          "pid": 144474,
+          "start_ticks": 296812852,
+          "sid": 144418,
+          "pgid": 144465
+        }
+      ],
+      "all_original_processes_absent": true,
+      "session_empty": true,
+      "actual_native_executed": true,
+      "actual_native_exit_code": 2,
+      "long_request_started": false,
+      "refusal": "cache scratch lease requires serve, native dense bank, profiled borrowing, spec4 with MTP or DFlash2 without MTP, and one GPU without token graphs/vision/remote experts",
+      "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "next": "Preserve spec4 allocation/prefill cache loan;use existing --mtp-max-t2 in a new committed comparison. V1remains failed,no retry or adoption."
     },
     "source_inputs": {
       "files": 751,

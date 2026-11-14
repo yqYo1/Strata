@@ -656,10 +656,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with quiet validation,closed owners,no fresh fault and actual spec4argv.
   Code/prose have33213/33283fresh inputs,3548/5485outputs,TG14.0220/8.82839,
   and observed acceptance80.3074%/34.2952%. Both reference classes and long
-  thinking/answer gates pass;the paired comparison remains pending. These are
+  thinking/answer gates pass. V1then stops before candidate warmups:changing
+  global spec to2triggers the existing cache-scratch admission refusal. Actual
+  native exit is2,with no fresh fault;all four owned processes and their session
+  are now absent. The original incomplete owner observation and failed trial
+  remain failed,with separate later closure evidence. These are
   new fixed-id workload samples,not a matched regression comparison to the
-  earlier id. Keep its13.2MBraw output only through the imminent first paired
-  candidate's body/eligibility review,then retire consumed raw evidence.
+  earlier id. Retire its consumed raw output after source/recipe recovery.
+  The next prospective comparison must keep spec4allocation/prefill borrowing
+  in both arms and use existing --mtp-max-t0/2for actual MTPwidth. It needs a
+  fresh plan and processes;V1does not become a successful comparison.
   Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
   changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
