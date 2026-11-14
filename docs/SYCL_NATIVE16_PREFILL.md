@@ -1036,10 +1036,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `.worktree/retire-adaptive-source`checkout's source-only consumer is closed;
   its973regular files(13916535bytes)are retired after verifying a clean tree
   and the originalbbd345commit's reachability from the pushed primary.
-  Before another engine generation,finish binding the1467/698GU,1453adaptive
-  and1461DFlash2compiler maps,original link/recipe and final ELF inputs,then
-  retire the ended builds at a serialized safe boundary.
-  The three holds remain pending until those checks and actual cleanup finish.
+  The1467/698GU,1453adaptive and1461DFlash2compiler maps now bind completely
+  to their recovered project/dependency sources or the original SDKmanifest,
+  with zero uncovered inputs. All three29-file frozen-link maps also match
+  that manifest. This is source-census/membership proof,not new execution or
+  qualification. Before another engine generation,check live SDK/link/ELF
+  bytes and current consumers,then retire the ended builds at a serialized
+  safe boundary. The three holds remain pending until those checks and actual
+  cleanup finish;the active SDKmanifest itself must be preserved.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
