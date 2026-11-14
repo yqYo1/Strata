@@ -349778,5 +349778,77 @@
         "errors": []
       }
     ]
+  },
+  "long_generation_segment_metrology_v1": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "scope": "Offline API/native metrology and original-build reuse; no new GPU/model/speed qualification.",
+    "journal_source_commit": "4eeb079de8c3364ddf6a5908b1fb939d06422813",
+    "segment_source_commit": "5228b1ee7ac5bba6ecb18afe681b7567a361af60",
+    "retained_reader_source_commit": "781268737f6e30b83a5c9457816da539c9668d89",
+    "host_python": {
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "regression_reproduction": {
+      "source_commit": "5adc1e2f93e0e34e20c47f3830a08a5d4d60ff45",
+      "tests": 2,
+      "exit_code": 1,
+      "failure": "At the end gate only start existed; a gate refusal wrote interrupted instead of preserving the completed API sample."
+    },
+    "journal_suite": {
+      "source_commit": "4eeb079de8c3364ddf6a5908b1fb939d06422813",
+      "exit_code": 0,
+      "tests": 70,
+      "skipped": 1
+    },
+    "segment_suite": {
+      "source_commit": "5228b1ee7ac5bba6ecb18afe681b7567a361af60",
+      "exit_code": 0,
+      "tests": 73,
+      "skipped": 1,
+      "skip_reason": "Optional STRATA_BENCH_REAL_PACK real tokenizer fixture not enabled.",
+      "command": "PYTHONDONTWRITEBYTECODE=1 timeout 180s flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -B -m unittest tools.test_strata_bench tools.test_benchmark_evidence tools.test_strata_bench_failfast -q",
+      "coverage": "Durable result before gate; pending/failed gates cannot complete; begin/HTTP/digest errors and secondary end-gate errors remain separate; single/reused/reread continuation counts, clocks and drafts; 17 malformed/mismatched segment refusals."
+    },
+    "synthetic_historical_count_case": {
+      "native_generated_tokens": 14720,
+      "server_inserted_tokens": 18,
+      "API_generated_tokens": 14738,
+      "first_prompt_tokens": 33283,
+      "continuation_prompt_tokens": 45589,
+      "continuation_reused_cases": [
+        0,
+        45588
+      ],
+      "actual_historical_clock_or_new_model_measurement": false
+    },
+    "retained_build_controls": {
+      "source_commit": "781268737f6e30b83a5c9457816da539c9668d89",
+      "command": "PYTHONDONTWRITEBYTECODE=1 timeout 180s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -B tools/sycl/check_decode_kv.py retained-host",
+      "exit_code": 0,
+      "positive": 2,
+      "negative": 5,
+      "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+      "original_build_evidence_commit": "6c05d9a4dd6d813627672d9c9badd61daa173b90",
+      "engine_sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+      "compiler_census_sha256": "2457f798c17913b344a179549ab7ef7c5b30b3e497c03d16f2d4be5c34b596d2",
+      "coherent_objects": 138,
+      "translation_units": 135,
+      "same_build_ELFs": 13,
+      "proof_sha256": "c10da270745fedda88b4881b2ac633e7d4185a7a9fa0d58b82696fc23a6c7093",
+      "legacy_refusal_preserved": true,
+      "native_recompiled": false
+    },
+    "GPU_executed": false,
+    "model_executed": false,
+    "performance_qualified": false,
+    "inference_adopted": false,
+    "original_failed_trial": "decode_window_speed_v3 remains failed; no earlier API aggregate or performance result is repaired retroactively.",
+    "next": "Use the unchanged 330405 engine, pin actual server/tokenizer insertion IDs, and commit a new segment-aware six-process KV0/1 benchmark controller/plan with matched thinking-enabled long generations and prefill/TTFT preservation. Preserve existing native/model qualification; verify actual capture, ownership, runtime and asset identities.",
+    "retention": "Immediate consumer is the pending same-binary KV comparison. Keep only compact host outcomes and source references; no raw unit-test logs, tensor dumps or additional binaries produced. Validated baseline, current candidate, immediate KV fixture and three separate legacy source-recovery holds remain."
   }
 }

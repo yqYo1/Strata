@@ -792,8 +792,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   closed ownership and no fresh fault. Width2 has not been observed in this
   model check. This qualifies the observed route/state handoff, not sustained
   TG, clean PP/TTFT, task/agent, physical model 262144/RESTORE, ordinary teardown
-  or default adoption. Next repair API/native-segment journal binding and
-  commit a repeated thinking-enabled long-generation comparison. The model's
+  or default adoption. The API journal now persists its completed response
+  before end-gate approval and records pending/passed/failed gates separately.
+  A refused gate preserves the response without making the cohort complete.
+  Source`5228b1ee7`adds ordered native-segment accounting: the first API prompt,
+  each actual read/reuse extent, output/draft totals and summed rounded clocks
+  must bind. Server-inserted token lengths must be independently pinned;those
+  tokens stay outside native TG. The synthetic historical-count fixture binds
+  14720native outputs plus18insertions to14738API tokens,with either a reread
+  or reused continuation. The73-test host suite passes with one optional real
+  tokenizer fixture skipped. No actual API/GPU speed trial follows from this
+  offline test. The prospective retained-build reader at`781268737`also passes
+  two positive/five negative source/recipe/census/13-ELF checks, preserving the
+  original admission refusal. It recovers original build evidence`6c05d9a4`
+  and allows only explicitly pinned uncompiled Python deltas;it does not
+  rebuild or repeat GPU qualification. Next wire these checks into a fresh
+  committed six-process flag0/1comparison,including actual tokenizer-derived
+  insertion lengths, thinking and prefill preservation. See
+  `long_generation_segment_metrology_v1`in the linked result. The model's
   successful raw output/cache is retired after source/recipe recovery:
   58 files, 11231037 regular bytes. Individual request/capture evidence and
   conservation/format/upload totals remain; 256 unused histogram bins are
@@ -811,14 +827,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `production_preparation.build_retirement`. The build-closure inventory confirms
   that only those three legacy engine roots remain alongside the validated
   reference and current candidate among these reviewed paths;no global cleanup
-  is claimed. Next run fresh same-build CPU/GPU qualification and
-  commit a separate model comparison with prefill-preservation and
-  sustained-thinking gates. This
+  is claimed. The fresh native/model handoff stages above are closed;the
+  separate repeated speed comparison and prefill-preservation checks remain
+  open. This
   component result alone is no model TGgain or default adoption.
   Actual request overlap/hit distribution and physical bus traffic remain
   unknown. The161ms observer service is still
   only a mechanism hypothesis;the limiting physical resource remains unknown.
-  No engine integration or model-gain claim follows;retire the prototype if
+  No default adoption or model-gain claim follows;retire the prototype if
   its performance screen fails. Keep the standalone fixture only through that
   immediate decision and reconcile the ended mapped-row/13-ELF consumers
   before another engine generation.
