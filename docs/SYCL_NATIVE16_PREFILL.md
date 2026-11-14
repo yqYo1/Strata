@@ -652,8 +652,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   inputs/recipe and checks the retained12ELFs,SDK/runtime and all15
   model assets. Today's native checkout is not substituted for that build.
   Both current-source frontend probes and the window/copy/draft host controls
-  pass with closed owners;native execution and the comparison decision remain
-  pending. Judge reference
+  pass with closed owners;the first reference process is running and the
+  comparison decision remains pending. Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
   changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
   model plan;otherwise retire the unused prototype to its original Git source.
@@ -673,6 +673,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   guards. Clean14508remains the speed reference. No candidate clean-speed,
   dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
   teardown qualification follows. See mixed_nt_model_v1.
+  The separate cooperative KVplanner source is authored but uncompiled and
+  unselected. One256-work-item group prefetches selection/table data and marks
+  hits atomically;the leader preserves exact query-order miss discovery and
+  the existing clock policy. It adds2KiB local scratch,no persistent allocation
+  or CPUround trip. Existing serial selection/clock statements are preserved.
+  The observed161.75/162.20ms service in the failed-overhead profile motivates
+  a bounded component question,not a hardware-saturation or model-gain claim.
+  Provenance is the owned1e196a13SYCL policy,Niko's MITf3925cf0CUDA parallel-hit
+  design,and the Khronos [group-barrier](https://github.khronos.org/SYCL_Reference/iface/group-functions.html)
+  and [atomic-ref](https://github.khronos.org/SYCL_Reference/iface/atomic_ref.html)
+  contracts. The reference LICENSEbytes match this repository. Next consumer,
+  after the serialized window comparison,is a fresh fixture comparing all map/
+  counter/payload bytes,empty/invalid/overflow/epoch-wrap and262144boundaries,
+  capture/replay and paired graph timings. No engine integration or simultaneous
+  GPUtest is authorized by the source-only prototype;retire it if its screen fails.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
   preparation transaction is retired after exact controller recovery. Use the
