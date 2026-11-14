@@ -812,9 +812,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its76-test host suite has75passes and one optional-tokenizer skip;all15full
   asset hashes match and both actual benchmark/server frontend probes pass.
   The pinned tokenizer independently gives3close and18wrap-up IDs. The
-  comparison is underway;its first reference process closes normally with
-  both workloads eligible,closed ownership and no fresh fault. No completed
-  paired model speed result or candidate adoption follows;
+  comparison is underway;its first matched pair closes normally with both
+  workloads eligible,closed ownership and no fresh fault. Code TG changes
+  14.059052->15.001873tok/s and prose8.860578->9.446893tok/s,with identical
+  request/output/reasoning hashes and draft counts in this pair. Prompt time
+  and TTFT do not worsen. These are single-pair observations;two further
+  pairs and dedicated preservation checks remain. No candidate adoption follows;
   dedicated prefill/TTFT preservation and broader adoption gates remain open. See
   `long_generation_segment_metrology_v1`in the linked result. The model's
   successful raw output/cache is retired after source/recipe recovery:
