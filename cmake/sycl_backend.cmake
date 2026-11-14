@@ -88,7 +88,7 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
                                  src/kernels/sycl/attention.cpp src/kernels/sycl/native_flash_attn.cpp src/kernels/sycl/qsa_index.cpp
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
-                                 src/kernels/sycl/decode_attention.cpp src/kernels/sycl/prompt_attention.cpp src/kernels/sycl/kv_stream.cpp
+                                 src/kernels/sycl/decode_attention.cpp src/kernels/sycl/prompt_attention.cpp src/kernels/sycl/kv_stream.cpp src/kernels/sycl/decode_kv_stream.cpp
                                  src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s2_experts.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
                                  src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
@@ -163,7 +163,8 @@ add_executable(kv_copy_groups_host_fixture EXCLUDE_FROM_ALL tools/sycl/kv_copy_g
 target_compile_features(kv_copy_groups_host_fixture PRIVATE cxx_std_17)
 target_include_directories(kv_copy_groups_host_fixture PRIVATE ${PROJECT_SOURCE_DIR}/include)
 add_executable(sycl_kv_copy_groups_bench EXCLUDE_FROM_ALL
-  tools/sycl/kv_copy_groups_bench.cpp src/kernels/sycl/kv_stream.cpp)
+  tools/sycl/kv_copy_groups_bench.cpp src/kernels/sycl/kv_stream.cpp
+  src/kernels/sycl/decode_kv_stream.cpp)
 target_link_libraries(sycl_kv_copy_groups_bench PRIVATE strata_sycl_runtime)
 target_compile_options(sycl_kv_copy_groups_bench PRIVATE -fno-fast-math -ffp-contract=off)
 # Compile the production GDN source directly for this bounded component fixture;
