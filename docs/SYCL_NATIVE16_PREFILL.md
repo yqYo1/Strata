@@ -1038,6 +1038,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ownership gates remain intact. This is native component qualification only;
   KVoracle,model handoff
   and per-unit speed comparison still follow only after their prerequisite gates.
+  The independent naming-image checks now compare the exact330405and6d2b4f
+  production ELFs. V1`f6da849ab`passes36ordinary sections(22974831bytes),
+  load layout and24645normalized non-file symbols;AMreview identifies its
+  missing raw PT_LOADcoverage. Fresh V2`8139ae06a`also passes all four raw
+  initialized load segments(22813505file bytes),normalizing only the ELF
+  section-table offset at bytes40..47. The two byte totals overlap and are
+  not additive. Self/refusal controls pass(1positive/6negative in V1,
+  1positive/7negative in V2). Original V1and the Aperformance plan are unchanged;
+  this is static compatibility evidence,not throughput or model adoption.
+  A compatibility-only replacement remains a prospective decision requiring
+  the original numerical/state/production-handoff gates;B1/B2stay unbuilt.
   Its temporary-third-generation
   consumer is the sole-change naming comparison,preserving both phase references.
   CPUcapacity is closed and the three legacy build holds are reconciled and

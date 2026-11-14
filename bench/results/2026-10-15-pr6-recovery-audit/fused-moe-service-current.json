@@ -366455,5 +366455,119 @@
         "errors": []
       }
     ]
+  },
+  "phase_kv_naming_elf_evidence": {
+    "scope": "Production host/device code/data/layout comparison for the non-optimizing name unit;not throughput/model adoption.",
+    "inputs": {
+      "reference": {
+        "record_sha256": "1ab18db544e7af8cf00e355550dc6e25aed721ab09b011bbdb5e045947ae7923",
+        "source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata",
+          "sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+          "bytes": 26476224,
+          "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+        }
+      },
+      "candidate": {
+        "record_sha256": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c",
+        "source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+          "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+          "bytes": 26476232,
+          "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+        }
+      }
+    },
+    "runs": {
+      "v1": {
+        "controller_commit": "f6da849abb602bc2b291edc89f762bf8f398aa5f",
+        "controller_sha256": "3cac8a3f412ef45895cbbbb0d4ab8b835f297e0164dbe0e16fb73cfd3f8b172e",
+        "record_sha256": "62f5b58069f10737c991a97404225b21bc4df7f1005bde36a664d1a208101e92",
+        "complete": true,
+        "passed": true,
+        "controls": {
+          "positive": 1,
+          "refused": [
+            ".text",
+            ".rodata",
+            ".dynstr",
+            "program layout",
+            "symbol semantics",
+            "truncated ELF"
+          ],
+          "passed": true
+        },
+        "comparison": {
+          "equivalent": true,
+          "differences": [],
+          "equal_section_count": 36,
+          "equal_section_bytes": 22974831,
+          "equal_sections_sha256": "5b9c37ae2d35710dd455fbbe029c3c8b046e939fc2aa9c68b930254d453d6a3e",
+          "equal_static_symbol_count": 24645,
+          "metadata_exceptions": [
+            ".shstrtab",
+            ".strtab",
+            ".symtab"
+          ],
+          "section_table_file_offsets": [
+            26473728,
+            26473736
+          ]
+        }
+      },
+      "v2": {
+        "controller_commit": "8139ae06aa277b41f279950c545f585a5bf5e936",
+        "controller_sha256": "33306612d6e20ec9b34af21e4aeb35f8ca4ef9d80556eb358fbe4e67b3e70dc8",
+        "record_sha256": "df4288bdeee2d87107bce1e9103ab6a51dd2224ed24bdd31a21e0187f5cdf38f",
+        "complete": true,
+        "passed": true,
+        "controls": {
+          "positive": 1,
+          "refused": [
+            ".text",
+            ".rodata",
+            ".dynstr",
+            "program layout",
+            "raw load payload",
+            "symbol semantics",
+            "truncated ELF"
+          ],
+          "passed": true
+        },
+        "comparison": {
+          "equivalent": true,
+          "differences": [],
+          "equal_section_count": 36,
+          "equal_section_bytes": 22974831,
+          "equal_sections_sha256": "5b9c37ae2d35710dd455fbbe029c3c8b046e939fc2aa9c68b930254d453d6a3e",
+          "equal_static_symbol_count": 24645,
+          "raw_load_segments": 4,
+          "raw_initialized_load_file_bytes": 22813505,
+          "raw_loads_equal": true,
+          "raw_load_metadata_normalization": "Only ELF64e_shoff bytes40..47;not instructions/data or build-ID.",
+          "metadata_exceptions": [
+            ".shstrtab",
+            ".strtab",
+            ".symtab"
+          ],
+          "section_table_file_offsets": [
+            26473728,
+            26473736
+          ]
+        }
+      }
+    },
+    "review": {
+      "AL_sha256": "67c080885dca3fa861e80f6586bc5e931662059e54b065cc7220b2b72024e65c",
+      "AM_sha256": "ae701d315731a6bf9987798dfade7a1102db5a717729da5f028a4ecec82bb83c",
+      "AM_remaining_gap": "Raw PT_LOADfile bytes were not covered by V1;V2adds that prospectively and passes without changing V1.",
+      "remaining": "Original A performance plan remains active. Any compatibility-only replacement needs a new committed prospective decision plus original numerical/state/actual production-handoff gates. No A speed/model or B1/B2 adoption."
+    },
+    "original_performance_plan_unchanged": true,
+    "compatibility_control_adopted": false,
+    "performance_qualified": false,
+    "retention": "These compact observations support the pending A scope decision. Source f6/8139 remains on the active pushed child pending B1integration;preserve original identities before retiring that child. Keep private records only through that decision;normal Git history is the archive."
   }
 }
