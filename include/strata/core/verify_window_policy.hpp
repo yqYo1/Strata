@@ -16,6 +16,23 @@ constexpr bool valid_verify_input(VerifyInput input) {
     return input == VerifyInput::prompt || input == VerifyInput::decode;
 }
 
+struct VerifyKvShape {
+    int queries = 0;
+    int64_t logical_pages = 0, resident_pages = 0, page_size = 0;
+    int64_t kv_heads = 0, head_dim = 0, selection_capacity = 0;
+    bool streamed_int8 = false;
+};
+
+// 34cbaf29c: all six cells improved in each of three independent process
+// pairs. Keep this model-trial opt-in separate from prompt and other shapes.
+constexpr bool verify_coalesced_kv(bool enabled, VerifyInput input,
+                                   const VerifyKvShape& s) {
+    return enabled && input == VerifyInput::decode && s.streamed_int8 &&
+        (s.queries == 2 || s.queries == 4) && s.logical_pages == 65536 &&
+        s.resident_pages == 5120 && s.page_size == 4 && s.kv_heads == 2 &&
+        s.head_dim == 256 && s.selection_capacity == 2051;
+}
+
 // e44575158:q6_dense_c4_component_v2: these four non-head shapes won in
 // all three fresh processes against the production columns entry. Keep the
 // losing512-row shape and the separately faster sole-packed head unchanged.
@@ -96,6 +113,7 @@ public:
     VerifyWindowGraphCache& operator=(const VerifyWindowGraphCache&) = delete;
     struct Window {
         std::vector<Handle> layer, resident, pcie;
+        uint64_t kv_scalar_calls = 0, kv_coalesced_calls = 0;
         uint64_t q6_reference_calls = 0, q6_columns_calls = 0, q6_centered_calls = 0,
                  q6_native_half_calls = 0;
         // Packed target-head route is counted separately from canonical-row
@@ -141,6 +159,7 @@ public:
                 family->clear();
             }
             q6_reference_calls = q6_columns_calls = q6_centered_calls = q6_native_half_calls = 0;
+            kv_scalar_calls = kv_coalesced_calls = 0;
             q6_dpas_head_calls = 0;
             q6_packed_head_calls = 0;
             q6_dpas_dense_calls.fill(0);

@@ -84,9 +84,10 @@ void kv_stream_resolve_with_copy_groups(
     void* stream, uint32_t copy_group_cap);
 
 #ifdef STRATA_ENABLE_SYCL
-/// Unselected component candidate: cooperative reads/hit marks, with the exact
+/// Opt-in SYCL decode candidate: cooperative reads/hit marks with the exact
 /// serial miss order and clock policy. No additional persistent device storage.
-/// Requires its own numerical, capture, bounds and speed qualification.
+/// The caller owns phase/shape selection; component qualification alone does
+/// not establish model gain or default adoption.
 void kv_stream_resolve_with_coalesced_plan(
     const KvStreamMap& m, const QsaAttnPools& slots, const KvHostPools& host, int fmt,
     const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,

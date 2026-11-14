@@ -306,6 +306,7 @@ private:
     // runtime barrier snapshots a freshly recorded copy event outside capture.
     VerifyWindowGraphCache<cudaGraphExec_t> window_graphs_;
     VerifyInput last_input_ = VerifyInput::decode;
+    bool decode_kv_coalesced_ = false; // immutable opt-in; qualified INT8/C2,C4 only
     bool decode_q6_columns_ = false; // immutable after init; opt-in model candidate
     bool decode_q6_centering_ = false; // independent opt-in;18 measured column shapes only
     bool decode_q6_native_half_ = false; // immutable;26-cell incumbent intersection
