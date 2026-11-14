@@ -654,8 +654,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Original unexecuted V1preparation and V2protocol/V3API-name/V4timer failures
   stay in Git at245eecc93/bf67e3a0b/67d28b364/8b40f5c84. V5increases warmup/
   calibration rather than relaxing the250ms/1%bounds. No prior failure is
-  retroactively qualified. Retire consumed normal logs and superseded fixture
-  products after exact original-source/recipe/input recovery.
+  retroactively qualified. Consumed normal logs and superseded V1..4fixture
+  products are now retired after exact original-source/recipe/input recovery:
+  134files/7432029regular bytes. Current component admission and all retained
+  engine/fixture guards pass after deletion. Four obsolete active result copies
+  are retired to the exact history references above;current samples stay intact.
   The current engine remains for the ensuing named mechanism/model decision;retire the
   unused cache prototype at the next engine change,keeping independent bounds
   guards. Clean14508remains the speed reference. No candidate clean-speed,
