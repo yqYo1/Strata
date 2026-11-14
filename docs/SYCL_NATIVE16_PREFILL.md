@@ -645,8 +645,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   T2/20-row shape. Do not wire it into the measured hot path on that evidence.
   Next compare explicit spec2/spec4 configurations in the existing clean14508
   engine with matched long thinking/strong-and-weak-MTP workloads,before paying
-  for a new engine integration. This configuration screen is not prepared or
-  measured yet. A useful T2route may justify a separate decode-only row-copy
+  for a new engine integration. The prospective`decode_window_speed_v1`plan is
+  prepared with six fresh processes R,C,C,R,R,C:reference spec4,candidate spec2,
+  four official warmups and both long thinking workloads per process. Native
+  source stays14508;the new controller independently recovers its original
+  inputs/recipe and checks the retained engine,12fixtures,SDK/runtime and all15
+  model assets. Today's native checkout is not substituted for that build.
+  Host/model execution and the comparison decision are pending. Judge reference
+  strong/weak acceptance and report candidate acceptance independently,because
+  changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
   model plan;otherwise retire the unused prototype to its original Git source.
   Retain the current standalone89401e6b fixture only through that immediate
   configuration decision. Keep its engine siblings until the existing component
