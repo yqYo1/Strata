@@ -673,6 +673,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Source14508`src/core/verify.cpp:1585`prints prompt/decode explicitly. All
   owned processes are now absent,no fresh fault occurred,and the original
   failed observation stays failed with separate later closure evidence.
+  Its consumed raw output is retired after original source/recipe recovery;
+  the compact actual marker fixture remains for V3host admission.
   V3allows prompt widths1..4and requires actual selected2/4decode captures,
   checking the observed V2marker fixture before fresh model execution. No
   performance/length/thinking criterion changes. Judge reference
