@@ -343125,7 +343125,7 @@
     }
   },
   "kv_planner_speed_v1": {
-    "stage": "built",
+    "stage": "ready",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -343489,6 +343489,53 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "full",
+        "complete": true,
+        "passed": true,
+        "GPU_executed": true,
+        "runtime_maps": {
+          "files": 34,
+          "sha256": "8497feafb33c77a182f449c4688dee9656d64d0c31612957edb73cfe62df8068",
+          "unknown": 0,
+          "missing": 0
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 458283,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "counts": {
+          "kv_stream_resolve_component": 795,
+          "graph_correctness": 60,
+          "planner_context_graph": 15,
+          "planner_perf_cases": 12
+        },
+        "oracle_exact": true,
+        "numerical_only": true,
+        "physical262144_model_qualified": false,
+        "performance_qualified": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "active": false,
@@ -343558,7 +343605,7 @@
       "resource_limit": "Serial resolver service motivates the mechanism. No physical resource ceiling/saturation or actual bus-traffic measurement is established. Logical requested host payload is not measured PCIe traffic."
     },
     "processes": [],
-    "correctness_passed": false,
+    "correctness_passed": true,
     "host_controls": {
       "tests": 36,
       "skipped": 0,

@@ -715,11 +715,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
   teardown qualification follows. See mixed_nt_model_v1.
   The separate cooperative KVplanner remains unselected in production. Its
-  standalone fixture now builds from`945dea2ee`:five fresh TUs,718compiler
-  inputs/24external links,zero uncovered/reused objects and28passing host
-  controls. Binary`38c667d51`first passes14bounded semantics and20traced graph
+  standalone timing fixture now builds from`79ed58840`:five fresh TUs,718compiler
+  inputs/24external links,zero uncovered/reused objects and36passing host
+  controls. Binary`1e7765b60`first passes14bounded semantics and20traced graph
   replays,then795direct oracle records,60graph replays and15physical-tail
-  replays across three KVformats. Both owned processes exit0with quiet
+  replays across three KVformats,plus12timing-case records with two exact
+  replays each after map-only resets. Both owned processes exit0with quiet
   validation,closed ownership and no fresh fault;all34actual providers match.
   This is component numerical evidence,no model performance or physical262144
   qualification. One256-work-item group prefetches selection/table data and marks
@@ -739,10 +740,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   graph replays at the262143last cell. The target compiles its kernel and the
   three runtime TUs directly,without an engine/library rebuild. The committed
   recipe/controller recovers the original14508foundation and preserves its
-  twelve ELFs. See`kv_planner_validation_v1`for the exact checks and limits.
-  Next commit a separate paired graph-time plan for representative2/4-query
-  shapes,with resets/reference calculations outside timing,eligible batches
-  and clean speed distinct from tracing. The161ms observer service is still
+  twelve ELFs. See`kv_planner_speed_v1`for the exact checks and limits;the prior
+  numerical fixture remains recoverable from`945dea2ee`and its committed result.
+  The separate paired graph-time plan is committed for2/4-query INT8shapes,
+  5120resident pages,full cache and zero/quarter/all selected pages missing.
+  It declares R,C,C,R,R,Cfresh processes,500mswarmup,750mscalibration and three
+  >=250msisolated-interval sums per cell;map resets and oracle work are outside
+  timing. All three miss cells must improve in every paired process comparison
+  for that width to qualify for a separate model trial. Parameter validation
+  remains charged equally;API/device traces,events and profilers are absent.
+  Actual request overlap/hit distribution and physical bus traffic remain
+  unknown. The161ms observer service is still
   only a mechanism hypothesis;the limiting physical resource remains unknown.
   No engine integration or model-gain claim follows;retire the prototype if
   its performance screen fails. Keep the standalone fixture only through that
