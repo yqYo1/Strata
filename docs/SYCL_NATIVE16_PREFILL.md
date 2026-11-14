@@ -1007,8 +1007,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   it checks the original six-file mechanical rename and complete native-file
   set/bytes,refuses the later TU split,and requires legacy retirement before
   a fresh14-target coherent build. Its source/unit/recipe/provider admission
-  prepares`phase_kv_naming_native_v1`;configure/compile and all device/model
-  qualification remain pending. Its explicit temporary-third-generation
+  prepares`phase_kv_naming_native_v1`. Its28host census controls,configure
+  and actual planned-command collection close normally0;native compilation
+  and all device/model qualification remain pending. Its temporary-third-generation
   consumer is the sole-change naming comparison,preserving both phase references.
   CPUcapacity is closed and the three legacy build holds are reconciled and
   retired. Qualify and compare the original units separately before combination;
