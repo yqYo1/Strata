@@ -751,6 +751,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   timing. All three miss cells must improve in every paired process comparison
   for that width to qualify for a separate model trial. Parameter validation
   remains charged equally;API/device traces,events and profilers are absent.
+  The six processes now close0with108eligible samples,quiet validation,closed
+  owners and no fresh fault. Every cell improves in all three paired process
+  comparisons,so both widths2/4pass the declared component gate. Paired
+  geometric-mean C/Rtimes are0.388179/0.860978/0.871358forT2and
+  0.372557/0.672889/0.806724forT4(zero/quarter/all selected pages missing).
+  The shortest batch sum is545.887ms;maximum estimated clock fraction is
+  0.000280246. Individual samples and all paired ratios remain in the result.
+  Next isolate the production hook with`VerifyInput::decode`,keeping prompt
+  and T1/other widths on their existing path,then commit a separate model
+  comparison with prefill-preservation and sustained-thinking gates. This
+  component result alone is no model TGgain or default adoption.
   Actual request overlap/hit distribution and physical bus traffic remain
   unknown. The161ms observer service is still
   only a mechanism hypothesis;the limiting physical resource remains unknown.
