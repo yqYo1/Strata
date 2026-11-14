@@ -812,7 +812,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its76-test host suite has75passes and one optional-tokenizer skip;all15full
   asset hashes match and both actual benchmark/server frontend probes pass.
   The pinned tokenizer independently gives3close and18wrap-up IDs. The
-  comparison is prepared and host-ready,not a completed model speed result;
+  comparison is underway;its first reference process closes normally with
+  both workloads eligible,closed ownership and no fresh fault. No completed
+  paired model speed result or candidate adoption follows;
   dedicated prefill/TTFT preservation and broader adoption gates remain open. See
   `long_generation_segment_metrology_v1`in the linked result. The model's
   successful raw output/cache is retired after source/recipe recovery:
