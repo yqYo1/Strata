@@ -33006,7 +33006,7 @@
       "report_words": 1100
     },
     "source_packet_retired": true,
-    "review_point": "Use native Luna-max operational review at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-source-launch-review-p-20261114/digest.md when available;Main implements/qualifies launch fix separately from GPU tuning."
+    "review_point": "Native Luna-max launch review is received under orca_research_wave_o_20261114.launch_review. Before a new Task,Main must qualify the same source-workspace constructor with a real private report directory and closure/IPC/negative controls;do not retry failed Tasks."
   },
   "kv_stream_gpu_resolver_design_20261114o": {
     "classification": "decision_support",
@@ -33030,7 +33030,7 @@
       "report_words": 1100
     },
     "source_packet_retired": true,
-    "review_point": "Use native Luna-max operational review at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-source-launch-review-p-20261114/digest.md when available;Main implements/qualifies launch fix separately from GPU tuning."
+    "review_point": "Native Luna-max launch review is received under orca_research_wave_o_20261114.launch_review. Before a new Task,Main must qualify the same source-workspace constructor with a real private report directory and closure/IPC/negative controls;do not retry failed Tasks."
   },
   "orca_research_wave_o_20261114": {
     "stage": "closed_failed_before_Codex_exec",
@@ -33046,6 +33046,14 @@
     "both_tasks_failed": true,
     "ownership_closed": true,
     "lifecycle_proof_sha256": "7a104702606e77763a770b26fc160701653c895e273d658ebf9ebbfb3ecf4640",
-    "cleanup": "Owned temporary worker roots/auth/cache/source snapshots/transactions retired after verified terminal and host-process exit. Original outcome is not retried or relabelled."
+    "cleanup": "Owned temporary worker roots/auth/cache/source snapshots/transactions retired after verified terminal and host-process exit. Original outcome is not retried or relabelled.",
+    "launch_review": {
+      "reviewer": "native Codex gpt-6-luna,max",
+      "digest_sha256": "fdb8d9bc49f117518956f4a4d41bea1311e1358ef4af234bd451c994e0cd4033",
+      "main_read": "short operational digest only",
+      "finding": "Osource worker failed before Codex;Ncanary did not test the source-workspace constructor or publication path.",
+      "next": "Qualify the same constructor with a private real report cwd and parent publication only after verified closure. Check filesystem/mount identity,IPC/Run/Task/Dispatch binding,symlink/hash/mount/consumer/egress negative controls;hide host credential paths. Do not retry old Tasks.",
+      "remaining_holds": "No source report or model qualification. Credential visibility and exact-task NTrash cleanup remain unresolved."
+    }
   }
 }
