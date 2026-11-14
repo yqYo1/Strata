@@ -346253,6 +346253,18 @@
             "consumer": "Source/recipe recovery only;current engine includes the maintained feature port.",
             "next": "Recover the pinned CLIcensus from Git/status and retire the old engine;review at new full-engine build closure."
           }
+        },
+        "build_closure_review": {
+          "candidate_key": "decode_kv_native_v1",
+          "candidate_source": "1eec28c77f393d34814dc748502113514973ea8e",
+          "normal_retired_roots_still_absent": true,
+          "legacy_engine_roots_still_present": [
+            "gu-small-model-native-v2",
+            "adaptive-payload-audit-model-v2",
+            "dflash2-cache-loan-native-v1"
+          ],
+          "consumer": "Exact original-source recovery only;none is a qualified runtime/speed reference. Preserve the adaptive external-inputs.json SDK map.",
+          "next_review": "Perform the recorded bounded original-input comparisons at the next native-qualification planning boundary;do not count legacy holds as fresh comparison generations or claim global retirement."
         }
       }
     },
@@ -346819,7 +346831,7 @@
     }
   },
   "decode_kv_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -347223,8 +347235,8 @@
       }
     },
     "outcomes": {},
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -347246,6 +347258,151 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/compile_commands.json": "13c25a2d0d76e8d9e06286b9a2970a22b47935eb9bdcd5e8785e931ad6accbce",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/CMakeFiles/rules.ninja": "832f4ee8bbf42dc7a360f19c59b415a5d742dd15f59a0de7b3e2789bc32b6e3e",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/configure/owned/planned.stdout": "d746e625b476ddd89d0ab799e7163e762750e327605d91f3cf077b562faf254e"
+    },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/actual-inputs.json",
+      "sha256": "2457f798c17913b344a179549ab7ef7c5b30b3e497c03d16f2d4be5c34b596d2",
+      "compiler_files": 1471,
+      "generated_files": 1,
+      "external_link_files": 29,
+      "uncovered": 0,
+      "translation_units": 135,
+      "source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+      "class_definition_coherence": {
+        "headers": {
+          "include/strata/prefill/gemm.hpp": {
+            "header_sha256": "fb2e1dacab2672aa950b80e78be83f24fddf8ef70b4be74c8c818c232d09f3e2",
+            "includers": 5,
+            "includers_sha256": "0b5bdd4c29a4d3e822f50a33f2b72c39c0f5cd2c25197a37933c8186e45972a2",
+            "conditions": {
+              "STRATA_ENABLE_SYCL": "1"
+            },
+            "all_objects_from_fresh_build": true
+          },
+          "include/strata/core/verify.hpp": {
+            "header_sha256": "d0e6b46ac93d2451de3696aaa7ccdf788db71e02195b2aa867794570e3a7cf25",
+            "includers": 4,
+            "includers_sha256": "6d41dd724d2d9b157078c7cb6b3e28d9816f612b2e96b5fa0faf991c8649a6b9",
+            "conditions": {
+              "STRATA_ENABLE_SYCL": "1"
+            },
+            "all_objects_from_fresh_build": true
+          },
+          "include/strata/core/verify_window_policy.hpp": {
+            "header_sha256": "43c5b8956defb9bf81b4077af22677dab8759d399a5660076796e3c8fc7b8fab",
+            "includers": 6,
+            "includers_sha256": "9792931437f18571e95ebbf2ae29aea08b08b1b24187dd478606644596f32880",
+            "conditions": {},
+            "all_objects_from_fresh_build": true
+          },
+          "include/strata/kernels/cpu/pool.hpp": {
+            "header_sha256": "a8be9d7685d1ab38ccfdf51f34668e9326cddc127f1ac3d55237d20d5f787dab",
+            "includers": 12,
+            "includers_sha256": "790ff48b233539d50dfdbfc7cdd64d3a6418b99cd6e2e76c7e8a1a655ce7a1e6",
+            "conditions": {
+              "STRATA_CPU_SERVICE_PROFILE": "1"
+            },
+            "all_objects_from_fresh_build": true
+          },
+          "include/strata/core/expert_source.hpp": {
+            "header_sha256": "9981b72b916c9ceee6f037cf621fc9b5b2566da90ab663d235504f85cd9e3226",
+            "includers": 10,
+            "includers_sha256": "384fd508ead59c486495666c3fb55e32d7d2687ea9d6b1cf04c8a6239ed9cba1",
+            "conditions": {
+              "STRATA_ENABLE_SYCL": "1"
+            },
+            "all_objects_from_fresh_build": true
+          }
+        },
+        "partial_archive_reuse": false,
+        "fresh_complete_build": true
+      }
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata",
+        "sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+        "bytes": 26476224,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_q6_head_owner_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_q6_head_owner_test",
+        "sha256": "e5779e05db5c15d3e6593e09e8798dae5b254d2a57af16a5880f8b1aa949605e",
+        "bytes": 11734112,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_submission_test",
+        "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+        "bytes": 352152,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_verifier_retirement_test",
+        "sha256": "8c57d37f4de54c6a9b5eef4decc66c8742da408457be087f8d0b457f8807ffeb",
+        "bytes": 19753128,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_verify_window_policy_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_verify_window_policy_test",
+        "sha256": "310bfa2fba820a8fc225da0dd21107ca8ef29cb589bdc09baa4f90bef386870e",
+        "bytes": 114968,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_qsa_bf16_prefix_cached_subgroup_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_test",
+        "sha256": "0693067c78778b45a36973af5b6b1c687c486d3e17980c7173ecb8b16228b326",
+        "bytes": 1577968,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_qsa_bf16_prefix_cached_subgroup_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_bench",
+        "sha256": "c22cbe37e807bd0d4a1bbb5cfcaf4a86c162afbd0c6342a7a5b9b92676b5b8b1",
+        "bytes": 1547096,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_native16_qsa_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_native16_qsa_test",
+        "sha256": "85866bb1827cea081aac5ccfef8ac634ca70e1e36e534ed70c350844287c501f",
+        "bytes": 442664,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_moe_upload_census_host_test",
+        "sha256": "f274461c3b915becf16f611f7447681ca1e2bad2860b51a1b2288f3a09571269",
+        "bytes": 96456,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata_full_context_diagnostic",
+        "sha256": "90ea0f8260ff07e3098d986a38a13bc7c4446b45e97ed45aa71da48251aabf40",
+        "bytes": 26476352,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_gu_policy_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_gu_policy_test",
+        "sha256": "e1cbb0f7a9bdb5351797fd7e9eb4327286ffb366d64d8bf09520a5f94eeb3e47",
+        "bytes": 14155160,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      },
+      "sycl_expert_dispatch_bounds_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_expert_dispatch_bounds_test",
+        "sha256": "84ac8d793abc6fdb07647dc7801e47ab286bbf9497dee72c8abcfe9e82bde3d7",
+        "bytes": 15756816,
+        "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata",
+      "sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+      "bytes": 26476224,
+      "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -347284,6 +347441,20 @@
       },
       {
         "label": "planned",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "error": null
+      },
+      {
+        "label": "dependencies",
         "exit_code": 0,
         "ownership_closed": true,
         "errors": [],

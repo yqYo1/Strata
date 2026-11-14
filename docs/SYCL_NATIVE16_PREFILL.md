@@ -717,8 +717,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   remains the speed reference. No candidate clean-speed,
   dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
   teardown qualification follows. See mixed_nt_model_v1.
-  The separate cooperative KVplanner has component qualification and an
-  unbuilt,opt-in decode hook from`644412c8e`;default selection stays scalar. Its
+  The separate cooperative KVplanner has component qualification and a
+  built,runtime-unqualified opt-in decode hook from`644412c8e`;default selection stays scalar. Its
   standalone timing fixture now builds from`79ed58840`:five fresh TUs,718compiler
   inputs/24external links,zero uncovered/reused objects and36passing host
   controls. Binary`1e7765b60`first passes14bounded semantics and20traced graph
@@ -767,8 +767,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   other shapes keep their existing path. Its pre-exec control is
   `STRATA_SYCL_DECODE_KV_COALESCED=0|1`,default0,with copy geometry0required.
   Captured phase caches retain separate scalar/cooperative call counts and
-  print the actual selected calls. New policy/cache/Verifier fields require
-  a fresh full engine build,not a partial relink. The corrected
+  print the actual selected calls. The new policy/cache/Verifier fields now
+  have a fresh full engine build from`1eec28c77`:engine`330405370`,13ELFs,
+  138fresh objects/135unique sources,1471compiler inputs,one generated input
+  and29external links,zero uncovered inputs. All five actual class-header
+  closures have consistent conditions;no project archive/object was reused.
+  All five owned build commands close0,and28compiler-census host controls pass.
+  This is build evidence only;no GPU/model execution or speed/adoption follows.
+  See`decode_kv_native_v1`in the linked result. The corrected
   `decode_kv_policy_host_v2`check from`ba7715d00`passes all four CPUcommands:
   actual policy compilation,actual SYCL Verifier syntax,link and fixture
   execution,with874compiler/23link inputs and closed ownership. V1's incorrect
@@ -778,9 +784,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1210files/970017769regular bytes. Original source receipts and still-consumed
   SDK/census metadata remain;the known-good14508engine and1e776KVfixture are
   unchanged. The partial GU,adaptive audit and old DFlash2special-format
-  provenance holds remain separate,with exact recovery actions and the next
-  build-closure review in`production_preparation.build_retirement`. Next qualify
-  the fresh coherent candidate build and
+  provenance holds remain separate,with exact recovery actions in
+  `production_preparation.build_retirement`. The build-closure inventory confirms
+  that only those three legacy engine roots remain alongside the validated
+  reference and current candidate among these reviewed paths;no global cleanup
+  is claimed. Next run fresh same-build CPU/GPU qualification and
   commit a separate model comparison with prefill-preservation and
   sustained-thinking gates. This
   component result alone is no model TGgain or default adoption.
