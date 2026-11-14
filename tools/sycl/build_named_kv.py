@@ -30,7 +30,7 @@ RENAMES = {
 }
 UNIT_FILES = {
     'include/strata/core/verify_window_policy.hpp',
-    'include/strata/kernels/kv_stream_copy_groups.hpp',
+    'include/strata/kernels/kv_stream.hpp',
     'src/core/verify.cpp', 'src/kernels/sycl/kv_stream.cpp',
     'tests/core/verify_window_policy_test.cpp',
     'tools/sycl/kv_copy_groups_bench.cpp',
