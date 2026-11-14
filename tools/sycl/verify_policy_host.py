@@ -17,7 +17,9 @@ import fixture_build as common
 import decode_window_bench as baseline
 
 P, B, RESULT = common.P, common.B, common.RESULT
-ROOT, KEY = B/'decode-kv-policy-host-v1', 'decode_kv_policy_host_v1'
+ROOT, KEY = B/'decode-kv-policy-host-v2', 'decode_kv_policy_host_v2'
+EXPECTED_STDOUT = ('verify-window-policy: passed selections=30 centering=18 native-half=26 '
+    'dpas-head=1 dpas-dense=4 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64')
 require, sha = common.require, common.sha
 
 
@@ -39,6 +41,12 @@ def check(row,committed=True):
     if committed: require(common.validation.committed(RESULT,(KEY,))==compact(row),'commit exact host plan/result')
     common.build.check_inputs(row)
     require(all(sha(p)==h for p,h in row['generated_reference'].items()),'read-only generated reference changed')
+    require(row['expected_stdout']==EXPECTED_STDOUT,'frozen fixture marker differs')
+    for key in ('object','binary'):
+        if key in row:
+            item=row[key]
+            require(Path(item['path']).stat().st_size==item['bytes'] and sha(item['path'])==item['sha256'],
+                'before-launch host artifact changed: '+key)
 
 
 def allowed(row):
@@ -63,6 +71,11 @@ def dependencies(path,row):
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'fresh host-policy attempt only')
     native,proof=baseline.retained_native()
+    prior=common.validation.committed(RESULT,('decode_kv_policy_host_v1',))
+    require(prior['stage']=='failed' and not prior['passed'] and prior['ownership_closed'] and not prior['active']
+        and len(prior['outcomes'])==4 and all(c['exit_code']==0 and c['ownership_closed'] for c in prior['outcomes'])
+        and prior['marker_failure']['actual_stdout'].strip()==EXPECTED_STDOUT,
+        'preserve original four-command success with failed marker qualification')
     compiler='/opt/intel/oneapi/compiler/2026.2/bin/icpx'
     flags=[compiler,'--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13','-std=c++20',
         '-O2','-Wall','-Wextra','-Werror','-fno-fast-math','-ffp-contract=off','-I'+str(P/'include')]
@@ -91,6 +104,9 @@ def prepare():
         reference_source=proof['original_native_source'],reference_recipe_sha256=proof['original_recipe_sha256'],
         budget=dict(wall=180,cpu=240,rss_cap=4<<30,text_cap=2<<20,file_cap=32<<20,total_cap=64<<20),
         commands=[],outcomes=[],passed=False,complete=False,active=False,ownership_closed=True,GPU_executed=False,model_executed=False,
+        expected_stdout=EXPECTED_STDOUT,
+        previous_failure=dict(key='decode_kv_policy_host_v1',evidence_commit='2a1630dd24b2b266e6f475ca4f7278eee12eac10',
+            qualification='failed;all4CPUcommands0but wrong controller marker;no retroactive pass'),
         acceptance='Exact committed source/controller/recipe/compiler/SDK/header/link inputs;actual policy fixture0andPASS;actual SYCL verifier syntax0;all owned processes normally reaped with empty sessions. No native engine build,ODR/model/physical-context or performance qualification.',
         consumer='Current explicit decode KVhook;retire this temporary CPUELF after result/source recovery. Full engine rebuild remains mandatory before runtime tests.')
     check(row,False);ROOT.mkdir(mode=0o700)
@@ -111,6 +127,8 @@ def run():
             row['outcomes'].append(dict(label=label,exit_code=0,ownership_closed=True))
             if label in ('compile','syntax'):
                 inputs['compiled'].update(dependencies(ROOT/('policy.d' if label=='compile' else 'verify.d'),row))
+            if label=='compile':
+                row['object']=dict(path=str(ROOT/'policy.o'),sha256=sha(ROOT/'policy.o'),bytes=(ROOT/'policy.o').stat().st_size)
             if label=='link':
                 permits=allowed(row)|{str(ROOT/'policy.o'):sha(ROOT/'policy.o')}
                 for line in out.read_text().splitlines():
@@ -121,7 +139,7 @@ def run():
                 require(len(inputs['links'])>=8,'complete host link census required')
                 row['binary']=dict(path=str(ROOT/'policy'),sha256=sha(ROOT/'policy'),bytes=(ROOT/'policy').stat().st_size)
             if label=='run':
-                require('PASS' in out.read_text() and 'SKIP' not in out.read_text()
+                require(out.read_text().strip()==row['expected_stdout']
                     and sha(ROOT/'policy')==row['binary']['sha256'],'all actual policy/cache controls required')
         check(row,False);row.update(stage='closed',passed=True,complete=True,actual_inputs=inputs)
     except BaseException as error:
