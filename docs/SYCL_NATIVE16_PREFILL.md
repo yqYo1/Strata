@@ -742,6 +742,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   recipe/controller recovers the original14508foundation and preserves its
   twelve ELFs. See`kv_planner_speed_v1`for the exact checks and limits;the prior
   numerical fixture remains recoverable from`945dea2ee`and its committed result.
+  Its old build is retired after exact source/recipe/compiler/link recovery;
+  the validated timing fixture is now retained for the immediate comparison.
   The separate paired graph-time plan is committed for2/4-query INT8shapes,
   5120resident pages,full cache and zero/quarter/all selected pages missing.
   It declares R,C,C,R,R,Cfresh processes,500mswarmup,750mscalibration and three
