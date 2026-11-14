@@ -994,14 +994,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The source-only child`tune/phase-kv-isolation`prepares the next two units
   without changing this cohort's primary tree. Its policy commit`6b6098593`
   carries those AGENTS rules. Unit`ae74403d1`only renames the decode KVentry
-  and phase selector,with required callers/header/policy tests. Separate unit
-  `93b964cae`moves the cooperative planner into`decode_kv_stream.cpp`and
-  restores scalar`kv_stream.cpp`exactly from14508(SHA4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696).
+  and phase selector,with required callers/header/policy tests. The earlier
+  combined`93b964cae`proposal is now split further before any measurement:
+  current child`97ed15507`selects B1,the cooperative TU extraction/CMake wiring
+  only. It keeps Alpha's scalar/helper source byte-exact except for removing
+  the372-byte public decode wrapper now defined by the new TU
+  (scalar-file SHA34418f3b0b5ae8c2b4e0a217d54413197f60246c9e76299a22298619300bde57).
+  Removing the old definition,adding its independently compiled replacement
+  and linking both production/fixture targets form one required link unit.
+  B2,the scalar14508restoration,is separate and pending;its original bytes
+  remain recoverable with SHA4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696.
   The new decode source is extracted from the owned1eec implementation;
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
   are unchanged. The independent expert-dispatch bounds fix is preserved.
   The naming-only unit is merged into the primary with its original identity;
-  the TU split remains on the child. Neither is a tested/adopted model route.
+  B1remains unbuilt on the child and B2is not applied. Neither is an adopted model route.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
