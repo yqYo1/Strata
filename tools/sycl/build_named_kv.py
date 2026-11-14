@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build only the independently selected KV phase-naming change.
+"""Build an explicitly selected, independently compared KV isolation unit.
 
 Main-owned use of this fork's full-build/census helpers; repository LICENSE.
-The later scalar/cooperative TU split is deliberately excluded from this unit.
+Naming and cooperative TU extraction are separate selections and generations.
 Compilation is not GPU, phase-preservation, or model-route qualification.
 """
 import copy
@@ -15,6 +15,7 @@ import sys
 
 sys.dont_write_bytecode = True
 import build_decode_kv as previous
+import coherent_native_reuse as recovery
 
 P, B, RESULT = previous.P, previous.B, previous.RESULT
 PRIMARY = Path('/home/yayoi/orca/workspaces/Strata/sycl')
@@ -37,10 +38,123 @@ UNIT_FILES = {
 }
 TARGETS = [*previous.TARGETS, 'sycl_kv_copy_groups_bench']
 require, sha, signature = previous.require, previous.sha, previous.signature
+MODE, SEED_KEY = 'naming', previous.KEY
+SPLIT_UNIT = '97ed1550789b90ded5c9cbade96857c24d2ef4fa'
+SPLIT_FILES = {'cmake/sycl_backend.cmake', 'src/kernels/sycl/kv_stream.cpp',
+               'src/kernels/sycl/decode_kv_stream.cpp'}
+
+
+def select_unit(mode):
+    global MODE, ROOT, KEY, SEED, SEED_KEY
+    require(mode in ('naming', 'split'), 'select naming or split explicitly')
+    MODE = mode
+    if mode == 'split':
+        ROOT, KEY = B / 'phase-kv-split-native-v1', 'phase_kv_split_native_v1'
+        SEED, SEED_KEY = B / 'phase-kv-naming-native-v1/record.json', 'phase_kv_naming_native_v1'
+    else:
+        ROOT, KEY = B / 'phase-kv-naming-native-v1', 'phase_kv_naming_native_v1'
+        SEED, SEED_KEY = previous.ROOT / 'record.json', previous.KEY
+
+
+def split_unit_sources():
+    """B1 contains the required link unit only; B2 restoration stays excluded."""
+    source = previous.base.common.source
+    require(set(source.git(P, 'diff', '--name-only', UNIT, SPLIT_UNIT).decode().splitlines())
+            == SPLIT_FILES, 'review the exact three-file B1 unit')
+    paths = source.git(P, 'ls-tree', '-r', '--name-only', '-z', SPLIT_UNIT,
+                       '--', *SOURCE_PREFIXES, 'tools/sycl').decode().strip('\0').split('\0')
+    paths = {n for n in paths if not n.startswith('tools/sycl/')
+             or Path(n).suffix in ('.cpp', '.c', '.h', '.hpp', '.inc')}
+    live = source.git(P, 'ls-files', '-z', '--', *SOURCE_PREFIXES,
+                      'tools/sycl').decode().strip('\0').split('\0')
+    live = {n for n in live if not n.startswith('tools/sycl/')
+            or Path(n).suffix in ('.cpp', '.c', '.h', '.hpp', '.inc')}
+    require(paths == live, 'B1 native input was added or removed independently')
+    expected = {n: hashlib.sha256(raw).hexdigest()
+                for n, raw in source.blobs(P, SPLIT_UNIT, sorted(paths))}
+    require(all(sha(P / n) == h for n, h in expected.items()),
+            'select B1 alone; scalar restoration and other native edits are excluded')
+    require(expected['src/kernels/sycl/kv_stream.cpp']
+            == '34418f3b0b5ae8c2b4e0a217d54413197f60246c9e76299a22298619300bde57',
+            'keep the original scalar body except its moved decode wrapper')
+    return dict(origin_commit=SPLIT_UNIT, naming_base=UNIT, files=len(expected),
+        native_source_sha256=signature(expected),
+        changed_files={n: expected[n] for n in sorted(SPLIT_FILES)},
+        indivisible_link_unit='Remove the old public definition, compile its independent '
+            'replacement and link both production and KV fixture targets.',
+        scalar_restoration_or_settings_changed=False)
+
+
+def split_prerequisite():
+    """Recover A exactly, without reviving its retired historical fallback ELFs."""
+    source = previous.base.common.source
+    data = json.loads(source.git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))))
+    for phase in ('prefill', 'decode'):
+        gate = data['phase_kv_naming_' + phase + '_v1']
+        require(gate['stage'] == 'closed' and not gate['active']
+                and all(gate[k] for k in ('passed', 'complete', 'ownership_closed'))
+                and gate['decision']['naming_control_eligible'],
+                'both original A phase controls must qualify before building B1')
+    retirement = data['phase_kv_naming_reference_retirement_v1']
+    require(retirement['complete'] and retirement['ownership_closed']
+            and retirement['retired_native_source_commit']
+                == '1eec28c77f393d34814dc748502113514973ea8e'
+            and not (B / 'decode-kv-native-v1/build').exists(),
+            'retire the ended old generation before admitting a third build')
+    require(sha(SEED) == '2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c',
+            'original A build receipt changed')
+    seed = json.loads(SEED.read_text())
+    original = json.loads(source.git(P, 'show', '9ff38147e5d9bbbaec96dc8dcae86ffd969f457c:'
+                                  + str(RESULT.relative_to(P))))[SEED_KEY]
+    require(data[SEED_KEY] == original == context().compact(seed)
+            and seed['stage'] == 'built' and not seed['active']
+            and all(seed[k] for k in ('passed', 'complete', 'ownership_closed'))
+            and seed['native_source_commit'] == '9849e35803f011aaafb2753c1e0f31411e40308e',
+            'exact original A coherent build required')
+    recovered = recovery.recover(seed['project'])
+    for pin in seed['dependencies']: recovered.update(recovery.recover(pin))
+    require(sha(seed['recipe_seed']['path']) == seed['recipe_seed']['sha256']
+            and sha(seed['external_inputs']['path']) == seed['external_inputs']['sha256']
+            and all(sha(p) == h for p, h in seed['toolchain'].items()), 'A recipe/tool inputs changed')
+    external = json.loads(Path(seed['external_inputs']['path']).read_text())
+    require(all(sha(p) == h for p, h in external.items()), 'A SDK/link inputs changed')
+    for p, h in (seed['configured_files'] | seed['generated_inputs']).items():
+        require(recovered.get(p) == h if p in recovered else sha(p) == h,
+                'A configured/generated input changed')
+    census = seed['actual_inputs']
+    require(sha(census['path']) == census['sha256'] and census['uncovered'] == 0
+            and census['translation_units'] == 136
+            and len(seed['planned_compilation']) == 140, 'A actual compiler census changed')
+    actual = json.loads(Path(census['path']).read_text())
+    allowed = recovered | external | seed['generated_inputs']
+    require(len(actual['compiled']) == 1473 and len(actual['generated']) == 1
+            and len(actual['links']) == 29 and all(allowed.get(p) == h
+                and (p in recovered or sha(p) == h) for family in ('compiled', 'generated', 'links')
+                for p, h in actual[family].items()), 'recover A original compiler/link input bytes')
+    coherence = census['class_definition_coherence']
+    require(coherence['fresh_complete_build'] and not coherence['partial_archive_reuse']
+            and len(coherence['headers']) == 5 and all(v['all_objects_from_fresh_build']
+                and v['header_sha256'] == recovered[str(P / n)]
+                for n, v in coherence['headers'].items()), 'A class-definition closure changed')
+    retained = [v for v in seed['preserved_binaries']
+                if Path(v['path']).is_relative_to(B / 'coherent-prefill-native-v1')]
+    require(len(retained) == 12 and len(seed['binaries']) == 14,
+            'retain exactly the fast prefill and A generations')
+    for item in [*retained, *seed['binaries'].values()]:
+        require(Path(item['path']).stat().st_size == item['bytes']
+                and sha(item['path']) == item['sha256'], 'retained phase fallback changed')
+    return dict(unit=split_unit_sources(),
+        reference_build=dict(path=str(SEED), sha256=sha(SEED),
+            source_commit=seed['native_source_commit'], actual_inputs_sha256=census['sha256']),
+        naming_controls={phase: signature(data['phase_kv_naming_' + phase + '_v1'])
+                         for phase in ('prefill', 'decode')},
+        retirement_sha256=signature(retirement),
+        inherited_GPU_model_or_performance_qualification=False)
 
 
 def unit_sources():
     """Prove the six-file naming unit and exclude the subsequent TU split."""
+    if MODE == 'split': return split_unit_sources()
     source = previous.base.common.source
     names = source.git(P, 'diff', '--name-only', POLICY, UNIT).decode().splitlines()
     require(set(names) == UNIT_FILES, 'review the original six-file naming unit')
@@ -72,6 +186,7 @@ def unit_sources():
 
 
 def prerequisite():
+    if MODE == 'split': return split_prerequisite()
     source = previous.base.common.source
     data = json.loads(source.git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))))
     retirement = data['kv_planner_speed_v1']['production_preparation']['build_retirement']
@@ -103,12 +218,15 @@ def context():
     ctx = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctx)
     ctx.ROOT, ctx.KEY, ctx.TARGETS, ctx.MODEL_BUILD = ROOT, KEY, TARGETS, True
-    ctx.SEED, ctx.SEED_KEY, ctx.component_reference = SEED, previous.KEY, prerequisite
+    ctx.SEED, ctx.SEED_KEY, ctx.component_reference = SEED, SEED_KEY, prerequisite
     ctx.common.PREFIXES = previous.fixture.PREFIXES
     original = ctx.context
     duplicates = dict(previous.coherent.DUPLICATES)
     duplicates[str(P / 'src/kernels/sycl/kv_stream.cpp')] = [
         'strata_kernels', 'sycl_kv_copy_groups_bench']
+    if MODE == 'split':
+        duplicates[str(P / 'src/kernels/sycl/decode_kv_stream.cpp')] = [
+            'strata_kernels', 'sycl_kv_copy_groups_bench']
     def native_context():
         native = original()
         parser, census = native.planned_compilation, native.census
@@ -131,9 +249,13 @@ def context():
 
 def prepare():
     require(P == PRIMARY and not ROOT.exists()
-            and KEY not in json.loads(RESULT.read_text()), 'fresh primary-worktree naming build only')
+            and KEY not in json.loads(RESULT.read_text()), 'fresh primary-worktree selected-unit build only')
     proof = prerequisite()
     seed = json.loads(SEED.read_text())
+    preserved = seed['preserved_binaries']
+    if MODE == 'split':
+        preserved = [v for v in preserved
+                     if Path(v['path']).is_relative_to(B / 'coherent-prefill-native-v1')]
     project = previous.base.common.source.pin(P, previous.fixture.PREFIXES)
     recipe = copy.deepcopy(seed['recipe'])
     old = str(SEED.parent)
@@ -150,7 +272,7 @@ def prepare():
         recipe=recipe, recipe_seed=dict(path=str(SEED), sha256=sha(SEED)),
         toolchain=seed['toolchain'], external_inputs=seed['external_inputs'],
         native_source_commit=project['revision'],
-        preserved_binaries=[*seed['preserved_binaries'], *seed['binaries'].values()],
+        preserved_binaries=[*preserved, *seed['binaries'].values()],
         native_validation_probe=probe, validation_qualification=validation,
         build_prerequisite=proof,
         plan='Unit A only: two mechanical decode names with their six required callers/headers/tests. '
@@ -176,19 +298,37 @@ def prepare():
         commands=[], outcomes={}, passed=False, complete=False, active=False,
         ownership_closed=True, GPU_executed=False, model_qualified=False,
         physical262144_model_qualified=False, performance_qualified=False)
+    if MODE == 'split':
+        row['plan'] = ('Unit B1 only: independent cooperative decode TU and the required '
+            'production/fixture link wiring. Keep scalar/helper bytes except the moved public '
+            'decode wrapper; do not restore14508, change placement, settings or scheduling. '
+            'Require both closed A phase controls and old-generation retirement. Commit all '
+            'source/recipe/generated inputs before their stage; compile all14 targets fresh '
+            'and verify actual dependency/link and five-header coherence, including both '
+            'new-TU objects. Stop on the first failure, no refreshed pins. Compilation admits '
+            'neither B2 nor model execution: commit fresh small traced/numerical/KV/state '
+            'qualification and matched >=32K prefill/TTFT plus >=1K thinking-on strong/weak '
+            'MTP decode plans separately. Compare B1 against A before considering B2 or '
+            'their combination. Preserve physical262144/RESTORE and task obligations.')
+        row['retention'] = ('Temporary third generation B1 only after old1eec retirement; '
+            'retain fast14508/12ELFs and A/14ELFs unchanged. On B1 qualification failure '
+            'retire B1 after preserving evidence; on completed comparison select and retire '
+            'the superseded generation before B2. No fourth generation or old-ELF revival.')
     ctx = context()
     ctx.current(row, committed=False)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
         (ROOT / name).mkdir(mode=0o700)
     ctx.save(row)
-    print('Prepared naming-only full build; commit before configure. No GPU executed.', flush=True)
+    print('Prepared ' + MODE + ' full build; commit before configure. No GPU executed.', flush=True)
 
 
 if __name__ == '__main__':
+    if len(sys.argv) == 3:
+        select_unit(sys.argv.pop(1))
     require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'configure', 'compile'),
-            'use prepare|configure|compile')
-    require(P == PRIMARY, 'select the naming-only source in the existing primary worktree')
+            'use [naming|split] prepare|configure|compile')
+    require(P == PRIMARY, 'select the unit source in the existing primary worktree')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         previous.base.guards.no_model_owners([])
