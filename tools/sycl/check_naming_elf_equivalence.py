@@ -20,7 +20,7 @@ import measurement_guards as guards
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'naming-elf-equivalence-v1'
+ROOT = B / 'naming-elf-equivalence-v2'
 THIS = 'tools/sycl/check_naming_elf_equivalence.py'
 INPUTS = {
     'reference': ('decode-kv-native-v1',
@@ -34,19 +34,24 @@ INPUTS = {
 }
 RENAMES = {'verify_coalesced_kv': 'decode_verify_coalesced_kv',
            'kv_stream_resolve_with_coalesced_plan': 'decode_kv_stream_resolve_coalesced'}
-PLAN = dict(question='Are all production host/device image sections and load layout unchanged by Unit A?',
+PLAN = dict(question='Are all production host/device sections,initialized PT_LOADbytes and load layout unchanged by Unit A?',
+    predecessor='V1f6da849abpassed its section/layout criteria. AMreview found untested bytes outside '
+        'sections. Preserve V1unchanged;V2adds raw PT_LOADcoverage before any performance-plan decision.',
     input_scope='Only the two exact original full-build strata ELFs;not the extra fixture or a new build.',
     equality='ELF identity/type/machine/entry/flags/header counts and every program header must match. '
         'Section-name sets,ordinary section headers and all section contents must match,including '
         'non-allocated device-image sections. NOBITS size/address/flags must match. Allocated section '
-        'offsets and every program load layout remain exact.',
+        'offsets and every program load layout remain exact. Every initialized PT_LOADfile payload '
+        'must also match,including bytes outside sections;identical program headers retain zero-fill '
+        'memory sizes. Normalize only ELF64e_shoff bytes40..47 in those payloads. No raw-load build-ID '
+        'exception is allowed.',
     exceptions='Ignore only ELF section-table file offset;nonallocated .symtab/.strtab/.shstrtab raw '
         'bookkeeping and their offsets/sizes;and the GNU build-ID descriptor after validating its '
         'identical note structure. Compare all non-file static symbols by address/size/type/visibility '
         'and section,normalizing only the two declared C++ name-length prefixes. Ignore STT_FILE '
         'debug filenames. Dynamic symbols/strings/relocations and all other bytes remain exact.',
     stopping='Require positive self-comparison and refusals for text/data/dynamic-string/load-layout/'
-        'symbol perturbations and truncated ELF before comparing arms. One committed attempt,'
+        'raw-load-payload/symbol perturbations and truncated ELF before comparing arms. One committed attempt,'
         'finite CPU/address-space/file budgets. A mismatched section or '
         'symbol is an ineligible equivalence result;do not add exceptions or refresh inputs afterward.',
     limits='A pass is static production image compatibility evidence only. Numerical/state/model '
@@ -82,6 +87,16 @@ def parse(data):
         require(name not in sections, 'duplicate section name')
         sections[name] = dict(header=item[1:], data=b'' if item[1] == 8 else field(data, item[4], item[5]))
     program = [field(data, h[5] + i * 56, 56).hex() for i in range(h[10])]
+    loads = []
+    for raw in program:
+        ph = struct.unpack('<IIQQQQQQ', bytes.fromhex(raw))
+        if ph[0] != 1: continue  # PT_LOAD initialized file bytes;memsz is in the exact header.
+        require(ph[5] <= ph[6], 'load file payload exceeds memory extent')
+        payload = bytearray(field(data, ph[2], ph[5]))
+        for offset in range(max(40, ph[2]), min(48, ph[2] + ph[5])):
+            payload[offset - ph[2]] = 0  # Only the already-declared ELF section-table file offset.
+        loads.append(dict(file_offset=ph[2], file_bytes=ph[5], memory_bytes=ph[6], data=bytes(payload)))
+    require(bool(loads), 'production loadable segments required')
     symbols = []
     for name, item in sections.items():
         if item['header'][0] != 2: continue  # SHT_SYMTAB;dynamic bytes remain ordinary sections.
@@ -95,13 +110,14 @@ def parse(data):
                 label = label.replace(str(len(before)) + before, str(len(after)) + after)
             symbols.append((label, *symbol[1:]))
     return dict(header=h[:6] + h[7:], section_table_file_offset=h[6],
-                programs=program, sections=sections, symbols=collections.Counter(symbols))
+                programs=program, loads=loads, sections=sections, symbols=collections.Counter(symbols))
 
 
 def compare(old, new):
     differences = []
     if old['header'] != new['header']: differences.append('ELF semantic header')
     if old['programs'] != new['programs']: differences.append('program headers/load layout')
+    if old['loads'] != new['loads']: differences.append('raw initialized PT_LOAD payloads')
     if old['sections'].keys() != new['sections'].keys(): differences.append('section name set')
     matched, metadata = {}, []
     for name in old['sections'].keys() & new['sections'].keys():
@@ -125,6 +141,10 @@ def compare(old, new):
         equal_section_count=len(matched), equal_section_bytes=sum(v['bytes'] for v in matched.values()),
         equal_sections_sha256=sha(json.dumps(matched, sort_keys=True).encode()),
         equal_static_symbol_count=sum(old['symbols'].values()) if old['symbols'] == new['symbols'] else None,
+        raw_load_segments=len(old['loads']),
+        raw_initialized_load_file_bytes=sum(v['file_bytes'] for v in old['loads']),
+        raw_loads_equal=old['loads'] == new['loads'],
+        raw_load_metadata_normalization='Only ELF64e_shoff bytes40..47;not instructions/data or build-ID.',
         metadata_exceptions=sorted(metadata),
         section_table_file_offsets=[old['section_table_file_offset'], new['section_table_file_offset']])
 
@@ -163,6 +183,11 @@ def main():
         changed = copy.deepcopy(reference); changed['programs'][0] = 'changed-load-layout'
         require(not compare(reference, changed)['equivalent'], 'changed program layout accepted')
         controls.append('program layout')
+        changed = copy.deepcopy(reference); value = changed['loads'][0]['data']
+        require(bool(value), 'nonempty production load required')
+        changed['loads'][0]['data'] = bytes([value[0] ^ 1]) + value[1:]
+        require(not compare(reference, changed)['equivalent'], 'raw load payload change accepted')
+        controls.append('raw load payload')
         changed = copy.deepcopy(reference); symbol = next(iter(changed['symbols']))
         changed['symbols'][symbol] -= 1; changed['symbols'][(symbol[0] + '_unexpected', *symbol[1:])] += 1
         require(not compare(reference, changed)['equivalent'], 'changed symbol semantics accepted')
