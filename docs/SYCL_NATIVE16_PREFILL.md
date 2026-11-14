@@ -869,8 +869,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   checks and four refusals,1470compiler/29link inputs and twelve original ELFs.
   The compact child result is`coherent_original_reader_v1`at`ad505e6a9`.
   This is historical input/artifact binding,not new GPU/model qualification.
-  Original source and test-evidence commits remain through the merge;the
-  finished child is no longer needed. Use a separate committed comparison
+  Original source and test-evidence commits remain through the pushed merge;
+  the finished remote/local child and worktree are retired. Its three consumed
+  host-output/receipt files(1337bytes)are also retired;the CPUoutcome is unchanged.
+  Use a separate committed comparison
   controller before running either engine;no third engine is built.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
