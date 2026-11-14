@@ -25,7 +25,7 @@ struct VerifyKvShape {
 
 // 34cbaf29c: all six cells improved in each of three independent process
 // pairs. Keep this model-trial opt-in separate from prompt and other shapes.
-constexpr bool verify_coalesced_kv(bool enabled, VerifyInput input,
+constexpr bool decode_verify_coalesced_kv(bool enabled, VerifyInput input,
                                    const VerifyKvShape& s) {
     return enabled && input == VerifyInput::decode && s.streamed_int8 &&
         (s.queries == 2 || s.queries == 4) && s.logical_pages == 65536 &&

@@ -380,7 +380,7 @@ void kv_stream_resolve_with_copy_groups(
   resolve_impl(m, slots, host, fmt, ids, steps, nq, cap, s, stream,
                copy_group_cap, false);
 }
-void kv_stream_resolve_with_coalesced_plan(
+void decode_kv_stream_resolve_coalesced(
     const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
     int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
     const QsaShapes &s, void *stream, uint32_t copy_group_cap) {

@@ -28,7 +28,7 @@ int main() try {
             for (int queries=0;queries<=9;++queries) {
                 auto shape=kv;shape.queries=queries;
                 const bool expected=enabled && phase==VerifyInput::decode && (queries==2||queries==4);
-                need(strata::core::verify_coalesced_kv(enabled,phase,shape)==expected,
+                need(strata::core::decode_verify_coalesced_kv(enabled,phase,shape)==expected,
                     "KV planner escaped measured phase/window set");
                 kv_selected+=expected;
             }
@@ -41,11 +41,11 @@ int main() try {
                         &strata::core::VerifyKvShape::selection_capacity})
         for (int delta : {-1,1}) {
             auto shape=kv;shape.*member+=delta;
-            need(!strata::core::verify_coalesced_kv(true,VerifyInput::decode,shape),
+            need(!strata::core::decode_verify_coalesced_kv(true,VerifyInput::decode,shape),
                 "unmeasured KV geometry selected");
         }
     auto nonstreamed=kv;nonstreamed.streamed_int8=false;
-    need(!strata::core::verify_coalesced_kv(true,VerifyInput::decode,nonstreamed),
+    need(!strata::core::decode_verify_coalesced_kv(true,VerifyInput::decode,nonstreamed),
         "KV planner selected a non-streamed/other-format cache");
     // Only the independently measured winning head can use the new packing.
     // Exercise negative phase/layout/owner/type controls and every window size.

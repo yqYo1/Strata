@@ -189,7 +189,7 @@ struct Input {
     ids.put(expected_ids); steps.put(expected_steps);
   }
   void submit(Fixture &f,uint32_t groups,bool cooperative=false) {
-    const auto resolve = cooperative ? kv_stream_resolve_with_coalesced_plan
+    const auto resolve = cooperative ? decode_kv_stream_resolve_coalesced
                                      : kv_stream_resolve_with_copy_groups;
     resolve(f.map,f.pools,f.host,f.shape.fmt,
         ids.data(),steps.data(),nq,cap,f.geometry,&f.q,groups);
@@ -258,7 +258,7 @@ void record(const Fixture &f, const Case &c, const State &m, int groups, int sam
     << ",\"bandwidth_GBps\":null,\"oracle_exact\":true,\"fingerprint_fnv64\":" << fingerprint << "}\n";
 }
 void reject_and_sync_contracts(Fixture &f,uint32_t startup_groups,bool cooperative=false) {
-  const auto resolve_api = cooperative ? kv_stream_resolve_with_coalesced_plan
+  const auto resolve_api = cooperative ? decode_kv_stream_resolve_coalesced
                                        : kv_stream_resolve_with_copy_groups;
   auto c=cold(f.shape,1,"refusals_and_nullstream"); Input in(f,c);
   const auto initial=initial_payload(f.shape,c.before);
