@@ -683,13 +683,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   performance/length/thinking criterion changes. Code completes3112outputs
   at12.2716TG and90.625%acceptance. Prose spans two native calls:33283input/
   12288output and45589input/2432output;their14720native outputs differ from
-  the server's14738reported tokens by18. The controller's one-native-call
+  the server's14738reported tokens by18explicit server-inserted reasoning
+  wrap-up IDs,as the bounded Luna review now confirms. The controller's one-native-call
   boundary assumption rejects the extra footer before the client journals its
   prose result. All owned processes are now absent,no fresh fault occurred,
   and the failed whole trial stays failed. Preserve the compact physical-call
   samples and code APIresult;no API aggregate,repeated gain or quality claim.
-  Review this bounded contract failure separately while Main proceeds with
-  the KVplanner component;do not immediately restart another long MTPcohort.
+  The consumed V3raw output and review transaction are retired after exact
+  751controller-file and original native source/recipe recovery. Before another
+  cohort,bind each APIinterval to its ordered native segments and journal the
+  APIsample before end-gate approval. Preserve the failed outcome;Main proceeds
+  with the KVplanner component without another long MTPcohort now.
   Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
   changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
