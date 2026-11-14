@@ -974,7 +974,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   closed ownership(no skips;unit0.003s). They check worker-only settings,
   required actual pool footer,paired directions/work conservation and
   invalid-cohort refusals. This is no native rebuild or new GPUqualification;
-  model samples remain pending. The new admission consumes the closed
+  first5worker process now closes normally0with quiet validation,no fault
+  and absent/reaped owners. Evidence`6aca06bff`keeps code/prose3548/5485
+  native outputs,TG12.237382/7.718794and MTPacceptance0.803074/0.342952.
+  Both original request hashes and CPUentries/jobs match the earlier long
+  corpus;these are contemporary reference samples,not a speedup or completed
+  capacity decision. Process1is running with an actual1worker+host header.
+  The reused driver's`execution.json`is an Owner-closure snapshot before
+  final publication;completion comes from the canonical record plus actual
+  reaped/session-empty/absent-owner checks. Preserve the snapshot unchanged.
+  The new admission consumes the closed
   compact records after the old generated configurations are retired.
   If CPUexpert work is limiting,compare one actual format/
   NT at fixed work over hot and rotating footprints before choosing a kernel
@@ -1513,16 +1522,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   wrapped Codex as`agent_unconfigured`/`no_agent_detected`before Dispatch.
   Its owned helper closes and Main remains unchanged. No actual worker
   product/report mount,IPC,done or parent-publication gate is qualified.
-  Native Luna-max Y/Zreview finds no documented combined contract in the
-  checked worker-start,terminal-create and low-level-topology interfaces;
-  this does not prove that every supported managed-launch interface lacks it.
-  The next bounded action is a read-only managed-launch/configuration audit,
-  before any new canary. Xtraces Tto N's supervisor,whose ancestry/license
+  Native Luna-max ADreview corrects the earlier interface conclusion:
+  Orca1.4.229`agent.launch`accepts`agentArgs`and terminal`cwd`,and the
+  command builder consumes supplied args. Its supported existing-terminal
+  `worker-start`can own that recognized terminal with matching worktree.
+  This conditional composition is supported;cwd is not confinement.
+  Current Codex0.167.1CLI/help/binary is checked. AEprimary-doc findings
+  are under native Luna-max AFreview for a prospective exact-child sandbox
+  canary;actual report-only writes,recognition,worker IPC and handle/Dispatch
+  binding remain unqualified. Xtraces Tto N's supervisor,whose ancestry/license
   remain unresolved;do not reuse T/N/Wcode as an implementation basis.
   Current readiness and the two conditional source scopes are curated in
   `research-index.json`under`orca_research_wave_o_20261114.launch_review`.
-  Its latest short digest hash is
-  `cbf9853f2750327cf9ebc85d85658423ed35d61a79ccccb5f84313f309869023`;
+  Its latest APIreview digest hash is
+  `761ae5178037121bd3eef9c0aa03be709c4b046e88dc577bf91b60671c7cea3f`;
   Wproof hash is`2567c4e8fd73fdab3f846be55b7fe99591b4d7daaae4ec64e45734bb5d00044b`.
   Keep only needed W/Zevidence through that next contract decision,then
   retire superseded startup/review transactions. The prior exact NTrash/
