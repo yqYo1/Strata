@@ -830,6 +830,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.56%in prompt time and1.06%in TTFT;the prose intervals do not worsen.
   Preserve this unresolved first-use result rather than dismissing it as noise.
   Dedicated first/warmed32K/64K prefill/TTFT preservation checks remain.
+  The separate`decode_kv_prefill_v1`plan from`9269a3cef`uses twelve fresh
+  processes:three adjacent flag0/1pairs per length,with each middle pair
+  reversed. Every process uses three exact24-output thinking-on requests;
+  first long GPU use and subsequent2 medians stay separate. TTFT is measured
+  after count preflight. All eight first/warmed,length,prompt-time/TTFT median
+  series must be no slower for the median screen;all paired ratios remain.
+  This screen does not prove zero effect or adopt the model. The same330405
+  native13-ELF generation is reused with an explicit new uncompiled observer;
+  no native build or runtime setting changes.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
   checks,the six-process cohort retires424successful raw/cache files
