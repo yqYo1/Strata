@@ -774,7 +774,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   closures have consistent conditions;no project archive/object was reused.
   All five owned build commands close0,and28compiler-census host controls pass.
   This is build evidence only;no GPU/model execution or speed/adoption follows.
-  See`decode_kv_native_v1`in the linked result. The corrected
+  See`decode_kv_native_v1`in the linked result. Fresh same-build
+  `decode_kv_device_v1` now closes all 11 CPU/GPU stages: the six-case native
+  MAXT guard, 54 reader controls and the prior owner/policy/admission checks;
+  traced submission/phase/actual canonical and packed heads; small/full QSA
+  and off/on KV producers, including 262144 cells and final-cell overwrite;
+  and GU smoke plus 44 numerical cases. All native children close normally
+  with quiet parameter validation, closed ownership and no fresh fault.
+  GU has zero FP16 ULP difference and exact BF16 captures. Small fixture
+  geometry can select the scalar fallback: this does not yet prove actual
+  model selection of the cooperative planner. Next require the real
+  32769/82/32769-input handoff and actual decode-only cooperative capture;
+  sustained TG, clean PP/TTFT, agent/task, physical model 262144/RESTORE and
+  ordinary teardown remain unqualified. The corrected
   `decode_kv_policy_host_v2`check from`ba7715d00`passes all four CPUcommands:
   actual policy compilation,actual SYCL Verifier syntax,link and fixture
   execution,with874compiler/23link inputs and closed ownership. V1's incorrect

@@ -347467,7 +347467,7 @@
     }
   },
   "decode_kv_device_v1": {
-    "stage": "in_progress",
+    "stage": "closed",
     "source_commit": "01815886b75cb654783bd5077ba31d58f0771079",
     "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
     "native_record": {
@@ -348517,10 +348517,49 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "gu-numerics",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "numerics": {
+          "correctness_cases": 44,
+          "max_half_ulp": 0,
+          "BF16_capture_exact": true,
+          "guards": true,
+          "inputs_immutable": true
+        },
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 757904,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": true,
@@ -348723,6 +348762,13 @@
       },
       {
         "label": "smoke",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "numerics",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
