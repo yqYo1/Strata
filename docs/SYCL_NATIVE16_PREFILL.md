@@ -858,8 +858,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep the receipt and24config/plan files;all25fallback/candidate ELFs and
   original36samples/failed decision are unchanged.
   This campaign isolates the flag within330405. A matched cross-build
-  prefill/TTFT comparison with the retained coherent14508fallback is still
-  required before claiming whole-engine preservation. Its older
+  prefill/TTFT comparison with the retained coherent14508fallback closes
+  below with failed preservation;no whole-engine adoption follows. Its older
   `native_gdn_20261018`absolute PP and this campaign's different workload ID
   are not a matched regression comparison.
   The historical reader from`084e7eb2252f2192bd82e2b284d7c7eca414a1bf`is now
@@ -890,7 +890,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reject wrong generation/shape/wrapper or hidden settings;the two existing
   reducer tests preserve first/warmed and invalid-cohort refusals. This is
   source`34ea625bc`host evidence,not a rerun of the full native/test suite.
-  Model samples remain pending;no third engine is built.
+  Evidence`f26560ad7`now closes all twelve processes/thirty-six requests
+  normally0,with quiet validation,closed ownership,no freshfault,unchanged
+  boot/driver and all15final model-asset hashes. All three pairs per length
+  retain first/warmed prompt-time and TTFT samples. The32K first/warmed
+  prompt median C/Rratios are0.969932/0.992058;64K gives1.014361/1.004382.
+  Corresponding TTFT ratios are0.972084/0.993217and1.014245/1.004250.
+  Four of eight median series fail;all three64K paired prompt and TTFT
+  directions are slower. Do not dismiss the decrease as noise or adopt the
+  whole current generation. Preserve14508as the faster64K owned prefill
+  reference and330405for the separately planned CPUcapacity diagnostic;
+  its decode-only KVgain and failed same-binary flag screen remain distinct.
+  These matched bodies differ from the older`native_gdn_20261018`speed
+  reference;their absolute PP cannot establish that historical regression.
+  No third engine is built. Raw/configuration retirement is pending before
+  preparing the independent CPUcomparison;physical262144/RESTORE,agent/task
+  and ordinary runtime teardown remain unqualified.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
   checks,the six-process cohort retires424successful raw/cache files
@@ -917,8 +932,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reference and current candidate among these reviewed paths;no global cleanup
   is claimed. The fresh native/model handoff stages above are closed;the
   separate repeated decode speed comparison and dedicated prefill comparison
-  are closed,while the failed preservation screen and cross-build comparison
-  remain open. The component alone did not qualify model TG;the
+  are closed,as is the separate cross-build comparison;both failed
+  preservation results remain unresolved. The component alone did not qualify model TG;the
   completed model campaign above supplies the workload-scoped gain.
   Actual request overlap/hit distribution and physical bus traffic remain
   unknown. The161ms observer service is still
