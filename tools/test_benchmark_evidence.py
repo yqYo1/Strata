@@ -28,6 +28,46 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_completed_api_sample_is_durable_before_end_gate(self):
+        with tempfile.TemporaryDirectory() as td:
+            directory = Path(td)
+            journal = b.RequestJournal(directory, lambda x: x)
+            observed = []
+            def gate(stage, phase, run):
+                if stage == 'end':
+                    rows = [json.loads(x) for x in (directory / 'requests.jsonl').read_text().splitlines()]
+                    self.assertEqual([r['kind'] for r in rows], ['start', 'result'])
+                    self.assertEqual(rows[-1]['sample']['generated_tokens'], 1500)
+                    self.assertTrue(b.verify_request_journal(directory)['valid'])
+                observed.append(stage)
+            suite = b.Suite('unused', '', 262144, 1, True, journal=journal,
+                want_long_generation=True, long_generation_only=True, request_gate=gate)
+            with patch.object(b, 'chat', return_value=raw()):
+                suite.request('long-generation/regular-code', 0, None, [], 16384, True)
+            self.assertEqual(observed, ['begin', 'end'])
+
+    def test_failed_end_gate_preserves_one_api_result_and_failed_gate(self):
+        with tempfile.TemporaryDirectory() as td:
+            directory = Path(td)
+            journal = b.RequestJournal(directory, lambda x: x)
+            def gate(stage, phase, run):
+                if stage == 'end':
+                    raise RuntimeError('native segment coverage failed')
+            suite = b.Suite('unused', '', 262144, 1, True, journal=journal,
+                want_long_generation=True, long_generation_only=True, request_gate=gate)
+            with patch.object(b, 'chat', return_value=raw()), self.assertRaisesRegex(
+                    RuntimeError, 'native segment coverage failed'):
+                suite.request('long-generation/regular-code', 0, None, [], 16384, True)
+            rows = [json.loads(x) for x in (directory / 'requests.jsonl').read_text().splitlines()]
+            self.assertEqual([r['kind'] for r in rows], ['start', 'result', 'gate'])
+            self.assertEqual(rows[1]['sample']['generated_tokens'], 1500)
+            self.assertEqual(rows[2]['status'], 'failed')
+            proof = b.verify_request_journal(directory)
+            self.assertTrue(proof['valid'])
+            self.assertFalse(proof['complete'])
+            self.assertEqual(proof['pending'], [])
+            self.assertEqual(len(proof['failed_gates']), 1)
+
     def test_warmup_reconciliation_rejects_failed_missing_reordered_and_changed_requests(self):
         phases = [('warm-up/chat',None,24,True),('calibration',200,1,False),
                   ('calibration',800,1,False),('warm-up/prompt',None,8,True),
