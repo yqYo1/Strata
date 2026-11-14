@@ -699,9 +699,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   qualified in that failed configuration comparison. The unused row-copy
   source/fixture/controller and ended13-ELF observer consumers are now retired
   to`644412c8e`;eight unchanged build/admission helpers remain in
-  `tools/sycl/fixture_build.py`for the active KVwork. Recover the original
-  89401/e8source,recipes and final inputs before retiring their remaining
-  binaries;this is the next prerequisite before a new engine generation.
+  `tools/sycl/fixture_build.py`for the active KVwork. The original89401/e8
+  source,recipes and final compiler/link inputs are now recovered and their
+  ended binaries retired with the other normal superseded generations below.
   Original unexecuted V1preparation and V2protocol/V3API-name/V4timer failures
   stay in Git at245eecc93/bf67e3a0b/67d28b364/8b40f5c84. V5increases warmup/
   calibration rather than relaxing the250ms/1%bounds. No prior failure is
@@ -713,8 +713,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The closed CPUcache/whole-job and mapped-row prototypes'46source/controller
   files(724140bytes)are retired to`644412c8e`. CPUdispatch/pool/generator and
   original elementwise processing are restored from clean14508,while the
-  independent native-job MAXTguard and its regression test remain. Old e8/
-  mapped binary recovery/deletion is still pending. Clean14508remains the speed reference. No candidate clean-speed,
+  independent native-job MAXTguard and its regression test remain. Clean14508
+  remains the speed reference. No candidate clean-speed,
   dedicated-prefill,agent/task,physical262144/RESTORE or ordinary-provider
   teardown qualification follows. See mixed_nt_model_v1.
   The separate cooperative KVplanner has component qualification and an
@@ -773,8 +773,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   actual policy compilation,actual SYCL Verifier syntax,link and fixture
   execution,with874compiler/23link inputs and closed ownership. V1's incorrect
   success-marker gate remains failed. This is no engine build,GPU/model or
-  ODRqualification;recover and retire both temporary host products before
-  preparing the engine generation. Next qualify that build and
+  ODRqualification. Both temporary host products and eight ended engine/fixture
+  groups are now retired after exact Git source/recipe/compiler/link recovery:
+  1210files/970017769regular bytes. Original source receipts and still-consumed
+  SDK/census metadata remain;the known-good14508engine and1e776KVfixture are
+  unchanged. The partial GU,adaptive audit and old DFlash2special-format
+  provenance holds remain separate,with exact recovery actions and the next
+  build-closure review in`production_preparation.build_retirement`. Next qualify
+  the fresh coherent candidate build and
   commit a separate model comparison with prefill-preservation and
   sustained-thinking gates. This
   component result alone is no model TGgain or default adoption.
