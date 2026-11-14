@@ -988,6 +988,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   under Qualification and operating constraints immediately;mirror them into
   AGENTS.md's existing tuning/measurement rules when this cohort closes.
   Do not refresh its policy hashes to absorb a mid-cohort edit.
+  The source-only child`tune/phase-kv-isolation`prepares the next two units
+  without changing this cohort's primary tree. Its policy commit`6b6098593`
+  carries those AGENTS rules. Unit`ae74403d1`only renames the decode KVentry
+  and phase selector,with required callers/header/policy tests. Separate unit
+  `93b964cae`moves the cooperative planner into`decode_kv_stream.cpp`and
+  restores scalar`kv_stream.cpp`exactly from14508(SHA4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696).
+  The new decode source is extracted from the owned1eec implementation;
+  bounds,barriers,ordered clock/copy policy,parameters and persistent storage
+  are unchanged. The independent expert-dispatch bounds fix is preserved.
+  These are prepared source,not tested kernels or adopted model routes.
+  After closing CPUcapacity and reconciling the three legacy build holds,
+  qualify and compare the original units separately before their combination;
+  the second unit must not inherit an unpassed first-unit gate. Rebuild every
+  affected TU and require actual production phase routing,component oracles,
+  matched prefill/TTFT and sustained decode preservation. A split's result
+  does not qualify legacy shared graph/state/placement ownership or establish
+  the cause of an earlier regression. Integrate completed units into the
+  primary with their original identities,then retire the finished child.
   The reused driver's`execution.json`is an Owner-closure snapshot before
   final publication;completion comes from the canonical record plus actual
   reaped/session-empty/absent-owner checks. Preserve the snapshot unchanged.
