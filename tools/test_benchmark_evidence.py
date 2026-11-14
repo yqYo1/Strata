@@ -17,6 +17,7 @@ import strata_bench as b
 import long_generation_bench as lg
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'sycl'))
 import generation_engine as generation
+import decode_kv_bench as kv_bench
 
 
 def raw(body="answer", offered=300):
@@ -28,6 +29,57 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_kv_native_windows_require_ordered_footer_copy_cache_coverage(self):
+        header = 'strata serve: prompt 33283 tokens = fixture\n'
+        copied = 'strata serve: SYCL_EXPERT_COPY '+ ' '.join(k+'=0' for k in kv_bench.decode_footer.COPY_KEYS)+'\n'
+        cache = 'strata serve: decode expert cache hit rate: 50.0% (1 hits / 2 lookups)\n'
+        first = 'first prefill\n'+header+copied+cache
+        second = '\ncontinuation\n'+header+copied+cache
+        windows = kv_bench.native_windows(first+second)
+        self.assertEqual(len(windows), 2)
+        self.assertIn('first prefill', windows[0])
+        self.assertNotIn('continuation', windows[0])
+        self.assertIn('continuation', windows[1])
+        for bad in (header+cache+copied, first+header+copied, first+copied,
+                    first+copied.replace('submitted_blobs=0','submitted_blobs=broken')):
+            with self.subTest(bad=bad), self.assertRaises(RuntimeError): kv_bench.native_windows(bad)
+
+    def test_kv_capture_evidence_separates_phase_and_actual_arm(self):
+        def line(phase, width, flag, scalar, cooperative):
+            return (f'strata verify KV_PLAN: phase={phase} tokens={width} enabled={flag} '
+                f'scalar_calls={scalar} coalesced_calls={cooperative}\n')
+        off = line('prompt',4,0,12,0)+line('decode',1,0,12,0)+line('decode',4,0,12,0)
+        on = line('prompt',4,1,12,0)+line('decode',1,1,12,0)+line('decode',4,1,0,12)
+        self.assertEqual(len(kv_bench.kv_captures(off,0)),3)
+        self.assertEqual(kv_bench.kv_captures(on,1)[-1]['coalesced_calls'],12)
+        for text, arm in ((off,1),(on,0),(on.replace('phase=prompt','phase=decode'),1),
+                          (on.replace('coalesced_calls=12','coalesced_calls=11'),1)):
+            with self.subTest(text=text,arm=arm), self.assertRaises(RuntimeError): kv_bench.kv_captures(text,arm)
+
+    def test_kv_gated_events_bind_completed_and_pending_api_boundaries(self):
+        specs = [('warm-up/chat',None,24,True),('calibration',200,1,False),
+            ('calibration',800,1,False),('warm-up/prompt',None,8,True),
+            ('long-generation/regular-code',0,16384,True),('long-generation/varied-prose',0,16384,True)]
+        events = [dict(kind='identity')]
+        for phase, run, cap, thinking in specs:
+            start = dict(kind='start',index=len(events),phase=phase,run=run,turn=None,max_tokens=cap,
+                thinking=thinking,request_sha256='a'*64)
+            if phase.startswith('long-generation/'): start['gate_required']=True
+            events += [start,dict(kind='result',phase=phase,run=run,turn=None,request_index=start['index'],
+                sample=dict(ok=True,request_sha256='a'*64))]
+            if start.get('gate_required'):
+                events.append(dict(kind='gate',phase=phase,run=run,turn=None,request_index=start['index'],status='passed'))
+        self.assertEqual(len(kv_bench.gated_events(events,kv_bench.WORKLOADS)),6)
+        self.assertEqual(len(kv_bench.gated_events(events[:-2],('regular-code',),'varied-prose')),5)
+        self.assertEqual(len(kv_bench.gated_events(events[:-1],('regular-code',),'varied-prose',True)),6)
+        for variant in ('failed','missing','duplicate','wrong-request'):
+            wrong = [dict(e) for e in events]
+            if variant=='failed':wrong[-1]['status']='failed'
+            elif variant=='missing':wrong.pop()
+            elif variant=='duplicate':wrong.append(dict(wrong[-1]))
+            else:wrong[-1]['request_index']=1
+            with self.subTest(variant=variant),self.assertRaises(RuntimeError):kv_bench.gated_events(wrong,kv_bench.WORKLOADS)
+
     @staticmethod
     def continuation_sample(reused=45588):
         def footer(n, cached, read, pp, generated, tg, accepted, offered):
