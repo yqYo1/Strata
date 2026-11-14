@@ -342567,7 +342567,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "kv_planner_validation_v1": {
-    "stage": "prepared",
+    "stage": "built",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -342877,7 +342877,7 @@
     "active": false,
     "ownership_closed": true,
     "complete": false,
-    "passed": false,
+    "passed": true,
     "GPU_executed": false,
     "model_executed": false,
     "host_command": [
@@ -342909,6 +342909,19 @@
       "timing": "No speed claim in this plan. After correctness,commit a separate paired graph-time plan including resets,observer limits and representative2/4-query shapes before measuring gain."
     },
     "retention": "One named standalone component build for immediate planner correctness/performance decision;no third engine build or overwrite. Review at full validation closure. Legacy13-ELF consumer migration and ended mapped-row fixture/diagnostic-engine retirement remain explicit holds;reconcile before another engine generation.",
+    "host_controls": {
+      "tests": 28,
+      "skipped": 0,
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/kv-planner-validation-v1/build/sycl_kv_copy_groups_bench",
+      "sha256": "38c667d51a1f8b7efa3ae72bc280235a6f75f73d552989c9025394302eb44867",
+      "bytes": 441120
+    },
+    "native_source_commit": "945dea2ee1ab1c2f5096d0ef728166d9b34fe0ce",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "945dea2ee1ab1c2f5096d0ef728166d9b34fe0ce",
@@ -342929,6 +342942,27 @@
         "aggregate_sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
       }
     ],
-    "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51"
+    "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51",
+    "actual_inputs": {
+      "compiled": {
+        "files": 718,
+        "sha256": "4a0dd1a84b084d4f750886ddd8720b11ffc0e17384ab040bb1dbcfe91a86d57c"
+      },
+      "generated": {
+        "files": 0,
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "links": {
+        "files": 24,
+        "sha256": "44a95de723b5016eb81e2aa07d119c3ac501c8e4a6223941ec6a8e42732871a8"
+      },
+      "objects": {
+        "files": 5,
+        "sha256": "5ceec956a746234af0bfa2080f349a72725f2f2b820d8caed337042bd91b9be9"
+      },
+      "translation_units": 5,
+      "reused_objects": 0,
+      "uncovered": 0
+    }
   }
 }
