@@ -341375,7 +341375,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "ad4d6a021575c31ad75454b72ba974fbc72d7971",
     "native_observer_admission": {
       "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
@@ -341692,7 +341692,29 @@
         "environment_sha256": "1e7a33488c934a85bd83c1a4d5b20cf6eed159035e0b1bd87a7c206918d01e2f"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": false,
+        "error": "RuntimeError(\"owned benchmark failed: RuntimeError('actual target graph window differs from the MTP cap')\")",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "previous_attempt": {
       "key": "decode_window_speed_v1",
@@ -341752,6 +341774,74 @@
       "actual_capture_negative": 4,
       "copy_and_draft_controls": true,
       "GPU_executed": false
+    },
+    "post_failure_closure": {
+      "checked_utc": "2026-11-14T01:48:42.443436+00:00",
+      "closed_after_failure": true,
+      "original_failed_owner_observation_preserved": true,
+      "owned_identities": [
+        {
+          "pid": 186505,
+          "start_ticks": 296932797,
+          "sid": 186505,
+          "pgid": 186505
+        },
+        {
+          "pid": 186514,
+          "start_ticks": 296932828,
+          "sid": 186505,
+          "pgid": 186505
+        },
+        {
+          "pid": 186555,
+          "start_ticks": 296932927,
+          "sid": 186505,
+          "pgid": 186555
+        },
+        {
+          "pid": 186562,
+          "start_ticks": 296932951,
+          "sid": 186505,
+          "pgid": 186555
+        }
+      ],
+      "all_original_processes_absent": true,
+      "session_empty": true,
+      "actual_native_executed": true,
+      "completed_short_warmups": 4,
+      "long_request_started": false
+    },
+    "failure_diagnosis": {
+      "actual_allocation_width": 4,
+      "actual_MTPcap": 2,
+      "observed_target_captures": [
+        1,
+        2,
+        4
+      ],
+      "observed_decode_phase_captures": [
+        1,
+        2
+      ],
+      "observed_marker_fixture": [
+        "strata verify: captured the 4-token window in 49 event-completed segments",
+        "strata verify: phase=prompt tokens=4 q6_reference_calls=102 q6_columns_calls=0",
+        "strata verify: captured the 1-token window in 49 event-completed segments",
+        "strata verify: phase=prompt tokens=1 q6_reference_calls=102 q6_columns_calls=0",
+        "strata verify: phase=decode tokens=1 q6_reference_calls=21 q6_columns_calls=81",
+        "strata verify: captured the 2-token window in 49 event-completed segments",
+        "strata verify: phase=decode tokens=2 q6_reference_calls=21 q6_columns_calls=81"
+      ],
+      "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "original_log_sha256": "3badda7197555117581bbfd68fd7bb02534fb2db7841e9a3ce7bab042f57e94d",
+      "cause": "V2incorrectly rejected the startup allocation-width4graph,although actual decode captures are1/2. Controller refused at the first long begin gate before continue. No long timing sample was collected;original failed status remains.",
+      "next": "A new prospective plan must allow common startup width4and require selected width in phase=decode markers,plus exact native argv and actual graph presence. Qualify against this observed fixture before fresh model processes.",
+      "source_phase_contract": {
+        "commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "path": "src/core/verify.cpp",
+        "line": 1585,
+        "meaning": "VerifyInput::prompt versus decode is printed explicitly. Prompt width4is valid with allocation4and actual MTPdecode cap2."
+      }
     },
     "source_inputs": {
       "files": 751,

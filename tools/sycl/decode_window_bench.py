@@ -18,7 +18,7 @@ sys.dont_write_bytecode = True
 import coherent_decode_bench as previous
 
 P, B, RESULT = previous.P, previous.B, previous.RESULT
-ROOT, KEY = B / 'decode-window-speed-v2', 'decode_window_speed_v2'
+ROOT, KEY = B / 'decode-window-speed-v3', 'decode_window_speed_v3'
 THIS = 'tools/sycl/decode_window_bench.py'
 ARMS = ('candidate', 'reference', 'reference', 'candidate', 'candidate', 'reference')
 WORKLOADS = previous.WORKLOADS
@@ -201,29 +201,47 @@ def decision(processes):
 
 
 def previous_failure():
-    row = reuse.build.validation.committed(RESULT, ('decode_window_speed_v1',))
+    row = reuse.build.validation.committed(RESULT, ('decode_window_speed_v2',))
     require(row['stage'] == 'failed' and not row['passed'] and not row['complete']
-        and not row['active'] and row['ownership_closed'] and len(row['processes']) == 2
-        and row['processes'][0]['passed'] and not row['processes'][1]['passed']
+        and not row['active'] and row['ownership_closed'] and len(row['processes']) == 1
+        and not row['processes'][0]['passed']
         and row['post_failure_closure']['closed_after_failure']
-        and row['post_failure_closure']['actual_native_exit_code'] == 2
+        and row['post_failure_closure']['completed_short_warmups'] == 4
         and not row['post_failure_closure']['long_request_started']
-        and row['artifact_retirement']['complete'], 'preserve closed/refused V1 and its raw retirement')
-    return dict(key='decode_window_speed_v1', source_commit=row['source_commit'],
-        stage='failed', actual_native_exit_code=2, closed_after_failure=True,
+        and row['failure_diagnosis']['observed_target_captures'] == [1, 2, 4]
+        and row['failure_diagnosis']['observed_decode_phase_captures'] == [1, 2]
+        and row['artifact_retirement']['complete'], 'preserve closed V2 observer failure and its raw retirement')
+    return dict(key='decode_window_speed_v2', source_commit=row['source_commit'],
+        stage='failed', closed_after_failure=True, completed_short_warmups=4,
         long_candidate_request_started=False, original_failed_outcome_unchanged=True,
-        correction='V1changed allocation width to2and hit the existing cache-loan guard. '
-            'V2preserves allocation spec4and prefill/cache placement in both arms;only the existing '
-            'MTPcap0/2differs. No native rebuild or guard removal. All six processes are fresh.')
+        marker_fixture_sha256=signature(row['failure_diagnosis']['observed_marker_fixture']),
+        correction='V2incorrectly applied the decode-width requirement to prompt captures. '
+            'V3allows prompt widths1..4with allocation4and requires the selected width in actual '
+            'phase=decode markers and graph presence. MTPcap0/2,native engine,workloads and '
+            'performance/length/quality criteria stay the same. All six processes are fresh.')
 
 
 def target_windows(text, arm):
-    widths = sorted(set(map(int, re.findall(r'^strata verify: captured the (\d+)-token '
-        r'window in \d+ event-completed segments$', text, re.M))))
+    widths, phases = [], dict(prompt=[], decode=[])
+    for line in text.splitlines():
+        if line.startswith('strata verify: captured the '):
+            match = re.fullmatch(r'strata verify: captured the (\d+)-token '
+                r'window in \d+ event-completed segments', line)
+            require(match is not None, 'malformed target capture marker')
+            widths.append(int(match[1]))
+        elif line.startswith('strata verify: phase='):
+            match = re.fullmatch(r'strata verify: phase=(prompt|decode) tokens=(\d+) '
+                r'q6_reference_calls=\d+ q6_columns_calls=\d+', line)
+            require(match is not None, 'malformed target phase marker')
+            phases[match[1]].append(int(match[2]))
+    widths = sorted(set(widths)); phases = {k: sorted(set(v)) for k, v in phases.items()}
     expected = 2 if arm == 'candidate' else 4
-    require(expected in widths and all(w in (1, expected) for w in widths),
-        'actual target graph window differs from the MTP cap')
-    return widths
+    require(expected in widths and expected in phases['decode']
+        and all(1 <= w <= 4 for w in [*widths, *phases['prompt']])
+        and all(w in (1, expected) for w in phases['decode']),
+        'actual decode capture window differs from the MTP cap')
+    return dict(all_captured=widths, prompt=phases['prompt'], decode=phases['decode'],
+        allocation_maximum=4, selected_MTP_window=expected)
 
 
 def request_evidence(text, samples):
@@ -251,7 +269,7 @@ def context():
         require(args[args.index('--spec') + 1] == '4'
             and args[args.index('--mtp-max-t') + 1] == cap, 'actual native allocation/MTPcap argv differs')
         journal.update(allocation_max_window=4, configured_mtp_cap=int(cap),
-            actual_captured_target_windows=target_windows((root / 'engine.stderr').read_text(), ARMS[INDEX]))
+            target_capture_evidence=target_windows((root / 'engine.stderr').read_text(), ARMS[INDEX]))
         return rows, events, journal
     ctx.official = official
     return ctx
@@ -266,15 +284,25 @@ def controls():
         require(config['args'][1] == '4' and config['args'][-2:] == ['--mtp-max-t', cap]
             and row['configuration']['args'][1] == '4' and '--mtp-max-t' not in row['configuration']['args'],
             'window arm/source mutation control')
-    literal = 'strata verify: captured the {}-token window in 49 event-completed segments\n'
-    require(target_windows(literal.format(1) + literal.format(2), 'candidate') == [1, 2]
-        and target_windows(literal.format(1) + literal.format(4), 'reference') == [1, 4],
+    def literal(width, phase='decode'):
+        return (f'strata verify: captured the {width}-token window in 49 event-completed segments\n'
+            f'strata verify: phase={phase} tokens={width} q6_reference_calls=21 q6_columns_calls=81\n')
+    prompt = literal(4, 'prompt')
+    require(target_windows(prompt + literal(1) + literal(2), 'candidate')['decode'] == [1, 2]
+        and target_windows(prompt + literal(1) + literal(4), 'reference')['decode'] == [1, 4],
         'actual capture width positive controls')
-    for text, arm in ((literal.format(4), 'candidate'), (literal.format(2), 'reference'),
-        (literal.format(1), 'candidate'), (literal.format(2) + literal.format(4), 'candidate')):
+    for text, arm in ((literal(4), 'candidate'), (literal(2), 'reference'),
+        (literal(1), 'candidate'), (literal(2) + literal(4), 'candidate'),
+        (literal(5, 'prompt') + literal(2), 'candidate'),
+        (literal(2).replace('phase=decode', 'phase=unknown'), 'candidate')):
         try: target_windows(text, arm)
         except RuntimeError: pass
         else: raise RuntimeError('wrong/unconfirmed actual target window accepted')
+    fixture = reuse.build.validation.committed(RESULT,
+        ('decode_window_speed_v2', 'failure_diagnosis'))['observed_marker_fixture']
+    require(signature(fixture) == previous_failure()['marker_fixture_sha256']
+        and target_windows('\n'.join(fixture), 'candidate')['decode'] == [1, 2],
+        'original real warmup prompt/decode fixture required')
     for args in (['--spec', '2', '--pcie-frac', '0', '--adapt-swaps', '0'],
         ['--spec', '4', '--pcie-frac', '0.0625', '--adapt-swaps', '0'],
         ['--spec', '4', '--pcie-frac', '0', '--adapt-swaps', '8']):
@@ -282,7 +310,8 @@ def controls():
         except RuntimeError: pass
         else: raise RuntimeError('changed base configuration accepted')
     return dict(passed=True, allocation_window=4, MTP_caps=[0, 2], base_unchanged=True,
-        rejected_changed_bases=3, actual_capture_positive=2, actual_capture_negative=4,
+        rejected_changed_bases=3, actual_capture_positive=2, actual_capture_negative=6,
+        actual_V2_marker_fixture_passed=True,
         copy_and_draft_controls=True, GPU_executed=False)
 
 
@@ -324,7 +353,8 @@ def prepare():
                 'as closed coherent_decode_pcie_speed_v3. No per-job,census,trace,query,caller or stage-timer observer.',
             acceptance='All6processes/12long requests:>=32768fresh input,>=1024generated including thinking, '
                 '>=512answer chars,>=256drafts,normal SSE/journal/clocks/TTFT and identical request bodies. '
-                'Actual target captures must include2or4as selected,and no opposite width,at warmup gates '
+                'Allow common prompt captures1..4under allocation4. Require actual phase=decode captures '
+                'to include2or4as selected,with only1and that selected decode width,at warmup gates '
                 'before long timing and at final closure. Exact native argv/allocation4/MTPcap0or2, '
                 'source/build/SDK/12ELF/provider/frontend/model identities;all15full asset '
                 'hashes before/after cohort;normal0,closed owners,quiet validation,no fresh fault. '

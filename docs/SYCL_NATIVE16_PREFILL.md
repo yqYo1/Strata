@@ -645,12 +645,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   T2/20-row shape. Do not wire it into the measured hot path on that evidence.
   Next compare explicit MTPwindow2/4 configurations in the existing clean14508
   engine with matched long thinking/strong-and-weak-MTP workloads,before paying
-  for a new engine integration. The prospective`decode_window_speed_v2`controller
+  for a new engine integration. The prospective`decode_window_speed_v3`controller
   keeps allocation spec4and the prefill cache loan in both arms;only existing
-  --mtp-max-t0/2changes the actual MTPwindow. Its committed plan and both
-  current-source frontend probes pass,with closed owners. Cap/base-immutability,
-  copy/draft and actual capture-width positive/negative host controls also pass.
-  Native/model checks are pending. It declares six fresh processes C,R,R,C,C,R,four official warmups
+  --mtp-max-t0/2changes the actual MTPwindow. Its new plan/host/model checks are
+  pending. It declares six fresh processes C,R,R,C,C,R,four official warmups
   and both long thinking workloads per process;no V1sample is reused. Native
   source stays14508;the controller independently recovers its original
   inputs/recipe and checks the retained12ELFs,SDK/runtime and all15
@@ -669,8 +667,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   earlier id. Consumed V1raw output is now retired after original controller,
   native source/recipe and actual input recovery;compact samples/refusal and
   original failed status remain. V1does not become a successful comparison.
-  V2checks actual2/4target captures after the warmups before long timing and
-  at final closure,plus exact allocation/MTPcap argv. Judge reference
+  V2passes its host gates and four real candidate short warmups,with actual
+  prompt captures1/4and decode captures1/2. Its overly broad observer rejects
+  the prompt4graph at the first long begin gate;no long timing starts. Native
+  Source14508`src/core/verify.cpp:1585`prints prompt/decode explicitly. All
+  owned processes are now absent,no fresh fault occurred,and the original
+  failed observation stays failed with separate later closure evidence.
+  V3allows prompt widths1..4and requires actual selected2/4decode captures,
+  checking the observed V2marker fixture before fresh model execution. No
+  performance/length/thinking criterion changes. Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
   changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
   model plan;otherwise retire the unused prototype to its original Git source.
