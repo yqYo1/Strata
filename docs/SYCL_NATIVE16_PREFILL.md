@@ -1066,8 +1066,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   not additive. Self/refusal controls pass(1positive/6negative in V1,
   1positive/7negative in V2). Original V1and the Aperformance plan are unchanged;
   this is static compatibility evidence,not throughput or model adoption.
-  A compatibility-only replacement remains a prospective decision requiring
-  the original numerical/state/production-handoff gates;B1/B2stay unbuilt.
+  Prospective comparison source`f2e3eccad`now pins separate naming-only
+  prefill/decode plans against the exact1eec/330405reference at KV1in both
+  arms. Prefill keeps the existing12-process32K/64Korder and first/warmed
+  scopes;decode keeps six R,C,C,R,R,Cprocesses and both long-thinking bodies.
+  The unchanged median screens remain separate diagnostics,including failures.
+  Naming-control eligibility additionally requires the original numerical/state
+  gates,exact loaded-image identity,and no clear slowdown in each three-pair
+  log-time95%Student interval(df2). Timing alone does not prove equivalence
+  or speedup;this prospective criterion is only for the byte-identical naming
+  control and changes neither prior failed preservation result. It does not
+  apply to the different B1/B2images. Both phase controls remain pending;
+  B1/B2stay unbuilt. The retained cross-build configuration receipt supplies
+  its frozen environment/model manifest until these comparisons close;old
+  generated configurations or full diagnostic captures are not their inputs.
   Its temporary-third-generation
   consumer is the sole-change naming comparison,preserving both phase references.
   CPUcapacity is closed and the three legacy build holds are reconciled and

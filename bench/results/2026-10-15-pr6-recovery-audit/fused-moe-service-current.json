@@ -368185,5 +368185,861 @@
     "retained_ELFs": 39,
     "scope": "Only closed naming native/oracle/model raw output,full-parser private receipts and disposable caches. Useful outcomes/source/configuration/counts are committed. Original outcomes unchanged;14fresh fixtures and25phase-reference ELFs remain unchanged. No binary-generation retirement or new inference qualification.",
     "next_consumer": "Pending original naming-only matched prefill/TTFT/sustained-decode comparison uses committed curated gates and retained native build record;closed diagnostic controllers must not be resumed."
+  },
+  "phase_kv_naming_prefill_v1": {
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "source_commit": "f2e3eccad9e867107d6d4e16c5aae8ce6270f6e7",
+    "live_snapshot": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "f2e3eccad9e867107d6d4e16c5aae8ce6270f6e7",
+      "count": 1191,
+      "aggregate_sha256": "a991690fc47f6a37dedf6d4e8134ef65a009d5ae0893b234bd728c12bf6413c4"
+    },
+    "native_builds": {
+      "reference": {
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata",
+          "sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+          "bytes": 26476224,
+          "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+        },
+        "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+        "native_validation_probe": {
+          "library": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+            "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+          },
+          "loader": {
+            "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+          }
+        },
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840"
+      },
+      "candidate": {
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+          "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+          "bytes": 26476232,
+          "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+        },
+        "native_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e",
+        "native_validation_probe": {
+          "library": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+            "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+          },
+          "loader": {
+            "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+          }
+        },
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840"
+      }
+    },
+    "native_proofs": {
+      "proofs": {
+        "reference": {
+          "source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+          "build_evidence": "6c05d9a4dd6d813627672d9c9badd61daa173b90",
+          "record_sha256": "1ab18db544e7af8cf00e355550dc6e25aed721ab09b011bbdb5e045947ae7923",
+          "source_dependency_files": 2376,
+          "actual_census_sha256": "2457f798c17913b344a179549ab7ef7c5b30b3e497c03d16f2d4be5c34b596d2",
+          "original_recipe_sha256": "1a05f982286e1616f90fbd171fc68bc8ee690508e8522456a9742a5972c9e588",
+          "binaries": {
+            "strata": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata",
+              "sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+              "bytes": 26476224,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_q6_head_owner_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_q6_head_owner_test",
+              "sha256": "e5779e05db5c15d3e6593e09e8798dae5b254d2a57af16a5880f8b1aa949605e",
+              "bytes": 11734112,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_submission_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_submission_test",
+              "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+              "bytes": 352152,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_verifier_retirement_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_verifier_retirement_test",
+              "sha256": "8c57d37f4de54c6a9b5eef4decc66c8742da408457be087f8d0b457f8807ffeb",
+              "bytes": 19753128,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_verify_window_policy_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_verify_window_policy_test",
+              "sha256": "310bfa2fba820a8fc225da0dd21107ca8ef29cb589bdc09baa4f90bef386870e",
+              "bytes": 114968,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_qsa_bf16_prefix_cached_subgroup_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_test",
+              "sha256": "0693067c78778b45a36973af5b6b1c687c486d3e17980c7173ecb8b16228b326",
+              "bytes": 1577968,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_qsa_bf16_prefix_cached_subgroup_bench": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_bench",
+              "sha256": "c22cbe37e807bd0d4a1bbb5cfcaf4a86c162afbd0c6342a7a5b9b92676b5b8b1",
+              "bytes": 1547096,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_native16_qsa_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_native16_qsa_test",
+              "sha256": "85866bb1827cea081aac5ccfef8ac634ca70e1e36e534ed70c350844287c501f",
+              "bytes": 442664,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_moe_upload_census_host_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_moe_upload_census_host_test",
+              "sha256": "f274461c3b915becf16f611f7447681ca1e2bad2860b51a1b2288f3a09571269",
+              "bytes": 96456,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "strata_full_context_diagnostic": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata_full_context_diagnostic",
+              "sha256": "90ea0f8260ff07e3098d986a38a13bc7c4446b45e97ed45aa71da48251aabf40",
+              "bytes": 26476352,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "full_context_diagnostic_host_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/full_context_diagnostic_host_test",
+              "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+              "bytes": 91448,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_gu_policy_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_gu_policy_test",
+              "sha256": "e1cbb0f7a9bdb5351797fd7e9eb4327286ffb366d64d8bf09520a5f94eeb3e47",
+              "bytes": 14155160,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            },
+            "sycl_expert_dispatch_bounds_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/sycl_expert_dispatch_bounds_test",
+              "sha256": "84ac8d793abc6fdb07647dc7801e47ab286bbf9497dee72c8abcfe9e82bde3d7",
+              "bytes": 15756816,
+              "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+            }
+          },
+          "historical_source_recovered": true,
+          "current_source_not_substituted": true
+        },
+        "candidate": {
+          "source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e",
+          "build_evidence": "9ff38147e5d9bbbaec96dc8dcae86ffd969f457c",
+          "record_sha256": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c",
+          "source_dependency_files": 2384,
+          "actual_census_sha256": "82aecb2e341e2981e7d471d1d4d6099dd44c357128eded3077264d48e026b037",
+          "original_recipe_sha256": "1c14fb531398338c49a4aa3ee0612e1fdad81f46ee9ce2a50ac01805b00b5fdd",
+          "binaries": {
+            "strata": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+              "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+              "bytes": 26476232,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_q6_head_owner_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_q6_head_owner_test",
+              "sha256": "e5779e05db5c15d3e6593e09e8798dae5b254d2a57af16a5880f8b1aa949605e",
+              "bytes": 11734112,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_submission_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_submission_test",
+              "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+              "bytes": 352152,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_verifier_retirement_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_verifier_retirement_test",
+              "sha256": "e7ef81dc858facec5a10abfcf4d0c3d7ed3f6cfe38f1284ce45c99295657c26d",
+              "bytes": 19753128,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_verify_window_policy_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_verify_window_policy_test",
+              "sha256": "310bfa2fba820a8fc225da0dd21107ca8ef29cb589bdc09baa4f90bef386870e",
+              "bytes": 114968,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_qsa_bf16_prefix_cached_subgroup_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_test",
+              "sha256": "0693067c78778b45a36973af5b6b1c687c486d3e17980c7173ecb8b16228b326",
+              "bytes": 1577968,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_qsa_bf16_prefix_cached_subgroup_bench": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_qsa_bf16_prefix_cached_subgroup_bench",
+              "sha256": "c22cbe37e807bd0d4a1bbb5cfcaf4a86c162afbd0c6342a7a5b9b92676b5b8b1",
+              "bytes": 1547096,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_native16_qsa_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_native16_qsa_test",
+              "sha256": "85866bb1827cea081aac5ccfef8ac634ca70e1e36e534ed70c350844287c501f",
+              "bytes": 442664,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_moe_upload_census_host_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_moe_upload_census_host_test",
+              "sha256": "f274461c3b915becf16f611f7447681ca1e2bad2860b51a1b2288f3a09571269",
+              "bytes": 96456,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "strata_full_context_diagnostic": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata_full_context_diagnostic",
+              "sha256": "bf408b92676190c9401eb35e2bfecfb4ae9c747c0d317deec9e27fa94b27bf45",
+              "bytes": 26476360,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "full_context_diagnostic_host_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/full_context_diagnostic_host_test",
+              "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+              "bytes": 91448,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_gu_policy_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_gu_policy_test",
+              "sha256": "e1cbb0f7a9bdb5351797fd7e9eb4327286ffb366d64d8bf09520a5f94eeb3e47",
+              "bytes": 14155160,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_expert_dispatch_bounds_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_expert_dispatch_bounds_test",
+              "sha256": "84ac8d793abc6fdb07647dc7801e47ab286bbf9497dee72c8abcfe9e82bde3d7",
+              "bytes": 15756816,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            },
+            "sycl_kv_copy_groups_bench": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/sycl_kv_copy_groups_bench",
+              "sha256": "eeaf60aa8a0fe4f2c052d6f92bf006a509747ce62b9c6937539ba9348a437805",
+              "bytes": 465912,
+              "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+            }
+          },
+          "historical_source_recovered": true,
+          "current_source_not_substituted": true
+        },
+        "uncompiled_deltas": {
+          "tools/sycl/check_named_kv.py": {
+            "before": null,
+            "after": "f562291a293f3c250c975836fce51bec66518f06fa3b267a550a85554e482303"
+          },
+          "tools/sycl/check_named_kv_model.py": {
+            "before": null,
+            "after": "13a5921a10cd2febb986684ef7f76631e2d766a152f773c25efc41a6c47c4e4b"
+          },
+          "tools/sycl/check_named_kv_oracle.py": {
+            "before": null,
+            "after": "946268bf553a79e0870db3d74d4351592edb2014b18a4b2be87ae29e766381c1"
+          },
+          "tools/sycl/decode_kv_bench.py": {
+            "before": "6684795fa7692a844ff9e3f84d23a7dc034caf3c330575030c6cd7403523c096",
+            "after": "8b9a2aa5ad34b693a6572abe24aef8633d6703af6d80456a9f2722a1ae32dd08"
+          },
+          "tools/sycl/phase_naming_bench.py": {
+            "before": null,
+            "after": "c0ed3afe66fbe9e864092c5dbc9cf841c801e4c9c7a4be221349bd5d90586d10"
+          }
+        }
+      },
+      "gates": {
+        "decode_kv_device_v1": "e20d77c53d4bdc9983b4aae76c332fc1582b85b6976a22db67ae5f86618ad3bb",
+        "decode_kv_model_v1": "c30817d3586dad9acc2bcda5b1af105be20b4abdd9a49cc326b2c8e6e0262863",
+        "phase_kv_naming_device_v1": "19d2a981fecc018606ca6fec31490cc9e543d127488eafc5b4de2ea5e6e74602",
+        "phase_kv_naming_oracle_v1": "cc0ebc65e22d2dd9249fe9e967c03205dce4ee44936e1cbf46df5672de0d124d",
+        "phase_kv_naming_model_v1": "0c6fca4b4e6f4ad1c91e9f32563335aa11596a5fe0ab2144c81d913a72b57df7",
+        "phase_kv_naming_elf_evidence": "74dd055d70f76bd68f2cfe87721e10e5e9c5c7a592363c038f9f7917d9adc5e7"
+      }
+    },
+    "configuration_evidence_sha256": "24547c03af815185f7a2cf275785bdc686b3cab04314a9f8d5dcddf175ffd16a",
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-native-v1/build/strata",
+      "sha256": "330405370dab1d52995540e79c9dad5a3decf46d4e2007ab096dcc57e602d21e",
+      "bytes": 26476224,
+      "origin_source_commit": "1eec28c77f393d34814dc748502113514973ea8e"
+    },
+    "native_source_commit": "1eec28c77f393d34814dc748502113514973ea8e",
+    "insertions": {
+      "REASONING_CLOSE": {
+        "tokens": 3,
+        "token_ids_sha256": "75d18c989d1701fb96ef9cf2403f3b9179835b0d02b3dbd3979a5c369d07facd"
+      },
+      "REASONING_WRAP_UP": {
+        "tokens": 18,
+        "token_ids_sha256": "8c13ee65ac1092fe69103cea638d02cdcc10e33e0ac0ce4277b654545a66c074"
+      }
+    },
+    "stage": "prepared",
+    "plans": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/0",
+        "port": 48581,
+        "read": 32769,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/0/config.json",
+          "--port",
+          "48581",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/0/bench"
+        ],
+        "generated": {
+          "config.json": "2e13bcbe102d9611a49690b2568472dbd2df49c984da14864696696a3ee40d00",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "f746a783fc2f0926c097ed591650c344eb5c70e04c0abc015a423e65a4ea74f2"
+      },
+      {
+        "index": 1,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/1",
+        "port": 36459,
+        "read": 32769,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/1/config.json",
+          "--port",
+          "36459",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/1/bench"
+        ],
+        "generated": {
+          "config.json": "d1c0ed2be9e82855b42a7c2dd99407b9a61e6c6d142453cefef52f65797ce595",
+          "plan.json": "05037a21285c94f90c38f9fa6a1f85a389d2688965dcb1327eebf0b35063d04a"
+        },
+        "environment_sha256": "54277bc5596a76d49d715eeb39c2b8bab68375e087d3edc0fa143d0f287911ee"
+      },
+      {
+        "index": 2,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/2",
+        "port": 39301,
+        "read": 65537,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/2/config.json",
+          "--port",
+          "39301",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/2/bench"
+        ],
+        "generated": {
+          "config.json": "5a829ac8736372fd907a1532d3e70b4776db932c6541aeb891d62849b03d9a18",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "e98995c6b5a3688455227d82b52696dfe91eecb0e2bc9bdf0d244211e0a3b508"
+      },
+      {
+        "index": 3,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/3",
+        "port": 34453,
+        "read": 65537,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/3/config.json",
+          "--port",
+          "34453",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/3/bench"
+        ],
+        "generated": {
+          "config.json": "31f35a0dd18380827bcb9918a4207ba5290294aea588312e7963fc4dad91f6c7",
+          "plan.json": "05037a21285c94f90c38f9fa6a1f85a389d2688965dcb1327eebf0b35063d04a"
+        },
+        "environment_sha256": "26b39b09a1a88031caff4eddcfc54126522fe6daad591be23e46a4034e8b9cc3"
+      },
+      {
+        "index": 4,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/4",
+        "port": 50529,
+        "read": 65537,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/4/config.json",
+          "--port",
+          "50529",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/4/bench"
+        ],
+        "generated": {
+          "config.json": "0a0d4473c738e70f901d328e49bf34f2d7b36da7fce982fcbaa2e2627b8fa31f",
+          "plan.json": "05037a21285c94f90c38f9fa6a1f85a389d2688965dcb1327eebf0b35063d04a"
+        },
+        "environment_sha256": "c9f28ddb73a75d8f6aaddd886d57ec54dd9880ca84cec8cccc1fb2ebf496325a"
+      },
+      {
+        "index": 5,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/5",
+        "port": 52345,
+        "read": 65537,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/5/config.json",
+          "--port",
+          "52345",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/5/bench"
+        ],
+        "generated": {
+          "config.json": "779a913b168c80e1da4d1a30e1764faf7ffe3e2252a53bf8de23abff1989000e",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "cf1ed56b425debbb6767f5e8d52496f9614cd822e09fd0e4a8eeab22f0b5af18"
+      },
+      {
+        "index": 6,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/6",
+        "port": 58323,
+        "read": 32769,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/6/config.json",
+          "--port",
+          "58323",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/6/bench"
+        ],
+        "generated": {
+          "config.json": "e5574200e3b9efa9e9a0db46c8bbe517850633a57d9614e1cfafaf51ac4099a3",
+          "plan.json": "05037a21285c94f90c38f9fa6a1f85a389d2688965dcb1327eebf0b35063d04a"
+        },
+        "environment_sha256": "dda2ca4127fd0504913b372e091b2f46613e3ea052de8c8cac9cd2006b2a363d"
+      },
+      {
+        "index": 7,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/7",
+        "port": 53973,
+        "read": 32769,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/7/config.json",
+          "--port",
+          "53973",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/7/bench"
+        ],
+        "generated": {
+          "config.json": "f33a6a7348520097ba0a53deea1422e09c49b2540d661bb00ccce4cb0c074330",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "58a0ca666dfd183c2b468a04225e83c541e03c49eace1644a99c696f976e2a5e"
+      },
+      {
+        "index": 8,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/8",
+        "port": 59769,
+        "read": 32769,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/8/config.json",
+          "--port",
+          "59769",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/8/bench"
+        ],
+        "generated": {
+          "config.json": "bca03d2f72ae69b158e1bd57769e9c79a5d758d1ff7da7b071b063fe9c0b2bfb",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "1f20061be2f2f3d7d1ab9ce9ae9e3ed77f9b99e129eca18dfe9bd935dfbe7887"
+      },
+      {
+        "index": 9,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/9",
+        "port": 42711,
+        "read": 32769,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/9/config.json",
+          "--port",
+          "42711",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/9/bench"
+        ],
+        "generated": {
+          "config.json": "3a3967c73f9c120e32c6b6211d1de854c633c86bc948d8ce0481d4cf2a9bfe63",
+          "plan.json": "05037a21285c94f90c38f9fa6a1f85a389d2688965dcb1327eebf0b35063d04a"
+        },
+        "environment_sha256": "a60975b3e455a8ad30ab9106fc43926739f261c7a8dc8e9f8ac4bda51d8d6e3d"
+      },
+      {
+        "index": 10,
+        "kernel": "reference",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/10",
+        "port": 37369,
+        "read": 65537,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/10/config.json",
+          "--port",
+          "37369",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/10/bench"
+        ],
+        "generated": {
+          "config.json": "7007804b8b1a18d8b32d0b0794f835fce3e413760a9bcc849934efa4ec9e0d52",
+          "plan.json": "71f89aa3f3b02cd27cad694f1c9a2ab4f7770cb1cd3bb93d0c93694168b26d9c"
+        },
+        "environment_sha256": "6b8776733689548d47f0958e427b3b481cebadb687c3d5a2566da6319e08fdb7"
+      },
+      {
+        "index": 11,
+        "kernel": "candidate",
+        "heads": 1,
+        "adapt_swaps": 0,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/11",
+        "port": 36007,
+        "read": 65537,
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/11/config.json",
+          "--port",
+          "36007",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "decode_kv_prefill_20261114",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-prefill-v1/11/bench"
+        ],
+        "generated": {
+          "config.json": "0b6aaeaf3aacee1a9c20bd5a4631e59f1e2f98268f3dab17609dfddd397cc4a3",
+          "plan.json": "05037a21285c94f90c38f9fa6a1f85a389d2688965dcb1327eebf0b35063d04a"
+        },
+        "environment_sha256": "f77d57dc010b193b51a06f025ae2d34a80e5f03b5ac0afc609b49979a355d62d"
+      }
+    ],
+    "processes": [],
+    "request_hashes": {},
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "whole_bytes": 872415232,
+    "budgets": {
+      "wall": 1800,
+      "cpu": 36000,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "plan": {
+      "unit": "A:only six-file mechanical decode names;no TU split or scalar restoration.",
+      "order": "Twelve32K/64Kprocesses in the unchanged alternating plan,three long requests each,first/warmed separate.",
+      "constants": "Same current bench.sh/server/engine_once/placement,262144logical/20480residentINT8KV,8192throughputBF16/largeGU/bulk1/staging0,1256static slots,5workers,pcie0/adapt0,spec4,head2/dense1,KVcoalesced1/copygroups0 in both immutable child environments. Only native ELF/source differs.",
+      "acceptance": "Recover original sources/recipes/compiler/class/SDK/census and all retained images before launch.Freeze current live source,controller/tests/generated launcher plans/providers/Python/models.Exact fresh read/zero reuse/valid clientTTFT/journal/work and actual phase routes required.Decode needs>=1Knative outputs with thinking and an answer plus observed strong/weak MTPclasses.Normal0,reaped empty owner,quiet validation,no fresh fault,unchangedboot/driver.Hash all15model assets before this cohort and after its final process.",
+      "decision": "Keep every sample and all three paired ratios. No expected speed gain from renaming.Retain the eight-series median prefill/TTFT screen and median TGscreen as separate diagnostics,including every failed series. This is a naming-only compatibility control,not engine adoption:require the separately committed exact host/device loaded-image identity,numerical/handoffgates and three paired log-time ratios per series. A two-sided95%Student interval(df2)with lower bound>0 is a clear slowdown and blocks control eligibility;otherwise reportthe interval without claiming speedup or equivalence from timing alone. TGuses log(R/C),and observed strong/weak reference MTPclasses remain mandatory.Any failed screen remains unresolved;no posthoc exclusion,threshold change or added samples.Both naming-control phases must pass before replacing the unchanged comparison generationor advancing B1. This prospective control-only criterion changes no earlier failed KVflagor cross-build decision and does not apply to optimized/different loaded images.",
+      "stopping": "Commit source/plan;host controls;commit;each fresh process in order with closure commits.Stop first source/owner/count/clock/route/provider/validation/fault/budget/eligibility failure;no retry or pin refresh.",
+      "limits": "No new native build or default inference adoption;no physical262144fill/RESTORE/agent/task/ordinaryteardown or hardware-saturation claim.Previous failed KVflag and cross-build screens remain unchanged.",
+      "retention": "Keep compact individual samples/source/configuration/decisions;retire successful raw/cache on closure.Only the already declared three native generations;select/retire the superseded comparison image before a B1build."
+    },
+    "invariant_signature": "c05765ab0596b7d1cb9ec236b03dbe16a2c9916ca3e2db151d59953a601fcf7a",
+    "source_inputs": {
+      "files": 747,
+      "sha256": "8c1788dcee060308ea6e5b7ccbb9f52d7595b0d40d824a1aeb1077d17f3c234a"
+    },
+    "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
