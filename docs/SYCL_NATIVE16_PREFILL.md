@@ -643,16 +643,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   attribution requests used8target windows/29rows. The first window isT1 and
   the maximum isT4,so each remaining window isT4;none exercises the qualifying
   T2/20-row shape. Do not wire it into the measured hot path on that evidence.
-  Next compare explicit spec2/spec4 configurations in the existing clean14508
+  Next compare explicit MTPwindow2/4 configurations in the existing clean14508
   engine with matched long thinking/strong-and-weak-MTP workloads,before paying
-  for a new engine integration. The prospective`decode_window_speed_v1`plan is
-  prepared with six fresh processes R,C,C,R,R,C:reference spec4,candidate spec2,
-  four official warmups and both long thinking workloads per process. Native
-  source stays14508;the new controller independently recovers its original
+  for a new engine integration. The prospective`decode_window_speed_v2`controller
+  keeps allocation spec4and the prefill cache loan in both arms;only existing
+  --mtp-max-t0/2changes the actual MTPwindow. Its new plan/host/model checks
+  are pending. It declares six fresh processes C,R,R,C,C,R,four official warmups
+  and both long thinking workloads per process;no V1sample is reused. Native
+  source stays14508;the controller independently recovers its original
   inputs/recipe and checks the retained12ELFs,SDK/runtime and all15
   model assets. Today's native checkout is not substituted for that build.
-  Both current-source frontend probes and the window/copy/draft host controls
-  pass with closed owners. The first reference process now closes normally0,
+  V1's frontend probes and window/copy/draft host controls pass with closed
+  owners. Its reference process closes normally0,
   with quiet validation,closed owners,no fresh fault and actual spec4argv.
   Code/prose have33213/33283fresh inputs,3548/5485outputs,TG14.0220/8.82839,
   and observed acceptance80.3074%/34.2952%. Both reference classes and long
@@ -662,11 +664,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are now absent. The original incomplete owner observation and failed trial
   remain failed,with separate later closure evidence. These are
   new fixed-id workload samples,not a matched regression comparison to the
-  earlier id. Retire its consumed raw output after source/recipe recovery.
-  The next prospective comparison must keep spec4allocation/prefill borrowing
-  in both arms and use existing --mtp-max-t0/2for actual MTPwidth. It needs a
-  fresh plan and processes;V1does not become a successful comparison.
-  Judge reference
+  earlier id. Consumed V1raw output is now retired after original controller,
+  native source/recipe and actual input recovery;compact samples/refusal and
+  original failed status remain. V1does not become a successful comparison.
+  V2checks actual2/4target captures after the warmups before long timing and
+  at final closure,plus exact allocation/MTPcap argv. Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
   changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
   model plan;otherwise retire the unused prototype to its original Git source.

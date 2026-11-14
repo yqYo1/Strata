@@ -7,10 +7,10 @@ checkout supplies only the separately pinned Python frontend and controller.
 """
 import copy
 import fcntl
-import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import re
 import socket
 import sys
 
@@ -18,9 +18,10 @@ sys.dont_write_bytecode = True
 import coherent_decode_bench as previous
 
 P, B, RESULT = previous.P, previous.B, previous.RESULT
-ROOT, KEY = B / 'decode-window-speed-v1', 'decode_window_speed_v1'
+ROOT, KEY = B / 'decode-window-speed-v2', 'decode_window_speed_v2'
 THIS = 'tools/sycl/decode_window_bench.py'
-ARMS, WORKLOADS = previous.ARMS, previous.WORKLOADS
+ARMS = ('candidate', 'reference', 'reference', 'candidate', 'candidate', 'reference')
+WORKLOADS = previous.WORKLOADS
 WORKLOAD_ID = 'decode_window_20261114'
 PYTHON = previous.PYTHON
 require, sha, signature = previous.require, previous.sha, previous.signature
@@ -136,15 +137,16 @@ def configuration(row, plan):
     value = copy.deepcopy(row['configuration']); value['log'] = str(Path(plan['root']) / 'engine.stderr')
     args = value['args']
     require(args.count('--spec') == 1 and args[args.index('--spec') + 1] == '4'
+        and '--mtp-max-t' not in args
         and args[args.index('--pcie-frac') + 1] == '0'
         and args[args.index('--adapt-swaps') + 1] == '0', 'preserve qualified static placement')
-    args[args.index('--spec') + 1] = '2' if plan['kernel'] == 'candidate' else '4'
+    args.extend(('--mtp-max-t', '2' if plan['kernel'] == 'candidate' else '0'))
     return value
 
 
 def invariant(row, plan):
     value = dict(config=configuration(row, plan), environment=previous.environment(row, plan))
-    args = value['config']['args']; args[args.index('--spec') + 1] = '<window>'
+    args = value['config']['args']; args[args.index('--mtp-max-t') + 1] = '<MTP-cap>'
     return signature(json.dumps(value, sort_keys=True).replace(plan['root'], '<process>'))
 
 
@@ -153,6 +155,7 @@ def current(row):
         and core.pins(row['source_commit']) == row['sources']
         and all(sha(P / p) == h for p, h in row['policies'].items()),
         'commit and preserve exact controller/frontend/policy inputs')
+    require(previous_failure() == row['previous_attempt'], 'original failed trial/closure changed')
     native, proof, prior, providers = basis(row['native_observer_admission'])
     require(row['binary'] == native['binaries']['strata']
         and row['native_source_commit'] == reuse.SOURCE
@@ -179,7 +182,7 @@ def current(row):
 
 
 def decision(processes):
-    result = previous.runner_context().original_decision(processes)
+    result = context().runner_context().original_decision(processes)
     for name, group in result['workloads'].items():
         for arm, values in group['arms'].items():
             rates = [s['acceptance'] for s in values['samples']]
@@ -189,7 +192,7 @@ def decision(processes):
             'strong' if name == 'regular-code' else 'weak')
         group['candidate_screen_eligible_for_followup'] = (group['reproducible_TG_gain']
             and group['reference_workload_class_confirmed'])
-    result.update(variable='--spec4 reference versus --spec2 candidate;all other settings matched',
+    result.update(variable='--mtp-max-t0 reference versus2 candidate;--spec4 allocation common',
         inference_adopted=False, physical262144_or_RESTORE_qualified=False,
         next='Evaluate each workload separately. Candidate acceptance can change with the window; '
             'classify both arms from actual offers. Preserve prefill/decode separation and collect '
@@ -197,37 +200,95 @@ def decision(processes):
     return result
 
 
+def previous_failure():
+    row = reuse.build.validation.committed(RESULT, ('decode_window_speed_v1',))
+    require(row['stage'] == 'failed' and not row['passed'] and not row['complete']
+        and not row['active'] and row['ownership_closed'] and len(row['processes']) == 2
+        and row['processes'][0]['passed'] and not row['processes'][1]['passed']
+        and row['post_failure_closure']['closed_after_failure']
+        and row['post_failure_closure']['actual_native_exit_code'] == 2
+        and not row['post_failure_closure']['long_request_started']
+        and row['artifact_retirement']['complete'], 'preserve closed/refused V1 and its raw retirement')
+    return dict(key='decode_window_speed_v1', source_commit=row['source_commit'],
+        stage='failed', actual_native_exit_code=2, closed_after_failure=True,
+        long_candidate_request_started=False, original_failed_outcome_unchanged=True,
+        correction='V1changed allocation width to2and hit the existing cache-loan guard. '
+            'V2preserves allocation spec4and prefill/cache placement in both arms;only the existing '
+            'MTPcap0/2differs. No native rebuild or guard removal. All six processes are fresh.')
+
+
+def target_windows(text, arm):
+    widths = sorted(set(map(int, re.findall(r'^strata verify: captured the (\d+)-token '
+        r'window in \d+ event-completed segments$', text, re.M))))
+    expected = 2 if arm == 'candidate' else 4
+    require(expected in widths and all(w in (1, expected) for w in widths),
+        'actual target graph window differs from the MTP cap')
+    return widths
+
+
+def request_evidence(text, samples):
+    rows = previous.request_evidence(text, samples)
+    if INDEX is not None:
+        target_windows(text, ARMS[INDEX])
+    return rows
+
+
 def context():
     spec = importlib.util.spec_from_file_location('decode_window_private_context', previous.__file__)
     ctx = importlib.util.module_from_spec(spec); spec.loader.exec_module(ctx)
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.WORKLOAD_ID, ctx.INDEX = ROOT, KEY, THIS, WORKLOAD_ID, INDEX
+    ctx.ARMS = ARMS
     ctx.configuration, ctx.invariant, ctx.current = configuration, invariant, current
     ctx.save, ctx.compact, ctx.decision = save, compact, decision
+    ctx.request_evidence = request_evidence
     original_copy = previous.copy_records
     ctx.copy_records = lambda text, samples=None, *, arm: original_copy(text, samples, arm='reference')
+    original_official = ctx.official
+    def official(root, result):
+        rows, events, journal = original_official(root, result)
+        start = json.loads((root / 'engine-start.json').read_text())
+        args = start['args']; cap = '2' if ARMS[INDEX] == 'candidate' else '0'
+        require(args[args.index('--spec') + 1] == '4'
+            and args[args.index('--mtp-max-t') + 1] == cap, 'actual native allocation/MTPcap argv differs')
+        journal.update(allocation_max_window=4, configured_mtp_cap=int(cap),
+            actual_captured_target_windows=target_windows((root / 'engine.stderr').read_text(), ARMS[INDEX]))
+        return rows, events, journal
+    ctx.official = official
     return ctx
 
 
 def controls():
     previous.copy_controls(); previous.draft_controls()
     row = dict(configuration=dict(log='old', args=['--spec', '4', '--pcie-frac', '0', '--adapt-swaps', '0']))
-    for arm, window in (('reference', '4'), ('candidate', '2')):
+    for arm, cap in (('reference', '0'), ('candidate', '2')):
         plan = dict(root='/tmp/decode-window-control-' + arm, kernel=arm)
         config = configuration(row, plan)
-        require(config['args'][1] == window and row['configuration']['args'][1] == '4',
+        require(config['args'][1] == '4' and config['args'][-2:] == ['--mtp-max-t', cap]
+            and row['configuration']['args'][1] == '4' and '--mtp-max-t' not in row['configuration']['args'],
             'window arm/source mutation control')
+    literal = 'strata verify: captured the {}-token window in 49 event-completed segments\n'
+    require(target_windows(literal.format(1) + literal.format(2), 'candidate') == [1, 2]
+        and target_windows(literal.format(1) + literal.format(4), 'reference') == [1, 4],
+        'actual capture width positive controls')
+    for text, arm in ((literal.format(4), 'candidate'), (literal.format(2), 'reference'),
+        (literal.format(1), 'candidate'), (literal.format(2) + literal.format(4), 'candidate')):
+        try: target_windows(text, arm)
+        except RuntimeError: pass
+        else: raise RuntimeError('wrong/unconfirmed actual target window accepted')
     for args in (['--spec', '2', '--pcie-frac', '0', '--adapt-swaps', '0'],
         ['--spec', '4', '--pcie-frac', '0.0625', '--adapt-swaps', '0'],
         ['--spec', '4', '--pcie-frac', '0', '--adapt-swaps', '8']):
         try: configuration(dict(configuration=dict(args=args)), dict(root='/tmp/x', kernel='candidate'))
-        except (RuntimeError, KeyError): pass
+        except RuntimeError: pass
         else: raise RuntimeError('changed base configuration accepted')
-    return dict(passed=True, windows=[4, 2], base_unchanged=True, rejected_changed_bases=3,
+    return dict(passed=True, allocation_window=4, MTP_caps=[0, 2], base_unchanged=True,
+        rejected_changed_bases=3, actual_capture_positive=2, actual_capture_negative=4,
         copy_and_draft_controls=True, GPU_executed=False)
 
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh comparison only')
+    failed = previous_failure()
     native, proof, prior, _ = basis()
     contract, manifest = runner.model.python_manifest()
     assets = shared.models.model_pins(prior['configuration'], prior['model_assets'], full=True)
@@ -238,6 +299,7 @@ def prepare():
         native_observer_admission=proof, policies={p: sha(P / p) for p in POLICIES},
         python_contract=contract, python_selected=manifest['selected'], model_assets=assets,
         runtime_manifest=prior['runtime_manifest'], plans=[], processes=[], host_passed=False,
+        previous_attempt=failed,
         passed=False, complete=False, active=False, ownership_closed=True, whole_bytes=448 << 20,
         budgets=dict(wall=2700, cpu=16200, rss_cap=104 << 30, text_cap=16 << 20,
             file_cap=32 << 20, total_cap=64 << 20),
@@ -246,18 +308,25 @@ def prepare():
                 'Current measured decode uses T4;only T2 mapped-row copy passed its isolated component screen. '
                 'No physical CPU,PCIe,VRAM or GPU saturation follows from service shares. '
                 'This whole-entrypoint configuration test includes all resulting compute,copy,wait and dispatch costs.',
-            order='Six independent processes R,C,C,R,R,C. Each runs four official short warmups, '
+            order='Six fresh independent processes C,R,R,C,C,R. Candidate first catches admission before '
+                'spending another reference process. No V1sample is reused. Each runs four official short warmups, '
                 'then regular-code and varied-prose once with the same fixed workload id. '
                 'Commit each closed process before the next. No speed-based early stopping.',
-            constants='Original coherent14508/dcb8 executable and12fixtures;262144context,20480INT8residentKV, '
+            constants='Original coherent14508/dcb8 engine and same-build fixtures,12ELFs in total; '
+                '262144context,20480INT8residentKV, '
                 '1256static expert slots,5workers,PCIE0/adapt0,suffix0,min-p0;8192BF16/vLLM ordered-exp, '
-                'largeGU,head2/dense1,throughput strategy. Only --spec4/2 differs. '
+                'largeGU,head2/dense1,throughput strategy,allocation spec4/cache loan in both arms. '
+                'Only --mtp-max-t0/2 differs;native14508uses S for cap0 and min(cap,S) otherwise, '
+                'and limits generated drafts '
+                'without resizing the original target/MTPallocations. '
                 'No native build or process-environment mutation;preserve qualified runtime safety.',
             observers='Same clean nominal Arena/copy/cache/DRAFT_PREFILL footers and quiet parameter validation '
                 'as closed coherent_decode_pcie_speed_v3. No per-job,census,trace,query,caller or stage-timer observer.',
             acceptance='All6processes/12long requests:>=32768fresh input,>=1024generated including thinking, '
                 '>=512answer chars,>=256drafts,normal SSE/journal/clocks/TTFT and identical request bodies. '
-                'Exact native argv,source/build/SDK/12ELF/provider/frontend/model identities;all15full asset '
+                'Actual target captures must include2or4as selected,and no opposite width,at warmup gates '
+                'before long timing and at final closure. Exact native argv/allocation4/MTPcap0or2, '
+                'source/build/SDK/12ELF/provider/frontend/model identities;all15full asset '
                 'hashes before/after cohort;normal0,closed owners,quiet validation,no fresh fault. '
                 'Actual largeGU/Down/typed long-prefill route and full read-1 batched8192MTP callbacks. '
                 'All warmup/long native prompt/copy/API counts,drafts,rounded clocks bind;copies0in both arms. '
@@ -292,7 +361,7 @@ def prepare():
     row['invariant_signature'] = invariant(row, row['plans'][0])
     require(all(invariant(row, p) == row['invariant_signature'] for p in row['plans']), 'undeclared arm difference')
     save(row)
-    print('Prepared6same-engine window4/2processes;commit plan before host/model.', flush=True)
+    print('Prepared6fresh MTPcap2/0processes with common spec4allocation;commit plan before host/model.', flush=True)
 
 
 def execute(action):
