@@ -549,7 +549,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in that plan;preserve both prefill strategies and cache0/MTPdefaults. Do not
   partial-relink old class consumers. Closed RAMfixture/raw generations are
   retired after original Git/source/recipe recovery:44files,364453regular bytes;
-  all27individual samples remain in the CPUresult. The459-row performance CSV
+  all27individual samples remain in the CPUresult. The performance CSV
   now includes three RAMreference points and twelve mixed-cache comparison points.
   Keep14508clean speed reference and3d7fCPUfixture. The ended c0dc/c858small,
   492whole-stress and f59observer roots are now retired after original Git/recipe/
@@ -625,31 +625,37 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   conclusion that PCIe or CPUarithmetic is saturated. Successful raw profile
   output and the superseded V2fixture are retired at`dc3df2ef2`;compact original
   samples and the failed decision remain in`current_decode_device_service_v1`.
-  Main next tests subgroup-shared row-mask lookup in a fresh five-TU standalone
-  fixture under`mapped_rows_subgroup_v5`:ten host controls and bitwise/capture/
-  bounds first,then six
-  matched processes over10/20/30/40rows. Graph launch and completion are timed;
-  source preparation is excluded explicitly. Production dispatch is unchanged;
-  only qualifying shapes may enter a later decode-only model plan. This is not
-  a new engine build,model gain or full-context qualification. V2's native
-  correctness body passed18captures/54replays and five refusals with normal0,
-  empty/reaped process and no fresh fault,but the supervisor missed the final
-  stdout marker and failed its protocol gate. Preserve that failure. V3fixes
-  only the uncompiled controller/test protocol and reuses the exact3596912d
-  five-TU fixture after recovering its original245eecc93source and715compiler/
-  24external-link inputs. V3then closes normally with exact bitwise results and
-  quiet validation,but its direct-kernel-name check rejects the valid command-
-  graph APItrace. That gate stays failed. V4prospectively requires all18actual
-  command-buffer create/append/finalize/release and54enqueue success pairs,
-  with three new negative/positive host controls;no native change or prior
-  qualification is inferred. V4's new traced correctness now passes all18graph
-  success-pairs/54replays,34mapped providers,quiet validation,normal0/closed
-  owners and no fault. Its first scalar speed process then fails the original
-  duration/timer eligibility after18samples;the failing batch's exact values
-  were not printed. Keep that screen failed. V5keeps the250ms sample floor and
-  1%timer bound,increases per-cell warmup to500ms and calibration to750ms,and
-  records future failing-batch values. It needs a fresh fixture build and new
-  qualification/cohort;no candidate speed or production gain follows yet.
+  The fresh mapped-row fixture now closes at`84bdffd85`:five coherent TUs,
+  715compiler inputs/24external links,ten host controls,18captures/54bitwise
+  replays/five refusals and six independent processes/432eligible samples.
+  All processes finish0with closed owners,quiet validation and no fresh fault.
+  Minimum sample is469.673ms,warmup501.188ms and calibration752.580ms;maximum
+  clock-pair fraction0.000297600. Production dispatch stays unchanged.
+  For20rows with five hits and fresh host production,the three paired C/R
+  intervals are0.989908/0.859729/0.973510,geometric mean0.939216:the declared
+  component screen passes. The10/30/40row screens fail their original
+  all-three-pairs gate,including favorable10/30row geometric means;do not
+  erase those outcomes or promote them from their mean alone. All individual
+  samples and auxiliary cells remain under`mapped_rows_subgroup_v5`;four
+  component CSVpoints link the original evidence and actual8b40f5c84source.
+  This is no model PP/TG gain or physical-resource saturation claim.
+  Source and original caller counters establish that all six retained32K
+  attribution requests used8target windows/29rows. The first window isT1 and
+  the maximum isT4,so each remaining window isT4;none exercises the qualifying
+  T2/20-row shape. Do not wire it into the measured hot path on that evidence.
+  Next compare explicit spec2/spec4 configurations in the existing clean14508
+  engine with matched long thinking/strong-and-weak-MTP workloads,before paying
+  for a new engine integration. This configuration screen is not prepared or
+  measured yet. A useful T2route may justify a separate decode-only row-copy
+  model plan;otherwise retire the unused prototype to its original Git source.
+  Retain the current standalone89401e6b fixture only through that immediate
+  configuration decision. Keep its engine siblings until the existing component
+  admission's13-ELF guards are updated before an engine-generation transition.
+  Original unexecuted V1preparation and V2protocol/V3API-name/V4timer failures
+  stay in Git at245eecc93/bf67e3a0b/67d28b364/8b40f5c84. V5increases warmup/
+  calibration rather than relaxing the250ms/1%bounds. No prior failure is
+  retroactively qualified. Retire consumed normal logs and superseded fixture
+  products after exact original-source/recipe/input recovery.
   The current engine remains for the ensuing named mechanism/model decision;retire the
   unused cache prototype at the next engine change,keeping independent bounds
   guards. Clean14508remains the speed reference. No candidate clean-speed,
