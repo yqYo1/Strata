@@ -366714,12 +366714,71 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "cases": [],
+    "cases": [
+      {
+        "mode": "smoke",
+        "complete": true,
+        "passed": true,
+        "GPU_executed": true,
+        "runtime_maps": {
+          "files": 34,
+          "sha256": "f0b79b6aeb4295c8e7753be0fa01b86b6e8b059409eed11b79ab2ff4f89fe0ae",
+          "unknown": 0,
+          "missing": 0
+        },
+        "tracing": {
+          "bytes": 621706,
+          "sha256": "f8634ede35050bb1e58ccc819c5950cdd43197e5788d80a69616767c42d56634",
+          "calls": {
+            "urCommandBufferCreateExp": 5,
+            "urCommandBufferFinalizeExp": 5,
+            "urCommandBufferAppendKernelLaunchWithArgsExp": 10,
+            "urEnqueueCommandBufferExp": 20,
+            "urCommandBufferReleaseExp": 5
+          }
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2641255,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "counts": {
+          "kv_stream_resolve_component": 0,
+          "graph_correctness": 20,
+          "planner_context_graph": 0,
+          "planner_perf_cases": 0
+        },
+        "oracle_exact": true,
+        "numerical_only": true,
+        "physical262144_model_qualified": false,
+        "performance_qualified": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "performance_qualified": false,
     "plan": {
@@ -366734,6 +366793,7 @@
       "limits": "Component correctness only. Do not claim model262144fill,RESTORE,quality,ordinary teardown or speed. Actual production phase/state handoff and original comparison obligations remain separate;static ELF equivalence alone changes none of them."
     },
     "retention": "Use the existing14-target generation;no new binaries. Keep compact counts,exactness,provider,fault/closure and source identities;retire successful trace/cache/raw records after this oracle decision. Three named phase-comparison generations remain bounded by their existing retirement point.",
+    "correctness_passed": false,
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "568f7c1a5626e36ea71525729659848ef6dcaebd",
