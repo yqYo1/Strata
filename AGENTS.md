@@ -282,6 +282,16 @@ integration and testing.
   than independent paths; record the benefiting shapes/phases and retain separate
   selection outside that scope. Existing shared processing without this evidence
   is a legacy arrangement to audit, not a qualified design decision.
+  Make each owned inference function/kernel's actual use clear in its name:
+  prefill-only, decode-only or common, including phase-qualified namespaces
+  and adapters around external APIs. A common change requires measurements
+  of both phases. If one worsens, preserve its old implementation and select
+  the improved implementation only for the benefiting phase. If local
+  separation cannot remove the effect, fix the enclosing architecture's
+  coupling, including state/workspace ownership, weights/cache placement,
+  initialization/configuration, graph lifetime, scheduling and handoff.
+  Renaming alone does not establish separation. See the maintained
+  [qualification constraints](docs/SYCL_NATIVE16_PREFILL.md#qualification-and-operating-constraints).
   When isolating a candidate in a legacy shared dispatcher, keep the existing
   prefill implementation and use an explicit phase/job policy for decode. This
   containment does not establish that sharing is faster. Do not mutate process
@@ -369,6 +379,12 @@ integration and testing.
   plan, acceptance criteria and stopping rules. Assess the proposed mechanism's
   gain separately from the throughput target and broader correctness gates;
   preserve failed outcomes rather than changing criteria after seeing results.
+  Compare each smallest coherent unit separately, even when several parts are
+  changed together. Include its required headers, callers, producer/consumer
+  layouts and tests; compare independently variable kernels, placement and
+  settings separately. Justify an inseparable unit in the committed plan,
+  retain every unit's outcome, then validate their combination. An aggregate
+  result alone does not qualify its constituent changes or excuse a phase loss.
   A run's `passed` or `complete` field does not imply that its performance gate
   permits advancement. Inspect the recorded decision and underlying samples;
   do not start a gated model trial when its component performance gate failed.
