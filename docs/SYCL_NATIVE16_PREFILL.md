@@ -998,6 +998,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
   are unchanged. The independent expert-dispatch bounds fix is preserved.
   These are prepared source,not tested kernels or adopted model routes.
+  Child`1d0beb514`prepares`build_named_kv.py`for the first unit only:
+  it checks the original six-file mechanical rename and complete native-file
+  set/bytes,refuses the later TU split,and requires legacy retirement before
+  a fresh14-target coherent build. The controller is committed but not yet
+  executed or qualified;its explicit temporary-third-generation consumer is
+  the sole-change naming comparison,preserving both phase references.
   After closing CPUcapacity and reconciling the three legacy build holds,
   qualify and compare the original units separately before their combination;
   the second unit must not inherit an unpassed first-unit gate. Rebuild every
