@@ -22,7 +22,7 @@ P = Path(__file__).resolve().parents[2]
 THIS = 'tools/research/orca_scope.py'
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review')
 LIMITS = dict(wall_seconds=600, CPU_seconds=180, memory_bytes=4 << 30,
-              captured_text_bytes=8 << 20, tasks=64)
+              captured_text_bytes=8 << 20, tasks=256)
 
 
 def require(ok, message):
@@ -170,6 +170,14 @@ def attach(root, expected_path, unit):
             {p['pid'] for p in settled}, 'native family escaped accounting')
     row['settled_family'] = settled
     row['actual_properties'] = actual
+    # The pids controller counts threads as well as processes. Native Codex's
+    # code-mode host can exhaust64even when the process-family count is small.
+    row['initial_pids'] = {name: (group / name).read_text().strip()
+                           for name in ('pids.current', 'pids.peak', 'pids.max', 'pids.events')}
+    require(int(row['initial_pids']['pids.max']) == LIMITS['tasks']
+            and int(row['initial_pids']['pids.peak']) <= LIMITS['tasks']
+            and dict(line.split() for line in row['initial_pids']['pids.events'].splitlines())['max'] == '0',
+            'thread/process quota was already reached before task injection')
     row['accounting_ready'] = True
     (private / 'scope.json').write_text(json.dumps(row, indent=2) + '\n')
     print('Owned native scope attached;task execution and acceptance remain unqualified.')
@@ -183,6 +191,8 @@ def sample(root, session=None):
     group, props = cgroup(row)
     cpu = dict(line.split() for line in (group / 'cpu.stat').read_text().splitlines())
     events = dict(line.split() for line in (group / 'memory.events').read_text().splitlines())
+    pids = {name: (group / name).read_text().strip()
+            for name in ('pids.current', 'pids.peak', 'pids.max', 'pids.events')}
     peak = int((group / 'memory.peak').read_text())
     current = int((group / 'memory.current').read_text())
     pid = row['identity']['pid']
@@ -232,6 +242,7 @@ def sample(root, session=None):
         cgroup_memory_peak_bytes=peak, cgroup_memory_current_bytes=current,
         native_process_peak_RSS_bytes=native_peak, observed_current_tree_RSS_bytes=observed_RSS,
         aggregate_tree_RSS_peak_qualified=False,
+        pids=pids,
         memory_events={k: int(v) for k, v in events.items()}, captured_files=files,
         native_session_counted=session is not None, actual_properties=props,
         meaning='Kernel-reported native VmHWM is the native-process RSS high-water. '
@@ -245,6 +256,9 @@ def sample(root, session=None):
             and CPU_bound <= LIMITS['CPU_seconds']
             and native_peak <= LIMITS['memory_bytes'] and observed_RSS <= LIMITS['memory_bytes']
             and wall <= LIMITS['wall_seconds']
+            and int(pids['pids.max']) == LIMITS['tasks']
+            and 0 <= int(pids['pids.current']) <= int(pids['pids.peak']) <= LIMITS['tasks']
+            and dict(line.split() for line in pids['pids.events'].splitlines())['max'] == '0'
             and captured + 65536 <= LIMITS['captured_text_bytes']
             and all(events.get(k) == '0' for k in ('oom', 'oom_kill', 'oom_group_kill')),
             'resource budget failed;close only this owned worker and preserve failure')
