@@ -1053,6 +1053,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   not input for resuming the closed full-parser reader. This diagnostic's
   32outputs do not qualify sustainedTG or clean PP/TTFT. The original
   per-unit speed comparison and broader model gates remain pending.
+  After exact original source/recipe/ELFadmission and closed-owner checks,
+  all three successful diagnostic raw roots are retired:169files/23168434bytes.
+  Committed curated gates remain the comparison inputs;all39retained ELFs
+  are unchanged. Do not resume the closed raw-parser controllers.
   The independent naming-image checks now compare the exact330405and6d2b4f
   production ELFs. V1`f6da849ab`passes36ordinary sections(22974831bytes),
   load layout and24645normalized non-file symbols;AMreview identifies its
