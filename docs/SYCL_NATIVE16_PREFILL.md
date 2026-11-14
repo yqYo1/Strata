@@ -936,8 +936,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   their older source/service data do not qualify current14508/1eec resource
   limits. The next CPUquestion is a clean5-versus1pool-worker comparison with
   three independent processes per arm;it tests scheduling/critical-path
-  contribution,not arithmetic versus DRAM. Commit its own plan after this
-  prefill comparison. If CPUexpert work is limiting,compare one actual format/
+  contribution,not arithmetic versus DRAM. In the current1eec native layout,
+  `expert_pool_dispatch`also sends T1through`expert_pool_dispatch_multi`.
+  `run_split_multi_native`uses`3*(workers+host)`row tasks for each GU/Down
+  phase,with host-side hidden quantization between them. Thus the proposed
+  5/1worker comparison retains host participation and has six/two potential
+  compute participants;it does not exercise the canonical single-worker
+  inline path. Record the actual startup worker footer and argv;changed row
+  partitions/task counts prevent interpreting it as pure memory scaling.
+  Commit its own plan after this prefill comparison. If CPUexpert work is limiting,compare one actual format/
   NT at fixed work over hot and rotating footprints before choosing a kernel
   change. Separate any CPUcensus/service observer and its overhead from clean
   speed. Existing decode timing counters alone are wall-time regions.
