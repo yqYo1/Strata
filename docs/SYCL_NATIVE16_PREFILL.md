@@ -649,8 +649,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   keeps allocation spec4and the prefill cache loan in both arms;only existing
   --mtp-max-t0/2changes the actual MTPwindow. Its plan and both frontend probes
   pass with closed owners. Cap/base,copy/draft,two positive/six negative phase
-  controls and the committed actual V2prompt/decode fixture pass. Native/model
-  checks are pending. It declares six fresh processes C,R,R,C,C,R,four official warmups
+  controls and the committed actual V2prompt/decode fixture pass. Its first
+  candidate now stops at the prose end gate;the original cohort remains failed.
+  The plan declares six fresh processes C,R,R,C,C,R,four official warmups
   and both long thinking workloads per process;no V1sample is reused. Native
   source stays14508;the controller independently recovers its original
   inputs/recipe and checks the retained12ELFs,SDK/runtime and all15
@@ -679,7 +680,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the compact actual marker fixture remains for V3host admission.
   V3allows prompt widths1..4and requires actual selected2/4decode captures,
   checking the observed V2marker fixture before fresh model execution. No
-  performance/length/thinking criterion changes. Judge reference
+  performance/length/thinking criterion changes. Code completes3112outputs
+  at12.2716TG and90.625%acceptance. Prose spans two native calls:33283input/
+  12288output and45589input/2432output;their14720native outputs differ from
+  the server's14738reported tokens by18. The controller's one-native-call
+  boundary assumption rejects the extra footer before the client journals its
+  prose result. All owned processes are now absent,no fresh fault occurred,
+  and the failed whole trial stays failed. Preserve the compact physical-call
+  samples and code APIresult;no API aggregate,repeated gain or quality claim.
+  Review this bounded contract failure separately while Main proceeds with
+  the KVplanner component;do not immediately restart another long MTPcohort.
+  Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
   changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
   model plan;otherwise retire the unused prototype to its original Git source.
@@ -710,7 +721,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   design,and the Khronos [group-barrier](https://github.khronos.org/SYCL_Reference/iface/group-functions.html)
   and [atomic-ref](https://github.khronos.org/SYCL_Reference/iface/atomic_ref.html)
   contracts. The reference LICENSEbytes match this repository. Next consumer,
-  after the serialized window comparison,is a fresh fixture comparing all map/
+  after the serialized window comparison,is the maintained owned
+  `kv_copy_groups_bench.cpp --planner-validate`extension,now authored but
+  uncompiled. Its existing CPUoracle covers all map/control/miss and payload
+  bytes,three KVformats and copy geometries. New cases cover invalid gaps
+  across256items and dynamic four-query/zero-width/epoch-wrap/invalid-width
+  graph replays at the262143last cell. The target compiles its kernel and the
+  three runtime TUs directly,without an engine/library rebuild. Before building,
+  commit the exact recipe/controller and reconcile retained generations. The
+  next comparison must check all map/
   counter/payload bytes,empty/invalid/overflow/epoch-wrap and262144boundaries,
   capture/replay and paired graph timings. No engine integration or simultaneous
   GPUtest is authorized by the source-only prototype;retire it if its screen fails.

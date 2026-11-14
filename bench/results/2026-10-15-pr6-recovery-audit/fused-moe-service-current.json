@@ -341960,7 +341960,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "643af5295f2756e9a39546d060d35de51ac7b140",
     "native_observer_admission": {
       "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
@@ -342277,7 +342277,36 @@
         "environment_sha256": "5aa6b4cd142e497faef28b383ca14531045eafbe3f586d3aff62cc24038e41da"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 224346,
+          "start_ticks": 297042122,
+          "sid": 224278
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "error": "RuntimeError(\"owned benchmark failed: RuntimeError('extra common cache footer at request boundary')\")",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "previous_attempt": {
       "key": "decode_window_speed_v2",
@@ -342339,6 +342368,182 @@
       "actual_V2_marker_fixture_passed": true,
       "copy_and_draft_controls": true,
       "GPU_executed": false
+    },
+    "post_failure_closure": {
+      "checked_utc": "2026-11-14T02:53:10.554127+00:00",
+      "closed_after_failure": true,
+      "original_failed_owner_observation_preserved": true,
+      "owned_identities": [
+        {
+          "pid": 224278,
+          "start_ticks": 297041960,
+          "sid": 224278,
+          "pgid": 224278
+        },
+        {
+          "pid": 224287,
+          "start_ticks": 297041987,
+          "sid": 224278,
+          "pgid": 224278
+        },
+        {
+          "pid": 224332,
+          "start_ticks": 297042094,
+          "sid": 224278,
+          "pgid": 224332
+        },
+        {
+          "pid": 224346,
+          "start_ticks": 297042122,
+          "sid": 224278,
+          "pgid": 224332
+        }
+      ],
+      "all_original_processes_absent": true,
+      "session_empty": true,
+      "actual_native_executed": true,
+      "completed_native_requests": 7,
+      "completed_logical_results": 5,
+      "original_error": "RuntimeError(\"owned benchmark failed: RuntimeError('extra common cache footer at request boundary')\")"
+    },
+    "failure_diagnosis": {
+      "native_requests": [
+        {
+          "prompt_tokens": 74,
+          "reused": 0,
+          "read": 74,
+          "prompt_ms_rounded": 16684,
+          "generated": 24,
+          "decode_ms_rounded": 3034,
+          "accepted": 12,
+          "offered": 12,
+          "checkpoints": 0
+        },
+        {
+          "prompt_tokens": 261,
+          "reused": 0,
+          "read": 261,
+          "prompt_ms_rounded": 18342,
+          "generated": 1,
+          "decode_ms_rounded": 112,
+          "accepted": 0,
+          "offered": 0,
+          "checkpoints": 0
+        },
+        {
+          "prompt_tokens": 907,
+          "reused": 0,
+          "read": 907,
+          "prompt_ms_rounded": 8426,
+          "generated": 1,
+          "decode_ms_rounded": 103,
+          "accepted": 0,
+          "offered": 0,
+          "checkpoints": 0
+        },
+        {
+          "prompt_tokens": 1068,
+          "reused": 0,
+          "read": 1068,
+          "prompt_ms_rounded": 9569,
+          "generated": 8,
+          "decode_ms_rounded": 714,
+          "accepted": 4,
+          "offered": 4,
+          "checkpoints": 0
+        },
+        {
+          "prompt_tokens": 33213,
+          "reused": 0,
+          "read": 33213,
+          "prompt_ms_rounded": 51519,
+          "generated": 3112,
+          "decode_ms_rounded": 253593,
+          "accepted": 1479,
+          "offered": 1632,
+          "checkpoints": 0
+        },
+        {
+          "prompt_tokens": 33283,
+          "reused": 0,
+          "read": 33283,
+          "prompt_ms_rounded": 41500,
+          "generated": 12288,
+          "decode_ms_rounded": 1086434,
+          "accepted": 5019,
+          "offered": 7268,
+          "checkpoints": 0
+        },
+        {
+          "prompt_tokens": 45589,
+          "reused": 0,
+          "read": 45589,
+          "prompt_ms_rounded": 54025,
+          "generated": 2432,
+          "decode_ms_rounded": 189715,
+          "accepted": 1211,
+          "offered": 1220,
+          "checkpoints": 0
+        }
+      ],
+      "completed_code_API_sample": {
+        "acceptance_rate": 0.90625,
+        "agreement_eligible": true,
+        "client_interval": {
+          "first_output_monotonic_ns": 2970586064417647,
+          "request_begin_monotonic_ns": 2970534098669376,
+          "request_end_monotonic_ns": 2970839234583874
+        },
+        "completion_includes_thinking": true,
+        "decode_ms": 253593.1,
+        "decode_tps": 12.3,
+        "decode_tps_source": "engine",
+        "drafts_accepted": 1479,
+        "drafts_offered": 1632,
+        "eligible": true,
+        "err": null,
+        "finish_reason": "stop",
+        "generated_tokens": 3112,
+        "generated_tokens_source": "usage",
+        "ineligible_reasons": [],
+        "ok": true,
+        "output_chars": 5578,
+        "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+        "prompt_ms": 51518.7,
+        "prompt_tokens": 33213,
+        "prompt_tps": 644.7,
+        "prompt_tps_source": "engine",
+        "read_tokens": 33213,
+        "reasoning_chars": 3153,
+        "reasoning_sha256": "2f2d97bf5e2f2368a78deb6e270573e63d95d9762d67b879a8bb613e4e844e7f",
+        "request_sha256": "92bce6ff9fb460ede481191d2d8042dd020cfe0cc41a56e3ca04966250b8d976",
+        "reused_tokens": 0,
+        "speed_eligible": true,
+        "speed_ineligible_reasons": [],
+        "stream_complete": true,
+        "total_s": 305.136,
+        "truncated": false,
+        "ttft_s": 51.966,
+        "usage_generated_tokens": 3112
+      },
+      "prose_API_result_persisted": false,
+      "last_API_event": {
+        "kind": "start",
+        "phase": "long-generation/varied-prose"
+      },
+      "extra_footer_count": 1,
+      "native_prose_generated_total": 14720,
+      "native_prose_decode_ms_rounded_total": 1276149,
+      "server_reported_tokens": 14738,
+      "server_minus_native_tokens": 18,
+      "actual_target_decode_capture_widths": [
+        1,
+        2
+      ],
+      "original_log_sha256": "f9a5e2c06d54181831262793c7e91015e29c6b96d09ad1c35b29bb1668c3a7e9",
+      "meaning": "Prose logical request spans two native calls:33283input/12288output then45589input/2432output. The one-call-per-API cache footer gate fails at end before the client journals its prose result. Native model work and four warmups/code complete;the whole comparison remains failed. No repeated speed,quality,API aggregate or hardware-saturation claim.",
+      "next": "Review the bounded failed evidence and actual server/journal contract. Main proceeds with the GPU KVplanner component;no immediate restart of this long configuration cohort.",
+      "raw_retention": "Named native Luna-max evidence/measurement review;keep exact logs until that review and compact extraction finish,then retire successful raw output. Keep only a minimal failure fixture if needed."
     },
     "source_inputs": {
       "files": 751,

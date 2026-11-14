@@ -169,8 +169,9 @@ target_link_libraries(iq2_phase_host_test PRIVATE strata_kernels_cpu)
 add_executable(kv_copy_groups_host_fixture EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_host.cpp)
 target_compile_features(kv_copy_groups_host_fixture PRIVATE cxx_std_17)
 target_include_directories(kv_copy_groups_host_fixture PRIVATE ${PROJECT_SOURCE_DIR}/include)
-add_executable(sycl_kv_copy_groups_bench EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_bench.cpp)
-target_link_libraries(sycl_kv_copy_groups_bench PRIVATE strata_kernels)
+add_executable(sycl_kv_copy_groups_bench EXCLUDE_FROM_ALL
+  tools/sycl/kv_copy_groups_bench.cpp src/kernels/sycl/kv_stream.cpp)
+target_link_libraries(sycl_kv_copy_groups_bench PRIVATE strata_sycl_runtime)
 target_compile_options(sycl_kv_copy_groups_bench PRIVATE -fno-fast-math -ffp-contract=off)
 # Compile the production GDN source directly for this bounded component fixture;
 # other engine kernels are not dependencies of this target.

@@ -185,13 +185,16 @@ struct Input {
     }
     ids.put(expected_ids); steps.put(expected_steps);
   }
-  void submit(Fixture &f,uint32_t groups) {
-    kv_stream_resolve_with_copy_groups(f.map,f.pools,f.host,f.shape.fmt,
+  void submit(Fixture &f,uint32_t groups,bool cooperative=false) {
+    const auto resolve = cooperative ? kv_stream_resolve_with_coalesced_plan
+                                     : kv_stream_resolve_with_copy_groups;
+    resolve(f.map,f.pools,f.host,f.shape.fmt,
         ids.data(),steps.data(),nq,cap,f.geometry,&f.q,groups);
   }
 };
 struct Timing { uint64_t submit=0, marker_submit=0, whole=0, device_envelope=0; };
-Timing timed(Fixture &f, Input &in, uint32_t groups, bool events, ExecGraph *graph=nullptr) {
+Timing timed(Fixture &f, Input &in, uint32_t groups, bool events, ExecGraph *graph=nullptr,
+             bool cooperative=false) {
   try {
   checked_queue(f.rt,f.q,"before timed operation"); // outside measurement
   sycl::event begin, end;
@@ -199,7 +202,7 @@ Timing timed(Fixture &f, Input &in, uint32_t groups, bool events, ExecGraph *gra
   if (events) begin = f.q.single_task([] {});
   const auto t1 = Clock::now();
   if (graph) (void)f.q.submit([&](sycl::handler &h) { h.ext_oneapi_graph(*graph); });
-  else in.submit(f,groups);
+  else in.submit(f,groups,cooperative);
   const auto t2 = Clock::now();
   if (events) end = f.q.single_task([] {});
   const auto t3 = Clock::now();
@@ -251,7 +254,9 @@ void record(const Fixture &f, const Case &c, const State &m, int groups, int sam
     << ",\"host_whole_queue_ns\":" << t.whole << ",\"device_marker_envelope_ns\":" << (events?std::to_string(t.device_envelope):"null")
     << ",\"bandwidth_GBps\":null,\"oracle_exact\":true,\"fingerprint_fnv64\":" << fingerprint << "}\n";
 }
-void reject_and_sync_contracts(Fixture &f,uint32_t startup_groups) {
+void reject_and_sync_contracts(Fixture &f,uint32_t startup_groups,bool cooperative=false) {
+  const auto resolve_api = cooperative ? kv_stream_resolve_with_coalesced_plan
+                                       : kv_stream_resolve_with_copy_groups;
   auto c=cold(f.shape,1,"refusals_and_nullstream"); Input in(f,c);
   const auto initial=initial_payload(f.shape,c.before);
   f.put(c.before,initial);
@@ -264,20 +269,20 @@ void reject_and_sync_contracts(Fixture &f,uint32_t startup_groups) {
     require(rejected,"expected synchronous refusal before enqueue");
     (void)check(f,in,c.before,initial);
   };
-  for(uint32_t bad:{1u,257u,UINT32_MAX}) rejects([&] { in.submit(f,bad); });
+  for(uint32_t bad:{1u,257u,UINT32_MAX}) rejects([&] { in.submit(f,bad,cooperative); });
   rejects([&] {
     auto alias=f.pools;
     if(f.shape.fmt==0) alias.k_pool=f.host.k_pool;
     else if(f.shape.fmt==1) alias.k_q=f.host.k_q;
     else alias.k_q4=f.host.k_q4;
-    kv_stream_resolve_with_copy_groups(f.map,alias,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,in.cap,f.geometry,&f.q,128);
+    resolve_api(f.map,alias,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,in.cap,f.geometry,&f.q,128);
   });
   rejects([&] {
     auto alias=f.map; alias.miss_slot=alias.miss_block;
-    kv_stream_resolve_with_copy_groups(alias,f.pools,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,in.cap,f.geometry,&f.q,128);
+    resolve_api(alias,f.pools,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,in.cap,f.geometry,&f.q,128);
   });
   rejects([&] {
-    kv_stream_resolve_with_copy_groups(f.map,f.pools,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,0,f.geometry,&f.q,128);
+    resolve_api(f.map,f.pools,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,0,f.geometry,&f.q,128);
   });
   const auto expected=resolve(f.shape,c);
   const auto payload=expected_payload(f.shape,c.before,expected);
@@ -288,14 +293,14 @@ void reject_and_sync_contracts(Fixture &f,uint32_t startup_groups) {
     pending_or_hold("API equivalence submission",[&] {
       if(production_wrapper)
         kv_stream_resolve(f.map,f.pools,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,in.cap,f.geometry,&f.q);
-      else in.submit(f,startup_groups);
+      else in.submit(f,startup_groups,cooperative);
     });
     checked_queue(f.rt,f.q,"API equivalence completion");
     (void)check(f,in,expected,payload);
   }
   f.put(c.before,initial); checked_all(f.rt,f.q,"before null-stream probe");
   pending_or_hold("null-stream probe",[&] {
-    kv_stream_resolve_with_copy_groups(f.map,f.pools,f.host,f.shape.fmt,
+    resolve_api(f.map,f.pools,f.host,f.shape.fmt,
         in.ids.data(),in.steps.data(),1,in.cap,f.geometry,nullptr,128);
   });
   (void)check(f,in,expected,payload);
@@ -307,7 +312,7 @@ void reject_and_sync_contracts(Fixture &f,uint32_t startup_groups) {
           u64(values,4)==u64(expected.ctl,4) && values[3]==expected.ctl[3],
           "guarded counter snapshot contract");
 }
-void graph_contract(Fixture &f) {
+void graph_contract(Fixture &f,bool cooperative=false) {
   namespace ex=sycl::ext::oneapi::experimental;
   for(int groups:{0,128,256,512,1024}) {
     auto c=cold(f.shape,513,"graph_first"); c.cap=f.shape.slots;
@@ -315,7 +320,7 @@ void graph_contract(Fixture &f) {
     check_groups(groups); f.put(c.before,initial_payload(f.shape,c.before));
     ex::command_graph<ex::graph_state::modifiable> graph(f.q.get_context(),f.q.get_device());
     graph.begin_recording(f.q);
-    in.submit(f,groups);
+    in.submit(f,groups,cooperative);
     graph.end_recording(f.q);
     auto exec=graph.finalize();
     // Explicit geometry is fixed at capture; no environment mutation occurs.
@@ -342,22 +347,71 @@ void graph_contract(Fixture &f) {
     checked_queue(f.rt,f.q,"graph correctness scope completion");
   }
 }
-void validate(std::shared_ptr<Runtime> rt, sycl::queue &q, bool exhaustive,uint32_t startup_groups) {
+// Main-authored extension of the owned fixture/oracle. Keep the candidate's
+// graph parameters fixed while refreshing input contents and persistent state.
+void planner_context_graph(Fixture &f) {
+  require(f.shape.blocks==65536 && f.shape.page==4 && f.shape.slots>=1025,
+          "fixed physical-context planner fixture geometry");
+  Case base("planner_context_tail",f.shape);
+  for(int qi=0;qi<4;++qi) {
+    std::vector<int32_t> row;
+    for(int i=0;i<257;++i)
+      row.push_back((i/4+qi*7)*f.shape.page+i%f.shape.page);
+    row.back()=f.shape.blocks*f.shape.page-1;
+    base.add(std::move(row));
+  }
+  Input in(f,base);
+  f.put(base.before,initial_payload(f.shape,base.before));
+  ex::command_graph<ex::graph_state::modifiable> graph(f.q.get_context(),f.q.get_device());
+  graph.begin_recording(f.q); in.submit(f,0,true); graph.end_recording(f.q);
+  auto executable=graph.finalize();
+  State previous=base.before;
+  for(int pass=0;pass<5;++pass) {
+    auto c=base;c.before=previous;
+    if(pass==1) c.widths={1,255,256,257};
+    if(pass==2) c.widths={0,0,0,0};
+    if(pass==3) c.before.ctl[0]=INT_MAX;
+    if(pass==4) c.widths={c.cap+1,0,0,0};
+    const auto expected=resolve(f.shape,c);
+    const auto payload=expected_payload(f.shape,c.before,expected);
+    f.put(c.before,initial_payload(f.shape,c.before)); in.put(c);
+    pending_or_hold("planner full-context graph replay",[&] {
+      auto done=f.q.submit([&](sycl::handler &h) { h.ext_oneapi_graph(executable); });
+      f.rt->wait(done);
+    });
+    const auto fingerprint=check(f,in,expected,payload);
+    std::cout << "{\"phase\":\"planner_context_graph\",\"fmt\":" << f.shape.fmt
+              << ",\"last_cell\":262143,\"replay\":" << pass
+              << ",\"oracle_exact\":true,\"fingerprint_fnv64\":" << fingerprint << "}\n";
+    previous=expected;
+  }
+  checked_all(f.rt,f.q,"planner full-context graph completion");
+}
+void validate(std::shared_ptr<Runtime> rt, sycl::queue &q, bool exhaustive,
+              uint32_t startup_groups,bool cooperative=false) {
   for(int fmt:{0,1,2}) {
     {
       Shape tiny{1043,17,4,1,64,fmt}; Fixture tf(tiny,rt,q);
-      for (const auto &c:semantics(tiny)) {
+      auto cases=semantics(tiny);
+      if(cooperative) for(bool resident:{false,true}) {
+        Case gap(resident?"resident_invalid_gap_across256":"miss_invalid_gap_across256",tiny);
+        std::vector<int32_t> row(257,tiny.page);row[255]=-1;
+        gap.add(std::move(row));gap.add({tiny.page});
+        if(resident) seed(gap.before,1,0);
+        cases.push_back(std::move(gap));
+      }
+      for (const auto &c:cases) {
         Input in(tf,c); const auto expected=resolve(tiny,c);
         const auto initial=initial_payload(tiny,c.before), payload=expected_payload(tiny,c.before,expected);
         for (int groups:{0,128,256,512,1024}) {
-          check_groups(groups); tf.put(c.before,initial); const auto t=timed(tf,in,groups,false);
+          check_groups(groups); tf.put(c.before,initial); const auto t=timed(tf,in,groups,false,nullptr,cooperative);
           const auto h=check(tf,in,expected,payload); record(tf,c,expected,groups,-1,false,t,h);
         }
       }
       tf.source_exact();
     }
     Shape s{1043,1031,1,1,64,fmt}; Fixture f(s,rt,q);
-    reject_and_sync_contracts(f,startup_groups); graph_contract(f);
+    reject_and_sync_contracts(f,startup_groups,cooperative); graph_contract(f,cooperative);
     std::vector<Case> cases=semantics(s);
     for(int n=0;n<=513;++n)
       if(exhaustive || n==0 || n==1 || n==2 || n==127 || n==128 || n==129 ||
@@ -368,7 +422,7 @@ void validate(std::shared_ptr<Runtime> rt, sycl::queue &q, bool exhaustive,uint3
       const auto initial=initial_payload(s,c.before), payload=expected_payload(s,c.before,expected);
       uint64_t baseline=0;
       for(int groups:{0,128,256,512,1024}) {
-        check_groups(groups); f.put(c.before,initial); const auto t=timed(f,in,groups,false);
+        check_groups(groups); f.put(c.before,initial); const auto t=timed(f,in,groups,false,nullptr,cooperative);
         const auto h=check(f,in,expected,payload);
         if(!groups) baseline=h; else require(h==baseline,"legacy/candidate fingerprint exact");
         record(f,c,expected,groups,-1,false,t,h);
@@ -393,12 +447,13 @@ void validate(std::shared_ptr<Runtime> rt, sycl::queue &q, bool exhaustive,uint3
       const auto initial=initial_payload(s,c.before), payload=expected_payload(s,c.before,expected);
       uint64_t baseline=0;
       for(int groups:{0,128,256,512,1024}) {
-        check_groups(groups); f.put(c.before,initial); const auto t=timed(f,in,groups,false);
+        check_groups(groups); f.put(c.before,initial); const auto t=timed(f,in,groups,false,nullptr,cooperative);
         const auto h=check(f,in,expected,payload);
         if(!groups) baseline=h; else require(h==baseline,"real-shape legacy/candidate exact");
         record(f,c,expected,groups,-1,false,t,h);
       }
     }
+    if(cooperative) planner_context_graph(f);
     f.source_exact();
   }
 }
@@ -452,25 +507,36 @@ int main(int argc,char **argv) {
     }
     if(mode=="--help") {
       require(argc<=2,"help takes no extra args");
-      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
+      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-validate|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
       return 0;
     }
     const bool graph=mode=="--graph-benchmark"||mode=="--graph-event-benchmark";
     const bool events=mode=="--event-benchmark"||mode=="--graph-event-benchmark";
     const bool bench=mode=="--benchmark"||mode=="--event-benchmark"||graph;
-    require((bench&&argc==4)||((mode=="--validate"||mode=="--validate-exhaustive")&&argc==2),"invalid arguments");
+    const bool planner=mode=="--planner-validate";
+    require((bench&&argc==4)||((mode=="--validate"||mode=="--validate-exhaustive"||planner)&&argc==2),"invalid arguments");
     int candidate=0,samples=0;
     if(bench) { candidate=std::stoi(argv[2]); samples=std::stoi(argv[3]); check_groups(candidate);
       require(candidate!=0&&samples>=40&&samples<=80&&samples%4==0,"benchmark bounds"); }
     // Read-only snapshots happen before constructing Runtime and queues.
     const auto startup_groups=kv_stream_copy_group_cap_from_text(std::getenv("STRATA_SYCL_KV_COPY_GROUPS"));
+    if(planner) require(startup_groups==0,"planner screen preserves production copy geometry0");
     frozen_env();
     auto rt=strata::sycl_backend::runtime_for(); auto q=rt->make_queue(events);
     require(rt->device().is_gpu(),"actual GPU required");
+    if(planner) require(q.has_property<sycl::property::queue::in_order>() &&
+        rt->device().get_info<sycl::info::device::max_work_group_size>()>=256 &&
+        rt->device().get_info<sycl::info::device::name>().find("B570")!=std::string::npos,
+        "planner screen requires the qualified B570/in-order/workgroup256 setup");
     std::cerr << "device=" << rt->device().get_info<sycl::info::device::name>() << "\n";
     if(bench) benchmark(rt,q,candidate,samples,events,graph);
-    else validate(rt,q,mode=="--validate-exhaustive",startup_groups);
+    else validate(rt,q,mode=="--validate-exhaustive",startup_groups,planner);
     checked_all(rt,q,"final completion");
+    if(planner) {
+      std::cout << "KV_PLAN_WAIT\n" << std::flush;
+      std::string reply;
+      require(bool(std::getline(std::cin,reply)) && reply=="QUIT","Main-owned provider/retirement gate required");
+    }
     std::cerr << "PASS bounded component scope only\n"; return 0;
   } catch(const std::exception &e) { std::cerr << "FAIL " << e.what() << '\n'; return 1; }
 }
