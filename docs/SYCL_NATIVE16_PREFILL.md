@@ -884,7 +884,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   warmed samples and all paired ratios;the same eight-series median screen
   does not adopt inference or revise the old failed flag screen. The plan
   binds both source/recipe/compiler/provider/ELF proofs and739current inputs.
-  Host controls and model samples remain pending;no third engine is built.
+  Both actual benchmark/server frontend probes and four CPUcontrols now pass
+  normally with closed ownership. The two new tests bind the native launcher
+  plan without bypassing engine_once,keep both environment arms at KV0and
+  reject wrong generation/shape/wrapper or hidden settings;the two existing
+  reducer tests preserve first/warmed and invalid-cohort refusals. This is
+  source`34ea625bc`host evidence,not a rerun of the full native/test suite.
+  Model samples remain pending;no third engine is built.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
   checks,the six-process cohort retires424successful raw/cache files
@@ -926,9 +932,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   CPUjob,the layer-size bounds give40.717..71.773/56.742..100.020GB/s.
   These are logical demand estimates,not measured DRAM traffic,ISAthroughput
   or a hardware ceiling;per-layer job weights and cache reuse are unresolved.
-  Use a separately planned,overhead-checked CPUcensus/service attribution to
-  distinguish quantization arithmetic from RAMlimits before choosing a CPU
-  optimization. Existing decode timing counters alone are wall-time regions.
+  A bounded native Luna-max review of four existing reports confirms that
+  their older source/service data do not qualify current14508/1eec resource
+  limits. The next CPUquestion is a clean5-versus1pool-worker comparison with
+  three independent processes per arm;it tests scheduling/critical-path
+  contribution,not arithmetic versus DRAM. Commit its own plan after this
+  prefill comparison. If CPUexpert work is limiting,compare one actual format/
+  NT at fixed work over hot and rotating footprints before choosing a kernel
+  change. Separate any CPUcensus/service observer and its overhead from clean
+  speed. Existing decode timing counters alone are wall-time regions.
+  The short review transaction`existing-decode-resource-review-r-20261114`
+  remains outside Git for the next index-curation boundary:preserve its
+  GGMLtype42=Q2_0correction and the old workload's zero NT1cache bindings in
+  the existing report entries after the frozen comparison closes,then retire
+  the transaction. Its digest hash is`1ee8e7c8fc6458888c32ca9f6728f8b58c70aa6e772ebb27472847796038046b`.
   No default adoption or hardware-saturation claim follows. The opt-in hook
   has a named prefill-preservation consumer;the standalone timing fixture's
   generation is retired after exact original source/recipe recovery. Active
