@@ -652,8 +652,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   inputs/recipe and checks the retained12ELFs,SDK/runtime and all15
   model assets. Today's native checkout is not substituted for that build.
   Both current-source frontend probes and the window/copy/draft host controls
-  pass with closed owners;the first reference process is running and the
-  comparison decision remains pending. Judge reference
+  pass with closed owners. The first reference process now closes normally0,
+  with quiet validation,closed owners,no fresh fault and actual spec4argv.
+  Code/prose have33213/33283fresh inputs,3548/5485outputs,TG14.0220/8.82839,
+  and observed acceptance80.3074%/34.2952%. Both reference classes and long
+  thinking/answer gates pass;the paired comparison remains pending. These are
+  new fixed-id workload samples,not a matched regression comparison to the
+  earlier id. Keep its13.2MBraw output only through the imminent first paired
+  candidate's body/eligibility review,then retire consumed raw evidence.
+  Judge reference
   strong/weak acceptance and report candidate acceptance independently,because
   changing window width can change the observed rate. A useful T2route may justify a separate decode-only row-copy
   model plan;otherwise retire the unused prototype to its original Git source.
