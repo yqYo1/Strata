@@ -812,16 +812,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its76-test host suite has75passes and one optional-tokenizer skip;all15full
   asset hashes match and both actual benchmark/server frontend probes pass.
   The pinned tokenizer independently gives3close and18wrap-up IDs. The
-  comparison is underway;two matched pairs close normally with both workloads
-  eligible,closed ownership and no fresh fault. Code C/R TG ratios are
-  1.067062/1.073229 and prose1.066171/1.076062,with identical request/output/
-  reasoning hashes and draft counts in each pair. In the second code pair,
+  comparison now closes all six processes normally with both workloads
+  eligible,closed ownership,quiet validation,no fresh fault and all15final
+  asset hashes. Code C/R TG ratios are1.067062/1.073229/1.062957 and
+  prose1.066171/1.076062/1.067888. All three pairs improve for both confirmed
+  MTP classes;paired geometric-mean gains are6.774%and7.003%. Independent
+  process median TG is14.059->14.991for code and8.833->9.440for prose.
+  Request/output/reasoning hashes and draft counts match across the six
+  processes;each API has one native segment and zero inserted tokens. This
+  observation does not impose identical output as a quality standard.
+  In the second code pair,
   candidate first-use prompt time54.211s exceeds reference52.0236s by4.2%,and
-  TTFT55.627s exceeds53.315s by4.3%;other observed pair intervals do not worsen.
+  TTFT55.627s exceeds53.315s by4.3%. The third code pair is also slower by
+  0.56%in prompt time and1.06%in TTFT;the prose intervals do not worsen.
   Preserve this unresolved first-use result rather than dismissing it as noise.
-  One further pair and dedicated prefill/TTFT preservation checks remain.
-  No candidate adoption follows;
-  dedicated prefill/TTFT preservation and broader adoption gates remain open. See
+  Dedicated first/warmed32K/64K prefill/TTFT preservation checks remain.
+  The default flag stays0;no candidate adoption follows. Broader adoption
+  gates remain open. See
   `long_generation_segment_metrology_v1`in the linked result. The model's
   successful raw output/cache is retired after source/recipe recovery:
   58 files, 11231037 regular bytes. Individual request/capture evidence and
@@ -841,15 +848,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   that only those three legacy engine roots remain alongside the validated
   reference and current candidate among these reviewed paths;no global cleanup
   is claimed. The fresh native/model handoff stages above are closed;the
-  separate repeated speed comparison and prefill-preservation checks remain
-  open. This
-  component result alone is no model TGgain or default adoption.
+  separate repeated decode speed comparison is closed,while prefill-preservation
+  checks remain open. The component alone did not qualify model TG;the
+  completed model campaign above supplies the workload-scoped gain.
   Actual request overlap/hit distribution and physical bus traffic remain
   unknown. The161ms observer service is still
   only a mechanism hypothesis;the limiting physical resource remains unknown.
-  No default adoption or model-gain claim follows;retire the prototype if
-  its performance screen fails. Keep the standalone fixture only through that
-  immediate decision and reconcile the ended mapped-row/13-ELF consumers
+  No default adoption or hardware-saturation claim follows. The opt-in hook
+  has a named prefill-preservation consumer;the standalone timing fixture's
+  comparison consumer has ended. Retire that fixture after exact original
+  source/recipe recovery and reconcile the ended mapped-row/13-ELF consumers
   before another engine generation.
   Legacy holds remain separate.
   This baseline observer is not an optimized model adoption. The consumed V1private
