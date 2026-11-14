@@ -647,8 +647,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   engine with matched long thinking/strong-and-weak-MTP workloads,before paying
   for a new engine integration. The prospective`decode_window_speed_v2`controller
   keeps allocation spec4and the prefill cache loan in both arms;only existing
-  --mtp-max-t0/2changes the actual MTPwindow. Its new plan/host/model checks
-  are pending. It declares six fresh processes C,R,R,C,C,R,four official warmups
+  --mtp-max-t0/2changes the actual MTPwindow. Its new plan is prepared;host/model
+  checks are pending. It declares six fresh processes C,R,R,C,C,R,four official warmups
   and both long thinking workloads per process;no V1sample is reused. Native
   source stays14508;the controller independently recovers its original
   inputs/recipe and checks the retained12ELFs,SDK/runtime and all15
