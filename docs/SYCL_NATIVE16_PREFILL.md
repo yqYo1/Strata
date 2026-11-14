@@ -862,15 +862,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   required before claiming whole-engine preservation. Its older
   `native_gdn_20261018`absolute PP and this campaign's different workload ID
   are not a matched regression comparison.
-  The isolated child`experiment/coherent-reference-reuse`at`084e7eb2252f2192bd82e2b284d7c7eca414a1bf`
-  proposes an original-source/recipe/census reader for that14508comparison.
-  Its two source files are outside the active735-input worktree. Both CPU
-  tests now pass under Main's serialized ownership,with two positive snapshot
+  The historical reader from`084e7eb2252f2192bd82e2b284d7c7eca414a1bf`is now
+  integrated after the735-input cohort closes. Its two source/test files are
+  byte-identical to the reviewed child. Both CPUtests pass under Main's
+  serialized ownership,with two positive snapshot
   checks and four refusals,1470compiler/29link inputs and twelve original ELFs.
   The compact child result is`coherent_original_reader_v1`at`ad505e6a9`.
-  It is not integrated or GPU/model-qualified.
-  Review after this cohort's closure,then merge useful
-  code/tests into feature/sycl and retire the child;no third engine is built.
+  This is historical input/artifact binding,not new GPU/model qualification.
+  Original source and test-evidence commits remain through the merge;the
+  finished child is no longer needed. Use a separate committed comparison
+  controller before running either engine;no third engine is built.
   The default flag stays0;no candidate adoption follows. Broader adoption
   gates remain open. After734original controller-input and native recipe/census
   checks,the six-process cohort retires424successful raw/cache files
