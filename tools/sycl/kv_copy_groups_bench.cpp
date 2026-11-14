@@ -18,6 +18,10 @@ using strata::sycl_backend::MemoryKind;
 using strata::sycl_backend::Runtime;
 using namespace strata::kernels;
 namespace {
+// Selected once from argv before Runtime construction; never changed while
+// provider/collector threads exist. Each scalar owner runs in its own process.
+auto scalar_resolve = kv_stream_resolve_with_copy_groups;
+auto scalar_wrapper = kv_stream_resolve;
 constexpr size_t Guard = 16;
 constexpr int32_t IntGuard = -123456789;
 using Clock = std::chrono::steady_clock;
@@ -190,7 +194,7 @@ struct Input {
   }
   void submit(Fixture &f,uint32_t groups,bool cooperative=false) {
     const auto resolve = cooperative ? decode_kv_stream_resolve_coalesced
-                                     : kv_stream_resolve_with_copy_groups;
+                                     : scalar_resolve;
     resolve(f.map,f.pools,f.host,f.shape.fmt,
         ids.data(),steps.data(),nq,cap,f.geometry,&f.q,groups);
   }
@@ -259,7 +263,7 @@ void record(const Fixture &f, const Case &c, const State &m, int groups, int sam
 }
 void reject_and_sync_contracts(Fixture &f,uint32_t startup_groups,bool cooperative=false) {
   const auto resolve_api = cooperative ? decode_kv_stream_resolve_coalesced
-                                       : kv_stream_resolve_with_copy_groups;
+                                       : scalar_resolve;
   auto c=cold(f.shape,1,"refusals_and_nullstream"); Input in(f,c);
   const auto initial=initial_payload(f.shape,c.before);
   f.put(c.before,initial);
@@ -295,7 +299,7 @@ void reject_and_sync_contracts(Fixture &f,uint32_t startup_groups,bool cooperati
     f.put(c.before,initial); checked_queue(f.rt,f.q,"before API equivalence");
     pending_or_hold("API equivalence submission",[&] {
       if(production_wrapper)
-        kv_stream_resolve(f.map,f.pools,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,in.cap,f.geometry,&f.q);
+        scalar_wrapper(f.map,f.pools,f.host,f.shape.fmt,in.ids.data(),in.steps.data(),1,in.cap,f.geometry,&f.q);
       else in.submit(f,startup_groups,cooperative);
     });
     checked_queue(f.rt,f.q,"API equivalence completion");
@@ -619,15 +623,16 @@ int main(int argc,char **argv) {
     }
     if(mode=="--help") {
       require(argc<=2,"help takes no extra args");
-      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--planner-benchmark scalar|cooperative|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
+      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--decode-scalar-smoke|--decode-scalar-validate|--planner-benchmark scalar|cooperative|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
       return 0;
     }
     const bool graph=mode=="--graph-benchmark"||mode=="--graph-event-benchmark";
     const bool events=mode=="--event-benchmark"||mode=="--graph-event-benchmark";
     const bool bench=mode=="--benchmark"||mode=="--event-benchmark"||graph;
-    const bool smoke=mode=="--planner-smoke";
+    const bool decode_scalar=mode=="--decode-scalar-smoke"||mode=="--decode-scalar-validate";
+    const bool smoke=mode=="--planner-smoke"||mode=="--decode-scalar-smoke";
     const bool planner_speed=mode=="--planner-benchmark";
-    const bool planner=mode=="--planner-validate"||smoke||planner_speed;
+    const bool planner=mode=="--planner-validate"||decode_scalar||smoke||planner_speed;
     require((bench&&argc==4)||(planner_speed&&argc==3)||
         ((mode=="--validate"||mode=="--validate-exhaustive"||planner)&&!planner_speed&&argc==2),"invalid arguments");
     if(planner_speed) require(std::string(argv[2])=="scalar"||std::string(argv[2])=="cooperative","planner arm required");
@@ -637,6 +642,11 @@ int main(int argc,char **argv) {
     // Read-only snapshots happen before constructing Runtime and queues.
     const auto startup_groups=kv_stream_copy_group_cap_from_text(std::getenv("STRATA_SYCL_KV_COPY_GROUPS"));
     if(planner) require(startup_groups==0,"planner screen preserves production copy geometry0");
+    if(decode_scalar) {
+      scalar_resolve=decode_kv_stream_resolve_scalar_with_copy_groups;
+      scalar_wrapper=decode_kv_stream_resolve_scalar;
+      std::cerr << "kv_scalar_entry=decode; selected before Runtime construction\n";
+    }
     frozen_env();
     auto rt=strata::sycl_backend::runtime_for(); auto q=rt->make_queue(events);
     require(rt->device().is_gpu(),"actual GPU required");
@@ -649,7 +659,7 @@ int main(int argc,char **argv) {
     else if(smoke) planner_smoke(rt,q);
     else if(bench) benchmark(rt,q,candidate,samples,events,graph);
     else validate(rt,q,mode=="--validate-exhaustive",startup_groups,planner);
-    if(mode=="--planner-validate") planner_perf_validation(rt,q);
+    if(mode=="--planner-validate"||mode=="--decode-scalar-validate") planner_perf_validation(rt,q);
     checked_all(rt,q,"final completion");
     if(planner) {
       std::cout << "KV_PLAN_WAIT\n" << std::flush;

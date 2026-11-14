@@ -1227,7 +1227,13 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                         n, cap_, s, cs, 0);
                     ++graph_window.kv_coalesced_calls;
                 } else {
-                    qsa_kv_resolve(st, *g_, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount, n, cap_, cs);
+                    if (decode_verify_scalar_kv(input, st.kv_mode == 1)) {
+                        decode_kv_stream_resolve_scalar(st.map, qsa_attn_pools(st), st.host,
+                            qsa_kv_format(st), sel_ + (size_t) tb * cap_,
+                            step_ + tb * kStepCount, n, cap_, s, cs);
+                    } else {
+                        qsa_kv_resolve(st, *g_, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount, n, cap_, cs);
+                    }
                     if (st.kv_mode == 1) ++graph_window.kv_scalar_calls;
                 }
 #else

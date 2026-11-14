@@ -14,6 +14,12 @@ using strata::core::verify_q6_dpas_head;
 using strata::core::verify_q6_dpas_dense;
 using strata::core::VerifyQ6Route;
 
+static_assert(strata::core::decode_verify_scalar_kv(VerifyInput::decode, true));
+static_assert(!strata::core::decode_verify_scalar_kv(VerifyInput::prompt, true));
+static_assert(!strata::core::decode_verify_scalar_kv(VerifyInput::decode, false));
+static_assert(!strata::core::decode_verify_scalar_kv(VerifyInput::prompt, false));
+static_assert(!strata::core::decode_verify_scalar_kv(static_cast<VerifyInput>(255), true));
+
 static void need(bool ok, const char* message) {
     if (!ok) throw std::runtime_error(message);
 }

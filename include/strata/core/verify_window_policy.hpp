@@ -23,6 +23,12 @@ struct VerifyKvShape {
     bool streamed_int8 = false;
 };
 
+// Scalar decode must remain independently selectable while prefill changes.
+// Non-streamed caches need no residency planner; prompt keeps its own entry.
+constexpr bool decode_verify_scalar_kv(VerifyInput input, bool streamed) {
+    return input == VerifyInput::decode && streamed;
+}
+
 // 34cbaf29c: all six cells improved in each of three independent process
 // pairs. Keep this model-trial opt-in separate from prompt and other shapes.
 constexpr bool decode_verify_coalesced_kv(bool enabled, VerifyInput input,

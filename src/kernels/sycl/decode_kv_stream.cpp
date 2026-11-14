@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <climits>
+#include <cstdlib>
 #include <vector>
 
 namespace strata::kernels {
@@ -255,6 +256,120 @@ void decode_kv_stream_resolve_coalesced(
     });
   });
 
+  sycl::event event;
+  if (!copy_groups) {
+    // Legacy default: one workgroup per residency slot, including all hits.
+    event = q.parallel_for(
+        sycl::nd_range<1>(size_t(m.n_slots) * 128, 128),
+        [=](sycl::nd_item<1> it) {
+          const size_t k = it.get_group_linear_id(), t = it.get_local_linear_id();
+          if (k >= size_t(m.ctl[2]))
+            return;
+          const size_t b = m.miss_block[k], slot = m.miss_slot[k];
+          for (int a = 0; a < r.n; ++a)
+            for (size_t i = t; i < r.len[a]; i += 128)
+              r.dst[a][slot * r.len[a] + i] = r.src[a][b * r.len[a] + i];
+        });
+  } else {
+    // The same in-order queue publishes ctl/miss lists before this kernel.
+    // Every placement k belongs to exactly one k % copy_groups workgroup.
+    // Placements have distinct destination slots, so no barrier is needed.
+    event = q.parallel_for(
+        sycl::nd_range<1>(copy_groups * 128, 128),
+        [=](sycl::nd_item<1> it) {
+          const size_t t = it.get_local_linear_id();
+          for (size_t k = it.get_group_linear_id(); k < size_t(m.ctl[2]);
+               k += copy_groups) {
+            const size_t b = m.miss_block[k], slot = m.miss_slot[k];
+            for (int a = 0; a < r.n; ++a)
+              for (size_t i = t; i < r.len[a]; i += 128)
+                r.dst[a][slot * r.len[a] + i] = r.src[a][b * r.len[a] + i];
+          }
+        });
+  }
+  finish(stream, event);
+}
+// Decode scalar/fallback ownership only. Keep the original scalar mark/miss
+// order, victim helper, copy geometry, bounds and completion policy.
+// Prefill stays on its unchanged translation unit.
+void decode_kv_stream_resolve_scalar(const KvStreamMap &m, const QsaAttnPools &slots,
+                       const KvHostPools &host, int fmt, const int32_t *ids,
+                       const int32_t *steps, int64_t nq, int64_t cap,
+                       const QsaShapes &s, void *stream) {
+  if (nq <= 0)
+    return;
+  // The process environment is fixed before runtime initialization. The
+  // component fixture supplies the same policy explicitly without changing it.
+  const uint32_t group_cap = kv_stream_copy_group_cap_from_text(
+      std::getenv("STRATA_SYCL_KV_COPY_GROUPS"));
+  decode_kv_stream_resolve_scalar_with_copy_groups(
+      m, slots, host, fmt, ids, steps, nq, cap, s, stream, group_cap);
+}
+void decode_kv_stream_resolve_scalar_with_copy_groups(
+    const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
+    int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
+    const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
+  using namespace decode_kv_detail;
+  if (nq <= 0)
+    return;
+  validate_kv_stream_copy_group_cap(copy_group_cap);
+  if (nq > INT_MAX || cap <= 0 || cap > INT_MAX)
+    throw std::invalid_argument("invalid KV selection dimensions");
+  auto w = map_spans(m);
+  Spans rd{{ids, bytes(checked_count(nq, cap), 4)},
+           {steps, bytes(checked_count(nq, kStepCount), 4)}};
+  const auto r = runs(slots, host, fmt, s);
+  run_spans(r, m.n_slots, m.n_blocks, w, rd);
+  spans(w, rd);
+  auto &q = queue_for(stream);
+  const size_t copy_groups = std::min(size_t(m.n_slots), size_t(copy_group_cap));
+  // Deterministic baseline policy. Mark every hit before choosing victims;
+  // bounded miss storage also makes an over-capacity selection safe.
+  q.single_task([=] {
+    int epoch = m.ctl[0];
+    if (epoch < 0 || epoch == INT_MAX) {
+      for (int64_t i = 0; i < m.n_slots; ++i)
+        m.slot_stamp[i] = -1;
+      epoch = 0;
+    }
+    ++epoch;
+    int need = 0;
+    uint64_t lookups = 0;
+    for (int64_t qi = 0; qi < nq; ++qi) {
+      const int width = steps[qi * kStepCount + kStepWidth];
+      if (width < 0 || width > cap) {
+        m.ctl[3] = 1;
+        continue;
+      }
+      int64_t previous = -1;
+      for (int i = 0; i < width; ++i) {
+        const int cell = ids[qi * cap + i];
+        if (cell < 0 || int64_t(cell) / s.page_size >= m.n_blocks) {
+          m.ctl[3] = 1;
+          continue;
+        }
+        const int64_t block = cell / s.page_size;
+        if (block == previous)
+          continue;
+        previous = block;
+        ++lookups;
+        const int slot = m.page_table[block];
+        if (slot >= 0 && slot < m.n_slots) {
+          m.slot_stamp[slot] = epoch;
+          m.slot_ref[slot] = 1;
+        } else if (slot == -1) {
+          if (need == m.n_slots) {
+            m.ctl[3] = 1;
+            continue;
+          }
+          m.page_table[block] = -2;
+          m.miss_block[need++] = int(block);
+        } else if (slot != -2)
+          m.ctl[3] = 1;
+      }
+    }
+    resolve_victims(m, epoch, need, lookups);
+  });
   sycl::event event;
   if (!copy_groups) {
     // Legacy default: one workgroup per residency slot, including all hits.

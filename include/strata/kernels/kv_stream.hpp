@@ -84,6 +84,20 @@ void kv_stream_resolve_with_copy_groups(
     void* stream, uint32_t copy_group_cap);
 
 #ifdef STRATA_ENABLE_SYCL
+/// Decode-owned scalar fallback, including width1 and shapes outside the
+/// cooperative policy. The caller supplies the actual decode phase. Keeps
+/// STRATA_SYCL_KV_COPY_GROUPS and its original serial residency semantics.
+void decode_kv_stream_resolve_scalar(
+    const KvStreamMap& m, const QsaAttnPools& slots, const KvHostPools& host, int fmt,
+    const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
+    void* stream);
+
+/// Explicit immutable geometry for same-build decode scalar oracle/graph tests.
+void decode_kv_stream_resolve_scalar_with_copy_groups(
+    const KvStreamMap& m, const QsaAttnPools& slots, const KvHostPools& host, int fmt,
+    const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
+    void* stream, uint32_t copy_group_cap);
+
 /// Opt-in SYCL decode candidate: cooperative reads/hit marks with the exact
 /// serial miss order and clock policy. No additional persistent device storage.
 /// The caller owns phase/shape selection; component qualification alone does
