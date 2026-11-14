@@ -1569,9 +1569,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its latest short review digest hash is
   `7eb88accd1dd710e03bc47b2320acaf31fdec4a62dd68a22fa52bfa4db62421f`;
   Wproof hash is`2567c4e8fd73fdab3f846be55b7fe99591b4d7daaae4ec64e45734bb5d00044b`.
-  Curated AG/AH facts are retained in the existing index;retire their ended
-  transaction files and superseded startup/review paperwork at the next
-  serialized CPU-process gap. Keep only substantive reusable findings and
+  Curated AG/AH facts are retained in the existing index;their six ended
+  transaction files(20343bytes)are retired in the serialized CPU-process gap.
+  Other superseded startup/review paperwork still requires reconciliation.
+  Keep only substantive reusable findings and
   the smallest needed W/origin evidence. The prior exact NTrash/
   credential-cleanup hold stays under`orca_deterministic_startup_n_20261114`.
   At that next boundary,check the superseded external
