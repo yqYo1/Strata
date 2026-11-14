@@ -1017,10 +1017,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   required declarations/caller and same-fixture oracle/graph modes. Its body
   is extracted from owned1eec scalar code;prefill scalar bytes remain SHA34418f3b0b5ae8c2b4e0a217d54413197f60246c9e76299a22298619300bde57.
   B1sremains unbuilt/unqualified and must be compared after B1,not folded into
-  B1's build or results. The first serialized host-only syntax screen is
+  B1's build or results. The first serialized host-only syntax screen closes
+  normally0with reaped empty ownership and all five compile-time phase controls:
   `/usr/bin/g++ -std=c++17 -Iinclude -fsyntax-only tests/core/verify_window_policy_test.cpp`
-  in that exact child revision,with five compile-time phase controls and no
-  generated ELF. It cannot qualify SYCL compilation,linkage,actual routes or
+  in that exact child revision,with GCC13and no generated ELF. It cannot
+  qualify SYCL compilation,linkage,actual routes or
   speed;fresh bounded native/oracle/model and both-phase comparisons remain required.
   The new decode source is extracted from the owned1eec implementation;
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
