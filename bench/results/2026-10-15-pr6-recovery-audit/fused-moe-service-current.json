@@ -380276,7 +380276,7 @@
         "token_ids_sha256": "8c13ee65ac1092fe69103cea638d02cdcc10e33e0ac0ce4277b654545a66c074"
       }
     },
-    "stage": "prepared",
+    "stage": "ready",
     "plans": [
       {
         "index": 0,
@@ -380701,7 +380701,7 @@
     ],
     "processes": [],
     "request_hashes": {},
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -380726,6 +380726,28 @@
       "retention": "Keep compact individual samples,configuration,original source/build and route/closure evidence. Retire successful raw/cache at verified closure. Retain fast14508,A and B1only until this independent phase comparison selects and retires a superseded generation;no fourth engine build."
     },
     "invariant_signature": "c05765ab0596b7d1cb9ec236b03dbe16a2c9916ca3e2db151d59953a601fcf7a",
+    "host_results": [
+      {
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "role": "server",
+        "passed": true
+      }
+    ],
+    "host_unit_evidence": {
+      "passed": true,
+      "source_commit": "9c2fc6005fc1964c2d5580873abff2a469fdfd2b",
+      "tests": [
+        "tools.test_phase_split_bench",
+        "tools.test_benchmark_evidence.EvidenceTests.test_kv_prefill_medians_keep_first_and_warmed_independent",
+        "tools.test_benchmark_evidence.EvidenceTests.test_kv_prefill_refuses_incomplete_or_nonfinite_cohorts"
+      ],
+      "count": 10,
+      "exit_code": 0,
+      "ownership_closed": true
+    },
     "source_inputs": {
       "files": 756,
       "sha256": "74dc56e5909db6b7bc01e51cba8631035d51b609d0fb3c6b25407412bf40d645"

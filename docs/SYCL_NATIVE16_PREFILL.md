@@ -1122,6 +1122,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   23298472regular bytes. Curated committed gates,shared build/runtime
   manifests and all40engine/fixture images remain;do not resume the closed
   raw-parser controllers.
+  PR#180publishes this closed validation/retirement boundary to default
+  `f08f3a431`;normal merge-back`2e4147ba8`preserves every original measured
+  identity in permanent`feature/sycl`,and the clean ghq default mirror is pulled.
+  The next source`9c2fc6005`pins B1-only A/B comparisons through the maintained
+  `bench.sh`drivers:12prefill processes with first/warmed32K/64K separate,
+  then a separately prepared six-process thinking-decode cohort. Its frontend
+  controls and10source/phase/decision tests pass;clean native speed samples
+  are pending. The new decision has no naming-only image-identity exception.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
