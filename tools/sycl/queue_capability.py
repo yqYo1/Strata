@@ -17,10 +17,10 @@ import measurement_owner as owner_api
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'queue-capability-v2'
+ROOT = B / 'queue-capability-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
 FUSED = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'prefill_queue_capability_v2'
+KEY = 'prefill_queue_capability_v3'
 CC = Path('/usr/bin/gcc').resolve()
 LOADER = Path('/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0')
 NEO = Path('/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758')
@@ -57,8 +57,11 @@ def environment():
         UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1', STRATA_SYCL_PREFILL_SAME_QUEUE='1')
 
 
+FLAGS = ['-std=c11', '-O2', '-Wall', '-Wextra', '-Werror', '-fPIE']
+
+
 def commands():
-    return [[str(CC), '-std=c11', '-O2', '-Wall', '-Wextra', '-Werror', '-fPIE',
+    return [[str(CC), *FLAGS,
         '-MD', '-MF', str(ROOT/'actual.d'), '-o', str(ROOT/'inventory'), str(SOURCE),
         str(LOADER), '-pie', '-Wl,-z,relro,-z,now']]
 
@@ -109,10 +112,10 @@ def main():
     guards.no_model_owners([])
     if action == 'prepare':
         require(KEY not in record and not ROOT.exists(), 'no implicit retry')
-        previous = record.get('prefill_queue_capability_v1', {})
+        previous = record.get('prefill_queue_capability_v2', {})
         require(previous.get('stage') == 'failed' and previous.get('ownership_closed')
-            and not previous.get('active') and previous.get('error') == 'original C compiler closure changed',
-            'retain the stopped broad-manifest admission; no repeated native inventory')
+            and not previous.get('active') and previous.get('error') == 'compiler dependency mismatch',
+            'retain the stopped unoptimized header census; no repeated native inventory')
         rev = git('rev-parse', 'HEAD').decode().strip()
         pins = sources(rev)
         ROOT.mkdir(mode=0o700)
@@ -125,7 +128,7 @@ def main():
             driver=guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
             external_inputs={str(CC): sha(CC), str(LOADER): sha(LOADER)}, limits=LIMITS,
             plan=dict(question='Current B570 queue-group capabilities for a bounded prefill event-lane audit',
-                previous_refusal='V1 rejected an unrelated historical project-source file before any child/API work',
+                previous_refusal='V1 rejected unrelated historical source; V2 unoptimized header census missed O2-conditional headers; neither initialized a GPU',
                 compiler_manifest_scope='Exact installed compiler/runtime/headers; historical metric probe source is not an input',
                 gate='Normal0,exact providers,all three protocol gates,unchanged boot/driver,no fault and closed owner',
                 repetitions=1, GPU_work_submitted=False, performance_or_overlap_claim=False,
@@ -147,7 +150,7 @@ def main():
     try:
         providers = verify(row)
         if action == 'prepare':
-            _, out, _ = run('dependencies', [str(CC), '-M', str(SOURCE)])
+            _, out, _ = run('dependencies', [str(CC), *FLAGS, '-M', str(SOURCE)])
             names = out.read_text().replace('\\\n', ' ').split(':', 1)[1].split()
             for name in names:
                 p = Path(name).resolve()
