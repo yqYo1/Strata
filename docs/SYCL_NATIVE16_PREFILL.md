@@ -1206,6 +1206,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   evidence plus512CSVpoints. Three ended diagnostic/analyzer source files
   are retired to their original Git commits;shared seed/runtime receipts,
   surviving collector and all40native ELFs remain available for named consumers.
+  PR#182publishes this boundary on fork default`11dc9765e`;normal merge-back
+  `01ca08f23`preserves179original CSVsource/evidence identities on permanent
+  `feature/sycl`. The clean ghq default mirror is pulled;no child branch is added.
+  Main's next unit is the existing prefill bank capacity only:384versus512,
+  with fast14508math,8192chunks,allGPU32Kresiduals and decode1256slots fixed.
+  Source`b28ac9e03`defines six independent512/384/384/512/512/384processes,
+  three fresh32769/24thinking requests each,first use separate from subsequent2.
+  The original host stage fails because its synthetic512completion footer
+  still says384;no native model ran. Preserve that failure. Fixture-only
+  correction`56ce46ce4`uses a fresh`prefill_bank512_compare_v2`root and plan,
+  whose19host controls pass. Cohort execution is pending;all3paired warmed
+  prompt ratios must favor512before a separate64K/capacity/decode follow-up.
+  Requested bank-copy reduction is a distinct mechanism result,not physical
+  PCIe traffic. No kernel,chunk,decode or default change is bundled with it.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
