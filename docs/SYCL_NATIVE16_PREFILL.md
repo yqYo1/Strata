@@ -1370,7 +1370,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   committed source and recipe for a newly planned reproduction. The U1C++
   helper and independent byte/lifetime oracles remain the concrete inputs for
   U2's next fresh image,which will include the U1individual-copy control itself.
-  U2contiguous-run copying remains a separate unmeasured unit. In the source-view case,
+  U2contiguous-run copying is now source-prepared as a separate unmeasured unit.
+  The immutable startup selector adds `coalesced` alongside `jit|eager`;the
+  individual eager arm stays available in the same image. The fresh build uses
+  the same14508base plus four explicit owned overlays,without pending KVmath.
+  Its byte/lifetime gate includes individual and run copies,strided fallback,
+  disjoint clustered IDs including511,and a1009254400-byte production-stride
+  copy with checked cancellation. No new queue,bank capacity or math is bundled.
+  In the source-view case,
   admission enforces source_stride==blob_bytes;private-bank/U1admission enforces
   bank_stride==blob_bytes. ForNdistinct IDs across24full-fit512banks,the number
   of contiguous runs is at most min(N,24*513-N). The observed first32Krequest

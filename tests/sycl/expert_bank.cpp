@@ -534,18 +534,26 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
     }
 }
 
-void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel) {
-    need(pd::prefill_fullfit_eager_requested(),"eager fixture needs immutable pre-exec eager policy");
+void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel,
+        size_t stride=256,bool clustered=false) {
+    const auto policy=pd::prefill_fullfit_upload_policy();
+    need(policy!=pd::PrefillFullfitUploadPolicy::jit,"fixture needs immutable pre-exec upload policy");
+    const bool coalesce=policy==pd::PrefillFullfitUploadPolicy::coalesced;
     auto runtime=sb::runtime_for();auto& q=runtime->compute();
-    constexpr size_t stride=256;
+    need(stride%256==0 && source_stride>=stride && experts>=0 && experts<=512,"fixture geometry");
     std::vector<uint32_t> host(512*source_stride/4+2*G,Guard);
     auto* slab=reinterpret_cast<uint8_t*>(host.data()+G);
     std::vector<int32_t> ids;
-    for (int e=0;e<experts;++e) ids.push_back(experts==512?e:e*3+2);
+    for (int e=0;e<experts;++e)
+        ids.push_back(experts==512?e:clustered?(e<experts/2?e:512-experts+e):e*3+2);
+    size_t expected_copies=0;
+    for (size_t i=0;i<ids.size();++i)
+        expected_copies+=!coalesce || source_stride!=stride || !i || ids[i]!=ids[i-1]+1;
     strata::core::ExpertCache cache;std::string error;
     // This general384-slot allocation admits a private512-slot packed view,
     // like the actual full-fit layers;its final64KiB remains a guard.
-    if (!cache.open_uninitialized(384,1,512,512,error)) throw std::runtime_error(error);
+    const size_t backing_stride=stride==256?512:2662400;
+    if (!cache.open_uninitialized(384,1,512,int64_t(backing_stride),error)) throw std::runtime_error(error);
     pd::PrivateExpertBank bank(cache,stride);
     sb::Allocation scratch(runtime,4096,sb::MemoryKind::Device);
     sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
@@ -563,8 +571,8 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
                 []{sb::cleanup_fail_stop("prefill eager fixture retirement");});lease.arm();
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);
             const auto receipt=pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,
-                source_stride,ids,&q,{{scratch.data(),scratch.size()}});
-            need(receipt.experts==ids.size() && receipt.copy_commands==ids.size() &&
+                source_stride,ids,&q,{{scratch.data(),scratch.size()}},coalesce);
+            need(receipt.experts==ids.size() && receipt.copy_commands==expected_copies &&
                 receipt.payload_bytes==ids.size()*stride,"eager accepted transfer conservation");
             for (size_t rank=0;rank<ids.size();++rank) {
                 const int e=ids[rank];const auto ticket=slots.begin(e);
@@ -605,13 +613,23 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
     const auto existing=slots.begin(1);slots.queued(existing);
     reject([&]{pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,source_stride,ids,&q,{});});
     need(drains==layers && cancellations==(cancel?layers:0),"eager drain count");
-    std::cout<<"prefill_fullfit_eager PASS experts="<<experts<<" source_stride="<<source_stride
+    std::cout<<"prefill_fullfit_eager PASS policy="<<(coalesce?"coalesced":"eager")
+        <<" experts="<<experts<<" source_stride="<<source_stride<<" bank_stride="<<stride
+        <<" accepted_copy_commands="<<expected_copies<<" requested_H2D_bytes="<<ids.size()*stride
         <<" layers="<<layers<<" cancellations="<<cancellations<<" rejects="<<rejects<<"\n";
 }
 
 int main(int argc, char** argv) try {
     if (argc==2 && (std::string(argv[1])=="--fullfit-eager-smoke" ||
-                   std::string(argv[1])=="--fullfit-eager-validate")) {
+                   std::string(argv[1])=="--fullfit-eager-validate" ||
+                   std::string(argv[1])=="--fullfit-coalesced-large")) {
+        if (std::string(argv[1])=="--fullfit-coalesced-large") {
+            need(pd::prefill_fullfit_upload_policy()==pd::PrefillFullfitUploadPolicy::coalesced,
+                "large fixture needs coalesced policy");
+            prefill_fullfit_eager_case(512,1971200,1,true,1971200);
+            std::cout<<"prefill_fullfit_eager_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED\n";
+            return 0;
+        }
         prefill_fullfit_eager_case(4,256,2,false);
         prefill_fullfit_eager_case(4,512,2,true);
         if (std::string(argv[1])=="--fullfit-eager-validate") {
@@ -619,6 +637,8 @@ int main(int argc, char** argv) try {
             prefill_fullfit_eager_case(1,256,3,true);
             prefill_fullfit_eager_case(127,512,2,false);
             prefill_fullfit_eager_case(512,256,2,false);
+            prefill_fullfit_eager_case(128,256,2,false,256,true);
+            prefill_fullfit_eager_case(128,512,2,true,256,true);
         }
         std::cout<<"prefill_fullfit_eager_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED\n";
         return 0;

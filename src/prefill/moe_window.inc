@@ -209,7 +209,9 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     const auto& layout = strata::kernels::cpu::expert_layout();
     const auto& format = layout.fmt[size_t(layer)];
     detail::PrefillFullfitUploadReceipt eager_upload;
-    if (detail::prefill_fullfit_eager_requested() && owner.private_expert_bank &&
+    const auto upload_policy=detail::prefill_fullfit_upload_policy();
+    const bool coalesce=upload_policy==detail::PrefillFullfitUploadPolicy::coalesced;
+    if (upload_policy!=detail::PrefillFullfitUploadPolicy::jit && owner.private_expert_bank &&
         owner.expert_slots && owner.expert_slots->full_fit() &&
         !owner.expert_slots->permanent_used() && !owner.expert_upload_staging) {
         if (m.layer_major_residual.gpu_rows!=m.layer_major_residual.rows ||
@@ -229,15 +231,18 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                 owner.expert_source_stride,experts,m.cs,
                 {{m.region,size_t(m.region_bytes)},{mixed,mixed_bytes},
                  {bo,size_t(m.T*N*2)},{residual,size_t(bytes)},
-                 {m.dq_gu[0],size_t(2*640*N*2)},{m.dq_d[0],size_t(N*640*2)}});
+                 {m.dq_gu[0],size_t(2*640*N*2)},{m.dq_d[0],size_t(N*640*2)}},coalesce);
         }
         owner.staged_uploads+=eager_upload.experts;stats_.experts_streamed+=eager_upload.experts;
         owner.staged_upload_bytes+=eager_upload.payload_bytes;
-        std::fprintf(stderr,"strata prefill fullfit upload: policy=eager layer=%lld first_row=%lld "
+        std::fprintf(stderr,"strata prefill fullfit upload: policy=%s layer=%lld first_row=%lld "
             "logical_experts=%llu accepted_copy_commands=%llu requested_H2D_bytes=%llu "
+            "source_stride=%llu bank_stride=%llu "
             "publication=accepted_same_queue native_completion=unchecked_until_outer_drain\n",
-            (long long)layer,(long long)first_row,(unsigned long long)eager_upload.experts,
-            (unsigned long long)eager_upload.copy_commands,(unsigned long long)eager_upload.payload_bytes);
+            coalesce?"coalesced":"eager",(long long)layer,(long long)first_row,
+            (unsigned long long)eager_upload.experts,(unsigned long long)eager_upload.copy_commands,
+            (unsigned long long)eager_upload.payload_bytes,(unsigned long long)owner.expert_source_stride,
+            (unsigned long long)owner.private_expert_bank->layout().stride);
     }
     int32_t loaded = -1;
     for (size_t index = 0; index < owner.routes->jobs().size(); ++index) {
