@@ -376231,6 +376231,44 @@
       "ownership_closed": true,
       "original_source_and_recipe_recovered": true,
       "remaining_paths": []
+    },
+    "build_controller_v2": {
+      "stage": "prepared",
+      "prior_admission": {
+        "source_commit": "07c323f9d6a090aa3147b3bc5b471d84b0878314",
+        "passed": false,
+        "reason": "split_unit_sources compared the entire A-toB1 Git delta with the three native paths;three independent uncompiled Python additions also occur in that history. The read-only guard refused before prepare/configure/compile or GPU work. Main integrated the held source proposal but did not qualify it."
+      },
+      "fix": "Limit this origin-delta check to declared native/source prefixes;the existing complete native path-set and exact97ed-byte checks still reject any added,removed or modified native input. Do not change old hashes or the original failure.",
+      "source_sha256": {
+        "tools/sycl/build_named_kv.py": "4c6287765232fbb9a9fafb53ba85b5d5db0ca1515e83094d3c2149353c701697",
+        "tools/test_phase_kv_build.py": "30a51234023b7e6c37fcb21d35ca22102a686215820c079bdbfdc0635ded00bd"
+      },
+      "host_plan": {
+        "command": [
+          "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "tools.test_phase_kv_build"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-split-build-host-v2",
+        "cases": 6,
+        "wall": 90,
+        "cpu": 60,
+        "rss_cap": 1073741824,
+        "text_cap": 131072,
+        "file_cap": 1048576,
+        "total_cap": 4194304,
+        "acceptance": "Commit exact source/recipe first;one fresh owned host run. Six controls including real immutable A/B1 Git delta must pass,normal0,reaped empty ownership and source unchanged. Stop first failure;no retries. No GPU/native build or other job concurrently."
+      },
+      "complete": false,
+      "passed": false,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "native_built": false,
+      "retention": "Retain compact control/failure and source hashes;raw host logs only until verification at the next B1build boundary."
     }
   },
   "phase_kv_naming_reference_retirement_v1": {

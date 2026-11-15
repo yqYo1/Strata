@@ -59,7 +59,8 @@ def select_unit(mode):
 def split_unit_sources():
     """B1 contains the required link unit only; B2 restoration stays excluded."""
     source = previous.base.common.source
-    require(set(source.git(P, 'diff', '--name-only', UNIT, SPLIT_UNIT).decode().splitlines())
+    require(set(source.git(P, 'diff', '--name-only', UNIT, SPLIT_UNIT,
+                           '--', *SOURCE_PREFIXES).decode().splitlines())
             == SPLIT_FILES, 'review the exact three-file B1 unit')
     paths = source.git(P, 'ls-tree', '-r', '--name-only', '-z', SPLIT_UNIT,
                        '--', *SOURCE_PREFIXES, 'tools/sycl').decode().strip('\0').split('\0')

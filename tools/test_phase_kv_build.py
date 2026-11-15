@@ -35,6 +35,18 @@ class BuildUnits(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'three-file B1'):
                 build.split_unit_sources()
 
+    def test_original_split_has_only_the_three_native_changes(self):
+        # Real immutable Git inputs catch a guard accidentally counting the
+        # independent uncompiled observer commits between A and B1.
+        source = build.previous.base.common.source
+        all_names = set(source.git(build.P, 'diff', '--name-only', build.UNIT,
+                                   build.SPLIT_UNIT).decode().splitlines())
+        native_names = set(source.git(build.P, 'diff', '--name-only', build.UNIT,
+                                      build.SPLIT_UNIT, '--',
+                                      *build.SOURCE_PREFIXES).decode().splitlines())
+        self.assertEqual(native_names, build.SPLIT_FILES)
+        self.assertGreater(len(all_names), len(native_names))
+
     def test_unclosed_naming_control_blocks_split_admission(self):
         gate = dict(stage='running', active=False, passed=True, complete=True,
                     ownership_closed=True, decision=dict(naming_control_eligible=True))
