@@ -7899,7 +7899,7 @@
         "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
       }
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "006d0559173b0bd1c8d972c80b47647b3473535f",
     "admission": {
       "schema": "strata-current-pti-host-admission-v1",
@@ -8144,13 +8144,58 @@
         "environment_sha256": "3013c7f3ce7bedcb9177a316b8e02cd6b5a61b3a806e67cdf3428da1076d46ce"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 32769,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+          "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+          "bytes": 26448640,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "enclosing_owned_run_raw_ns": {
+          "begin": 3080482138474999,
+          "end": 3080624851988938
+        },
+        "native_identity": {
+          "pid": 4105906,
+          "start_ticks": 308050812,
+          "sid": 4105844
+        },
+        "external_request_raw_windows": [
+          {
+            "begin": 3080569253132636,
+            "end": 3080621468025566
+          }
+        ],
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "whole_bytes": 1610612736,
     "budgets": {
       "wall": 1500,
@@ -8187,6 +8232,24 @@
     },
     "sources_sha256": "00a07d4ac4d670a1598ca5af6850a41044429c3b965560d78771162c6bd3a2f3",
     "environment_template_sha256": "acc519298717548ea5818dcabdfc1935be462f3dcb0c666021c2ee65839b526f",
-    "model_assets_sha256": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e"
+    "model_assets_sha256": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+    "preflight_failure_analysis": {
+      "cause": "Controller called legacy117K/64Kjoint-head route reader directly,without32Kextent or current zero-byte packed-draft-head policy. Native first request completed32769read/24generated;no new GPUfault. Comparison remains failed/incomplete.",
+      "command_error": "RuntimeError('unplanned route case')",
+      "observation_complete": false,
+      "operational_cleanup": {
+        "prior_reap_session_empty": true,
+        "direct_child_reaped": true,
+        "original_owned_identities_absent": true
+      },
+      "native_observation": {
+        "read_tokens": 32769,
+        "generated_tokens": 24,
+        "prompt_ms": 50530,
+        "printed_pp": 648.5,
+        "comparison_eligible": false
+      },
+      "next": "New v2plan using existing owned fast-route reader,with a small actual-header regression fixture before any further GPUrun;do not restart v1."
+    }
   }
 }
