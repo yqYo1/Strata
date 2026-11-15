@@ -15,7 +15,7 @@ import current_request_profile as campaign
 import current_pti_probe as small
 
 P,B=campaign.P,campaign.B
-ROOT,KEY=B/'current-pti-environment-probe-v2','unitrace_current_environment_probe_v2'
+ROOT,KEY=B/'current-pti-environment-probe-v3','unitrace_current_environment_probe_v3'
 PRIOR_ROOT,PRIOR_KEY=B/'current-request-profile-v2','unitrace_current_request_profile_v2'
 THIS='tools/sycl/profile_environment_probe.py'
 SCRIPT=('import os,json;print(json.dumps(dict(pid=os.getpid(),exe=os.readlink("/proc/self/exe"),'

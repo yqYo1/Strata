@@ -24,7 +24,7 @@ import compare_owned_prefill as routes
 
 P, B, RESULT = admission.CHECKOUT, admission.pti.B, admission.RESULT
 FUSED = admission.FUSED
-ROOT, KEY = B/'current-request-profile-v3', 'unitrace_current_request_profile_v3'
+ROOT, KEY = B/'current-request-profile-v4', 'unitrace_current_request_profile_v4'
 THIS, TEST = 'tools/sycl/current_request_profile.py', 'tools/test_current_request_profile.py'
 FIXTURE = 'tests/fixtures/sycl-fast-prefill-route-32k.txt'
 fast_request_route = routes.context().request_route
@@ -229,7 +229,7 @@ def current(row):
             {k:v for k,v in row['admission'].items() if k!='controller_commit'}
             and signature(core.compact(seed))==row['configuration_evidence_sha256']
             and gate==row['small_probe_evidence_sha256'],'frozen build/configuration/probe changed')
-    env_gate=admission.committed_json(RESULT,P)['unitrace_current_environment_probe_v2']
+    env_gate=admission.committed_json(RESULT,P)['unitrace_current_environment_probe_v3']
     require(signature(env_gate)==row['environment_probe_evidence_sha256']
             and env_gate['checker_source_sha256']==sha(P/THIS),
             'frozen same-source environment qualification changed')
@@ -249,7 +249,7 @@ def current(row):
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'fresh profile plan required')
     admitted,seed,gate=basis();revision=admission.pti.git(P,'rev-parse','HEAD').decode().strip()
-    env_gate=admission.committed_json(RESULT,P)['unitrace_current_environment_probe_v2']
+    env_gate=admission.committed_json(RESULT,P)['unitrace_current_environment_probe_v3']
     require(env_gate['passed'] and env_gate['complete'] and env_gate['ownership_closed']
             and env_gate['checker_result']['accepted'] and env_gate['fresh_faults']==[]
             and env_gate['checker_source_sha256']==sha(P/THIS),
@@ -262,16 +262,18 @@ def prepare():
         configuration_evidence_sha256=signature(core.compact(seed)),small_probe_evidence_sha256=gate,
         environment_probe_evidence_sha256=signature(env_gate),
         python_contract=contract,python_selected=python['selected'],plans=[],processes=[],request_hashes={},
-        host_passed=False,passed=False,complete=False,active=False,ownership_closed=True,whole_bytes=1536<<20,
-        budgets=dict(wall=1500,cpu=9000,rss_cap=104<<30,text_cap=16<<20,file_cap=256<<20,total_cap=384<<20),
+        host_passed=False,passed=False,complete=False,active=False,ownership_closed=True,whole_bytes=5<<30,
+        budgets=dict(wall=1500,cpu=9000,rss_cap=104<<30,text_cap=16<<20,file_cap=1<<30,total_cap=1280<<20),
         plan='Four independent processes clean,trace,trace,clean;three fresh thinking-on32769inputs and24outputs each. '
              'Commit each closure. Trace from native exec with current qualified device-only settings;no pause/session,host API or hardware counters. '
              'Separate first_long and median of subsequent2;two matched trace/clean ratios for prompt,clientTTFT,total request duration. '
              'All ratios must be0.9..1.1 for observer-overhead qualification;otherwise retain timing/ranking as perturbed observations only. '
              'Same fast14508ELF/configuration/placement and native validation in all arms;only device collector differs. '
              'Closed ownership,normal0,quiet validation,actual route/count/thinking/wire identity,current maps/source/providers,unchanged boot/driver,no fresh faults required. '
-             'Stop first failure without retry or changed pins. Maximum256MiBtrace and1million events;384MiBraw per process and1536MiBcampaign '
-             'are finite exceptions for three whole long requests. This is attribution,not speed adoption,phase-drain proof or saturation.',
+             'Stop first failure without retry or changed pins. Prior v3trace reaches256MiBand native exitsSIGXFSZ(-25),so it remains failed. '
+             'New finite limits are1GiBtrace/4million events,1280MiBraw per process and5GiBcampaign for startup plus three whole long requests. '
+             'Model owners must close before JSONanalysis,which is bounded by the declared bytes/events. '
+             'This is attribution,not speed adoption,phase-drain proof or saturation.',
         retention='No new binary generation. Keep individual clean/traced samples,top20kernel services plus conserved tail,union/crossing counts and identities/limits. '
                   'Retire full traces,logs,caches and private receipts after their verified result boundary.')
     ROOT.mkdir(mode=0o700)
