@@ -16,9 +16,9 @@ import measurement_owner as ownership
 import ur_validation
 
 P,B=original.P,original.B
-ROOT=B/'fullfit-upload-host-v1'
+ROOT=B/'fullfit-upload-host-v2'
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-KEY='prefill_fullfit_upload_host_v1'
+KEY='prefill_fullfit_upload_host_v2'
 SOURCE='tests/prefill/fullfit_upload_plan_test.cpp'
 HEADER='include/strata/prefill/fullfit_upload_plan.hpp'
 SELF='tools/sycl/fullfit_upload_host.py'
@@ -47,6 +47,10 @@ def verify(row,committed=True):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'fresh CPU oracle only')
+    prior=ur_validation.committed(RESULT,('prefill_fullfit_upload_host_v1',))
+    require(prior['ownership_closed'] and not prior['active'] and not prior['passed']
+        and prior.get('qualification_hold') and not (B/'fullfit-upload-host-v1').exists(),
+        'retain original launch-guard hold and retire ended CPUgeneration before V2')
     native,proof=original.verify_original();cc='/opt/intel/oneapi/compiler/2026.2/bin/icpx'
     flags=[cc,'--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13','-std=c++20','-O2','-Wall','-Wextra','-Werror','-fno-fast-math','-ffp-contract=off','-I'+str(P/'include')]
     row=dict(stage='prepared',project=original.coherent.build.common.source.pin(P,PREFIXES),foundation=proof,
@@ -76,6 +80,12 @@ def execute():
     owner=ownership.Owner(ROOT/'owned',lambda:write(ROOT/'ownership.json',owner.commands));actual=dict(compiled={},links={})
     try:
         for label,args in row['recipe']:
+            require(original.coherent.build.common.source.pin(P,PREFIXES)['source_sha256']==row['project']['source_sha256']
+                and sha(row['compiler']['path'])==row['compiler']['sha256'], 'before-command source/compiler mismatch')
+            if label=='oracle':
+                require(args==[row['binary']['path']] and sha(args[0])==row['binary']['sha256']
+                    and all(sha(p)==h for group in actual.values() for p,h in group.items()),
+                    'before-launch executable or consumed input mismatch')
             entry,out,err=owner.run(label,args,row['environment'],P,**LIMITS)
             require(ownership.closed(entry) and entry['exit_code']==0,'host command failed: '+label)
             if label=='compile':
