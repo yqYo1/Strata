@@ -1,0 +1,26 @@
+# Actual fast14508headers from failed controller006d05591request0;route regression fixture,not speed qualification.
+strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes
+strata prefill heads: draft_reader=mtp4
+strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000
+strata prefill heads: draft detached bytes=0 retained-map-bytes=425196
+strata mtp: prompt expert phase=before-detach free_bytes=3537846272 total_bytes=10666115072
+strata mtp: prompt expert phase=after-detach free_bytes=4245639168 total_bytes=10666115072
+strata prefill: GDN columns=4 workgroups=192 lanes=128 barriers=3 epilogue=GPU_FP32_same_order scratch=existing_y
+strata MoE split admission: active=0 rows=32768 primary_rows=0 tail_payload_bytes=0 extra_allocation_bytes=0 prefill_slots=384 max_single_allocation_bytes=10132807680 decode_changed=0
+strata MoE accumulator admission: requested_mode=10 rows=32768 gpu_prefix_rows=32768 shared_arena_bytes=1180698624 free_gpu_bytes=4245639168 fixed_including_headroom_bytes=2297692416 mixed_fp16_bytes=167772160
+strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=67371008; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum
+strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component
+strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component
+strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component
+strata MoE mixed banks: storage=scratch primary_bytes=167772160 tail_bytes=0 tail_offset=546968064 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain
+strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=32768 mixed_fp16_bytes=0
+strata MoE expert bank: requested_slots=384 effective_slots=384 staged=1 host_slab_bytes=1363148800 device_bytes=1022361600 residual_gpu_rows=32768 allocation_limit_bytes=10132807680 general_map=private_scratch_never_published
+strata prefill: layer-major candidate, tokens=32768 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=671088640 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592
+strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified
+strata MoE expert bank complete: uploads=17283 requested_H2D_bytes=35325977600 permanent_hits=0 permanent_slots=256 total_slots=384 final_drain=checked
+strata MoE GU fusion: fused_jobs=2074 fused_rows=12893531 separate_jobs=16125 min_rows=2334
+strata MoE Down fusion: fused_jobs=2074 fused_rows=12893531 separate_jobs=16125 min_rows=2334
+strata MoE accumulator window: windows=48 dequants=17283 jobs=18199 source_H2D_bytes=62914560 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=32768
+strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=4915310592 total_bytes=10666115072
+strata mtp: experts restored bytes=707788800, cumulative detach=0.231 ms reload=124.192 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)
+strata mtp: prompt expert phase=after-restore free_bytes=4207517696 total_bytes=10666115072
