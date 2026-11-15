@@ -14131,5 +14131,42 @@
         "sha256": "db18bce2cae66bfdb77bb2418d495cac4d273e72a0daa12c8e90166b049e9263"
       }
     }
+  },
+  "prefill_upload_event_plan_host_v1": {
+    "stage": "planned",
+    "question": "Reject changed private launch/safety/identity fields and JSONbool/int type changes before any source/runtime/native admission.",
+    "test_source": "tests/core/test_upload_event_lane_plan.py",
+    "test_sha256": "bae695d37a8c08bca44164291d95ab6cdbfc720a9a045baaec6e03d9e10ff1eb",
+    "controller_source": "f411a5c4075c76a11497c5878231415e711e9fe5",
+    "command": [
+      "/usr/bin/timeout",
+      "--kill-after=3",
+      "60",
+      "/usr/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/core",
+      "-p",
+      "test_upload_event_lane_plan.py",
+      "-v"
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "interpreter": {
+      "path": "/usr/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "GPU_executed": false,
+    "passed": false,
+    "ownership_closed": true,
+    "retention": "Retain compact pass/fail counters and original source/result commit;host-only test remains only through the current controller qualification."
   }
 }
