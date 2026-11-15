@@ -1,9 +1,9 @@
 // Main-authored diagnostic; repository LICENSE. No external implementation.
 // API contracts: installed Level Zero1.17 headers and Intel SYCL interop.
 // No inference, kernel, overlap, imported event, or environment mutation.
+#include <level_zero/ze_api.h>
 #include <sycl/sycl.hpp>
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
-#include <level_zero/ze_api.h>
 
 #include <chrono>
 #include <cstdint>

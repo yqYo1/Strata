@@ -18,9 +18,9 @@ import measurement_owner as owned
 import ur_validation
 
 P, B = original.P, original.B
-ROOT = B/'prefill-copy-engine-v5'
+ROOT = B/'prefill-copy-engine-v6'
 RESULT = P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-KEY = 'prefill_copy_engine_v5'
+KEY = 'prefill_copy_engine_v6'
 SOURCE = 'tests/sycl/prefill_copy_engine.cpp'
 PREFIXES = ['tools/sycl', SOURCE, 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
 LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
@@ -70,9 +70,10 @@ def check(row, committed=True):
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'inspect existing handle; no retry')
     native, proof = original.verify_original()
-    old = json.loads((B/'prefill-copy-engine-v1/record.json').read_text())
-    require(old['stage'] == 'failed' and old['ownership_closed'] and not old['active']
-        and old['binary']['sha256'] == sha(old['binary']['path']), 'closed V1 initialization refusal required')
+    old = ur_validation.committed(RESULT, ('prefill_copy_engine_v5',))
+    require(old['stage'] == 'closed_metadata_only' and old['ownership_closed'] and not old['active']
+        and len(old['results']) == 2 and all(x['native_exit_code']==0 for x in old['results']),
+        'closed original metadata controls required before corrected copy fixture')
     cc = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
     flags = ['-std=c++17', '-O2', '-fsycl', '-fsycl-host-only', '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13', '-Wall', '-Wextra', '-Werror']
     recipe = [
@@ -124,15 +125,8 @@ def prepare():
             references=['https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_backend_level_zero.md',
                 'https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api.html#zecommandlisthostsynchronize',
                 'https://github.com/oneapi-src/level-zero#logging-api-calls']))
-    # A controller/logging change does not relabel or rebuild an unchanged TU.
-    require(old['project']['source_sha256'][SOURCE] == sha(P/SOURCE)
-        and sha(P/SOURCE) == __import__('hashlib').sha256(git(P,'show',old['project']['revision']+':'+SOURCE)).hexdigest(),
-        'original probe native source must be recoverable and unchanged')
-    row.update(recipe=old['recipe'],native_source_commit=old['project']['revision'],
-        reused_native=dict(record_path=str(B/'prefill-copy-engine-v1/record.json'),
-            record_sha256=sha(B/'prefill-copy-engine-v1/record.json'),binary=old['binary']))
-    for c in row['cases']: c['argv'][0] = old['binary']['path']
-    row['plan']['previous_failure'] = 'V1 context initialization failed;V2draft unexecuted;V3exec-path refusal. V4logs zeDriverGetDefaultContext followed by validation ZE_RESULT_ERROR_INVALID_NULL_HANDLE for its nonnull context in an internal1-byte zeMemAllocHost. V5changes only ZE_ENABLE_HANDLE_LIFETIME1to0 from V4,retaining ZE parameter/thread validation and loader/API trace,original C++image,SDK/runtime and all qualified safety variables. This tests compatibility of default-context tracking;no causal conclusion before matched metadata success. Metadata gates precede transfer.'
+    row['native_source_commit'] = row['project']['revision']
+    row['plan']['previous_failure'] = 'V1/V4failed context initialization;V2draft unexecuted;V3prelaunch refusal. Isolated V5handle-lifetime flag0control passes both ordinal0/1metadata with all other validation/safety fixed. V6freshly compiles the documented ze_api-before-SYCL-interop header order and requires actual driver,URadapter,SYCL,loader and validation providers at the work gate. These are common correctness prerequisites;the measured unit remains solely the transfer primitive. No C++or model speedup is claimed from those fixes.'
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache','owned'): (ROOT/name).mkdir(mode=0o700)
     save(row)
@@ -167,15 +161,6 @@ def execute(action):
     cursor = None
     try:
         if action == 'build':
-            if 'reused_native' in row:
-                reuse = row['reused_native']
-                require(sha(reuse['record_path']) == reuse['record_sha256']
-                    and sha(reuse['binary']['path']) == reuse['binary']['sha256'], 'original probe receipt/ELF changed')
-                old = json.loads(Path(reuse['record_path']).read_text())
-                require(all(sha(p) == h for g in old['actual_inputs'].values() for p,h in g.items()), 'original actual compiler/link/object inputs changed')
-                row.update(stage='built',actual_inputs=old['actual_inputs'],binary=reuse['binary'],passed=True)
-                print('Reused exact V1 native image;only committed logging/controller plan changes.',flush=True)
-                return
             allowed = permit(native,row); actual = dict(compiled={},links={},objects={})
             for label,argv in row['recipe']:
                 entry,out,err = supervisor.run(label,argv,row['build_environment'],P,**BUILD)
@@ -214,7 +199,11 @@ def execute(action):
                         name = item['name']; require(name == expected[len(gates)],'gate order')
                         providers[name] = mappings(channel.proc.pid,row)
                         if name == 'runtime-ready':
-                            require(VALIDATION in providers[name],'ZE validation layer not initialized')
+                            needed = [VALIDATION,LOADER,case['environment']['ZE_ENABLE_ALT_DRIVERS'],
+                                case['environment']['UR_ADAPTERS_FORCE_LOAD'],
+                                '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so']
+                            require(all(str(Path(p).resolve()) in providers[name] for p in needed),
+                                'required actual initialized provider missing')
                         gates.append(name); channel.send(b'continue\n')
                     else:
                         records.append(item)
