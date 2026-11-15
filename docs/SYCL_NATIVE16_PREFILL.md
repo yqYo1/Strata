@@ -1297,7 +1297,48 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   closed owners. Preserve copy-offload avoidance. An explicit ordinal1copy-only
   path is API-feasible in principle and requires a separate queue-policy safety
   qualification;keeping the offload variable set does not qualify raw LevelZero
-  work. Material critical-path opportunity and that bounded plan are still
+  work. The standalone copy-engine probe uses `sycl::malloc_host` host USM;
+  physical page pinning is unverified. Earlier plan wording "pinned host" is
+  corrected here without changing allocation,inputs or either timed arm.
+  Orca Luna BZand native Luna-max CAconfirm the borrowed-handle/drain-before-free
+  ordering and identify the documented interop-header order and explicit named
+  provider-admission gaps. Fresh source`3d801e985`corrects those prerequisites
+  for both arms;its executable is byte-identical to the original probe,so the
+  header correction is not evidence of a compile/runtime failure or speedup.
+  Main's separate V4→V5control changes only`ZE_ENABLE_HANDLE_LIFETIME=1→0`:
+  default-context/internal1-byte allocation initialization changes from a ZE
+  validation error to normal0for both ordinal0and1metadata. Parameter/thread/UR
+  validation,APIlogging and qualified runtime safety remain enabled. This is
+  checker compatibility evidence,not copy bandwidth or model qualification.
+  The fresh`prefill_copy_engine_v6`cohort now closes all14normal0processes:
+  two metadata controls,two traced256-byte checks,four1MiB/256MiB checks,and
+  three alternating independent bandwidth pairs. Full source/readback/edge
+  guards,35actual initialized providers,quiet validation,closed owners and
+  unchanged boot/driver pass with no fresh GPUfault. Each speed process retains
+  one warmup and three8×256MiBhost-complete batches;all18timed batches exceed
+  the declared100msfloor. Source is`3d801e985`,ELF770f72aae9eed67e94f73c18e88e48dd2103219f456012ab17be8dc66fb9d82f.
+  Evidence`a0404d96e`preserves the full cohort. Process-median requested GB/s
+  are SYCL6.485465/6.292787/6.291627and copy-only5.801157/6.444878/6.259003.
+  Paired copy/SYCLtime ratios1.117961/0.976401/1.005212have geometric mean
+  1.031425;the predeclared independent replacement gate fails. Preserve all
+  slower batches,including the3.52..6.49GB/sSYCLand3.55..6.45copy-only range.
+  A queue replacement alone is not adopted or advanced to a model trial.
+  These are synchronized hostUSMrequested-byte rates,not physical pinning,
+  bus/VRAMtraffic,saturation,production-path cost or model PP. CPUtime covers
+  submission plus completion together and does not qualify disjoint attribution.
+  The current limiting-resource evidence remains the original~10.31scopy union,
+  ~28.66skernel union and~4msoverlap;this probe calibrates a transfer primitive
+  around6.3GB/sbut does not establish either resource's physical saturation.
+  Any copy/compute overlap test needs a new minimal ownership/dependency unit
+  and prospective comparison;it cannot inherit this failed speed gate.
+  Exact Git source/recipe recovery for both probe images verifies355project
+  files,635actual compiler inputs and25link inputs each. The closed fixture,
+  one-shot controller and normal transaction output are retired to their
+  original commits;122external files/3000590bytes are physically removed.
+  All26independently retained phase-reference ELFs remain unchanged. The CSV
+  now contains550points,including two explicitly component-only transfer rows.
+  Legacy/.cache/provenance holds remain separate from this closed cohort.
+  Material critical-path opportunity and that bounded plan are still
   prerequisites to a further source-research scope. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
   model library path selects its qualified /usr/local IGCwithout a system edit.
@@ -5603,7 +5644,8 @@ Compare each smallest coherent change separately, even when several changes
 are being developed together. Include the headers, callers, producer/consumer
 layout changes and tests needed for that unit to remain valid. Evaluate
 independent kernels, placement changes and settings in separate matched
-comparisons. If several edits are inseparable, state their invariant and why
+comparisons, holding the other units and workload fixed regardless of the extra
+build/run effort. If several edits are inseparable, state their invariant and why
 they form one unit in the committed plan before measurement. Keep each unit's
 outcome and then validate the combined implementation; an aggregate improvement
 cannot establish which constituent changes to adopt or conceal a phase loss.

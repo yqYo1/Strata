@@ -12738,5 +12738,894 @@
       "reachable_from_pushed_primary": "f4748d48fedebdc74751f9e216cde6a9861427b7",
       "raw_manifest_retired": true
     }
+  },
+  "prefill_copy_engine_v6": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "native_source_commit": "3d801e985edaee0b9b7c203244c0c45af7565bf2",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v6/probe",
+      "sha256": "770f72aae9eed67e94f73c18e88e48dd2103219f456012ab17be8dc66fb9d82f"
+    },
+    "project": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "3d801e985edaee0b9b7c203244c0c45af7565bf2",
+      "count": 355,
+      "aggregate_sha256": "c3252173f09740ed5320cf213f2384d4e193c8e47eb703f61b2f5788118c8c31"
+    },
+    "recipe": [
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O2",
+          "-fsycl",
+          "-fsycl-host-only",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v6/probe.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_copy_engine.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v6/probe.o"
+        ]
+      ],
+      [
+        "link",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O2",
+          "-fsycl",
+          "-fsycl-host-only",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v6/probe.o",
+          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+          "-Wl,-t",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v6/probe"
+        ]
+      ]
+    ],
+    "build_environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/cache",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+      "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+      "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+      "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+      "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+      "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "validation_provider": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0",
+      "sha256": "5b5ead80d98959d0f0a27a8981bb911c354720d39a4aa2125dc18266ad67d970"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "actual_inputs": {
+      "compiled": {
+        "files": 635,
+        "sha256": "32a36cc7b7b8cfa671b6812a419875fd142dfd07484878648360be4ddabb81aa"
+      },
+      "links": {
+        "files": 25,
+        "sha256": "1e787926abf385d742a4fe21b1968f4b3d808fd18ca903a96eb913f343ba5d32"
+      },
+      "objects": {
+        "files": 1,
+        "sha256": "535eddd156634398bb3f86007d910d7bf7b970ccf2dfe99dc83a509e7fa33cbf"
+      }
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "analysis": {
+      "evidence_commit": "a0404d96e50ac17a9fd05e131ef90bc4188b294e",
+      "speed_processes": {
+        "sycl": [
+          {
+            "label": "speed-0-sycl",
+            "median_wall_s": 0.33112255700000004,
+            "median_requested_GB_s": 6.4854646794721384,
+            "min_requested_GB_s": 4.250325548717544,
+            "max_requested_GB_s": 6.4865111678667615
+          },
+          {
+            "label": "speed-1-sycl",
+            "median_wall_s": 0.34126116100000004,
+            "median_requested_GB_s": 6.292786561785153,
+            "min_requested_GB_s": 3.522874041944853,
+            "max_requested_GB_s": 6.292918114047632
+          },
+          {
+            "label": "speed-2-sycl",
+            "median_wall_s": 0.34132403,
+            "median_requested_GB_s": 6.291627483713936,
+            "min_requested_GB_s": 3.7992717716255227,
+            "max_requested_GB_s": 6.484986926544282
+          }
+        ],
+        "copy": [
+          {
+            "label": "speed-0-copy",
+            "median_wall_s": 0.370181957,
+            "median_requested_GB_s": 5.801156991560234,
+            "min_requested_GB_s": 4.115865649225874,
+            "max_requested_GB_s": 6.448396171818531
+          },
+          {
+            "label": "speed-1-copy",
+            "median_wall_s": 0.333207811,
+            "median_requested_GB_s": 6.444877872325748,
+            "min_requested_GB_s": 3.9808005426935553,
+            "max_requested_GB_s": 6.44692661965487
+          },
+          {
+            "label": "speed-2-copy",
+            "median_wall_s": 0.343103172,
+            "median_requested_GB_s": 6.259002606947627,
+            "min_requested_GB_s": 3.546436463716459,
+            "max_requested_GB_s": 6.448523215231192
+          }
+        ]
+      },
+      "paired_copy_over_sycl_median_time_ratios": [
+        1.1179605531978298,
+        0.9764012113877794,
+        1.005212472148533
+      ],
+      "paired_time_ratio_geomean": 1.031424759839359,
+      "all_three_pair_gain_gate_passed": false,
+      "model_trial_allowed": false,
+      "decision": "Synchronized copy-engine replacement alone not adopted;no stable gain. No overlap or model trial admitted by this comparison.",
+      "limits": "HostUSM,physical page pinning unverified;requested payload bytes divided by host-complete time,not measured bus/VRAM traffic or hardware saturation. One slow timed batch in each process is preserved. CPUtime is complete transfer-plus-completion window,not disjoint host attribution. No model,decode,quality,agent,full-context or overlap qualification.",
+      "host_USM_batch_bytes": 268435456,
+      "measured_copies_per_batch": 8,
+      "measured_batches_per_process": 3,
+      "minimum_batch_wall_s": 0.1,
+      "all_18_batches_eligible": true,
+      "arm_process_median_GB_s": {
+        "sycl": 6.292786561785153,
+        "copy": 6.259002606947627
+      },
+      "arm_all_batch_GB_s_range": {
+        "sycl": [
+          3.522874041944853,
+          6.4865111678667615
+        ],
+        "copy": [
+          3.546436463716459,
+          6.448523215231192
+        ]
+      },
+      "next": "Any copy/compute overlap proposal needs a new independently committed dependency/owner/safety plan and its own matched performance question;it must not inherit or relabel this failed replacement gate."
+    },
+    "premature_invocation_refusal": {
+      "count": 1,
+      "GPU_process_launched": false,
+      "reason": "Main misread a tool wait yield as process completion;immutable-plan gate refused the next invocation before launch. Original handle resumed and closed normally;no overlapping measurement.",
+      "misleading_intermediate_commit": "97cb118e7",
+      "correcting_terminal_evidence_commit": "55f1c74bd"
+    },
+    "original_full_evidence_commit": "a0404d96e50ac17a9fd05e131ef90bc4188b294e",
+    "analysis_evidence_commit": "badfafe750471fb68f76f2a90b299184a1dce868",
+    "prior_attempts": [
+      {
+        "version": 1,
+        "stage": "failed",
+        "source_commit": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5",
+        "original_evidence_commit": "a0404d96e50ac17a9fd05e131ef90bc4188b294e",
+        "passed": false,
+        "complete": false,
+        "ownership_closed": true,
+        "detail": {
+          "native_exit_code": 1,
+          "owner_error": "RuntimeError('protocol EOF before expected line')",
+          "UR_boundary": "urContextCreate returns UR_RESULT_ERROR_UNKNOWN after successful B570 enumeration;no urEnqueue API calls",
+          "data_transfer_executed": false,
+          "raw_copy_list_created": false,
+          "trace_bytes": 9258,
+          "stderr_excerpt": " pid=1712099 operation=config-release result=0\nstrata UR validation API: pid=1712099 operation=postinit result=46\nstrata UR validation: pid=1712099 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\ncopy probe: level_zero backend failed with error: 2147483646 (UR_RESULT_ERROR_UNKNOWN)\n   ---> urDeviceRelease\n   <--- urDeviceRelease(.hDevice = 0xc8ef610) -> UR_RESULT_SUCCESS;\n   ---> urAdapterRelease\n   <--- urAdapterRelease(.hAdapter = 0xc745990) -> UR_RESULT_SUCCESS;\n",
+          "next": "Preserve failed attempt. Qualify increased loader logging in a new controller/plan with identical C++image and safety variables;do not advance transfer case."
+        }
+      },
+      {
+        "version": 2,
+        "stage": "unexecuted_draft_superseded",
+        "source_commit": "890c426fc5c4a823a003393221e249d14eccd98d",
+        "original_evidence_commit": "a0404d96e50ac17a9fd05e131ef90bc4188b294e",
+        "passed": false,
+        "complete": false,
+        "ownership_closed": true,
+        "detail": "Before build/reuse or native launch,Main found local plan admission needed explicit equality with committed public plan. V3fixes that guard and avoids duplicated actual compiler manifests. V2had no measurement;not a failed runtime sample."
+      },
+      {
+        "version": 3,
+        "stage": "failed",
+        "source_commit": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5",
+        "original_evidence_commit": "a0404d96e50ac17a9fd05e131ef90bc4188b294e",
+        "passed": false,
+        "complete": false,
+        "ownership_closed": false,
+        "detail": {
+          "operation": "Popen exec of absent new output path;actual original ELF existed but case argv differed",
+          "native_process_created": false,
+          "GPU_executed": false,
+          "raw_owner_record_ownership_closed": false,
+          "reconciliation": "FileNotFoundError ENOENT with no returned process,PID or owned identities;no native child to resume. Preserve original failed owner record. V4checks argv against the guarded binary before launch.",
+          "ownership_closed_after_reconciliation": true
+        }
+      },
+      {
+        "version": 4,
+        "stage": "failed",
+        "source_commit": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5",
+        "original_evidence_commit": "a0404d96e50ac17a9fd05e131ef90bc4188b294e",
+        "passed": false,
+        "complete": false,
+        "ownership_closed": true,
+        "detail": {
+          "native_exit_code": 1,
+          "ownership_closed": true,
+          "data_transfer_executed": false,
+          "raw_copy_list_created": false,
+          "boundary": "Driver default context obtained;validation layer returns ZE_RESULT_ERROR_INVALID_NULL_HANDLE for nonnull hContext in internal size1 zeMemAllocHost;UR maps initialization toUNKNOWN",
+          "excerpt": "[2026-11-16 07:21:01.346] [thread-id: 125515573830208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xf036d68, phRootDevice=0x7ffe6271b530)\n[2026-11-16 07:21:01.346] [thread-id: 125515573830208] [trace] zeDriverGetDefaultContext(hDriver)\n[2026-11-16 07:21:01.346] [thread-id: 125515573830208] [trace] zeMemAllocHost(hContext, host_desc, size, alignment, pptr)\n[2026-11-16 07:21:01.346] [thread-id: 125515573830208] [trace] ERROR (ZE_RESULT_ERROR_INVALID_NULL_HANDLE) in zeMemAllocHost(hContext=0xf041888, host_desc={stype=0x7ffe6271afa0, flags=0}, size=1, alignment=0, pptr=0x7ffe6271af78)\ncopy probe: level_zero backend failed with error: 2147483646 (UR_RESULT_ERROR_UNKNOWN)\n   ---> urDeviceRelease\n   <--- urDeviceRelease(.hDevice = 0xf04c1d0) -> UR_RESULT_SUCCESS;\n   ---> urAdapterRelease\n   <--- urAdapterRelease(.hAdapter = 0xeea1990) -> UR_RESULT_SUCCESS;",
+          "next": "V5metadata changes only handle-lifetime checker flag;parameter/thread/URvalidation and all safety settings remain."
+        }
+      },
+      {
+        "version": 5,
+        "stage": "closed_metadata_only",
+        "source_commit": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5",
+        "original_evidence_commit": "a0404d96e50ac17a9fd05e131ef90bc4188b294e",
+        "passed": true,
+        "complete": false,
+        "ownership_closed": true,
+        "detail": {
+          "sycl_ordinal": 0,
+          "copy_ordinal": 1,
+          "native_exit_codes": [
+            0,
+            0
+          ],
+          "data_transfer_executed": false,
+          "fresh_faults": [],
+          "both_normal_closed": true,
+          "same_native_CPP_image": true,
+          "causal_scope": "V4toV5 changes only ZE_ENABLE_HANDLE_LIFETIME1to0. Both SYCL/raw-list metadata now pass with parameter/thread/UR validation and API logging preserved;default-context lifetime-checker combination is incompatible in this stack.",
+          "qualification": "Metadata/list creation only,no copy safety,bandwidth,overlap or inference adoption.",
+          "next": "Close V5before transfer. Fresh V6corrects documented header order and strengthens explicit required-provider admission before any data copy;both arms share those correctness prerequisites."
+        }
+      }
+    ],
+    "scope": "Standalone host-USM synchronized H2D primitive;no engine/math/placement/decode or overlap changes.",
+    "source_provenance": "Main-authored from installed Intel SYCL interop/LevelZero1.17 API declarations;repository LICENSE,no external implementation or XeStrata source.",
+    "frozen_plan_evidence_commit": "ba800e0b9",
+    "observer_environment": {
+      "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "ZES_ENABLE_SYSMAN": "0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "ZE_ENABLE_VALIDATION_LAYER": "1",
+      "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+      "ZE_ENABLE_THREADING_VALIDATION": "1",
+      "ZE_ENABLE_HANDLE_LIFETIME": "0",
+      "ZEL_ENABLE_LOADER_LOGGING": "1",
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+      "ZEL_LOADER_LOG_CONSOLE": "1",
+      "ZEL_LOADER_LOGGING_LEVEL": "warn",
+      "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "0"
+    },
+    "observer_path_policy": "Per-process private output paths;full UR/ZE API trace for metadata/tiny cases only;quiet warning logging for large and speed cases. Source/recipe/runtime/ELF/provider checks and pre-main UR activation required.",
+    "host_storage": "sycl::malloc_host USM;OS page pinning unverified;earlier pinned-host wording corrected prospectively in maintained decisions before speed collection.",
+    "cases": [
+      {
+        "label": "metadata-sycl",
+        "engine_ordinal": 0,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": []
+      },
+      {
+        "label": "metadata-copy",
+        "engine_ordinal": 1,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": []
+      },
+      {
+        "label": "tiny-sycl",
+        "engine_ordinal": 0,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 256,
+            "copies": 1,
+            "wall_s": 0.0007254570000000001,
+            "cpu_s": 0.000421,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 256,
+            "copies": 2,
+            "wall_s": 0.00043537000000000003,
+            "cpu_s": 0.000435,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "tiny-copy",
+        "engine_ordinal": 1,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 256,
+            "copies": 1,
+            "wall_s": 0.001222844,
+            "cpu_s": 0.000581,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 256,
+            "copies": 2,
+            "wall_s": 0.00023057400000000002,
+            "cpu_s": 0.00026,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "bytes-1048576-sycl",
+        "engine_ordinal": 0,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 1048576,
+            "copies": 1,
+            "wall_s": 0.0005685610000000001,
+            "cpu_s": 0,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 1048576,
+            "copies": 1,
+            "wall_s": 0.000516363,
+            "cpu_s": 0.000996,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "bytes-1048576-copy",
+        "engine_ordinal": 1,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 1048576,
+            "copies": 1,
+            "wall_s": 0.000599049,
+            "cpu_s": 0.000618,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 1048576,
+            "copies": 1,
+            "wall_s": 0.00044123100000000005,
+            "cpu_s": 0.0005729999999999999,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "bytes-268435456-sycl",
+        "engine_ordinal": 0,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.091248123,
+            "cpu_s": 0.022121,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.09443285300000001,
+            "cpu_s": 0.02104,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "bytes-268435456-copy",
+        "engine_ordinal": 1,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.042017088,
+            "cpu_s": 0.042700999999999996,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.041811631,
+            "cpu_s": 0.042626,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "speed-0-sycl",
+        "engine_ordinal": 0,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.086646022,
+            "cpu_s": 0.020347999999999998,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.505251568,
+            "cpu_s": 0.127862,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.33112255700000004,
+            "cpu_s": 0.10005299999999999,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.33106913600000004,
+            "cpu_s": 0.09940299999999999,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "speed-0-copy",
+        "engine_ordinal": 1,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.042033106,
+            "cpu_s": 0.042385,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.33302601000000004,
+            "cpu_s": 0.33232999999999996,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.5217574700000001,
+            "cpu_s": 0.521166,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.370181957,
+            "cpu_s": 0.370289,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "speed-1-copy",
+        "engine_ordinal": 1,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.052503526,
+            "cpu_s": 0.053198999999999996,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.333207811,
+            "cpu_s": 0.33352499999999996,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.333101922,
+            "cpu_s": 0.333302,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.539460248,
+            "cpu_s": 0.540045,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "speed-1-sycl",
+        "engine_ordinal": 0,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.041897086,
+            "cpu_s": 0.013389999999999999,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.34126116100000004,
+            "cpu_s": 0.101448,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.6095828640000001,
+            "cpu_s": 0.143613,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.341254027,
+            "cpu_s": 0.10148,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "speed-2-sycl",
+        "engine_ordinal": 0,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.041783932,
+            "cpu_s": 0.013208,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.331146951,
+            "cpu_s": 0.09953999999999999,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.34132403,
+            "cpu_s": 0.101398,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.565235597,
+            "cpu_s": 0.138605,
+            "full_readback_and_guards": true
+          }
+        ]
+      },
+      {
+        "label": "speed-2-copy",
+        "engine_ordinal": 1,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "boot_unchanged": true,
+        "fresh_faults": [],
+        "batches": [
+          {
+            "kind": "batch",
+            "warmup": true,
+            "bytes": 268435456,
+            "copies": 1,
+            "wall_s": 0.042196428,
+            "cpu_s": 0.042475,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.333019449,
+            "cpu_s": 0.332713,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.6055328130000001,
+            "cpu_s": 0.604849,
+            "full_readback_and_guards": true
+          },
+          {
+            "kind": "batch",
+            "warmup": false,
+            "bytes": 268435456,
+            "copies": 8,
+            "wall_s": 0.343103172,
+            "cpu_s": 0.343175,
+            "full_readback_and_guards": true
+          }
+        ]
+      }
+    ],
+    "validation_summary": {
+      "all_source_readback_and_guards_passed": true,
+      "all_pre_main_UR_activation_proofs_passed": true,
+      "all_required_initialized_providers_passed": true,
+      "initialized_providers_per_process": 35,
+      "provider_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "files": 84
+      },
+      "additional_provider": {
+        "path": "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0",
+        "sha256": "5b5ead80d98959d0f0a27a8981bb911c354720d39a4aa2125dc18266ad67d970"
+      },
+      "UR_and_ZE_parameter_validation": true,
+      "ZE_thread_validation": true,
+      "ZE_handle_lifetime_validation": false,
+      "quiet_validation": true,
+      "normal_processes": 14,
+      "ordinary_runtime_teardown_or_physical_context_qualified": false
+    },
+    "artifact_retirement": {
+      "stage": "retired_verified",
+      "inventory_sha256": "94f3b7770ba98a143dcb4458b9466ddb43dd4a2f912f83fbb711b8dfc5cb7018",
+      "roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v4",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v5",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v6",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-copy-engine-bz-20261116",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-copy-engine-bz-20261116-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-copy-engine-bz-20261116",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-copy-engine-ca-20261116"
+      ],
+      "files": 122,
+      "bytes": 3000590,
+      "source_recovery": [
+        {
+          "version": 1,
+          "source_commit": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5",
+          "project_files": 355,
+          "compiler_files": 635,
+          "external_link_files": 25,
+          "final_binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v1/probe",
+            "sha256": "770f72aae9eed67e94f73c18e88e48dd2103219f456012ab17be8dc66fb9d82f"
+          },
+          "source_recipe_actual_inputs_recovered": true
+        },
+        {
+          "version": 6,
+          "source_commit": "3d801e985edaee0b9b7c203244c0c45af7565bf2",
+          "project_files": 355,
+          "compiler_files": 635,
+          "external_link_files": 25,
+          "final_binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v6/probe",
+            "sha256": "770f72aae9eed67e94f73c18e88e48dd2103219f456012ab17be8dc66fb9d82f"
+          },
+          "source_recipe_actual_inputs_recovered": true
+        }
+      ],
+      "retained_engine_generations": 2,
+      "retained_engine_ELFs": 26,
+      "all_reference_ELFs_unchanged": true,
+      "reason": "Replacement speed gate failed;closed probe and report transactions have no current consumer. Restore source/recipe from recorded commits for any new overlap plan. Preserve all18timed batches and6warmups,metadata compatibility/refusals,exact identity and compact review corrections.",
+      "next_review": "No ended probe generations remain;future overlap requires new source/plan. Existing legacy/.cache/provenance holds remain separate.",
+      "pushed_source_and_evidence_verified": true
+    }
   }
 }

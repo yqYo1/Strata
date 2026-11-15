@@ -34459,5 +34459,63 @@
     "reachable_curation_primary": "7bcd29fb9b85afeba91eb80a05abc044027f4534",
     "owned_native_sessions_retired": true,
     "raw_manifest_retired": true
+  },
+  "prefill_copy_engine_contract_bz_20261116": {
+    "classification": "decision support",
+    "status": "reviewed_compact_corrections",
+    "schedulable_now": false,
+    "scope": "Standalone synchronized pinned-host copy-engine probe API/ownership/isolation audit;not production overlap redesign.",
+    "eligibility_evidence": [
+      "cpu-profiler-current.json:prefill_queue_capability_v4",
+      "cpu-profiler-current.json:prefill_runtime_queues_v2",
+      "cpu-profiler-current.json:unitrace_current_request_resources_v1",
+      "fused-moe-service-current.json:prefill_coalesced_unit_v1"
+    ],
+    "source_commit": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5",
+    "sources": {
+      "tests/sycl/prefill_copy_engine.cpp": "d43d3b2d58c9d49df63d1e0a435a796df6ac94873999d088e8eb60692980f7ab",
+      "tools/sycl/prefill_copy_engine.py": "2bba88f39fef80b563380750718bb1226bbb83908a3610fc40e5c5750ecdcf69"
+    },
+    "report_budget": {
+      "words": 1800,
+      "bytes": 24576
+    },
+    "source_views_outside_capture": true,
+    "manual_launch_reason": "worker-start cannot express strict-config,no-daemon,isolated --cd,network and exclusion of both temporary roots;manual terminal/Task lane with pinned native scope.",
+    "native_pid": 1707868,
+    "review": {
+      "report_sha256": "4039aaebd3e6d720e0e8a201d65c7312757a7262710b5bdb5ae01fa9d5041db2",
+      "review_sha256": "6a21245c1158f67ec36e615745e3c804ee3acd353705562e99dcd3665ee90543",
+      "digest_sha256": "04dded6f2c182b78c13da254ad7e557827f3b6d63e807e84b7077112b1ec59d9",
+      "verdict": "accept with targeted corrections;not device qualification",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "source_reviewed": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5"
+    },
+    "retention": "Raw report/source-view/control/review and exact owned closed worker transcript physically retired after curation and source recovery;compact corrections retained. No new eligible research scope.",
+    "task_id": "task_c55858ff69c6",
+    "dispatch_id": "ctx_5bc69624e73c",
+    "terminal": "term_c228be69-425b-4c80-96ac-e568d54991a1",
+    "outcome": "succeeded",
+    "native_worker_closed": true,
+    "resource_envelope_passed": true,
+    "final_resource_sample": "{\"unit\": \"strata-research-copy-engine-bz-20261116.scope\", \"wall_seconds\": 263.70999999996275, \"CPU_seconds_conservative_bound\": 26.035167, \"native_process_peak_RSS_bytes\": 417132544, \"cgroup_memory_peak_bytes\": 305049600, \"captured_text_bytes_upper_bound\": 743455, \"native_session_counted\": true}",
+    "worker_startup_status_observed": true,
+    "native_process_exit": "Both exact cgroup member pidfds positively exited after settlement;Orca terminal close confirmed.",
+    "review_task": "/root/prefill_copy_engine_report_review_ca_20261116",
+    "findings": [
+      "Documented ze_api-before-interop include order;not a demonstrated compile failure.",
+      "Require named initialized loader,URadapter and driver separately from an allowlist;no wrong provider was observed.",
+      "Borrowed handles and host-drained readback/free ordering are sound in visible synchronized probe.",
+      "Use hostUSM;physical pinning and physical PCIe traffic remain unverified."
+    ],
+    "integration": {
+      "source": "3d801e985",
+      "consumer": "prefill_copy_engine_v6",
+      "scope": "Common correctness prerequisites for standalone transfer primitive comparison;no engine or inference adoption",
+      "retained_reference": "docs/SYCL_NATIVE16_PREFILL.md current transfer paragraph"
+    },
+    "next_scopes": [],
+    "raw_retirement": "cpu-profiler-current.json:prefill_copy_engine_v6.artifact_retirement"
   }
 }

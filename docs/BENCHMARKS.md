@@ -327,8 +327,12 @@ Compare each smallest coherent change separately before qualifying a combination
 even when several parts were implemented together. Required headers, callers,
 producer/consumer layouts and their tests may form one inseparable unit; explain
 that dependency in the committed comparison plan. Independently variable kernels,
-placement and settings need individual comparisons. Preserve each unit's outcome
-and then check the combination, including both phases when common processing changes.
+placement and settings need individual comparisons with the other units and
+workload fixed, even when this requires extra builds or runs. Record those arms
+in the plan before collection. Preserve each unit's outcome and then check the
+combination and relevant interactions, including both phases when common
+processing changes. A combined gain or loss alone cannot accept or reject each
+constituent change.
 
 Commit batch sizes, repetition order, timing eligibility and overhead checks
 before collection. A declared minimum batch duration screens timing granularity;
