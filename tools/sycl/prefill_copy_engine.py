@@ -18,9 +18,9 @@ import measurement_owner as owned
 import ur_validation
 
 P, B = original.P, original.B
-ROOT = B/'prefill-copy-engine-v1'
+ROOT = B/'prefill-copy-engine-v2'
 RESULT = P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-KEY = 'prefill_copy_engine_v1'
+KEY = 'prefill_copy_engine_v2'
 SOURCE = 'tests/sycl/prefill_copy_engine.cpp'
 PREFIXES = ['tools/sycl', SOURCE, 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
 LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
@@ -62,6 +62,9 @@ def check(row, committed=True):
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'inspect existing handle; no retry')
     native, proof = original.verify_original()
+    old = json.loads((B/'prefill-copy-engine-v1/record.json').read_text())
+    require(old['stage'] == 'failed' and old['ownership_closed'] and not old['active']
+        and old['binary']['sha256'] == sha(old['binary']['path']), 'closed V1 initialization refusal required')
     cc = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
     flags = ['-std=c++17', '-O2', '-fsycl', '-fsycl-host-only', '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13', '-Wall', '-Wextra', '-Werror']
     recipe = [
@@ -74,7 +77,7 @@ def prepare():
             'ZE_ENABLE_ALT_DRIVERS','ZES_ENABLE_SYSMAN','SYCL_CACHE_PERSISTENT']
     env = {k:v for k,v in seed['environment_template'].items() if k in keys}
     env.update(CUDA_MODULE_LOADING='EAGER', ZE_ENABLE_VALIDATION_LAYER='1', ZE_ENABLE_PARAMETER_VALIDATION='1',
-               ZE_ENABLE_THREADING_VALIDATION='1', ZE_ENABLE_HANDLE_LIFETIME='1')
+               ZE_ENABLE_THREADING_VALIDATION='1', ZE_ENABLE_HANDLE_LIFETIME='1', ZEL_ENABLE_LOADER_LOGGING='1')
     cases = []
     def case(label, policy, size, iterations, batches, trace=False, speed=False):
         root = ROOT/label
@@ -113,6 +116,14 @@ def prepare():
             references=['https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_backend_level_zero.md',
                 'https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api.html#zecommandlisthostsynchronize',
                 'https://github.com/oneapi-src/level-zero#logging-api-calls']))
+    # A controller/logging change does not relabel or rebuild an unchanged TU.
+    require(old['project']['source_sha256'][SOURCE] == sha(P/SOURCE)
+        and sha(P/SOURCE) == __import__('hashlib').sha256(git(P,'show',old['project']['revision']+':'+SOURCE)).hexdigest(),
+        'original probe native source must be recoverable and unchanged')
+    row.update(recipe=old['recipe'],native_source_commit=old['project']['revision'],
+        reused_native=dict(record_path=str(B/'prefill-copy-engine-v1/record.json'),
+            record_sha256=sha(B/'prefill-copy-engine-v1/record.json'),binary=old['binary'],actual_inputs=old['actual_inputs']))
+    row['plan']['previous_failure'] = 'V1 metadata SYCL urContextCreate returned UNKNOWN before any work. Preserve V1failed. V2changes only loader logging enablement;identical original C++image/recipe/compiler/SDK/runtime/safety and validation settings. Metadata gates precede any transfer.'
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache','owned'): (ROOT/name).mkdir(mode=0o700)
     save(row)
@@ -147,6 +158,14 @@ def execute(action):
     cursor = None
     try:
         if action == 'build':
+            if 'reused_native' in row:
+                reuse = row['reused_native']
+                require(sha(reuse['record_path']) == reuse['record_sha256']
+                    and sha(reuse['binary']['path']) == reuse['binary']['sha256'], 'original probe receipt/ELF changed')
+                require(all(sha(p) == h for g in reuse['actual_inputs'].values() for p,h in g.items()), 'original actual compiler/link/object inputs changed')
+                row.update(stage='built',actual_inputs=reuse['actual_inputs'],binary=reuse['binary'],passed=True)
+                print('Reused exact V1 native image;only committed logging/controller plan changes.',flush=True)
+                return
             allowed = permit(native,row); actual = dict(compiled={},links={},objects={})
             for label,argv in row['recipe']:
                 entry,out,err = supervisor.run(label,argv,row['build_environment'],P,**BUILD)
