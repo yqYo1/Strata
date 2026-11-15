@@ -375033,5 +375033,49 @@
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "phase_kv_split_qualification_preparation_v1": {
+    "stage": "source_proposal_host_pending",
+    "source_commit": "2734a78bb3e1c78f128aa06b474ebada2cd60eca",
+    "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-phase-kv-isolation",
+    "source_sha256": {
+      "tools/sycl/check_split_kv.py": "d22ad150dbdf674370218b5dce244285a8468cc3257bb618210a733d68274181",
+      "tools/test_phase_kv_split_qualification.py": "869dbc35033d3cf4a12c651a2e9b99e67f8ff4858f87afc0555fd7ffa23699f1"
+    },
+    "provenance": "Main-authored from owned check_named_kv.py/check_decode_kv.py and build_named_kv.py;repository LICENSE. No external engine or XeStrata code.",
+    "unit": "B1 cooperative TU extraction qualification only;not B1s scalar isolation or B2 restoration. The new uncompiled Python observer is integrated only after the exact B1 build.",
+    "host_plan": {
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_phase_kv_split_qualification"
+      ],
+      "working_directory": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-phase-kv-isolation",
+      "cases": 6,
+      "wall_seconds": 90,
+      "CPU_seconds": 60,
+      "RSS_bytes": 1073741824,
+      "text_bytes": 131072,
+      "file_bytes": 1048576,
+      "total_bytes": 4194304,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-split-qualification-host-v1",
+      "order": "Commit exact proposal/recipe;after active naming decode process3 closes and Main verifies no model owners,run once before process4. No GPU job,build or other test in parallel. Stop first source/owner/exit/budget/control failure;no retry.",
+      "acceptance": "One valid census plus five refusals:wrong old A counts,missing same-build fixture,uncovered compiler input,source receipt mismatch,partial link. Require six unittest passes,normal0,reaped empty ownership and unchanged source. This is host-controller validation only."
+    },
+    "expected_new_build_shape": {
+      "targets": 14,
+      "fresh_objects": 142,
+      "unique_translation_units": 137,
+      "uncovered_compiler_inputs": 0,
+      "status": "Prospective B1 expectation,not an observed build."
+    },
+    "host_passed": false,
+    "native_built": false,
+    "GPU_executed": false,
+    "adopted": false,
+    "next": "Finish both original naming controls,select/retire old1eec after exact recovery,integrate B1 alone and build coherently. Then add this reader and run fresh11-stage gates;independent oracle/model/both-phase performance obligations remain.",
+    "retention": "Two proposed source/control files serve the imminent B1 qualification. Keep compact host outcome/source pins only;retire successful private control output after its decision. No new native generation."
   }
 }
