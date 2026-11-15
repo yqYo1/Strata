@@ -13046,5 +13046,86 @@
         "stage": "retired_verified"
       }
     ]
+  },
+  "prefill_fullfit_upload_host_v1": {
+    "stage": "prepared",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "recipe": [
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-std=c++20",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1/actual.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/prefill/fullfit_upload_plan_test.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1/oracle.o"
+        ]
+      ],
+      [
+        "link",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1/oracle.o",
+          "-Wl,-t",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1/oracle"
+        ]
+      ],
+      [
+        "oracle",
+        [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1/oracle"
+        ]
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1/tmp",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "expected": "prefill full-fit upload oracle: byte_cases=6 refusals=10 failure_publication=checked",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "plan": {
+      "unit": "CPU-only immutable plan and accepted-enqueue publication for empty512-slot full-fit prefill banks.",
+      "resource_evidence": "Whole-request unitrace_current_request_resources_v1:copy union10.309796s,kernel union28.658416s,about4ms overlap;service is not physical traffic/saturation. Actual32Ksource1/staging0has28full-fit layers among48. Ordinary Runtime queues all use ordinal0/index0. Test whether fixed copy transaction/submission work can be amortized while bytes stay identical;compatible hardware headroom remains unknown.",
+      "next_consumer": "Main same-queue native transfer integration;retire CPUELF after original input recovery and retain source only through this bounded proposal.",
+      "oracle": "Six independent byte-layout cases,ten refusals including failed third enqueue;unchanged payload/guards/dense destination ranks and no failed-copy publication.",
+      "future_comparison_units": [
+        "U1:JIT per-expert versus eager per-expert with identical bytes,math,placement and queue.",
+        "U2:eager per-expert versus eager contiguous-run copies with identical schedule,bytes and permanent-slot ownership.",
+        "Then original JIT versus the useful combination;retain U1even if slower. No constituent adoption from combined timing alone."
+      ],
+      "gate": "Exact committed source/SDK/compiler/actual header/link inputs,normal0/empty owned sessions and exact oracle marker. Not native events,lifetimes,performance,model quality,handoff,decode or physical262144qualification."
+    },
+    "source_commit": "672e18a1067df8bc414c4f0b2c37169c35459808",
+    "source_sha256": "ae753db25fce89d55a4c93c83c3d9add6255e5af03ab4b70b10f23b9d183ffba"
   }
 }
