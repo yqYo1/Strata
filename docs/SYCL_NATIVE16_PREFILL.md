@@ -1341,14 +1341,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   911.589→926.929at64K;these medians and paired geometric means are different
   summaries. Keep every first/warmed sample:the third32Kfirst eager/JITtime
   ratio is1.103185748,so no all-pair first-use gain is claimed. Local warmed
- 32K→64Kslopes are0.858330ms/token(JIT)and0.851109(eager);two lengths do
+  32K→64Kslopes are0.858330ms/token(JIT)and0.851109(eager);two lengths do
   not qualify a fitted law,physical fixed cost or extrapolation. The CSVnow
-  has536points,including8first/warmed arm summaries from this cohort.
+  has540points,including8first/warmed arm summaries from this cohort and
+  four current-period original-control summaries.
   Absolute rates remain below historical fast14508PP871.574/1006.832.
   `prefill_eager_original_control_v1`now reuses that exact retained dcb8ELF
   under the current matched frontend/configuration/workloads. Its first32K
   control closes normally at756.450warmed PP,also below its own historical
-  value;the64Kcontrol is pending. This is one process per length,not a new
+  value;its64Kcontrol closes at914.473PP. Both processes and all six requests
+  finish normally0with closed owners,quiet validation,no new fault and15final
+  model hashes matching. This is one process per length,not a new
   paired cross-build gain/regression claim or a cause attribution. The normalized
   shared compile commands have no differences;hardware saturation remains
   unknown. Main keeps extended source-gap analysis delegated to bounded Orca
@@ -1356,17 +1359,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reference separately. Default adoption,source replacement,repeated sustained
   decode/agent/task and fullphysical262144/tails/RESTORE remain unqualified.
   Retain the two existing phase references plus this explicitly bounded third
-  candidate for the immediate original control/next-unit decision;retire the
-  superseded candidate before another build. U2contiguous-run copying remains
-  a separate unmeasured unit;first inspect actual demanded-ID runs rather than
-  assuming full-fit capacity512means all512experts are demanded. Reducing the
+  candidate only through this boundary's source recovery,then retire it before
+  U2's fresh image;the individual-copy control will be in that same new image.
+  U2contiguous-run copying remains a separate unmeasured unit. Actual source-view
+  admission enforces source_stride==blob_bytes;private-bank/U1admission enforces
+  bank_stride==blob_bytes. ForNdistinct IDs across24full-fit512banks,the number
+  of contiguous runs is at most min(N,24*513-N). The observed first32Krequest
+  hasN=8697,so at most3615copy APIcalls are needed with unchanged16012825600B;
+  first64KhasN=9178,at most3134calls with unchanged16889804800B. These are
+  source-derived request-count bounds,not actual coalesced commands,physical
+  bus transactions or speed measurements. Retain individual/run-copy outcomes
+  separately before comparing the useful combination with JIT. Reducing the
   expert-major streaming bank is a different possible placement unit:verify all
   callers,owner/admission and fallback requirements before comparing it. Do not
   combine that allocation change with U2or an independent-engine queue policy.
   Existing copy-union10.309796s/kernel-union28.658416s includes24decode tokens,
   so it gives neither isolated prefill attribution nor physical-bus saturation.
   Native byte/lifetime and U1same-image PP/TTFTscreens are now closed;the
-  original-reference control and broader adoption gates above remain open.
+  original-reference control is closed;broader adoption gates above remain open.
   Metadata and CPUtests themselves qualify neither model speed nor saturation;
   the U1speed claim comes only from its closed paired model cohort.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
