@@ -6980,5 +6980,48 @@
       "complete": true
     },
     "next_consumer": "Main implements direct admission against surviving collector/launcher and current independent runtime;then request controller integration after the frozen B1prefill cohort. No PTI/model run is qualified. Preserve previous1.576/1.538 overhead failures and provider-origin hold."
+  },
+  "unitrace_current_admission_host_v1": {
+    "source_commit": "f3e6d2794421d2a3e4632fe45cd0485de2e6d222",
+    "source_sha256": {
+      "tools/sycl/current_pti_admission.py": "2f91f6b9bb160d1b8d8cc4d7ec0cb1f043c8b4bbd73c1dec73bb0fdfbfd68908",
+      "tools/test_current_pti_admission.py": "6f71d14f7644c531cae02b2f8e552a06101adbdab276d95af6bd26f19cc83e66",
+      "tools/sycl/request_profile_reader.py": "c60c8e209fe6acd9e3ff4385f3f9132897ddc18166322386c0a3af7e15084e5c"
+    },
+    "recipe": {
+      "unit_command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_current_pti_admission"
+      ],
+      "admission_command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "tools/sycl/current_pti_admission.py",
+        "--out",
+        "{root}/admission.json"
+      ],
+      "wall_seconds": 120,
+      "CPU_seconds": 90,
+      "RSS_bytes": 1073741824,
+      "text_bytes": 131072,
+      "total_bytes": 4194304,
+      "GPU_executed": false
+    },
+    "GPU_executed": false,
+    "collector_loaded": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "unit_tests": 4,
+    "error": "AssertionError('admit failed')",
+    "stage": "failed_preflight",
+    "runtime_admission_qualified": false,
+    "actual_asset_admission_executed": false,
+    "failure_mechanism": "Main outer host harness held the global measurement flock while the child admission CLI acquired the same lock. Child refused before source/asset recovery. No collector or GPU ran.",
+    "next": "Commit a host runner that locks only its unit stage;the admission child exclusively owns its own lock. Use a fresh v2root;preserve this failure and the four closed host controls.",
+    "retention": "Keep bounded original failure receipt/excerpt until corrected owned host qualification closes;then retain compact failure/source/criteria and retire private raw output."
   }
 }

@@ -12,6 +12,7 @@ import fcntl
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -29,7 +30,8 @@ HOST_CHECK = dict(unit_command=['/home/yayoi/.local/share/strata-sycl/venv/bin/p
     admission_command=['/home/yayoi/.local/share/strata-sycl/venv/bin/python3',
     '-B', THIS, '--out', '{root}/admission.json'],
     wall_seconds=120, CPU_seconds=90, RSS_bytes=1 << 30,
-    text_bytes=128 << 10, total_bytes=4 << 20, GPU_executed=False)
+    text_bytes=128 << 10, total_bytes=4 << 20, GPU_executed=False,
+    lock_policy='Parent locks only the unit stage;admission child owns its own exclusive lock.')
 
 
 def require(value, message):
@@ -155,11 +157,56 @@ def admit():
                 'Keep original1.576/1.538 failures and old provider-origin hold unchanged.')
 
 
+def check_host(output):
+    root = output.parent
+    require(not root.exists(), 'fresh owned host root required;inspect prior attempt')
+    root.mkdir(mode=0o700); (root / 'tmp').mkdir(mode=0o700)
+    owner = pti.supervision.Owner(root / 'owned')
+    environment = dict(PATH='/usr/bin:/bin', LANG='C', LC_ALL='C',
+        TMPDIR=str(root / 'tmp'), PYTHONDONTWRITEBYTECODE='1', PYTHONUNBUFFERED='1')
+    result = dict(source_commit=pti.git(CHECKOUT, 'rev-parse', 'HEAD').decode().strip(),
+        source_sha256={name: digest(CHECKOUT / name) for name in
+            (THIS, 'tools/test_current_pti_admission.py', 'tools/sycl/request_profile_reader.py')},
+        recipe=HOST_CHECK, passed=False, complete=False, GPU_executed=False, collector_loaded=False)
+    def run(label, argv):
+        entry, out, err = owner.run(label, argv, environment, CHECKOUT,
+            wall=HOST_CHECK['wall_seconds'], cpu=HOST_CHECK['CPU_seconds'],
+            rss_cap=HOST_CHECK['RSS_bytes'], text_cap=HOST_CHECK['text_bytes'],
+            file_cap=1 << 20, total_cap=HOST_CHECK['total_bytes'])
+        text = out.read_text() + err.read_text()
+        require(pti.supervision.closed(entry) and entry['exit_code'] == 0, label + ': ' + text[-8000:])
+        return text
+    try:
+        # Releasing this open-file-description lock before exec is essential:
+        # the child opens the same lock file and must acquire it independently.
+        with (pti.B / 'owned-v0141-measurement.lock').open('a+') as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); pti.guards.no_model_owners([])
+            text = run('unit', HOST_CHECK['unit_command'])
+            require(re.search(r'Ran 4 tests in [0-9.]+s', text) and text.rstrip().endswith('OK'),
+                    'all four host controls required')
+            result['unit_tests'] = 4
+        run('admit', [value.replace('{root}', str(root)) for value in HOST_CHECK['admission_command']])
+        result['admission'] = json.loads((root / 'admission.json').read_text())
+        result.update(passed=True, complete=True)
+    except BaseException as error:
+        result['error'] = repr(error)
+    finally:
+        result['ownership_closed'] = owner.active is None and all(pti.supervision.closed(c) for c in owner.commands)
+        result['commands'] = owner.commands
+        with output.open('x') as stream: json.dump(result, stream, indent=2); stream.write('\n')
+    require(result['passed'] and result['ownership_closed'], result.get('error', 'host ownership failed'))
+    print('Owned host controls and current source/asset admission close;no collector/GPUexecuted.')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', required=True, type=Path)
+    parser.add_argument('--host-check', action='store_true')
     args = parser.parse_args()
     require((CHECKOUT / THIS).read_bytes() == blob(CHECKOUT, 'HEAD', THIS), 'commit this controller first')
+    if args.host_check:
+        check_host(args.out)
+        sys.exit(0)
     with (pti.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); pti.guards.no_model_owners([])
         result = admit()
