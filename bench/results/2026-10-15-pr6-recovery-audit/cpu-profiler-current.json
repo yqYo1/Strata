@@ -9538,7 +9538,7 @@
         "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
       }
     },
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "79a63ad485e80182bcecdf7317afa1ac56b84c03",
     "admission": {
       "schema": "strata-current-pti-host-admission-v1",
@@ -10073,6 +10073,55 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 1,
+        "read": 32769,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+          "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+          "bytes": 26448640,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "enclosing_owned_run_raw_ns": {
+          "begin": 3083667779631676,
+          "end": 3083828492841477
+        },
+        "native_identity": {
+          "pid": 35813,
+          "start_ticks": 308369382,
+          "sid": 35745
+        },
+        "external_request_raw_windows": [
+          {
+            "begin": 3083747429798043,
+            "end": 3083802919878918
+          },
+          {
+            "begin": 3083803278101182,
+            "end": 3083827956061033
+          }
+        ],
+        "request_routes_checked_before_continue": 1,
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     ],
     "request_hashes": {
@@ -10086,7 +10135,7 @@
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "whole_bytes": 1610612736,
     "budgets": {
       "wall": 1500,
@@ -10123,6 +10172,17 @@
     },
     "sources_sha256": "dfa3be8a36db04dc0ace9a6f1ff60a26baa9ffaa7fbf0133fcf23ca4c5b32add",
     "environment_template_sha256": "acc519298717548ea5818dcabdfc1935be462f3dcb0c666021c2ee65839b526f",
-    "model_assets_sha256": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e"
+    "model_assets_sha256": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+    "post_closure_analysis": {
+      "cause": "Device-only collection completed first long request,but during second request its Chrome trace reached the predeclared256MiBfile cap. Whole cohort remains failed/incomplete;no trace coverage or overhead qualification.",
+      "command_error": "RuntimeError('owned native identity differs')",
+      "operational_cleanup": {
+        "prior_reap_session_empty": true,
+        "direct_child_reaped": true,
+        "original_owned_identities_absent": true
+      },
+      "trace_bytes": 268435456,
+      "next": "New v4plan with finite1GiBtrace/4million-event budget and updated reader allowance;fresh environment qualification and matched cohort. Never resume v3or refresh its pins."
+    }
   }
 }
