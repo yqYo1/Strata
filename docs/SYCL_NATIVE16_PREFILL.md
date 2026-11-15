@@ -1075,7 +1075,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   modes pass four seeds,two restore cycles and12graph replays;packed head2's
   maximum pair error is4.17232513428e-7. Fresh attention/producer small/full
   and GUsmoke/numerics gates pass their original criteria. This remains
-  component qualification;KVoracle/model and both-phase comparisons are pending.
+  component qualification;the fresh KV oracle and production handoff below
+  now close,while both-phase performance comparisons remain pending.
   Child`2734a78bb`also prepares its standalone B1device reader. Six committed
   host controls pass normally0with reaped empty ownership:one valid census
   and five generation/fixture/source/coverage/partial-link refusals. Its
@@ -1107,7 +1108,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   graph replays,15physical-tail graph cases and12timing-shape checks.
   Runtime inventory contains34files with zero missing/unknown mappings.
   These are same-build cooperative/scalar numerical gates;actual production
-  handoff and both-phase performance remain pending. The final cell in a
+  handoff now also closes normally0at controller`c184f1eb8`:thinking-on
+  32769/82/32769inputs and32outputs each,all48layers twice,two actual
+  cooperative-decode4captures and scalar-only short prefill. Placement,
+  GU/Down/QSA work conservation,MTPrestore/recapture,15full asset hashes,
+  quiet validation,closed ownership and unchanged boot/driver all pass
+  without fresh faults. Full first-job histograms are curated out after
+  validation;their work totals and hashes remain. Both-phase performance
+  remains pending. The final cell in a
   component fixture does not qualify a262144-token model fill.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
@@ -1219,7 +1227,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   both admit the byte-identical image control together with its original
   numerical/handoff proof. Both Aphase controls are now eligible;this is
   neither statistical equivalence from timing alone nor inference adoption.
-  B1native/model execution and B1s/B2remain unqualified. The ended1eecbuild is now
+  B1phase performance and B1s/B2remain unqualified. The ended1eecbuild is now
   retired after exact2376-source/dependency,recipe/compiler/class/SDKand
   13ELFrecovery:192files/206386091bytes. Both retained generations'26images
   stay unchanged. The first optional all-same-uid maps scan is refused by
