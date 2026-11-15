@@ -7022,7 +7022,7 @@
     "actual_asset_admission_executed": false,
     "failure_mechanism": "Main outer host harness held the global measurement flock while the child admission CLI acquired the same lock. Child refused before source/asset recovery. No collector or GPU ran.",
     "next": "Commit a host runner that locks only its unit stage;the admission child exclusively owns its own lock. Use a fresh v2root;preserve this failure and the four closed host controls.",
-    "retention": "Keep bounded original failure receipt/excerpt until corrected owned host qualification closes;then retain compact failure/source/criteria and retire private raw output."
+    "retention": "Original failure remains unchanged;private raw retired in unitrace_request_profile_host_raw_retirement. Recover exact source/recipe from the recorded original Git commit."
   },
   "unitrace_current_admission_host_v2": {
     "source_commit": "b2ff405c89257230ce113fd7ab742f6593d46872",
@@ -7065,7 +7065,7 @@
     "failure_mechanism": "Main admission wrapper referenced nonexistent coherent_original_reuse.build after tool/native source checks. Scoped committed evidence must be read through ur_validation.committed. No collector/GPUexecuted.",
     "runtime_admission_qualified": false,
     "next": "Fresh committed v3host attempt using the canonical scoped evidence reader;preserve v2failure unchanged.",
-    "retention": "Retire original bounded failed raw output after corrected source/asset qualification;retain this compact failure and source/criteria."
+    "retention": "Original failure remains unchanged;private raw retired in unitrace_request_profile_host_raw_retirement. Recover exact source/recipe from the recorded original Git commit."
   },
   "unitrace_current_admission_host_v3": {
     "source_commit": "d0a8b2836a72cc9e50dc4779d926639a5589384d",
@@ -7186,8 +7186,8 @@
     "next_consumer": "Fresh bounded current-provider/RAW-clock probe on existing same-build submission fixture,then32Krequest collection with the tested reader. This host gate never loads PTI and does not qualify timing,phase attribution or saturation."
   },
   "unitrace_request_profile_host_raw_retirement": {
-    "state": "prepared",
-    "complete": false,
+    "state": "retired",
+    "complete": true,
     "roots": [
       {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-pti-admission-host-v1",
@@ -7213,11 +7213,9 @@
     ],
     "files": 16,
     "regular_bytes": 25012,
-    "temporary_manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-pti-host-retirement-manifest.json",
-      "sha256": "0f179fb1ca37e17d47be8caf8c241a5bb2239eb23cd2ae6c79c4bf319666831c"
-    },
     "reason": "Keep committed compact original v1/v2failures and v3success/provenance. Normal host logs and duplicate private receipts have no next consumer;no executable was built.",
-    "next_consumer": "Fresh collector/native probe consumes committed v3admission and original build/runtime manifests,not closed private host readers."
+    "next_consumer": "Fresh collector/native probe consumes committed v3admission and original build/runtime manifests,not closed private host readers.",
+    "temporary_manifest_sha256": "0f179fb1ca37e17d47be8caf8c241a5bb2239eb23cd2ae6c79c4bf319666831c",
+    "manifest_retired": true
   }
 }
