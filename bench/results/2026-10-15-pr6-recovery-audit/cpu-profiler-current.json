@@ -9214,7 +9214,7 @@
     }
   },
   "unitrace_current_environment_probe_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "cca56b17fbb39da912c07c9dd20a359320e39fd5",
     "admission": {
       "schema": "strata-current-pti-host-admission-v1",
@@ -9395,8 +9395,8 @@
       "file_cap": 1048576,
       "total_cap": 4194304
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_workload_executed": false,
@@ -9404,6 +9404,50 @@
     "question": "Which exact pinned launcher additions cause the pre-long native environment checker to reject? Run only Python self environment/maps,not model inference;keep the old checker result separate from execution success.",
     "retention": "Keep added environment names and selected public tracing fields,source/normal-exit/owner/fault results;retire normal private environment dump/logs at the correction boundary. No credentials,model or hardware-speed claim.",
     "generated_plan_sha256": "65809f762668b3ae3df623a0b4b99574b80ddf6b82d7d595a7da2264dab0ef41",
+    "host_probe_accepted": true,
+    "checker_result": {
+      "accepted": true
+    },
+    "native_exit_code": 0,
+    "added_environment_names": [
+      "INTEL_LIBITTNOTIFY64",
+      "STRATA_UNITRACE_TARGET_PRELOAD",
+      "UNITRACE_ChromeDeviceLogging",
+      "UNITRACE_ChromeEventBufferSize",
+      "UNITRACE_DeviceTiming",
+      "UNITRACE_FollowChildProcess",
+      "UNITRACE_LD_PRELOAD_OLD",
+      "UNITRACE_SystemTime",
+      "UNITRACE_TraceOutputDir",
+      "UNITRACE_VERSION",
+      "ZE_ENABLE_TRACING_LAYER"
+    ],
+    "selected_public_trace_environment": {
+      "ZES_ENABLE_SYSMAN": "0",
+      "UNITRACE_SystemTime": "1",
+      "UNITRACE_FollowChildProcess": "1",
+      "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-pti-environment-probe-v2/trace",
+      "UNITRACE_VERSION": "2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)",
+      "UNITRACE_DeviceTiming": "1",
+      "UNITRACE_ChromeDeviceLogging": "1",
+      "UNITRACE_ChromeEventBufferSize": "128",
+      "INTEL_LIBITTNOTIFY64": "libunitrace_tool.so",
+      "UNITRACE_LD_PRELOAD_OLD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "ZE_ENABLE_TRACING_LAYER": "1",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so:/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+    },
+    "actual_environment_sha256": "13c716b2cfb9528e5271bcfa029a9f48bff1efed3edb5bbb3e231cc22de53b40",
+    "actual_native_pid": 1748,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
     "source_inputs_sha256": "dfa3be8a36db04dc0ace9a6f1ff60a26baa9ffaa7fbf0133fcf23ca4c5b32add"
   }
 }
