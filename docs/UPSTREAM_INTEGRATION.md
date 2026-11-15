@@ -16,10 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check and fetch | 2026-11-13 21:06:39 UTC / November 14 06:06:39 JST |
-| Observed upstream | `13eedf552417a6a791a7d13c6597e24300ee3a09`, `v0.2.13.1-160-g13eedf55` |
-| Next check at the approximate 48-hour cadence | 2026-11-15 21:06:39 UTC / November 16 06:06:39 JST |
-| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `13eedf55` are fetched, with the plain GPU-list ordering fix imported and tested |
+| Last actual check and fetch | 2026-11-15 20:52:36 UTC / November 16 05:52:36 JST |
+| Observed upstream | `baf16363b4403ef0ed4f538f5d5ed11c43fb9535` (latest fetched main;no engine import) |
+| Next check at the approximate 48-hour cadence | 2026-11-17 20:52:36 UTC / November 18 05:52:36 JST |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `baf16363` are fetched, with the plain GPU-list ordering fix imported and tested |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
 | New inference adoption from this check | None |
@@ -33,21 +33,25 @@ own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
-The November14JST check fetches eight further commits/11changed paths from
-`c1ff07f1` through `13eedf55`. Required candidates include the18-second vision
-context-retry bound and portable serve-stop bound;dense MMQ row-id padding
-needs an actual SYCL-path safety review. DeepSeek/35B and CUDA/HIP execution
-remain excluded. No new inference or functional import follows from this check.
-The complete interval now contains379commits/1000changed paths beyond
-the partial `146df3c4` import. The prior151-commit/303-path review through
-`c1ff07f1` remains partial,with its original evidence in Git. Bounded
-source reviews cover router, control/launch and server/reader changes; they do
-not complete the function ledger. The plain `--gpu` fix from Niko
-`2b9df3fe71cb24cef3052c332e032ea681729abe` now clears stale GPU ordering when
-replacing a saved selection, while preserving explicit roles and unchanged
-selections. Its four regression tests and14existing GPU-role tests pass with
-no skips; help text is updated. The source and evidence are recorded under
-`current_sync.functional_import.incremental_function_ports.plain_gpu_order`.
+The November16JST check fetches742additional commits/2086changed paths from
+`13eedf55` to`baf16363`. The cumulative unintegrated interval beyond the partial
+`146df3c4` import is1121commits/2816changed paths. This is an actual ghq-clone
+fetch and matching remote-main observation;the legacy checkout and native
+engines are unchanged. Root LICENSE bytes match the previous observation;
+individual component provenance still needs review. Two bounded read-only
+scopes cover drafting/launch/control dependencies and CPUexpert/pool/SYCL
+resolver changes. They are source reviews,not a complete742commit functional
+ledger,performance evaluation or code import. DeepSeek/35B and CUDA/HIP execution
+remain excluded. The new source/validation obligations remain in`new_interval`.
+
+Earlier router/control/server source reviews remain partial. Required candidates
+include vision context-retry and portable serve-stop bounds;dense MMQ row-id
+padding still needs an actual SYCL-path safety review. The plain `--gpu`fix from
+Niko`2b9df3fe71cb24cef3052c332e032ea681729abe`clears stale ordering when replacing
+a saved selection,preserving explicit roles and unchanged selections. Its four
+regressions and14existing GPU-role tests pass without skips. The existing
+`current_sync.functional_import.incremental_function_ports.plain_gpu_order`
+record remains the evidence;the new fetch does not complete its broader ports.
 
 The Control/App Intel Arc setup fix and expert-arena shortfall/warning changes
 remain required-function candidates. Fixed-order skinny BF16 GEMMs and compiled
