@@ -33909,7 +33909,7 @@
       "Provide existing read-only records of the exact UR/Level Zero/driver versions and target queue-group/index capabilities under the qualified settings. Without them, the report can only restate architecture-level possibilities.",
       "Pin the compat source and relevant current inputs at source revision 2a2aca00361409d2c97dda65c99959df20109911. If the audit exposes a viable queue split, Main commits a separate matched plan before any build/run and retains numerical, event, bounds, failure-drain, dependency-path, and decode-preservation gates."
     ],
-    "eligibility_reason": "This review closes the generic overlap-library question, but the actual profile route and target queue topology are missing. Existing reports already cover general mechanisms; dispatching without those two facts would repeat conditional theory rather than resolve the current decision.",
+    "eligibility_reason": "Queue capability prerequisite now partly supplied:one compute+copy and one copy-only engine under the original model provider selection. Actual effective source-view/staging markers and installed UR-to-engine selection remain unresolved. Do not dispatch a generic repeat or infer overlap from queue count.",
     "stop_condition": "If the active path cannot expose an independent supported engine/index under the required settings, or cannot preserve the bank/lifetime protocol without a broad redesign, return no eligible overlap candidate and retain the same-queue path.",
     "stage": "conditional_not_dispatched",
     "required_model": "gpt-6-luna",
@@ -33917,6 +33917,37 @@
     "required_via": "Orca",
     "previous_report_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
     "review_origin": "prefill_overlap_library_review_bm_20261115",
-    "Main_scope_note": "This stop condition limits one bounded audit; a needed architectural redesign is not a permanent rejection or completion of tuning. Pin its larger coherent ownership seam and compare it prospectively if evidence supports that work."
+    "Main_scope_note": "This stop condition limits one bounded audit; a needed architectural redesign is not a permanent rejection or completion of tuning. Pin its larger coherent ownership seam and compare it prospectively if evidence supports that work.",
+    "current_capability_evidence": {
+      "commit": "31413aec3113ba401145dc04d5b78b44e4b2fc84",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "prefill_queue_capability_v4",
+      "source_commit": "9f9c658965441772d92f60f0a38dd99c5c59c273",
+      "metadata_only": true,
+      "queue_groups": [
+        {
+          "ordinal": 0,
+          "flags": 7,
+          "physical_engines": 1,
+          "compute": true,
+          "copy": true
+        },
+        {
+          "ordinal": 1,
+          "flags": 2,
+          "physical_engines": 1,
+          "compute": false,
+          "copy": true
+        }
+      ],
+      "owner_closed": true,
+      "native_exit_code": 0,
+      "fresh_faults": false,
+      "copy_offload_force_disabled": true
+    },
+    "remaining_prerequisites": [
+      "Exact active32K effective source-view/staging/full-fit markers and per-operation event/wait edges on14508/dcb8",
+      "Actual installed UR normal-queue/engine selection under copy-offload-disabled qualified settings;local llvm fbccb466 source is a reference,not proof of loaded adapter behavior"
+    ]
   }
 }
