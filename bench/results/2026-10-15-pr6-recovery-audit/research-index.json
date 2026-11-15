@@ -33710,5 +33710,52 @@
       "Missing private-view/full-fit telemetry limits causal route claims,not checked all-GPU placement. Ten declared pins exclude some transitive readers;no whole-path qualification from this audit."
     ],
     "retention": "Curated source/measurement corrections and hashes retained;full report/review/Task/launch bodies physically retired. Original report is not promised recoverable. No inference adoption."
+  },
+  "qsa_workgroup64_source_bh_20261115": {
+    "classification": "decision support",
+    "stage": "dispatched",
+    "source_revision": "96d319326da3c7c6f0477752f0e870713f10fafe",
+    "source_pins": {
+      "AGENTS.md": "dcf1f25f5d87a022b8a49b5f398c31149901d377b977fc090d9f366c862f610f",
+      "docs/ARTIFACT_RETENTION.md": "5d2328f25f2f06ca9264e8b9c5f96a6b7f97eaddd1dbaa59ae85ee9619ecafa6",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "eeebba1dd68db3c4c3ffa88d5156475408ac27fac37f594d9277d5df6c18306d",
+      "include/strata/kernels/qsa_bf16_prefix.hpp": "fca4df929e893f75e719697f353210d8f65eec7f52beaeda10fe2b8a62ec4de5",
+      "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+      "tests/sycl/qsa_bf16_prefix.cpp": "115eccc84a0ebc874aa7943fc5447d720fde8828c7b4cbb974f94b6635a14eb3",
+      "tests/sycl/qsa_bf16_prefix_layout_bench.cpp": "6a14fa3e071d86e5494e10ec4f7b40efa66e066a47710d34ca7c1e13d438890b",
+      "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+      "LICENSE": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
+    },
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "MemAvailable_bytes": 90853408768,
+      "workers": 1,
+      "memory_bytes": 4294967296,
+      "CPU_seconds": 180,
+      "wall_seconds": 600,
+      "measured_prerequisite": "Current whole-request device-only profile has median28.658s kernel union versus10.310s copy union;largest individual prefix6.80s/48calls at32K. Not saturation. Existing128-thread SG16 ordered-exp cached-Q/KVvec4 kernel uses only4of8subgroups forQK;PVuses8. All declared bank comparison gates now closed;512rejected. This is new64-thread redistribution,not the old exact-workgroup-attribute metadata experiment or realhead softmax reduction."
+    },
+    "question": "Audit smallest coherent64-thread version of this exact selected prefix. Keep SG16,Cells32,ScoreStride33,cachedQ,K/Vvec4,ordered ascending FP32softmax and allmath/storage/validation unchanged. QKretains4subgroups;PVcandidate maps head=(sg/2)*8,dim=(sg%2)*128 with8accumulator fragments instead of4;head-owned softmax loops step4instead8. Identify every other hardcoded8/4/128ownership,load/store/collective/barrier/invalid/tail/device-admission dependency. Prove complete unique head/dimension/cell coverage and uniform group calls,or explain a concrete flaw. Compare register/SLM/residency tradeoffs and legal installed SYCL joint_matrix contracts;no speed,ISA,physical traffic or hardware-saturation claim. Include minimum correctness and same-production-entrypoint component comparison to accept/reject only thisworkgroupunit. No implementation or independent math/layout change.",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "via": "Orca",
+    "report_budget_words": 1600,
+    "report_budget_bytes": 20480,
+    "run": "run_b636799aa6dc",
+    "task": "task_b72d34fb05f6",
+    "dispatch": "ctx_0afe1405c429",
+    "terminal": "term_9664f851-1ba1-4259-a3ae-cb5067aa7ca2",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-qsa-workgroup64-bh-20261115",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-qsa-workgroup64-bh-20261115/report.md",
+    "native_identity": {
+      "pid": 278825,
+      "start_ticks": 309018923,
+      "sid": 278684
+    },
+    "scope": "strata-research-bh-qsa64-20261115.scope",
+    "actual_model_and_report_only_workspace_checked": true,
+    "main_reads_body_on_arrival": false,
+    "ownership_closed": false,
+    "next": "Do not steer or duplicate. Main prepares separate prototype/build recovery without changing pinned source;native Luna-max reviews returned report."
   }
 }
