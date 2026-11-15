@@ -1120,6 +1120,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.868335/0.861969/0.843611ms/token. Two lengths cannot validate a law or
   a held-out length,and the intercept is not a physical fixed cost. Source14508
   remains the faster credible owned reference;this control does not replace it.
+  The ended CPUcapacity and naming-prefill raw roots are now retired after
+  original Git/source/recipe/owner checks:1300files/205966509bytes,including
+  960derived Intel GPUcache ELFs. All39retained engine/fixture images remain
+  unchanged. Original samples/verdicts,CSVand source identities stay in Git;
+  the shared configuration/model/environment receipt remains retained. The
+  initial no-ELF cleanup refusal is preserved;the prospective cache-specific
+  v2rule verifies original parents/SDK/inputs and rejects other ELF/symlinks.
+  Do not resume their closed raw-parser readers or recreate old process paths.
   Sustained decode control remains pending;B1/B1s/B2stay unbuilt/unadopted.
   The retained cross-build configuration receipt supplies
   its frozen environment/model manifest until these comparisons close;old
