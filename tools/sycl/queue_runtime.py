@@ -20,9 +20,9 @@ import measurement_owner as owner_api
 import ur_validation
 
 P,B=original.P,original.B
-ROOT=B/'queue-runtime-v1'
+ROOT=B/'queue-runtime-v2'
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-KEY='prefill_runtime_queues_v1'
+KEY='prefill_runtime_queues_v2'
 SOURCE='bench/sycl/queue_runtime.cpp'
 THIS='tools/sycl/queue_runtime.py'
 PREFIXES=['include','src/sycl/runtime.cpp','tools/sycl',SOURCE,'AGENTS.md','docs/ARTIFACT_RETENTION.md']
@@ -62,6 +62,10 @@ def check(row,committed=True):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'no implicit metadata retry')
+    old=ur_validation.committed(RESULT,('prefill_runtime_queues_v1',))
+    require(old['stage']=='failed' and old['ownership_closed'] and not old['active']
+        and old['error']=="RuntimeError('unfrozen link input: /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0')",
+        'preserve the closed linker-admission failure;no native queue inventory ran')
     native,proof=original.verify_original()
     database=json.loads((original.ROOT/'build/compile_commands.json').read_text())
     entry,=[v for v in database if v['file']==str(P/'src/sycl/runtime.cpp')]
@@ -89,6 +93,7 @@ def prepare():
         environment=env,driver=guards.driver_guard(),boot=seed['boot'],commands=[],
         passed=False,complete=False,active=False,ownership_closed=True,application_work_submitted=False,
         plan=dict(question='Actual Level Zero ordinals/indices returned by the unchanged production Runtime queue constructors',
+            previous='V1compilation/link commands closed0;admission omitted the already frozen runtime manifest from the link allowlist. Keep V1failed;new V2plan includes that original unchanged manifest.',
             unit='Two fresh host-only TUs:metadata fixture and original-matching Runtime. No engine,math,kernel,placement,phase selector or safety-setting change.',
             qualification='Host-only metadata build has no usable inference image. It queries handles of Runtime compute,transfer,make_queue(true/false);zero URenqueue calls required.',
             gate='Exact committed source/original Runtime headers/SDK/recipe/executable/providers/private before-main validation;four in-order queue records,normal0,quiet validation,closed ownership,unchanged boot/driver,no fresh fault.',
@@ -100,8 +105,9 @@ def prepare():
     save(row);print('Prepared actual Runtime queue inventory;commit before build.',flush=True)
 
 
-def allowed(native):
+def allowed(native,row):
     values=json.loads(Path(native['external_inputs']['path']).read_text())
+    values.update(json.loads(Path(row['runtime_manifest']['path']).read_text()))
     for pin in [native['project'],*native['dependencies']]:
         values.update({str((Path(pin['root'])/n).resolve()):h for n,h in pin['source_sha256'].items()})
     values[str(P/SOURCE)]=sha(P/SOURCE)
@@ -127,7 +133,7 @@ def execute(action):
     owner=owner_api.Owner(ROOT/'owned',lambda:write(ROOT/'ownership.json',owner.commands))
     try:
         if action=='build':
-            permit=allowed(native);actual=dict(compiled={},links={},objects={})
+            permit=allowed(native,row);actual=dict(compiled={},links={},objects={})
             for name,argv in row['recipe']:
                 entry,out,err=owner.run(name,argv,row['build_environment'],P,**LIMITS)
                 require(owner_api.closed(entry) and entry['exit_code']==0,'compiler/link failed: '+name)
