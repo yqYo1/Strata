@@ -1093,8 +1093,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The new B1device plan pins1194source files and11fresh stages,without
   inheriting GPUresults. The completed child has no unique commits,PRs,
   pending files or ELFconsumer;its remote/local branch and worktree are now
-  removed after verifying pushed permanent ancestry. The remaining child is
-  the user's unfinished PR6verification task. Future
+  removed after verifying pushed permanent ancestry. The PR6verification
+  child remains unfinished. Future
   Orca accounting uses the byte-identical permanent`tools/research/orca_scope.py`.
   The next66-line`check_split_kv_oracle.py`adapter reuses the existing KV
   oracle/graph driver,with explicit B1native selection and a fresh result root.
@@ -1130,6 +1130,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   then a separately prepared six-process thinking-decode cohort. Its frontend
   controls and10source/phase/decision tests pass;clean native speed samples
   are pending. The new decision has no naming-only image-identity exception.
+  To keep that cohort's inputs frozen,temporary child`tune/request-profiler`
+  from`10c6f2a69`holds the independent Main-authored request reader`5de1f6c49`.
+  Its nine bounded host tests close normally0at`f0909e0f5`;normal raw output
+  is retired at`7d22d861c`. This qualifies synthetic schema/interval controls,
+  not runtime admission,request draining,observer overhead or GPUattribution.
+  Finish direct admission against the surviving PTIartifacts and current
+  independent providers,then integrate after this frozen prefill cohort closes
+  and retire the child after pushed original-commit preservation. Existing
+  provider-origin and1.576/1.538observer-overhead failures remain unchanged.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
