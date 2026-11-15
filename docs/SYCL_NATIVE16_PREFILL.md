@@ -1040,14 +1040,31 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The new decode source is extracted from the owned1eec implementation;
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
   are unchanged. The independent expert-dispatch bounds fix is preserved.
-  The naming-only unit is merged into the primary with its original identity;
-  B1remains unbuilt on the child and B2is not applied. Neither is an adopted model route.
+  Naming and B1source are merged into the primary with their original identities
+  through`25b9c5113`(merge`07c323f9d`). B1sremains held on the child and B2is
+  not applied. Source integration is not an adopted model route.
   Child`25b9c5113`prepares the same builder's explicit`split`selection for B1,
   with fresh production/fixture objects and separate scalar-restoration exclusion.
   Its five source-pinned host controls pass normally0with reaped empty ownership;
   they test unit selection and refusal of an unfinished/failed naming gate,
   not the new kernel. Building B1still requires both original Aphase controls
   and retirement of the old1eecgeneration after exact source/recipe recovery.
+  Main's first real B1origin check finds that its whole Git delta also includes
+  three uncompiled Python additions;the original guard refuses before building.
+  Prospective`94799047b`scopes this delta to native/source prefixes while keeping
+  the complete native-file set and exact97edbytes checks. Its six host tests
+  execute normally0,but Main's outer result aggregation fails after exit by
+  treating Owner's returned tuple as an entry. Preserve that failed outer
+  receipt and the separately verified unchanged-input,closed six-test execution;
+  do not repeat or relabel the original failure. Independent source/recipe/build
+  admission remains required and no native/GPUqualification is inherited.
+  Source`0569e6924`passes exact871-native-input B1admission and pins the fresh
+  build. Configuration closes normally0with28compiler-census host controls;
+  the planned142objects/137unique TUs include two new decode-TUobjects for
+  production and the KVfixture. Commit`0208f89eb`records configured inputs
+  before compilation. Compilation and actual census remain pending;retain
+  fast14508and Aunchanged and do not add the qualification observer until
+  this exact B1build closes.
   Child`2734a78bb`also prepares its standalone B1device reader. Six committed
   host controls pass normally0with reaped empty ownership:one valid census
   and five generation/fixture/source/coverage/partial-link refusals. Its
@@ -1168,9 +1185,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   both admit the byte-identical image control together with its original
   numerical/handoff proof. Both Aphase controls are now eligible;this is
   neither statistical equivalence from timing alone nor inference adoption.
-  B1/B1s/B2remain unbuilt/unadopted. Retire the ended1eecbuild only after
-  exact original Git/source/recipe/compiler-input/ELF recovery,then build
-  B1 alone against A while retaining faster14508. Compare each independent
+  B1compilation and B1s/B2remain unqualified. The ended1eecbuild is now
+  retired after exact2376-source/dependency,recipe/compiler/class/SDKand
+  13ELFrecovery:192files/206386091bytes. Both retained generations'26images
+  stay unchanged. The first optional all-same-uid maps scan is refused by
+  process permissions before deletion;its failure remains recorded. The new
+  bounded plan verifies named ownership and accessible maps/fds,with four
+  unrelated processes' internals unavailable and no global-absence claim.
+  Keep original receipts/census/configuration and build B1alone against A
+  while retaining faster14508. Compare each independent
   unit before their combination;do not fold B1s or scalar restoration into B1.
   Native16capacity review BA also keeps the current8192chunk. The optional
   vLLM adapter has additional8Kownership/GU/Down guards;raising a top-level
