@@ -6912,5 +6912,72 @@
       "selected_assets_verified_after": 13,
       "current_profiler_asset_files_verified_after": 8
     }
+  },
+  "unitrace_request_reader_host_v1": {
+    "source_commit": "5de1f6c493b72422ce1ed609ccc3225cb316740f",
+    "source_sha256": {
+      "tools/sycl/request_profile_reader.py": "c60c8e209fe6acd9e3ff4385f3f9132897ddc18166322386c0a3af7e15084e5c",
+      "tools/test_request_profile_reader.py": "663de6a264ad9ac912d4739c72901ae4087e553df1b3cf06673c8e2539139d74"
+    },
+    "recipe": {
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_request_profile_reader"
+      ],
+      "wall_seconds": 90,
+      "CPU_seconds": 60,
+      "RSS_bytes": 1073741824,
+      "text_bytes": 131072,
+      "total_bytes": 4194304,
+      "GPU_executed": false
+    },
+    "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "owner_source_commit": "671a29615dde00772e4edd3b34c1abf49fcb383f",
+    "owner_source_sha256": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+    "PTI_revision": "4b6d74294cdc72766c00a9211fe2e4261ee94244",
+    "reference_source_sha256": {
+      "tools/unitrace/src/unitimer.h": "2351a54b4e51c152e10eaf46eb980b4815a096dfd3f680dbbc0b549ebd91ac6f",
+      "tools/unitrace/src/chromelogger.h": "fbc916401bf62a4acb5e437e67ff14ee622c8ee7ab47b4321abb36d0263cdc76"
+    },
+    "exit_code": 0,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_or_collector_executed": false,
+    "tests": 9,
+    "passed": true,
+    "stage": "closed",
+    "complete": true,
+    "active": false,
+    "runtime_admission_qualified": false,
+    "clock_domain_runtime_verified": false,
+    "observer_overhead_qualified": false,
+    "physical_saturation_qualified": false,
+    "retention": {
+      "state": "prepared",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/request-profile-reader-host-v1",
+      "files": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/request-profile-reader-host-v1/owned/reader.stderr",
+          "bytes": 107,
+          "sha256": "7c758af7411e05fc2e6c4fb89045f7a03d9a5957d5305092903a23a66373d034"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/request-profile-reader-host-v1/owned/reader.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/request-profile-reader-host-v1/record.json",
+          "bytes": 3251,
+          "sha256": "16878b0ce443a39c3cc2d84b328cdb7251e7287569d4a37dc3b075427881c034"
+        }
+      ],
+      "reason": "Normal host-test output and private ownership bookkeeping have no next consumer after committed compact9-test results. No executable was produced.",
+      "source_commit": "5de1f6c493b72422ce1ed609ccc3225cb316740f"
+    },
+    "next_consumer": "Main implements direct admission against surviving collector/launcher and current independent runtime;then request controller integration after the frozen B1prefill cohort. No PTI/model run is qualified. Preserve previous1.576/1.538 overhead failures and provider-origin hold."
   }
 }
