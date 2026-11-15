@@ -14180,5 +14180,438 @@
     ],
     "duration_s": 0.003,
     "decision": "Preserve original failed controls;strict JSONfingerprints replace plain Pythonlocal/public dictionary equality before any event-dependent GPUrun. No actual measurement-record type corruption observed."
+  },
+  "prefill_upload_event_lane_v2": {
+    "stage": "prepared",
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "validation_provider": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0",
+      "sha256": "5b5ead80d98959d0f0a27a8981bb911c354720d39a4aa2125dc18266ad67d970"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "host_interpreter": {
+      "path": "/usr/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "native_source_commit": "a49344a6f9952ac73284611708a133c364d39503",
+    "recipe": [
+      [
+        "host-controls",
+        [
+          "/usr/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/core",
+          "-p",
+          "test_upload_event_lane_plan.py",
+          "-v"
+        ]
+      ],
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O2",
+          "-fsycl",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/upload_event_lane.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe.o"
+        ]
+      ],
+      [
+        "link",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O2",
+          "-fsycl",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe.o",
+          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+          "-Wl,-t",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe"
+        ]
+      ]
+    ],
+    "build_environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/cache",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+      "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+      "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+      "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+      "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+      "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "cases": [
+      {
+        "mode": "metadata",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/metadata",
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "ZES_ENABLE_SYSMAN": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "ZE_ENABLE_THREADING_VALIDATION": "1",
+          "ZE_ENABLE_HANDLE_LIFETIME": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "1",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "ZEL_LOADER_LOG_CONSOLE": "1",
+          "ZEL_LOADER_LOGGING_LEVEL": "trace",
+          "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/metadata/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/metadata/cache",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/metadata/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/metadata/validation.log"
+        },
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe",
+          "metadata"
+        ]
+      },
+      {
+        "mode": "forward",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/forward",
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "ZES_ENABLE_SYSMAN": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "ZE_ENABLE_THREADING_VALIDATION": "1",
+          "ZE_ENABLE_HANDLE_LIFETIME": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "1",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "ZEL_LOADER_LOG_CONSOLE": "1",
+          "ZEL_LOADER_LOGGING_LEVEL": "trace",
+          "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/forward/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/forward/cache",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/forward/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/forward/validation.log"
+        },
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe",
+          "forward"
+        ]
+      },
+      {
+        "mode": "reverse",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/reverse",
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "ZES_ENABLE_SYSMAN": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "ZE_ENABLE_THREADING_VALIDATION": "1",
+          "ZE_ENABLE_HANDLE_LIFETIME": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "1",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "ZEL_LOADER_LOG_CONSOLE": "1",
+          "ZEL_LOADER_LOGGING_LEVEL": "trace",
+          "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/reverse/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/reverse/cache",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/reverse/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/reverse/validation.log"
+        },
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe",
+          "reverse"
+        ]
+      },
+      {
+        "mode": "permanent",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/permanent",
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "ZES_ENABLE_SYSMAN": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "ZE_ENABLE_THREADING_VALIDATION": "1",
+          "ZE_ENABLE_HANDLE_LIFETIME": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "1",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "ZEL_LOADER_LOG_CONSOLE": "1",
+          "ZEL_LOADER_LOGGING_LEVEL": "trace",
+          "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/permanent/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/permanent/cache",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/permanent/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/permanent/validation.log"
+        },
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe",
+          "permanent"
+        ]
+      },
+      {
+        "mode": "cancel",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel",
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "ZES_ENABLE_SYSMAN": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "ZE_ENABLE_THREADING_VALIDATION": "1",
+          "ZE_ENABLE_HANDLE_LIFETIME": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "1",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "ZEL_LOADER_LOG_CONSOLE": "1",
+          "ZEL_LOADER_LOGGING_LEVEL": "trace",
+          "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel/cache",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel/validation.log"
+        },
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe",
+          "cancel"
+        ]
+      },
+      {
+        "mode": "cancel-throw",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel-throw",
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "ZES_ENABLE_SYSMAN": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "ZE_ENABLE_THREADING_VALIDATION": "1",
+          "ZE_ENABLE_HANDLE_LIFETIME": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "1",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "ZEL_LOADER_LOG_CONSOLE": "1",
+          "ZEL_LOADER_LOGGING_LEVEL": "trace",
+          "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel-throw/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel-throw/cache",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel-throw/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/cancel-throw/validation.log"
+        },
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe",
+          "cancel-throw"
+        ]
+      },
+      {
+        "mode": "refuse",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/refuse",
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "ZES_ENABLE_SYSMAN": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "ZE_ENABLE_THREADING_VALIDATION": "1",
+          "ZE_ENABLE_HANDLE_LIFETIME": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "1",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "ZEL_LOADER_LOG_CONSOLE": "1",
+          "ZEL_LOADER_LOGGING_LEVEL": "trace",
+          "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/refuse/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/refuse/cache",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/refuse/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/refuse/validation.log"
+        },
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-event-lane-v2/probe",
+          "refuse"
+        ]
+      }
+    ],
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "model_trial_allowed": false,
+    "performance_qualified": false,
+    "plan": {
+      "question": "E1safety prerequisite for an independent prefill H2D lane:raw ordinal1copy-ready to SYCLordinal0reader,and exported last-reader fence back to copy before scratch overwrite.",
+      "measured_opportunity": "Original current-route trace has~10.31scopy union,~28.66skernel union,~4msoverlap;requested bank bytes35.2GB. Standalone synchronized host-USM rate~6.3GB/s did not improve from engine replacement. This motivates a DIFFERENT bounded scheduling/dependency question,not a saturation or model-speed claim.",
+      "minimal_coherent_unit": "Per-transfer completion token,queue-bound last-reader token,native/SYCLevent ownership,one scratch-overwrite dependency,source/destination retention,cancellation and dual-queue drain. No changed inference math,placement,bank sizing,source-view copying,decode or general Runtime policy.",
+      "source": "Main-authored header and single fresh test TU,repository LICENSE. Official installed SYCL/LevelZero API declarations are behavior references;no external implementation or XeStrata source. Independent serialized probe is archived at3d801e985.",
+      "cases": "Metadata first,no application GPU work;then held forward copy/reader,held second-reader reverse overwrite,permanent repeated readers,normal cancellation and explicit exception unwind after accepted upload,and bad range/null/foreign/stale token refusals. Fresh processes,no event reset/recycling or graph capture. Pinned host negative controls run before native compilation.",
+      "gates": "Commit source/recipe/SDK/compiler/ELF;typed JSONlocal/public plan equality;required actual providers before first application enqueue,after exact-kernel prewarm,and before exit;private pre-main URactivation;full traces and quiet parameter/thread validation;host hold remains pending>=50ms then manual release;dependency submission/import<100ms where asserted;full payload/source/edge guards;normal0/positive closed ownership;unchanged boot/driver,no fresh fault.",
+      "stop": "Stop first identity,source,build,API,guard,validation,deadline,ownership or GPUfault failure. Independent2s host release runs before any wait;raw drain5s and owned native90s wall. No retry,driver reset,foreign process signals or hash refresh.",
+      "limits": "No timing discriminator,overlap gain,model,decode,quality,agent,physical262144 or ordinary runtime teardown qualification. HostUSM only;ordinary immutable RAMsource views remain a separate required source-kind check before production. No throughput derived from uint reader fixture.",
+      "next": "Only after E1source/safety gates pass,commit a separate E2comparison using representative production consumer work and fixed bytes/math,serialized versus event overlap,then actual32K+model only if its own component gate passes. Prior replacement gate stays failed.",
+      "retention": "One temporary component beside unchanged fast14508/namingAengine references. Retain through E1and its immediate E2decision,then retire ended code/artifacts after exact source/recipe recovery. No new inference image.",
+      "references": [
+        "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_backend_level_zero.md",
+        "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list.html",
+        "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/event.html"
+      ]
+    },
+    "project": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "a49344a6f9952ac73284611708a133c364d39503",
+      "count": 358,
+      "aggregate_sha256": "745caad4c67277c5c136f88577b642ea2145ef585c17e65e42b1addac5e7efa1"
+    },
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
   }
 }
