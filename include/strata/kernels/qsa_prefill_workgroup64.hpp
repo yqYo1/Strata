@@ -10,5 +10,11 @@ bool qsa_bf16_prefix_workgroup64_batch(const uint16_t *query, const QsaAttnPools
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+// Numerical fixture only;additional state stores never enter speed batches.
+bool qsa_bf16_prefix_workgroup64_state_probe_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch,
+    const QsaPrefixStateProbe &probe, void *stream);
 } // namespace strata::kernels::prefill
 #endif

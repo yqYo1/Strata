@@ -451,4 +451,12 @@ bool qsa_bf16_prefix_workgroup64_batch(const uint16_t *query, const QsaAttnPools
   return prefill_prefix_workgroup64_impl<33,false,false,true,true,true,true,false>(
       query,pools,ids,steps,cap,shape,output,queries,bounds,live_cells,scratch,stream);
 }
+bool qsa_bf16_prefix_workgroup64_state_probe_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch,
+    const QsaPrefixStateProbe &probe, void *stream) {
+  return prefill_prefix_workgroup64_impl<33,false,false,true,true,true,true,true>(
+      query,pools,ids,steps,cap,shape,output,queries,bounds,live_cells,scratch,stream,probe);
+}
 } // namespace strata::kernels::prefill
