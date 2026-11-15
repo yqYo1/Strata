@@ -33406,12 +33406,12 @@
   },
   "native16_chunk_capacity_16k_audit_az_20261115": {
     "classification": "decision_support",
-    "stage": "eligible_source_audit",
+    "stage": "source_task_running",
     "title": "Coherent native16 long-prefill 8192-to16384 chunk-capacity extension",
     "question": "For the selected throughput/BF16 residual path with GDN_COLUMNS4,GDN_FP16=1,GDN_BARRIERS3=1,CHUNK64=0 and8192chunks,derive the smallest coherent extension supporting a16384outer chunk without disabling the fast family. Trace real typed producer/consumer limits,allocation/indexing/barrier assumptions,and GDN/QSA/MoE/MTPcallback/tail/full262144state boundaries. Separate true algorithmic/kernel capacities from admission guards. Compare extending typed kernels versus retaining8192internal tiles under a larger outer chunk. Give exact minimal files/required dependencies,workspace/max-single-allocation formulas and counterevidence. Do not merely recommend raising a guard,implement code,run tests or claim speed.",
     "prior_evidence": "Owned fast14508 repeats1006.832PP64K at8192;hardware saturation is unknown. AX source review excludes scalar KV body as long-batch arithmetic. Current source explicitly limits GDNcolumns and typed execution to8192;the proposed size experiment is prospective resource/scheduling characterization,not an adopted optimization. Older6e40shape/time-model and generic hierarchical-scan collections do not audit this current native16 path.",
     "scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite_evidence": "Concrete current path/settings and guard locations are supplied;Main pins current native9849source. This is a finite source extension/safety question needing no missing profiler or runtime metric. AQ/AR and subsequent source pilots prove the report-only constructor/lifecycle.",
       "missing_prerequisites": [],
       "nonduplication": "Current typed8192capacity and dependencies,not a generic chunk-size performance or scan survey. Preserve independent decode and both prefill strategies.",
@@ -33424,15 +33424,36 @@
         "native_age_seconds": 600,
         "pids_max": 256,
         "five_way_not_admitted": true
-      }
+      },
+      "pending": "Existing AZ Task active;do not duplicate or steer. All24pinned input files also match the original fast14508source;no runtime gain follows."
     },
     "assignment": {
       "model": "gpt-6-luna",
       "effort": "medium",
       "via": "Orca",
-      "report_words": 1600
+      "report_words": 1600,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-native16-capacity-az-20261115",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-native16-capacity-az-20261115/report.md",
+      "run": "run_d2d2576b81f8",
+      "task": "task_79e0a3423e3b",
+      "dispatch": "ctx_5ab480b0ca11",
+      "terminal": "term_604b2b10-78fd-487d-8305-bec3ba24edc9",
+      "task_sha256": "61db6fd2a09448c8b7fb4048e28da4b0e4922e60fc0a47a7abf98be08026803c",
+      "native_pid": 3319171,
+      "start_ticks": 305862805,
+      "sid": 3319053,
+      "scope": "strata-research-az-capacity-20261115.scope",
+      "actual_effective_context_sha256": "4a5aa9e0c6814ca4a26209933cd62ec3b6c53c58280dd4ea17515e9a7cbbf408",
+      "state": "ready/input_accepted,turnStart observed;actual gpt-6-luna medium/report-only root verified"
     },
     "review_point": "Native Luna-max source/safety/scope review;Main then implements only a justified minimum unit and owns bounded component/model/size comparisons. A capacity refusal is not evidence of a faster candidate.",
-    "retention": "Private report/review only through the imminent chunk-capacity unit decision. Retain compact source-backed constraints,not transaction history."
+    "retention": "Private report/review only through the imminent chunk-capacity unit decision. Retain compact source-backed constraints,not transaction history.",
+    "source_commits": [
+      "9849e35803f011aaafb2753c1e0f31411e40308e",
+      "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+    ],
+    "source_inputs_frozen": true,
+    "ownership_closed": false,
+    "report_review_required": true
   }
 }

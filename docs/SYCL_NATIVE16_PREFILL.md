@@ -1025,7 +1025,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   speed;fresh bounded native/oracle/model and both-phase comparisons remain required.
   B1scovers Verifier's scalar fallback,not the separate single-token
   Layer/Session path. That legacy caller still reaches`qsa_kv_resolve`and
-  needs explicit phase attribution before changing its shared scalar body.
+  must remain unchanged for a prompt-only scalar candidate. Source review AX
+  corrects the earlier generic graph-route proposal:the measured`--serve`
+  `--spec4`route uses Verifier,including width1decode and short prompt windows;
+  long batched prefill uses separate append kernels. Do not advance a shared
+  scalar-body restoration as its long-prefill arithmetic optimization. Any
+  future short-prompt scalar candidate needs independent Verifier prompt
+  selection while preserving decode and legacy Layer code/capture/configuration.
+  The active width4cooperative TU remains reachable;only a separately proved
+  dead branch after B1could be removed. High-level checkpoint/restore sources
+  confirm prevalidation and transfer-failure fail-stop;post-restore readback
+  remains optional. These source facts neither explain nor erase the original
+  measured PPdifference or qualify a runtime/model route.
   The new decode source is extracted from the owned1eec implementation;
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
   are unchanged. The independent expert-dispatch bounds fix is preserved.
@@ -1037,6 +1048,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   they test unit selection and refusal of an unfinished/failed naming gate,
   not the new kernel. Building B1still requires both original Aphase controls
   and retirement of the old1eecgeneration after exact source/recipe recovery.
+  Child`2734a78bb`also prepares its standalone B1device reader. Six committed
+  host controls pass normally0with reaped empty ownership:one valid census
+  and five generation/fixture/source/coverage/partial-link refusals. Its
+  142objects/137TUs remain a prospective build expectation,not an observed
+  build. Add this uncompiled observer only after the exact B1build;fresh
+  eleven-stage native gates,oracles,model and both-phase comparisons remain
+  pending. The ended host raw root is retired(3files/50050bytes)after348
+  original source inputs and the exact recipe are recovered and checked.
   The prospective reader recovers A's original compiler/class/SDKclosure and
   retains fast14508/12ELFs plus A/14ELFs,without reviving retired old binaries.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
@@ -1135,11 +1154,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   zero inserted/reused tokens and actual scalar1/cooperative4routes match;
   normal0,quiet validation,reaped empty ownership and no fresh fault pass.
   Keep the slower code sample without dismissing it as noise. Original
-  reference`da46ff31f`and candidate`2f3b83d29`are one pair,not a compatibility
-  verdict,gain or adoption. The exact six-process R,C,C,R,R,Cplan and
-  10controller host controls remain fixed;its second named-image process
-  (index2)is running. Both-phase naming control eligibility and B1/B1s/B2
-  remain pending/unadopted.
+  reference`da46ff31f`and candidate`2f3b83d29`remain the original first pair.
+  The second pair now also closes normally0with the same counts/acceptance:
+  candidate`3aa4c65e7`gives14.9646/9.4128TG and reference`bfcb3f4fc`
+  gives14.9628/9.4163TG. Both directions and all individual samples remain;
+  two pairs are not a compatibility verdict,gain or adoption. The exact
+  six-process R,C,C,R,R,Cplan and10controller host controls remain fixed;
+  index4,the final reference,is running. Both-phase naming control eligibility
+  and B1/B1s/B2remain pending/unadopted.
   The retained cross-build configuration receipt supplies
   its frozen environment/model manifest until these comparisons close;old
   generated configurations or full diagnostic captures are not their inputs.
