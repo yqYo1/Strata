@@ -18,7 +18,7 @@ import coherent_original_reuse as original
 import measurement_owner as owner
 
 P,B,RESULT=original.P,original.B,original.RESULT
-ROOT,KEY=B/'qsa-prefill-workgroup64-build-v2','qsa_prefill_workgroup64_build_v2'
+ROOT,KEY=B/'qsa-prefill-workgroup64-build-v3','qsa_prefill_workgroup64_build_v3'
 THIS='tools/sycl/build_qsa_workgroup64.py'
 BASE_SOURCE='14508acbf1b70eb994fdf37f97fb6d0f5cff7d43'
 BASE_ROOT=B/'coherent-prefill-native-v1'
@@ -56,6 +56,10 @@ def prepare():
     retirement=data['phase_kv_split_prefill_v1']['B1_build_retirement']
     require(retirement['stage']=='deleted_verified' and retirement['retained_ELFs']==26
         and not Path(retirement['root']).exists(),'retire ended B1before a bounded third generation')
+    prior=data['qsa_prefill_workgroup64_build_v2']['retirement']
+    require(prior['stage']=='deleted_verified' and prior['retained_engine_ELFs']==26
+        and not any(Path(p).exists() for p in prior['paths']),
+        'failed probe-contract component retired before replacement')
     base,proof=original.verify_original()
     require(type(proof) is dict and proof['original_native_source']==BASE_SOURCE,
         'typed original native proof required')

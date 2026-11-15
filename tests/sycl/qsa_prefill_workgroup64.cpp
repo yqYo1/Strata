@@ -19,4 +19,7 @@ bool compare_prefill_state(const uint16_t *query, const strata::kernels::QsaAttn
 #define qsa_bf16_prefix_state_probe_batch compare_prefill_state
 #define STRATA_QSA_COMPARE_PREFIX33 1
 #define STRATA_QSA_COMPARE_PREFIX_STATE 1
+// This prefix diagnostic captures all16padded heads;the real-head flag only
+// expands numerical coverage to all12real heads. Invalid coordinate remains16.
+#define STRATA_QSA_PADDED_STATE_PROBE 1
 #include "qsa_bf16_prefix.cpp"
