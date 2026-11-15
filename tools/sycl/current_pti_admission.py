@@ -19,6 +19,7 @@ import sys
 sys.dont_write_bytecode = True
 import coherent_original_reuse as native
 import unitrace_profile as pti
+import ur_validation as validation
 from request_profile_reader import PTI_REVISION
 
 CHECKOUT = Path(__file__).resolve().parents[2]
@@ -136,7 +137,7 @@ def verify_tools(container):
 def admit():
     tools = verify_tools(committed_json(RESULT, CHECKOUT))
     row, proof = native.verify_original()
-    qualified = native.build.validation.committed(FUSED, ('phase_kv_split_device_v1',))
+    qualified = validation.committed(FUSED, ('phase_kv_split_device_v1',))
     require(qualified['stage'] == 'closed' and not qualified['active']
             and all(qualified[key] for key in ('passed', 'complete', 'ownership_closed'))
             and qualified['native_validation_probe'] == row['native_validation_probe'],

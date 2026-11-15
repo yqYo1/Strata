@@ -7023,5 +7023,48 @@
     "failure_mechanism": "Main outer host harness held the global measurement flock while the child admission CLI acquired the same lock. Child refused before source/asset recovery. No collector or GPU ran.",
     "next": "Commit a host runner that locks only its unit stage;the admission child exclusively owns its own lock. Use a fresh v2root;preserve this failure and the four closed host controls.",
     "retention": "Keep bounded original failure receipt/excerpt until corrected owned host qualification closes;then retain compact failure/source/criteria and retire private raw output."
+  },
+  "unitrace_current_admission_host_v2": {
+    "source_commit": "b2ff405c89257230ce113fd7ab742f6593d46872",
+    "source_sha256": {
+      "tools/sycl/current_pti_admission.py": "9a1d9a4acdfb2608d2fe1ecb7a06b2a7b7c7bb10047cd1b9336f073aedd061d9",
+      "tools/test_current_pti_admission.py": "6f71d14f7644c531cae02b2f8e552a06101adbdab276d95af6bd26f19cc83e66",
+      "tools/sycl/request_profile_reader.py": "c60c8e209fe6acd9e3ff4385f3f9132897ddc18166322386c0a3af7e15084e5c"
+    },
+    "recipe": {
+      "unit_command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_current_pti_admission"
+      ],
+      "admission_command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "tools/sycl/current_pti_admission.py",
+        "--out",
+        "{root}/admission.json"
+      ],
+      "wall_seconds": 120,
+      "CPU_seconds": 90,
+      "RSS_bytes": 1073741824,
+      "text_bytes": 131072,
+      "total_bytes": 4194304,
+      "GPU_executed": false,
+      "lock_policy": "Parent locks only the unit stage;admission child owns its own exclusive lock."
+    },
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "collector_loaded": false,
+    "unit_tests": 4,
+    "error": "ValueError('admit: Traceback (most recent call last):\\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-request-profiler/tools/sycl/current_pti_admission.py\", line 222, in <module>\\n    result = admit()\\n             ^^^^^^^\\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-request-profiler/tools/sycl/current_pti_admission.py\", line 139, in admit\\n    qualified = native.build.validation.committed(FUSED, (\\'phase_kv_split_device_v1\\',))\\n                ^^^^^^^^^^^^\\nAttributeError: module \\'coherent_original_reuse\\' has no attribute \\'build\\'\\n')",
+    "ownership_closed": true,
+    "stage": "failed_host_reader",
+    "failure_mechanism": "Main admission wrapper referenced nonexistent coherent_original_reuse.build after tool/native source checks. Scoped committed evidence must be read through ur_validation.committed. No collector/GPUexecuted.",
+    "runtime_admission_qualified": false,
+    "next": "Fresh committed v3host attempt using the canonical scoped evidence reader;preserve v2failure unchanged.",
+    "retention": "Retire original bounded failed raw output after corrected source/asset qualification;retain this compact failure and source/criteria."
   }
 }
