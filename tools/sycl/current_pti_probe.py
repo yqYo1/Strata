@@ -159,7 +159,8 @@ def run(label):
             and fixture==row['fixture'] and preload==row['preload'], 'frozen assets changed')
     journal=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15)
     cursor=next(s.split(': ',1)[1] for s in journal.splitlines() if s.startswith('-- cursor: '))
-    result=dict(label=label,passed=False,host_probe_accepted=False,clock_domain=reader.CLOCK,maps=[],GPU_executed=False)
+    result=dict(label=label,passed=False,host_probe_accepted=False,clock_domain=reader.CLOCK,maps=[],
+        native_execution_attempted=False,GPU_work_admitted=False,GPU_executed=None)
     owner=None
     def persist():
         (ROOT/label/'execution.json').write_text(json.dumps(dict(
@@ -173,16 +174,19 @@ def run(label):
                 if line=='COMPONENT_READY '+phase:break
                 require(line.startswith('case '),'unexpected fixture protocol: '+line)
             result['maps'].append(dict(phase=phase,**mapped(entry['pid'],row,label)))
+            if phase=='runtime-ready':result['GPU_work_admitted']=True
             io.send(b'X')
         require(io.line(30)=='case teardown=PASS' and io.line(30)=='fixture_status=PASS mode=submission', 'final numeric fixture status')
         io.exit(90)
     try:
+        result['native_execution_attempted']=True
         entry,out,err=owner.run(label,command(row,label),environment(row,label),P,interaction=interact,
             wall=120,cpu=120,rss_cap=2<<30,text_cap=16<<20,file_cap=64<<20,total_cap=128<<20)
         end=time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
         text=out.read_text();errors=err.read_text()
         require(admission.pti.supervision.closed(entry) and entry['exit_code']==0
                 and len([s for s in text.splitlines() if s.startswith('case ')])==10, 'ten numerical cases and normal closure required')
+        result['GPU_executed']=True
         proof=validation.preload_evidence(errors,entry['pid'])
         require(proof['loader']==preload['loader']['path'] and not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called',errors), 'first-init/validation proof failed')
         if label=='trace':

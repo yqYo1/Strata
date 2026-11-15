@@ -7217,5 +7217,39 @@
     "next_consumer": "Fresh collector/native probe consumes committed v3admission and original build/runtime manifests,not closed private host readers.",
     "temporary_manifest_sha256": "0f179fb1ca37e17d47be8caf8c241a5bb2239eb23cd2ae6c79c4bf319666831c",
     "manifest_retired": true
+  },
+  "unitrace_current_probe_host_v1": {
+    "source_commit": "9e758d6cc5b20f3f096ed0b79b8673439adf8210",
+    "source_sha256": {
+      "tools/sycl/current_pti_probe.py": "163b3323e7440a3fe320b2da47d69c07e1bfdb48bf73d64600bd2c706f510ebd",
+      "tools/test_current_pti_probe.py": "2929ec8b04407a5618f549f6fa72bcf46fa81cad8e2b50563912ac7dbe1d6290"
+    },
+    "recipe": {
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_current_pti_probe"
+      ],
+      "wall_seconds": 90,
+      "CPU_seconds": 60,
+      "RSS_bytes": 1073741824,
+      "text_bytes": 131072,
+      "total_bytes": 4194304,
+      "GPU_executed": false
+    },
+    "tests": 4,
+    "exit_code": 0,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "passed": true,
+    "stage": "closed",
+    "complete": true,
+    "active": false,
+    "GPU_probe_qualified": false,
+    "scope": "Synthetic arm/safety/source/provider guards only;no native collector execution.",
+    "next": "Repeat scoped controls for the prospective attempted/executed failure-reporting fix before preparing the fresh actual probe.",
+    "retention": "Retire normal host stdout/stderr/private receipt at the next safe boundary after original source recovery;keep this compact4-test outcome."
   }
 }
