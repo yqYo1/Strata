@@ -17,10 +17,10 @@ import measurement_owner as owner_api
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'queue-capability-v3'
+ROOT = B / 'queue-capability-v4'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
 FUSED = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'prefill_queue_capability_v3'
+KEY = 'prefill_queue_capability_v4'
 CC = Path('/usr/bin/gcc').resolve()
 LOADER = Path('/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0')
 NEO = Path('/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758')
@@ -52,7 +52,8 @@ def sources(rev):
 def environment():
     return dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8',
         TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
-        LD_LIBRARY_PATH='/usr/lib/x86_64-linux-gnu', ZE_ENABLE_ALT_DRIVERS=str(NEO),
+        LD_LIBRARY_PATH='/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib',
+        ZE_ENABLE_ALT_DRIVERS=str(NEO),
         ZES_ENABLE_SYSMAN='0', NEOReadDebugKeys='1', EnableDirectSubmission='0',
         UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1', STRATA_SYCL_PREFILL_SAME_QUEUE='1')
 
@@ -112,10 +113,10 @@ def main():
     guards.no_model_owners([])
     if action == 'prepare':
         require(KEY not in record and not ROOT.exists(), 'no implicit retry')
-        previous = record.get('prefill_queue_capability_v2', {})
+        previous = record.get('prefill_queue_capability_v3', {})
         require(previous.get('stage') == 'failed' and previous.get('ownership_closed')
-            and not previous.get('active') and previous.get('error') == 'compiler dependency mismatch',
-            'retain the stopped unoptimized header census; no repeated native inventory')
+            and not previous.get('active') and previous.get('error') == 'inventory failed; inspect existing owner',
+            'retain the closed different-provider refusal; no repeated identical native inventory')
         rev = git('rev-parse', 'HEAD').decode().strip()
         pins = sources(rev)
         ROOT.mkdir(mode=0o700)
@@ -128,7 +129,8 @@ def main():
             driver=guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
             external_inputs={str(CC): sha(CC), str(LOADER): sha(LOADER)}, limits=LIMITS,
             plan=dict(question='Current B570 queue-group capabilities for a bounded prefill event-lane audit',
-                previous_refusal='V1 rejected unrelated historical source; V2 unoptimized header census missed O2-conditional headers; neither initialized a GPU',
+                previous_refusal='V1 unrelated source,V2 incomplete O2 header census,V3 system-first LD_LIBRARY_PATH selected system IGC; all closed; no submitted GPU work',
+                provider_selection='Use the original qualified model LD_LIBRARY_PATH; do not force /usr/lib ahead of ld.so cache /usr/local IGC',
                 compiler_manifest_scope='Exact installed compiler/runtime/headers; historical metric probe source is not an input',
                 gate='Normal0,exact providers,all three protocol gates,unchanged boot/driver,no fault and closed owner',
                 repetitions=1, GPU_work_submitted=False, performance_or_overlap_claim=False,
