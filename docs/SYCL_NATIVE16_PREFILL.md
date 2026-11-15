@@ -1297,7 +1297,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   closed owners. Preserve copy-offload avoidance. An explicit ordinal1copy-only
   path is API-feasible in principle and requires a separate queue-policy safety
   qualification;keeping the offload variable set does not qualify raw LevelZero
-  work. Material critical-path opportunity and that bounded plan are still
+  work. The standalone copy-engine probe uses `sycl::malloc_host` host USM;
+  physical page pinning is unverified. Earlier plan wording "pinned host" is
+  corrected here without changing allocation,inputs or either timed arm.
+  Orca Luna BZand native Luna-max CAconfirm the borrowed-handle/drain-before-free
+  ordering and identify the documented interop-header order and explicit named
+  provider-admission gaps. Fresh source`3d801e985`corrects those prerequisites
+  for both arms;its executable is byte-identical to the original probe,so the
+  header correction is not evidence of a compile/runtime failure or speedup.
+  Main's separate V4→V5control changes only`ZE_ENABLE_HANDLE_LIFETIME=1→0`:
+  default-context/internal1-byte allocation initialization changes from a ZE
+  validation error to normal0for both ordinal0and1metadata. Parameter/thread/UR
+  validation,APIlogging and qualified runtime safety remain enabled. This is
+  checker compatibility evidence,not copy bandwidth or model qualification.
+  Material critical-path opportunity and that bounded plan are still
   prerequisites to a further source-research scope. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
   model library path selects its qualified /usr/local IGCwithout a system edit.

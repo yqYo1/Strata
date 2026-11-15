@@ -34462,8 +34462,8 @@
   },
   "prefill_copy_engine_contract_bz_20261116": {
     "classification": "decision support",
-    "status": "completed_awaiting_native_review",
-    "schedulable_now": true,
+    "status": "reviewed_compact_corrections",
+    "schedulable_now": false,
     "scope": "Standalone synchronized pinned-host copy-engine probe API/ownership/isolation audit;not production overlap redesign.",
     "eligibility_evidence": [
       "cpu-profiler-current.json:prefill_queue_capability_v4",
@@ -34485,7 +34485,15 @@
     "source_views_outside_capture": true,
     "manual_launch_reason": "worker-start cannot express strict-config,no-daemon,isolated --cd,network and exclusion of both temporary roots;manual terminal/Task lane with pinned native scope.",
     "native_pid": 1707868,
-    "review": "Native Codex gpt-6-luna max after completion;Main digest only.",
+    "review": {
+      "report_sha256": "4039aaebd3e6d720e0e8a201d65c7312757a7262710b5bdb5ae01fa9d5041db2",
+      "review_sha256": "6a21245c1158f67ec36e615745e3c804ee3acd353705562e99dcd3665ee90543",
+      "digest_sha256": "04dded6f2c182b78c13da254ad7e557827f3b6d63e807e84b7077112b1ec59d9",
+      "verdict": "accept with targeted corrections;not device qualification",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "source_reviewed": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5"
+    },
     "retention": "Curate concrete contract corrections and source/API evidence;retire source view,raw Task/report/review and owned native session after pushed results and closed owners.",
     "task_id": "task_c55858ff69c6",
     "dispatch_id": "ctx_5bc69624e73c",
@@ -34496,6 +34504,19 @@
     "final_resource_sample": "{\"unit\": \"strata-research-copy-engine-bz-20261116.scope\", \"wall_seconds\": 263.70999999996275, \"CPU_seconds_conservative_bound\": 26.035167, \"native_process_peak_RSS_bytes\": 417132544, \"cgroup_memory_peak_bytes\": 305049600, \"captured_text_bytes_upper_bound\": 743455, \"native_session_counted\": true}",
     "worker_startup_status_observed": true,
     "native_process_exit": "Both exact cgroup member pidfds positively exited after settlement;Orca terminal close confirmed.",
-    "review_task": "/root/prefill_copy_engine_report_review_ca_20261116"
+    "review_task": "/root/prefill_copy_engine_report_review_ca_20261116",
+    "findings": [
+      "Documented ze_api-before-interop include order;not a demonstrated compile failure.",
+      "Require named initialized loader,URadapter and driver separately from an allowlist;no wrong provider was observed.",
+      "Borrowed handles and host-drained readback/free ordering are sound in visible synchronized probe.",
+      "Use hostUSM;physical pinning and physical PCIe traffic remain unverified."
+    ],
+    "integration": {
+      "source": "3d801e985",
+      "consumer": "prefill_copy_engine_v6",
+      "scope": "Common correctness prerequisites for standalone transfer primitive comparison;no engine or inference adoption",
+      "retained_reference": "docs/SYCL_NATIVE16_PREFILL.md current transfer paragraph"
+    },
+    "next_scopes": []
   }
 }
