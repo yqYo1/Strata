@@ -1235,7 +1235,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   52.256379s/462.73s. Keep report/review bodies only through this cohort's
   decision. The existing research-index row now holds the curated findings
   and closure;report/review bodies and transactions have no remaining consumer.
-  Their raw retirement and the ended bank benchmark controllers are next.
+  Their467raw files/63432307bytes are physically retired. Six ended bank/
+  fixed-profile controller,test and fixture files are retired to their source
+  commits;the temporary bank-reader parameters are restored exactly to their
+  original bytes. All40native ELFs and shared receipts remain unchanged.
+  Four individual first/warmed arm aggregates bring the CSVto516points.
   Main's next independent source question is a64-thread version of the current
   measured QSA prefix,keeping its32-cell tile,cached Q,K/Vvector4and ordered
   softmax. Pin the required PV/head remapping and GRF/SLM tradeoff before a
