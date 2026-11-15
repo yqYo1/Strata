@@ -21,7 +21,7 @@ import engine_once
 import ur_validation as validation
 
 P,B,RESULT=build.P,build.B,build.RESULT
-ROOT,KEY=B/'qsa-prefill-workgroup64-check-v2','qsa_prefill_workgroup64_check_v2'
+ROOT,KEY=B/'qsa-prefill-workgroup64-check-v3','qsa_prefill_workgroup64_check_v3'
 THIS='tools/sycl/check_qsa_workgroup64.py'
 STAGES=('smoke','oracle4','oracle16','bench-smoke','timing0','timing1','timing2')
 require,sha=build.require,build.sha
@@ -78,7 +78,7 @@ def prepare():
         stages=list(STAGES),results=[],passed=False,complete=False,active=False,ownership_closed=True,
         whole_bytes=768<<20,budgets=dict(wall=300,cpu=600,rss_cap=6<<30,text_cap=16<<20,file_cap=64<<20,total_cap=128<<20),
         plan=dict(unit='Only64versus128threads with required head stepping/PVpartition/eightfragments. Same32cells,pitch33,cachedQ,KVvec4,orderedFP32softmax and BF16 storage;no kernel/model setting combination.',
-            numerical='First traced oracle4smoke with actual maps/environment/pre-main validation. Then independent oracle4and16full cases:11cases each including262144live cells,masked/tail/invalid-input/alias/guard cases;all output bits match oldprefix33;rawFP32maximum/alpha/normalizer/sum match WG128ordered for all12realheads atpage4andreal/paddedheads atpage16. Then normal-export benchmark smoke. Any failure stops before timing.',
+            numerical='First traced oracle16smoke(two real/padded boundary heads per KVhead) with actual maps/environment/pre-main validation. Then independent oracle4and16full cases:11cases each including262144live cells,masked/tail/invalid-input/alias/guard cases;all output bits match oldprefix33;rawFP32maximum/alpha/normalizer/sum match WG128ordered for all12realheads atpage4andreal/paddedheads atpage16. Then normal-export benchmark smoke. Any failure stops before timing.',
             timing='Three independent normal bench processes0..2,each with3shapes(78453cells,8192queries,cap33gather or2051gather/clustered). Six paired rounds per shape,rotated order. Both direct exports refreshed/drained every call;references,resets and readbacks outside batches. cap33uses64calls,cap2051uses2calls;each timed batch>=50ms,inner clock-pair overhead*64<=1percent of50ms. Ineligible batch stops;no post-hoc size/criteria changes.',
             acceptance='All source/ELF/actual-map/driver/boot/validation/owner/numerical gates pass,then per shape all3process candidate/baseline median ratios<1supports that shape only,without minimum gain. Model-stage planning is eligible only when both2051patterns pass;report33separately and retain128outside qualified shapes. This direct-export experiment explicitly isolates geometry;actual production dispatch/whole-model/handoff/quality/262144/TGneed later new gates.',
             stopping='Stop first input,dependency,protocol,owner,validation,fault,clock,batch-floor or numerical failure;no retry/hashrefresh/speed-based exclusions. Commit each closed stage. All environment fixed before exec.'),
@@ -136,7 +136,7 @@ def run(stage):
     row=json.loads((ROOT/'record.json').read_text());current(row);index=len(row['results'])
     require(index<len(STAGES) and STAGES[index]==stage and all(r['passed'] for r in row['results']),
         'one ordered fresh stage;no retry')
-    name='oracle4' if stage=='smoke' else stage if stage in ('oracle4','oracle16') else 'bench'
+    name='oracle16' if stage=='smoke' else stage if stage in ('oracle4','oracle16') else 'bench'
     args=['--smoke'] if stage in ('smoke','bench-smoke') else ['--component']
     if stage.startswith('timing'):args.append(stage[-1])
     binary=row['binaries'][name];root=ROOT/stage;env=environment(row,stage)
@@ -162,6 +162,8 @@ def run(stage):
         require(io.line(30).startswith('fixture_status=PASS '),'actual fixture completion required');io.exit(90)
     try:
         entry,out,err=job.run(stage,[binary['path'],*args],env,P,interaction=interact,**row['budgets'])
+        result['process_observation']={k:entry.get(k) for k in
+            ('pid','exit_code','error','direct_child_reaped','session_empty','observation_complete','elapsed_seconds')}
         output,errors=out.read_text(),err.read_text()
         require(build.owner.closed(entry) and entry['exit_code']==0,'normal closed fixture required')
         proof=validation.preload_evidence(errors,entry['pid'])
