@@ -7527,7 +7527,7 @@
     "next": "Prepare and commit fresh v2fixture control/trace plan using current independently qualified environment."
   },
   "unitrace_current_runtime_probe_v2": {
-    "stage": "prepared",
+    "stage": "ready",
     "controller": {
       "revision": "12e74253f017cf823177928b72739c95b52f082e",
       "files": 355
@@ -7675,12 +7675,73 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "results": [],
+    "results": [
+      {
+        "label": "control",
+        "passed": true,
+        "host_probe_accepted": true,
+        "clock_domain": "CLOCK_MONOTONIC_RAW",
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 21,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "e569d02aba04c384171308834c62a52193518226f4442cfd61e269eba82bc602"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "96275d4cb3eea222b1a1f50adc6244f85a7c5d292bd596ffcb113ed1cffde957"
+          },
+          {
+            "phase": "before-exit",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "96275d4cb3eea222b1a1f50adc6244f85a7c5d292bd596ffcb113ed1cffde957"
+          }
+        ],
+        "native_execution_attempted": true,
+        "GPU_work_admitted": true,
+        "GPU_executed": true,
+        "native_exit_code": 0,
+        "enclosing_raw_ns": {
+          "begin": 3079132159667589,
+          "end": 3079135957369795
+        },
+        "preload_evidence": {
+          "pid": 4053463,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "active": false,
-    "passed": false,
+    "passed": true,
     "complete": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "plan": "Commit source/plan;control then trace in separate owned processes,commit each closure. At before-runtime,runtime-ready,before-exit require actual target/preload/current mapped ELF hashes,first-init validation proof,ten submission cases and normal0. Trace needs nonempty complete GPUevents inside actual enclosing CLOCK_MONOTONIC_RAW process bounds with SystemTime1. Stop first identity,source,provider,owner,validation,fault,budget or clock failure;no retry.",
     "limits": "Small fixture safety/clock gate only. No complete service/count coverage,physical bus traffic,prefill critical path,model request,observer-overhead or throughput qualification. Retained validation reference does not qualify ordinary provider teardown. Old failures remain.",
     "retention": "Use the existing fast14508same-build fixture and surviving collector;no binary generation. Retain compact identity/map/clock/correctness/fault outcomes,retire normal trace/cache after verification. Next consumer is a separately committed32Krequest/overhead plan."
