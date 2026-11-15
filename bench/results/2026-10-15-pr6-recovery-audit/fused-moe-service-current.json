@@ -390896,7 +390896,7 @@
     }
   },
   "prefill_coalesced_device_v1": {
-    "stage": "in_progress",
+    "stage": "closed",
     "source_commit": "2e5de1643e2221696c6bdb606109b8682f3b91cb",
     "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "native_overlay_commit": "be82383e8b6b9a15522272b31d587d9081a6e9b5",
@@ -391334,10 +391334,60 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "large",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "native_exit_code": 0,
+        "cases": [
+          {
+            "experts": 512,
+            "source_stride": 1971200,
+            "bank_stride": 1971200,
+            "accepted_copy_commands": 1,
+            "requested_H2D_bytes": 1009254400,
+            "layers": 1,
+            "cancellations": 1,
+            "refusals": 4
+          }
+        ],
+        "validation": {
+          "pid": 1333505,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc loader constructor diagnostics;not timing or hardware utilization"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "plan": {
