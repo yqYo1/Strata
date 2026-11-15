@@ -33011,31 +33011,42 @@
   },
   "kv_stream_gpu_resolver_design_20261114o": {
     "classification": "decision_support",
-    "stage": "eligible_source_not_started",
+    "stage": "running_read_only_source_pilot",
     "title": "Remaining KVphase ownership after cooperative and scalar decode isolation",
-    "source_packet": null,
-    "source_commit": "8b40f5c84133378a50002dc4a5b0707b6ebdb9fa",
     "question": "Trace all scalar/cooperative KVresolver consumers and explicit/implicit phases in current primary and held73d88aa12. Separate long/short prompt,Verifier decode/fallback,Layer/Session single-token,MTP,and full-context/RESTORE paths. Identify exact remaining coupling and smallest coherent caller/state/kernel boundary before prefill scalar restoration. Give paths/lines,static versus observed evidence,required invariants and counterevidence;no implementation,tests or speed claim.",
     "prior_evidence": "The old scope never produced a qualified source report. Cooperative2/4algorithm and795oracle records already exist;do not redo that design survey. New held73d88aa12 isolates Verifier scalar/fallback only;Layer/Session phase attribution is a concrete remaining question. Prefill control0ec9 closes36samples;hardware saturation and actual non-Verifier route exposure remain unknown.",
     "scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite_evidence": "Completed/succeeded AQ Task/Dispatch,worker_done,owned closure and AR native Luna-max review;same supported constructor/flags/sourcecf481a0fe. Current source73d88aa12 and9849 available;Main pins file hashes before dispatch. No runtime/profile prerequisite for this source call-census.",
       "missing_prerequisites": [],
       "nonduplication": "Fresh held scalar isolation postdates the unstarted old scope. Restrict to remaining actual phase/caller/state ownership;do not resurvey the implemented cooperative planner.",
-      "capacity": "Only one source pilot;Main checks actual MemAvailable and live worker/process handles before creation."
+      "capacity": "Only one source pilot;Main checks actual MemAvailable and live worker/process handles before creation.",
+      "pending": "This first source pilot is live;inspect its exact Task/Dispatch/process handles before another source dispatch. No steering,duplicate or automatic bulk start."
     },
     "assignment": {
       "model": "gpt-6-luna",
       "effort": "medium",
       "via": "Orca",
-      "report_words": 1100
+      "report_words": 1100,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-source-wave-as-20261115/kv-phase-ownership",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-source-wave-as-20261115/kv-phase-ownership/report.md",
+      "run": "run_5a7695a42ba0",
+      "task": "task_41eae01c0228",
+      "dispatch": "ctx_52ec87eb312e",
+      "terminal": "term_0dcc4eac-ed44-4214-9821-c350b9629ec8",
+      "task_sha256": "83b34af299d55bd6a827f757b6f3d7bdeedefda66f3cbf7cbf55fa9ad2542a9e",
+      "native_pid": 3119049,
+      "start_ticks": 305335858,
+      "sid": 3118946,
+      "scope": "strata-research-as-kv-20261115.scope"
     },
     "source_packet_retired": true,
     "review_point": "After first fresh source report,required native Luna-max review;Main reads short digest and only relevant decision-support sections for the concrete boundary question.",
     "source_commits": [
       "9849e35803f011aaafb2753c1e0f31411e40308e",
       "73d88aa123edfe15d29ed937974d919d597adc9e"
-    ]
+    ],
+    "report_review_required": true
   },
   "orca_research_wave_o_20261114": {
     "stage": "closed_failed_before_Codex_exec",
@@ -33114,6 +33125,14 @@
         "source": "Orca1.4.229 bundled orchestration references/low-level-topology.md and terminal create/worker-start help",
         "composition": "terminal create --worktree <primary> --command <native Codex argv>;worker-start --terminal <recognized handle> --worktree <same primary> --spec <new Task>",
         "limits": "AI demonstrates native recognition,actual pinned argv/effective sandbox,report-only writes and worker IPC. Full reuse remains unqualified until its original finite-resource gate has a prospectively measured replacement;old failed Task/Dispatch remain unchanged."
+      },
+      "first_source_pilot": {
+        "scope": "kv_stream_gpu_resolver_design_20261114o",
+        "run": "run_5a7695a42ba0",
+        "task": "task_41eae01c0228",
+        "dispatch": "ctx_52ec87eb312e",
+        "state": "in_progress",
+        "ownership_closed": false
       }
     }
   },
