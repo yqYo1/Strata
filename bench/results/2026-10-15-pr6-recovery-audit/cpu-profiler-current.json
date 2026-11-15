@@ -7311,5 +7311,38 @@
       "sha256": "4863ddf3154f062b45de5af7e79beab7d6fde51cc40b390339289bf41a6a19e5"
     },
     "reason": "Compact qualified host controls/source/recipe are committed;normal logs/private ownership receipts have no next consumer. No executable was created."
+  },
+  "unitrace_current_probe_host_v3": {
+    "source_commit": "a67fd4c6f1825baa28f2ecba667f8d4fbc8a53eb",
+    "source_sha256": {
+      "tools/sycl/current_pti_probe.py": "a9c70ffce7cf8e8625b6aa3e69bdeb5ae6a7a715640313c23c01699b798a0d51",
+      "tools/test_current_pti_probe.py": "714ccb9b0286db2ae5f0f255cd1c820a640cc54140cdffc56be598474d22f5d1"
+    },
+    "recipe": {
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_current_pti_probe"
+      ],
+      "wall_seconds": 90,
+      "CPU_seconds": 60,
+      "RSS_bytes": 1073741824,
+      "text_bytes": 131072,
+      "total_bytes": 4194304,
+      "GPU_executed": false
+    },
+    "tests": 4,
+    "exit_code": 0,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "passed": true,
+    "stage": "closed",
+    "complete": true,
+    "active": false,
+    "GPU_probe_qualified": false,
+    "scope": "Four host guards including executable-only regular ELF maps;device/rodata/vdso mappings excluded.",
+    "next": "Integrate original observer source into feature/sycl,then fresh committed control/trace safety and RAW-clock probe."
   }
 }
