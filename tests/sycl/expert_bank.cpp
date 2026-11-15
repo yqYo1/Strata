@@ -534,7 +534,95 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
     }
 }
 
+void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel) {
+    need(pd::prefill_fullfit_eager_requested(),"eager fixture needs immutable pre-exec eager policy");
+    auto runtime=sb::runtime_for();auto& q=runtime->compute();
+    constexpr size_t stride=256;
+    std::vector<uint32_t> host(512*source_stride/4+2*G,Guard);
+    auto* slab=reinterpret_cast<uint8_t*>(host.data()+G);
+    std::vector<int32_t> ids;
+    for (int e=0;e<experts;++e) ids.push_back(experts==512?e:e*3+2);
+    strata::core::ExpertCache cache;std::string error;
+    // This general384-slot allocation admits a private512-slot packed view,
+    // like the actual full-fit layers;its final64KiB remains a guard.
+    if (!cache.open_uninitialized(384,1,512,512,error)) throw std::runtime_error(error);
+    pd::PrivateExpertBank bank(cache,stride);
+    sb::Allocation scratch(runtime,4096,sb::MemoryKind::Device);
+    sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
+    auto* status=status_owner.as<uint32_t>();
+    pd::ExpertBankSlots slots(512,true);
+    std::vector<uint32_t> copied(size_t(cache.bytes())/4);
+    unsigned drains=0,cancellations=0,rejects=0;
+    for (unsigned generation=1;generation<=layers;++generation) {
+        slots.reset();
+        for (int e=0;e<512;++e) for (size_t i=0;i<source_stride/4;++i)
+            host[G+size_t(e)*source_stride/4+i]=value(e,i,generation);
+        uint32_t observed=~uint32_t(0);
+        try {
+            pd::DraftUploadGuard lease([&]{runtime->wait();++drains;return true;},
+                []{sb::cleanup_fail_stop("prefill eager fixture retirement");});lease.arm();
+            q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);
+            const auto receipt=pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,
+                source_stride,ids,&q,{{scratch.data(),scratch.size()}});
+            need(receipt.experts==ids.size() && receipt.copy_commands==ids.size() &&
+                receipt.payload_bytes==ids.size()*stride,"eager accepted transfer conservation");
+            for (size_t rank=0;rank<ids.size();++rank) {
+                const int e=ids[rank];const auto ticket=slots.begin(e);
+                need(!ticket.upload && ticket.permanent && ticket.slot==int32_t(rank) &&
+                    receipt.first_upload[size_t(e)],"eager first-reader mapping");
+                need(cache.slot_of(0,e)<0,"eager mapping leaked to general decode cache");
+                const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
+                q.parallel_for(sycl::range<1>(stride/4),[=](sycl::id<1> at) {
+                    const size_t i=at[0];
+                    if (blob[i]!=value(e,i,generation))
+                        sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,
+                            sycl::memory_scope::device,sycl::access::address_space::global_space>(*status).fetch_or(1);
+                });
+            }
+            q.memcpy(copied.data(),cache.device_slot(0),size_t(cache.bytes()));
+            q.memcpy(&observed,status,4);
+            if (cancel) throw Stop{}; // every source/destination owner still lives
+            runtime->wait();++drains;lease.retire();
+        } catch (const Stop&) { ++cancellations; }
+        need(observed==0,"eager GPU consumer or checked cancellation");
+        for (size_t rank=0;rank<ids.size();++rank) for (size_t i=0;i<stride/4;++i)
+            need(copied[rank*stride/4+i]==value(ids[rank],i,generation),"eager full byte readback");
+        for (size_t i=ids.size()*stride/4;i<copied.size();++i)
+            need(copied[i]==Guard,"eager unused bank guard");
+        for (int e=0;e<512;++e) for (size_t i=0;i<source_stride/4;++i)
+            need(host[G+size_t(e)*source_stride/4+i]==value(e,i,generation),"eager immutable source");
+        for (size_t i=0;i<G;++i)
+            need(host[i]==Guard && host[host.size()-1-i]==Guard,"eager host edge guards");
+    }
+    auto reject=[&](auto fn){bool caught=false;try{fn();}catch(const std::invalid_argument&){caught=true;}need(caught,"eager refusal absent");++rejects;};
+    slots.reset();
+    reject([&]{pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,source_stride,ids,&q,
+        {{bank.device_slot(0)+stride,64}});});
+    need(slots.permanent_used()==0,"scratch overlap published an expert");
+    reject([&]{pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride-1,source_stride,ids,&q,{});});
+    pd::ExpertBankSlots partial(511);
+    reject([&]{pd::stage_prefill_fullfit_eager(partial,bank,slab,512*source_stride,source_stride,ids,&q,{});});
+    const auto existing=slots.begin(1);slots.queued(existing);
+    reject([&]{pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,source_stride,ids,&q,{});});
+    need(drains==layers && cancellations==(cancel?layers:0),"eager drain count");
+    std::cout<<"prefill_fullfit_eager PASS experts="<<experts<<" source_stride="<<source_stride
+        <<" layers="<<layers<<" cancellations="<<cancellations<<" rejects="<<rejects<<"\n";
+}
+
 int main(int argc, char** argv) try {
+    if (argc==2 && (std::string(argv[1])=="--fullfit-eager-smoke" ||
+                   std::string(argv[1])=="--fullfit-eager-validate")) {
+        prefill_fullfit_eager_case(4,256,2,false);
+        prefill_fullfit_eager_case(4,512,2,true);
+        if (std::string(argv[1])=="--fullfit-eager-validate") {
+            prefill_fullfit_eager_case(0,256,2,false);
+            prefill_fullfit_eager_case(1,256,3,true);
+            prefill_fullfit_eager_case(127,512,2,false);
+            prefill_fullfit_eager_case(512,256,2,false);
+        }
+        std::cout<<"prefill_fullfit_eager_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED\n";
+        return 0;
+    }
 #if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
     if(argc==2 && std::string(argv[1])=="--padding-guard-smoke") {
         bank_padding_guard_smoke();std::cout<<"expert_bank_fixture PASS model=UNRUN\n";return 0;

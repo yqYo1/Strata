@@ -208,6 +208,36 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
     const auto& layout = strata::kernels::cpu::expert_layout();
     const auto& format = layout.fmt[size_t(layer)];
+    detail::PrefillFullfitUploadReceipt eager_upload;
+    if (detail::prefill_fullfit_eager_requested() && owner.private_expert_bank &&
+        owner.expert_slots && owner.expert_slots->full_fit() &&
+        !owner.expert_slots->permanent_used() && !owner.expert_upload_staging) {
+        if (m.layer_major_residual.gpu_rows!=m.layer_major_residual.rows ||
+            !owner.scratch_mixed || m.copy!=m.cs || owner.expert_cache!=m.cache ||
+            owner.private_expert_bank->owner()!=m.cache)
+            throw std::invalid_argument("prefill eager upload: owner/queue/residual contract");
+        if (owner.command_trace)
+            throw std::invalid_argument("prefill eager upload: command observer requires a separate plan");
+        std::vector<int32_t> experts;experts.reserve(512);
+        for (const auto& job:owner.routes->jobs())
+            if (experts.empty() || experts.back()!=job.expert) experts.push_back(job.expert);
+        {
+            hp::Host host(hp::upload_submit);
+            eager_upload=detail::stage_prefill_fullfit_eager(*owner.expert_slots,
+                *owner.private_expert_bank,owner.expert_slab,owner.expert_slab_bytes,
+                owner.expert_source_stride,experts,m.cs,
+                {{m.region,size_t(m.region_bytes)},{mixed,mixed_bytes},
+                 {bo,size_t(m.T*N*2)},{residual,size_t(bytes)},
+                 {m.dq_gu[0],size_t(2*640*N*2)},{m.dq_d[0],size_t(N*640*2)}});
+        }
+        owner.staged_uploads+=eager_upload.experts;stats_.experts_streamed+=eager_upload.experts;
+        owner.staged_upload_bytes+=eager_upload.payload_bytes;
+        std::fprintf(stderr,"strata prefill fullfit upload: policy=eager layer=%lld first_row=%lld "
+            "logical_experts=%llu accepted_copy_commands=%llu requested_H2D_bytes=%llu "
+            "publication=accepted_same_queue native_completion=unchecked_until_outer_drain\n",
+            (long long)layer,(long long)first_row,(unsigned long long)eager_upload.experts,
+            (unsigned long long)eager_upload.copy_commands,(unsigned long long)eager_upload.payload_bytes);
+    }
     int32_t loaded = -1;
     for (size_t index = 0; index < owner.routes->jobs().size(); ++index) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -231,12 +261,16 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                     detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
                         owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
                         layout.blob_bytes(layer), job.expert, m.cs, owner.expert_source_stride);
-                if (upload_census) upload_census->record(job.rows, ticket.upload);
+                const bool eager_first=eager_upload.first_upload[size_t(job.expert)];
+                if (eager_first && (ticket.upload || !ticket.permanent))
+                    throw std::runtime_error("prefill eager upload: first reader lost permanent mapping");
+                if (upload_census) upload_census->record(job.rows, ticket.upload || eager_first);
                 slot = ticket.slot;
                 if (ticket.upload) {
                     ++owner.staged_uploads; ++stats_.experts_streamed;
                     owner.staged_upload_bytes += layout.blob_bytes(layer);
-                } else ++owner.staged_hits;
+                } else if (!eager_first) ++owner.staged_hits;
+                eager_upload.first_upload[size_t(job.expert)]=false;
             } else slot = m.host_res[size_t(layer * NE + job.expert)];
             if (slot < 0) { err = "prefill MoE accumulator: missing layer expert"; return false; }
             const auto* blob = owner.private_expert_bank ? owner.private_expert_bank->device_slot(slot) :
