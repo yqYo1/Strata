@@ -378658,12 +378658,71 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "cases": [],
+    "cases": [
+      {
+        "mode": "smoke",
+        "complete": true,
+        "passed": true,
+        "GPU_executed": true,
+        "runtime_maps": {
+          "files": 34,
+          "sha256": "30f23d29af25c95492ee758709cc417ffe8d5c5dc5071fb8c436d3de5debf1a7",
+          "unknown": 0,
+          "missing": 0
+        },
+        "tracing": {
+          "bytes": 614729,
+          "sha256": "d6a5a45bd7eee4320ef6288df24516f63683a3df7f66a2f1e6a24e3a344993f3",
+          "calls": {
+            "urCommandBufferCreateExp": 5,
+            "urCommandBufferFinalizeExp": 5,
+            "urCommandBufferAppendKernelLaunchWithArgsExp": 10,
+            "urEnqueueCommandBufferExp": 20,
+            "urCommandBufferReleaseExp": 5
+          }
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3658566,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "counts": {
+          "kv_stream_resolve_component": 0,
+          "graph_correctness": 20,
+          "planner_context_graph": 0,
+          "planner_perf_cases": 0
+        },
+        "oracle_exact": true,
+        "numerical_only": true,
+        "physical262144_model_qualified": false,
+        "performance_qualified": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "performance_qualified": false,
     "plan": {
@@ -378678,6 +378737,7 @@
       "limits": "Component correctness only;model handoff,matched prefill/TTFT and sustained thinking decode comparisons remain required. No naming-only static-image compatibility exception applies to this different B1 image. Physical262144 model fill,RESTORE,task/agent and ordinary teardown remain separate."
     },
     "retention": "Use the existing B1fixture;no new binary. Retain fast14508and validated A references for the immediate independent phase comparisons. Retire successful oracle trace/cache after useful correctness/closure/provenance evidence is preserved and its actual consumers close. No fourth engine generation.",
+    "correctness_passed": false,
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "4d050d13c01d2a922cd27fa1196e5bfd32162474",
