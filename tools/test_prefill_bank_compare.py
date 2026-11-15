@@ -13,6 +13,7 @@ class PrefillBankTests(unittest.TestCase):
         raw=(bank.P/bank.prior.FIXTURE).read_text()
         p=dict(index=0,arm='clean',read=32769,heads=1,expected_bank_slots=512)
         good=raw.replace('requested_slots=384','requested_slots=512').replace('effective_slots=384','effective_slots=512').replace('prefill_slots=384','prefill_slots=512')
+        good=good.replace('total_slots=384','total_slots=512')
         good=good.replace('device_bytes=1022361600','device_bytes=1363148800').replace('layer_cache=1022361600','layer_cache=1363148800')
         self.assertEqual(bank.request_route(good,p)['fast_window']['prefill_slots'],512)
         for text in (raw,good.replace('residual_gpu_rows=32768','residual_gpu_rows=24576'),

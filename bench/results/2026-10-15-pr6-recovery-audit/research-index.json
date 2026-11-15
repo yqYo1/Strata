@@ -33640,5 +33640,51 @@
     },
     "schedulable_now": false,
     "next": "No repeat source audit;use current completed request resource evidence to select one prefill unit."
+  },
+  "prefill_bank512_source_bf_20261115": {
+    "classification": "decision support",
+    "stage": "dispatched_source_audit",
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "MemAvailable_bytes": 90869215232,
+      "worker_limit": 1,
+      "memory_bytes": 4294967296,
+      "CPU_seconds": 180,
+      "wall_seconds": 600,
+      "report_bytes": 16384,
+      "report_words": 1300,
+      "reason": "Current complete32Kcohort has10.31s copy union versus28.66s kernel union and4ms overlap;384bank uses383permanent+scratch while512supports full-fit. This is exact current source and new benchmark admission audit,not generic cache/overlap research."
+    },
+    "source_revision": "b28ac9e03c3d7b18557ee8d21a303087bc9680ea",
+    "source_pins": {
+      "AGENTS.md": "dcf1f25f5d87a022b8a49b5f398c31149901d377b977fc090d9f366c862f610f",
+      "docs/ARTIFACT_RETENTION.md": "5d2328f25f2f06ca9264e8b9c5f96a6b7f97eaddd1dbaa59ae85ee9619ecafa6",
+      "include/strata/prefill/expert_bank_plan.hpp": "7b3874a8eabd78fa48dac1902ce287f0954a23c98333de9424cd50ea80c7f156",
+      "include/strata/prefill/expert_bank_upload.hpp": "5afc4acd1ceaa56603c8b10c40e9f02b674536a088373d92cc22e858ef6b6282",
+      "src/prefill/moe_window.inc": "be2937ca8f2b817f195da4aa944288837d59a0bc90fece269917186928cd0fa5",
+      "src/prefill/layer_major.inc": "1fd34995c5255ed655b049596d795760c31b88055b5b572d13456162d507737e",
+      "tools/sycl/prefill_bank_compare.py": "d54dd99060a3bdb23761f8301ab76ad2f960a61d4257c7fbc25931129f1c8838",
+      "tools/sycl/compare_official_prefill.py": "219d4ea18f7723000110985b6f066b91a5c466b9b26e97636714e49cbd07b1df",
+      "tools/sycl/qsa16_stream_bench.py": "4ce850dea6bd10e0df31d9e3e3b7ee6fc858334e3d1ef2f50919b17262069c57",
+      "LICENSE": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
+    },
+    "question": "Audit the exact current mode10/native16/private-source-view/full-GPU bank384-versus512 experiment. Trace whether512actually reduces repeated expert uploads for32768rows with8192operator chunks,when packed per-layer views become full-fit,and which paths still upload. Check first-demand mapping/reset/enqueue/checked-drain and lifetime/stride/USM bounds,including physical262144tails/RESTORE assumptions without claiming qualification. Inspect the new reader/controller for actual512admission and unchanged decode placement;identify concrete false acceptance or missing invariants. Give conditional consequences and counterexamples,not performance or GPU-health claims.",
+    "report_budget_words": 1300,
+    "report_budget_bytes": 16384,
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "via": "Orca",
+    "run": "run_8b1136bdd4a7",
+    "task": "task_8a0123632924",
+    "dispatch": "ctx_dff396e94fba",
+    "terminal": "term_bf020a10-48a4-4753-bf1e-5298b2a21d01",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-prefill-bank512-bf-20261115",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-prefill-bank512-bf-20261115/report.md",
+    "resource_scope": "strata-research-bf-bank512-20261115.scope",
+    "ownership_closed": false,
+    "actual_turn_context_sha256": "72787b8213a839fc63b0e49d0648b4ef5c8b61940b6c970cc0a0c7011d2e390a",
+    "main_reads_body_on_arrival": false,
+    "previous_report_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "next": "No steering or duplicate. Main continues serialized one-knob comparison;native Luna-max reviews completed report."
   }
 }
