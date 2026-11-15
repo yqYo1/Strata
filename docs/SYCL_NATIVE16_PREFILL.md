@@ -1062,14 +1062,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   build. Configuration closes normally0with28compiler-census host controls;
   the planned142objects/137unique TUs include two new decode-TUobjects for
   production and the KVfixture. Commit`0208f89eb`records configured inputs
-  before compilation. Compilation and actual census remain pending;retain
-  fast14508and Aunchanged and do not add the qualification observer until
-  this exact B1build closes.
+  before compilation. All five configure/compile/census commands now close
+  normally0with reaped empty ownership. All14fresh ELFs use142objects/
+  137unique TUs,1474compiler inputs,one generated input and29external link
+  inputs,with zero uncovered files and consistent definitions across five
+  headers. Engine SHA2f83ee16d7286f83c3278ec23e342121a71a0e20b0eccd49fb4a0bfd301a67b8
+  comes from0569e6924;the original build receipt SHAis
+  9807e41d5d73074e03c8e553f4d2f0a977a57cfddc3b0eba7e7745aa180266e1.
+  All26retained reference images remain unchanged. This is compilation only;
+  fresh native/oracle/model and both-phase comparisons remain pending.
   Child`2734a78bb`also prepares its standalone B1device reader. Six committed
   host controls pass normally0with reaped empty ownership:one valid census
   and five generation/fixture/source/coverage/partial-link refusals. Its
-  142objects/137TUs remain a prospective build expectation,not an observed
-  build. Add this uncompiled observer only after the exact B1build;fresh
+  142objects/137TUs now match the actual fresh B1build. Add this uncompiled
+  observer only after that exact build's committed closure;fresh
   eleven-stage native gates,oracles,model and both-phase comparisons remain
   pending. The ended host raw root is retired(3files/50050bytes)after348
   original source inputs and the exact recipe are recovered and checked.
@@ -1185,7 +1191,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   both admit the byte-identical image control together with its original
   numerical/handoff proof. Both Aphase controls are now eligible;this is
   neither statistical equivalence from timing alone nor inference adoption.
-  B1compilation and B1s/B2remain unqualified. The ended1eecbuild is now
+  B1native/model execution and B1s/B2remain unqualified. The ended1eecbuild is now
   retired after exact2376-source/dependency,recipe/compiler/class/SDKand
   13ELFrecovery:192files/206386091bytes. Both retained generations'26images
   stay unchanged. The first optional all-same-uid maps scan is refused by
