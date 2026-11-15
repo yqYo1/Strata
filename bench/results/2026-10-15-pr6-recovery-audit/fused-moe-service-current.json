@@ -390721,7 +390721,7 @@
     "raw_artifacts_retired": true
   },
   "prefill_coalesced_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "be82383e8b6b9a15522272b31d587d9081a6e9b5",
     "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "native_source_identity": "Committed base plus explicit overlays;not the whole overlay revision native tree",
@@ -390831,8 +390831,8 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -390843,6 +390843,18 @@
       "limits": "CPUplanner qualification is reused only for its unchanged header/oracle. Native safety,model handoff,32K/64Kspeed,decode preservation,quality and physical262144/RESTORE are unqualified.",
       "retention": "Bounded third generation:original14508prefill reference plus namingAdecode/phase reference remain unchanged. This candidate is for the immediate U2 individual/run safety and matched model comparison;retire after its decision before another candidate. No ended generation renewed."
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-coalesced-native-v1/build/strata",
+        "sha256": "cfe0e0138f1cb20b21bc9df0af6101ff6a84db9d9f1fb364ebc91956399e237d",
+        "bytes": 26461784
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-coalesced-native-v1/build/sycl_expert_bank_test",
+        "sha256": "977440406b68c17cef2f39eb6896efcd1feb29f6e87bd5a82ab7813051f08ee1",
+        "bytes": 517208
+      }
+    },
     "controller_sources": {
       "files": 356,
       "sha256": "511a94bebcd16f28698287bcdebbf706c601a2c5a611b82f9cfc3c9214a32651"
@@ -390851,6 +390863,36 @@
       "files": 1165,
       "sha256": "53d12909583fdee7030abe9bde511278eed8c93ce061833429a19dab3b4c939b"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1461,
+        "sha256": "2260c9c42761d978701d9ca2f853527e9c0d73c569f5bf066f3add19e6b108e2"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "66b7893f175d002485d9382093e874e74c7ebb2af36dff4b2229fc585acb7ea5"
+      },
+      "links": {
+        "files": 29,
+        "sha256": "e5892521b3f3a86a1f8ce83f6db53c28593a581d1e667eafd9c7d3ffc9ee6de3"
+      },
+      "objects": {
+        "files": 126,
+        "sha256": "7c3b22de38d3f79a43efe03adb8a97ea0cf14c0acb4f771d2429c1d55fc9cb35"
+      },
+      "produced": {
+        "files": 135,
+        "sha256": "ca6a0e2f65f317674040e207fc0ad802c3e29682f94f10015518e1498aec013f"
+      },
+      "Gemm_includers": {
+        "files": 4,
+        "sha256": "3d055777fbc1799a0afe75abbe63a5db705015ba274c9e58f04af6bdf7d15975"
+      },
+      "translation_units": 125,
+      "fresh_objects": 126,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
