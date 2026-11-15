@@ -1315,6 +1315,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   actual geometry counts;no C++input or sample changes. Before a native trial,
   integrate only this prefill proposal onto the fast14508native source and pin
   its complete recoverable inputs;do not bundle the pending KVengine changes.
+  Prove that the whole preloaded bank remains disjoint from live FFNscratch,
+  retain source/bank owners through error drains,and preserve the partial-bank
+  and nonempty-bank fallback before native execution.
   Existing copy-union10.309796s/kernel-union28.658416s includes24decode tokens,
   so it gives neither isolated prefill attribution nor physical-bus saturation.
   Native events/lifetimes,matched32K/64KPP/TTFT,repeated decode preservation and
