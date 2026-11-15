@@ -12607,5 +12607,104 @@
       "inventory_sha256": "6d648ead5849acf61299744b2f6882eb58d5518f6ced2c335acf85c6efb541f3",
       "stage": "retired_verified"
     }
+  },
+  "prefill_individual_trim_host_v1": {
+    "stage": "prepared",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "recipe": [
+      [
+        "syntax",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-DSTRATA_CPU_SERVICE_PROFILE=1",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+          "-fsyntax-only",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-individual-trim-host-v1/syntax.d",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/expert_bank.cpp"
+        ]
+      ],
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-std=c++20",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-individual-trim-host-v1/actual.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/prefill/fullfit_upload_plan_test.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-individual-trim-host-v1/oracle.o"
+        ]
+      ],
+      [
+        "link",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-individual-trim-host-v1/oracle.o",
+          "-Wl,-t",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-individual-trim-host-v1/oracle"
+        ]
+      ],
+      [
+        "oracle",
+        [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-individual-trim-host-v1/oracle"
+        ]
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-individual-trim-host-v1/tmp",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "expected": "prefill full-fit upload oracle: byte_cases=6 refusals=10 failure_publication=checked",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "plan": {
+      "unit": "Remove the failed U2only. Restore owned U1caller/fixture;drop the unused planner coalescing argument/branch while preserving individual mapping,guards and failure publication. SYCLfrontend syntax-only plus independent CPUoracle;no GPU execution.",
+      "resource_evidence": "U2same-image model comparison is closed with a failed performance gate at32Kand64K. Remove its unused selector,coalescing branch and fixtures;retain independently positive U1eager individual-copy selection.",
+      "next_consumer": "Source cleanup only:SYCLfixture syntax and CPU individual-copy/publication oracle. Retire this CPUELF and one-shot controller after exact source/recipe/input recovery. No model or runtime qualification is reused for changed native source.",
+      "oracle": "Six independent byte-layout cases,ten refusals including failed third enqueue;unchanged payload/guards/dense destination ranks and no failed-copy publication.",
+      "gate": "Exact committed source/SDK/compiler/actual header/link inputs,normal0/empty owned sessions and exact oracle marker. Not native events,lifetimes,performance,model quality,handoff,decode or physical262144qualification."
+    },
+    "source_commit": "f13b3baf46af5f104d11178a094f561ec1cfc8f6",
+    "source_sha256": "ea8de84992b846c2e89d12b676fe93e09bf5fadc085009ea5f267efc11c54ade"
   }
 }
