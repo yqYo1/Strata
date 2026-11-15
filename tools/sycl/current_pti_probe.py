@@ -8,6 +8,7 @@ import fcntl
 import json
 from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 import time
@@ -124,6 +125,15 @@ def prepare():
     print('Prepared current PTI fixture probe;commit before control/trace.')
 
 
+def executable_paths(text):
+    paths=set()
+    for line in text.splitlines():
+        fields=line.split(maxsplit=5)
+        if len(fields)==6 and 'x' in fields[1] and fields[5].startswith('/'):
+            paths.add(fields[5])
+    return paths
+
+
 def mapped(pid, row, label):
     allowed = json.loads(Path(row['admission']['runtime_manifest']['path']).read_text())
     allowed.update({v['path']:v['sha256'] for v in row['preload'].values()})
@@ -132,10 +142,9 @@ def mapped(pid, row, label):
         item=row['admission']['tools']['artifacts']['libunitrace_tool.so'];allowed[item['path']]=item['sha256']
     allowed={str(Path(p).resolve()):h for p,h in allowed.items()}
     paths=set()
-    for line in Path('/proc',str(pid),'maps').read_text().splitlines():
-        fields=line.split(maxsplit=5)
-        if len(fields)!=6 or not fields[5].startswith('/'): continue
-        path=Path(fields[5]);require(not str(path).endswith(' (deleted)'), 'deleted owned mapped file')
+    for name in executable_paths(Path('/proc',str(pid),'maps').read_text()):
+        path=Path(name);require(not str(path).endswith(' (deleted)'), 'deleted owned mapped executable')
+        if not stat.S_ISREG(path.stat().st_mode):continue
         with path.open('rb') as stream:
             if stream.read(4)!=b'\x7fELF':continue
         real=str(path.resolve());require(real in allowed and digest(real)==allowed[real], 'unknown/changed mapped ELF: '+real)

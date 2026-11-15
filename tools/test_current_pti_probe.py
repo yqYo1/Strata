@@ -41,6 +41,11 @@ class CurrentPTIProbeTests(unittest.TestCase):
             with self.assertRaises(ValueError):probe.environment(row,'trace')
         with self.assertRaises(ValueError):probe.environment(self.row,'unknown')
         with self.assertRaises(ValueError):probe.command(self.row,'unknown')
+        maps=('1-2 rw-s 0 00:00 1 /dev/dri/renderD128\n'
+              '2-3 r-xp 0 00:00 2 /qualified/lib.so\n'
+              '3-4 r--p 0 00:00 2 /qualified/lib.so\n'
+              '4-5 r-xp 0 00:00 0 [vdso]\n')
+        self.assertEqual(probe.executable_paths(maps),{'/qualified/lib.so'})
 
     def test_only_observer_commit_may_differ_from_closed_host_admission(self):
         original=dict(controller_commit='old',native_source_commit='native',tools={'sha':'exact'})
