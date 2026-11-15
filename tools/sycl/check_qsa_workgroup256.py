@@ -21,7 +21,7 @@ import engine_once
 import ur_validation as validation
 
 P,B,RESULT=build.P,build.B,build.RESULT
-ROOT,KEY=B/'qsa-prefill-workgroup256-check-v1','qsa_prefill_workgroup256_check_v1'
+ROOT,KEY=B/'qsa-prefill-workgroup256-check-v2','qsa_prefill_workgroup256_check_v2'
 THIS='tools/sycl/check_qsa_workgroup256.py'
 STAGES=('smoke','oracle4','oracle16','bench-smoke','timing0','timing1','timing2')
 require,sha=build.require,build.sha

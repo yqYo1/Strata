@@ -21,6 +21,7 @@
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
 
 namespace strata::kernels::prefill {
+template<bool CaptureState> class QsaPrefillWorkgroup256Kernel;
 namespace {
 namespace mx = sycl::ext::oneapi::experimental::matrix;
 namespace mi = sycl::ext::intel::experimental::matrix;
@@ -462,5 +463,25 @@ bool qsa_bf16_prefix_workgroup256_state_probe_batch(const uint16_t *query, const
     const QsaPrefixStateProbe &probe, void *stream) {
   return prefill_prefix_workgroup256_impl<33,false,false,true,true,true,true,true>(
       query,pools,ids,steps,cap,shape,output,queries,bounds,live_cells,scratch,stream,probe);
+}
+// Main-authored diagnostic co-location for the installed DPC++ lookup issue:
+// https://github.com/intel/llvm/issues/22852 . No inference math or timing change.
+std::array<QsaPrefillWorkgroup256Resources,2>
+prefill_workgroup256_kernel_resources(void *stream) {
+  auto &queue=sycl_backend::queue_for(stream);
+  const auto device=queue.get_device();
+  const sycl::kernel_id ids[]={sycl::get_kernel_id<QsaPrefillWorkgroup256Kernel<false>>(),
+      sycl::get_kernel_id<QsaPrefillWorkgroup256Kernel<true>>()};
+  if (ids[0]==ids[1]) throw std::logic_error("WG256 normal/capture kernel IDs alias");
+  std::array<QsaPrefillWorkgroup256Resources,2> result{};
+  for (int capture=0;capture<2;++capture) {
+    const auto bundle=sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+        queue.get_context(),{device},{ids[capture]});
+    const auto kernel=bundle.get_kernel(ids[capture]);
+    result[capture]={kernel.get_info<sycl::info::kernel_device_specific::work_group_size>(device),
+        device.get_info<sycl::info::device::local_mem_size>(),
+        kernel.get_info<sycl::info::kernel_device_specific::private_mem_size>(device)};
+  }
+  return result;
 }
 } // namespace strata::kernels::prefill

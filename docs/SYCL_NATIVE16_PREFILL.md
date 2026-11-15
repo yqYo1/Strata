@@ -1294,8 +1294,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   distinct cell halves. All14source/report pins match. Main's repair uses
   `Subgroups=Workgroup/16`for both head loops and a labelled device-local capacity
   query alongside exact-kernel maximum/private queries. No baseline math changes.
-  The repaired source needs a fresh build_v2recipe,then exact normal/capture
-  kernel admission,numerical/state/262144component checks and3-process timing.
+  Its fresh build_v2from`d1bd18deb`completes9objects/3ELFs,726compiler inputs
+  and24link files,with zero uncovered inputs. The first exact-kernel smoke then
+  refuses before anyURenqueue:`get_kernel_id`from anotherTUcannotfindtheID.
+  Native exits1,owners close,no new fault;preserve`check_v1`asfailed.
+  The installed2026.2lookup matches the known
+  [Intel cross-TU lookup report](https://github.com/intel/llvm/issues/22852).
+  After originalsource/recipe/census/all3ELFrecovery,the47files/8692224bytes
+  are retired. Main now co-locates reflection with the kernel submission and
+  returns scalar resource values to fixtures;the corrected math body is byte
+  identical apart from the kernel-name forward declaration. Freshbuild_v3and
+  check_v2must still prove exact normal/capture admission,traced smoke,all22
+  numerical/state/262144component cases and3-process timing.
   No production route or performance is qualified yet.
   M4and prefix-memory reuse remain conditional;fullmodel/handoff/decode/context
   gates stay open. Source and reports are held only through this bounded decision.

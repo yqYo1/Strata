@@ -1,10 +1,17 @@
 // Authored for Strata; repository LICENSE applies.
 #pragma once
 #include "strata/kernels/qsa_bf16_prefix.hpp"
+#include <array>
+#include <cstdint>
 #if defined(STRATA_ENABLE_SYCL)
 namespace strata::kernels::prefill {
-// Exact IDs for pre-execution kernel/device limit checks in the fixtures.
-template<bool CaptureState> class QsaPrefillWorkgroup256Kernel;
+struct QsaPrefillWorkgroup256Resources {
+  std::uint64_t maximum, device_local, reported_private;
+};
+// Diagnostic only. Resolve IDs beside their kernel submissions: DPC++ cross-TU
+// lookup fails in the installed runtime. No enqueue or timed-path work here.
+std::array<QsaPrefillWorkgroup256Resources,2>
+prefill_workgroup256_kernel_resources(void *stream);
 // Component-only long-prefill candidate. The independent128-thread production
 // export stays unchanged. Admission,rounding,32-cell tiles and ordered FP32
 // state match it;SG16 ownership changes coherently with the256-thread workgroup.
