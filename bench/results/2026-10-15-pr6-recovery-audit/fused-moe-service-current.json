@@ -388997,6 +388997,91 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "bench-smoke",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 21,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "34f3dfc64ad1552376d2e5132035567ea2f84af19ed0c877b18821421bdf7598"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "754b5e4ead09c4742c771149dc131d4fb957b9535e50ab0614fae157383d9fa0"
+          },
+          {
+            "phase": "after-cleanup",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "754b5e4ead09c4742c771149dc131d4fb957b9535e50ab0614fae157383d9fa0"
+          }
+        ],
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/bench",
+          "sha256": "6358cd7e08fed19a1c74a6bd8aeb041a282f87460b68c6b516989c74870a5246",
+          "bytes": 1748280
+        },
+        "process_observation": {
+          "pid": 537160,
+          "exit_code": 0,
+          "error": null,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "observation_complete": true,
+          "elapsed_seconds": 9.590992324985564
+        },
+        "kernel_admission": [
+          {
+            "capture": 0,
+            "maximum": 1024,
+            "device_local": 131072,
+            "reported_private": 0,
+            "requested_dynamic_local": 20036
+          },
+          {
+            "capture": 1,
+            "maximum": 1024,
+            "device_local": 131072,
+            "reported_private": 0,
+            "requested_dynamic_local": 20036
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 537160,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "7ba753baa606de5a138707dec53c07661b8c768dfa7e341c40d81420b6aa6dab",
+        "stderr_sha256": "9b9f970c20e6b3cbb707231de1fd65353b056790909619f52778b6b2e30127d3",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "passed": false,
