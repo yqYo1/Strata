@@ -386506,7 +386506,7 @@
     }
   },
   "qsa_prefill_workgroup64_check_v3": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "555b97bd8f61ae6fb0dffa6cd55e657bc5395b15",
     "source_sha256": "391d9548f85d0afeb62c801a16f46903814f9b8a7ac9f36424af5d79b328a64f",
     "build_record": {
@@ -387713,10 +387713,441 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "timing2",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 21,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "7a5edff8b84df9e1b363ced54d670b549d8fd050efe8712283ee6dc02b7bfc32"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "7111d782ac322402bc38cb1d008ca08b1f92dc3ef7417044dc18cd1dc0fff935"
+          },
+          {
+            "phase": "after-cleanup",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "7111d782ac322402bc38cb1d008ca08b1f92dc3ef7417044dc18cd1dc0fff935"
+          }
+        ],
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v3/bench",
+          "sha256": "740ea846e6884e8fec5b8bbcf7de8d9547b298fc74b424965b47ad74cc12e559",
+          "bytes": 1740896
+        },
+        "process_observation": {
+          "pid": 395917,
+          "exit_code": 0,
+          "error": null,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "observation_complete": true,
+          "elapsed_seconds": 35.808776983991265
+        },
+        "samples": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 0,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 8.54718526563,
+            "batch_calls": 64,
+            "batch_ms": 547.019857
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 0,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 12.2314472344,
+            "batch_calls": 64,
+            "batch_ms": 782.812623
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 1,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 12.2506142812,
+            "batch_calls": 64,
+            "batch_ms": 784.039314
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 1,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 8.62946895313,
+            "batch_calls": 64,
+            "batch_ms": 552.286013
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 2,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 8.3797876875,
+            "batch_calls": 64,
+            "batch_ms": 536.306412
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 2,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 12.235980125,
+            "batch_calls": 64,
+            "batch_ms": 783.102728
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 3,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 12.5498066875,
+            "batch_calls": 64,
+            "batch_ms": 803.187628
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 3,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 8.37312971875,
+            "batch_calls": 64,
+            "batch_ms": 535.880302
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 4,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 8.380235125,
+            "batch_calls": 64,
+            "batch_ms": 536.335048
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 4,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 12.2866162344,
+            "batch_calls": 64,
+            "batch_ms": 786.343439
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 5,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 12.378587,
+            "batch_calls": 64,
+            "batch_ms": 792.229568
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 5,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 8.38329753125,
+            "batch_calls": 64,
+            "batch_ms": 536.531042
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 0,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 223.3403495,
+            "batch_calls": 2,
+            "batch_ms": 446.680699
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 0,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 308.5609275,
+            "batch_calls": 2,
+            "batch_ms": 617.121855
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 1,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 306.006353,
+            "batch_calls": 2,
+            "batch_ms": 612.012706
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 1,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 223.757719,
+            "batch_calls": 2,
+            "batch_ms": 447.515438
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 2,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 223.9409995,
+            "batch_calls": 2,
+            "batch_ms": 447.881999
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 2,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 306.5994385,
+            "batch_calls": 2,
+            "batch_ms": 613.198877
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 3,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 306.7116445,
+            "batch_calls": 2,
+            "batch_ms": 613.423289
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 3,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 224.362097,
+            "batch_calls": 2,
+            "batch_ms": 448.724194
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 4,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 224.0065055,
+            "batch_calls": 2,
+            "batch_ms": 448.013011
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 4,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 306.7537365,
+            "batch_calls": 2,
+            "batch_ms": 613.507473
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 5,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 306.738837,
+            "batch_calls": 2,
+            "batch_ms": 613.477674
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 5,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 223.5641145,
+            "batch_calls": 2,
+            "batch_ms": 447.128229
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 0,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 138.112962,
+            "batch_calls": 2,
+            "batch_ms": 276.225924
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 0,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 199.5747465,
+            "batch_calls": 2,
+            "batch_ms": 399.149493
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 1,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 199.499123,
+            "batch_calls": 2,
+            "batch_ms": 398.998246
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 1,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 138.1256355,
+            "batch_calls": 2,
+            "batch_ms": 276.251271
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 2,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 138.046385,
+            "batch_calls": 2,
+            "batch_ms": 276.09277
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 2,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 200.193572,
+            "batch_calls": 2,
+            "batch_ms": 400.387144
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 3,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 199.066501,
+            "batch_calls": 2,
+            "batch_ms": 398.133002
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 3,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 137.8003705,
+            "batch_calls": 2,
+            "batch_ms": 275.600741
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 4,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 138.08626,
+            "batch_calls": 2,
+            "batch_ms": 276.17252
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 4,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 199.0117615,
+            "batch_calls": 2,
+            "batch_ms": 398.023523
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 5,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 199.488781,
+            "batch_calls": 2,
+            "batch_ms": 398.977562
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 5,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 138.2920115,
+            "batch_calls": 2,
+            "batch_ms": 276.584023
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 395917,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "b308238357d1aaeb0d5e7ad613ade0a220a45d1a69aae350414b309b98969ad2",
+        "stderr_sha256": "8883c994a65db311ea9c2f50d1dd573ff8665c7e98bbc880aa9fc0720fab7d9c",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "whole_bytes": 805306368,
@@ -387744,6 +388175,46 @@
       "timing0": "40cd45afef0634963f7a5d85667aa106b5642664e1cf0df6969626a3602fd7ad",
       "timing1": "9396002e01658df88ecf3e94b2989021d529d4763b31562c0e5243dc190271ee",
       "timing2": "3f65d1284e04cbcbdce4abe43d7bada0c249d36ec8a60f752025d3eec0050113"
+    },
+    "decision": {
+      "shapes": [
+        {
+          "cap": 33,
+          "pattern": "gather",
+          "process_median_time_ratios": [
+            1.4441976660239335,
+            1.453507135374394,
+            1.4637267107569782
+          ],
+          "all_processes_faster": false
+        },
+        {
+          "cap": 2051,
+          "pattern": "gather",
+          "process_median_time_ratios": [
+            1.3679979451291882,
+            1.367137226117355,
+            1.3702305951541383
+          ],
+          "all_processes_faster": false
+        },
+        {
+          "cap": 2051,
+          "pattern": "clustered",
+          "process_median_time_ratios": [
+            1.4475988605801897,
+            1.445998184209517,
+            1.4445656331356354
+          ],
+          "all_processes_faster": false
+        }
+      ],
+      "wide_geometry_screen_passed": false,
+      "production_dispatch_qualified": false,
+      "model_adopted": false,
+      "model_PP_qualified": false,
+      "physical262144_model_qualified": false,
+      "sustained_TG_qualified": false
     }
   }
 }
