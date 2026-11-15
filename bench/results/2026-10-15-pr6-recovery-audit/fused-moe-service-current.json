@@ -388296,5 +388296,2428 @@
       "reason": "Closed observers/research/review;actual route,source/recipe and compact useful outcomes retained;no remaining raw-body or executable consumer.",
       "stage": "retired_verified"
     }
+  },
+  "prefill_eager_native_v1": {
+    "source_commit": "51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054",
+    "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "native_source_identity": "Committed base plus explicit overlays;not the whole overlay revision native tree",
+    "overlays": {
+      "include/strata/prefill/fullfit_upload_plan.hpp": "c3f3ce3abd30730f52fcb16a024d64e4566a349d54b3d200b5b60a6e25411c2a",
+      "include/strata/prefill/expert_bank_upload.hpp": "d529dbe0c8dc6048038bdec85ab3d0601821c261825f896e803a1188a535a39e",
+      "src/prefill/moe_window.inc": "8d2ada50a3769aaaec9fda649de0003bf1c461b784fc0635dbf6f1f04e91a5c7",
+      "tests/sycl/expert_bank.cpp": "e4894bcd42b5a4869ae395846a6dfd48b491d8e208567f319f8b5aeb7e32bcf0"
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/strata",
+        "sha256": "7ea162eac831256af28e861059641501021a5fec194871b9bcb4dcaddc1b1f9d",
+        "bytes": 26461792
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/sycl_expert_bank_test",
+        "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+        "bytes": 513048
+      }
+    },
+    "actual_inputs": {
+      "compiled": {
+        "files": 1461,
+        "sha256": "69cef9cd245757e767925e553af5cd6ea63401b2b2075054a8330b34fa814d4d"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "e4eb11ae8af7ebcdc6ee75566efc235ef83cf16b03ae0259c1aad1e06631968a"
+      },
+      "links": {
+        "files": 29,
+        "sha256": "e5892521b3f3a86a1f8ce83f6db53c28593a581d1e667eafd9c7d3ffc9ee6de3"
+      },
+      "objects": {
+        "files": 126,
+        "sha256": "e6c99ea3442fc7acd3e300bd582cc21a4198a150dc034940f74ee5f314425905"
+      },
+      "produced": {
+        "files": 135,
+        "sha256": "1219ae6f07f99e8baa5bb8bb7712cc34b86a32ab86c313cdb8aad9237fce179a"
+      },
+      "Gemm_includers": {
+        "files": 4,
+        "sha256": "64fdb0497dab6281183e33efe329a8af70763aeeb1555b26f9ea733f46ea7410"
+      },
+      "translation_units": 125,
+      "fresh_objects": 126,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    },
+    "stage": "built_artifacts_retired",
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "active": false,
+    "original_source_recipe_evidence": "d24af268c1d5d657d73751b0f170e23e20a50149",
+    "recipe_sha256": "764b3b79be168b0e7c1dcd74904a056ac826439949484f16f792e32a1c70f069",
+    "artifacts_retired": true,
+    "retirement_record": "prefill_eager_model_v1.artifact_retirement",
+    "qualification": "Build/copy-lifetime/model-unit checks completed before source/recipe recovery and retirement. No currently executable U1generation;restore source/recipe from Git for a newly committed comparison."
+  },
+  "prefill_eager_device_v1": {
+    "source_commit": "d24af268c1d5d657d73751b0f170e23e20a50149",
+    "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "native_overlay_commit": "51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054",
+    "results": [
+      {
+        "mode": "smoke",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "native_exit_code": 0,
+        "cases": [
+          {
+            "experts": 4,
+            "source_stride": 256,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          },
+          {
+            "experts": 4,
+            "source_stride": 512,
+            "layers": 2,
+            "cancellations": 2,
+            "refusals": 4
+          }
+        ],
+        "validation": {
+          "pid": 957672,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc loader constructor diagnostics;not timing or hardware utilization"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "validate",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "native_exit_code": 0,
+        "cases": [
+          {
+            "experts": 4,
+            "source_stride": 256,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          },
+          {
+            "experts": 4,
+            "source_stride": 512,
+            "layers": 2,
+            "cancellations": 2,
+            "refusals": 4
+          },
+          {
+            "experts": 0,
+            "source_stride": 256,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          },
+          {
+            "experts": 1,
+            "source_stride": 256,
+            "layers": 3,
+            "cancellations": 3,
+            "refusals": 4
+          },
+          {
+            "experts": 127,
+            "source_stride": 512,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          },
+          {
+            "experts": 512,
+            "source_stride": 256,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          }
+        ],
+        "validation": {
+          "pid": 961304,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc loader constructor diagnostics;not timing or hardware utilization"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "active": false,
+    "stage": "closed_artifacts_retired",
+    "original_full_evidence": "04634f850",
+    "artifacts_retired": true
+  },
+  "prefill_eager_model_v1": {
+    "source_commit": "5f1a954530e4fcd5842d766582bbaa72cf6f71b6",
+    "native_source_commit": "51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054",
+    "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "native_source_identity": "Committed base plus explicit overlays;not the whole overlay revision native tree",
+    "native_overlays": {
+      "include/strata/prefill/fullfit_upload_plan.hpp": "c3f3ce3abd30730f52fcb16a024d64e4566a349d54b3d200b5b60a6e25411c2a",
+      "include/strata/prefill/expert_bank_upload.hpp": "d529dbe0c8dc6048038bdec85ab3d0601821c261825f896e803a1188a535a39e",
+      "src/prefill/moe_window.inc": "8d2ada50a3769aaaec9fda649de0003bf1c461b784fc0635dbf6f1f04e91a5c7",
+      "tests/sycl/expert_bank.cpp": "e4894bcd42b5a4869ae395846a6dfd48b491d8e208567f319f8b5aeb7e32bcf0"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/strata",
+      "sha256": "7ea162eac831256af28e861059641501021a5fec194871b9bcb4dcaddc1b1f9d",
+      "bytes": 26461792
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "request_hashes": {
+      "32769": [
+        "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+        "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+        "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588"
+      ],
+      "65537": [
+        "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+        "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+        "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d"
+      ]
+    },
+    "decision": {
+      "unit": "U1eager individual upload vs JIT individual upload;same candidate ELF",
+      "points": [
+        {
+          "read": 32769,
+          "individual_processes": {
+            "jit": [
+              {
+                "first_PP": 603.4,
+                "first_TTFT_s": 54.482,
+                "warmed_PP": 748.7079424411778,
+                "warmed_prompt_ms": 43767.399999999994,
+                "warmed_TTFT_s": 43.9585
+              },
+              {
+                "first_PP": 569.5,
+                "first_TTFT_s": 57.762,
+                "warmed_PP": 739.9261857639457,
+                "warmed_prompt_ms": 44286.850000000006,
+                "warmed_TTFT_s": 44.466
+              },
+              {
+                "first_PP": 560.5,
+                "first_TTFT_s": 58.64,
+                "warmed_PP": 752.4359623472034,
+                "warmed_prompt_ms": 43550.55,
+                "warmed_TTFT_s": 43.7245
+              }
+            ],
+            "eager": [
+              {
+                "first_PP": 613.5,
+                "first_TTFT_s": 53.581,
+                "warmed_PP": 761.6384675189747,
+                "warmed_prompt_ms": 43024.35,
+                "warmed_TTFT_s": 43.258
+              },
+              {
+                "first_PP": 604.1,
+                "first_TTFT_s": 54.419,
+                "warmed_PP": 765.3760138271721,
+                "warmed_prompt_ms": 42814.25,
+                "warmed_TTFT_s": 43.0135
+              },
+              {
+                "first_PP": 508.1,
+                "first_TTFT_s": 64.659,
+                "warmed_PP": 768.8634809203649,
+                "warmed_prompt_ms": 42620.05,
+                "warmed_TTFT_s": 42.788
+              }
+            ]
+          },
+          "paired_time_ratios": [
+            {
+              "warmed_prompt_ms": 0.9830227520940245,
+              "warmed_client_TTFT": 0.9840645153952023,
+              "first_prompt_ms": 0.9835674959029223
+            },
+            {
+              "warmed_prompt_ms": 0.9667485946731365,
+              "warmed_client_TTFT": 0.9673345927225295,
+              "first_prompt_ms": 0.9426028808908554
+            },
+            {
+              "warmed_prompt_ms": 0.978634024139764,
+              "warmed_client_TTFT": 0.9785818019645736,
+              "first_prompt_ms": 1.1031857483729164
+            }
+          ],
+          "warmed_geomean_time_ratio": 0.9761108569473437,
+          "reproducible_warmed_gain": true,
+          "warmed_TTFT_median_preserved": true,
+          "eager_all_warmed_processes_at_least1000": false
+        },
+        {
+          "read": 65537,
+          "individual_processes": {
+            "jit": [
+              {
+                "first_PP": 793.3,
+                "first_TTFT_s": 82.813,
+                "warmed_PP": 909.6101224782113,
+                "warmed_prompt_ms": 72049.54999999999,
+                "warmed_TTFT_s": 72.24199999999999
+              },
+              {
+                "first_PP": 790.3,
+                "first_TTFT_s": 83.112,
+                "warmed_PP": 919.2073192112466,
+                "warmed_prompt_ms": 71297.29999999999,
+                "warmed_TTFT_s": 71.47800000000001
+              },
+              {
+                "first_PP": 793.8,
+                "first_TTFT_s": 82.738,
+                "warmed_PP": 911.588934411693,
+                "warmed_prompt_ms": 71893.15,
+                "warmed_TTFT_s": 72.0795
+              }
+            ],
+            "eager": [
+              {
+                "first_PP": 803.8,
+                "first_TTFT_s": 81.829,
+                "warmed_PP": 924.6366853770494,
+                "warmed_prompt_ms": 70878.65,
+                "warmed_TTFT_s": 71.06700000000001
+              },
+              {
+                "first_PP": 803.8,
+                "first_TTFT_s": 81.729,
+                "warmed_PP": 926.9285494049792,
+                "warmed_prompt_ms": 70703.4,
+                "warmed_TTFT_s": 70.939
+              },
+              {
+                "first_PP": 799.4,
+                "first_TTFT_s": 82.164,
+                "warmed_PP": 927.0970447959451,
+                "warmed_prompt_ms": 70690.55,
+                "warmed_TTFT_s": 70.8695
+              }
+            ]
+          },
+          "paired_time_ratios": [
+            {
+              "warmed_prompt_ms": 0.9837486840653412,
+              "warmed_client_TTFT": 0.9837352232773181,
+              "first_prompt_ms": 0.9869906161027289
+            },
+            {
+              "warmed_prompt_ms": 0.9916700912937798,
+              "warmed_client_TTFT": 0.9924592182209908,
+              "first_prompt_ms": 0.9831610325745509
+            },
+            {
+              "warmed_prompt_ms": 0.983272397996193,
+              "warmed_client_TTFT": 0.9832129801122372,
+              "first_prompt_ms": 0.9929653889384132
+            }
+          ],
+          "warmed_geomean_time_ratio": 0.9862228847098039,
+          "reproducible_warmed_gain": true,
+          "warmed_TTFT_median_preserved": true,
+          "eager_all_warmed_processes_at_least1000": false
+        }
+      ],
+      "mechanism_screen_passed": true,
+      "inference_adopted": false,
+      "sustained_decode_qualified": false,
+      "physical262144_RESTORE_qualified": false,
+      "whole_goal_complete": false,
+      "U2coalescing_measured": false
+    },
+    "post_cohort_review": {
+      "original_closure_evidence": "410f6cb8d",
+      "original_mechanism_outcome_preserved": true,
+      "source_and_work": {
+        "same_requests_as_historical_fast_reference": true,
+        "matched_request_job_and_H2D_checks": 18,
+        "all_equal": true,
+        "compile_command_root_normalization_deltas": 0,
+        "other_inference_source_excluded": true
+      },
+      "local_length_characterization": {
+        "jit": {
+          "points": [
+            {
+              "read": 32769,
+              "warm_ms": 43767.399999999994,
+              "warm_ttft_s": 43.9585
+            },
+            {
+              "read": 65537,
+              "warm_ms": 71893.15,
+              "warm_ttft_s": 72.0795
+            }
+          ],
+          "adjacent_ms_per_token": 0.8583297729492188,
+          "adjacent_TTFT_ms_per_token": 0.8581848144531249
+        },
+        "eager": {
+          "points": [
+            {
+              "read": 32769,
+              "warm_ms": 42814.25,
+              "warm_ttft_s": 43.0135
+            },
+            {
+              "read": 65537,
+              "warm_ms": 70703.4,
+              "warm_ttft_s": 70.939
+            }
+          ],
+          "adjacent_ms_per_token": 0.8511093139648436,
+          "adjacent_TTFT_ms_per_token": 0.8522186279296873
+        }
+      },
+      "two_length_model_limit": "Two same-route lengths supply local slopes only;no held-out fit,physical fixed cost,linear law or extrapolation.",
+      "historical_absolute_reference": {
+        "native": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "PP32": 871.5739184786221,
+        "PP64": 1006.8318,
+        "comparison": "Historical measurement,not a matched current-period arm. Both present JIT/eager rates are lower;do not replace the faster retained image from U1alone."
+      },
+      "decision": "U1same-image warmed mechanism screen passes bothlengths/all3pairs. Keep optional candidate for further qualification;default adoption and fastest-image replacement remain held for current-period original controls,decode preservation and broader gates.",
+      "first_use_limit": "Retain all first samples:the third32K eager/JITtime ratio is1.103185748;no reliable all-pair first-use gain claim.",
+      "resource": "Same queue0and identical requested H2D/job volumes. Current GPUarithmetic/VRAM/physicalPCIe saturation and cause of historical gap remain unknown. U1gain is causal scheduling evidence,not hardware-ceiling proof.",
+      "observed_idle_link": {
+        "current": "2.5GT/s x1",
+        "maximum_reported": "2.5GT/s x1",
+        "virtualization_probe": "systemd-detect-virt:none",
+        "limitation": "Reported sysfs ceiling conflicts with existing transfer evidence;do not convert it into a physical bandwidth ceiling without validation."
+      },
+      "next_unit": "Keep U1result separate. Before U2contiguous-run copy comparison,check actual demanded-ID run opportunities;full-fit capacity512does not mean512demanded IDs. A smaller streaming bank is a separate possible placement unit,requiring source/owner/admission proof and its own comparison."
+    },
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "active": false,
+    "original_full_evidence": "410f6cb8dcfb0813a35616a72324acfe643e2c7a",
+    "full_source_and_initial_plan": "5f1a954530e4fcd5842d766582bbaa72cf6f71b6",
+    "effective_parent_environment_template": {
+      "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONUNBUFFERED": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "STRATA_SYCL_MMQ_XMX": "1",
+      "STRATA_SYCL_MMQ_XMX_TILE": "8",
+      "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+      "STRATA_SYCL_MMQ_XMX_PACK": "0",
+      "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_PREFILL_RING": "8",
+      "STRATA_PREFILL_MMQ": "0",
+      "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+      "STRATA_WATCHDOG_S": "480",
+      "STRATA_SYCL_PROMPT_DIRECT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+      "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+      "STRATA_SYCL_KV_COPY_GROUPS": "0",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+      "STRATA_PREFILL_RELEASE_HEADS": "1",
+      "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+      "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+      "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+      "STRATA_GR_UNFUSED": "0",
+      "STRATA_PREFILL_BF16X2": "0",
+      "STRATA_PF_FUSED": "0",
+      "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+      "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+      "XDG_CACHE_HOME": "{case_root}/cache",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_ROPE_TABLE": "1",
+      "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+      "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+      "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+      "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+      "TMPDIR": "{case_root}/tmp",
+      "STRATA_MEASUREMENT_ROOT": "{case_root}",
+      "ZES_ENABLE_SYSMAN": "0",
+      "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+      "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+      "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+      "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+      "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+      "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
+      "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+      "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "STRATA_MTP_BATCH_F16": "1",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+      "STRATA_IQ2_PAIR": "1",
+      "STRATA_SYCL_MTP_OBSERVER": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+      "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,{case_root}/validation.log",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONPYCACHEPREFIX": "{case_root}/cache/python",
+      "STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR": "1",
+      "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+      "STRATA_SYCL_PREFILL_TOPK_EARLY": "0",
+      "STRATA_SYCL_PREFILL_GDN_BARRIERS3": "1",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_GDN_FP16": "1",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "0",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_CPU_WORK_CENSUS": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_ADAPT_SYNC": "1",
+      "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+      "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+      "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "2",
+      "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "1",
+      "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+      "STRATA_KV_STAGE_OWN": "1",
+      "STRATA_SYCL_PREFILL_QSA_STREAM": "1",
+      "STRATA_SYCL_PREFILL_MOE_CENSUS": "0",
+      "STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING": "0",
+      "STRATA_SYCL_PREFILL_QSA_BULK_HOST_MIRROR": "1",
+      "STRATA_SYCL_PREFILL_FULLFIT_UPLOAD": "{jit|eager}"
+    },
+    "native_environment_delta": {
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+    },
+    "model_assets": {
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "dev": 40,
+          "ino": 2640848,
+          "bytes": 54817524224,
+          "mtime_ns": 1791009083688077826,
+          "ctime_ns": 1791009083692077878
+        },
+        "sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3"
+      },
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+          "dev": 40,
+          "ino": 2623800,
+          "bytes": 28800138432,
+          "mtime_ns": 1790924461554234294,
+          "ctime_ns": 1791008604221189761
+        },
+        "sha256": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin",
+          "dev": 40,
+          "ino": 2878806,
+          "bytes": 116099072,
+          "mtime_ns": 1790947194721370688,
+          "ctime_ns": 1790947194721370688
+        },
+        "sha256": "c724dc0b0822ada5d2977bf5bde821605feabaa64ea2e0045b67ca656329070a"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt",
+          "dev": 40,
+          "ino": 2878822,
+          "bytes": 1851,
+          "mtime_ns": 1790947194721370688,
+          "ctime_ns": 1790947194721370688
+        },
+        "sha256": "991456cf4eb266eb8a888c349e548d11bc640f5dbd9149439aa9786af0f732fd"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+          "dev": 40,
+          "ino": 2878820,
+          "bytes": 425196,
+          "mtime_ns": 1790947268196150153,
+          "ctime_ns": 1790947268196150153
+        },
+        "sha256": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin",
+          "dev": 40,
+          "ino": 2878804,
+          "bytes": 707788800,
+          "mtime_ns": 1790947193902361950,
+          "ctime_ns": 1790947193902361950
+        },
+        "sha256": "09398406be61f1f54c93861f449e48b8df0bfccbc9ec9b2b7636775a6ea9244f"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json",
+          "dev": 40,
+          "ino": 2654126,
+          "bytes": 306,
+          "mtime_ns": 1791009279665519972,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin",
+          "dev": 40,
+          "ino": 2652886,
+          "bytes": 1538035200,
+          "mtime_ns": 1791009279664519959,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "d2af3d8331e5c7a1985d1d589747230f9d56719a6d33c7cddc9ee6b81cde6b13"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt",
+          "dev": 40,
+          "ino": 2654124,
+          "bytes": 93685,
+          "mtime_ns": 1791009279665519972,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+          "dev": 40,
+          "ino": 2653896,
+          "bytes": 3304,
+          "mtime_ns": 1791009280472529749,
+          "ctime_ns": 1791009280472529749
+        },
+        "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+          "dev": 40,
+          "ino": 2653772,
+          "bytes": 9993,
+          "mtime_ns": 1791009280442529386,
+          "ctime_ns": 1791009280442529386
+        },
+        "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+          "dev": 40,
+          "ino": 2785432,
+          "bytes": 3353258,
+          "mtime_ns": 1791009280259527169,
+          "ctime_ns": 1791009280259527169
+        },
+        "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+          "dev": 40,
+          "ino": 2785434,
+          "bytes": 744960,
+          "mtime_ns": 1791009280269527290,
+          "ctime_ns": 1791009280269527290
+        },
+        "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+          "dev": 40,
+          "ino": 2785438,
+          "bytes": 541,
+          "mtime_ns": 1791009280269527290,
+          "ctime_ns": 1791009280269527290
+        },
+        "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+          "dev": 40,
+          "ino": 2785430,
+          "bytes": 5737005,
+          "mtime_ns": 1791009280185526273,
+          "ctime_ns": 1791009280185526273
+        },
+        "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+      }
+    },
+    "processes": [
+      {
+        "index": 0,
+        "read": 32769,
+        "kernel": "jit",
+        "native_identity": {
+          "pid": 985638,
+          "start_ticks": 310872984,
+          "sid": 985578
+        },
+        "subsequent_median_ms": 44803.3,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 54620.7,
+            "prompt_tps": 599.9,
+            "ttft_s": 54.9,
+            "total_s": 56.923,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 44856.8,
+            "prompt_tps": 730.5,
+            "ttft_s": 45.123,
+            "total_s": 47.067,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 44749.8,
+            "prompt_tps": 732.3,
+            "ttft_s": 45.011,
+            "total_s": 46.898,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": false,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "read": 32769,
+        "kernel": "eager",
+        "native_identity": {
+          "pid": 996965,
+          "start_ticks": 310903414,
+          "sid": 996900
+        },
+        "subsequent_median_ms": 43048.149999999994,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 54116.9,
+            "prompt_tps": 605.5,
+            "ttft_s": 54.292,
+            "total_s": 56.225,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43048.2,
+            "prompt_tps": 761.2,
+            "ttft_s": 43.209,
+            "total_s": 45.109,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43048.1,
+            "prompt_tps": 761.2,
+            "ttft_s": 43.217,
+            "total_s": 45.147,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": false,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8697,
+            "requested_fullfit_H2D_bytes": 16012825600,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8711,
+            "requested_fullfit_H2D_bytes": 16037811200,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8672,
+            "requested_fullfit_H2D_bytes": 15968870400,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "read": 32769,
+        "kernel": "jit",
+        "native_identity": {
+          "pid": 1008605,
+          "start_ticks": 310937021,
+          "sid": 1008545
+        },
+        "subsequent_median_ms": 43767.399999999994,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 54307.0,
+            "prompt_tps": 603.4,
+            "ttft_s": 54.482,
+            "total_s": 56.36,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43904.1,
+            "prompt_tps": 746.4,
+            "ttft_s": 44.121,
+            "total_s": 45.81,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43630.7,
+            "prompt_tps": 751.1,
+            "ttft_s": 43.796,
+            "total_s": 45.668,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "read": 32769,
+        "kernel": "eager",
+        "native_identity": {
+          "pid": 1018253,
+          "start_ticks": 310965092,
+          "sid": 1018190
+        },
+        "subsequent_median_ms": 43024.35,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 53414.6,
+            "prompt_tps": 613.5,
+            "ttft_s": 53.581,
+            "total_s": 55.602,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43044.0,
+            "prompt_tps": 761.3,
+            "ttft_s": 43.218,
+            "total_s": 45.165,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43004.7,
+            "prompt_tps": 762.0,
+            "ttft_s": 43.298,
+            "total_s": 45.059,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8697,
+            "requested_fullfit_H2D_bytes": 16012825600,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8711,
+            "requested_fullfit_H2D_bytes": 16037811200,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8672,
+            "requested_fullfit_H2D_bytes": 15968870400,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "read": 65537,
+        "kernel": "eager",
+        "native_identity": {
+          "pid": 1027856,
+          "start_ticks": 310993067,
+          "sid": 1027792
+        },
+        "subsequent_median_ms": 70878.65,
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 81534.9,
+            "prompt_tps": 803.8,
+            "ttft_s": 81.829,
+            "total_s": 83.738,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 70865.0,
+            "prompt_tps": 924.8,
+            "ttft_s": 71.053,
+            "total_s": 73.041,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 70892.3,
+            "prompt_tps": 924.5,
+            "ttft_s": 71.081,
+            "total_s": 72.999,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9178,
+            "requested_fullfit_H2D_bytes": 16889804800,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9179,
+            "requested_fullfit_H2D_bytes": 16891161600,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9160,
+            "requested_fullfit_H2D_bytes": 16860006400,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "read": 65537,
+        "kernel": "jit",
+        "native_identity": {
+          "pid": 1040238,
+          "start_ticks": 311029639,
+          "sid": 1040177
+        },
+        "subsequent_median_ms": 72049.54999999999,
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 82609.6,
+            "prompt_tps": 793.3,
+            "ttft_s": 82.813,
+            "total_s": 85.023,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 72112.2,
+            "prompt_tps": 908.8,
+            "ttft_s": 72.295,
+            "total_s": 74.252,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 71986.9,
+            "prompt_tps": 910.4,
+            "ttft_s": 72.189,
+            "total_s": 74.277,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "read": 32769,
+        "kernel": "eager",
+        "native_identity": {
+          "pid": 1053355,
+          "start_ticks": 311066377,
+          "sid": 1053290
+        },
+        "subsequent_median_ms": 42814.25,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 54241.8,
+            "prompt_tps": 604.1,
+            "ttft_s": 54.419,
+            "total_s": 56.267,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 42803.8,
+            "prompt_tps": 765.6,
+            "ttft_s": 42.976,
+            "total_s": 44.851,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 42824.7,
+            "prompt_tps": 765.2,
+            "ttft_s": 43.051,
+            "total_s": 45.008,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8697,
+            "requested_fullfit_H2D_bytes": 16012825600,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8711,
+            "requested_fullfit_H2D_bytes": 16037811200,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8672,
+            "requested_fullfit_H2D_bytes": 15968870400,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "read": 32769,
+        "kernel": "jit",
+        "native_identity": {
+          "pid": 1062684,
+          "start_ticks": 311094494,
+          "sid": 1062620
+        },
+        "subsequent_median_ms": 44286.850000000006,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 57544.7,
+            "prompt_tps": 569.5,
+            "ttft_s": 57.762,
+            "total_s": 59.78,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 44283.8,
+            "prompt_tps": 740.0,
+            "ttft_s": 44.46,
+            "total_s": 46.418,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 44289.9,
+            "prompt_tps": 739.9,
+            "ttft_s": 44.472,
+            "total_s": 46.449,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "read": 65537,
+        "kernel": "jit",
+        "native_identity": {
+          "pid": 1072334,
+          "start_ticks": 311123431,
+          "sid": 1072264
+        },
+        "subsequent_median_ms": 71297.29999999999,
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 82926.7,
+            "prompt_tps": 790.3,
+            "ttft_s": 83.112,
+            "total_s": 85.123,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 71325.9,
+            "prompt_tps": 918.8,
+            "ttft_s": 71.503,
+            "total_s": 73.429,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 71268.7,
+            "prompt_tps": 919.6,
+            "ttft_s": 71.453,
+            "total_s": 73.273,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 9,
+        "read": 65537,
+        "kernel": "eager",
+        "native_identity": {
+          "pid": 1084763,
+          "start_ticks": 311161406,
+          "sid": 1084699
+        },
+        "subsequent_median_ms": 70703.4,
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 81530.3,
+            "prompt_tps": 803.8,
+            "ttft_s": 81.729,
+            "total_s": 83.952,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 70501.4,
+            "prompt_tps": 929.6,
+            "ttft_s": 70.789,
+            "total_s": 72.811,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 70905.4,
+            "prompt_tps": 924.3,
+            "ttft_s": 71.089,
+            "total_s": 72.981,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9178,
+            "requested_fullfit_H2D_bytes": 16889804800,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9179,
+            "requested_fullfit_H2D_bytes": 16891161600,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9160,
+            "requested_fullfit_H2D_bytes": 16860006400,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 10,
+        "read": 32769,
+        "kernel": "jit",
+        "native_identity": {
+          "pid": 1097235,
+          "start_ticks": 311199842,
+          "sid": 1097174
+        },
+        "subsequent_median_ms": 43550.55,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 58463.5,
+            "prompt_tps": 560.5,
+            "ttft_s": 58.64,
+            "total_s": 60.691,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43646.7,
+            "prompt_tps": 750.8,
+            "ttft_s": 43.814,
+            "total_s": 45.568,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43454.4,
+            "prompt_tps": 754.1,
+            "ttft_s": 43.635,
+            "total_s": 45.607,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 11,
+        "read": 32769,
+        "kernel": "eager",
+        "native_identity": {
+          "pid": 1107780,
+          "start_ticks": 311229558,
+          "sid": 1107716
+        },
+        "subsequent_median_ms": 42620.05,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 64496.1,
+            "prompt_tps": 508.1,
+            "ttft_s": 64.659,
+            "total_s": 66.632,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 42575.7,
+            "prompt_tps": 769.7,
+            "ttft_s": 42.755,
+            "total_s": 44.517,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 42664.4,
+            "prompt_tps": 768.1,
+            "ttft_s": 42.821,
+            "total_s": 44.612,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8697,
+            "requested_fullfit_H2D_bytes": 16012825600,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8711,
+            "requested_fullfit_H2D_bytes": 16037811200,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 8672,
+            "requested_fullfit_H2D_bytes": 15968870400,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 12,
+        "read": 65537,
+        "kernel": "eager",
+        "native_identity": {
+          "pid": 1118451,
+          "start_ticks": 311261529,
+          "sid": 1118387
+        },
+        "subsequent_median_ms": 70690.55,
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 81982.4,
+            "prompt_tps": 799.4,
+            "ttft_s": 82.164,
+            "total_s": 84.085,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 70559.8,
+            "prompt_tps": 928.8,
+            "ttft_s": 70.733,
+            "total_s": 72.668,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 70821.3,
+            "prompt_tps": 925.4,
+            "ttft_s": 71.006,
+            "total_s": 72.9,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9178,
+            "requested_fullfit_H2D_bytes": 16889804800,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9179,
+            "requested_fullfit_H2D_bytes": 16891161600,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "eager",
+            "fullfit_layers": 24,
+            "accepted_copy_commands": 9160,
+            "requested_fullfit_H2D_bytes": 16860006400,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 13,
+        "read": 65537,
+        "kernel": "jit",
+        "native_identity": {
+          "pid": 1130636,
+          "start_ticks": 311298152,
+          "sid": 1130575
+        },
+        "subsequent_median_ms": 71893.15,
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 82563.2,
+            "prompt_tps": 793.8,
+            "ttft_s": 82.738,
+            "total_s": 84.781,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 71376.7,
+            "prompt_tps": 918.2,
+            "ttft_s": 71.577,
+            "total_s": 73.643,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 72409.6,
+            "prompt_tps": 905.1,
+            "ttft_s": 72.582,
+            "total_s": 74.458,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      }
+    ],
+    "artifact_retirement": {
+      "stage": "retired_verified",
+      "manifest": {
+        "sha256": "2ea27fe65a6aea4c8ef3bdaf34f654209f7ccf3af30fe700d6cae1bcf89ccf7c"
+      },
+      "roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-model-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-device-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-original-control-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-origin-gap-br-20261115",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-origin-gap-br-20261115-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-origin-gap-bs-20261115",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-origin-gap-bs-20261115-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-origin-gap-review-bt-20261115"
+      ],
+      "files": 2540,
+      "bytes": 302703511,
+      "candidate_final_images": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/strata",
+          "sha256": "7ea162eac831256af28e861059641501021a5fec194871b9bcb4dcaddc1b1f9d",
+          "bytes": 26461792
+        },
+        "sycl_expert_bank_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/sycl_expert_bank_test",
+          "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+          "bytes": 513048
+        }
+      },
+      "source_recovery": {
+        "native_base": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "overlays_commit": "51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054",
+        "native_evidence": "d24af268c1d5d657d73751b0f170e23e20a50149",
+        "original_source_recipe_compact_equal": true,
+        "recovered_source_files": 1165,
+        "actual_compiler_inputs": 1461,
+        "external_link_inputs": 29,
+        "all_actual_inputs_and_ELFs_checked": true,
+        "pushed_primary": "02ae1cc9b547fb1d9105f991aca0db22d630750b"
+      },
+      "retained_phase_references": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1",
+          "ELFs": 12,
+          "image_identity_sha256": "fbcd46efdf0334acf95b8228ac6c3ebee6c2574bda47ed36fb944e18b4ed330c"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1",
+          "ELFs": 14,
+          "image_identity_sha256": "180ffdbf004ea971a3df8ef732103ca8aeb8c712468ee48f182c74ce64af9455"
+        }
+      ],
+      "remaining_holds": "Existing legacy/orphan/.cache provenance holds remain separately unchanged;this is not a global artifact-retirement claim.",
+      "manifest_retired": true,
+      "reason": "Closed U1unit and original controls;source/review curated. U2will contain its own U1individual-copy control in a fresh image,so ended binaries/raw/transactions have no remaining consumer. Retain C++proposal/oracles for that named next unit;preserve original14508and namingAphase references."
+    },
+    "limits": "All individual PP/TTFT/token/MTP samples retained. Original full plan,route and provider evidence in reachable original commits. Same-image mechanism pass;no cross-build/default adoption,sustainedTG,task/agent,fullphysical262144/RESTORE or hardware-saturation qualification."
+  },
+  "prefill_eager_original_control_v1": {
+    "source_commit": "1ca26ef811d6b88ffdcbe9eba5c9adfdaf7b0174",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+      "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+      "bytes": 26448640,
+      "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+    },
+    "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "decision": {
+      "points": [
+        {
+          "read": 32769,
+          "original_current_PP": 756.4500472651431,
+          "original_current_TTFT_s": 43.4765,
+          "U1_jit_PP": 748.7079424411778,
+          "U1_eager_PP": 765.3760138271721
+        },
+        {
+          "read": 65537,
+          "original_current_PP": 914.4725321262599,
+          "original_current_TTFT_s": 71.863,
+          "U1_jit_PP": 911.588934411693,
+          "U1_eager_PP": 926.9285494049792
+        }
+      ],
+      "descriptive_current_period_control_only": true,
+      "new_paired_build_gain_or_regression_qualified": false,
+      "inference_adopted": false,
+      "limits": "One original process per length versus an earlier closed3pair same-image unit. Retain samples;no automatic attribution to code,hardware,clock or source path."
+    },
+    "request_hashes": {
+      "32769": [
+        "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+        "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+        "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588"
+      ],
+      "65537": [
+        "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+        "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+        "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d"
+      ]
+    },
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "active": false,
+    "original_full_evidence": "5f19593b9e529c593efd40847ce4053d0105dc4f",
+    "shared_configuration_and_environment": "prefill_eager_model_v1",
+    "processes": [
+      {
+        "index": 0,
+        "read": 32769,
+        "kernel": "original14508",
+        "native_identity": {
+          "pid": 1175605,
+          "start_ticks": 311428795,
+          "sid": 1175481
+        },
+        "subsequent_median_ms": 43319.45,
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 54039.7,
+            "prompt_tps": 606.4,
+            "ttft_s": 54.192,
+            "total_s": 56.12,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43340.6,
+            "prompt_tps": 756.1,
+            "ttft_s": 43.498,
+            "total_s": 45.422,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43298.3,
+            "prompt_tps": 756.8,
+            "ttft_s": 43.455,
+            "total_s": 45.32,
+            "generated_tokens": 24,
+            "request_sha256": "7854927ca835c402a1e257c06b2d986087bd6ec69feaa102a982f756f50cf588",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 18228,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18275,
+            "fused_down_jobs": 2083,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 18229,
+            "fused_down_jobs": 2084,
+            "requested_bank_H2D_bytes": 35397017600,
+            "requested_dequant_H2D_bytes": 62914560,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "read": 65537,
+        "kernel": "original14508",
+        "native_identity": {
+          "pid": 1191733,
+          "start_ticks": 311475188,
+          "sid": 1191669
+        },
+        "subsequent_median_ms": 71666.45,
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 82216.4,
+            "prompt_tps": 797.1,
+            "ttft_s": 82.397,
+            "total_s": 84.633,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 71658.2,
+            "prompt_tps": 914.6,
+            "ttft_s": 71.856,
+            "total_s": 73.938,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 71674.7,
+            "prompt_tps": 914.4,
+            "ttft_s": 71.87,
+            "total_s": 73.755,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16
+          }
+        ],
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "clean_speed": true,
+        "work": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_dequant_H2D_bytes": 125829120,
+            "policy": "jit",
+            "fullfit_layers": 0,
+            "accepted_copy_commands": 0,
+            "requested_fullfit_H2D_bytes": 0,
+            "native_completion": "outer checked bank drain",
+            "physical_bus_traffic_or_overlap_measured": false
+          }
+        ]
+      }
+    ],
+    "raw_artifacts_retired": true
   }
 }

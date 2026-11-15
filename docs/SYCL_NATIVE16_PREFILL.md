@@ -1307,22 +1307,89 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   end tuning. Main's next owned proposal instead preserves the same queue and
   bytes:U1compares JITper-expert with eager per-expert upload;U2compares eager
   per-expert with contiguous-run copies,then validates their useful combination.
-  `fullfit_upload_plan.hpp`and its independent byte/publication oracle are
-  prototypes with no production caller. CPUV2evidence`35041702b`passes6byte
+  `fullfit_upload_plan.hpp`and its independent byte/publication oracle remain
+  experimental. CPUV2evidence`35041702b`passes6byte
   cases/10refusals,including failed-enqueue nonpublication. V1's missing launch
   guard stays held;V2checks source/compiler/ELF/consumed bytes before launch.
   The initial resource annotation's28eligible layers is corrected to24from the
-  actual geometry counts;no C++input or sample changes. Before a native trial,
-  integrate only this prefill proposal onto the fast14508native source and pin
-  its complete recoverable inputs;do not bundle the pending KVengine changes.
-  Prove that the whole preloaded bank remains disjoint from live FFNscratch,
-  retain source/bank owners through error drains,and preserve the partial-bank
-  and nonempty-bank fallback before native execution.
+  actual geometry counts;no C++input or sample changes. U1now has an owned
+  long-prefill caller and native fixture:committed14508sources plus four
+  explicit overlays at`51ea99cae`,excluding pending KVengine changes. The
+  fresh coherent`prefill_eager_native_v1`build uses125unique TUs/126objects,
+  all four production Gemm-header includers,1461compiler and29external link
+  inputs,zero uncovered. Its engine SHAis
+  `7ea162eac831256af28e861059641501021a5fec194871b9bcb4dcaddc1b1f9d`.
+  `STRATA_SYCL_PREFILL_FULLFIT_UPLOAD=jit|eager`selects the upload position
+  before process initialization;U2coalescing is not selected. The eager caller
+  checks the whole bank against live FFNscratch and rejects unequal payload/
+  stride bytes;source/cache owners remain under the existing checked outer
+  drain. Partial,nonempty and staging banks retain their original route.
+  Fresh traced smoke and quiet validation in`prefill_eager_device_v1`,evidence
+  `04634f850`,pass all8cases across0/1/4/127/512experts,strided sources,full
+  readback/guards,refusals,reuse and cancellation. Both native processes close
+  normally0with quiet validation,verified actual initialized providers and no
+  new fault. This is byte/lifetime evidence,not model performance or adoption.
+  The closed`prefill_eager_model_v1`cohort,evidence`410f6cb8d`,passes two
+  traced model processes plus twelve clean processes:three independent matched
+  pairs at each of32Kand64K,three fresh thinking-on bench.sh requests per
+  process. All42requests and14native owners close normally0with quiet validation
+  and no new fault. Every paired request has identical actual job/fused-job/H2D
+  counts;its request hashes also match the historical fastest cohort. U1alone
+  passes its predeclared warmed PP/TTFTscreen in all three pairs at both lengths.
+  Eager/JITpaired geometric-mean warmed time ratios are0.9761108569at32Kand
+  0.9862228847at64K. Process-median PPis748.708→765.376at32Kand
+  911.589→926.929at64K;these medians and paired geometric means are different
+  summaries. Keep every first/warmed sample:the third32Kfirst eager/JITtime
+  ratio is1.103185748,so no all-pair first-use gain is claimed. Local warmed
+  32K→64Kslopes are0.858330ms/token(JIT)and0.851109(eager);two lengths do
+  not qualify a fitted law,physical fixed cost or extrapolation. The CSVnow
+  has540points,including8first/warmed arm summaries from this cohort and
+  four current-period original-control summaries.
+  Absolute rates remain below historical fast14508PP871.574/1006.832.
+  `prefill_eager_original_control_v1`now reuses that exact retained dcb8ELF
+  under the current matched frontend/configuration/workloads. Its first32K
+  control closes normally at756.450warmed PP,also below its own historical
+  value;its64Kcontrol closes at914.473PP. Both processes and all six requests
+  finish normally0with closed owners,quiet validation,no new fault and15final
+  model hashes matching. This is one process per length,not a new
+  paired cross-build gain/regression claim or a cause attribution. The normalized
+  shared compile commands have no differences;hardware saturation remains
+  unknown. Main keeps extended source-gap analysis delegated to bounded Orca
+  Luna. Preserve U1's positive same-image result and the faster historical
+  reference separately. Default adoption,source replacement,repeated sustained
+  decode/agent/task and fullphysical262144/tails/RESTORE remain unqualified.
+  This boundary recovered the exact1165native source inputs,original recipe,
+  1461compiler/29link inputs and final two ELFs from their original commits
+  against the actual files before retirement. Its2540files/302703511bytes,
+  including the ended candidate build,raw model/device output and BR/BS/BT
+  source/review transactions,are physically retired. Useful individual samples
+  and source/protocol corrections remain in compact results and Git. The two
+  independently retained phase references remain unchanged:fast14508/12ELFs
+  and namingA/14ELFs. Existing legacy/orphan/.cache holds remain separate.
+  The four ended one-shot controllers are retired to Git;restore their original
+  committed source and recipe for a newly planned reproduction. The U1C++
+  helper and independent byte/lifetime oracles remain the concrete inputs for
+  U2's next fresh image,which will include the U1individual-copy control itself.
+  U2contiguous-run copying remains a separate unmeasured unit. In the source-view case,
+  admission enforces source_stride==blob_bytes;private-bank/U1admission enforces
+  bank_stride==blob_bytes. ForNdistinct IDs across24full-fit512banks,the number
+  of contiguous runs is at most min(N,24*513-N). The observed first32Krequest
+  hasN=8697,so at most3615copy APIcalls are needed with unchanged16012825600B;
+  first64KhasN=9178,at most3134calls with unchanged16889804800B. These are
+  source-derived request-count bounds under those equal-stride admissions.
+  Verify actual per-layer source strides in the new native trial before relying
+  on the bounds;the startup flag alone is insufficient. They are not actual coalesced commands,physical
+  bus transactions or speed measurements. Retain individual/run-copy outcomes
+  separately before comparing the useful combination with JIT. Reducing the
+  expert-major streaming bank is a different possible placement unit:verify all
+  callers,owner/admission and fallback requirements before comparing it. Do not
+  combine that allocation change with U2or an independent-engine queue policy.
   Existing copy-union10.309796s/kernel-union28.658416s includes24decode tokens,
   so it gives neither isolated prefill attribution nor physical-bus saturation.
-  Native events/lifetimes,matched32K/64KPP/TTFT,repeated decode preservation and
-  full-model/task/RESTORE/physical262144gates stay open. No new clean-speed or
-  throughput-target claim follows from these diagnostics or CPUtests.
+  Native byte/lifetime and U1same-image PP/TTFTscreens are now closed;the
+  original-reference control is closed;broader adoption gates above remain open.
+  Metadata and CPUtests themselves qualify neither model speed nor saturation;
+  the U1speed claim comes only from its closed paired model cohort.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
@@ -5866,19 +5933,15 @@ Fresh bounded model/frontend checks now pass for both fixed-width routes;
 their sustained comparison and broader model qualification remain pending.
 Required tracking/recovery/alias/API/CLI imports and hardware-tuned unmodified
 upstream measurements remain incomplete. Source and evidence are published on
-`feature/sycl`. Default integration is pending through PR180 under main's
-squash-only rule24638744. All 172 CSV source/evidence commits are verified ancestors
-of the pushed permanent primary and automatic head deletion is disabled. The
-project workflow permits a default content snapshot while preserving all those
-original identities on `feature/sycl`. The latest ordinary squash attempt at
-`fbe45f1b1` on November 14 UTC is rejected: the active ruleset restricts updates,with
-`update_allows_fetch_and_merge=false`. Admin merge permission for this concrete
-PR is pending; PR 180 remains open and no protection bypass or rule change was
-performed. Continue tuning on the pushed primary while default publication
-awaits an authorized route. After an
-authorized merge, merge the updated default back normally and verify the original
-identities again. The last
-verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce5c`.
+`feature/sycl`. The published default before this U1round is
+`2192aba41ac199a8522cafbe5ef60db5cdf616c0`through PR186;the earlier PR180
+permission hold is no longer current. This boundary publishes source/evidence
+from the permanent primary while preserving original measured commit identities.
+The U1source/evidence publication is [PR187](https://github.com/yqYo1/Strata/pull/187).
+Source publication does not close the unfinished functional-import or inference
+adoption gates above. The current CSVcontains540points;verify its original
+source/evidence ancestors and disabled automatic head deletion before default
+publication,then merge the updated default back normally and pull the clean ghq mirror.
 
 ## Expert upload chain decision
 

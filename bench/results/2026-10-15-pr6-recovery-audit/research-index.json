@@ -34056,5 +34056,204 @@
         "stage": "retired_verified"
       }
     ]
+  },
+  "prefill_eager_upload_source_bp_20261115": {
+    "stage": "reviewed_curated_reference",
+    "classification": "decision support",
+    "question": "Audit the newly implemented U1 eager-individual full-fit upload path, not generic independent-queue design. Follow actual caller to producer/consumer spans and outer owner drain; compare JIT/eager bytes, demanded expert map, source stride, reset/cancel/error behavior, private/full512 versus partial/nonempty/staging fallback, and unchanged decode. Identify concrete bugs or minimal coherent fixes with evidence, including counterexamples. Distinguish accepted enqueue from completion and shared in-order ordering from independent DMA overlap. No speed/adoption claims.",
+    "policy_revision": "f0e3918f1d392b2dc107e36ad69a264fbc464b16",
+    "task": {
+      "sha256": "cf11a7a100b7f39ca1ec3678bcef1d527d6081c38af26a797a4241d1f025ee9e",
+      "retired_after_curation": true
+    },
+    "launch_eligibility": {
+      "schedulable_now": false,
+      "evidence": [
+        "U1production caller and native fixture committed at51ea99cae,actual overlay guard included",
+        "materialized coherent14508+four-overlay source snapshot exists with15file/API/policy pins",
+        "prior generic queue/event audit reviewed and curated;newscope reviews actual new implementation"
+      ]
+    },
+    "previous_reference": "prefill_upload_event_lane_source_scope_20261115",
+    "limits": {
+      "words": 1600,
+      "bytes": 24576
+    },
+    "retention": "Compact source/protocol corrections and original hashes are the maintained reference;31raw files/82176bytes and ended report/review/transaction roots physically retired. No model/performance/physical-context qualification.",
+    "run": "run_46428b6b0f7d",
+    "task_id": "task_8f49859a7321",
+    "dispatch": "ctx_16f96a4c897e",
+    "terminal": "term_20788115-b813-4d15-a323-86d0cee03dd1",
+    "native_scope": "strata-research-eager-bp-20261115.scope",
+    "sandbox_verified": {
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "cwd": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-upload-source-bp-20261115",
+      "network_access": true,
+      "exclude_tmpdir_env_var": true,
+      "exclude_slash_tmp": true,
+      "approval": "never",
+      "actual_turn_context": true
+    },
+    "report": {
+      "bytes": 6129,
+      "words": 847,
+      "sha256": "b3ad4bb8875c8984ee7f2c10137fe55583986fdd688bcb23cd218776a72c23ef",
+      "retired_verified": true
+    },
+    "review": {
+      "agent": "/root/prefill_eager_upload_review_bq_20261115",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "sha256": "5b6d0c0249436cc4dcdb5e036bf64b768d7f2874342d7aef6508feda85fb379f",
+      "digest_sha256": "1aefbc08e674020d3ac988b8cbd243c8925f4cbbf195308e94977ed924e075e1",
+      "Main_read_digest_only": true,
+      "retired_verified": true
+    },
+    "closure": {
+      "accepted_worker_done": true,
+      "all_owned_pidfds_exited": true,
+      "terminal_closed": true,
+      "delivery_acknowledged": true,
+      "full_native_age_seconds": 377.49,
+      "CPU_seconds_upper": 36.510943,
+      "native_peak_RSS_bytes": 427917312,
+      "cgroup_peak_bytes": 319250432,
+      "captured_text_upper_bytes": 1210298,
+      "within_budgets": true
+    },
+    "findings": [
+      "Pinned U1helper checks bounds,accepted-enqueue publication,same in-order readers and outer checked owner drain. No eager-only correctness bug demonstrated. Same-queue submission does not prove independent DMA overlap or speedup.",
+      "Worker omitted route-builder from15pins. Main separately checks the actual compiled immutable moe_window_routes.hpp constructor:ascending expert loop,then bounded row chunks;strict plan ordering refuses malformed IDs before copy. Native source/census both bind SHA455b0d9cba3378b1781ad5b9894e2635b9ff7fd1b274e8880c68228d7442d030.",
+      "Current errors exit and drain without retry. A future continuation/retry path after ambiguous enqueue would need an independent publication/failure audit;not a demonstrated present bug."
+    ],
+    "operational_exception": {
+      "required_startup_status": false,
+      "successful_worker_orchestration_check_and_completion_IPC": true,
+      "meaning": "Reporter did not execute the exact required startup status --json command. Preserve this protocol failure;later completion does not qualify the missing startup gate.",
+      "next_dispatch": "Place exact startup status command in top-level injected spec and check its actual worker receipt;orchestration check is not a substitute."
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "question": "Re-audit failure publication only if a future caller can continue/retry after an ambiguous enqueue;no duplicate generic queue audit now.",
+      "prerequisite": "A concrete changed failure/continuation implementation,or a new unresolved U1source defect."
+    },
+    "retirement": {
+      "sha256": "b34ae2068b88c659a1aee451f4446e781a2cb8b27cf9209b0c3910f7d466254a",
+      "files": 31,
+      "bytes": 82176,
+      "roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-upload-source-bp-20261115",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-upload-source-bp-20261115-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-eager-upload-review-bq-20261115"
+      ],
+      "stage": "retired_verified",
+      "manifest_retired": true,
+      "reason": "Completed source audit,Main digest curation and verified native/terminal closure;no remaining raw report,review or transaction consumer. Artifact deletion deferred until model1process closes."
+    }
+  },
+  "prefill_eager_origin_gap_br_20261115": {
+    "stage": "failed_preflight_closed_no_report",
+    "classification": "decision support",
+    "question": "Compare committed original14508versus its new four-file U1overlay/source-root build as a finite source/host-code audit. Determine whether there is a concrete unintended JIT/compute/placement/default change,or a defensible changed host-code/inlining/initialization mechanism. Compare alternatives and counterevidence;do not label a performance cause from symbols alone. Original/new recipes and normalized common compile commands match;U1jit/eager workloads/jobs/bytes match,with a same-image gain but lower absolute speed than history. Identify only bounded next checks and the smallest coherent follow-up unit. Main continues actual controls and tuning;no extended generic regression history.",
+    "task": {
+      "sha256": "50707739a5ee3eb8068fb1f6d07f351f6bf93e48cb75f1479d5e242a82230a32",
+      "retired_after_curation": true
+    },
+    "policy_revision": "1ca26ef811d6b88ffdcbe9eba5c9adfdaf7b0174",
+    "launch_eligibility": {
+      "schedulable_now": false,
+      "evidence": [
+        "Closed U1same-image3pair32K/64K cohort410f6cb8d;currentbody JIT/eager both below original historical reference",
+        "Same actual workloads/jobs/H2D in all18matched requests;normalized shared compile commands match;two original/new source/ELF/recipe snapshots pinned",
+        "No prior completed U1cross-build host-code audit;generic upload audit is already curated and should not be repeated"
+      ]
+    },
+    "input_count": 22,
+    "budget": {
+      "words": 1800,
+      "bytes": 24576
+    },
+    "retention": "Curated source/protocol corrections and original hashes retained;ended transaction/source/report/review roots physically retired. No new inferred performance cause.",
+    "failure": "Main appended a separated full stop to the top-level exact command;worker ran status --json . which failed. Corrected status succeeded,but worker preserved the literal preflight failure and returned outcome failed before source audit. No report/findings.",
+    "closure": {
+      "accepted_failed_worker_done": true,
+      "all_owned_pidfds_exited": true,
+      "terminal_closed": true,
+      "delivery_acknowledged": true,
+      "full_native_age_seconds": 316.51,
+      "CPU_seconds_upper": 18.360421,
+      "captured_text_upper": 467993,
+      "within_budgets": true
+    },
+    "raw_retired_verified": true,
+    "retirement_record": "prefill_eager_model_v1.artifact_retirement"
+  },
+  "prefill_eager_origin_gap_bs_20261115": {
+    "stage": "reviewed_curated_reference",
+    "classification": "decision support",
+    "question": "Compare committed original14508versus its new four-file U1overlay/source-root build as a finite source/host-code audit. Determine whether there is a concrete unintended JIT/compute/placement/default change,or a defensible changed host-code/inlining/initialization mechanism. Compare alternatives and counterevidence;do not label a performance cause from symbols alone. Original/new recipes and normalized common compile commands match;U1jit/eager workloads/jobs/bytes match,with a same-image gain but lower absolute speed than history. Identify only bounded next checks and the smallest coherent follow-up unit. Main continues actual controls and tuning;no extended generic regression history.",
+    "task": {
+      "sha256": "26fc08b556d71bfff822d75fc7365b6fd28aad02fec220fe84aae110bc6d4ba5",
+      "retired_after_curation": true
+    },
+    "launch_eligibility": {
+      "schedulable_now": false,
+      "evidence": [
+        "BRacceptedfailedpreflight and owned native/terminal closure verified;no duplicate live audit",
+        "Same22immutable original/candidate source/recipe/ELF inputs and closed U1evidence;only startup argv serialization corrected"
+      ]
+    },
+    "input_count": 22,
+    "budget": {
+      "words": 1800,
+      "bytes": 24576
+    },
+    "retention": "Curated source/protocol corrections and original hashes retained;ended transaction/source/report/review roots physically retired. No new inferred performance cause.",
+    "run": "run_c6e30704daa9",
+    "task_id": "task_4f71a1ca8f86",
+    "dispatch": "ctx_23b4ad8c2364",
+    "terminal": "term_29f5eccc-e3ea-40da-a420-eb650567ebd6",
+    "report": {
+      "bytes": 6242,
+      "words": 875,
+      "sha256": "fbe199f904b8e5fdb29b830660b98a13eabf88f21f61964fa9e568ff1c2a1857",
+      "retired_verified": true
+    },
+    "closure": {
+      "accepted_success": true,
+      "all_owned_pidfds_exited": true,
+      "terminal_closed": true,
+      "delivery_acknowledged": true,
+      "resource_sample_native_age": 372.72,
+      "native_age_at_positive_exit": 468.71,
+      "CPU_seconds_upper": 27.593661,
+      "native_peak_RSS": 449314816,
+      "cgroup_peak_bytes": 344354816,
+      "captured_text_upper": 677286,
+      "within_budgets": true,
+      "actual_startup_status_success": true,
+      "actual_sandbox_verified": true
+    },
+    "review_agent": "/root/prefill_origin_gap_review_bt_20261115",
+    "review": {
+      "agent": "/root/prefill_origin_gap_review_bt_20261115",
+      "sha256": "0e35d8a0aab8fac5d1536c7cb36502149b05027282d7c5217b346c02c3fe8665",
+      "digest_sha256": "6e109e40c5753fe0c5c760b68a98c850540c01870d055127e0a89475ac6415b4",
+      "Main_read_digest_only": true,
+      "pins_verified": 22,
+      "retired_verified": true
+    },
+    "findings": [
+      "Source supports an opt-in host enqueue-order change. No demonstrated change to device compute/JIT,placement or default selection. Source/symbol differences do not establish a latency cause.",
+      "If a later matched candidate-only discrepancy needs attribution,charge the whole eager branch,including expert-ID vector construction and its eager-only diagnostic,before the firstGEMM.",
+      "Subsequent current-period controls use the identical retained originalELF:756.45PP32and914.47PP64,also below historical871.57/1006.83. One process perlength is descriptive,not a matched cross-build effect/cause. Preserve U1paired mechanism result independently."
+    ],
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisite": "Repeated matched evidence of a candidate-only delta requiring source/host attribution;no generic retrospective audit now."
+    },
+    "raw_retired_verified": true,
+    "retirement_record": "prefill_eager_model_v1.artifact_retirement"
   }
 }
