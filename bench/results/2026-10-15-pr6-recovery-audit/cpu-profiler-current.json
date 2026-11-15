@@ -7348,5 +7348,149 @@
     "GPU_probe_qualified": false,
     "scope": "Four host guards including executable-only regular ELF maps;device/rodata/vdso mappings excluded.",
     "next": "Integrate original observer source into feature/sycl,then fresh committed control/trace safety and RAW-clock probe."
+  },
+  "unitrace_current_runtime_probe_v1": {
+    "stage": "preflight_rejected",
+    "controller": {
+      "revision": "ba5185424ff30bea2d987bce51c562f04d44ce3a",
+      "files": 355
+    },
+    "admission": {
+      "schema": "strata-current-pti-host-admission-v1",
+      "scope": "host_source_asset_admission_only",
+      "controller_commit": "ba5185424ff30bea2d987bce51c562f04d44ce3a",
+      "controller_sha256": "144d49370e69df375d63a2e70901f693eb9d01433771aa4ba4fe1f6005f52149",
+      "tools": {
+        "artifacts": {
+          "libunitrace_tool.so": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+            "bytes": 2329704,
+            "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+          },
+          "unitrace": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+            "bytes": 513168,
+            "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+          }
+        },
+        "collector_source_commit": "e57b5ee7fce1de6391c793f1014c44cae3b85d9c",
+        "launcher_source_commit": "8fba6f3aaa22578bf0b7a3ae0cc945b6d3de89c9",
+        "recovered_launcher_source_sha256": "d033ab839454e1779689062f3932ceba830ebac4fe5504a06068078818e6be1f",
+        "original_compiler_inputs": 457,
+        "indexed_compiler_inputs": 460,
+        "original_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/dependencies.json",
+          "files": 457,
+          "sha256": "6fa2604f00edde615f2150815c0de23a90c2caac1c0ad7e75bfcd73e1b146a35",
+          "scope": "Complete preprocessor header closure plus compiler/linker/startup/runtime assets; retained externally for current build/qualification admission."
+        },
+        "indexed_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/compiler-inputs.json",
+          "files": 460,
+          "sha256": "e7d01b2a1a6fe76886e79062f6c25f71afd213cd8f26d88321876cb26db38e20"
+        },
+        "collector_recipe_sha256": "610301c464bbc27755acc4c93449d21b564a79d57e99c3977fd9f9434af4cb79",
+        "launcher_recipe_sha256": "edb1023cff562479c84867ffbc56d3600b130385d06bdba068217300d7c5afee",
+        "retired_artifact_or_fixture_readers_called": false
+      },
+      "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+        "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+        "bytes": 26448640,
+        "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+      },
+      "native_build_proof_sha256": "3bf9d637819c6a92636d4bf507bbd6818c7a5ae8f841200ca4ff085c9370dbd9",
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+      },
+      "runtime_files": 84,
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "required_pre_exec_controls": {
+        "UNITRACE_SystemTime": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0"
+      },
+      "source_and_artifact_recovery_passed": true,
+      "GPU_executed": false,
+      "collector_loaded": false,
+      "fresh_collector_probe_passed": false,
+      "observer_overhead_qualified": false,
+      "request_drain_qualified": false,
+      "physical_saturation_qualified": false,
+      "historical_provider_origin_hold_cleared": false,
+      "pending": "Commit this direct admission;fresh bounded known-work/current-map/RAW-clock probe;then prospective32Krequest collection and matched clean observer-overhead controls. Keep original1.576/1.538 failures and old provider-origin hold unchanged."
+    },
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/sycl_submission_test",
+      "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+      "bytes": 352152,
+      "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "base_environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "results": [],
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "plan": "Commit source/plan;control then trace in separate owned processes,commit each closure. At before-runtime,runtime-ready,before-exit require actual target/preload/current mapped ELF hashes,first-init validation proof,ten submission cases and normal0. Trace needs nonempty complete GPUevents inside actual enclosing CLOCK_MONOTONIC_RAW process bounds with SystemTime1. Stop first identity,source,provider,owner,validation,fault,budget or clock failure;no retry.",
+    "limits": "Small fixture safety/clock gate only. No complete service/count coverage,physical bus traffic,prefill critical path,model request,observer-overhead or throughput qualification. Retained validation reference does not qualify ordinary provider teardown. Old failures remain.",
+    "retention": "Use the existing fast14508same-build fixture and surviving collector;no binary generation. Retain compact identity/map/clock/correctness/fault outcomes,retire normal trace/cache after verification. Next consumer is a separately committed32Krequest/overhead plan.",
+    "native_execution_attempted": false,
+    "GPU_work_admitted": false,
+    "error": "Main source review before native launch found that base_environment was loaded from historical measurement_environment.json,whose provider paths differ from the current independently qualified runtime manifest. No control/trace process was launched.",
+    "next": "Keep this rejection unchanged;commit a new probe source/plan using the actual phase_kv_split_device_v1 qualified environment and reject historical XeStrata provider paths before exec."
   }
 }
