@@ -388471,5 +388471,114 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "prefill_eager_device_v1": {
+    "stage": "prepared",
+    "source_commit": "d24af268c1d5d657d73751b0f170e23e20a50149",
+    "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "native_overlay_commit": "51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054",
+    "native_record_sha256": "04f030659647498a1829ad5b882ad44d3926f09e433c3afb130ccbf549c0b38c",
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/strata",
+        "sha256": "7ea162eac831256af28e861059641501021a5fec194871b9bcb4dcaddc1b1f9d",
+        "bytes": 26461792
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/sycl_expert_bank_test",
+        "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+        "bytes": 513048
+      }
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/cache",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+      "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+      "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+      "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+      "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+      "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "plan": {
+      "order": [
+        "smoke",
+        "validate"
+      ],
+      "first": "Trace+parameter-validation+pre-main probe;two4expert cases,normal and cancellation.",
+      "second": "Quiet parameter validation;0,1,4,127,512experts,strided source,full readback,unused bank/source guards,alias/extent/nonempty/partial refusals and checked cancellation.",
+      "providers": "LD_DEBUG=libs records actual initialized ELF paths in these diagnostic-only processes;check all against original runtime84 and require actual SYCL,URv2,LevelZero GPU,IGC and pre-main libraries.",
+      "acceptance": "Both normal0,exact case markers,quiet validation,closed owners,unchanged boot/driver and zero fresh faults. Stop first failure. No component performance gate.",
+      "next": "Only after both pass,commit a new matched same-ELF jit/eager model-handoff and32K/64K speed plan. Keep decode/task/agent/fullphysical262144/RESTORE gates open.",
+      "retention": "Keep useful case/closure/provider-conservation outcomes;retire successful API/loader traces after model admission consumes these gates. No new build generation."
+    },
+    "budget": {
+      "wall": 180,
+      "cpu": 240,
+      "rss_cap": 4294967296,
+      "text_cap": 33554432,
+      "file_cap": 67108864,
+      "total_cap": 83886080
+    },
+    "sources": {
+      "files": 353,
+      "sha256": "5750bca59ddbbf038cf657d2daea950d574ed779bfd4a772e958d002f30d63d9"
+    }
   }
 }
