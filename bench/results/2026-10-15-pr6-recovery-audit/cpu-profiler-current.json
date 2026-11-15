@@ -12427,5 +12427,185 @@
       ],
       "reason": "Completed metadata-only probe;restore source/recipe from Git for a concrete new capability question. No production export or build target uses it."
     }
+  },
+  "prefill_runtime_queues_v1": {
+    "stage": "failed",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "error": "RuntimeError('unfrozen link input: /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0')",
+    "application_work_submitted": false,
+    "source_commit": "b138b8be74ddd4e8f1ec6a9398ee448c6830444b",
+    "original_complete_evidence_commit": "6ad5e8dfd4bcb6b252499c5422be11b2b1d4ed1c",
+    "original_evidence_key": "prefill_runtime_queues_v1"
+  },
+  "prefill_runtime_queues_v2": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/queue-runtime-v2/queue_runtime",
+      "sha256": "e2633bec4b140b2890b79428dbc6abd6ea1868edb17f1f35ee6019788c4b763f"
+    },
+    "artifact_retirement": [
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/queue-runtime-v1",
+        "original_evidence_commit": "6ad5e8dfd4bcb6b252499c5422be11b2b1d4ed1c",
+        "source_commit": "b138b8be74ddd4e8f1ec6a9398ee448c6830444b",
+        "source_files_recovered": 530,
+        "actual_compiler_inputs": 705,
+        "actual_link_inputs": 25,
+        "fresh_objects": 2,
+        "final_ELF_sha256": "e2633bec4b140b2890b79428dbc6abd6ea1868edb17f1f35ee6019788c4b763f",
+        "owner_closed": true,
+        "files": 14,
+        "bytes": 390851,
+        "raw_inventory_sha256": "c33a65d34930a89bfdb6ec144a3faafa708590db3b103f3ea50a7a7201563367",
+        "stage": "retired_verified"
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/queue-runtime-v2",
+        "original_evidence_commit": "794bb2672269486793ea080303227e4c8f0cd3db",
+        "source_commit": "338ae2302583cc65a22fd91f95d6908d357b1224",
+        "source_files_recovered": 530,
+        "actual_compiler_inputs": 705,
+        "actual_link_inputs": 25,
+        "fresh_objects": 2,
+        "final_ELF_sha256": "e2633bec4b140b2890b79428dbc6abd6ea1868edb17f1f35ee6019788c4b763f",
+        "owner_closed": true,
+        "files": 18,
+        "bytes": 497287,
+        "raw_inventory_sha256": "d7cde0785820b4e88df6ce61a61726a43448e67871f933e98f08e920c6da0cc8",
+        "stage": "retired_verified"
+      }
+    ],
+    "queues": [
+      {
+        "kind": "queue",
+        "name": "compute",
+        "ordinal": 0,
+        "index": 0,
+        "immediate": true,
+        "in_order": true,
+        "profiling": true
+      },
+      {
+        "kind": "queue",
+        "name": "transfer",
+        "ordinal": 0,
+        "index": 0,
+        "immediate": true,
+        "in_order": true,
+        "profiling": false
+      },
+      {
+        "kind": "queue",
+        "name": "make_queue_profiled",
+        "ordinal": 0,
+        "index": 0,
+        "immediate": true,
+        "in_order": true,
+        "profiling": true
+      },
+      {
+        "kind": "queue",
+        "name": "make_queue_unprofiled",
+        "ordinal": 0,
+        "index": 0,
+        "immediate": true,
+        "in_order": true,
+        "profiling": false
+      }
+    ],
+    "UR_enqueue_calls": 0,
+    "native_exit_code": 0,
+    "fresh_faults": false,
+    "boot_unchanged": true,
+    "application_work_submitted": false,
+    "source_commit": "338ae2302583cc65a22fd91f95d6908d357b1224",
+    "original_complete_evidence_commit": "794bb2672269486793ea080303227e4c8f0cd3db",
+    "original_evidence_key": "prefill_runtime_queues_v2",
+    "actual_provider_maps_sha256": "6cc12e5fbc11a52345dbd1f77148b94a06241b11cd0e1bad028f33dc2300cd9c",
+    "limits": "Two fresh host-only TUs of unchanged original Runtime and metadata fixture. Actual native immediate-list ordinals/indices,not model math,copy-offload route,speed or overlap qualification."
+  },
+  "prefill_fullfit_upload_host_v1": {
+    "stage": "closed",
+    "passed": false,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "source_commit": "672e18a1067df8bc414c4f0b2c37169c35459808",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1/oracle",
+      "sha256": "11024f5dd52d42f75ca71542861031f6c9a96b79438bfdbb49552e98ebbf9edc"
+    },
+    "execution_and_byte_oracle_passed": true,
+    "qualification_hold": "Controller did not recheck the freshly linked ELF and consumed inputs immediately before oracle launch. Original successful output is retained;source/build inputs were pinned but the mandatory launch guard was incomplete.",
+    "artifact_retirement": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1",
+      "files": 11,
+      "bytes": 240614,
+      "inventory_sha256": "52861a6229b2743c58f8074cd617975bb763bcaeacdda17137bda9c2b47ddbce",
+      "source_commit": "672e18a1067df8bc414c4f0b2c37169c35459808",
+      "source_recipe_and_actual_compiler_link_inputs_recovered": true,
+      "exact_ELF_sha256": "11024f5dd52d42f75ca71542861031f6c9a96b79438bfdbb49552e98ebbf9edc",
+      "reason": "Original normal0and byte oracle preserved with launch-guard hold;new CPUV2uses a separate prospective guarded plan,no baseline binary consumer remains.",
+      "stage": "retired_verified"
+    },
+    "GPU_executed": false,
+    "original_complete_evidence_commit": "60401d3549ef896149a67ca0f47c109c96cf1293",
+    "original_evidence_key": "prefill_fullfit_upload_host_v1"
+  },
+  "prefill_fullfit_upload_host_v2": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "source_commit": "c3267027b71c9f4ce1e01cbc70e7fe0fe6a39555",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v2/oracle",
+      "sha256": "11024f5dd52d42f75ca71542861031f6c9a96b79438bfdbb49552e98ebbf9edc"
+    },
+    "decision": {
+      "CPU_byte_and_publication_oracle_passed": true,
+      "native_GPU_events_lifetime_qualified": false,
+      "production_inference_selected": false,
+      "performance_qualified": false,
+      "actual_eligible_layer_count": 24,
+      "actual_total_layers": 48,
+      "resource_description_correction": "The original source/controller resource description said28full-fit layers. The seven observed geometry counts sum to24full-fit and24partial layers. This annotation error changes no C++code,oracle input,byte result or runtime policy;use24for future estimates."
+    },
+    "GPU_executed": false,
+    "original_complete_evidence_commit": "35041702b14c69f86212e5abc8a084fdb161cd08",
+    "original_evidence_key": "prefill_fullfit_upload_host_v2",
+    "oracle": "byte_cases6/refusals10/failure-publication checked;all three owned commands0and closed",
+    "actual_inputs": {
+      "compiled": {
+        "files": 195,
+        "sha256": "56595f012a629af4991b39a224298a5653367420dc50202a6febf31e4cb92ea6"
+      },
+      "links": {
+        "files": 23,
+        "sha256": "259e0dd29f24079cd5add7dae2a1a9be72d4822c1842c6d3d07d758f7da055b3"
+      }
+    },
+    "next": "Integrate only the prefill full-fit path;compare JIT/eager scalar asU1and eager scalar/coalesced asU2before their useful combination;native event/lifetime,model32K/64K,decode,quality and262144gates remain open.",
+    "artifact_retirement": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v2",
+      "source_commit": "c3267027b71c9f4ce1e01cbc70e7fe0fe6a39555",
+      "exact_ELF_sha256": "11024f5dd52d42f75ca71542861031f6c9a96b79438bfdbb49552e98ebbf9edc",
+      "actual_compiler_inputs": 195,
+      "actual_link_inputs": 23,
+      "source_recipe_and_actual_inputs_recovered": true,
+      "reason": "Closed observers/research/review;actual route,source/recipe and compact useful outcomes retained;no remaining raw-body or executable consumer.",
+      "files": 11,
+      "bytes": 240616,
+      "inventory_sha256": "6d648ead5849acf61299744b2f6882eb58d5518f6ced2c335acf85c6efb541f3",
+      "stage": "retired_verified"
+    }
   }
 }

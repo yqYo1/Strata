@@ -1,0 +1,55 @@
+// Main-authored; repository LICENSE. Independent byte-copy and failure oracle.
+#include "strata/prefill/fullfit_upload_plan.hpp"
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+#include <limits>
+
+using namespace strata::prefill::detail;
+static void check(bool value) { if (!value) throw std::runtime_error("full-fit upload oracle failed"); }
+template<class F> static void refuses(F&& operation) {
+    try { operation(); } catch (const std::exception&) { return; }
+    throw std::runtime_error("invalid full-fit upload accepted");
+}
+static void bytes(const std::vector<int32_t>& ids,uint64_t source_stride,bool coalesced,size_t calls) {
+    const auto bank=ExpertBankLayout::packed(512*256,256);
+    const auto plan=PrefillFullfitUploadPlan::make(ids,bank,source_stride,coalesced);
+    std::vector<uint8_t> source(512*source_stride),destination(bank.backing_bytes,0xa5);
+    for (int e=0;e<512;++e)
+        for (size_t i=0;i<source_stride;++i) source[size_t(e)*source_stride+i]=uint8_t((e+i*5)%251);
+    ExpertBankSlots slots(512,true);size_t observed=0;uint64_t copied=0;
+    enqueue_prefill_fullfit_upload(plan,slots,[&](const PrefillFullfitCopy& run) {
+        check(slots.permanent_used()==int32_t(run.first)); // not published before acceptance
+        std::memcpy(destination.data()+run.destination_offset,source.data()+run.source_offset,run.bytes);
+        ++observed;copied+=run.bytes;return true;
+    });
+    check(observed==calls && copied==ids.size()*256 && copied==plan.payload_bytes());
+    for (size_t i=0;i<ids.size();++i) {
+        const auto hit=slots.begin(ids[i]);check(!hit.upload && hit.permanent && hit.slot==int32_t(i));
+        check(std::memcmp(destination.data()+i*256,source.data()+size_t(ids[i])*source_stride,256)==0);
+    }
+    check(std::all_of(destination.begin()+ids.size()*256,destination.end(),[](uint8_t v){return v==0xa5;}));
+}
+int main() try {
+    const auto bank=ExpertBankLayout::packed(512*256,256);
+    const std::vector<int32_t> ids{2,3,4,8,9,21};
+    bytes(ids,256,false,6);bytes(ids,256,true,3);bytes(ids,512,true,6);
+    bytes({},256,true,0);bytes({511},256,true,1);
+    std::vector<int32_t> all;for (int e=0;e<512;++e) all.push_back(e);
+    bytes(all,256,true,1);
+    for (const auto& invalid:std::vector<std::vector<int32_t>>{{-1},{512},{3,3},{3,2}})
+        refuses([&]{PrefillFullfitUploadPlan::make(invalid,bank,256,true);});
+    refuses([&]{PrefillFullfitUploadPlan::make(ids,bank,128,true);});
+    refuses([&]{PrefillFullfitUploadPlan::make(ids,bank,std::numeric_limits<uint64_t>::max()-255,true);});
+    refuses([&]{PrefillFullfitUploadPlan::make(ids,ExpertBankLayout::packed(511*256,256),256,true);});
+    ExpertBankSlots partial(511);const auto plan=PrefillFullfitUploadPlan::make(ids,bank,256,false);
+    refuses([&]{enqueue_prefill_fullfit_upload(plan,partial,[](auto){return true;});});
+    ExpertBankSlots failed(512,true);unsigned attempts=0;
+    refuses([&]{enqueue_prefill_fullfit_upload(plan,failed,[&](auto){return ++attempts!=3;});});
+    check(attempts==3 && failed.permanent_used()==2);
+    const auto unpublished=failed.begin(4);check(unpublished.upload && unpublished.slot==2);
+    ExpertBankSlots nonempty(512,true);const auto first=nonempty.begin(1);nonempty.queued(first);
+    refuses([&]{enqueue_prefill_fullfit_upload(plan,nonempty,[](auto){return true;});});
+    std::puts("prefill full-fit upload oracle: byte_cases=6 refusals=10 failure_publication=checked");
+    return 0;
+} catch (const std::exception& error) { std::fprintf(stderr,"%s\n",error.what());return 1; }

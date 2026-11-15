@@ -21,6 +21,7 @@ import time
 P = Path(__file__).resolve().parents[2]
 THIS = 'tools/research/orca_scope.py'
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review')
+REPORT_ROOTS = (B, B.with_name('research'))
 LIMITS = dict(wall_seconds=600, CPU_seconds=180, memory_bytes=4 << 30,
               captured_text_bytes=8 << 20, tasks=256)
 
@@ -274,7 +275,8 @@ if __name__ == '__main__':
     require(len(sys.argv) >= 3 and sys.argv[1] in ('attach', 'sample'),
             'attach REPORT_ROOT IDENTITY_JSON UNIT | sample REPORT_ROOT [NATIVE_SESSION_JSONL]')
     root = Path(sys.argv[2]).resolve()
-    require(root.is_relative_to(B) and root != B and root.is_dir(), 'private existing report root required')
+    require(any(root.is_relative_to(base) and root != base for base in REPORT_ROOTS)
+            and root.is_dir(), 'private existing report root required')
     if sys.argv[1] == 'attach':
         require(len(sys.argv) == 5, 'exact named identity and scope required')
         attach(root, Path(sys.argv[3]).resolve(), sys.argv[4])

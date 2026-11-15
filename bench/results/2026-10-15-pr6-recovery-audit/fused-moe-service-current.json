@@ -388178,5 +388178,123 @@
       },
       "retention": "Keep individual speed samples and meaningful scope/bounds fields. Repeated successful PID/provider/validation/map records and deleted-log hashes are available in original Git evidence;no current decision needs duplicate copies."
     }
+  },
+  "prefill_transfer_route_v1": {
+    "stage": "closed",
+    "source_commit": "7f4c43b7d23a9856d9e9af63f3f5c2bd80e3a0f5",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+      "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+      "bytes": 26448640,
+      "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+    },
+    "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "request_hashes": {
+      "32769": [
+        "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+        "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d"
+      ]
+    },
+    "original_complete_evidence_commit": "45260f03c488c850af7da29e07a6505ca122d02e",
+    "original_evidence_key": "prefill_transfer_route_v1",
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "configuration_reference": "coherent_prefill_speed_v1;actual32769input,24outputs,throughput,chunk8192,context262144/resident20480;only existing STRATA_TRACEprogress observer added",
+    "frontend_source_inputs": {
+      "files": 761,
+      "sha256": "ba3bf897e3aa3673881525034d5bacac681af003b931eb11c0c41c4972d2723f"
+    },
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "actual_transfer_route": {
+      "actual_source_view": true,
+      "source_marker": {
+        "requested_view": "1",
+        "effective_view": "1",
+        "layers": "48",
+        "owned_slab_bytes": "0",
+        "borrowed_layer_span_bytes": "50292326400",
+        "host_copy": "eliminated",
+        "source_pin": "unspecified",
+        "source_owner": "caller_through_checked_retirement"
+      },
+      "staged_bank": true,
+      "actual_private_layer_geometries": {
+        "slots469/stride2176000/full_fit0": 14,
+        "slots512/stride1510400/full_fit1": 5,
+        "slots512/stride1971200/full_fit1": 15,
+        "slots512/stride1715200/full_fit1": 3,
+        "slots438/stride2329600/full_fit0": 9,
+        "slots512/stride1868800/full_fit1": 1,
+        "slots384/stride2662400/full_fit0": 1
+      },
+      "actual_layers": 48,
+      "upload_staging_enabled": false,
+      "source_bound_staging_evidence": "Immutable STAGING=0 plus exact called source and absence of its mandatory construction/footer markers",
+      "source_bound_queue_evidence": "Successful layer-major and per-expert admission in14508require m.copy==m.cs;all copy/dequant/GEMM submissions use that same in-order stream",
+      "limits": "Actual emitted source/bank/layer markers plus pinned branch contracts;no per-command timestamps,engine ordinals,bus traffic,overlap or speed claim."
+    },
+    "samples": [
+      {
+        "actual_read_tokens": 32769,
+        "actual_reused_tokens": 0,
+        "prompt_ms": 54114.5,
+        "prompt_tps": 605.5,
+        "ttft_s": 54.284,
+        "total_s": 56.188,
+        "generated_tokens": 24,
+        "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+        "drafts_offered": 21,
+        "drafts_accepted": 16,
+        "timing_frontend_state": "post-count-preflight"
+      },
+      {
+        "actual_read_tokens": 32769,
+        "actual_reused_tokens": 0,
+        "prompt_ms": 42662.7,
+        "prompt_tps": 768.1,
+        "ttft_s": 42.846,
+        "total_s": 44.842,
+        "generated_tokens": 24,
+        "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+        "drafts_offered": 21,
+        "drafts_accepted": 16,
+        "timing_frontend_state": "post-count-preflight"
+      }
+    ],
+    "outcome": {
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "request_routes_checked_before_continue": 2
+    },
+    "actual_full_fit_layers": 24,
+    "actual_partial_layers": 24,
+    "first_and_subsequent_route_identical": true,
+    "limits": "Diagnostic trace-on two-request route observation;not clean PP/TG,task quality,physical262144or adoption. Staging0and same-queue source contracts are distinct from per-command device telemetry.",
+    "raw_retirement": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-transfer-route-v1",
+      "files": 76,
+      "bytes": 10826426,
+      "inventory_sha256": "f20fc7c31b7e32f1aa27b670e3e5d64032ed934015080c9b3eecf50382d6dbd0",
+      "reason": "Closed observers/research/review;actual route,source/recipe and compact useful outcomes retained;no remaining raw-body or executable consumer.",
+      "stage": "retired_verified"
+    }
   }
 }

@@ -1282,21 +1282,47 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   layer-major admission requires`m.copy==m.cs`;bank publication relies on that
   ordering. An independent long-prefill upload/compute lane needs event-backed
   publication,reader retirement,retained owners and checked drains as one
-  coherent unit,preserving math,decode and qualified runtime safety. The next
-  Orca source scope remains conditional until Main pins actual32Kroute/source/
-  staging and event/wait evidence plus actual installed URengine selection.
+  coherent unit,preserving math,decode and qualified runtime safety. The bounded
+  Orca Luna BNsource audit and native Luna-max BOreview are now closed.
+  Actual two-request evidence`prefill_transfer_route_v1`(`45260f03c`)confirms
+  source-view1,staging0,owned slab0and all48private layer geometries;24layers
+  are full-fit512and24remain partial. Existing layer/FFNadmission establishes
+  their same-queue ordering and checked final drains.
   The metadata-only inventory`prefill_queue_capability_v4`(evidence`31413aec3`)
   now confirms ordinal0compute+copy/one physical engine and ordinal1copy-only/
   one engine,API1.17,normal0/closed owners/no fresh fault. It submits no GPUwork.
-  Preserve copy-offload avoidance;this inventory does not prove that another
-  ordinary SYCLqueue selects ordinal1. Initial source/header admission failures
+  The unchanged production Runtime's four constructor cases now return native
+  immediate,in-order ordinal0/index0handles in`prefill_runtime_queues_v2`
+  (`794bb2672`),with zeroURenqueue calls,normal0,quiet pre-main validation and
+  closed owners. Preserve copy-offload avoidance. An explicit ordinal1copy-only
+  path is API-feasible in principle and requires a separate queue-policy safety
+  qualification;keeping the offload variable set does not qualify raw LevelZero
+  work. Material critical-path opportunity and that bounded plan are still
+  prerequisites to a further source-research scope. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
   model library path selects its qualified /usr/local IGCwithout a system edit.
-  Recover existing committed route/provider evidence first;collect only its
-  remaining facts. A separate transfer queue's existence and
+  A separate transfer queue's existence and
   about4msobserved overlap do not prove a usable independent engine or causal
   speedup. A broader required redesign remains work to scope,not a reason to
-  end tuning. Full-model/task/RESTORE/physical262144gates stay open.
+  end tuning. Main's next owned proposal instead preserves the same queue and
+  bytes:U1compares JITper-expert with eager per-expert upload;U2compares eager
+  per-expert with contiguous-run copies,then validates their useful combination.
+  `fullfit_upload_plan.hpp`and its independent byte/publication oracle are
+  prototypes with no production caller. CPUV2evidence`35041702b`passes6byte
+  cases/10refusals,including failed-enqueue nonpublication. V1's missing launch
+  guard stays held;V2checks source/compiler/ELF/consumed bytes before launch.
+  The initial resource annotation's28eligible layers is corrected to24from the
+  actual geometry counts;no C++input or sample changes. Before a native trial,
+  integrate only this prefill proposal onto the fast14508native source and pin
+  its complete recoverable inputs;do not bundle the pending KVengine changes.
+  Prove that the whole preloaded bank remains disjoint from live FFNscratch,
+  retain source/bank owners through error drains,and preserve the partial-bank
+  and nonempty-bank fallback before native execution.
+  Existing copy-union10.309796s/kernel-union28.658416s includes24decode tokens,
+  so it gives neither isolated prefill attribution nor physical-bus saturation.
+  Native events/lifetimes,matched32K/64KPP/TTFT,repeated decode preservation and
+  full-model/task/RESTORE/physical262144gates stay open. No new clean-speed or
+  throughput-target claim follows from these diagnostics or CPUtests.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
