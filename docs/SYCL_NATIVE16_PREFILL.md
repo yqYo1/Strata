@@ -1216,10 +1216,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The original host stage fails because its synthetic512completion footer
   still says384;no native model ran. Preserve that failure. Fixture-only
   correction`56ce46ce4`uses a fresh`prefill_bank512_compare_v2`root and plan,
-  whose19host controls pass. Cohort execution is in progress;all3paired warmed
-  prompt ratios must favor512before a separate64K/capacity/decode follow-up.
-  Requested bank-copy reduction is a distinct mechanism result,not physical
-  PCIe traffic. No kernel,chunk,decode or default change is bundled with it.
+  whose19host controls pass. The six-process cohort closes at`6103815b9`with
+  18fresh thinking-on32769/24requests,all native0,quiet validation,closed
+  ownership,no fresh fault and15full model hashes matching. Candidate512/
+  reference384warmed prompt-time ratios are0.999155/1.001262/0.998744;
+  clientTTFT ratios0.999457/1.001176/0.998908. The all-three gain gate fails.
+  Warmed medians are832.050PP/39.5355sTTFT for384and831.895/39.554for512.
+  All arms request exactly the same bank bytes for each matched body;their
+  process medians are35326259200bytes. This is requested APIvolume,not
+  physical PCIe traffic. Keep384and reject this512change;do not start its
+  gated64K/decode follow-up. No kernel,chunk,decode or default change is bundled.
   Orca Luna BFand native Luna-max BGreview are complete. All ten Taskpins
   match;the report is consumed through its146-word review digest only.
   Missing private-view/full-fit telemetry limits causal claims,without
@@ -1227,8 +1233,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   that mechanism claim alone;a separate reproducible speed gain stays eligible.
   The owned worker family and terminal are closed;CPU/wall upper bounds are
   52.256379s/462.73s. Keep report/review bodies only through this cohort's
-  decision,then curate their findings and update the existing research-index
-  row at closure. Do not edit its frozen qualification metadata during the run.
+  decision. The existing research-index row now holds the curated findings
+  and closure;report/review bodies and transactions have no remaining consumer.
+  Their raw retirement and the ended bank benchmark controllers are next.
+  Main's next independent source question is a64-thread version of the current
+  measured QSA prefix,keeping its32-cell tile,cached Q,K/Vvector4and ordered
+  softmax. Pin the required PV/head remapping and GRF/SLM tradeoff before a
+  bounded component comparison;no speed or saturation is inferred from source.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file

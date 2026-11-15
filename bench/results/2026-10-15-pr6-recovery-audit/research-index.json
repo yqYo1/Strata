@@ -33643,7 +33643,7 @@
   },
   "prefill_bank512_source_bf_20261115": {
     "classification": "decision support",
-    "stage": "dispatched_source_audit",
+    "stage": "closed_review_consumed",
     "scope_eligibility": {
       "schedulable_now": false,
       "MemAvailable_bytes": 90869215232,
@@ -33681,10 +33681,36 @@
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-prefill-bank512-bf-20261115",
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-prefill-bank512-bf-20261115/report.md",
     "resource_scope": "strata-research-bf-bank512-20261115.scope",
-    "ownership_closed": false,
+    "ownership_closed": true,
     "actual_turn_context_sha256": "72787b8213a839fc63b0e49d0648b4ef5c8b61940b6c970cc0a0c7011d2e390a",
     "main_reads_body_on_arrival": false,
     "previous_report_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-    "next": "No steering or duplicate. Main continues serialized one-knob comparison;native Luna-max reviews completed report."
+    "next": "No repeated bank survey. No512gated64K/decode advance;choose independent measured QSA unit.",
+    "worker_completion_confirmed": true,
+    "captured_executors_gone": true,
+    "terminal_closed": true,
+    "report_sha256": "b305810138af82b1bfdbfb066a777ed306d3f628f2b5c773b0a74bdb16ba7123",
+    "report_bytes": 5664,
+    "operational_closure": {
+      "CPU_seconds_full_lifetime_upper_bound": 52.256378999999995,
+      "wall_seconds_upper_bound": 462.73000000044703,
+      "native_process_VmHWM_bytes": 434982912,
+      "source_hashes_unchanged": true
+    },
+    "native_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "task": "prefill_bank512_report_review_bg_20261115",
+      "digest_sha256": "0ccb4fa772f7af9a0ba081087b039de6aa3a4b43467cfadbb1647b3c8d42f49d",
+      "review_sha256": "384b9d4b68b1f0e79852106a9eec9e02fd5cbeaaa0c06a7755f71d6fe0f35bcd",
+      "main_reads_only_short_digest": true,
+      "explicit_source_pins_checked": 10
+    },
+    "curated_findings": [
+      "512avoids scratch reuploads only when demands revisit scratch-routed experts;row count alone does not establish reuse.",
+      "No byte reduction rejects the upload-reduction mechanism,not a separately credible speed gain. Actual cohort has equal bytes and mixed speed;384selected.",
+      "Missing private-view/full-fit telemetry limits causal route claims,not checked all-GPU placement. Ten declared pins exclude some transitive readers;no whole-path qualification from this audit."
+    ],
+    "retention": "Report/review consumer ended at six-process decision;curated corrections/provenance suffice. Retire bodies and transactions after compact deletion record."
   }
 }
