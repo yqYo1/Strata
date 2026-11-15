@@ -382,8 +382,10 @@ integration and testing.
   Compare each smallest coherent unit separately, even when several parts are
   changed together. Include its required headers, callers, producer/consumer
   layouts and tests; compare independently variable kernels, placement and
-  settings separately. Justify an inseparable unit in the committed plan,
-  retain every unit's outcome, then validate their combination. An aggregate
+  settings separately while holding the other units and workload fixed. Extra
+  measurement effort does not waive these comparisons. Justify an inseparable
+  unit in the committed plan, retain every unit's outcome, then validate their
+  combination and any relevant interactions. An aggregate
   result alone does not qualify its constituent changes or excuse a phase loss.
   A run's `passed` or `complete` field does not imply that its performance gate
   permits advancement. Inspect the recorded decision and underlying samples;

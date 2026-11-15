@@ -5603,7 +5603,8 @@ Compare each smallest coherent change separately, even when several changes
 are being developed together. Include the headers, callers, producer/consumer
 layout changes and tests needed for that unit to remain valid. Evaluate
 independent kernels, placement changes and settings in separate matched
-comparisons. If several edits are inseparable, state their invariant and why
+comparisons, holding the other units and workload fixed regardless of the extra
+build/run effort. If several edits are inseparable, state their invariant and why
 they form one unit in the committed plan before measurement. Keep each unit's
 outcome and then validate the combined implementation; an aggregate improvement
 cannot establish which constituent changes to adopt or conceal a phase loss.
