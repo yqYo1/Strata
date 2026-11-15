@@ -1041,7 +1041,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bounds,barriers,ordered clock/copy policy,parameters and persistent storage
   are unchanged. The independent expert-dispatch bounds fix is preserved.
   Naming and B1source are merged into the primary with their original identities
-  through`25b9c5113`(merge`07c323f9d`). B1sremains held on the child and B2is
+  through`25b9c5113`(merge`07c323f9d`). B1sremains held in original73d88history and B2is
   not applied. Source integration is not an adopted model route.
   Child`25b9c5113`prepares the same builder's explicit`split`selection for B1,
   with fresh production/fixture objects and separate scalar-restoration exclusion.
@@ -1081,6 +1081,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   original source inputs and the exact recipe are recovered and checked.
   The prospective reader recovers A's original compiler/class/SDKclosure and
   retains fast14508/12ELFs plus A/14ELFs,without reviving retired old binaries.
+  Merge`80ab8eac2`integrates only its199uncompiled observer/control lines and
+  preserves original2734/73d88identities in permanent history. Every1193B1
+  build input remains byte-exact;the held B1simplementation is excluded.
+  The new B1device plan pins1194source files and11fresh stages,without
+  inheriting GPUresults. The completed child has no unique commits,PRs,
+  pending files or ELFconsumer;its normal retirement is prepared. Future
+  Orca accounting uses the byte-identical permanent`tools/research/orca_scope.py`.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
