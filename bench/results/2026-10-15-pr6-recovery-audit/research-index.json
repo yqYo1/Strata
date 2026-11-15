@@ -33011,7 +33011,7 @@
   },
   "kv_stream_gpu_resolver_design_20261114o": {
     "classification": "decision_support",
-    "stage": "report_closed_review_pending",
+    "stage": "reviewed_source_decision_support",
     "title": "Remaining KVphase ownership after cooperative and scalar decode isolation",
     "question": "Trace all scalar/cooperative KVresolver consumers and explicit/implicit phases in current primary and held73d88aa12. Separate long/short prompt,Verifier decode/fallback,Layer/Session single-token,MTP,and full-context/RESTORE paths. Identify exact remaining coupling and smallest coherent caller/state/kernel boundary before prefill scalar restoration. Give paths/lines,static versus observed evidence,required invariants and counterevidence;no implementation,tests or speed claim.",
     "prior_evidence": "The old scope never produced a qualified source report. Cooperative2/4algorithm and795oracle records already exist;do not redo that design survey. New held73d88aa12 isolates Verifier scalar/fallback only;Layer/Session phase attribution is a concrete remaining question. Prefill control0ec9 closes36samples;hardware saturation and actual non-Verifier route exposure remain unknown.",
@@ -33021,7 +33021,7 @@
       "missing_prerequisites": [],
       "nonduplication": "Fresh held scalar isolation postdates the unstarted old scope. Restrict to remaining actual phase/caller/state ownership;do not resurvey the implemented cooperative planner.",
       "capacity": "Only one source pilot;Main checks actual MemAvailable and live worker/process handles before creation.",
-      "pending": "AT native Luna-max scope/depth/source review pending;do not duplicate or steer this completed Task."
+      "pending": "Closed/reviewed;do not repeat this census. A fresh follow-up must pin the missing restore source and resolve the concrete Layer/Session caller-state boundary,with current capacity checks."
     },
     "assignment": {
       "model": "gpt-6-luna",
@@ -33042,18 +33042,27 @@
       "state": "completed/succeeded;native and PTYclosed"
     },
     "source_packet_retired": true,
-    "review_point": "After first fresh source report,required native Luna-max review;Main reads short digest and only relevant decision-support sections for the concrete boundary question.",
+    "review_point": "Before changing the shared prefill scalar body,resolve remaining Layer/Session caller phase and pinned restore invariants;then retire this private report/review transaction after compact source-backed decisions.",
     "source_commits": [
       "9849e35803f011aaafb2753c1e0f31411e40308e",
       "73d88aa123edfe15d29ed937974d919d597adc9e"
     ],
-    "report_review_required": true,
+    "report_review_required": false,
     "ownership_closed": true,
     "report_sha256": "96f19a49941ec09a1fdf334ef3f48599f5d7bf449e72af835d9191280949dbc3",
     "report_bytes": 6560,
     "source_inputs_retained": true,
     "review_task": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/kv-phase-source-review-at-20261115/task.json",
-    "review_digest": null,
+    "review_digest": {
+      "reviewer": "native Codex gpt-6-luna max;AT",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/kv-phase-source-review-at-20261115/digest.md",
+      "sha256": "af18666bfd10de7fef848f65a3f729dafea5e00b9059ac98f60ec205e9ffdef9",
+      "review_sha256": "ba16f0d9254b2d02ec57ec029be39ba33dd17b7d626b8c2d75f966ea6e098f2f",
+      "finding": "Useful source-only decision support:Layer/Session single-token QSA still has no explicit phase;Verifier cooperative/scalar isolation alone does not cover it. Fourteen relevant pinned files match. No implementation or qualification follows.",
+      "corrections": "Prompt routing citation is generate.cpp:6825-6841;streamed append is prefill.cpp:2898-2925. conversation_snapshot.cpp:200-218 was not pinned;that restore claim remains unverified.",
+      "main_read": "Short AT digest and only Caller and phase census / Remaining boundary sections for the pending phase decision.",
+      "retention": "Review/source report remain only for the immediate Layer/Session phase-boundary decision;review again after that decision. No collection-library promotion."
+    },
     "operational_closure": {
       "worker_done_accepted": true,
       "canonical_dispatch": "completed",
@@ -33153,10 +33162,12 @@
         "run": "run_5a7695a42ba0",
         "task": "task_41eae01c0228",
         "dispatch": "ctx_52ec87eb312e",
-        "state": "closed_report_review_pending",
+        "state": "closed_reviewed_source_decision_support",
         "ownership_closed": true,
         "source_input_hashes_unchanged": true,
-        "report_sha256": "96f19a49941ec09a1fdf334ef3f48599f5d7bf449e72af835d9191280949dbc3"
+        "report_sha256": "96f19a49941ec09a1fdf334ef3f48599f5d7bf449e72af835d9191280949dbc3",
+        "report_review_digest_sha256": "af18666bfd10de7fef848f65a3f729dafea5e00b9059ac98f60ec205e9ffdef9",
+        "remaining": "One bounded source pilot only;aggregate tree RSSpeak and five-way concurrency remain unqualified. Release receipt retained external terminal before Main subsequently closed exact owned PTY."
       }
     }
   },
