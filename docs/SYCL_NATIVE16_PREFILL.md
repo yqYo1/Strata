@@ -1269,9 +1269,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   production routing or modelPP/TG. Register pressure/occupancy remain unknown.
   Original source/recipe,725compiler/24link inputs and all3finalELFs are
   recovered before retiring the failed component:45files/8319408bytes.
-  Fast14508and namingAremain26ELFs. The prototype source is held only until
-  the native Luna-max BJreview returns its short existing-library/next-unit
-  eligibility digest;then retire unused exports,fixtures and controllers.
+  Fast14508and namingAremain26ELFs. The six unused prototype/export/fixture/
+  controller files are retired to source`f20d1b751`and controller`555b97bd8`.
+  The independent padded-probe fixture correction remains for the next unit.
+  Closed traces and duplicate receipts are retired:30files/38054622bytes.
+  Six component CSVpoints bring the historical index to522rows.
+  Native Luna-max BJreview confirms that a256-thread/two-PV-fragment geometry
+  is distinct from the old256-GRFcompiler test. Main's next bounded unit starts
+  from ownedWG128,keeping32cells,pitch33,cachedQ,K/Vvec4,ordered-exp/math fixed.
+  Its16xSG16/head stepping/PVpartition/two accumulators must change together.
+  No such kernel is implemented or qualified yet;commit it and recheck Orca
+  source-audit eligibility before build/numerical/timing. M4and prefix-memory
+  reuse remain conditional;neither a failedWG64trial nor this review adopts
+  another algorithm. Fullmodel/handoff/decode/context gates stay open.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
