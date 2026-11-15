@@ -1086,7 +1086,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   build input remains byte-exact;the held B1simplementation is excluded.
   The new B1device plan pins1194source files and11fresh stages,without
   inheriting GPUresults. The completed child has no unique commits,PRs,
-  pending files or ELFconsumer;its normal retirement is prepared. Future
+  pending files or ELFconsumer;its remote/local branch and worktree are now
+  removed after verifying pushed permanent ancestry. The remaining child is
+  the user's unfinished PR6verification task. Future
   Orca accounting uses the byte-identical permanent`tools/research/orca_scope.py`.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
