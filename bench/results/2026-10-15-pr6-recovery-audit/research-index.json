@@ -33406,7 +33406,7 @@
   },
   "native16_chunk_capacity_16k_audit_az_20261115": {
     "classification": "decision_support",
-    "stage": "report_closed_review_pending",
+    "stage": "reviewed_source_decision_support",
     "title": "Coherent native16 long-prefill 8192-to16384 chunk-capacity extension",
     "question": "For the selected throughput/BF16 residual path with GDN_COLUMNS4,GDN_FP16=1,GDN_BARRIERS3=1,CHUNK64=0 and8192chunks,derive the smallest coherent extension supporting a16384outer chunk without disabling the fast family. Trace real typed producer/consumer limits,allocation/indexing/barrier assumptions,and GDN/QSA/MoE/MTPcallback/tail/full262144state boundaries. Separate true algorithmic/kernel capacities from admission guards. Compare extending typed kernels versus retaining8192internal tiles under a larger outer chunk. Give exact minimal files/required dependencies,workspace/max-single-allocation formulas and counterevidence. Do not merely recommend raising a guard,implement code,run tests or claim speed.",
     "prior_evidence": "Owned fast14508 repeats1006.832PP64K at8192;hardware saturation is unknown. AX source review excludes scalar KV body as long-batch arithmetic. Current source explicitly limits GDNcolumns and typed execution to8192;the proposed size experiment is prospective resource/scheduling characterization,not an adopted optimization. Older6e40shape/time-model and generic hierarchical-scan collections do not audit this current native16 path.",
@@ -33425,7 +33425,7 @@
         "pids_max": 256,
         "five_way_not_admitted": true
       },
-      "pending": "BA native Luna-max source/capacity/safety review pending;do not duplicate or steer completed AZ Task."
+      "pending": "Closed/reviewed;keep current8192chunk. No generic repeat audit;pin the actual scheduling seam/effective backend and measure a specific unit before changing capacity."
     },
     "assignment": {
       "model": "gpt-6-luna",
@@ -33446,19 +33446,28 @@
       "actual_effective_context_sha256": "4a5aa9e0c6814ca4a26209933cd62ec3b6c53c58280dd4ea17515e9a7cbbf408",
       "state": "completed/succeeded;accepted worker_done;exact native family and owned PTYclosed"
     },
-    "review_point": "Native Luna-max source/safety/scope review;Main then implements only a justified minimum unit and owns bounded component/model/size comparisons. A capacity refusal is not evidence of a faster candidate.",
+    "review_point": "Capacity proposal remains held. Review exact scheduler/consumer seam only if measured resource evidence selects a larger outer batch;do not fold capacity changes into B1.",
     "retention": "Private report/review only through the imminent chunk-capacity unit decision. Retain compact source-backed constraints,not transaction history.",
     "source_commits": [
       "9849e35803f011aaafb2753c1e0f31411e40308e",
       "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
     ],
-    "source_inputs_frozen": true,
+    "source_inputs_frozen": false,
     "ownership_closed": true,
-    "report_review_required": true,
+    "report_review_required": false,
     "report_sha256": "cf6ce378ec25b0887c41b132861a27a85055141c0e6cf1317dffec83ee03f30d",
     "report_bytes": 9904,
     "review_task": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/native16-capacity-source-review-ba-20261115/task.json",
-    "review_digest": null,
+    "review_digest": {
+      "reviewer": "native Codex gpt-6-luna max;BA",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/native16-capacity-source-review-ba-20261115/digest.md",
+      "sha256": "55cb6d73fbdbd09bdd72cb75bbcbe7bfbaac2b51cc30c51b24aa6fa1cec67503",
+      "review_sha256": "b305c26c4d638f8d77d9c042b9d86e831752a4f1fbc0afc7a42e024f6c3da797",
+      "finding": "All24pins match. Core8192producer/consumer limits are real;optional vLLM adapter also limits ownership and fused GU/Down jobs. Its effective backend was not supplied. Total allocated workspace/max-single-allocation and headroom remain unmeasured.",
+      "decision": "Keep8192;do not lift admission guards. A separate16Kouter scheduling batch over8Koperator tiles is only a proposal:planner/cursor/residual/route seam is unreviewed and could be a no-op for the existing layer-major schedule. No implementation or speed/allocation/decode/model qualification.",
+      "main_read": "BA short digest and bounded decision;AZ extension and memory sections for this concrete capacity question only.",
+      "retention": "Private report/review only through this capacity decision;compact corrected constraints retained here. Prior holds unchanged."
+    },
     "operational_closure": {
       "worker_done_accepted": true,
       "canonical_dispatch": "completed",

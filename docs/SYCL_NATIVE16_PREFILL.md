@@ -1147,7 +1147,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   initial no-ELF cleanup refusal is preserved;the prospective cache-specific
   v2rule verifies original parents/SDK/inputs and rejects other ELF/symlinks.
   Do not resume their closed raw-parser readers or recreate old process paths.
-  Sustained decode control now closes its first matched pair:
+  Sustained decode control closes all three matched pairs,including its first:
   3548/5485thinking-on native outputs at33213/33283fresh inputs give
   reference15.0378/9.4120TG and named-image14.5927/9.4278TG,
   with unchanged80.3074%/34.2952%draft acceptance. API/native clocks,
@@ -1158,10 +1158,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The second pair now also closes normally0with the same counts/acceptance:
   candidate`3aa4c65e7`gives14.9646/9.4128TG and reference`bfcb3f4fc`
   gives14.9628/9.4163TG. Both directions and all individual samples remain;
-  two pairs are not a compatibility verdict,gain or adoption. The exact
-  six-process R,C,C,R,R,Cplan and10controller host controls remain fixed;
-  index4,the final reference,is running. Both-phase naming control eligibility
-  and B1/B1s/B2remain pending/unadopted.
+  the last reference/candidate give14.9905/14.9895TG for code and
+  9.4486/9.4465TG for prose. All six fresh processes close normally0with
+  unchanged counts/acceptance,quiet validation,reaped empty ownership and
+  no fresh fault. Preserve both original TGmedian-screen failures:reference
+  medians14.9905/9.4163versus candidate14.9646/9.4278are not a speedup.
+  The prospective naming-only three-pair log-time95%intervals are
+  [-0.0331343,0.0531229]for code and[-0.00320874,0.00248841]for prose;
+  both admit the byte-identical image control together with its original
+  numerical/handoff proof. Both Aphase controls are now eligible;this is
+  neither statistical equivalence from timing alone nor inference adoption.
+  B1/B1s/B2remain unbuilt/unadopted. Retire the ended1eecbuild only after
+  exact original Git/source/recipe/compiler-input/ELF recovery,then build
+  B1 alone against A while retaining faster14508. Compare each independent
+  unit before their combination;do not fold B1s or scalar restoration into B1.
+  Native16capacity review BA also keeps the current8192chunk. The optional
+  vLLM adapter has additional8Kownership/GU/Down guards;raising a top-level
+  limit is unsafe. A16Kouter batch over8Koperator tiles is only a held
+  scheduling proposal with an unreviewed planner/cursor/residual/route seam,
+  unknown workspace admission and no performance or model qualification.
   The retained cross-build configuration receipt supplies
   its frozen environment/model manifest until these comparisons close;old
   generated configurations or full diagnostic captures are not their inputs.
