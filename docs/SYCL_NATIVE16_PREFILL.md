@@ -1128,15 +1128,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   initial no-ELF cleanup refusal is preserved;the prospective cache-specific
   v2rule verifies original parents/SDK/inputs and rejects other ELF/symlinks.
   Do not resume their closed raw-parser readers or recreate old process paths.
-  Sustained decode control now has its first closed unchanged1eec reference:
+  Sustained decode control now closes its first matched pair:
   3548/5485thinking-on native outputs at33213/33283fresh inputs give
-  15.0378/9.4120TG,with80.3074%/34.2952%draft acceptance. API/native clocks,
+  reference15.0378/9.4120TG and named-image14.5927/9.4278TG,
+  with unchanged80.3074%/34.2952%draft acceptance. API/native clocks,
   zero inserted/reused tokens and actual scalar1/cooperative4routes match;
   normal0,quiet validation,reaped empty ownership and no fresh fault pass.
-  Evidence`da46ff31f`is one reference process,not a paired gain or adoption.
-  The exact six-process R,C,C,R,R,Cplan and10controller host controls are
-  committed;its first named-image process is running. Both-phase naming
-  control eligibility and B1/B1s/B2remain pending/unadopted.
+  Keep the slower code sample without dismissing it as noise. Original
+  reference`da46ff31f`and candidate`2f3b83d29`are one pair,not a compatibility
+  verdict,gain or adoption. The exact six-process R,C,C,R,R,Cplan and
+  10controller host controls remain fixed;its second named-image process
+  (index2)is running. Both-phase naming control eligibility and B1/B1s/B2
+  remain pending/unadopted.
   The retained cross-build configuration receipt supplies
   its frozen environment/model manifest until these comparisons close;old
   generated configurations or full diagnostic captures are not their inputs.
