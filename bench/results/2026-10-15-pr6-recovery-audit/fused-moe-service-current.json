@@ -393809,7 +393809,63 @@
       "sha256": "7f36b3039c1f25d22c131c7d3e6e23e96a816963338943c607af9758b309a6bd"
     },
     "environment_template_sha256": "98cd3f1c3757ab1af397810baa56efbdbe3678c47cf220099d163d95efd3714a",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "artifact_retirement": {
+      "stage": "planned",
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-boundary-retirement-v1.json",
+        "sha256": "2ea27fe65a6aea4c8ef3bdaf34f654209f7ccf3af30fe700d6cae1bcf89ccf7c"
+      },
+      "roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-model-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-device-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-original-control-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-origin-gap-br-20261115",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-origin-gap-br-20261115-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-origin-gap-bs-20261115",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-origin-gap-bs-20261115-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-origin-gap-review-bt-20261115"
+      ],
+      "files": 2540,
+      "bytes": 302703511,
+      "candidate_final_images": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/strata",
+          "sha256": "7ea162eac831256af28e861059641501021a5fec194871b9bcb4dcaddc1b1f9d",
+          "bytes": 26461792
+        },
+        "sycl_expert_bank_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/sycl_expert_bank_test",
+          "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+          "bytes": 513048
+        }
+      },
+      "source_recovery": {
+        "native_base": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "overlays_commit": "51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054",
+        "native_evidence": "d24af268c1d5d657d73751b0f170e23e20a50149",
+        "original_source_recipe_compact_equal": true,
+        "recovered_source_files": 1165,
+        "actual_compiler_inputs": 1461,
+        "external_link_inputs": 29,
+        "all_actual_inputs_and_ELFs_checked": true,
+        "pushed_primary": "02ae1cc9b547fb1d9105f991aca0db22d630750b"
+      },
+      "retained_phase_references": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1",
+          "ELFs": 12,
+          "image_identity_sha256": "fbcd46efdf0334acf95b8228ac6c3ebee6c2574bda47ed36fb944e18b4ed330c"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1",
+          "ELFs": 14,
+          "image_identity_sha256": "180ffdbf004ea971a3df8ef732103ca8aeb8c712468ee48f182c74ce64af9455"
+        }
+      ],
+      "remaining_holds": "Existing legacy/orphan/.cache provenance holds remain separately unchanged;this is not a global artifact-retirement claim."
+    }
   },
   "prefill_eager_original_control_v1": {
     "configuration": {
