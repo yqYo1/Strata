@@ -12280,5 +12280,96 @@
       "fractionofmodelcriticalpathremoved"
     ],
     "qualification": "No GPUexecutedfor this calculation;not PP/TG/modeladoption. Use actual admission and matchedcomponenttimings next."
+  },
+  "prefill_queue_capability_v1": {
+    "stage": "failed",
+    "source_commit": "45f23c595b3a46e51b049938f27fc45f7d07e00e",
+    "source_inputs": {
+      "bench/sycl/queue_capability.c": "d50d91e30396cd6b32eaf491a209af203b1638a1efe1d43c87ccb6a71d9b105a",
+      "tools/sycl/queue_capability.py": "822887e23f07287e3fd3e94b375a00b7de5b72dd8a0dc06e46e371d9fcb641a4",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+    },
+    "commands": [
+      [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fPIE",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/queue-capability-v1/actual.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/queue-capability-v1/inventory",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/queue_capability.c",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "-pie",
+        "-Wl,-z,relro,-z,now"
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/queue-capability-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/queue-capability-v1/cache",
+      "LD_LIBRARY_PATH": "/usr/lib/x86_64-linux-gnu",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "ZES_ENABLE_SYSMAN": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "compiler_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/dependencies.json",
+      "sha256": "b02995d7082b0409cebac6406b2a26eabf73fe38f924662c0ba0aac81f9afaf0",
+      "files": 117,
+      "runtime_elfs": 24
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "external_inputs": {
+      "/usr/bin/x86_64-linux-gnu-gcc-13": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "limits": {
+      "wall": 60,
+      "cpu": 45,
+      "rss_cap": 1073741824,
+      "text_cap": 1048576,
+      "file_cap": 4194304,
+      "total_cap": 8388608
+    },
+    "plan": {
+      "question": "Current B570 queue-group capabilities for a bounded prefill event-lane audit",
+      "gate": "Normal0,exact providers,all three protocol gates,unchanged boot/driver,no fault and closed owner",
+      "repetitions": 1,
+      "GPU_work_submitted": false,
+      "performance_or_overlap_claim": false,
+      "retained_generations": "Two unchanged engine references plus this temporary metadata-only C probe",
+      "retirement": "After capability extraction and original source/recipe recovery; no retained new engine"
+    },
+    "error": "original C compiler closure changed",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false
   }
 }
