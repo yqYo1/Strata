@@ -229,6 +229,10 @@ def current(row):
             {k:v for k,v in row['admission'].items() if k!='controller_commit'}
             and signature(core.compact(seed))==row['configuration_evidence_sha256']
             and gate==row['small_probe_evidence_sha256'],'frozen build/configuration/probe changed')
+    env_gate=admission.committed_json(RESULT,P)['unitrace_current_environment_probe_v2']
+    require(signature(env_gate)==row['environment_probe_evidence_sha256']
+            and env_gate['checker_source_sha256']==sha(P/THIS),
+            'frozen same-source environment qualification changed')
     contract,python=runner.entry.python_manifest()
     require(contract==row['python_contract'] and python['selected']==row['python_selected'],'qualified Python changed')
     for plan in row['plans']:
