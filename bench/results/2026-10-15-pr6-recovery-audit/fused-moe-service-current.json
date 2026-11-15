@@ -386782,6 +386782,75 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "bench-smoke",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 21,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "7a5edff8b84df9e1b363ced54d670b549d8fd050efe8712283ee6dc02b7bfc32"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "7111d782ac322402bc38cb1d008ca08b1f92dc3ef7417044dc18cd1dc0fff935"
+          },
+          {
+            "phase": "after-cleanup",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "7111d782ac322402bc38cb1d008ca08b1f92dc3ef7417044dc18cd1dc0fff935"
+          }
+        ],
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v3/bench",
+          "sha256": "740ea846e6884e8fec5b8bbcf7de8d9547b298fc74b424965b47ad74cc12e559",
+          "bytes": 1740896
+        },
+        "process_observation": {
+          "pid": 386713,
+          "exit_code": 0,
+          "error": null,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "observation_complete": true,
+          "elapsed_seconds": 9.370119920000434
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 386713,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "4ca7dc3d98a07df010c3edc5d98a3463f98e974fa6f036986bd37336a10647cf",
+        "stderr_sha256": "d0a995f5670b6e590183350112a72bf99360e1341fe0e1dd05fe0aeaa825002f",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "passed": false,
