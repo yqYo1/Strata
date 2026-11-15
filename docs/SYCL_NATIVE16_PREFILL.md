@@ -1238,12 +1238,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Their467raw files/63432307bytes are physically retired. Six ended bank/
   fixed-profile controller,test and fixture files are retired to their source
   commits;the temporary bank-reader parameters are restored exactly to their
-  original bytes. All40native ELFs and shared receipts remain unchanged.
+  original bytes. The then-retained40native ELFs were unchanged;the failed B1
+  generation is now retired after2390Git source/dependency,1474compiler and
+  29link-input recovery and14final-ELFchecks:197files/207539980bytes.
+  Retain fast14508/12ELFs and namingA/14ELFs;shared receipts remain available.
   Four individual first/warmed arm aggregates bring the CSVto516points.
   Main's next independent source question is a64-thread version of the current
   measured QSA prefix,keeping its32-cell tile,cached Q,K/Vvector4and ordered
-  softmax. Pin the required PV/head remapping and GRF/SLM tradeoff before a
-  bounded component comparison;no speed or saturation is inferred from source.
+  softmax. Main's separate`932e5d68d`prototype changes the required head
+  stepping,PVownership and eight accumulator fragments as one coherent unit;
+  `ee86239e5`adds an independent raw online-state probe for numerical checks.
+  No production dispatch uses it. Orca BHsource audit and native Luna-max BI
+  review find coherent ownership;no speed or saturation follows. Build only a
+  bounded third component generation,with fresh baseline/runtime objects and
+  original compiler/SDKflags,then numerical/physical-cell fixtures before any
+  clean component timing. Direct-export timings isolate this geometry;actual
+  production routing and a whole-model screen would require later new gates.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
