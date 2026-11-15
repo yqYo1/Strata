@@ -214,7 +214,8 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         !owner.expert_slots->permanent_used() && !owner.expert_upload_staging) {
         if (m.layer_major_residual.gpu_rows!=m.layer_major_residual.rows ||
             !owner.scratch_mixed || m.copy!=m.cs || owner.expert_cache!=m.cache ||
-            owner.private_expert_bank->owner()!=m.cache)
+            owner.private_expert_bank->owner()!=m.cache ||
+            owner.private_expert_bank->layout().stride!=uint64_t(layout.blob_bytes(layer)))
             throw std::invalid_argument("prefill eager upload: owner/queue/residual contract");
         if (owner.command_trace)
             throw std::invalid_argument("prefill eager upload: command observer requires a separate plan");
