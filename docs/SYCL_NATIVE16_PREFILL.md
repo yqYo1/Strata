@@ -1117,6 +1117,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   validation;their work totals and hashes remain. Both-phase performance
   remains pending. The final cell in a
   component fixture does not qualify a262144-token model fill.
+  After exact source/recipe/census/ELF admission and closed-owner checks,
+  its successful native/oracle/model raw roots are retired:172files,
+  23298472regular bytes. Curated committed gates,shared build/runtime
+  manifests and all40engine/fixture images remain;do not resume the closed
+  raw-parser controllers.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
