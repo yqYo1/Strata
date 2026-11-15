@@ -1200,6 +1200,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   demonstrated different emitted code. Check prospective bank-slot changes
   separately from kernel changes;the current scratch contract requires8192
   chunks,so a larger chunk is not a settings-only experiment on this route.
+  The trace-analysis consumer is closed and700external files/1402195439bytes
+  are physically retired,including the two complete traces and the failed
+  256MiBcapture. Keep the compact individual samples,corrections and resource
+  evidence plus512CSVpoints. Three ended diagnostic/analyzer source files
+  are retired to their original Git commits;shared seed/runtime receipts,
+  surviving collector and all40native ELFs remain available for named consumers.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
