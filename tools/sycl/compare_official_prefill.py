@@ -224,14 +224,11 @@ def host(experiment=None):
     print('Current-source frontend probes passed;commit before native execution.', flush=True)
 
 
-def route(text, read, heads, *, expected_rows=None, expected_bank_slots=384):
+def route(text, read, heads, *, expected_rows=None):
     """Validate one actual request window,including a capacity-limited control."""
     require(heads in (0, 1) and (read in READS if expected_rows is None else
             expected_rows == read - 1 and (8192 < expected_rows <= 81920 or
                                           90112 < expected_rows <= 117488)), 'unplanned route case')
-    require(type(expected_bank_slots) is int and 1 <= expected_bank_slots <= 512
-            and (expected_bank_slots == 384 or expected_rows is not None and expected_rows <= 81920),
-            'prospectively declared bank slots required')
     def records(prefix):
         result = []
         for line in text.splitlines():
@@ -258,7 +255,7 @@ def route(text, read, heads, *, expected_rows=None, expected_bank_slots=384):
             and int(main['residual_gpu']) == gpu * 10240 * 2
             and int(main['residual_host']) == (n - gpu) * 10240 * 2
             and main['residual_staging'] == '0', 'HC4 residual byte/row conservation differs')
-    require(bank['requested_slots'] == str(expected_bank_slots) and int(bank['residual_gpu_rows']) == gpu
+    require(bank['requested_slots'] == '384' and int(bank['residual_gpu_rows']) == gpu
             and int(bank['device_bytes']) == int(main['layer_cache']) > 0
             and int(bank['allocation_limit_bytes']) >= int(bank['device_bytes'])
             and bank['general_map'] == 'private_scratch_never_published'
@@ -266,7 +263,7 @@ def route(text, read, heads, *, expected_rows=None, expected_bank_slots=384):
             and admission['decode_changed'] == '0', 'bank/cache publication differs')
     full = gpu == n
     if read == 65537 or expected_rows is not None and n <= 81920:
-        require(full and staged == 1 and slots == expected_bank_slots and split == 0, 'ordinary all-GPU placement differs')
+        require(full and staged == 1 and slots == 384 and split == 0, '64K placement differs')
     elif full:
         require(staged == split == 1 and slots == 128, '117K all-GPU split placement differs')
     else:

@@ -794,8 +794,7 @@ def request_route(text, plan):
         # intact. This build's sole packed draft head retires zero device bytes.
         policy = source.device.load_module('qsa16_stream_clean_window_policy', comparison.__file__)
         policy.DRAFT_BYTES = 0
-        result['fast_window'] = policy.route(text, plan['read'], plan['heads'], expected_rows=rows,
-            expected_bank_slots=plan.get('expected_bank_slots',384))
+        result['fast_window'] = policy.route(text, plan['read'], plan['heads'], expected_rows=rows)
         phases = re.findall(r'^strata mtp: prompt expert phase=(\S+) ', text, re.M)
         require(phases == ['before-detach', 'after-detach', 'after-prompt-before-restore', 'after-restore']
             and re.findall(r'^strata mtp: experts restored bytes=(\d+),', text, re.M) == ['707788800'],
