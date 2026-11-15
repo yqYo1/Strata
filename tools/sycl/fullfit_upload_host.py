@@ -57,6 +57,7 @@ def prepare():
         environment={k:v for k,v in native['recipe']['environment'].items() if k in ['PATH','HOME','LANG','LC_ALL','LD_LIBRARY_PATH']},
         expected=EXPECTED,passed=False,complete=False,active=False,ownership_closed=True,GPU_executed=False,
         plan=dict(unit='CPU-only immutable plan and accepted-enqueue publication for empty512-slot full-fit prefill banks.',
+            resource_evidence='Whole-request unitrace_current_request_resources_v1:copy union10.309796s,kernel union28.658416s,about4ms overlap;service is not physical traffic/saturation. Actual32Ksource1/staging0has28full-fit layers among48. Ordinary Runtime queues all use ordinal0/index0. Test whether fixed copy transaction/submission work can be amortized while bytes stay identical;compatible hardware headroom remains unknown.',
             next_consumer='Main same-queue native transfer integration;retire CPUELF after original input recovery and retain source only through this bounded proposal.',
             oracle='Six independent byte-layout cases,ten refusals including failed third enqueue;unchanged payload/guards/dense destination ranks and no failed-copy publication.',
             future_comparison_units=['U1:JIT per-expert versus eager per-expert with identical bytes,math,placement and queue.','U2:eager per-expert versus eager contiguous-run copies with identical schedule,bytes and permanent-slot ownership.','Then original JIT versus the useful combination;retain U1even if slower. No constituent adoption from combined timing alone.'],
