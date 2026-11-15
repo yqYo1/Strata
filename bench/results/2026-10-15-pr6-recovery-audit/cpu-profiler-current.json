@@ -12280,5 +12280,152 @@
       "fractionofmodelcriticalpathremoved"
     ],
     "qualification": "No GPUexecutedfor this calculation;not PP/TG/modeladoption. Use actual admission and matchedcomponenttimings next."
+  },
+  "prefill_queue_capability_v4": {
+    "stage": "closed",
+    "source_commit": "9f9c658965441772d92f60f0a38dd99c5c59c273",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/queue-capability-v4/inventory",
+      "sha256": "e1281ffca94e38112b47c387eebc077edee01244c8213eb6f94784be04d6350a"
+    },
+    "original_complete_evidence_commit": "31413aec3113ba401145dc04d5b78b44e4b2fc84",
+    "native_exit_code": 0,
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "boot_unchanged": true,
+    "fresh_faults": false,
+    "native_work_submitted": false,
+    "inference_implementation_changed": false,
+    "decision": "Queue groups expose one compute+copy physical engine at ordinal0 and one copy-only engine at ordinal1. Keep qualified copy-offload avoidance. Separate ordinary SYCL queues alone do not establish independent engine use or hardware overlap.",
+    "next": "Recover exact remaining32K effective source/staging telemetry and actual UR queue selection before event-lane feasibility dispatch. Preserve same-queue control and independently compare the smallest coherent ownership/event change;do not mix math,precision,placement or decode changes.",
+    "limits": "Metadata-only1.17API inventory,not actual SYCL queue selection,bus bandwidth,overlap,saturation,performance or model qualification.",
+    "evidence_path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+    "evidence_key": "prefill_queue_capability_v4",
+    "inventory": [
+      {
+        "kind": "driver",
+        "API_major": 1,
+        "API_minor": 17,
+        "driver_version": 17013582
+      },
+      {
+        "kind": "queue_group",
+        "ordinal": 0,
+        "flags": 7,
+        "physical_engines": 1,
+        "compute": true,
+        "copy": true,
+        "max_fill_pattern_bytes": 18446744073709551615
+      },
+      {
+        "kind": "queue_group",
+        "ordinal": 1,
+        "flags": 2,
+        "physical_engines": 1,
+        "compute": false,
+        "copy": true,
+        "max_fill_pattern_bytes": 1
+      }
+    ],
+    "qualified_environment": {
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "ZES_ENABLE_SYSMAN": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1"
+    },
+    "verified_runtime_ready_providers": [
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "/usr/local/lib/libigc.so.2.41.5+1788943183",
+      "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+      "/usr/local/lib/libopencl-clang2.so.22.1"
+    ],
+    "full_input_provider_recipe_evidence": "31413aec3113ba401145dc04d5b78b44e4b2fc84",
+    "failed_prior_attempts": [
+      {
+        "version": 1,
+        "original_evidence_commit": "c53d9c7a2c483d47c9a63508bce473a2c2cf473b",
+        "passed": false,
+        "ownership_closed": true,
+        "GPU_work_submitted": false,
+        "reason": "Unrelated historical source in compiler manifest;no native runtime"
+      },
+      {
+        "version": 2,
+        "original_evidence_commit": "56e8433243f7bd84a0870978bd2d57dba0771fa7",
+        "passed": false,
+        "ownership_closed": true,
+        "GPU_work_submitted": false,
+        "reason": "Unoptimized header census omitted O2-conditional headers;no native runtime"
+      },
+      {
+        "version": 3,
+        "original_evidence_commit": "30d52b6bd25b7ec0a95512576cd25bae0b41fe8b",
+        "passed": false,
+        "ownership_closed": true,
+        "GPU_work_submitted": false,
+        "reason": "System-first LD_LIBRARY_PATH selected system IGC;runtime-ready provider gate stopped before queue inventory;owner terminated"
+      }
+    ],
+    "artifact_retirement": {
+      "stage": "retired_verified",
+      "root_parent": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007",
+      "roots": [
+        {
+          "version": 1,
+          "source": "45f23c595b3a46e51b049938f27fc45f7d07e00e",
+          "files": 0,
+          "bytes": 0,
+          "actual_C_inputs": 0,
+          "raw_inventory_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "version": 2,
+          "source": "b1dd13e2716674fdae5e13c04d4b26cb8b0341f7",
+          "files": 7,
+          "bytes": 24681,
+          "actual_C_inputs": 42,
+          "raw_inventory_sha256": "db8734d3f27e78b17e1ed712ac80d30836f98f0f745db906d95962dbac8cab2f"
+        },
+        {
+          "version": 3,
+          "source": "c06a5c02ca2007a1dfe8896590d511f6af3bf3a4",
+          "files": 9,
+          "bytes": 24803,
+          "actual_C_inputs": 42,
+          "raw_inventory_sha256": "00042e294ff2b04b20d891d06c48091bd026e567a86214fe5418d7a84a5770c0"
+        },
+        {
+          "version": 4,
+          "source": "9f9c658965441772d92f60f0a38dd99c5c59c273",
+          "files": 9,
+          "bytes": 24213,
+          "actual_C_inputs": 42,
+          "raw_inventory_sha256": "c3444bc722d497ba4b08741ceb104b634d5c1730ca44be5de9ceef42fe7dcda6"
+        }
+      ],
+      "root_name_template": "queue-capability-v{version}",
+      "final_ELF_sha256_all_three": "e1281ffca94e38112b47c387eebc077edee01244c8213eb6f94784be04d6350a",
+      "source_recipe_actual_inputs_recovered": true,
+      "owners_closed": true,
+      "files": 25,
+      "bytes": 73697,
+      "retained_engine_generations": 2,
+      "retained_engine_ELFs": 26,
+      "all_retained_engine_ELFs_unchanged": true
+    },
+    "prototype_retirement": {
+      "source_commit": "9f9c658965441772d92f60f0a38dd99c5c59c273",
+      "files": [
+        "bench/sycl/queue_capability.c",
+        "tools/sycl/queue_capability.py"
+      ],
+      "reason": "Completed metadata-only probe;restore source/recipe from Git for a concrete new capability question. No production export or build target uses it."
+    }
   }
 }

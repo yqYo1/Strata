@@ -1284,9 +1284,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   publication,reader retirement,retained owners and checked drains as one
   coherent unit,preserving math,decode and qualified runtime safety. The next
   Orca source scope remains conditional until Main pins actual32Kroute/source/
-  staging and event/wait evidence plus current runtime/queue-group capabilities.
+  staging and event/wait evidence plus actual installed URengine selection.
+  The metadata-only inventory`prefill_queue_capability_v4`(evidence`31413aec3`)
+  now confirms ordinal0compute+copy/one physical engine and ordinal1copy-only/
+  one engine,API1.17,normal0/closed owners/no fresh fault. It submits no GPUwork.
+  Preserve copy-offload avoidance;this inventory does not prove that another
+  ordinary SYCLqueue selects ordinal1. Initial source/header admission failures
+  and a system-first IGCselection refusal remain failed;using the original
+  model library path selects its qualified /usr/local IGCwithout a system edit.
   Recover existing committed route/provider evidence first;collect only its
-  missing capability/route facts. A separate transfer queue's existence and
+  remaining facts. A separate transfer queue's existence and
   about4msobserved overlap do not prove a usable independent engine or causal
   speedup. A broader required redesign remains work to scope,not a reason to
   end tuning. Full-model/task/RESTORE/physical262144gates stay open.
