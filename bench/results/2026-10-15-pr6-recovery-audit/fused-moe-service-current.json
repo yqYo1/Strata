@@ -386361,7 +386361,7 @@
     }
   },
   "qsa_prefill_workgroup64_check_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "45c7e953b25a7fb3c2135110da4742615ba4e436",
     "source_sha256": "4c4eb9c35173511e30e4ecdd48326d21c474265e44fb8f0a728a9b394a63dc55",
     "build_record": {
@@ -386424,11 +386424,51 @@
       "timing1",
       "timing2"
     ],
-    "results": [],
+    "results": [
+      {
+        "stage": "smoke",
+        "passed": false,
+        "complete": false,
+        "host_probe_accepted": false,
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 21,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "c3d8d819f450300dd4f6739594d4bdfb5f5caa933e62b89855098327a252d57b"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "975a329fcd1eb44539a03d858fdf65ccdbf4c62678bece4c5d9923181a704e3b"
+          }
+        ],
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v3/oracle4",
+          "sha256": "4c029679c8a98f5618c4daed681cc53deb4c61c5a0bb1bea372fd0946ec51b0d",
+          "bytes": 1780232
+        },
+        "error": "ValueError('normal closed fixture required')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "whole_bytes": 805306368,
     "budgets": {
       "wall": 300,
@@ -386454,6 +386494,15 @@
       "timing0": "8b0b8183ae8408cd91f9b3a39fd259a3e08efca8e1bbbfdd97c6dd2847e95c01",
       "timing1": "f6ed897ebaf861e65430ef03741633fdfc0f9a3e70e763e42c8a92c08e9be812",
       "timing2": "6e12304a24418f2e935bae2c9c25206375856d46dc061d6dd79e01eee288f0f5"
+    },
+    "failure_detail": {
+      "native_exit_code": -15,
+      "owner_stop": "RuntimeError('combined log cap')",
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "live_PID_absent": true,
+      "state_admission_rejections": 9,
+      "interpretation": "Corrected padded-probe invalid-coordinate tests pass. Full API trace of24real-head state probes exceeds declared16MiB combined log budget;owned SIGTERM stops before first case completes. No numeric/speed qualification. New controller-only plan traces two padded-boundary heads via unchanged oracle16 ELF first;retains full24real-head oracle4 coverage with parameter validation in subsequent stage."
     }
   }
 }
