@@ -25,6 +25,12 @@ CHECKOUT = Path(__file__).resolve().parents[2]
 RESULT = CHECKOUT / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
 FUSED = native.P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 THIS = 'tools/sycl/current_pti_admission.py'
+ORIGINAL_SOURCES = ('09d650542c9455454516f6ebbc4597f69ec72502',
+    '8fba6f3aaa22578bf0b7a3ae0cc945b6d3de89c9',
+    'e57b5ee7fce1de6391c793f1014c44cae3b85d9c')
+ARTIFACT_SHAS = {
+    'libunitrace_tool.so': 'e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c',
+    'unitrace': '6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244'}
 HOST_CHECK = dict(unit_command=['/home/yayoi/.local/share/strata-sycl/venv/bin/python3',
     '-B', '-m', 'unittest', 'tools.test_current_pti_admission'],
     admission_command=['/home/yayoi/.local/share/strata-sycl/venv/bin/python3',
@@ -94,6 +100,10 @@ def recover_launcher(owner):
 def verify_tools(container):
     base, owner, indexed = [container[key] for key in
         ('unitrace_build', 'unitrace_session_owner', 'unitrace_indexed_collector')]
+    require(tuple(record['source_commit'] for record in (base, owner, indexed)) == ORIGINAL_SOURCES,
+            'admit the exact historical builds,not refreshed records')
+    require({name: artifact['sha256'] for name, artifact in indexed['artifacts'].items()} == ARTIFACT_SHAS,
+            'admit the exact surviving artifacts,not refreshed hashes')
     for record in (base, owner, indexed):
         require(record['stage'] == 'built' and record['passed'] and record['ownership_closed']
                 and not record['active'] and record['official_revision'] == PTI_REVISION,
