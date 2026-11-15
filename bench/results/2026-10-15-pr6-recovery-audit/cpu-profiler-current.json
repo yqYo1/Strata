@@ -7899,7 +7899,7 @@
         "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
       }
     },
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "006d0559173b0bd1c8d972c80b47647b3473535f",
     "admission": {
       "schema": "strata-current-pti-host-admission-v1",
@@ -8146,7 +8146,7 @@
     ],
     "processes": [],
     "request_hashes": {},
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -8162,6 +8162,29 @@
     },
     "plan": "Four independent processes clean,trace,trace,clean;three fresh thinking-on32769inputs and24outputs each. Commit each closure. Trace from native exec with current qualified device-only settings;no pause/session,host API or hardware counters. Separate first_long and median of subsequent2;two matched trace/clean ratios for prompt,clientTTFT,total request duration. All ratios must be0.9..1.1 for observer-overhead qualification;otherwise retain timing/ranking as perturbed observations only. Same fast14508ELF/configuration/placement and native validation in all arms;only device collector differs. Closed ownership,normal0,quiet validation,actual route/count/thinking/wire identity,current maps/source/providers,unchanged boot/driver,no fresh faults required. Stop first failure without retry or changed pins. Maximum256MiBtrace and1million events;384MiBraw per process and1536MiBcampaign are finite exceptions for three whole long requests. This is attribution,not speed adoption,phase-drain proof or saturation.",
     "retention": "No new binary generation. Keep individual clean/traced samples,top20kernel services plus conserved tail,union/crossing counts and identities/limits. Retire full traces,logs,caches and private receipts after their verified result boundary.",
+    "host_evidence": {
+      "source_commit": "006d0559173b0bd1c8d972c80b47647b3473535f",
+      "tests": 15,
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "recipe": {
+        "command": [
+          "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "tools.test_current_request_profile",
+          "tools.test_request_profile_reader"
+        ],
+        "wall_seconds": 90,
+        "CPU_seconds": 60,
+        "RSS_bytes": 1073741824,
+        "text_bytes": 131072,
+        "total_bytes": 4194304,
+        "GPU_executed": false
+      }
+    },
     "sources_sha256": "00a07d4ac4d670a1598ca5af6850a41044429c3b965560d78771162c6bd3a2f3",
     "environment_template_sha256": "acc519298717548ea5818dcabdfc1935be462f3dcb0c666021c2ee65839b526f",
     "model_assets_sha256": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e"
