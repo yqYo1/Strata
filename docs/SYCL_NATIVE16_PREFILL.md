@@ -1101,6 +1101,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   original14direct/20graph and795full/60graph/15physical-tail/12timing-shape
   criteria. It adds no native build or inference setting and inherits no
   old oracle/model/performance result.
+  Its fresh traced smoke and quiet full oracle now close normally0with
+  unchanged boot/driver,no fresh fault and absent owned native processes:
+  14direct smoke cases,20smoke graph replays,795exact full records,60full
+  graph replays,15physical-tail graph cases and12timing-shape checks.
+  Runtime inventory contains34files with zero missing/unknown mappings.
+  These are same-build cooperative/scalar numerical gates;actual production
+  handoff and both-phase performance remain pending. The final cell in a
+  component fixture does not qualify a262144-token model fill.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
