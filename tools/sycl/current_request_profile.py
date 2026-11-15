@@ -24,8 +24,10 @@ import compare_owned_prefill as routes
 
 P, B, RESULT = admission.CHECKOUT, admission.pti.B, admission.RESULT
 FUSED = admission.FUSED
-ROOT, KEY = B/'current-request-profile-v1', 'unitrace_current_request_profile_v1'
+ROOT, KEY = B/'current-request-profile-v2', 'unitrace_current_request_profile_v2'
 THIS, TEST = 'tools/sycl/current_request_profile.py', 'tools/test_current_request_profile.py'
+FIXTURE = 'tests/fixtures/sycl-fast-prefill-route-32k.txt'
+fast_request_route = routes.context().request_route
 ARMS, RUNS = ('clean','trace','trace','clean'), 3
 ORDER = [(32769,1)]*len(ARMS)
 require, sha, signature = admission.require, admission.digest, runner.fingerprint
@@ -68,7 +70,7 @@ def basis():
 
 def source_pins(revision):
     pins=core.pins(revision)
-    for name in (THIS,TEST,'tools/test_request_profile_reader.py','AGENTS.md','docs/ARTIFACT_RETENTION.md'):
+    for name in (THIS,TEST,FIXTURE,'tools/test_request_profile_reader.py','AGENTS.md','docs/ARTIFACT_RETENTION.md'):
         require((P/name).read_bytes()==admission.blob(P,revision,name),'commit exact profile input: '+name)
         pins[name]=sha(P/name)
     require(THIS in pins,'actual controller must be tracked')
@@ -158,11 +160,8 @@ def observe_lifetime(outcome,stage,stamp):
 
 
 def request_route(text,plan):
-    out=runner.route(text,plan['read'],1)
-    out['actual_GU_dispatch']=routes.gu.dispatch(text,'large')
-    require('softmax=parallel-exp-ascending-sum' in text and 'softmax=subgroup' not in text,
-            'actual ordered-exp attention required')
-    return out
+    require(plan['read']==32769 and plan['heads']==1,'declared32Kroute required')
+    return fast_request_route(text,plan)
 
 
 def check_sample(sample,count,read,minimum_ms=10000):
@@ -284,8 +283,8 @@ def host():
     owner=runner.build.supervision.Owner(ROOT/'host');spec=HOST_CHECK
     entry,out,err=owner.run('unit',spec['command'],dict(PATH='/usr/bin:/bin',LANG='C',PYTHONDONTWRITEBYTECODE='1'),P,
         wall=spec['wall_seconds'],cpu=spec['CPU_seconds'],rss_cap=spec['RSS_bytes'],text_cap=spec['text_bytes'],file_cap=1<<20,total_cap=spec['total_bytes'])
-    text=out.read_text()+err.read_text();passed=runner.build.supervision.closed(entry) and entry['exit_code']==0 and re.search(r'Ran 15 tests in [0-9.]+s',text) and text.rstrip().endswith('OK')
-    row['host_evidence']=dict(source_commit=row['source_commit'],tests=15,passed=bool(passed),exit_code=entry['exit_code'],ownership_closed=runner.build.supervision.closed(entry),recipe=spec)
+    text=out.read_text()+err.read_text();passed=runner.build.supervision.closed(entry) and entry['exit_code']==0 and re.search(r'Ran 16 tests in [0-9.]+s',text) and text.rstrip().endswith('OK')
+    row['host_evidence']=dict(source_commit=row['source_commit'],tests=16,passed=bool(passed),exit_code=entry['exit_code'],ownership_closed=runner.build.supervision.closed(entry),recipe=spec)
     row.update(host_passed=bool(passed),stage='ready' if passed else 'failed');save(row);require(passed,text[-8000:])
 
 

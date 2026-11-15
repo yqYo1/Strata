@@ -12,6 +12,17 @@ import engine_once
 
 
 class CurrentRequestProfileTests(unittest.TestCase):
+    def test_actual_fast_32k_route_uses_zero_byte_packed_draft_contract(self):
+        text=(profile.P/profile.FIXTURE).read_text();plan=dict(read=32769,heads=1)
+        result=profile.request_route(text,plan)
+        self.assertEqual(result['rows'],32768)
+        self.assertEqual(result['draft_requested_D2H'],0)
+        self.assertEqual(result['fast_window']['prefill_slots'],384)
+        self.assertEqual(result['MTP_expert_restore_bytes'],707788800)
+        for changed in (text.replace('draft detached bytes=0','draft detached bytes=223227900'),
+                        text.replace('tokens=32768 chunk=8192','tokens=32768 chunk=4096')):
+            with self.assertRaises(RuntimeError):profile.request_route(changed,plan)
+
     def test_whole_request_keeps_device_capture_from_exec_and_legacy_modes(self):
         config=dict(mode='whole_request',launcher=dict(path='/qualified/unitrace'),session='unused')
         argv=engine_once.profile_command(config,['/qualified/strata','--serve'])
