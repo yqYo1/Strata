@@ -13143,6 +13143,17 @@
     },
     "execution_and_byte_oracle_passed": true,
     "qualification_hold": "Controller did not recheck the freshly linked ELF and consumed inputs immediately before oracle launch. Original successful output is retained;source/build inputs were pinned but the mandatory launch guard was incomplete.",
-    "next_action": "Fresh V2plan with per-command source/compiler checks and exact ELF/actual-input checks immediately before launch;no retrospective V1qualification."
+    "next_action": "Fresh V2plan with per-command source/compiler checks and exact ELF/actual-input checks immediately before launch;no retrospective V1qualification.",
+    "artifact_retirement": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1",
+      "files": 11,
+      "bytes": 240614,
+      "inventory_sha256": "52861a6229b2743c58f8074cd617975bb763bcaeacdda17137bda9c2b47ddbce",
+      "source_commit": "672e18a1067df8bc414c4f0b2c37169c35459808",
+      "source_recipe_and_actual_compiler_link_inputs_recovered": true,
+      "exact_ELF_sha256": "11024f5dd52d42f75ca71542861031f6c9a96b79438bfdbb49552e98ebbf9edc",
+      "reason": "Original normal0and byte oracle preserved with launch-guard hold;new CPUV2uses a separate prospective guarded plan,no baseline binary consumer remains.",
+      "stage": "retired_verified"
+    }
   }
 }
