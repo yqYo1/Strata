@@ -1,0 +1,291 @@
+// Main-owned decode path extracted without an algorithm change from
+// 1eec28c77f393d34814dc748502113514973ea8e; repository LICENSE.
+// Independent translation unit and kernel identities keep the cooperative
+// planner out of the legacy scalar resolver's compilation path.
+#include "strata/kernels/kv_stream.hpp"
+#include "strata/kernels/kv_stream_copy_groups.hpp"
+#include "strata/kernels/kv_q4.hpp"
+#include "strata/sycl/launch.hpp"
+#include <algorithm>
+#include <array>
+#include <climits>
+#include <vector>
+
+namespace strata::kernels {
+namespace {
+namespace decode_kv_detail {
+using namespace sycl_backend;
+using Spans = std::vector<Span>;
+void spans(const Spans &writes, const Spans &reads = {}) {
+  for (size_t i = 0; i < writes.size(); ++i) {
+    validate_spans({writes[i]}, {});
+    for (size_t j = 0; j < i; ++j)
+      validate_spans({writes[i]}, {writes[j]});
+    for (auto r : reads)
+      validate_spans({writes[i]}, {r});
+  }
+  for (auto r : reads)
+    validate_spans({}, {r});
+}
+size_t bytes(int64_t count, size_t stride) {
+  if (count < 0 || (stride && uint64_t(count) > SIZE_MAX / stride))
+    throw std::invalid_argument("SYCL KV stream size overflow");
+  return size_t(count) * stride;
+}
+struct Runs {
+  std::array<const uint8_t *, 4> src{};
+  std::array<uint8_t *, 4> dst{};
+  std::array<size_t, 4> len{};
+  int n = 0;
+};
+Runs runs(const QsaAttnPools &dst, const KvHostPools &src, int fmt,
+          const QsaShapes &s) {
+  if (s.n_head_kv <= 0 || s.page_size <= 0 || s.head_dim <= 0 ||
+      s.head_dim > INT_MAX ||
+      (fmt != kKvF16 && fmt != kKvInt8 && fmt != kKvQ4) ||
+      (fmt == kKvInt8 && s.head_dim % 64) || (fmt == kKvQ4 && s.head_dim % 32))
+    throw std::invalid_argument("invalid SYCL KV streaming format/shape");
+  const size_t rows = checked_count(s.n_head_kv, s.page_size);
+  Runs r;
+  auto add = [&](const void *p, const void *q, size_t rowbytes) {
+    r.src[r.n] = static_cast<const uint8_t *>(p);
+    r.dst[r.n] = const_cast<uint8_t *>(static_cast<const uint8_t *>(q));
+    r.len[r.n++] = bytes(rows, rowbytes);
+  };
+  if (fmt == kKvF16) {
+    add(src.k_pool, dst.k_pool, size_t(s.head_dim) * 2);
+    add(src.v_pool, dst.v_pool, size_t(s.head_dim) * 2);
+  } else if (fmt == kKvInt8) {
+    add(src.k_q, dst.k_q, s.head_dim);
+    add(src.v_q, dst.v_q, s.head_dim);
+    add(src.k_scale, dst.k_scale, size_t(s.head_dim / 64) * 2);
+    add(src.v_scale, dst.v_scale, size_t(s.head_dim / 64) * 2);
+  } else {
+    add(src.k_q4, dst.k_q4, kv_q4_bytes_per_head(int(s.head_dim)));
+    add(src.v_q4, dst.v_q4, kv_q4_bytes_per_head(int(s.head_dim)));
+  }
+  return r;
+}
+void run_spans(Runs r, int64_t dstcount, int64_t srccount, Spans &w,
+               Spans &rd) {
+  for (int i = 0; i < r.n; ++i) {
+    w.push_back({r.dst[i], bytes(dstcount, r.len[i])});
+    rd.push_back({r.src[i], bytes(srccount, r.len[i])});
+  }
+}
+Spans map_spans(const KvStreamMap &m) {
+  if (m.n_blocks <= 0 || m.n_blocks > INT_MAX || m.n_slots <= 0 ||
+      m.n_slots > INT_MAX)
+    throw std::invalid_argument("invalid SYCL KV residency capacity");
+  return {{m.page_table, bytes(m.n_blocks, 4)},
+          {m.slot_block, bytes(m.n_slots, 4)},
+          {m.slot_stamp, bytes(m.n_slots, 4)},
+          {m.slot_ref, bytes(m.n_slots, 4)},
+          {m.ctl, kKvCtlInts * 4},
+          {m.miss_block, bytes(m.n_slots, 4)},
+          {m.miss_slot, bytes(m.n_slots, 4)}};
+}
+uint64_t counter(const int32_t *c) {
+  return uint64_t(uint32_t(c[0])) | (uint64_t(uint32_t(c[1])) << 32);
+}
+void increment(int32_t *c, uint64_t amount) {
+  const uint64_t value = counter(c) + amount;
+  c[0] = sycl::bit_cast<int32_t>(uint32_t(value));
+  c[1] = sycl::bit_cast<int32_t>(uint32_t(value >> 32));
+}
+// Decode-owned ordered clock policy. Only one work-item calls this after every
+// selected resident block has been marked with the current epoch.
+void resolve_victims(const KvStreamMap &m, int epoch, int need,
+                     uint64_t lookups) {
+  int hand = m.ctl[1];
+  if (hand < 0 || hand >= m.n_slots)
+    hand = 0;
+  int placed = 0;
+  for (int k = 0; k < need; ++k) {
+    int victim = -1;
+    for (int64_t scanned = 0; scanned < 2 * m.n_slots; ++scanned) {
+      const int sl = hand;
+      hand = int((int64_t(hand) + 1) % m.n_slots);
+      if (m.slot_stamp[sl] == epoch)
+        continue;
+      if (m.slot_block[sl] < 0 || m.slot_ref[sl] == 0) {
+        victim = sl;
+        break;
+      }
+      m.slot_ref[sl] = 0;
+    }
+    const int b = m.miss_block[k];
+    if (victim < 0) {
+      m.page_table[b] = -1;
+      m.ctl[3] = 1;
+      continue;
+    }
+    const int old = m.slot_block[victim];
+    if (old >= 0 && old < m.n_blocks)
+      m.page_table[old] = -1;
+    m.page_table[b] = victim;
+    m.slot_block[victim] = b;
+    m.slot_stamp[victim] = epoch;
+    m.slot_ref[victim] = 1;
+    m.miss_block[placed] = b;
+    m.miss_slot[placed++] = victim;
+  }
+  m.ctl[0] = epoch;
+  m.ctl[1] = hand;
+  m.ctl[2] = placed;
+  increment(m.ctl + 4, placed);
+  increment(m.ctl + 6, lookups);
+  increment(m.ctl + 8, 1);
+}
+} // namespace decode_kv_detail
+} // namespace
+void decode_kv_stream_resolve_coalesced(
+    const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
+    int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
+    const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
+  using namespace decode_kv_detail;
+  if (nq <= 0)
+    return;
+  validate_kv_stream_copy_group_cap(copy_group_cap);
+  if (nq > INT_MAX || cap <= 0 || cap > INT_MAX)
+    throw std::invalid_argument("invalid KV selection dimensions");
+  auto w = map_spans(m);
+  Spans rd{{ids, bytes(checked_count(nq, cap), 4)},
+           {steps, bytes(checked_count(nq, kStepCount), 4)}};
+  const auto r = runs(slots, host, fmt, s);
+  run_spans(r, m.n_slots, m.n_blocks, w, rd);
+  spans(w, rd);
+  auto &q = queue_for(stream);
+  const size_t copy_groups = std::min(size_t(m.n_slots), size_t(copy_group_cap));
+  // Main-authored bounded candidate, based on the owned scalar kv_stream.cpp
+  // and SYCL group-barrier/atomic-ref contracts. Consecutive block duplicates
+  // need no table read; all remaining table reads are coalesced across lanes.
+  // The leader still discovers misses in their original query/cell order.
+  constexpr size_t Wg = 256;
+  using HitAtomic =
+      sycl::atomic_ref<int32_t, sycl::memory_order::relaxed,
+                       sycl::memory_scope::work_group,
+                       sycl::access::address_space::global_space>;
+  static_assert(HitAtomic::required_alignment == alignof(int32_t));
+  q.submit([&](sycl::handler &h) {
+    sycl::local_accessor<int32_t, 1> blocks(sycl::range<1>(Wg), h);
+    sycl::local_accessor<int32_t, 1> resident(sycl::range<1>(Wg), h);
+    h.parallel_for(sycl::nd_range<1>(Wg, Wg), [=](sycl::nd_item<1> it) {
+      const size_t lane = it.get_local_linear_id();
+      const auto group = it.get_group();
+      const int before = m.ctl[0];
+      const bool reset = before < 0 || before == INT_MAX;
+      const int epoch = (reset ? 0 : before) + 1;
+      if (reset)
+        for (int64_t i = int64_t(lane); i < m.n_slots; i += Wg)
+          m.slot_stamp[i] = -1;
+      // Unconditional even for empty/invalid selections: every work-item
+      // must finish its epoch read/reset before the leader publishes ctl[0].
+      sycl::group_barrier(group);
+      int need = 0;
+      uint64_t lookups = 0;
+      for (int64_t qi = 0; qi < nq; ++qi) {
+        const int width = steps[qi * kStepCount + kStepWidth];
+        if (width < 0 || width > cap) {
+          if (lane == 0)
+            m.ctl[3] = 1;
+          continue; // Uniform: steps are immutable throughout the call.
+        }
+        int previous = -1;
+        for (int64_t base = 0; base < width; base += Wg) {
+          const int64_t i = base + int64_t(lane);
+          int block = -1, slot = -3;
+          if (i < width) {
+            const int cell = ids[qi * cap + i];
+            if (cell >= 0 && int64_t(cell) / s.page_size < m.n_blocks) {
+              block = int(int64_t(cell) / s.page_size);
+              const bool same =
+                  i > 0 && ids[qi * cap + i - 1] >= 0 &&
+                  int64_t(ids[qi * cap + i - 1]) / s.page_size == block;
+              if (!same) {
+                slot = m.page_table[block];
+                if (slot >= 0 && slot < m.n_slots) {
+                  // Different queries/runs can name the same slot. Equal
+                  // ordinary writes would still be a data race in SYCL.
+                  HitAtomic{m.slot_stamp[slot]}.store(epoch);
+                  HitAtomic{m.slot_ref[slot]}.store(1);
+                }
+              }
+            }
+          }
+          blocks[lane] = block;
+          resident[lane] = slot;
+          // All table reads/hit marks precede the leader's table writes.
+          sycl::group_barrier(group);
+          if (lane == 0) {
+            const int count = int(std::min<int64_t>(Wg, width - base));
+            for (int j = 0; j < count; ++j) {
+              const int b = blocks[size_t(j)];
+              if (b < 0) {
+                m.ctl[3] = 1;
+                continue; // Preserve previous across invalid cell gaps.
+              }
+              if (b == previous)
+                continue;
+              previous = b;
+              ++lookups;
+              const int cached = resident[size_t(j)];
+              if (cached >= 0 && cached < m.n_slots)
+                continue;
+              // A preceding lane/query may already have claimed this miss.
+              const int now = m.page_table[b];
+              if (now == -1) {
+                if (need == m.n_slots) {
+                  m.ctl[3] = 1;
+                  continue;
+                }
+                m.page_table[b] = -2;
+                m.miss_block[need++] = b;
+              } else if (now != -2) {
+                m.ctl[3] = 1;
+              }
+            }
+          }
+          // No later prefetch may race the preceding leader's miss marks.
+          sycl::group_barrier(group);
+        }
+      }
+      if (lane == 0)
+        resolve_victims(m, epoch, need, lookups);
+    });
+  });
+
+  sycl::event event;
+  if (!copy_groups) {
+    // Legacy default: one workgroup per residency slot, including all hits.
+    event = q.parallel_for(
+        sycl::nd_range<1>(size_t(m.n_slots) * 128, 128),
+        [=](sycl::nd_item<1> it) {
+          const size_t k = it.get_group_linear_id(), t = it.get_local_linear_id();
+          if (k >= size_t(m.ctl[2]))
+            return;
+          const size_t b = m.miss_block[k], slot = m.miss_slot[k];
+          for (int a = 0; a < r.n; ++a)
+            for (size_t i = t; i < r.len[a]; i += 128)
+              r.dst[a][slot * r.len[a] + i] = r.src[a][b * r.len[a] + i];
+        });
+  } else {
+    // The same in-order queue publishes ctl/miss lists before this kernel.
+    // Every placement k belongs to exactly one k % copy_groups workgroup.
+    // Placements have distinct destination slots, so no barrier is needed.
+    event = q.parallel_for(
+        sycl::nd_range<1>(copy_groups * 128, 128),
+        [=](sycl::nd_item<1> it) {
+          const size_t t = it.get_local_linear_id();
+          for (size_t k = it.get_group_linear_id(); k < size_t(m.ctl[2]);
+               k += copy_groups) {
+            const size_t b = m.miss_block[k], slot = m.miss_slot[k];
+            for (int a = 0; a < r.n; ++a)
+              for (size_t i = t; i < r.len[a]; i += 128)
+                r.dst[a][slot * r.len[a] + i] = r.src[a][b * r.len[a] + i];
+          }
+        });
+  }
+  finish(stream, event);
+}
+} // namespace strata::kernels

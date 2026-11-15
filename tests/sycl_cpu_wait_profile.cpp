@@ -10,6 +10,9 @@ static_assert(!std::is_copy_constructible_v<hp::Host>);
 static_assert(!std::is_move_constructible_v<hp::Host>);
 static_assert(std::is_nothrow_destructible_v<hp::Host>);
 static_assert(std::is_nothrow_destructible_v<hp::Wait>);
+static_assert(!std::is_copy_constructible_v<hp::StatusScope>);
+static_assert(!std::is_copy_constructible_v<hp::StatusPart>);
+static_assert(std::is_nothrow_destructible_v<hp::StatusPart>);
 
 void require(bool ok, const char* message) {
     if (!ok) throw std::runtime_error(message);
@@ -27,6 +30,8 @@ int main() try {
         hp::Scope scope(false);
         hp::Host host(hp::moe_gather);
         hp::Wait wait(hp::compat_queue);
+        hp::StatusScope status;
+        hp::StatusPart part(hp::status_precheck);
         require(hp::active == nullptr, "disabled observer changed TLS");
     }
     begin("valid");
@@ -37,9 +42,15 @@ int main() try {
             hp::Host host(static_cast<hp::HostKind>(k));
             work();
             if (k == hp::moe_status) {
-                hp::Wait wait(hp::compat_queue);
-                hp::Wait nested(hp::direct_queue);
-                work();
+                hp::StatusScope status;
+                { hp::StatusPart part(hp::status_precheck); work(); }
+                {
+                    hp::StatusPart part(hp::status_drain);
+                    hp::Wait wait(hp::compat_queue);
+                    hp::Wait nested(hp::direct_queue);
+                    work();
+                }
+                status.complete();
             }
             host.finish();
             host.finish();
@@ -60,6 +71,12 @@ int main() try {
         require(s.count[hp::compat_queue] == 1 && !s.count[hp::direct_queue] &&
                 s.host_wait_cpu[hp::moe_status] == s.cpu[hp::compat_queue] &&
                 s.host_wait_wall[hp::moe_status] == s.wall[hp::compat_queue], "wait subtraction mismatch");
+        require(s.status_scopes == 1 && s.status_completed == 1 &&
+            s.status_calls[hp::status_precheck] == 1 && s.status_calls[hp::status_drain] == 1 &&
+            s.status_wait_cpu[hp::status_drain] == s.cpu[hp::compat_queue] &&
+            s.status_wait_wall[hp::status_drain] == s.wall[hp::compat_queue] &&
+            hp::duration(s.status_scope_cpu - s.status_cpu[hp::status_precheck] - s.status_cpu[hp::status_drain]) &&
+            !s.status_depth && !s.status_part_depth, "status accounting mismatch");
         scope.complete(true);
     }
     require(hp::active == nullptr, "scope did not restore TLS");
@@ -98,6 +115,47 @@ int main() try {
         require(original->invalid, "nested scope was accepted");
     }
     require(hp::active == nullptr, "final TLS not restored");
+    begin("status_nested_scope");
+    {
+        hp::Scope scope(true);
+        { hp::StatusScope outer; hp::StatusScope inner; work(); }
+        require(hp::active->invalid && !hp::active->status_depth, "nested status scope accepted");
+    }
+    begin("status_nested_part");
+    {
+        hp::Scope scope(true);
+        {
+            hp::StatusScope status;
+            hp::StatusPart outer(hp::status_precheck), inner(hp::status_queue);
+            work();
+        }
+        require(hp::active->invalid && !hp::active->status_part_depth, "nested status part accepted");
+    }
+    begin("status_part_inside_wait");
+    {
+        hp::Scope scope(true);
+        {
+            hp::StatusScope status;
+            hp::Wait wait(hp::compat_queue);
+            hp::StatusPart part(hp::status_drain);
+            work();
+        }
+        require(hp::active->invalid && !hp::active->status_depth && !hp::active->status_part_depth,
+            "status part inside wait accepted");
+    }
+    begin("status_exception");
+    {
+        hp::Scope scope(true);
+        try {
+            hp::StatusScope status;
+            hp::StatusPart part(hp::status_precheck);
+            work(); throw 7;
+        } catch (int) {}
+        require(!hp::active->invalid && hp::active->status_scopes == 1 && !hp::active->status_completed &&
+            hp::active->status_throws[hp::status_precheck] == 1 &&
+            !hp::active->status_depth && !hp::active->status_part_depth, "status exception ownership mismatch");
+        scope.complete(false);
+    }
     std::puts("fixture_status=PASS");
     return 0;
 } catch (const std::exception& error) {

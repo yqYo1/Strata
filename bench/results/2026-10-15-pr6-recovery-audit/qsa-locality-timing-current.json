@@ -1,0 +1,347 @@
+{
+  "schema": "closed-QSA-same-code-locality-v1",
+  "stage": "closed",
+  "passed": true,
+  "complete": true,
+  "ownership_closed": true,
+  "active": false,
+  "GPU_executed": true,
+  "native_source_commit": "a509cdbbf9cf207e6ed4cac8a7f923f69554bd04",
+  "production_native_basis": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "measurement_controller_commit": "50b24baf4781f7a20a60a9a07bf972447131c919",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-v1/fixture",
+    "bytes": 1458768,
+    "sha256": "5084c9626b4c5d905d090c69bab8a8b1e727e7718a9591a22832bdd932ebde84",
+    "retired": true
+  },
+  "prepared_plan": {
+    "commit": "be00a1e0f13d86656fbc75693872215d2bc39560",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-timing-current.json",
+    "sha256": "b8f7a39ba524ff0e9b04d94c4174c720a9080e4376ec18569e2a086269f41298"
+  },
+  "build_evidence": {
+    "commit": "be00a1e0f13d86656fbc75693872215d2bc39560",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-build-current.json",
+    "sha256": "bef1d7f3794965b1323307c6ab0cd607e208b26086325653945528d652e1eef3"
+  },
+  "small_review_and_ISA_evidence": {
+    "commit": "be00a1e0f13d86656fbc75693872215d2bc39560",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-check-current.json",
+    "sha256": "766c996cb647d669194036ac82319e56063a174180f84acdabdbe94dc23c09b7"
+  },
+  "device": "Intel Arc B570",
+  "scope": "Synthetic whole-production-wrapper mask-address/working-set sensitivity;not a model replay.",
+  "common": {
+    "cells": 117488,
+    "queries": 512,
+    "cap": 2051,
+    "page_size": 4,
+    "query_heads": 24,
+    "kv_heads": 2,
+    "dimension": 256,
+    "calls_per_batch": 128,
+    "rounds": 5,
+    "equal_warmups_per_switch": 2,
+    "timing_floor_ns": 100000000,
+    "timer_overhead_multiplier": 1000,
+    "all_samples_eligible": true,
+    "all_sample_checks": "PASS",
+    "payload": "Identity physical pages;finite32-cell-periodic K8/V8 with FP16 scales. Every mask preserves cell%32 and therefore every ordered QK/softmax/PV operand bit.",
+    "timed_work": "Host steady-clock actual production wrapper/admission/full-live-prefix BF16 pack/attention/drain. Transfers,reference/readback,correctness and perturbation outside timing."
+  },
+  "patterns": {
+    "0": "Common:allqueries share2051 valid unique IDs.",
+    "1": "Shifted:contiguous32-cell blocks,query-dependent block offset.",
+    "2": "Scattered:per-cell block permutation,query-dependent offset;valid unique IDs."
+  },
+  "logical_union_rows": [
+    2051,
+    117472,
+    117472
+  ],
+  "processes": [
+    {
+      "index": 0,
+      "pid": 329078,
+      "exit_code": 0,
+      "normal_owned_closure": true,
+      "validation_activation": {
+        "pid": 329078,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "cases": 2,
+      "samples": 0
+    },
+    {
+      "index": 1,
+      "pid": 330252,
+      "exit_code": 0,
+      "normal_owned_closure": true,
+      "validation_activation": null,
+      "cases": 1,
+      "samples": 15
+    },
+    {
+      "index": 2,
+      "pid": 332305,
+      "exit_code": 0,
+      "normal_owned_closure": true,
+      "validation_activation": null,
+      "cases": 1,
+      "samples": 15
+    },
+    {
+      "index": 3,
+      "pid": 334458,
+      "exit_code": 0,
+      "normal_owned_closure": true,
+      "validation_activation": null,
+      "cases": 1,
+      "samples": 15
+    }
+  ],
+  "process_summaries": [
+    {
+      "process": 0,
+      "arms": [
+        {
+          "arm": 0,
+          "median_ms": 11.0326341640625,
+          "minimum_ms": 11.0250434453125,
+          "maximum_ms": 11.0721755703125
+        },
+        {
+          "arm": 1,
+          "median_ms": 13.9964017890625,
+          "minimum_ms": 13.973603828125,
+          "maximum_ms": 14.0232474375
+        },
+        {
+          "arm": 2,
+          "median_ms": 18.452310765625,
+          "minimum_ms": 18.40596725,
+          "maximum_ms": 18.4996581875
+        }
+      ],
+      "scattered_over_common": 1.6725208586840683,
+      "scattered_over_shifted": 1.3183610361946436
+    },
+    {
+      "process": 1,
+      "arms": [
+        {
+          "arm": 0,
+          "median_ms": 11.0615074921875,
+          "minimum_ms": 11.015305328125,
+          "maximum_ms": 11.0708302578125
+        },
+        {
+          "arm": 1,
+          "median_ms": 13.991910078125,
+          "minimum_ms": 13.9702118515625,
+          "maximum_ms": 14.0067063359375
+        },
+        {
+          "arm": 2,
+          "median_ms": 18.4486272578125,
+          "minimum_ms": 18.4198350625,
+          "maximum_ms": 18.4693101171875
+        }
+      ],
+      "scattered_over_common": 1.667822154515771,
+      "scattered_over_shifted": 1.3185209992633633
+    },
+    {
+      "process": 2,
+      "arms": [
+        {
+          "arm": 0,
+          "median_ms": 11.033150609375,
+          "minimum_ms": 11.00283425,
+          "maximum_ms": 11.037426140625
+        },
+        {
+          "arm": 1,
+          "median_ms": 13.9878150546875,
+          "minimum_ms": 13.9544920234375,
+          "maximum_ms": 14.0323998203125
+        },
+        {
+          "arm": 2,
+          "median_ms": 18.447560359375,
+          "minimum_ms": 18.416647453125,
+          "maximum_ms": 18.4983675
+        }
+      ],
+      "scattered_over_common": 1.6720120129330862,
+      "scattered_over_shifted": 1.318830731408118
+    }
+  ],
+  "prospective_sensitivity_gate": "Every process scattered/common median>=1.10;no model-performance/adoption gate.",
+  "scattered_over_common": [
+    1.6725208586840683,
+    1.667822154515771,
+    1.6720120129330862
+  ],
+  "scattered_over_common_geomean": 1.6707836815120847,
+  "substantial_address_sensitivity": true,
+  "qualification": {
+    "full_mixed_and_uniform_width_validation": true,
+    "all_output_bits_equal_across_patterns": true,
+    "V_perturbation_changes_output_identically": true,
+    "guards": true,
+    "inputs_immutable": true,
+    "all_IDs_valid_unique_and_ordered_payload_equivalent": true,
+    "same_native_runtime_selected13_rechecked_after_each_process": true,
+    "normal_owned_exits": 4,
+    "boot_unchanged": true,
+    "fresh_faults": [],
+    "postcheck_errors": [],
+    "runtime_teardown_qualified": false
+  },
+  "codegen": {
+    "passed": true,
+    "actual_executed_kernels_matched": true,
+    "ISA": [
+      {
+        "phase": "prefix",
+        "file": "OCL_asmbddb19e14fd58c81_simd32_entry_0006.asm",
+        "sha256": "631467042c2399cb9b6f5cf08802f8b35e12513bcd0053cdedf2fc1c7ceb1274",
+        "same_prior_attention_ISA": null
+      },
+      {
+        "phase": "attention",
+        "file": "OCL_asm7e3ea555cb721531_simd16_entry_0006.asm",
+        "sha256": "edbfc3b047a07e944446823317e231060ab1662baf11e61871eee5dffdcb3e6e",
+        "same_prior_attention_ISA": true
+      }
+    ],
+    "attention_ISA_byte_identical_to_prior": true,
+    "prior_evidence": {
+      "commit": "7adbbf7b0241e48da0dcfabf458e5a4e81138379",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-timing-current.json",
+      "sha256": "66398664fa76ef22565d4a18d5014e2f731e8262d48507a74180a83094cd75f0",
+      "scope": "Earlier production ISA/current comparison used at admission;consumer now closed."
+    },
+    "source_and_frontend_IR_unchanged": true,
+    "same_attention_image_for_every_mask": true,
+    "limits": "Static resources/ISA and whole-wrapper mask sensitivity only;not cache hits,physical bytes,saturation or model performance.",
+    "attention_resources": {
+      "SIMD": "16",
+      "GRF": "128",
+      "dynamic_SLM_bytes": 20032,
+      "spill_descriptor": "12480",
+      "raw_slm_size": "32"
+    }
+  },
+  "decision": "Strong same-code/equal-operand address sensitivity passes every prospective1.10 gate. Prioritize real selected-ID capture/replay and per-layer/chunk prefix-pack accounting before a query-order/locality implementation;do not repeat another unmotivated layout or broadGRF256 change. No engine/decode adoption.",
+  "limits": [
+    "Separate ID allocations contribute to the address treatment;this is whole-wrapper mask sensitivity,not exclusive KV load time.",
+    "Every arm repacks the whole live prefix;the clock does not isolate attention or producer time.",
+    "Logical unions are requested-row counts,not physical traffic,cache hits/residency or saturation.",
+    "Periodic synthetic payloads and masks are not actual-model data;no model-prefill speedup or resource ceiling is established.",
+    "Real39K16-query union evidence cannot be assumed representative of117K/262K. Fresh current-shape replay and state-handoff/repeated matched decode gates remain necessary."
+  ],
+  "selected_engine_preserved": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "clean_model_speed_qualified": false,
+  "hardware_saturation_qualified": false,
+  "model_adoption_qualified": false,
+  "retention": {
+    "consumer": "Current decision/reference for actual-mask locality replay and independently selected prefill candidate.",
+    "next_review": "After that mechanism decision;original plans/build/review recoverable from pinned Git.",
+    "raw_and_extra_build": "Retired after committed compact evidence and exact source/recipe/SDK recovery."
+  },
+  "sample_columns": [
+    "process",
+    "arm",
+    "round",
+    "order",
+    "elapsed_ns",
+    "timer_pair_ns"
+  ],
+  "source_recovery": {
+    "verified": true,
+    "remote_feature_sycl": "7adbbf7b0241e48da0dcfabf458e5a4e81138379",
+    "project_recipe_inputs": 186,
+    "exact_commands": 8,
+    "all13_build_smoke_and_timing_commands_normally_closed": true,
+    "SDK_inputs": 8700,
+    "SDK_manifest_sha256": "5cdf1a647648111b26159b441cff6082c4b7acaab051222ba3db275ebd1f37a2",
+    "SDK_manifest_recovery": "Original8697-file parent manifest at/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json plus four compiler -print-file-name link inputs,as in the exact sourcea509 build recipe;identical rows/hash verified.",
+    "selected13_assets_match": true,
+    "selected_original_inputs": 9853
+  },
+  "retirement": {
+    "complete": true,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-retirement-20261023.jsonl",
+    "manifest_sha256": "af32fb11bc9fc54ab296fa395d32cdd8eef33a27b9034220cd5edce201d80129",
+    "external_cache_files": 184,
+    "external_cache_bytes": 58535923,
+    "source_archive": "be00a1e0f",
+    "old_probe_comparison_archive": "7adbbf7b0241e48da0dcfabf458e5a4e81138379",
+    "tracked_retirement": "Four closed fixture/build/check/measurement source files,two build/smoke receipts,and the consumed135-sample probe comparison;Git deletion diff records paths/blob hashes.",
+    "selected_engine": "Original6e40 engine plus12same-build fixtures retained;extra generation retired.",
+    "reports": "Locality audit/review consumed;GRF targeted retrieval did not justify repeating the previously rejected broadGRF256experiment. Only current compact decision remains.",
+    "selected13_assets_match_after": true
+  },
+  "samples": [
+    [0,0,0,0,1416354831,20],
+    [0,1,0,1,1788621290,20],
+    [0,2,0,2,2355963808,20],
+    [0,1,1,0,1791539429,20],
+    [0,2,1,1,2360548992,20],
+    [0,0,1,2,1417238473,20],
+    [0,2,2,0,2361895778,20],
+    [0,0,2,1,1411492550,20],
+    [0,1,2,2,1794975672,20],
+    [0,0,3,0,1411205561,20],
+    [0,1,3,1,1791256835,20],
+    [0,2,3,2,2367956248,20],
+    [0,1,4,0,1793209262,20],
+    [0,2,4,1,2365873135,20],
+    [0,0,4,2,1412177173,20],
+    [1,1,0,0,1791911208,20],
+    [1,2,0,1,2364071695,20],
+    [1,0,0,2,1416950362,20],
+    [1,2,1,0,2357738888,20],
+    [1,0,1,1,1417066273,20],
+    [1,1,1,2,1788187117,20],
+    [1,0,2,0,1415872959,20],
+    [1,1,2,1,1792858411,20],
+    [1,2,2,2,2364061514,20],
+    [1,1,3,0,1790964490,20],
+    [1,2,3,1,2361424289,20],
+    [1,0,3,2,1409959082,20],
+    [1,2,4,0,2360166265,20],
+    [1,0,4,1,1414107741,20],
+    [1,1,4,2,1790255933,20],
+    [2,2,0,0,2367791040,20],
+    [2,0,0,1,1412656672,20],
+    [2,1,0,2,1789943639,20],
+    [2,0,1,0,1412243278,20],
+    [2,1,1,1,1796147177,20],
+    [2,2,1,2,2365599193,20],
+    [2,1,2,0,1794243130,20],
+    [2,2,2,1,2358352954,20],
+    [2,0,2,2,1408362784,20],
+    [2,2,3,0,2357330874,20],
+    [2,0,3,1,1409418153,20],
+    [2,1,3,2,1786174979,20],
+    [2,0,4,0,1412790546,20],
+    [2,1,4,1,1790440327,20],
+    [2,2,4,2,2361287726,20]
+  ]
+}

@@ -169,7 +169,9 @@ void accumulator_spans(void* stream, std::initializer_list<Span> outputs,
 }
 size_t accumulator_routes(const detail::MoeWindowRoutes& plan, void* stream) {
     const size_t routes = size_t(plan.rows()) * detail::MoeWindowRoutes::top_k;
-    if (plan.rows() < 1 || plan.rows() > detail::MoeWindowRoutes::max_accum_rows ||
+    const auto limit = plan.split_accumulator() ? detail::MoeWindowRoutes::max_split_accum_rows
+                                               : detail::MoeWindowRoutes::max_accum_rows;
+    if (plan.rows() < 1 || plan.rows() > limit ||
         plan.original_slots().size() != routes || plan.source_rows().size() != routes ||
         !queue_for(stream).has_property<sycl::property::queue::in_order>())
         throw std::invalid_argument("MoE accumulator requires an inverse plan and in-order queue");
@@ -229,6 +231,8 @@ void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
 void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
                     const uint16_t* down, const int32_t* source, const int32_t* original,
                     const float* job_weights, float* accumulator, uint32_t* status, void* stream) {
+    if (plan.split_accumulator())
+        throw std::invalid_argument("MoE ordinary accumulator cannot consume a split plan");
     const size_t routes = accumulator_routes(plan, stream);
     const auto& job = plan.jobs().at(job_index);
     if (job.rows < 1 || job.rows > 8192 || size_t(job.rows) > routes || job.global_row < 0 ||
@@ -247,6 +251,36 @@ void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
         }
         const size_t out = size_t(token) * N + col;
         accumulator[out] = sycl::fma(job_weights[routed], load(down[i]), accumulator[out]);
+    });
+}
+
+void moe_accumulate_split(const detail::MoeWindowRoutes& plan, size_t job_index,
+                    const uint16_t* down, const int32_t* source, const int32_t* original,
+                    const float* job_weights, float* primary, float* tail,
+                    int64_t primary_rows, uint32_t* status, void* stream) {
+    if (!plan.split_accumulator() || primary_rows < 1 || primary_rows >= plan.rows())
+        throw std::invalid_argument("MoE split accumulator requires two nonempty logical banks");
+    const size_t routes = accumulator_routes(plan, stream);
+    const auto& job = plan.jobs().at(job_index);
+    if (job.rows < 1 || job.rows > 8192 || size_t(job.rows) > routes || job.global_row < 0 ||
+        size_t(job.global_row) > routes - size_t(job.rows))
+        throw std::invalid_argument("MoE split accumulator job span");
+    const size_t rows = size_t(plan.rows()), first_rows = size_t(primary_rows);
+    const size_t offset = size_t(job.global_row), n = count(job.rows, N);
+    accumulator_spans(stream, {{primary, first_rows * N * 4},
+        {tail, (rows - first_rows) * N * 4}, {status, 4}},
+        {{down, n * 2}, {source, routes * 4}, {original, routes * 4}, {job_weights, routes * 4}});
+    for_each(n, stream, [=](size_t i) {
+        const size_t routed = offset + i / N, col = i % N;
+        const int32_t token = source[routed], slot = original[routed];
+        if (slot < 0 || size_t(slot) >= routes) { accumulator_error(status, 1); return; }
+        if (token < 0 || size_t(token) >= rows || token != slot / 10) {
+            accumulator_error(status, 2); return;
+        }
+        const bool in_tail = size_t(token) >= first_rows;
+        float* bank = in_tail ? tail : primary;
+        const size_t out = (size_t(token) - (in_tail ? first_rows : 0)) * N + col;
+        bank[out] = sycl::fma(job_weights[routed], load(down[i]), bank[out]);
     });
 }
 

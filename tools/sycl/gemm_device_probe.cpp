@@ -10,6 +10,9 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <sys/syscall.h>
+#include <time.h>
+#include <unistd.h>
 #include <vector>
 
 namespace {
@@ -34,8 +37,17 @@ uint16_t encode(float value, bool bf16) {
     return bf16 ? uint16_t(std::bit_cast<uint32_t>(value) >> 16)
                 : strata::kernels::f16_from_f32(value);
 }
-void run(const std::shared_ptr<Runtime>& rt, int rows, bool down, bool bf16) {
-    const int width = down ? 2560 : 1280, inner = down ? 640 : 2560, ld = width + 3;
+uint64_t raw_ns() {
+    timespec value{};
+    need(clock_gettime(CLOCK_MONOTONIC_RAW, &value) == 0, "raw clock failed");
+    return uint64_t(value.tv_sec) * 1000000000ULL + uint64_t(value.tv_nsec);
+}
+void run(const std::shared_ptr<Runtime>& rt, int rows, bool down, bool bf16, bool hc_once = false) {
+    // MTP's HC down-projection width/inner geometry;64 rows bounds the first
+    // library-coverage fixture. It is not a model throughput measurement.
+    const int width = hc_once ? 320 : down ? 2560 : 1280;
+    const int inner = hc_once ? 10240 : down ? 640 : 2560, ld = width + 3;
+    const char* role = hc_once ? "HCDown" : down ? "Down" : "GU";
     const size_t nx = size_t(rows) * inner, nw = size_t(width) * inner, ny = size_t(rows) * ld;
     const size_t gpu_bytes = (nx + nw + 4 * Guard) * 2 + (ny + 2 * Guard) * 4;
     need(gpu_bytes < (256u << 20), "bounded device-byte budget");
@@ -56,13 +68,17 @@ void run(const std::shared_ptr<Runtime>& rt, int rows, bool down, bool bf16) {
     strata::prefill::Gemm gemm;
     std::string error;
     need(gemm.init_external(&rt->compute(), nullptr, 0, nullptr, 0, error), error.c_str());
-    std::cout << "BEGIN type=" << (bf16 ? "bf16" : "fp16") << " role=" << (down ? "Down" : "GU")
+    std::cout << "BEGIN type=" << (bf16 ? "bf16" : "fp16") << " role=" << role
               << " rows=" << rows << " N=" << width << " K=" << inner << " ld=" << ld << '\n';
+    if (hc_once) std::cout << "OP_BEGIN invocation=1 pid=" << getpid() << " tid=" << syscall(SYS_gettid)
+                          << " raw_ns=" << raw_ns() << '\n';
     if (bf16) gemm.bf16(dx.as<uint16_t>() + Guard, dw.as<uint16_t>() + Guard,
                         dy.as<float>() + Guard, rows, width, inner, ld);
     else gemm.f16(dx.as<uint16_t>() + Guard, dw.as<uint16_t>() + Guard,
                   dy.as<float>() + Guard, rows, width, inner, ld);
+    if (hc_once) std::cout << "OP_RETURN invocation=1 raw_ns=" << raw_ns() << '\n';
     rt->wait();
+    if (hc_once) std::cout << "OP_DRAIN invocation=1 raw_ns=" << raw_ns() << " checked=1\n";
     copy(rt, y.data(), dy.data(), y.size() * 4);
     int coefficient = 0;
     for (int k = 0; k < inner; ++k) coefficient += (k % 5 - 2) * (k % 7 - 3);
@@ -77,7 +93,7 @@ void run(const std::shared_ptr<Runtime>& rt, int rows, bool down, bool bf16) {
     copy(rt, xx.data(), dx.data(), xx.size() * 2);
     copy(rt, ww.data(), dw.data(), ww.size() * 2);
     need(xx == x && ww == w, "input guards and immutability");
-    std::cout << "PASS type=" << (bf16 ? "bf16" : "fp16") << " role=" << (down ? "Down" : "GU")
+    std::cout << "PASS type=" << (bf16 ? "bf16" : "fp16") << " role=" << role
               << " rows=" << rows << " values=" << size_t(rows) * width
               << " analytic=FULL_EXACT guards=PASS inputs=PASS device_bytes=" << gpu_bytes << '\n';
 }
@@ -86,17 +102,20 @@ int main(int argc, char** argv) {
     std::cout << std::unitbuf;
     try {
         const bool smoke = argc == 2 && std::string(argv[1]) == "--smoke";
-        need(smoke || argc == 1, "usage: sycl_gemm_device_probe [--smoke]");
+        const bool once = argc == 2 && std::string(argv[1]) == "--one-bf16";
+        need(smoke || once || argc == 1, "usage: sycl_gemm_device_probe [--smoke|--one-bf16]");
         auto rt = strata::sycl_backend::runtime_for();
         need(rt->device().is_gpu(), "GPU queue required");
         std::cout << "device=" << rt->device().get_info<sycl::info::device::name>()
                   << " driver=" << rt->device().get_info<sycl::info::device::driver_version>() << '\n';
-        for (bool bf16 : {false, true}) for (int rows : {1, 160, 8192}) {
+        if (once) run(rt, 64, false, true, true);
+        else for (bool bf16 : {false, true}) for (int rows : {1, 160, 8192}) {
             if (smoke && rows != 1) continue;
             for (bool down : {false, true}) run(rt, rows, down, bf16);
         }
         rt->wait();
-        std::cout << "DONE cases=" << (smoke ? 4 : 12) << " scope=synthetic_location_probe_not_model_performance\n";
+        std::cout << "DONE cases=" << (once ? 1 : smoke ? 4 : 12)
+                  << " scope=synthetic_location_probe_not_model_performance\n";
     } catch (const std::exception& e) {
         std::cerr << "FAIL " << e.what() << '\n';
         return 1;

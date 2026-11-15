@@ -241,7 +241,14 @@ int main(int argc,char** argv) try {
     if(argc==3 && std::string(argv[1])=="scan") {
         std::vector<int> ids; std::string s=argv[2]; size_t at=0;
         while(at<s.size()) { size_t end=s.find(',',at); ids.push_back(std::stoi(s.substr(at,end-at))); if(end==std::string::npos)break; at=end+1; }
-        require(ids.size()==1 || ids.size()==6 || ids.size()==12,"scan thread count"); ram_scan(ids);
+        require((ids.size()>=1 && ids.size()<=6) || ids.size()==12,"scan thread count");
+        cpu_set_t allowed;CPU_ZERO(&allowed);
+        require(sched_getaffinity(0,sizeof allowed,&allowed)==0,"scan allowed CPUs");
+        require(std::all_of(ids.begin(),ids.end(),[&](int c){return c>=0 && c<CPU_SETSIZE && CPU_ISSET(c,&allowed);}),
+                "scan CPU outside allowed affinity");
+        auto unique=ids;std::sort(unique.begin(),unique.end());
+        require(std::adjacent_find(unique.begin(),unique.end())==unique.end(),"duplicate scan CPU");
+        ram_scan(ids);
     } else {
         require(argc==11,"expected shard gu down gate_offset up_offset down_offset bytes workers check|measure");
         Inputs input(argv[1],std::stoi(argv[2]),std::stoi(argv[3]),std::stoull(argv[4]),std::stoull(argv[5]),std::stoull(argv[6]),std::stoull(argv[7]));

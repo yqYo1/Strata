@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""Main-owned passive resource diagnostic on the retained old speed reference."""
+"""Main-owned current-engine decode resource diagnostic; no new native build."""
 import argparse
-import copy
 import fcntl
 import hashlib
 import json
@@ -21,7 +20,7 @@ from build_engine import blobs
 
 P, B, A = generation.P, generation.B, generation.A
 RESULT = A / 'client-resources-current.json'
-ROOT = B / 'decode-client-resources-v2'
+ROOT = B / 'decode-current-resources-v2'
 READER = P / 'bench/sycl/client_resources.py'
 sys.path.insert(0, str(READER.parent))
 import client_resources
@@ -75,187 +74,287 @@ def source_proof(record):
     return count
 
 
-def prepare():
-    previous = generation.committed(RESULT)
-    guards.require(previous.get('mode') == 'client-resources' and
-        previous.get('diagnostic_version', 1) == 1 and previous.get('complete') is True and
-        previous.get('passed') is True and previous.get('ownership_closed') is True and
-        not previous.get('active') and not previous.get('fresh_faults') and
-        previous.get('resource_admission_qualified') is True and
-        previous.get('artifact_retirement', {}).get('complete') is True,
-        'collector-only diagnostic requires the closed admitted first capture; no automatic retry')
-    previous_raw = RESULT.read_bytes()
-    previous_commit = generation.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip()
-    closed = generation.committed(generation.RESULT)
-    summary = closed['engine_comparison_summary']
-    guards.require(closed['complete'] and closed['passed'] and closed['ownership_closed'] and
-        len(summary['processes']) == 6 and summary['diagnostic_nonregression_gate_passed'] is False,
-        'close the six-process comparison and preserve its failed gate first')
-    selected = [p for p in summary['processes'] if p['arm'] == 'old'][-1]
-    revision, path = selected['receipt_commit'], str(generation.RESULT.relative_to(P))
-    raw = generation.git('show', revision + ':' + path)
-    old = json.loads(raw)
-    guards.require(old['complete'] and old['passed'] and old['ownership_closed'] and not old['fresh_faults'] and
-        old['engine_arm'] == 'old' and old['observer_records_absent'], 'invalid selected old-engine qualification')
-    receipt_path = B / 'known-good-396d0c91f301/source-build.json'
-    record = dict(schema=1, mode='client-resources', diagnostic_version=2,
-        source_commit=generation.git('rev-parse', 'HEAD').decode().strip(),
-        previous_capture=dict(commit=previous_commit,path=str(RESULT.relative_to(P)),
-            sha256=hashlib.sha256(previous_raw).hexdigest()),
-        reference=dict(commit=revision, path=path, sha256=hashlib.sha256(raw).hexdigest()),
-        binary=old['binary'], build_source_commit=old['build_source_commit'],
-        source_build_record=dict(path=str(receipt_path), sha256=old['engine_build_receipts'][str(receipt_path)]),
-        fallback_reference=dict(commit=revision,path=str(generation.common.BUILD.relative_to(P)),
-            sha256=old['engine_build_receipts'][str(generation.common.BUILD)]),
-        runtime_asset_delta=old['runtime_asset_delta'], complete=False, passed=False, active=False,
-        clean_speed_qualified=False, hardware_bottleneck_qualified=False, model_quality_qualified=False,
-        purpose='Confirm the first admitted resource observation with only the external collector: remove parameter validation/stage progress, use the same selected old engine and official workload. Scheduled CPU and CCS cycles do not isolate useful arithmetic or physical traffic.',
-        prospective_gates='One diagnostic process, no automatic retry. Normal official regular-code request after four successful warmups, thinking enabled, at least32768 fresh inputs and1024 generated tokens, answer and engine clocks. Exact source/recipe/runtime/binary binding, immutable collector-only environment preserving qualified safety settings, journal-bound work/client clocks, reader exit0 and explicit terminal, recomputed eligible CCS intervals inside observed request windows. Preserve incomplete/no-data/fault outcomes. No clean-speed/observer-overhead, engine-choice, physical-traffic, saturation or70tok/s qualification. Review the original and new samples separately; elapsed-time differences are not a matched overhead estimate.',
-        budgets=dict(wall=1800,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20))
-    record['original_native_inputs_recovered'] = source_proof(record)
+def modules():
+    # Lazy imports avoid the cpu_capacity -> resource_engine source-proof edge.
+    import cpu_capacity as assets
+    import mtp_model_observer as restored
+    import generation_compare as comparison
+    return assets, restored, comparison
+
+
+def qualification():
+    import query_profile as q
+    _, restored, _ = modules()
+    full, count = q.current_build()
+    setup = restored.original_setup()
+    closed = generation.committed(restored.RESULT)
+    guards.require(closed['stage']=='closed' and closed['binary']==full['binary'] and
+        len(closed['processes'])==1, 'closed same-build MTP attribution required')
+    row=closed['processes'][0]
+    guards.require(row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'] and
+        row['native_exit_code']==0 and row['fault_probe_successful'] and row['fresh_faults']==[] and
+        row['boot_unchanged'] and len(row['requests'])==len(row['routes'])==1 and
+        row['requests'][0]['workload']=='varied-prose' and generation.sample_eligible(row['requests'][0]) and
+        row['requests'][0]['acceptance_rate']<=.40 and
+        row['routes'][0]['actual_MoE_mode']==10 and row['routes'][0]['restored_dense_layers']==48 and
+        row['routes'][0]['cache_payload_and_map_match'] and
+        row['routes'][0]['private_bank']['actual_private_layers']==48 and
+        row['observation']['summary']['accounting_valid']==1,
+        'complete current-route closure/work/attribution proof required')
+    profile_path=str(Path(closed['process_plans'][0]['root'])/'expert-profile.bin')
+    archive=json.loads(generation.git('show',setup['reference']['commit']+':'+setup['reference']['path']))
+    setup=dict(setup,expert_profile_sha256=closed['process_plans'][0]['inputs'][profile_path],
+        request_sha256=archive['processes'][0]['requests'][0]['request_sha256'])
+    proof=dict(original_inputs_recovered=count,build_sha256=generation.common.digest(q.BUILD_RECORD),
+        component_sha256=generation.common.digest(q.COMPONENT),
+        mtp_reference_sha256=generation.common.digest(restored.RESULT),setup_reference=setup['reference'])
+    return full, proof, setup
+
+
+def environment(setup):
+    _, restored, _=modules()
+    env=restored.environment(setup,ROOT,'0')
+    guards.require(env['STRATA_CPU_WORK_CENSUS']==env['STRATA_IQ2_PAIR']==env['STRATA_IQ2_PAIR_AUDIT']=='1' and
+        env['STRATA_SYCL_MTP_OBSERVER']=='0','fixed post-IQ2 diagnostic environment')
+    return env
+
+
+def observed_iq2_threads(text, samples, client_interval, audit):
+    """Bind registered callback TIDs to scheduled ticks, never useful kernel time.
+
+    The existing work parser first validates every audit record and counter. This
+    adds identities dropped by its compact summary and matches full proc captures.
+    """
+    pattern=(r'^strata IQ2_GU_THREAD stage=(begin|end) request=5 slot=(\d+) tid=(\d+) '
+        r'calls=(\d+) row_ops=(\d+) nt1_rows=(\d+) pair_rows=(\d+) cpu=(-?\d+) pinned=(\d+)$')
+    fields=('calls','row_ops','nt1_rows','pair_rows')
+    snapshots={stage:{} for stage in ('begin','end')}
+    for stage,slot,tid,*tail in re.findall(pattern,text,re.M):
+        guards.require(int(tid) not in snapshots[stage], 'duplicate registered TID')
+        snapshots[stage][int(tid)]=dict(zip((*fields,'cpu','pinned'),map(int,tail)))
+    begin,end=snapshots['begin'],snapshots['end'];active=[]
+    for tid,final in end.items():
+        initial=begin.get(tid,dict.fromkeys(fields,0))
+        delta={k:final[k]-initial[k] for k in fields}
+        guards.require(all(v>=0 for v in delta.values()),'registered work regressed')
+        if delta['row_ops']:
+            active.append(dict(tid=tid,cpu=final['cpu'],pinned=final['pinned'],work=delta))
+    guards.require(len(active)==audit['active_threads'] and sorted(t['cpu'] for t in active)==audit['cpus'] and
+        sum(t['pinned'] for t in active)==audit['pinned_threads'] and
+        all(sum(t['work'][k] for t in active)==audit[k] for k in fields), 'registered callback work differs')
+    first,split,last=(client_interval[k] for k in
+        ('request_begin_monotonic_ns','first_output_monotonic_ns','request_end_monotonic_ns'))
+    ticks=samples[0]['ticks_per_second']
+    for label,lo,hi in [('before_first_output',first,split),('after_first_output',split,last)]:
+        pairs=[(a,b) for a,b in zip(samples,samples[1:]) if lo<=a['begin_monotonic_ns'] and b['end_monotonic_ns']<=hi]
+        guards.require(len(pairs)>=2,'registered TID sampling coverage missing')
+        for t in active:
+            total=0;starts=set()
+            for a,b in pairs:
+                rows=[]
+                for capture in (a,b):
+                    found=[r for r in capture['threads'] if r['tid']==t['tid']]
+                    guards.require(len(found)==1,'registered TID missing from contained CPU interval')
+                    rows.append(found[0]);starts.add(found[0]['start_ticks'])
+                delta=rows[1]['cpu_ticks']-rows[0]['cpu_ticks']
+                guards.require(delta>=0 and len(starts)==1,'registered TID reuse/counter regression')
+                total+=delta
+            if 'start_ticks' in t:guards.require(t['start_ticks']==next(iter(starts)),'registered TID reused across output boundary')
+            t['start_ticks']=next(iter(starts));t[label]=dict(contained_intervals=len(pairs),cpu_seconds=total/ticks)
+    return dict(threads=sorted(active,key=lambda t:t['tid']),
+        limits='Scheduled user/kernel CPU includes callback arithmetic,active polling and other work on these TIDs; excludes blocked waits. IQ2 counters identify registered workers,not the instructions responsible for CPU time. Client windows are not native phase boundaries.')
+
+
+def benchmark_pins(revision):
+    pins=generation.benchmark_pins(revision)
+    name=str(READER.relative_to(P));raw=generation.git('show',revision+':'+name)
+    guards.require(READER.read_bytes()==raw,'commit exact passive reader first')
+    pins[name]=hashlib.sha256(raw).hexdigest()
+    return pins
+
+
+def prospective_plan():
+    return dict(question='On the current qualified strong-MTP route, where does decode host wall time go, how much native CPU time is scheduled and how much request-contained CCS work is observed?',
+        process_count=1, workload='regular-code', runs=1, collector_seconds=900, collector_interval=1,
+        constants='Restored6e40 native and all12 same-build fixtures; same model/profile,131072 resident INT8 context,8192 prefill,1256 slots,5 workers,pcie0,adapt0,spec4,suffix0,caches0,greedy,no token graph/no coupled draft,Q8 MTP. Official bench.sh thinking-enabled regular-code diagnostic subset with four warmups and >=32K fresh input,>=1024 generated tokens and >=512 answer characters. Same official v4 strong-code request body as the closed canonical cohort.',
+        observers='Existing CPU_WORK_CENSUS1,IQ2_PAIR_AUDIT1,DECODE_TIMING1,MTP_OBSERVER0 plus passive client_resources.py proc/fdinfo reader. Keep the qualified parameter-validation,stage-progress,minimal draft/cache-audit and all runtime safety settings. No private preload or native/codegen change. Environment fixed before exec.',
+        admission='Recover exact current native/dependencies/recipe/fixtures, original closed canonical cohort and current MTP diagnostic and source/controller/model/runtime inputs. Verify actual native PID/start/SID/executable/environment and four warmups before long dispatch. Require complete official stream/journal/engine clocks,MTP work and GPU BF16/mode10/cache restoration, exact declared passive collector/source/exit, wholly contained CPU/CCS spans before/after first output, recomputed intervals and rounded host-scope/work conservation. Stop after failure or budget; never retry.',
+        interpretation='Keep verify/commit/draft outer wall clocks separate from nested host/wait/pool clocks. CPU_pool_run includes scheduling/waits,not useful arithmetic alone. GPU-reach wait is not device compute time. Compare logical CPU jobs/entries/NT1 lower bound and dot equivalents with source-compatible CPU calibration only after checking source/flags/shape limits. CCS activity,scheduled CPU and requested copies do not prove arithmetic,DRAM or PCIe saturation.',
+        limits='One observed strong-MTP request. No clean speed,observer-overhead,weak-MTP/agent/task quality,physical262144/session/RESTORE,adoption or70tok/s qualification. Missing hardware counters/ceilings remain unknown.',
+        retention='Keep one individual request,compact before/after-first-output CPU/CCS and registered-IQ2-TID aggregates,rounded host-clock/work checks,actual config/environment/source/native/owner/fault identities and decision. Retire normal logs,full sample timeline and JIT after replay/coverage verification; no full API trace or tensor capture.')
+
+
+def current(record, full_models=False):
+    assets, _, _=modules()
+    full, proof, setup=qualification()
+    guards.require(full['binary']==record['binary'] and proof==record['qualification'] and
+        prospective_plan()==record['plan'],'current native/generation qualification or prospective plan changed')
+    pins=benchmark_pins(record['source_commit'])
+    guards.require(len(pins)==record['source_count'] and assets.fingerprint(pins)==record['benchmark_fingerprint'] and
+        generation.common.digest(generation.SETTINGS)==record['settings_sha256'],'source/settings changed')
+    for name,sha in record['generated_inputs'].items():
+        guards.require(generation.common.digest(name)==sha,'generated diagnostic input changed: '+name)
+    guards.require(record['config']==modules()[1].recipe.config(setup,ROOT) and
+        record['environment']==environment(setup) and assets.machine_identity()==record['machine_identity'] and
+        assets.model_pins(record['config'],record['model_assets'],full=full_models)==record['model_assets'],
+        'immutable configuration,environment or model/platform changed')
     generation.runtime_assets_unchanged(record)
-    guards.require(not ROOT.exists(), 'never overwrite or retry an existing diagnostic')
+    return setup
+
+
+def prepare():
+    assets, _, comparison=modules()
+    guards.require(not ROOT.exists(),'single-use current resource root; no retry')
+    previous=generation.committed(RESULT)
+    guards.require(previous['stage']=='closed' and previous['ownership_closed'] and not previous['active'] and
+        previous.get('artifact_retirement',{}).get('complete') is True,
+        'preserve/close original resource observation before replacement')
+    full,proof,setup=qualification()
+    source=generation.git('rev-parse','HEAD').decode().strip();pins=benchmark_pins(source)
+    models=assets.model_pins(setup['config'],setup['model_assets'],full=True)
+    guards.require(setup['config']['cwd']==str(P),'prepare/run only in the primary worktree after integration')
     ROOT.mkdir(mode=0o700)
-    for name in ('cache', 'tmp'): (ROOT/name).mkdir()
-    original_root = old['environment']['STRATA_MEASUREMENT_ROOT']
-    env = {k:v.replace(original_root,str(ROOT)) for k,v in old['environment'].items()}
-    settings = generation.committed(generation.SETTINGS)
-    for key in ('UR_ENABLE_LAYERS','UR_LOG_TRACING','STRATA_TRACE',
-                'STRATA_DECODE_CPU_PROFILE','STRATA_DECODE_TIMING'):
-        guards.require(key not in env,'collector-only environment contains an internal observer: '+key)
-    for key in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys','EnableDirectSubmission',
-                'STRATA_SYCL_PREFILL_SAME_QUEUE'):
-        guards.require(env[key] == settings['environment'][key], 'qualified safety setting differs: '+key)
-    config = copy.deepcopy(old['config'])
-    config['args'][config['args'].index('--expert-profile')+1] = str(ROOT/'expert-profile.bin')
-    config.update(log=str(ROOT/'engine.stderr'),env={})
-    guards.require(config['exe'] == str(P/'tools/sycl/engine_once.py'), 'one-launch wrapper required')
-    shutil.copyfile(P/'data/expert-profile.bin', ROOT/'expert-profile.bin')
-    guards.require(generation.common.digest(ROOT/'expert-profile.bin') == old['profile_sha256'], 'expert profile changed')
+    for name in ('cache','tmp'):(ROOT/name).mkdir()
+    config=modules()[1].recipe.config(setup,ROOT)
+    env=environment(setup)
+    shutil.copyfile(P/'data/expert-profile.bin',ROOT/'expert-profile.bin')
+    guards.require(generation.common.digest(ROOT/'expert-profile.bin')==setup['expert_profile_sha256'],
+        'profile copy changed')
+    collection=dict(source=dict(path=str(READER),sha256=generation.common.digest(READER)),seconds=900,interval=1)
     (ROOT/'config.json').write_text(json.dumps(config,indent=2)+'\n')
+    (ROOT/'plan.json').write_text(json.dumps(dict(binary=full['binary'],native_validation_probe=None,
+        resource_collection=collection),indent=2)+'\n')
     with socket.socket() as sock:
         sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
-    command=['/bin/sh',str(P/'bench.sh'),'--config',str(ROOT/'config.json'),'--port',str(port),
-        '--long-generation-only','--think','--runs','1','--workload-id',generation.WORKLOAD_ID,
-        '--fail-fast-engine-error','--ready-timeout','600','--out',str(ROOT/'bench'),
-        '--long-generation-workload','regular-code']
-    pins=generation.benchmark_pins(record['source_commit'])
-    pins[str(READER.relative_to(P))]=generation.common.digest(READER)
-    guards.require(READER.read_bytes()==generation.git('show',record['source_commit']+':'+str(READER.relative_to(P))),
-        'commit exact reader before preparation')
-    record.update(environment=env, config=config, command=command,
-        config_sha256=generation.common.digest(ROOT/'config.json'),profile_sha256=old['profile_sha256'],
-        settings_sha256=generation.common.digest(generation.SETTINGS),source_count=len(pins),
-        source_aggregate_sha256=hashlib.sha256(json.dumps(pins,sort_keys=True).encode()).hexdigest(),
-        resource_collection=dict(source=dict(path=str(READER),sha256=pins[str(READER.relative_to(P))]),seconds=900,interval=1))
-    (ROOT/'plan.json').write_text(json.dumps(dict(record,source_sha256=pins),indent=2)+'\n')
+    record=dict(mode='engine-compare',stage='prepared',source_commit=source,build_source_commit=full['source_commit'],
+        binary=full['binary'],qualification=proof,native_validation_probe=None,
+        previous_resource_reference=dict(commit=generation.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
+            path=str(RESULT.relative_to(P)),sha256=generation.common.digest(RESULT)),
+        plan=prospective_plan(),config=config,environment=env,resource_collection=collection,
+        generated_inputs={str(ROOT/n):generation.common.digest(ROOT/n) for n in ('config.json','plan.json','expert-profile.bin')},
+        command=['/bin/sh',str(P/'bench.sh'),'--config',str(ROOT/'config.json'),'--port',str(port),
+            '--long-generation-only','--long-generation-workload','regular-code','--think','--runs','1',
+            '--profile-request-gates','--workload-id',comparison.WORKLOAD_ID,'--fail-fast-engine-error',
+            '--ready-timeout','600','--out',str(ROOT/'bench')],
+        runtime_asset_delta=setup['runtime_asset_delta'],model_assets=models,machine_identity=assets.machine_identity(),
+        source_count=len(pins),benchmark_fingerprint=assets.fingerprint(pins),settings_sha256=generation.common.digest(generation.SETTINGS),
+        complete=False,passed=False,active=False,ownership_closed=True,clean_speed_qualified=False,
+        hardware_saturation_qualified=False,model_adoption_qualified=False,
+        budgets=dict(wall=1800,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20))
+    current(record)
+    (ROOT/'diagnostic-plan.json').write_text(json.dumps(record,indent=2)+'\n')
     RESULT.write_text(json.dumps(record,indent=2)+'\n')
-    print('Prepared '+str(RESULT.relative_to(P))+'; commit before run.')
+    print('Prepared current-engine resource diagnostic; commit exact plan before run.')
+
+
+def closed_evidence(record, setup, entry, boot):
+    """Replay actual closed files; callers separately prove source/assets/fault gates."""
+    _, restored, comparison=modules()
+    evidence={}
+    paths=list((ROOT/'bench').glob('*/results.json'))
+    guards.require(supervision.closed(entry) and entry.get('exit_code')==0 and len(paths)==1,'owned official benchmark failed')
+    result=json.loads(paths[0].read_text())
+    rows,journal,events=comparison.official(ROOT,result,workloads=('regular-code',))
+    evidence['requests']=rows
+    guards.require(result['complete'] and not result['results']['failures'] and rows[0]['acceptance_rate']>=.60 and
+        rows[0]['request_sha256']==setup['request_sha256'],
+        'incomplete suite or observed workload is not strong MTP')
+    require_journal_binding(rows,generation.journal_evidence(ROOT)[1])
+    evidence['warmups']=journal
+    native=generation.native_end(ROOT,record,dict(config=record['config']),boot,entry['pid'])
+    guards.require(record.get('native_identity')==native['native'] and record.get('effective_environment_verified') is True,
+        'native identity differs from the admitted long-request handshake')
+    evidence.update(native_exit_code=native['exit_code'],resource_collector_exit_code=native['resource_collector_exit_code'])
+    path,=(ROOT/'bench').glob('*/requests.jsonl');events=[json.loads(x) for x in path.read_text().splitlines()]
+    text=(ROOT/'engine.stderr').read_text(errors='replace')
+    evidence['route']=comparison.native_routes(text,events,1,workloads=('regular-code',))[0]
+    all_rows=[e['sample'] for e in events if e['kind']=='result']
+    paired,work,timing=restored.recipe.work_evidence(text,all_rows,record['config'],1,ROOT)
+    evidence.update(decode_timing=timing[-1],iq2_dispatch=paired[-1],census=restored.recipe.compact_work(work)[-1])
+    capture=ROOT/'client-resources.jsonl';samples=[json.loads(x) for x in capture.read_text().splitlines()]
+    evidence['resources']=client_resources.summarize_capture(samples,native['native'],boot,rows[0]['client_interval'])
+    evidence['registered_iq2_threads']=observed_iq2_threads(text,samples[1:-1],rows[0]['client_interval'],paired[-1])
+    evidence['collector_read_spans']=collection_read_spans(samples[1:-1],rows[0]['client_interval'])
+    evidence['evidence_sha256']={p.name:generation.common.digest(p) for p in
+        (paths[0],path,capture,ROOT/'engine-start.json',ROOT/'engine-exit.json',ROOT/'engine.stderr')}
+    return evidence
 
 
 def run():
-    record=generation.committed(RESULT)
-    plan=json.loads((ROOT/'plan.json').read_text());pins=plan.pop('source_sha256')
-    guards.require(not record['complete'] and record == plan and len(pins)==record['source_count'] and
-        hashlib.sha256(json.dumps(pins,sort_keys=True).encode()).hexdigest()==record['source_aggregate_sha256'], 'fresh exact plan required')
-    recovered=generation.benchmark_pins(record['source_commit'],match_worktree=False)
-    recovered[str(READER.relative_to(P))]=hashlib.sha256(generation.git('show',record['source_commit']+':'+str(READER.relative_to(P)))).hexdigest()
-    guards.require(recovered==pins,'original diagnostic inputs cannot be recovered')
-    for name,sha in pins.items():
-        guards.require(generation.common.digest(P/name)==sha,'diagnostic source changed: '+name)
-    guards.require(generation.common.digest(generation.SETTINGS)==record['settings_sha256'] and
-        generation.common.digest(ROOT/'config.json')==record['config_sha256'] and
-        generation.common.digest(ROOT/'expert-profile.bin')==record['profile_sha256'], 'diagnostic inputs changed')
-    guards.require(source_proof(record)==record['original_native_inputs_recovered'],'native source proof differs')
-    generation.runtime_assets_unchanged(record)
+    import select
+    import time
+    assets, _, comparison=modules()
+    record=generation.committed(RESULT);setup=current(record)
+    guards.require(record==json.loads((ROOT/'diagnostic-plan.json').read_text()) and record['stage']=='prepared' and
+        not record['active'] and not (ROOT/'record.json').exists() and not (ROOT/'launch.json').exists(),
+        'fresh exact diagnostic only; inspect an existing owner instead of retrying')
     boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-    before=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True)
-    cursor=next(x.split(': ',1)[1] for x in before.splitlines() if x.startswith('-- cursor: '))
+    before=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15)
+    cursor=next(s.split(': ',1)[1] for s in before.splitlines() if s.startswith('-- cursor: '))
     owner=None
     def persist():
         record['active']=bool(owner and owner.active is not None)
         (ROOT/'record.json').write_text(json.dumps(dict(record,owned_commands=owner.commands if owner else []),indent=2)+'\n')
+    def interact(io,leader):
+        for stage in ('begin','end'):
+            while True:
+                line=io.line(1500)
+                if line.startswith('STRATA_PROFILE_GATE '):break
+            guards.require(json.loads(line.removeprefix('STRATA_PROFILE_GATE '))==
+                dict(stage=stage,phase='long-generation/regular-code',run=0),'long request gate differs')
+            if stage=='begin':
+                native=json.loads((ROOT/'engine-start.json').read_text())['native']
+                identity=supervision.identity(native['pid'])
+                guards.require(identity and identity['start_ticks']==native['start_ticks'] and identity['sid']==leader['pid'] and
+                    Path('/proc',str(native['pid']),'exe').resolve()==Path(record['binary']['path']).resolve(), 'native ownership/executable differs')
+                actual=dict(p.split(b'=',1) for p in Path('/proc',str(native['pid']),'environ').read_bytes().split(b'\0') if b'=' in p)
+                guards.require(all(actual.get(k.encode())==v.encode() for k,v in record['environment'].items()) and
+                    b'LD_PRELOAD' not in actual,'effective native environment differs')
+                path,=(ROOT/'bench').glob('*/requests.jsonl')
+                events=[json.loads(x) for x in path.read_text().splitlines()]
+                guards.require(len(events)==10 and events[-1]['kind']=='start' and events[-1]['phase']=='long-generation/regular-code',
+                    'warmup/long journal extent differs')
+                generation.warmup_reconciliation(events[:-1],workloads=())
+                text=(ROOT/'engine.stderr').read_text(errors='replace')
+                generation.request_evidence(text,[e['sample'] for e in events[:-1] if e['kind']=='result'])
+                assets.verify_pool(text,5)
+                record.update(native_identity=native,effective_environment_verified=True)
+                persist()
+            io.send(b'continue\n')
+        io.proc.stdin.close();deadline=time.monotonic()+180
+        while not io.exit_watch.poll(0) or not io.eof:
+            io.poll();guards.require(time.monotonic()<deadline,'benchmark teardown deadline')
+            if select.select([io.proc.stdout],[],[],.05)[0]:io.read();io.pending.clear()
+        io.exit(1)
     owner=supervision.Owner(ROOT/'owned',persist)
     try:
-        entry,_,_=owner.run('bench',record['command'],record['environment'],P,**record['budgets'])
-        record.update(complete=bool(supervision.closed(entry)),exit_code=entry.get('exit_code'))
-        result,=(ROOT/'bench').glob('*/results.json')
-        generation_result=json.loads(result.read_text())['results']['long_generation']
-        rows=generation.collect_samples(generation_result);record['requests']=rows
-        generation.require_complete_generation(generation_result,rows,('regular-code',))
-        journal,journal_rows=generation.journal_evidence(ROOT)
-        require_journal_binding(rows,journal_rows)
-        record['warmups']=generation.warmup_evidence(ROOT,journal)
-        end=json.loads((ROOT/'engine-exit.json').read_text());record['native_exit']=end
-        guards.require(entry['exit_code']==end['exit_code']==end['resource_collector_exit_code']==0,
-            'benchmark/native/resource collector failed')
-        guards.require(end['boot_id']==boot,'native receipt boot differs')
-        log=(ROOT/'engine.stderr').read_text(errors='replace')
-        guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:',log), 'runtime failure')
-        samples=[json.loads(line) for line in (ROOT/'client-resources.jsonl').read_text().splitlines()]
-        record['resources']=client_resources.summarize_capture(samples,end['native'],boot,rows[0]['client_interval'])
-        record['resource_evidence_sha256']=dict(official_result=generation.common.digest(result),
-            capture=generation.common.digest(ROOT/'client-resources.jsonl'))
-        generation.runtime_assets_unchanged(record)
-        record['resource_admission_qualified']=True
-        record['passed']=True
+        entry,_,_=owner.run('bench',record['command'],record['environment'],P,interaction=interact,**record['budgets'])
+        record.update(closed_evidence(record,setup,entry,boot))
+        current(record,full_models=True)
+        record.update(passed=True,complete=True)
     except BaseException as error:
         record['error']=str(error)
-        if (ROOT/'engine.stderr').exists():record['error_excerpt']=(ROOT/'engine.stderr').read_text(errors='replace')[-8192:]
+        if (ROOT/'engine.stderr').exists():record['error_excerpt']=(ROOT/'engine.stderr').read_text(errors='replace')[-4096:]
     finally:
-        record['ownership_closed']=owner.active is None and all(supervision.closed(c) for c in owner.commands)
-        after=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True)
-        record['fresh_faults']=[x for x in after.splitlines() if re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',x)]
-        record['boot_unchanged']=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-        try:record['driver_after']=guards.driver_guard()
-        except Exception as error:record.update(driver_guard_error=str(error),passed=False)
-        record['passed']=bool(record['passed'] and record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
-        persist();RESULT.write_text(json.dumps(record,indent=2)+'\n')
-    print(json.dumps({k:record.get(k) for k in ('complete','passed','ownership_closed','error')}))
+        record.update(ownership_closed=owner.active is None and all(supervision.closed(e) for e in owner.commands),
+            fresh_faults=None,fault_probe_successful=False,boot_unchanged=False)
+        try:
+            after=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True,timeout=15)
+            record.update(fresh_faults=[s for s in after.splitlines() if re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',s)],
+                fault_probe_successful=True,boot_unchanged=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip())
+            guards.driver_guard()
+        except Exception as error:record['fault_probe_error']=str(error)
+        record['passed']=bool(record['passed'] and record['ownership_closed'] and record['fault_probe_successful'] and
+            record['fresh_faults']==[] and record['boot_unchanged'] and 'fault_probe_error' not in record)
+        record['stage']='closed';persist();RESULT.write_text(json.dumps(record,indent=2)+'\n')
+    print(json.dumps({k:record.get(k) for k in ('passed','complete','ownership_closed','error')}))
     return 0 if record['passed'] else 1
 
 
-def summarize():
-    record=generation.committed(RESULT)
-    guards.require(not record.get('post_closure_admission'), 'preserve the original admission; a new analysis requires a distinct plan')
-    guards.require(record['complete'] and record['passed'] and record['ownership_closed'] and
-        not record['active'] and not record['fresh_faults'] and record['boot_unchanged'],
-        'closed successful execution required for strengthened resource admission')
-    path,=(ROOT/'bench').glob('*/results.json')
-    suite=json.loads(path.read_text())['results']['long_generation']
-    rows=generation.collect_samples(suite)
-    generation.require_complete_generation(suite,rows,('regular-code',))
-    journal,journal_rows=generation.journal_evidence(ROOT)
-    require_journal_binding(rows,journal_rows)
-    guards.require(rows==record['requests'] and generation.warmup_evidence(ROOT,journal)==record['warmups'],
-        'official samples or warmup evidence differ from the original execution receipt')
-    native=json.loads((ROOT/'engine-exit.json').read_text())
-    guards.require(native==record['native_exit'],'native closure receipt changed')
-    capture=ROOT/'client-resources.jsonl'
-    captured=[json.loads(line) for line in capture.read_text().splitlines()]
-    resources=client_resources.summarize_capture(captured,
-        native['native'],native['boot_id'],rows[0]['client_interval'])
-    guards.require(resources==record['resources'],'resource replay differs from original admitted values')
-    record['collector_read_spans']=dict(windows=collection_read_spans(
-        captured[1:-1],
-        rows[0]['client_interval']),limits='Inclusive synchronous reader-call wall time, including descheduling. Does not bound asynchronous driver/cache/clock effects or total model slowdown; only a prospectively matched collector-off/on comparison can measure that effect.')
-    record['post_closure_admission']=dict(analyzer_source_commit=generation.git('rev-parse','HEAD').decode().strip(),
-        original_execution_receipt_commit=generation.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
-        official_result_sha256=generation.common.digest(path),capture_sha256=generation.common.digest(capture),
-        journal_bound_clocks_and_work=True,original_resources_reproduced=True,
-        original_execution_outcome_unchanged=True,GPU_executed=False)
-    record['resource_admission_qualified']=True
-    RESULT.write_text(json.dumps(record,indent=2)+'\n')
-    print(json.dumps(record['post_closure_admission']))
-    return 0
-
-
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=('prepare','run','summarize'));args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=('prepare','run'));args=parser.parse_args()
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
-        if args.action=='summarize':return summarize()
-        guards.driver_guard()
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([]);guards.driver_guard()
         return prepare() if args.action=='prepare' else run()
 
 

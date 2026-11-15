@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstdlib>
 #include <string>
 #include <cuda_runtime.h>
 #include <iostream>
@@ -15,6 +16,13 @@ void require(bool v, const char *s) {
   if (!v)
     throw std::runtime_error(s);
 }
+void admission(const char *phase) {
+  const char *setting = std::getenv("STRATA_TEST_MAIN_GATES");
+  if (setting && std::string(setting) == "1") {
+    std::cout << "COMPONENT_READY " << phase << '\n' << std::flush;
+    require(std::cin.get() == 'X', "Main component admission gate");
+  }
+}
 int main(int argc, char** argv) {
   const bool native = argc == 2 && std::string(argv[1]) == "--native";
   const bool submission = argc == 2 && std::string(argv[1]) == "--submission";
@@ -26,11 +34,13 @@ int main(int argc, char** argv) {
     require(argc == 1 || native || submission,
             "usage: sycl_compat_test [--native|--submission]");
     std::cout << std::unitbuf;
+    admission("before-runtime");
     std::cerr << "compat: create streams and USM owners\n";
     constexpr size_t n = 257, bytes = n * sizeof(int);
     cudaStream_t a{}, b{};
     CHECK(cudaStreamCreate(&a));
     CHECK(cudaStreamCreate(&b));
+    admission("runtime-ready");
     int *in{}, *out{}, *device{};
     CHECK(cudaMallocHost((void **)&in, bytes));
     CHECK(cudaMallocHost((void **)&out, bytes));
@@ -165,6 +175,7 @@ int main(int argc, char** argv) {
       CHECK(cudaEventDestroy(captured));
       CHECK(cudaStreamDestroy(a));
       CHECK(cudaStreamDestroy(b));
+      admission("before-exit");
       std::cout << "case teardown=PASS\nfixture_status=PASS mode=submission\n";
       return 0;
     }

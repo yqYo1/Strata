@@ -46,6 +46,7 @@ namespace strata::core {
 
 class PeerExperts;   // multi-GPU: the second GPU's expert tier (peer_experts.hpp)
 class RemoteExperts;
+class CpuWorkCensus;
 struct LoadStats;
 
 namespace detail {
@@ -227,6 +228,9 @@ struct GpuPlanSink {
 struct NativeHitGraphs;
 #endif
 struct ExpertDispatch {
+    // Prompt/window reads keep the baseline CPU producer. Generation enters a
+    // host-owned scope after prefill; each pool batch copies this selection.
+    strata::kernels::cpu::NativeGuPhase native_gu_phase = strata::kernels::cpu::NativeGuPhase::Prefill;
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
     RouterLookahead* lookahead = nullptr;   ///< CS-T: warms the next layer's predicted file-tier experts
@@ -356,6 +360,7 @@ struct ExpertDispatch {
     std::vector<uint8_t> nact_multi;
     std::vector<strata::kernels::cpu::ExpertJobMulti> jobs_multi;
     std::vector<int16_t> job_of;
+    CpuWorkCensus* cpu_work_census = nullptr; ///< owned by the serialized decode request; never a worker/GPU owner
     /// Plan v0.3 P6: the verify window's GPU plan (VRAM hits + the PCIe share of the misses); `pcie_num`/256 of
     /// each layer's distinct missed experts (the last ones in routing order) are read by the GPU over PCIe.
     GpuPlanSink* plan = nullptr;

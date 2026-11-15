@@ -1,0 +1,2471 @@
+{
+  "mode": "engine-compare",
+  "stage": "closed",
+  "source_commit": "6213f0325d807b5eaf319bbf8096c9337f5402bd",
+  "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22136648,
+    "sha256": "928472767678928804e3bf289c04e97acf64cf6fd3b84a77cc2d178907410d02"
+  },
+  "native_validation_probe": null,
+  "qualification": {
+    "native": {
+      "original_inputs_recovered": 9836,
+      "source_build_sha256": "c6186d7a7a29fb839bee588316afb3d30e68487441ffa860524e707a872daae7",
+      "shared_component_sha256": "966b32a5afa31ed359988991344ad22babf82e2114430f8f7d40d1f4087c9cdf",
+      "packed_component_sha256": "6866f52260e0057ccf8974de2e0899d103ed486a5e43a662ef895a0e2e745638",
+      "original_packed_build": {
+        "commit": "b62a63744",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json",
+        "sha256": "eb1344a9953d1c3ae433a0cffe120ef59e46746cbaa8298ba98507dc7ac615cc"
+      },
+      "native_origin_source_commit": "e0623d4f73e7909d68406ce3addca1fc0b3e348a",
+      "controller_only_native_reuse": true
+    },
+    "diagnostic_sha256": "31d820f3ff776f796627001eb02d39b277508ef8a97a32f5c97f35809154d412"
+  },
+  "original_configuration": {
+    "commit": "d081f088bc0480e6a484f1361b7f4d283c7973ce",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+    "sha256": "dc5178db87ade1e309f208e69ee1a76d8f67322f84d733830364625f9b5a737d"
+  },
+  "plan": {
+    "order": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "arms": [
+      "same-native-packed-off",
+      "same-native-packed-on"
+    ],
+    "requests_per_process": 4,
+    "actual_fresh_input_tokens": 117489,
+    "output_cap": 24,
+    "thinking": true,
+    "workload_id": "native_gdn_20261018",
+    "classification": "Isolated private expert-bank layout; identical native binary,Q8 MTP,cache/scratch placement and request bodies.",
+    "prerequisites": "Both packed-bank117K diagnostic processes pass with conserved MoE work,fewer requested H2D bytes,closed ownership,full before/after model hashes and no fresh fault. Verify same-build engine,nine fixtures,original inputs and all runtime/model identities.",
+    "decision": "Compare first-use separately. For each pair use the ratio of subsequent-request median throughput (three fresh requests/process). Faster screen requires all three ratios>1 and geomean>1.02; slower screen requires all<1 and geomean<1/1.02. Otherwise inconclusive. Nonregression requires geomean>=0.98 and every pair>=0.95. The1000 milestone requires each of three candidate process medians>=1000tok/s.",
+    "stopping": "Stop on first process, input, route, fault, ownership, budget or sample-eligibility failure. Never retry a root or replace failed samples. No speed-based early stopping.",
+    "limits": "Independent process pairs are repetition units. Four requests share each process; first-long and subsequent-long results remain separate. Short thinking output does not qualify decode,task quality,agent-session or physical262144/session/RESTORE. Requested bytes are not measured physical traffic. Neither screen adopts a model route."
+  },
+  "plans": [
+    {
+      "cohort": 0,
+      "arm": 0,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/0",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/0/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/0/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "environment_fingerprint": "334b65824213dd85159399b5f8c1513e7c0e823b67a37aed826241df8b5b43fd",
+      "generated_inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/0/config.json": "da49294223a6f6dfc4f9cc157f3f7f257d384a6dc8ec7e6c454da2a2809e8e85",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/0/plan.json": "a6d386da82ab8a4be4a8d4a49738d01f73b9498cfc91f2c8918e3052412ad500",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/0/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/0/config.json",
+        "--port",
+        "38899",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/0/bench"
+      ]
+    },
+    {
+      "cohort": 1,
+      "arm": 1,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/1",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/1/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/1/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "environment_fingerprint": "6e62b7aff685a083c8827e215318f1d617f0c5e89ec93f85cd35ef569ffa3a09",
+      "generated_inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/1/config.json": "9ad7c17a252f7e730547a17fccae2a3f9ba34535db4cbc2d8675d33ca96c7429",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/1/plan.json": "a6d386da82ab8a4be4a8d4a49738d01f73b9498cfc91f2c8918e3052412ad500",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/1/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/1/config.json",
+        "--port",
+        "57439",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/1/bench"
+      ]
+    },
+    {
+      "cohort": 2,
+      "arm": 1,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/2",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/2/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/2/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "environment_fingerprint": "5c79a39c7fd4dd88c207efd2bdddd62b072e21021286ce9c57cd17b427dde1bc",
+      "generated_inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/2/config.json": "d0d47a26641fdbae363d4a3dd635813af282a31d201cfcc068d924a8773ba256",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/2/plan.json": "a6d386da82ab8a4be4a8d4a49738d01f73b9498cfc91f2c8918e3052412ad500",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/2/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/2/config.json",
+        "--port",
+        "35533",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/2/bench"
+      ]
+    },
+    {
+      "cohort": 3,
+      "arm": 0,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/3",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/3/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/3/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "environment_fingerprint": "6bb10a4932e316262b5eba5ab49a030b47c093570be9fae9fb45ca40eb7317dd",
+      "generated_inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/3/config.json": "a7beb3d74ae07035a5a996335bc16004c923e2db93ccfc879c2786b45cdd8a2f",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/3/plan.json": "a6d386da82ab8a4be4a8d4a49738d01f73b9498cfc91f2c8918e3052412ad500",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/3/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/3/config.json",
+        "--port",
+        "33695",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/3/bench"
+      ]
+    },
+    {
+      "cohort": 4,
+      "arm": 0,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/4",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/4/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/4/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "environment_fingerprint": "3e4b6ebceeabd59c67ce11179e1800af90097882b0862eb262e80b0f2c7ed7ab",
+      "generated_inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/4/config.json": "c7b70c940e20da2e03ac5632e6ade768858bf701cd1ca38de3430b6f2a3d7b5c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/4/plan.json": "a6d386da82ab8a4be4a8d4a49738d01f73b9498cfc91f2c8918e3052412ad500",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/4/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/4/config.json",
+        "--port",
+        "53519",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/4/bench"
+      ]
+    },
+    {
+      "cohort": 5,
+      "arm": 1,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/5",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/5/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/5/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "environment_fingerprint": "f2c70ec1cdecbe6d6e48d954b981546a6571042d8162cf08e8e9dc5877ce2ff4",
+      "generated_inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/5/config.json": "5375def18ed828ba83ef8d70d9453a5e0dbb734a5463fcc328332dcece2c3a94",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/5/plan.json": "a6d386da82ab8a4be4a8d4a49738d01f73b9498cfc91f2c8918e3052412ad500",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/5/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/5/config.json",
+        "--port",
+        "40595",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-expert-bank-clean-v1/5/bench"
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "cohort": 0,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "ttft_s": 140.667,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 140507.5,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 0
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.873,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117526.0,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 1
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.674,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117478.9,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 2
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.665,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117502.0,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 3
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 4,
+        "journal_sha256": "773202c6307966c0920b7ea601f4dd2921a44a288970c3a4dcad3dbc132e411c",
+        "state_sha256": "a453127b2952b291896cde6d4189b6b4bfba4de9ac392b1fd51ec9d83234006e"
+      },
+      "native_identity": {
+        "pid": 1482191,
+        "start_ticks": 90478822,
+        "sid": 1482164
+      },
+      "native_exit_code": 0,
+      "work": [
+        {
+          "expert_bank": {
+            "uploads": 19631,
+            "requested_H2D_bytes": 40102860800,
+            "permanent_hits": 13594,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33225,
+              "jobs": 37353,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19601,
+            "requested_H2D_bytes": 40032153600,
+            "permanent_hits": 13595,
+            "permanent_slots": 261,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33196,
+              "jobs": 37326,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19572,
+            "requested_H2D_bytes": 39965158400,
+            "permanent_hits": 13616,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33188,
+              "jobs": 37318,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19558,
+            "requested_H2D_bytes": 39945267200,
+            "permanent_hits": 13611,
+            "permanent_slots": 264,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33169,
+              "jobs": 37298,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        }
+      ],
+      "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
+      "binary_sha256": "928472767678928804e3bf289c04e97acf64cf6fd3b84a77cc2d178907410d02",
+      "machine_identity": {
+        "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "device": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+      },
+      "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+      "benchmark_fingerprint": "5831fe148dd57e71f3e6fb7b48991c5e88c454c94eb03480b1d5c60c2daece9e",
+      "observer_records_absent": true,
+      "actual_route_checked": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "driver_guard_passed": true
+    },
+    {
+      "cohort": 1,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "ttft_s": 126.508,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 126343.5,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 0
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.424,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117265.0,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 1
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.325,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117166.1,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 2
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.432,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117247.9,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 3
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 4,
+        "journal_sha256": "d4dde21a867b1fa2a2603ba9bdc6a322e508230dc6a9f48f08c3668c9614a0b0",
+        "state_sha256": "f92b6d7c4425bf11446302e42e22b47996b444d6f362eaea2fec6ff9e5ce5c0e"
+      },
+      "native_identity": {
+        "pid": 1509172,
+        "start_ticks": 90550732,
+        "sid": 1509146
+      },
+      "native_exit_code": 0,
+      "work": [
+        {
+          "expert_bank": {
+            "uploads": 18937,
+            "requested_H2D_bytes": 38673152000,
+            "permanent_hits": 14288,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33225,
+              "jobs": 37353,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18938,
+            "requested_H2D_bytes": 38668979200,
+            "permanent_hits": 14258,
+            "permanent_slots": 261,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33196,
+              "jobs": 37326,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18908,
+            "requested_H2D_bytes": 38601190400,
+            "permanent_hits": 14280,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33188,
+              "jobs": 37318,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18899,
+            "requested_H2D_bytes": 38590643200,
+            "permanent_hits": 14270,
+            "permanent_slots": 264,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33169,
+              "jobs": 37298,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        }
+      ],
+      "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
+      "binary_sha256": "928472767678928804e3bf289c04e97acf64cf6fd3b84a77cc2d178907410d02",
+      "machine_identity": {
+        "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "device": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+      },
+      "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+      "benchmark_fingerprint": "5831fe148dd57e71f3e6fb7b48991c5e88c454c94eb03480b1d5c60c2daece9e",
+      "observer_records_absent": true,
+      "actual_route_checked": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "driver_guard_passed": true
+    },
+    {
+      "cohort": 2,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "ttft_s": 126.673,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 126473.3,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 0
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.339,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117180.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 1
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.46,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117299.1,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 2
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.417,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117242.1,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 3
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 4,
+        "journal_sha256": "369a866cd4fb8e7ac655bbc3ae9d89794e8c884f72113ef506fbfbbc0bd59fcf",
+        "state_sha256": "7c01e85797b3e40ffdf32c8cb3d9f792aff6ad4bf0e76eef3da360da6622e822"
+      },
+      "native_identity": {
+        "pid": 1538085,
+        "start_ticks": 90619422,
+        "sid": 1538054
+      },
+      "native_exit_code": 0,
+      "work": [
+        {
+          "expert_bank": {
+            "uploads": 18937,
+            "requested_H2D_bytes": 38673152000,
+            "permanent_hits": 14288,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33225,
+              "jobs": 37353,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18938,
+            "requested_H2D_bytes": 38668979200,
+            "permanent_hits": 14258,
+            "permanent_slots": 261,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33196,
+              "jobs": 37326,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18908,
+            "requested_H2D_bytes": 38601190400,
+            "permanent_hits": 14280,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33188,
+              "jobs": 37318,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18899,
+            "requested_H2D_bytes": 38590643200,
+            "permanent_hits": 14270,
+            "permanent_slots": 264,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33169,
+              "jobs": 37298,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        }
+      ],
+      "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
+      "binary_sha256": "928472767678928804e3bf289c04e97acf64cf6fd3b84a77cc2d178907410d02",
+      "machine_identity": {
+        "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "device": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+      },
+      "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+      "benchmark_fingerprint": "5831fe148dd57e71f3e6fb7b48991c5e88c454c94eb03480b1d5c60c2daece9e",
+      "observer_records_absent": true,
+      "actual_route_checked": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "driver_guard_passed": true
+    },
+    {
+      "cohort": 3,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "ttft_s": 126.942,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 126775.6,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 0
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.651,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117463.7,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 1
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.626,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117464.5,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 2
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.647,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117481.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 3
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 4,
+        "journal_sha256": "57eba58a836ff84c6f5fdf573014c40c04687e230bafd093c6dfd5a00395f05d",
+        "state_sha256": "89ea2a0a2d5c59209c9446076c8146a813da713cd906a51c6c40d44449232a10"
+      },
+      "native_identity": {
+        "pid": 1566465,
+        "start_ticks": 90688846,
+        "sid": 1566403
+      },
+      "native_exit_code": 0,
+      "work": [
+        {
+          "expert_bank": {
+            "uploads": 19631,
+            "requested_H2D_bytes": 40102860800,
+            "permanent_hits": 13594,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33225,
+              "jobs": 37353,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19601,
+            "requested_H2D_bytes": 40032153600,
+            "permanent_hits": 13595,
+            "permanent_slots": 261,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33196,
+              "jobs": 37326,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19572,
+            "requested_H2D_bytes": 39965158400,
+            "permanent_hits": 13616,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33188,
+              "jobs": 37318,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19558,
+            "requested_H2D_bytes": 39945267200,
+            "permanent_hits": 13611,
+            "permanent_slots": 264,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33169,
+              "jobs": 37298,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        }
+      ],
+      "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
+      "binary_sha256": "928472767678928804e3bf289c04e97acf64cf6fd3b84a77cc2d178907410d02",
+      "machine_identity": {
+        "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "device": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+      },
+      "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+      "benchmark_fingerprint": "5831fe148dd57e71f3e6fb7b48991c5e88c454c94eb03480b1d5c60c2daece9e",
+      "observer_records_absent": true,
+      "actual_route_checked": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "driver_guard_passed": true
+    },
+    {
+      "cohort": 4,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "ttft_s": 126.88,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 126693.7,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 0
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.713,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117544.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 1
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.862,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117664.3,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 2
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.702,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117530.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 3
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 4,
+        "journal_sha256": "e1954f25d103670af589abff76d22f010e590480eff89ff70bd33bb2ab8b1188",
+        "state_sha256": "d6687be274eb0fafb51e5c555eae359e13a3c46c38e9642a377aeb64ef165778"
+      },
+      "native_identity": {
+        "pid": 1599492,
+        "start_ticks": 90757122,
+        "sid": 1599467
+      },
+      "native_exit_code": 0,
+      "work": [
+        {
+          "expert_bank": {
+            "uploads": 19631,
+            "requested_H2D_bytes": 40102860800,
+            "permanent_hits": 13594,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33225,
+              "jobs": 37353,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19601,
+            "requested_H2D_bytes": 40032153600,
+            "permanent_hits": 13595,
+            "permanent_slots": 261,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33196,
+              "jobs": 37326,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19572,
+            "requested_H2D_bytes": 39965158400,
+            "permanent_hits": 13616,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33188,
+              "jobs": 37318,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 19558,
+            "requested_H2D_bytes": 39945267200,
+            "permanent_hits": 13611,
+            "permanent_slots": 264,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33169,
+              "jobs": 37298,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        }
+      ],
+      "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
+      "binary_sha256": "928472767678928804e3bf289c04e97acf64cf6fd3b84a77cc2d178907410d02",
+      "machine_identity": {
+        "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "device": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+      },
+      "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+      "benchmark_fingerprint": "5831fe148dd57e71f3e6fb7b48991c5e88c454c94eb03480b1d5c60c2daece9e",
+      "observer_records_absent": true,
+      "actual_route_checked": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "driver_guard_passed": true
+    },
+    {
+      "cohort": 5,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "ttft_s": 126.776,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 126610.2,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 0
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.399,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117237.0,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 1
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.394,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117209.3,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 2
+        },
+        {
+          "ok": true,
+          "ttft_s": 117.402,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 117241.6,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 3
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 4,
+        "journal_sha256": "216c4c40bcaca18f5aa6bfefb531d079ad9271d3d288b906792cdd07b17e386e",
+        "state_sha256": "fb1e06a06966ccec63d3404f47f7fd3a4e519d62f576cfab95e5bcb516c47913"
+      },
+      "native_identity": {
+        "pid": 1629624,
+        "start_ticks": 90823919,
+        "sid": 1629601
+      },
+      "native_exit_code": 0,
+      "work": [
+        {
+          "expert_bank": {
+            "uploads": 18937,
+            "requested_H2D_bytes": 38673152000,
+            "permanent_hits": 14288,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7485,
+              "fused_rows": 49290450,
+              "separate_jobs": 29868,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33225,
+              "jobs": 37353,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18938,
+            "requested_H2D_bytes": 38668979200,
+            "permanent_hits": 14258,
+            "permanent_slots": 261,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7476,
+              "fused_rows": 49282122,
+              "separate_jobs": 29850,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33196,
+              "jobs": 37326,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18908,
+            "requested_H2D_bytes": 38601190400,
+            "permanent_hits": 14280,
+            "permanent_slots": 267,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7479,
+              "fused_rows": 49245415,
+              "separate_jobs": 29839,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33188,
+              "jobs": 37318,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        },
+        {
+          "expert_bank": {
+            "uploads": 18899,
+            "requested_H2D_bytes": 38590643200,
+            "permanent_hits": 14270,
+            "permanent_slots": 264,
+            "total_slots": 384
+          },
+          "logical_work": {
+            "GU": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "Down": {
+              "fused_jobs": 7489,
+              "fused_rows": 49249286,
+              "separate_jobs": 29809,
+              "min_rows": 2334
+            },
+            "accumulator": {
+              "windows": 96,
+              "dequants": 33169,
+              "jobs": 37298,
+              "source_H2D_bytes": 225576960,
+              "GPU_resident_windows_only": 1,
+              "operator_max": 8192,
+              "maximum_rows": 81920
+            }
+          }
+        }
+      ],
+      "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
+      "binary_sha256": "928472767678928804e3bf289c04e97acf64cf6fd3b84a77cc2d178907410d02",
+      "machine_identity": {
+        "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "device": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+      },
+      "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+      "benchmark_fingerprint": "5831fe148dd57e71f3e6fb7b48991c5e88c454c94eb03480b1d5c60c2daece9e",
+      "observer_records_absent": true,
+      "actual_route_checked": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "driver_guard_passed": true
+    }
+  ],
+  "runtime_asset_delta": {
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "package": "libze-intel-gpu1:amd64",
+      "previous_version": "26.31.39395.14-1~24.04~ppa1",
+      "candidate_version": "26.31.39395.16-1~24.04~ppa1",
+      "upgrade_utc": "2026-10-19T08:32:29+00:00",
+      "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+      "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+    },
+    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+      "package": "libudev1:amd64",
+      "previous_version": "255.4-1ubuntu8.17",
+      "candidate_version": "255.4-1ubuntu8.18",
+      "upgrade_utc": "2026-10-19T08:31:15+00:00",
+      "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
+      "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
+    }
+  },
+  "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+  "model_assets": {
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "dev": 40,
+        "ino": 2640848,
+        "bytes": 54817524224,
+        "mtime_ns": 1791009083688077826,
+        "ctime_ns": 1791009083692077878
+      },
+      "sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3"
+    },
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "dev": 40,
+        "ino": 2623800,
+        "bytes": 28800138432,
+        "mtime_ns": 1790924461554234294,
+        "ctime_ns": 1791008604221189761
+      },
+      "sha256": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113"
+    },
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin",
+        "dev": 40,
+        "ino": 2878806,
+        "bytes": 116099072,
+        "mtime_ns": 1790947194721370688,
+        "ctime_ns": 1790947194721370688
+      },
+      "sha256": "c724dc0b0822ada5d2977bf5bde821605feabaa64ea2e0045b67ca656329070a"
+    },
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt",
+        "dev": 40,
+        "ino": 2878822,
+        "bytes": 1851,
+        "mtime_ns": 1790947194721370688,
+        "ctime_ns": 1790947194721370688
+      },
+      "sha256": "991456cf4eb266eb8a888c349e548d11bc640f5dbd9149439aa9786af0f732fd"
+    },
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+        "dev": 40,
+        "ino": 2878820,
+        "bytes": 425196,
+        "mtime_ns": 1790947268196150153,
+        "ctime_ns": 1790947268196150153
+      },
+      "sha256": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+    },
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin",
+        "dev": 40,
+        "ino": 2878804,
+        "bytes": 707788800,
+        "mtime_ns": 1790947193902361950,
+        "ctime_ns": 1790947193902361950
+      },
+      "sha256": "09398406be61f1f54c93861f449e48b8df0bfccbc9ec9b2b7636775a6ea9244f"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json",
+        "dev": 40,
+        "ino": 2654126,
+        "bytes": 306,
+        "mtime_ns": 1791009279665519972,
+        "ctime_ns": 1791009279665519972
+      },
+      "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin",
+        "dev": 40,
+        "ino": 2652886,
+        "bytes": 1538035200,
+        "mtime_ns": 1791009279664519959,
+        "ctime_ns": 1791009279665519972
+      },
+      "sha256": "d2af3d8331e5c7a1985d1d589747230f9d56719a6d33c7cddc9ee6b81cde6b13"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt",
+        "dev": 40,
+        "ino": 2654124,
+        "bytes": 93685,
+        "mtime_ns": 1791009279665519972,
+        "ctime_ns": 1791009279665519972
+      },
+      "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+        "dev": 40,
+        "ino": 2653896,
+        "bytes": 3304,
+        "mtime_ns": 1791009280472529749,
+        "ctime_ns": 1791009280472529749
+      },
+      "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+        "dev": 40,
+        "ino": 2653772,
+        "bytes": 9993,
+        "mtime_ns": 1791009280442529386,
+        "ctime_ns": 1791009280442529386
+      },
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+        "dev": 40,
+        "ino": 2785432,
+        "bytes": 3353258,
+        "mtime_ns": 1791009280259527169,
+        "ctime_ns": 1791009280259527169
+      },
+      "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+        "dev": 40,
+        "ino": 2785434,
+        "bytes": 744960,
+        "mtime_ns": 1791009280269527290,
+        "ctime_ns": 1791009280269527290
+      },
+      "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+        "dev": 40,
+        "ino": 2785438,
+        "bytes": 541,
+        "mtime_ns": 1791009280269527290,
+        "ctime_ns": 1791009280269527290
+      },
+      "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+    },
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json": {
+      "identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+        "dev": 40,
+        "ino": 2785430,
+        "bytes": 5737005,
+        "mtime_ns": 1791009280185526273,
+        "ctime_ns": 1791009280185526273
+      },
+      "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+    }
+  },
+  "machine_identity": {
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "device": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+  },
+  "source_count": 151,
+  "benchmark_fingerprint": "5831fe148dd57e71f3e6fb7b48991c5e88c454c94eb03480b1d5c60c2daece9e",
+  "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "ownership_closed": true,
+  "adoption_qualified": false,
+  "sustained_decode_qualified": false,
+  "model_hash_policy": "Full model digests at preparation and after final process; inode,size,mtime,ctime and inventory guards before/after every process.",
+  "retention": "Keep individual first/subsequent samples,paired work/route/ownership/fault checks and decisions. Retire normal output/JIT after closure; no full API trace or tensors.",
+  "budgets": {
+    "wall": 2400,
+    "cpu": 54000,
+    "rss_cap": 103079215104,
+    "text_cap": 67108864,
+    "file_cap": 67108864,
+    "total_cap": 67108864
+  },
+  "decision": {
+    "prefill_decision": "inconclusive_variability_or_small_effect",
+    "subsequent_pair_ratios": [
+      1.0021672029946807,
+      1.0018969295159332,
+      1.0026254510094936
+    ],
+    "subsequent_ratio_geomean": 1.0022298160665513,
+    "first_use_tps": [
+      836.1760048395993,
+      929.9172494034121,
+      928.9628720053956,
+      926.7477337910449,
+      927.3468215073046,
+      927.9584109337162
+    ],
+    "subsequent_median_tps": [
+      999.8893635853007,
+      1002.056326808412,
+      1002.1058988196219,
+      1000.2085736541678,
+      999.5252873797905,
+      1002.1494920545562
+    ],
+    "prefill_nonregression": true,
+    "candidate1000tok_s_all_process_medians": true,
+    "adoption_qualified": false,
+    "sustained_decode_qualified": false,
+    "limits": "Independent process pairs are repetition units. Four requests share each process; first-long and subsequent-long results remain separate. Short thinking output does not qualify decode,task quality,agent-session or physical262144/session/RESTORE. Requested bytes are not measured physical traffic. Neither screen adopts a model route."
+  },
+  "evidence_compaction": {
+    "original_complete_evidence_commit": "da23ad44082f7a11111cb36e9636f6fd3b08eb7e",
+    "reducer_decision_preserved": true,
+    "retired_information": "Duplicate parser aliases,unqualified24-token decode rates,client clock boundaries,duplicate journal request list and normal driver-probe detail. All24 PP clocks/TTFTs,actual counts,thinking/MTP evidence,completed work,owner/fault outcomes and decisions remain."
+  },
+  "raw_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-packed-bank-clean-20261021.jsonl",
+    "manifest_sha256": "e8d96001cf5d87abe1b10cbe9154073efed689dcd16f0da6bd5a3b6c46b33d62",
+    "files": 425,
+    "bytes": 76769421,
+    "cohort_files": 421,
+    "cohort_bytes": 76734919,
+    "closed_transaction_files": 4,
+    "original_controller_inputs_recovered": 151,
+    "original_native_inputs_recovered": 9836,
+    "native_artifacts_hash_checked": 19,
+    "original_outcomes_unchanged": true
+  },
+  "post_cohort_retention": {
+    "current_engine": "e062 native / ac904 controller-only build: six clean117K processes plus same-build component/layout/diagnostic gates passed; sustained generation/model adoption still pending.",
+    "reference_generation": "3b extra engine/eight fixtures retired after the two-arm generation pilot closed and exact source/recipe recovery; see generation-reference-current.json::raw_retirement. Current e062/ac904 engine/nine fixtures remain for resource attribution.",
+    "shape_input": "Keep40839-byte packed-bank117K-moe-shape-input.json (SHAa6056d879716e678b1efb5554e52ba55f1fb874ed4e72fce3d92749aad5ee1dd) for Main current-native production-shaped GEMM work/service reference; diagnostic first-request distribution,not proof of all clean request histograms.131072B cap; review when that fixture plan is frozen or rejected.",
+    "closed_controller_source": "Native-end/draft-work helpers promoted to generation_engine.py for the immediate generation_compare.py consumer. Closed packed model/clean launchers and retired-run-only tests removed; reusable source/layout evidence remains. Original experiment/reducer recoverable at6213f0325d807b5eaf319bbf8096c9337f5402bd/da23ad440; original outcomes unchanged.",
+    "legacy_provenance_holds": "The14 old worktree proposal/metadata paths are reviewed and retired; available unique failed-GDN source/recipes are preserved in228b85f13,without claiming complete original snapshot recovery. See native-gdn-engine-build.json::legacy_provenance_exception.untracked_prebuild_review. Six separate obsolete-product/source-recovery exceptions retain their original compact receipts/unique evidence and are not comparison generations."
+  }
+}

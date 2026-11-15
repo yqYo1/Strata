@@ -51,6 +51,19 @@ class NativeSetupTests(unittest.TestCase):
             self.assertEqual(call.call_args.args[0][2:], args)
             self.assertEqual(Path(call.call_args.args[0][1]), ROOT / "tools/setup_intel.py")
 
+    def test_unsupported_setup_modes_do_not_start_the_source_adapter(self):
+        # Control owns an engine component, not the source checkout's builder.
+        # Neither that pending route nor Windows may reach a download/build.
+        for win, control in ((True, False), (False, True)):
+            with self.subTest(win=win, control=control), \
+                 patch.object(I.S, "WIN", win), patch.object(I.S, "CONTROL", control), \
+                 patch.object(I.S, "fail", side_effect=SystemExit(1)) as fail, \
+                 patch.object(I.S.subprocess, "call") as child:
+                with self.assertRaises(SystemExit):
+                    I.S.sycl_setup(["--backend", "sycl", "--check"])
+                fail.assert_called_once()
+                child.assert_not_called()
+
     def test_actual_ram_remains_upstream_function(self):
         ram = I.S.ram_gb
         with patch.object(I, "intel_gpus", return_value=[dict(index=0, name="Intel test", vram_gb=8, arch="xe")]), \

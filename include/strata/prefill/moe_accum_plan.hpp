@@ -16,6 +16,9 @@ namespace strata::prefill::detail {
 struct MoeAccumPlan {
     static constexpr int64_t width = 2560, experts = 512, top_k = 10, hc = 4;
     static constexpr int64_t ff = 640, chunk = 8192, maximum_rows = 81920;
+    // A separately admitted long-prefill candidate. Ordinary make() keeps its
+    // original row limit and contiguous FP32 accumulator contract.
+    static constexpr int64_t split_maximum_rows = 117488, split_primary_rows = 65536;
     enum class Plane : size_t {
         accumulator, weights, slots, source, job_weights, injection,
         gathered, gu, hidden, down_job, shared_chunk, shared_gate,
@@ -29,6 +32,7 @@ struct MoeAccumPlan {
         uint64_t offset = 0, bytes = 0;
     };
     int64_t rows = 0, primary_rows = 0, tail_rows = 0;
+    int64_t accumulator_primary_rows = 0, accumulator_tail_rows = 0;
     uint64_t primary_bytes = 0, tail_bytes = 0, region_bytes = 0;
     std::array<Span, size_t(Plane::count)> planes{};
 
@@ -42,8 +46,17 @@ struct MoeAccumPlan {
                               uint64_t embedding_bytes, uint64_t available_region_bytes) {
         if (n <= chunk || n > maximum_rows)
             throw std::invalid_argument("MoE accumulator window must contain 8193..81920 rows");
+        return layout(n, legacy_r_bytes, embedding_bytes, available_region_bytes, n);
+    }
+
+private:
+    static MoeAccumPlan layout(int64_t n, uint64_t legacy_r_bytes,
+                              uint64_t embedding_bytes, uint64_t available_region_bytes,
+                              int64_t accumulator_rows) {
         MoeAccumPlan plan;
         plan.rows = n;
+        plan.accumulator_primary_rows = accumulator_rows;
+        plan.accumulator_tail_rows = n - accumulator_rows;
         const uint64_t row_bytes = uint64_t(width) * 2;
         if (multiply(uint64_t(n), row_bytes) <= legacy_r_bytes) {
             plan.primary_rows = n;
@@ -58,7 +71,7 @@ struct MoeAccumPlan {
             throw std::invalid_argument("MoE mixed banks exceed existing R/embedding allocations");
         const uint64_t w = uint64_t(n), j = uint64_t(chunk);
         const std::array<uint64_t, size_t(Plane::count)> payloads = {
-            multiply(w, width * 4), multiply(w, top_k * 4), multiply(w, top_k * 4),
+            multiply(uint64_t(accumulator_rows), width * 4), multiply(w, top_k * 4), multiply(w, top_k * 4),
             multiply(w, top_k * 4), multiply(w, top_k * 4), multiply(w, hc * 4),
             multiply(j, width * 2), multiply(j, 2 * ff * 2), multiply(j, ff * 2),
             multiply(j, width * 2), multiply(j, width * 2), multiply(w, 4),
@@ -79,6 +92,52 @@ struct MoeAccumPlan {
             plan.region_bytes += reserved;
         }
         return plan;
+    }
+
+public:
+    // Both mixed FP16 banks still borrow idle R and the shared-arena suffix.
+    // The extra FP32 accumulator is a DISTINCT owned allocation; it cannot
+    // alias the mixed tail, any plane, or the residual. Admission/retirement
+    // and actual max-allocation checks belong to the calling request owner.
+    static MoeAccumPlan make_split_scratch(int64_t n, uint64_t legacy_r_bytes,
+                                           uint64_t available_region_bytes) {
+        if (n <= maximum_rows || n > split_maximum_rows)
+            throw std::invalid_argument("MoE split accumulator requires 81921..117488 rows");
+        auto plan = layout(n, legacy_r_bytes, available_region_bytes,
+                           available_region_bytes, split_primary_rows);
+        if (plan.primary_rows <= 0 || plan.region_bytes > available_region_bytes ||
+            plan.tail_bytes > available_region_bytes - plan.region_bytes)
+            throw std::invalid_argument("MoE split mixed tail exceeds idle shared-arena suffix");
+        return plan;
+    }
+
+    uint64_t accumulator_tail_bytes() const {
+        return multiply(uint64_t(accumulator_tail_rows), width * 4);
+    }
+
+    uint64_t accumulator_tail_allocation_bytes() const {
+        const auto bytes = accumulator_tail_bytes();
+        if (!bytes) return 0;
+        if (bytes > uint64_t(std::numeric_limits<std::ptrdiff_t>::max()) - 511)
+            throw std::overflow_error("MoE split accumulator guard overflow");
+        return (bytes + 255) / 256 * 256 + 256;
+    }
+
+    // Shared output consumes complete <=8192-row chunks. The 65536-row bank
+    // boundary is chunk aligned, so no shared epilogue straddles two pointers.
+    MixedSpan accumulator_piece(int64_t first, int64_t count) const {
+        if (first < 0 || first >= rows || first % chunk || count <= 0 ||
+            count != std::min(chunk, rows - first))
+            throw std::invalid_argument("MoE accumulator piece is not a complete logical chunk");
+        const bool tail = first >= accumulator_primary_rows;
+        if (!tail && count > accumulator_primary_rows - first)
+            throw std::invalid_argument("MoE accumulator piece crosses banks");
+        const auto offset = multiply(uint64_t(tail ? first - accumulator_primary_rows : first), width * 4);
+        const auto bytes = multiply(uint64_t(count), width * 4);
+        const auto capacity = multiply(uint64_t(tail ? accumulator_tail_rows : accumulator_primary_rows), width * 4);
+        if (offset > capacity || bytes > capacity - offset)
+            throw std::invalid_argument("MoE accumulator piece exceeds its logical bank");
+        return {tail, offset, bytes};
     }
 
     // The first GPU candidate owns a separate contiguous FP16 mixed allocation.

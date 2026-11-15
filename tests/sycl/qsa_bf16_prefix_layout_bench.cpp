@@ -5,6 +5,7 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <chrono>
@@ -19,7 +20,11 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
-#if defined(STRATA_QSA_BENCH_ORDERED_EXP)
+#if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
+constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
+constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
+constexpr const char *baseline_name="ordered_exp", *candidate_name="cached_subgroup";
+#elif defined(STRATA_QSA_BENCH_ORDERED_EXP)
 constexpr auto baseline_attention=qsa_bf16_prefix_kvvec4_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name="kvvec4", *candidate_name="ordered_exp";
@@ -102,8 +107,12 @@ void run(int cells,int queries,int cap,bool clustered) {
   auto shape=qsa_real_shapes();shape.page_size=Page;
   const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
   auto invoke=[&](int variant) {
+    auto attention=variant ? candidate_attention : baseline_attention;
+#if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
+    if (variant==2) attention=qsa_bf16_prefix_subgroup_batch;
+#endif
     rt->wait();const auto start=std::chrono::steady_clock::now();
-    require((variant ? candidate_attention : baseline_attention)(dq.data(),pools,di.data(),ds.data(),cap,shape,
+    require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
     rt->wait();return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
   };
@@ -113,16 +122,32 @@ void run(int cells,int queries,int cap,bool clustered) {
         b[i]==marker && b[b.size()-16+i]==marker && c[i]==bad_marker &&
         c[c.size()-16+i]==bad_marker && y[i]==marker && y[y.size()-16+i]==marker,"output/scratch guards");
   };
-  invoke(0);guards();const auto reference=out.get();
-  for (size_t i=16;i<reference.size()-16;++i)
-    require(std::isfinite(std::bit_cast<float>(uint32_t(reference[i])<<16)),"baseline all finite");
+  invoke(0);guards();
+  std::array<std::vector<uint16_t>,2> reference{out.get(),out.get()};
+#if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
+  // Independent existing subgroup export is the candidate's reference; never
+  // bless a candidate by saving its own first output. Kept outside timing.
+  invoke(2);guards();reference[1]=out.get();
+  size_t differing=0;double max_abs=0;
+  for (size_t i=16;i<reference[0].size()-16;++i) {
+    differing+=reference[0][i]!=reference[1][i];
+    const float a=std::bit_cast<float>(uint32_t(reference[0][i])<<16);
+    const float b=std::bit_cast<float>(uint32_t(reference[1][i])<<16);
+    max_abs=std::max(max_abs,std::fabs(double(a)-b));
+  }
+  std::cout<<"reference baseline=ordered_exp candidate=uncached_subgroup differing="<<differing
+      <<" compared="<<q.size()<<" max_absolute="<<std::setprecision(12)<<max_abs
+      <<" comparison=diagnostic_not_model_quality\n";
+#endif
+  for (const auto &ref:reference) for (size_t i=16;i<ref.size()-16;++i)
+    require(std::isfinite(std::bit_cast<float>(uint32_t(ref[i])<<16)),"reference all finite");
   const std::array<int,2> variants{0,1};
   for (int variant:variants) {
-    invoke(variant);guards();require(out.get()==reference,"warm full-output bit comparison");
+    invoke(variant);guards();require(out.get()==reference[variant],"warm full-output reference bit comparison");
   }
   for (int round=0;round<6;++round) for (int index=0;index<2;++index) {
     const int variant=variants[(process_id+round+index)%2];const double ms=invoke(variant);
-    guards();require(out.get()==reference,"timed full-output bit comparison");
+    guards();require(out.get()==reference[variant],"timed full-output reference bit comparison");
     std::cout<<"sample process="<<process_id<<" cells="<<cells<<" queries="<<queries<<" cap="<<cap
         <<" pattern="<<(clustered ? "clustered" : "gather")<<" round="<<round
         <<" order="<<index<<" variant="<<variant<<" implementation="<<(variant ? candidate_name : baseline_name)

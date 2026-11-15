@@ -27,6 +27,12 @@ DeviceRegistry &device_registry() {
   static DeviceRegistry* const registry = new DeviceRegistry;
   return *registry;
 }
+DeviceRegistry &host_registry() {
+  // Separate maps preserve the existing device-only admission contract.
+  // As with device owners, compat allocations can retire after other statics.
+  static DeviceRegistry* const registry = new DeviceRegistry;
+  return *registry;
+}
 sycl::device select_device(int ordinal) {
   auto candidates = Runtime::devices();
   if (ordinal < 0 || static_cast<size_t>(ordinal) >= candidates.size())
@@ -189,9 +195,27 @@ void validate_device_span(const void *pointer, size_t bytes,
   (void)runtime_for_device_span(pointer, bytes, queue);
 }
 
+void validate_host_span(const void *pointer, size_t bytes,
+                        const sycl::queue &queue) {
+  const auto address = reinterpret_cast<uintptr_t>(pointer);
+  if (!pointer || !bytes || bytes > UINTPTR_MAX - address)
+    throw std::invalid_argument("invalid registered SYCL host span");
+  auto &registry = host_registry();
+  std::lock_guard lock(registry.mutex);
+  auto next = registry.spans.upper_bound(address);
+  if (next == registry.spans.begin())
+    throw std::invalid_argument("unregistered SYCL host span");
+  const auto &[base, entry] = *std::prev(next);
+  const size_t offset = address - base;
+  if (offset > entry.bytes || bytes > entry.bytes - offset ||
+      queue.get_context() != entry.runtime->context() ||
+      queue.get_device() != entry.runtime->device())
+    throw std::invalid_argument("SYCL host span exceeds allocation or queue domain");
+}
+
 Allocation::Allocation(std::shared_ptr<Runtime> runtime, size_t bytes,
                        MemoryKind kind)
-    : runtime_(std::move(runtime)), bytes_(bytes) {
+    : runtime_(std::move(runtime)), bytes_(bytes), kind_(kind) {
   if (!runtime_)
     throw std::invalid_argument("SYCL allocation requires a runtime");
   runtime_->check();
@@ -207,13 +231,13 @@ Allocation::Allocation(std::shared_ptr<Runtime> runtime, size_t bytes,
               : sycl::malloc_host(bytes, runtime_->context());
   if (!data_)
     throw std::bad_alloc();
-  if (kind == MemoryKind::Device) {
+  {
     try {
-      auto &registry = device_registry();
+      auto &registry = kind == MemoryKind::Device ? device_registry() : host_registry();
       std::lock_guard lock(registry.mutex);
       if (!registry.spans.emplace(reinterpret_cast<uintptr_t>(data_),
                                   DeviceSpan{bytes_, runtime_}).second)
-        throw std::runtime_error("duplicate SYCL device allocation");
+        throw std::runtime_error("duplicate SYCL allocation");
     } catch (...) {
       sycl::free(data_, runtime_->context());
       data_ = nullptr;
@@ -232,6 +256,7 @@ Allocation &Allocation::operator=(Allocation &&other) noexcept {
     runtime_ = std::move(other.runtime_);
     data_ = std::exchange(other.data_, nullptr);
     bytes_ = std::exchange(other.bytes_, 0);
+    kind_ = std::exchange(other.kind_, MemoryKind::Device);
   }
   return *this;
 }
@@ -241,7 +266,7 @@ void Allocation::release() noexcept {
     return;
   checked_cleanup([&] { runtime_->wait(); },
                   [&] {
-                    auto &registry = device_registry();
+                    auto &registry = kind_ == MemoryKind::Device ? device_registry() : host_registry();
                     std::lock_guard lock(registry.mutex);
                     sycl::free(data_, runtime_->context());
                     registry.spans.erase(reinterpret_cast<uintptr_t>(data_));

@@ -26,11 +26,14 @@
 
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/kernels/f16_bits.hpp"
+#include "strata/kernels/q6_packed_center.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/artifact/iq_codebooks.hpp"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/native_mmq.hpp"
+#include <bit>
 #include <atomic>
+#include <type_traits>
 #include <sycl/ext/intel/math.hpp>
 
 namespace strata::kernels {
@@ -220,6 +223,27 @@ static_assert(sizeof(Q80Block) == 34 && alignof(Q80Block) == 2 &&
 static_assert(sizeof(IQ4NLBlock) == 18 && alignof(IQ4NLBlock) == 2 &&
               offsetof(IQ4NLBlock, qs) == 2);
 
+inline int load_q6_word(const void *ptr, int i32) {
+  static_assert(sizeof(int) == sizeof(uint32_t));
+  uint32_t word = 0;
+  __builtin_memcpy(&word, static_cast<const unsigned char *>(ptr) + 4 * i32,
+                   sizeof(word));
+  return std::bit_cast<int>(word);
+}
+inline float load_q6_half(const void *ptr) {
+  uint16_t bits = 0;
+  __builtin_memcpy(&bits, ptr, sizeof(bits));
+  return f32_from_f16(bits);
+}
+// Component-only representation transfer into a real half value. The input
+// remains a packed byte span; no unaligned or unconstructed half is read.
+inline float load_q6_native_half(const void *ptr) {
+  static_assert(sizeof(sycl::half) == sizeof(uint16_t) &&
+                std::is_trivially_copyable_v<sycl::half>);
+  uint16_t bits = 0;
+  __builtin_memcpy(&bits, ptr, sizeof(bits));
+  return float(sycl::bit_cast<sycl::half>(bits));
+}
 inline int load_int_b2(const void *ptr, int i32) {
   const auto *x = static_cast<const uint16_t *>(ptr);
   int value = x[2 * i32] << 0;
@@ -295,16 +319,27 @@ inline float q4_q8_dot_impl(const int *__restrict__ v,
   const float2 dm4f = half_pair_float(dm4);
   return dm4f.x * sumf_d - dm4f.y * sumf_m;
 }
+template <bool PackedCenter>
+int q6_center_word(uint32_t word) {
+  static_assert(sizeof(int) == sizeof(uint32_t), "Q6 packed words require 32-bit int");
+  if constexpr (PackedCenter)
+    return std::bit_cast<int>(component::q6_center_bytes(word));
+  else
+    return subtract_saturating_bytes(int(word), 0x20202020);
+}
+template <bool PackedCenter = false>
 inline float q6_q8_dot_impl(int vl, int vh, const int *__restrict__ u,
-                            const int8_t *__restrict__ scales, float d,
+                            const unsigned char *__restrict__ scales, float d,
                             const float *__restrict__ d8) {
   float sumf = 0.0f;
 #pragma unroll
   for (int i = 0; i < 2; ++i) {
-    const int sc = scales[4 * i];
-    const int vil = (vl >> (4 * i)) & 0x0f0f0f0f;
-    const int vih = ((vh >> (4 * i)) << 4) & 0x30303030;
-    const int vi = subtract_saturating_bytes(vil | vih, 0x20202020);
+    const int sc = std::bit_cast<int8_t>(scales[4 * i]);
+    const int vil = int((uint32_t(vl) >> (4 * i)) & 0x0f0f0f0fu);
+    const int vih = int(((uint32_t(vh) >> (4 * i)) << 4) & 0x30303030u);
+    // Both masks prove that every reconstructed byte is in 0..63. The packed
+    // alternative is Q6-only; other formats keep their saturating subtraction.
+    const int vi = q6_center_word<PackedCenter>(uint32_t(vil | vih));
     sumf += d8[i] * (packed_dot(vi, u[i], 0) * sc);
   }
   return d * sumf;
@@ -571,29 +606,56 @@ struct Q6KTraits {
   struct W {
     int vl, vh;
     float d;
-    const int8_t *scales;
+    const unsigned char *scales;
     int bq8_offset;
   };
-  static W load(const Block *__restrict__ w, int iqs) {
+  static W load(const unsigned char *__restrict__ w, int iqs) {
     W r;
     r.bq8_offset = 4 * (iqs / 16) + (iqs % 16) / 8;
     const int scale_offset = 8 * (iqs / 16) + (iqs % 16) / 4;
     const int vh_shift = 2 * ((iqs % 16) / 8);
-    r.vl = load_int_b2(w->ql, iqs);
-    r.vh = load_int_b2(w->qh, 8 * (iqs / 16) + iqs % 8) >> vh_shift;
-    r.scales = w->scales + scale_offset;
-    r.d = w->d;
+    r.vl = load_q6_word(w + offsetof(Block, ql), iqs);
+    r.vh = load_q6_word(w + offsetof(Block, qh), 8 * (iqs / 16) + iqs % 8) >> vh_shift;
+    r.scales = w + offsetof(Block, scales) + scale_offset;
+    r.d = load_q6_half(w + offsetof(Block, d));
     return r;
   }
-  static float apply(const W &r, const Q81Block *__restrict__ x, int iqs) {
+  // Keep the existing load and generic MMVQ callers unchanged. Only the
+  // explicit native-half component uses this otherwise identical metadata.
+  static W load_native_half(const unsigned char *__restrict__ w, int iqs) {
+    W r;
+    r.bq8_offset = 4 * (iqs / 16) + (iqs % 16) / 8;
+    const int scale_offset = 8 * (iqs / 16) + (iqs % 16) / 4;
+    const int vh_shift = 2 * ((iqs % 16) / 8);
+    r.vl = load_q6_word(w + offsetof(Block, ql), iqs);
+    r.vh = load_q6_word(w + offsetof(Block, qh), 8 * (iqs / 16) + iqs % 8) >> vh_shift;
+    r.scales = w + offsetof(Block, scales) + scale_offset;
+    r.d = load_q6_native_half(w + offsetof(Block, d));
+    return r;
+  }
+  template <bool PackedCenter = false>
+  static float apply(const W &r, const unsigned char *__restrict__ x, int iqs) {
     int u[2];
     float d8[2];
 #pragma unroll
     for (int i = 0; i < 2; ++i) {
-      u[i] = reinterpret_cast<const int *>(x[r.bq8_offset + 2 * i].qs)[iqs % 8];
-      d8[i] = half_low(x[r.bq8_offset + 2 * i].ds);
+      const auto *block = x + size_t(r.bq8_offset + 2 * i) * sizeof(Q81Block);
+      u[i] = load_q6_word(block + offsetof(Q81Block, qs), iqs % 8);
+      d8[i] = load_q6_half(block + offsetof(Q81Block, ds));
     }
-    return q6_q8_dot_impl(r.vl, r.vh, u, r.scales, r.d, d8);
+    return q6_q8_dot_impl<PackedCenter>(r.vl, r.vh, u, r.scales, r.d, d8);
+  }
+  static float apply_native_half(const W &r, const unsigned char *__restrict__ x,
+                                 int iqs) {
+    int u[2];
+    float d8[2];
+#pragma unroll
+    for (int i = 0; i < 2; ++i) {
+      const auto *block = x + size_t(r.bq8_offset + 2 * i) * sizeof(Q81Block);
+      u[i] = load_q6_word(block + offsetof(Q81Block, qs), iqs % 8);
+      d8[i] = load_q6_native_half(block + offsetof(Q81Block, ds));
+    }
+    return q6_q8_dot_impl<false>(r.vl, r.vh, u, r.scales, r.d, d8);
   }
 };
 int signed_grid_word(uint32_t positive, unsigned signs) {
@@ -907,14 +969,32 @@ Format format(int type) {
   }
 }
 
+// Q6 packed payloads are byte spans, not arrays of constructed Block objects.
+// Keep the other formats' legacy views unchanged. Layout types above supply
+// sizeof/offsetof constants only for Q6; its kernels never dereference them.
+template <typename F>
+auto weight_block_at(const void *base, size_t index) {
+  if constexpr (std::is_same_v<F, Q6KTraits>)
+    return static_cast<const unsigned char *>(base) + index * sizeof(Q6KBlock);
+  else
+    return static_cast<const typename F::Block *>(base) + index;
+}
+template <typename F>
+auto activation_block_at(const void *base, size_t index) {
+  if constexpr (std::is_same_v<F, Q6KTraits>)
+    return static_cast<const unsigned char *>(base) + index * sizeof(Q81Block);
+  else
+    return static_cast<const Q81Block *>(base) + index;
+}
+
 // Preserve the native thread-to-block mapping and ascending cross-subgroup
 // partial sum, followed by XOR reduction. Each column uses the same arithmetic
 // regardless of the total column count when multi_exact is enabled.
 template <typename F, int ROWS, int NW>
 void launch(const void *weights, const void *activations, float *y, int n_in,
             int n_out, int ncols, void *stream) {
-  const auto *w = static_cast<const typename F::Block *>(weights);
-  const auto *x = static_cast<const Q81Block *>(activations);
+  const void *w = weights;
+  const void *x = activations;
   const size_t groups = (size_t(n_out) + ROWS - 1) / ROWS;
   queue_for(stream).submit([&](sycl::handler &h) {
     sycl::local_accessor<float, 1> partial((NW - 1) * ncols * ROWS * 32, h);
@@ -931,10 +1011,12 @@ void launch(const void *weights, const void *activations, float *y, int n_in,
             const int kqs = F::kqs(tid);
             for (int i = 0; i < ROWS; ++i)
               if (row0 + i < size_t(n_out)) {
-                const auto weight = F::load(w + (row0 + i) * blocks + kbx, kqs);
+                const auto weight = F::load(
+                    weight_block_at<F>(w, (row0 + i) * blocks + kbx), kqs);
                 for (int j = 0; j < ncols; ++j)
                   tmp[j][i] +=
-                      F::apply(weight, x + j * stride + kbx * F::KBY, kqs);
+                      F::apply(weight,
+                          activation_block_at<F>(x, j * stride + kbx * F::KBY), kqs);
               }
           }
           if (warp > 0)
@@ -973,6 +1055,118 @@ void dispatch(const void *w, const void *x, float *y, int n_in, int n_out,
   else
     launch<F, 1, 4>(w, x, y, n_in, n_out, ncols, stream);
 }
+
+// Explicit Q6_K candidate; the production dispatch above stays unchanged.
+// Keep its exact thread/block and reduction order, specializing only the column
+// bound so private accumulators need not support eight runtime-indexed columns.
+template <int COLS, int ROWS, bool PackedCenter = false, bool NativeHalf = false>
+void launch_q6_columns(const void *weights, const void *activations, float *y,
+                       int n_in, int n_out, void *stream) {
+  static_assert(!NativeHalf || !PackedCenter,
+                "half conversion and packed centering are separate comparisons");
+  using F = Q6KTraits;
+  constexpr int NW = 4;
+  const void *w = weights;
+  const void *x = activations;
+  const size_t groups = (size_t(n_out) + ROWS - 1) / ROWS;
+  queue_for(stream).submit([&](sycl::handler &h) {
+    sycl::local_accessor<float, 1> partial((NW - 1) * COLS * ROWS * 32, h);
+    h.parallel_for(
+        sycl::nd_range<1>(groups * NW * 32, NW * 32),
+        [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
+          const int tid = int(item.get_local_linear_id());
+          const int lane = tid % 32, warp = tid / 32;
+          const size_t row0 = item.get_group_linear_id() * ROWS;
+          const int blocks = n_in / F::DIV;
+          const size_t stride = size_t(n_in) / 32;
+          float tmp[COLS][ROWS] = {};
+          for (int kbx = tid / F::T; kbx < blocks; kbx += F::BPI * NW / 4) {
+            const int kqs = F::kqs(tid);
+            for (int i = 0; i < ROWS; ++i)
+              if (row0 + i < size_t(n_out)) {
+                const auto *block = weight_block_at<F>(w, (row0 + i) * blocks + kbx);
+                const auto weight = [&] {
+                  if constexpr (NativeHalf) return F::load_native_half(block, kqs);
+                  else return F::load(block, kqs);
+                }();
+#pragma unroll
+                for (int j = 0; j < COLS; ++j) {
+                  if constexpr (NativeHalf)
+                    tmp[j][i] += F::apply_native_half(weight,
+                        activation_block_at<F>(x, j * stride + kbx * F::KBY), kqs);
+                  else tmp[j][i] +=
+                      F::template apply<PackedCenter>(weight,
+                          activation_block_at<F>(x, j * stride + kbx * F::KBY), kqs);
+                }
+              }
+          }
+          if (warp > 0)
+#pragma unroll
+            for (int j = 0; j < COLS; ++j)
+              for (int i = 0; i < ROWS; ++i)
+                partial[(((warp - 1) * COLS + j) * ROWS + i) * 32 + lane] =
+                    tmp[j][i];
+          item.barrier(sycl::access::fence_space::local_space);
+          if (warp == 0) {
+            const auto group = item.get_sub_group();
+#pragma unroll
+            for (int j = 0; j < COLS; ++j)
+              for (int i = 0; i < ROWS; ++i) {
+                for (int k = 0; k < NW - 1; ++k)
+                  tmp[j][i] +=
+                      partial[((k * COLS + j) * ROWS + i) * 32 + lane];
+                for (int offset = 16; offset; offset >>= 1)
+                  tmp[j][i] +=
+                      sycl::permute_group_by_xor(group, tmp[j][i], offset);
+                if (lane == i && row0 + i < size_t(n_out))
+                  y[size_t(j) * n_out + row0 + i] = tmp[j][i];
+              }
+          }
+        });
+  });
+}
+
+template <int COLS, bool PackedCenter = false, bool NativeHalf = false>
+void dispatch_q6_columns(const void *w, const void *x, float *y, int n_in,
+                         int n_out, void *stream) {
+  if (n_in / Q6KTraits::DIV < Q6KTraits::BPI)
+    launch_q6_columns<COLS, 4, PackedCenter, NativeHalf>(w, x, y, n_in, n_out, stream);
+  else
+    launch_q6_columns<COLS, 1, PackedCenter, NativeHalf>(w, x, y, n_in, n_out, stream);
+}
+
+// Component arms retain the public span/layout checks and column dispatch.
+// Centering and native-half widening are independent specializations; the latter
+// also checks fp16 support on each entry, including that cost in comparisons.
+// Generic MMVQ, prompt products and columns 5..7 retain the scalar reference.
+template <bool PackedCenter, bool NativeHalf = false>
+void q6_columns_entry(const void *w, const void *x, float *y, int n_in,
+                      int n_out, int ncols, void *stream) {
+  const auto wb = native_mmvq_weight_bytes(14, n_in, n_out);
+  const auto xb = native_q8_1_bytes(n_in, ncols);
+  validate_stream(stream);
+  validate_spans({{y, checked_count(checked_count(n_out, ncols), 4)}},
+                 {{w, wb}, {x, xb}});
+  if (!multi_exact.load(std::memory_order_relaxed))
+    throw std::invalid_argument("Q6 column specialization requires exact layout");
+  if constexpr (NativeHalf)
+    if (!queue_for(stream).get_device().has(sycl::aspect::fp16))
+      throw std::invalid_argument("Q6 native-half component requires fp16");
+  switch (ncols) {
+#define Q6_COLUMNS(N)                                                          \
+  case N:                                                                     \
+    dispatch_q6_columns<N, PackedCenter, NativeHalf>(w, x, y, n_in, n_out, stream); \
+    break
+    Q6_COLUMNS(1);
+    Q6_COLUMNS(2);
+    Q6_COLUMNS(3);
+    Q6_COLUMNS(4);
+    Q6_COLUMNS(8);
+#undef Q6_COLUMNS
+  default:
+    dispatch<Q6KTraits>(w, x, y, n_in, n_out, ncols, stream);
+  }
+}
 template <typename F, bool Down>
 void grouped_projection(const NativeExpertLayout &L,
                         const unsigned long long *pointers,
@@ -995,8 +1189,7 @@ void grouped_projection(const NativeExpertLayout &L,
           if (begin < 0 || end < begin || end > entries || !pointers[g])
             return;
           const auto blob = reinterpret_cast<const uint8_t *>(pointers[g]);
-          const auto weights = reinterpret_cast<const typename F::Block *>(
-              blob + (Down ? L.down_off : 0));
+          const auto *weights = blob + (Down ? L.down_off : 0);
           const int tid = int(it.get_local_linear_id()), lane = tid % 32,
                     warp = tid / 32;
           const int blocks = ni / F::DIV;
@@ -1006,12 +1199,13 @@ void grouped_projection(const NativeExpertLayout &L,
             for (int b = tid / F::T; b < blocks; b += F::BPI) {
               const int kqs = F::kqs(tid);
               const auto weight =
-                  F::load(weights + size_t(row) * blocks + b, kqs);
+                  F::load(weight_block_at<F>(weights, size_t(row) * blocks + b), kqs);
               for (int j = 0; j < used; ++j) {
                 const int input = Down ? first + j : tokens[first + j];
                 if (input >= 0 && input < entries)
                   sum[j] += F::apply(
-                      weight, x + size_t(input) * (ni / 32) + b * F::KBY, kqs);
+                      weight, activation_block_at<F>(x,
+                          size_t(input) * (ni / 32) + b * F::KBY), kqs);
               }
             }
             if (warp)
@@ -1120,15 +1314,16 @@ void prompt_product(NativeMmq p, sycl::queue &q) {
           if (!used)
             return;
           const int tid = it.get_local_linear_id(), lane = tid % 32, warp = tid / 32;
-          const auto *w = reinterpret_cast<const typename F::Block *>(
-              static_cast<const uint8_t *>(p.weights) + size_t(expert) * p.expert_bytes);
-          const auto *x = static_cast<const Q81Block *>(p.activation);
+          const auto *w = static_cast<const uint8_t *>(p.weights) +
+                          size_t(expert) * p.expert_bytes;
+          const void *x = p.activation;
           float sum[TILE] = {};
           const int kqs = F::kqs(tid);
           for (int b = tid / F::T; b < blocks; b += F::BPI) {
-            const auto weight = F::load(w + row * blocks + b, kqs);
+            const auto weight = F::load(weight_block_at<F>(w, row * blocks + b), kqs);
             for (int j = 0; j < used; ++j)
-              sum[j] += F::apply(weight, x + size_t(first + j) * x_stride + b * F::KBY, kqs);
+              sum[j] += F::apply(weight, activation_block_at<F>(x,
+                  size_t(first + j) * x_stride + b * F::KBY), kqs);
           }
           if (warp)
             for (int j = 0; j < used; ++j)
@@ -1227,7 +1422,9 @@ void native_quantize_q8_1(const float *x, void *scratch, int n_in, int ncols,
   const auto total = checked_count(n_in, ncols);
   validate_stream(stream);
   validate_spans({{scratch, bytes}}, {{x, checked_count(total, 4)}});
-  auto *out = static_cast<Q81Block *>(scratch);
+  // The scratch allocation is an encoded byte span. Write its representation
+  // without assuming that a Q81Block array was constructed in device storage.
+  auto *out = static_cast<unsigned char *>(scratch);
   queue_for(stream).parallel_for(
       sycl::nd_range<1>((total + 255) / 256 * 256, 256),
       [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
@@ -1247,15 +1444,33 @@ void native_quantize_q8_1(const float *x, void *scratch, int n_in, int ncols,
             maximum == 0
                 ? 0
                 : int(sycl::round(sycl::ext::intel::math::fdiv_rn(v, d)));
-        out[i / 32].qs[i % 32] = int8_t(q);
-        if (!(i % 32))
-          out[i / 32].ds = {{f16_from_f32(d)}, {f16_from_f32(sum)}};
+        auto *block = out + (i / 32) * sizeof(Q81Block);
+        block[offsetof(Q81Block, qs) + i % 32] = std::bit_cast<unsigned char>(int8_t(q));
+        if (!(i % 32)) {
+          const half2 ds{{f16_from_f32(d)}, {f16_from_f32(sum)}};
+          __builtin_memcpy(block + offsetof(Q81Block, ds), &ds, sizeof(ds));
+        }
       });
 }
 bool native_mmvq_supported(int type) noexcept {
   return type == 2 || type == 6 || type == 7 || type == 8 || type == 11 || type == 12 ||
          type == 13 || type == 14 || type == 18 || type == 20 || type == 21 ||
          type == 22 || type == 23 || type == 42 || type == 16 || type == 17 || type == 29;
+}
+
+void native_q6_k_columns_mmvq(const void *w, const void *x, float *y, int n_in,
+                             int n_out, int ncols, void *stream) {
+  q6_columns_entry<false>(w, x, y, n_in, n_out, ncols, stream);
+}
+void native_q6_k_centered_columns_mmvq(const void *w, const void *x, float *y,
+                                      int n_in, int n_out, int ncols,
+                                      void *stream) {
+  q6_columns_entry<true>(w, x, y, n_in, n_out, ncols, stream);
+}
+void native_q6_k_native_half_columns_mmvq(const void *w, const void *x, float *y,
+                                        int n_in, int n_out, int ncols,
+                                        void *stream) {
+  q6_columns_entry<false, true>(w, x, y, n_in, n_out, ncols, stream);
 }
 size_t native_mmvq_weight_bytes(int type, int n_in, int n_out) {
   const auto f = format(type);

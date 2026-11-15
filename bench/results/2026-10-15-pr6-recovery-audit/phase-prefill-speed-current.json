@@ -1,0 +1,835 @@
+{
+  "schema": "strata-phase-prefill-closed-v2",
+  "stage": "closed",
+  "archive": {
+    "commit": "1e676d554",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json",
+    "contents": "Exact frozen6-process plans,86-variable per-arm environments,137 host inputs,15 model pins and all original request/clock/native results."
+  },
+  "controller_source_commit": "4d805d772aa0e56643596da771e82ae5df91c4da",
+  "clock_controller_source_commit": "d39e438a4a0dcb4fdc60940ad4e976d3b11d1f1f",
+  "benchmark_fingerprint": "1c5dc03b874964988492b3ddf8b7977d4b328c92410d95770f30e088d7854c48",
+  "question": "Does the independently selected long-prefill layout preserve/improve the original fast route with decode configuration fixed?",
+  "plan": {
+    "order": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "execution": "Official bench.sh --prefill-only --prefill-tokens98304 --think --runs4;one short warmup then four fresh117489-token requests per independent process. Original6e40/candidate590f/candidate590f/original6e40/original6e40/candidate590f. First long request remains separate from the three subsequent requests.",
+    "constants": "Original canonical decode configuration:131072 resident INT8 context,1256 slots,8192 prefill,5 workers,pcie0,adapt0,spec4,suffix0,caches0,Q8 MTP,no token graph/no coupled draft. Identical arithmetic/placement/safety flags. Candidate590f additionally sets PREFILL_SEPARATE_LAYOUT1 before exec;original6e40 keeps the setting absent. No mid-process environment mutation.",
+    "actual_route": "Verify effective environment on the owned native process before its first long request,all five actual native/journal extents,four8192-chunk GPU BF16/mode10 long passes and candidate prefix budget/math. With caches/checkpoints disabled,the pinned selector deterministically uses explicit layer-major for n>8192 and chunk-major for the warmup;no silent explicit-long fallback is permitted. There is no direct enum log;this is a source-bound route proof using owned environment and actual request/dispatch records,not a claimed observed enum.",
+    "observers": "Remove NEO allocation logs,UR memory subscriber,stage/state/cache readbacks,census and timers. Keep the qualified native-only UR validation/retained-loader preload and warning logs in BOTH arms. Parameter validation is charged to both;this is not an observer-free speed claim or ordinary-teardown qualification.",
+    "decision": "Use each process subsequent-three median,exact tokens/engine_ms. Preserve every sample. Candidate faster screen requires all three paired ratios>1 and geomean>=1.0005. Prefill no-decline screen requires every ratio>=1. Target screen requires every candidate process median>=1000. A failed screen remains failed;no threshold/order change or noise dismissal. None qualifies decode or adoption.",
+    "timing": "Every long request must last>=10000 engine milliseconds. Before EACH native process,run the pinned CPU C++ steady_clock probe once:65536 adjacent pairs. Require steady clock,1ns period,positive CLOCK_MONOTONIC resolution<=1us and the pinned same libstdc++ provider. Screen (2*observed_max_pair_ns/1e6+0.05ms)/10000ms<=0.0001. The0.05ms term is DONE decimal rounding. This is measured endpoint-cost/precision eligibility,not a universal latency bound or instrumentation-overhead correction;keep validation costs charged and all actual times unchanged. No retry on calibration failure.",
+    "stopping": "Stop first source/config/model/route/journal/owner/fault/budget failure. No retry,skipped/replaced process or speed-based early stopping. Commit each closed outcome before the next process. Full15 model hashes at preparation and after process5;identity/stat pins before/after each process.",
+    "next": "Independently compare repeated thinking-on long generation for both observed MTP classes and upstream long/agent-session suite with the original decode implementation/configuration/1256 slots. Any decode impact is a separation defect;do not adopt while it remains. Physical262144/task/session/failure-owner gates remain distinct."
+  },
+  "native_sources": [
+    "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "1cba8a2857891862f8ed4c534d8afee3b0aeaf98"
+  ],
+  "binaries": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22190000,
+      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22229920,
+      "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
+    }
+  ],
+  "configuration": {
+    "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+    "args": [
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "131072",
+      "--expert-cache",
+      "1256",
+      "--expert-profile",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-prefill-speed-v2/0/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--prompt-cache",
+      "0",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "0",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--prefill",
+      "8192",
+      "--vram-reserve-mib",
+      "700",
+      "--no-coupled-draft",
+      "--no-token-graph"
+    ],
+    "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+    "model_name": "qwen3.8-flash-next-iq3_s-primary",
+    "aliases": [
+      "strata"
+    ],
+    "host": "127.0.0.1",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-prefill-speed-v2/0/engine.stderr",
+    "engine_silence_s": 480,
+    "parallel": 1,
+    "open_browser": false,
+    "env": {}
+  },
+  "environment_template": {
+    "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PYTHONUNBUFFERED": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_MMQ_XMX": "1",
+    "STRATA_SYCL_MMQ_XMX_TILE": "8",
+    "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+    "STRATA_SYCL_MMQ_XMX_PACK": "0",
+    "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_MMQ": "0",
+    "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+    "STRATA_WATCHDOG_S": "480",
+    "STRATA_SYCL_PROMPT_DIRECT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+    "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+    "STRATA_SYCL_KV_COPY_GROUPS": "0",
+    "STRATA_IQ_SINGLE_EXACT": "0",
+    "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+    "STRATA_IQ_TIMING_PROGRESS": "0",
+    "STRATA_PREFILL_RELEASE_HEADS": "0",
+    "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+    "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+    "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+    "STRATA_GR_UNFUSED": "0",
+    "STRATA_PREFILL_BF16X2": "0",
+    "STRATA_PF_FUSED": "0",
+    "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+    "STRATA_SYCL_SELECT_RADIX4": "1",
+    "STRATA_SYCL_SELECT_CYCLIC": "0",
+    "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+    "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-prefill-speed-v2/0/cache",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+    "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+    "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+    "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+    "STRATA_ROPE_TABLE": "1",
+    "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+    "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+    "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+    "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-prefill-speed-v2/0/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-prefill-speed-v2/0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+    "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+    "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+    "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+    "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+    "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+    "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
+    "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+    "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+    "CUDA_MODULE_LOADING": "EAGER",
+    "STRATA_MTP_BATCH_F16": "0",
+    "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+    "STRATA_IQ2_PAIR": "1",
+    "STRATA_SYCL_MTP_OBSERVER": "0",
+    "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+    "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+    "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+    "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+  },
+  "candidate_environment_delta": {
+    "STRATA_SYCL_PREFILL_SEPARATE_LAYOUT": "1"
+  },
+  "environment_template_replacement": "Replace process0 root with each owned private process root;native adds the same pinned validation LD_PRELOAD/expected-loader before exec in both arms.",
+  "runtime": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "driver_library": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+    }
+  },
+  "qualification": {
+    "selected": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "candidate_receipt_sha256": "166d0e1ca062202929fddc41a6e1979314bbb83f2e1dc9912d1bbfcd8328072e",
+    "components_sha256": "6bcd57538b304bf7d3c8b5d99678900c69f3fd7fdd14c6c5d51fe6143688af9e",
+    "state_sha256": "4331181dc47719fe69eb62809246a419aac923fc44efe92bd93f1c6aaee098bc",
+    "control_sha256": "c7f413f420f729e12dbd2303448a80c856cb55c11a2c3dc9a631620708717bf1"
+  },
+  "host_clock": {
+    "tests": 8,
+    "tests_passed": true,
+    "source": "d39e438a4a0dcb4fdc60940ad4e976d3b11d1f1f",
+    "controller_sha256": "3c9cafdc4ddaca856952e5ce7bf9e5260e149f1a75a49a4ca997ac413511e936",
+    "test_sha256": "5fdda7886b6734971998ab8f5515e163f08bc9984ab96bab5202a4b8292f5ac4",
+    "clock_source_sha256": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676",
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "provider": {
+      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+    },
+    "input_count": 137,
+    "compile_command": [
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-std=c++17",
+      "-O2",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/clock_overhead.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-prefill-speed-host-v2/clock_probe"
+    ],
+    "initial_calibration": {
+      "samples": 65536,
+      "resolution_ns": 1,
+      "min_ns": 20,
+      "p99_ns": 31,
+      "max_ns": 6823,
+      "endpoint_rounding_fraction_at_floor": 6.364600000000001e-06,
+      "provider": {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+      },
+      "limits": "Observed CPU C++ endpoint-cost screen;not a universal worst-case bound or subtraction from model times."
+    },
+    "limits": "Both native binaries import libstdc++ steady_clock::now;inspected provider uses clock_gettime(CLOCK_MONOTONIC). Probe calls that same C++ API/library;one fixed65536-pair pass,sort/output outside the measured pairs."
+  },
+  "requests": {
+    "actual_read_tokens": 117489,
+    "reused_tokens": 0,
+    "generated_tokens": 24,
+    "thinking": true,
+    "finish_reason": "length",
+    "reasoning_observed": true,
+    "task_quality_qualified": false,
+    "hashes": [
+      "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+      "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+      "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
+    ]
+  },
+  "processes": [
+    {
+      "index": 0,
+      "arm": 0,
+      "native_identity": {
+        "pid": 2808298,
+        "start_ticks": 116153757,
+        "sid": 2808030
+      },
+      "passed_execution": true,
+      "complete": true,
+      "ownership_closed": true,
+      "effective_environment_verified_requests": 4,
+      "clock_calibration": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 30,
+        "max_ns": 70,
+        "endpoint_rounding_fraction_at_floor": 5.014000000000001e-06
+      },
+      "journal_sha256": "db027df69679c99523bbe49abcb1e8e82df5b1b593e0616d4d939b9abaacbe5e",
+      "route": {
+        "rows": 117488,
+        "full_GPU_BF16": true,
+        "MoE_mode": 10,
+        "checkpoint_count": 0,
+        "prefix_bytes": 241555328,
+        "layout": "legacy layer-major",
+        "route_proof": "Pinned selector + actual owned environment/request extents/chunks/math;not a direct enum marker."
+      },
+      "requests": [
+        {
+          "run": 0,
+          "prompt_ms": 126358.9,
+          "decode_ms": 1771.9,
+          "prompt_tps": 929.8,
+          "decode_tps": 13.5,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 1,
+          "prompt_ms": 117187.2,
+          "decode_ms": 1622.6,
+          "prompt_tps": 1002.6,
+          "decode_tps": 14.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 2,
+          "prompt_ms": 117044.4,
+          "decode_ms": 1596.8,
+          "prompt_tps": 1003.8,
+          "decode_tps": 15.0,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 3,
+          "prompt_ms": 117133.9,
+          "decode_ms": 1574.0,
+          "prompt_tps": 1003.0,
+          "decode_tps": 15.2,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "arm": 1,
+      "native_identity": {
+        "pid": 2833068,
+        "start_ticks": 116218851,
+        "sid": 2833036
+      },
+      "passed_execution": true,
+      "complete": true,
+      "ownership_closed": true,
+      "effective_environment_verified_requests": 4,
+      "clock_calibration": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 30,
+        "max_ns": 5500,
+        "endpoint_rounding_fraction_at_floor": 6.1e-06
+      },
+      "journal_sha256": "7fbe1279ccac61291321851f1940633e19ce12d51be9a3812820e55d9591bcd1",
+      "route": {
+        "rows": 117488,
+        "full_GPU_BF16": true,
+        "MoE_mode": 10,
+        "checkpoint_count": 0,
+        "prefix_bytes": 241555328,
+        "layout": "source-bound explicit layer-major",
+        "route_proof": "Pinned selector + actual owned environment/request extents/chunks/math;not a direct enum marker."
+      },
+      "requests": [
+        {
+          "run": 0,
+          "prompt_ms": 126502.7,
+          "decode_ms": 1701.8,
+          "prompt_tps": 928.7,
+          "decode_tps": 14.1,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 1,
+          "prompt_ms": 117170.9,
+          "decode_ms": 1610.1,
+          "prompt_tps": 1002.7,
+          "decode_tps": 14.9,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 2,
+          "prompt_ms": 117112.7,
+          "decode_ms": 1616.9,
+          "prompt_tps": 1003.2,
+          "decode_tps": 14.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 3,
+          "prompt_ms": 117178.5,
+          "decode_ms": 1636.9,
+          "prompt_tps": 1002.6,
+          "decode_tps": 14.7,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "arm": 1,
+      "native_identity": {
+        "pid": 2859524,
+        "start_ticks": 116297864,
+        "sid": 2859485
+      },
+      "passed_execution": true,
+      "complete": true,
+      "ownership_closed": true,
+      "effective_environment_verified_requests": 4,
+      "clock_calibration": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 31,
+        "max_ns": 5691,
+        "endpoint_rounding_fraction_at_floor": 6.138200000000001e-06
+      },
+      "journal_sha256": "fb6eaf8ba86d3b982cc881607aa15fd1179cfe7f58897d86053252361a8dfa28",
+      "route": {
+        "rows": 117488,
+        "full_GPU_BF16": true,
+        "MoE_mode": 10,
+        "checkpoint_count": 0,
+        "prefix_bytes": 241555328,
+        "layout": "source-bound explicit layer-major",
+        "route_proof": "Pinned selector + actual owned environment/request extents/chunks/math;not a direct enum marker."
+      },
+      "requests": [
+        {
+          "run": 0,
+          "prompt_ms": 126465.4,
+          "decode_ms": 1644.4,
+          "prompt_tps": 929.0,
+          "decode_tps": 14.6,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 1,
+          "prompt_ms": 117225.8,
+          "decode_ms": 1593.9,
+          "prompt_tps": 1002.2,
+          "decode_tps": 15.1,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 2,
+          "prompt_ms": 117132.8,
+          "decode_ms": 1639.1,
+          "prompt_tps": 1003.0,
+          "decode_tps": 14.6,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 3,
+          "prompt_ms": 117161.3,
+          "decode_ms": 1629.6,
+          "prompt_tps": 1002.8,
+          "decode_tps": 14.7,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "arm": 0,
+      "native_identity": {
+        "pid": 2884434,
+        "start_ticks": 116365764,
+        "sid": 2884404
+      },
+      "passed_execution": true,
+      "complete": true,
+      "ownership_closed": true,
+      "effective_environment_verified_requests": 4,
+      "clock_calibration": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 30,
+        "max_ns": 3246,
+        "endpoint_rounding_fraction_at_floor": 5.6492e-06
+      },
+      "journal_sha256": "14ad119799946d32f3456059ef26f5d1234e5c2e9c09e3638290f08e7fb463fd",
+      "route": {
+        "rows": 117488,
+        "full_GPU_BF16": true,
+        "MoE_mode": 10,
+        "checkpoint_count": 0,
+        "prefix_bytes": 241555328,
+        "layout": "legacy layer-major",
+        "route_proof": "Pinned selector + actual owned environment/request extents/chunks/math;not a direct enum marker."
+      },
+      "requests": [
+        {
+          "run": 0,
+          "prompt_ms": 126401.0,
+          "decode_ms": 1667.6,
+          "prompt_tps": 929.5,
+          "decode_tps": 14.4,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 1,
+          "prompt_ms": 117231.2,
+          "decode_ms": 1629.2,
+          "prompt_tps": 1002.2,
+          "decode_tps": 14.7,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 2,
+          "prompt_ms": 117134.6,
+          "decode_ms": 1619.6,
+          "prompt_tps": 1003.0,
+          "decode_tps": 14.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 3,
+          "prompt_ms": 117178.4,
+          "decode_ms": 1641.4,
+          "prompt_tps": 1002.7,
+          "decode_tps": 14.6,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "arm": 0,
+      "native_identity": {
+        "pid": 2911187,
+        "start_ticks": 116436391,
+        "sid": 2911158
+      },
+      "passed_execution": true,
+      "complete": true,
+      "ownership_closed": true,
+      "effective_environment_verified_requests": 4,
+      "clock_calibration": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 21,
+        "max_ns": 4579,
+        "endpoint_rounding_fraction_at_floor": 5.9158e-06
+      },
+      "journal_sha256": "213621493b202f71b3c9f13c5a0520df8dd3ee06f10d2eb7a11832a510857af5",
+      "route": {
+        "rows": 117488,
+        "full_GPU_BF16": true,
+        "MoE_mode": 10,
+        "checkpoint_count": 0,
+        "prefix_bytes": 241555328,
+        "layout": "legacy layer-major",
+        "route_proof": "Pinned selector + actual owned environment/request extents/chunks/math;not a direct enum marker."
+      },
+      "requests": [
+        {
+          "run": 0,
+          "prompt_ms": 126435.8,
+          "decode_ms": 1691.1,
+          "prompt_tps": 929.2,
+          "decode_tps": 14.2,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 1,
+          "prompt_ms": 117210.1,
+          "decode_ms": 1646.3,
+          "prompt_tps": 1002.4,
+          "decode_tps": 14.6,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 2,
+          "prompt_ms": 117228.6,
+          "decode_ms": 1639.6,
+          "prompt_tps": 1002.2,
+          "decode_tps": 14.6,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 3,
+          "prompt_ms": 117132.4,
+          "decode_ms": 1623.0,
+          "prompt_tps": 1003.0,
+          "decode_tps": 14.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "arm": 1,
+      "native_identity": {
+        "pid": 2939223,
+        "start_ticks": 116502318,
+        "sid": 2939190
+      },
+      "passed_execution": true,
+      "complete": true,
+      "ownership_closed": true,
+      "effective_environment_verified_requests": 4,
+      "clock_calibration": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 30,
+        "max_ns": 3767,
+        "endpoint_rounding_fraction_at_floor": 5.7534e-06
+      },
+      "journal_sha256": "9af0bd074f184063db465df8e4e989dd264a3da4749faecb1ba36e7392c631af",
+      "route": {
+        "rows": 117488,
+        "full_GPU_BF16": true,
+        "MoE_mode": 10,
+        "checkpoint_count": 0,
+        "prefix_bytes": 241555328,
+        "layout": "source-bound explicit layer-major",
+        "route_proof": "Pinned selector + actual owned environment/request extents/chunks/math;not a direct enum marker."
+      },
+      "requests": [
+        {
+          "run": 0,
+          "prompt_ms": 126854.2,
+          "decode_ms": 1659.7,
+          "prompt_tps": 926.2,
+          "decode_tps": 14.5,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 1,
+          "prompt_ms": 117175.4,
+          "decode_ms": 1634.8,
+          "prompt_tps": 1002.7,
+          "decode_tps": 14.7,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 2,
+          "prompt_ms": 117262.3,
+          "decode_ms": 1643.6,
+          "prompt_tps": 1001.9,
+          "decode_tps": 14.6,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        },
+        {
+          "run": 3,
+          "prompt_ms": 117176.1,
+          "decode_ms": 1594.2,
+          "prompt_tps": 1002.7,
+          "decode_tps": 15.1,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "reasoning_chars": 121
+        }
+      ]
+    }
+  ],
+  "analysis": {
+    "first_use_tok_s": [
+      929.8039156719472,
+      928.7469753610002,
+      929.0209021598002,
+      929.4942286848997,
+      929.2383960871841,
+      926.1735125837379
+    ],
+    "subsequent_median_tok_s": [
+      1003.0315732678584,
+      1002.7148378991712,
+      1002.7969986676487,
+      1002.6506591658532,
+      1002.3794877745177,
+      1002.6703397706528
+    ],
+    "pair_ratios": [
+      0.9996842219356512,
+      1.000145952631116,
+      1.00029016156025
+    ],
+    "ratio_geomean": 1.0000400786430783,
+    "prefill_no_decline_screen": false,
+    "candidate_faster_screen": false,
+    "candidate1000_each_process": true,
+    "decode_preservation_qualified": false,
+    "adoption_qualified": false
+  },
+  "final_checks": {
+    "complete": true,
+    "ownership_closed": true,
+    "native_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "fresh_faults": [],
+    "boot_and_driver_unchanged": true,
+    "model_full_hashes_matched": 15,
+    "model_hash_proof": "Pinned controller full-hashes15 files after process5 before assigning passed=true;original model identities/digests archived. The six successful original results remain unchanged."
+  },
+  "selection": {
+    "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "candidate_adopted": false,
+    "reason": "First paired ratio<1 fails the prospective no-decline gate;faster gate also fails. Keep original decode implementation/configuration/1256 slots. Short outputs do not qualify decode;an impact there is a separation defect."
+  },
+  "replay": {
+    "official_requests": 30,
+    "long_requests": 24,
+    "reconstructed_fields_per_process": 10,
+    "all_match": true,
+    "method": "Reexecute original pinned run() evidence statements412..466 plus469 against each closed record;recompute all6 clock_evidence and summarize outputs. Native identities/exits,request journals,extents,route/math,budget/observer checks and validation evidence match original records. Frozen native/source/dependency/SDK/assets and all generated plans checked using current() before retirement."
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-phase-prefill-v2-20261024.jsonl",
+    "manifest_sha256": "eb5f5528ca463499da14c387f0c5c3eaa48ae04729cdd1f18e4fcea35d8963cc",
+    "files": 442,
+    "bytes": 77003305,
+    "reason": "Successful closed output,JIT,generated private configs/profiles and host executable/logs no longer have an execution consumer. Full useful inputs/sample evidence recover from the archive.",
+    "native_assets_deleted": false,
+    "tracked_source_retired": {
+      "archive_commit": "1e676d554",
+      "paths": [
+        "tools/sycl/phase_prefill_speed.py",
+        "tools/sycl/test_phase_prefill_speed.py"
+      ],
+      "reason": "Closed single-use controller and controls have no next execution consumer;original inputs remain reachable. Keep reusable C++ clock source for the next bounded Main timing qualification."
+    }
+  },
+  "pending": [
+    "No candidate adoption or decode preservation qualification.",
+    "Repeated strong/weak thinking-on generation and agent-session/state-handoff are independent gates.",
+    "Physical262144/full-tail/RESTORE/failure-owner and ordinary runtime teardown remain independently pending."
+  ]
+}

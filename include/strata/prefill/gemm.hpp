@@ -41,6 +41,16 @@ public:
              float beta = 0.0f);
 
 #if defined(STRATA_ENABLE_SYCL)
+    /// Dedicated prefill vendor product: FP16 X/W -> FP16 Y, overwrite only.
+    /// This is the oneMKL default compute mode (unset), not the native16
+    /// backend selector below; no accumulator type is promised by this API.
+    /// ldy=0 means N; otherwise ldy>=N. Positive dimensions, nonoverlapping
+    /// 2-byte-aligned registered device spans in this in-order queue's domain.
+    /// No explicit FP32 tensor or Strata temporary. The caller retains all
+    /// buffers until checked stream completion. No conversion/fallback path.
+    void f16_vendor_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
+                          int64_t T, int64_t N, int64_t K, int64_t ldy = 0);
+
     /// SYCL native matrix units: X[T,K] . W[N,K]^T -> 16-bit Y[T,N].
     /// Inputs/weights share the named format; output_bf16 chooses Y's format.
     /// Accumulator and beta epilogue are FP32; one final RNE output rounding.
@@ -60,9 +70,18 @@ public:
                     int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
                     int64_t ldy = 0, float beta = 0.0f);
     /// Explicit long-prefill GU candidate. Returns false without submission
-    /// unless startup GU_SWIGLU=large selects a >=2334-row job. Fixed FP16
+    /// unless startup GU_SWIGLU=large selects a >=2334-row job. Experimental
+    /// GU_SWIGLU=auto also selects compact fusion for rows1..96, retaining the
+    /// existing large-job path; rows97..2333 keep separate GU/SwiGLU. Auto needs
+    /// VLLM_TILE=auto. It is opt-in pending production/model qualification.
+    /// Fixed FP16
     /// X[T,2560], W[1280,2560] -> FP16 hidden[T,640], BF16-rounded operands.
     bool try_gu_swiglu16(const uint16_t* X, const uint16_t* W, uint16_t* hidden, int64_t T);
+    /// Explicit per-job eligibility: false suppresses only the compact candidate,
+    /// keeping large-job selection and every validation/finish step unchanged.
+    /// This does not change the process's immutable startup configuration.
+    bool try_gu_swiglu16(const uint16_t* X, const uint16_t* W, uint16_t* hidden,
+                         int64_t T, bool allow_compact);
     /// Opt-in long-prefill Down+accumulation, >=2334 expert rows only. False
     /// means no submission: caller retains separate Down and accumulation.
     /// Fixed FP16 X[T,640], W[2560,640]; BF16 RNE then explicit FP32 FMA.
@@ -72,6 +91,11 @@ public:
                             const uint16_t* X, const uint16_t* W,
                             const int32_t* source, const int32_t* original,
                             const float* weights, float* accumulator, uint32_t* status);
+    bool try_down_scatter16_split(const detail::MoeWindowRoutes& plan, size_t job_index,
+                            const uint16_t* X, const uint16_t* W,
+                            const int32_t* source, const int32_t* original,
+                            const float* weights, float* primary, float* tail,
+                            int64_t primary_rows, uint32_t* status);
 #endif
 
     /// W given as native GGUF blocks of `ggml_type`, dequantized to FP16 in the scratch, X in FP16.

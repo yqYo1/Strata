@@ -1,0 +1,48 @@
+{
+  "classification": "conditional_knowledge_reference",
+  "source_revision": "2061b3dc7bbd7e3790b087b59040ae8bea5fd810",
+  "external_ggml_revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+  "consumer": "Retrieve for a future NT2\u20134 CPU GU experiment only when actual model NTbins/service time justify it. Existing native AVX2 path already reuses weights;no source-only speed/adoption claim.",
+  "reviewed_findings": [
+    "Material dispatch omission: in pinned native_expert.cpp, default STRATA_IQ_MT_MIN is 2; for a non-AVX512 AVX2 host with STRATA_NO_IQ256 unset, nt>=2 plus iq256_supported(18) selects iq256_gu_rows. iq256_supported includes type 18 (IQ3_XXS); iq_avx2.cpp Fmt32<18> decodes IQ3 grid/sign/scale once per chunk and applies it across NT activation rows. This existing native route already performs multi-token weight-decode reuse. The report's wording that the native mult-token route is for other formats is incorrect. The report is right that GGML's fallback IQ3_XXS vec_dot asserts nrc==1, but this is not the actual default NT2+ dispatcher path. Candidate A must include the actual iq256 NT2\u20134 route, prepared NT1 repeated calls, and any direct fallback only as a distinct arm.",
+    "NT numeric target is under-specified until that route is compared: iq256 Fmt32<18> accumulates separate per-token integer streams, then per-block FP32 FMA with K=0.25 and final hsum; prepared pair_dot retains block FMAs and applies 0.25 after its horizontal reduction. Do not infer bitwise equivalence; test against both production NT2\u20134 and per-token NT1 outputs, then state the accepted downstream tolerance/routing impact.",
+    "The report's description of the owned 134-byte Block, 98-byte source block, paired gate/up NT1 arithmetic, Decode/NT=1 lease guard, borrowed activation/output, raw-weight need for Down, and shape/alias/bounds/guard requirements matches the pinned source. Its expansion sizes are arithmetically correct: 1,715,200 bytes prepared GU versus 13,107,200 bytes for full FP32 gate+up expansion per expert.",
+    "Counter requests (bytes, cache misses, instructions) are diagnostic only if valid access exists. Packet states PMU unavailable; leave physical traffic and saturation unknown, and do not let requested counters block independent timing/correctness work. No NT-bin distribution or model benefit is established."
+  ],
+  "provenance_and_license": {
+    "local": "Pinned product AGENTS.md and docs/ARTIFACT_RETENTION.md hashes matched. Product LICENSE and pinned GGML LICENSE are MIT; no source was copied. XeStrata was neither inspected nor used.",
+    "oneDNN": {
+      "source": "https://uxlfoundation.github.io/oneDNN/v3.12/dev_guide_matmul.html",
+      "revision": "v3.12.5 documentation",
+      "verified": "Official docs support multiple batch dimensions and batch broadcasting for CPU/GPU MatMul. The v3.12.5 tag LICENSE states Apache-2.0.",
+      "limit": "Useful only for batching/descriptor concepts; it does not implement IQ3_XXS or establish Zen3 performance. Any source reuse still needs an exact commit and file-level license check."
+    },
+    "FBGEMM": {
+      "source": "https://github.com/pytorch/FBGEMM/blob/main/include/fbgemm/Fbgemm.h",
+      "license_source": "https://github.com/pytorch/FBGEMM/blob/main/LICENSE",
+      "verified": "The cited Fbgemm.h shows packed matrix abstractions; the repository LICENSE page identifies BSD License (three-clause conditions), not Apache-2.0.",
+      "limit": "main is mutable and the report supplies no commit SHA. No implementation reference is eligible until exact revision and file-level provenance/license are pinned. Quantized packing is not an arithmetic match for this IQ3_XXS GU."
+    }
+  },
+  "next_scopes": [
+    {
+      "name": "prepared_iq3xxs_nt2_4_component_comparator",
+      "kind": "Main-owned implementation/measurement candidate, not another generic research survey",
+      "schedulable_now": false,
+      "prerequisites": [
+        "Corrected committed source map of default AVX2 IQ3_XXS dispatch, activation/output layout, and per-token rounding versus prepared NT1.",
+        "Committed candidate/fixture and comparison order: actual native iq256 NT2,3,4; prepared NT1 repeated baseline; prepared multi-token candidate; supported direct fallback only as a separately labeled arm.",
+        "Declared exact/tolerant numerical policy through GU-to-hidden quantization/down, bounds/alias/lifetime/guard gates, and setup-inclusive plus clean matched CPU timing plan."
+      ]
+    },
+    {
+      "name": "production_nt_distribution_economics",
+      "kind": "conditional decision support",
+      "schedulable_now": false,
+      "prerequisites": [
+        "Measured per-format production NT histogram and confirmation CPU expert work is on the token critical path.",
+        "Passing candidate numerical/safety gates and repeated setup-inclusive NT2\u20134 results against actual iq256 baseline, including memory/admission cost."
+      ]
+    }
+  ]
+}

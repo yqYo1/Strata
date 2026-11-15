@@ -112,8 +112,24 @@ cudaError_t stream_begin_capture_native(cudaStream_t);
 // Bind a disabled-timing event to the graph submission's completion. Covers
 // every graph node without submitting a separate queue barrier. The stream
 // must be outside capture; reusing the event replaces its previous recording.
+// A failed recording invalidates prior graph-timestamp provenance. The ordinary
+// event's last recording/lifetime is otherwise unchanged.
 cudaError_t graph_launch_with_completion(cudaGraphExec_t, cudaStream_t,
                                         cudaEvent_t);
+// Diagnostic only: profiling can change executable-graph optimization.
+// Ordinary cudaGraphInstantiate keeps its existing unprofiled route.
+cudaError_t graph_instantiate_profiled(cudaGraphExec_t *, cudaGraph_t);
+struct GraphEnvelopeTimestamps {
+  std::uint64_t submit = 0, start = 0, end = 0, timer_resolution = 0;
+  unsigned available_fields = 0; // submit/start/end are bits 0/1/2
+};
+// Query the retained outer completion event without waiting or queue work.
+// Call only after a checked completion/drain. NotReady/NotSupported and partial
+// query fields remain diagnostic evidence. Internal captured aliases are
+// rejected. end-start is a graph envelope, never arithmetic service time.
+// The retained copy is a snapshot. Serialize record/reuse/query when identifying
+// a specific replay; concurrent rerecording does not mean latest-at-return.
+cudaError_t graph_completion_timestamps(cudaEvent_t, GraphEnvelopeTimestamps *);
 }
 cudaError_t cudaGraphUpload(cudaGraphExec_t, cudaStream_t);
 cudaError_t cudaGraphDestroy(cudaGraph_t);

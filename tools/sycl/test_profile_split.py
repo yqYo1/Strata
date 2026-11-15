@@ -1,0 +1,261 @@
+#!/usr/bin/env python3
+"""Host rejection controls for owned split resource attribution."""
+import copy
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+import profile_split as profile
+
+
+class TraceGates(unittest.TestCase):
+    def setUp(self):
+        self.pid, self.device = 1234, 9000
+        self.events = [dict(ph='M', name='process_name', pid=self.device,
+            args=dict(name='DEVICE<host>[Intel(R) Arc(TM) B570 Graphics] 0:5:0:0 #0'))]
+        for i, name, start, duration in ((1, 'alpha', 11000, 2000), (2, 'beta', 12000, 2000),
+                (3, 'zeCommandListAppendMemoryCopy(H2D)[4096]', 14000, 100),
+                (4, 'zeCommandListAppendBarrier', 15000, 0)):
+            self.events += [dict(ph='s', cat='Flow_H2D_0', id=i, pid=self.pid),
+                dict(ph='X', cat='gpu_op', pid=self.device, ts=start, dur=duration,
+                     name=name, args=dict(id=i))]
+        self.events += [dict(ph='X', cat='cpu_op', pid=self.pid, ts=9500, dur=2000, name='API1'),
+                        dict(ph='X', cat='cpu_op', pid=self.pid, ts=14000, dur=500, name='API2')]
+
+    def parse(self, events=None):
+        return profile.trace_summary(self.events if events is None else events,
+                                     self.pid, 10_000_000, 20_000_000)
+
+    def test_overlapping_service_is_not_added_to_wall_and_payload_is_named(self):
+        result = self.parse()
+        self.assertEqual(result['gpu_union_us'], 3100)
+        self.assertEqual(result['host_api_union_in_window_us'], 2000)
+        self.assertEqual(result['controlled_request_wall_us'], 10000)
+        self.assertEqual(result['operation_counts'], dict(kernel=2, copy=1, barrier=1))
+        self.assertEqual(result['observed_copy_fill_payload_bytes'],
+                         {'zeCommandListAppendMemoryCopy(H2D)': 4096})
+        self.assertIn('No exact native prefill endpoint', result['limits'])
+
+    def test_invalid_numeric_service_is_refused(self):
+        for key, value in (('ts', True), ('ts', float('nan')), ('dur', float('inf')),
+                           ('dur', -1), ('dur', 0)):
+            events = copy.deepcopy(self.events)
+            events[2][key] = value
+            with self.subTest(key=key, value=value), self.assertRaises(RuntimeError):
+                self.parse(events)
+
+    def test_outside_window_and_wrong_pci_are_refused(self):
+        for mutation in ('before', 'after', 'device'):
+            events = copy.deepcopy(self.events)
+            if mutation == 'before':
+                events[2]['ts'] = 8000
+            elif mutation == 'after':
+                events[2]['ts'] = 19900
+            else:
+                events[0]['args']['name'] = 'DEVICE<host>[B570] 0:6:0:0 #0'
+            with self.subTest(mutation=mutation), self.assertRaises(RuntimeError):
+                self.parse(events)
+
+    def test_missing_ambiguous_and_foreign_host_sources_are_refused(self):
+        for mutation in ('missing', 'duplicate', 'foreign'):
+            events = copy.deepcopy(self.events)
+            if mutation == 'missing':
+                del events[1]
+            elif mutation == 'duplicate':
+                events.append(copy.deepcopy(events[1]))
+            else:
+                events[1]['pid'] = self.pid+1
+            with self.subTest(mutation=mutation), self.assertRaises(RuntimeError):
+                self.parse(events)
+
+    def test_duplicate_gpu_id_and_foreign_cpu_process_are_refused(self):
+        for mutation in ('id', 'host'):
+            events = copy.deepcopy(self.events)
+            if mutation == 'id':
+                events[4]['args']['id'] = 1
+            else:
+                events[-1]['pid'] = self.pid+1
+            with self.subTest(mutation=mutation), self.assertRaises(RuntimeError):
+                self.parse(events)
+
+    def test_missing_payload_and_empty_stream_are_refused(self):
+        events = copy.deepcopy(self.events)
+        events[6]['name'] = 'zeCommandListAppendMemoryCopy(H2D)'
+        for value in (events, []):
+            with self.assertRaises(RuntimeError):
+                self.parse(value)
+
+    def test_invalid_window_identity_is_refused(self):
+        for native, begin, end in ((True, 1, 2), (1234, True, 2), (1234, 2, 1)):
+            with self.subTest(identity=(native, begin, end)), self.assertRaises(RuntimeError):
+                profile.trace_summary(self.events, native, begin, end)
+
+    def test_shape_groups_and_observed_gaps_are_reduced_without_losing_work(self):
+        events = copy.deepcopy(self.events)
+        base = 'strata::experimental::vllm_xe2_native16::DenseKernel<half,bfloat16,Tile1>'
+        events[2]['name'] = base+'[SIMD16 {1;20;64} {128;1;1}]'
+        events[4]['name'] = base+'[SIMD16 {1;20;32} {128;1;1}]'
+        result = profile.family_summary(events, 10_000_000, 20_000_000)
+        families = {r['name']:r for r in result['families']}
+        self.assertEqual(sum(r['count'] for r in families.values()), 4)
+        self.assertEqual(families['native16_dense_gemm']['count'], 2)
+        self.assertAlmostEqual(families['native16_dense_gemm']['service_sum_s'], .004)
+        self.assertEqual(families['copy:H2D']['payload_bytes'], 4096)
+        self.assertEqual(result['largest_normalized_kernel_groups'][0]['name'], base)
+        self.assertEqual(result['largest_normalized_kernel_groups'][0]['count'], 2)
+        self.assertAlmostEqual(result['kernel_interval_union_s'], .003)
+        self.assertAlmostEqual(result['observed_gpu_gap_total_s'], .0069)
+        self.assertAlmostEqual(result['largest_internal_observed_gaps'][0]
+                               ['host_api_overlap_s']['API2'], .0004)
+
+    def test_fused_and_attention_symbols_have_explicit_source_families(self):
+        for symbol, family in [('x::SplitDownScatterKernel<false>', 'native16_down_fused'),
+            ('x::GuSwiGLUKernel<Tile1,false>', 'native16_gu_fused'),
+            ('prefix_batch_impl<33>', 'qsa_prefix'), ('unknown_symbol', 'other_kernel')]:
+            self.assertEqual(profile.kernel_family(symbol), family)
+
+
+class StatusGates(unittest.TestCase):
+    def test_status_partition_conserves_and_rejects_errors_or_missing_regions(self):
+        data = dict(version='1', available='1', complete='1', scopes='1', completed='1',
+            open_scopes='0', open_parts='0', cpu_s='1', wall_s='2',
+            unclassified_cpu_s='.1', unclassified_wall_s='.2')
+        for name in ('tag', 'precheck', 'queue_context', 'enqueue', 'observer', 'drain', 'postcheck', 'after_drain', 'branch'):
+            data.update({name+'_count':'1', name+'_throws':'0', name+'_cpu_s':'.1',
+                name+'_wall_s':'.2', name+'_wait_cpu_s':'.05', name+'_wait_wall_s':'.1'})
+        def text(value):
+            return 'strata prefill status: '+' '.join(k+'='+v for k,v in value.items())
+        result = profile.status_summary(text(data))
+        self.assertEqual(result['scopes'], 1)
+        self.assertAlmostEqual(result['parts'][0]['outside_known_wait_cpu_s'], .05)
+        for mutation in ('throw', 'sum', 'missing', 'open'):
+            other = dict(data)
+            if mutation == 'throw': other['enqueue_throws'] = '1'
+            elif mutation == 'sum': other['cpu_s'] = '1.1'
+            elif mutation == 'missing': del other['enqueue_throws']
+            else: other['open_scopes'] = '1'
+            with self.subTest(mutation=mutation), self.assertRaises(RuntimeError):
+                profile.status_summary(text(other))
+
+
+class StartupGates(unittest.TestCase):
+    def test_collector_reuse_allows_only_the_reviewed_parser_delta(self):
+        old = [dict(path='tools/sycl/bench_engine.py', original_sha256='original',
+            current_sha256='aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063')]
+        current = [dict(old[0], current_sha256='e263b7c8c8ea723576fffa172d762740dc3769a64e03c958188ec5be43de792a')]
+        profile.collector_host_changes(current,old)
+        for wrong in (old, [dict(current[0],current_sha256='unknown')],
+                      [dict(current[0],original_sha256='changed')],
+                      current+[dict(path='native.cpp',original_sha256='a',current_sha256='b')]):
+            with self.assertRaises(RuntimeError):
+                profile.collector_host_changes(wrong,old)
+        self.assertNotEqual(current,old)
+
+    def test_missing_mutated_and_extra_startup_variables_are_refused(self):
+        expected = dict(ZES_ENABLE_SYSMAN='0', UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1')
+        profile.same_environment(dict(expected, PWD='/work'), expected)
+        for value in ({}, dict(expected, ZES_ENABLE_SYSMAN='1'),
+                      dict(expected, UNITRACE_KernelMetrics='1')):
+            with self.assertRaises(RuntimeError):
+                profile.same_environment(value, expected)
+
+    def test_profile_flags_do_not_replace_safety_or_target_preload(self):
+        row = dict(native_validation_probe=dict(library=dict(path='/probe.so')))
+        profiling = dict(collector=dict(path='/collector.so'), session='Owned123',
+                         environment=dict(UNITRACE_SystemTime='1'))
+        env = dict(ZES_ENABLE_SYSMAN='0', EnableDirectSubmission='0')
+        with patch.object(profile.engine_once, 'native_environment',
+                          return_value=dict(env, LD_PRELOAD='/probe.so')):
+            actual = profile.expected_target_environment(row, env, profiling)
+        self.assertEqual(actual['ZES_ENABLE_SYSMAN'], '0')
+        self.assertEqual(actual['EnableDirectSubmission'], '0')
+        self.assertEqual(actual['LD_PRELOAD'], '/collector.so:/probe.so')
+        self.assertEqual(actual['STRATA_UNITRACE_TARGET_PRELOAD'], '/probe.so')
+        self.assertEqual(actual['UNITRACE_Session'], 'Owned123')
+        self.assertEqual(actual['UNITRACE_ChromeEventBufferSize'], '128')
+        self.assertEqual(actual['UNITRACE_VERSION'],
+                         '2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)')
+        self.assertEqual(actual['UNITRACE_LD_PRELOAD_OLD'], '/probe.so')
+        for key, value in [('UNITRACE_VERSION', 'other'), ('UNITRACE_LD_PRELOAD_OLD', '')]:
+            with self.subTest(variable=key), self.assertRaises(RuntimeError):
+                profile.same_environment(dict(actual, **{key:value}), actual)
+        self.assertEqual(env, dict(ZES_ENABLE_SYSMAN='0', EnableDirectSubmission='0'))
+
+    def test_session_name_cannot_address_another_path(self):
+        self.assertTrue(profile.session_path('Owned123').name.endswith('_Owned123'))
+        for value in ('', '../x', 'x/y', 'x y'):
+            with self.assertRaises(RuntimeError):
+                profile.session_path(value)
+
+
+class TypedGdnRouteGates(unittest.TestCase):
+    def setUp(self):
+        self.chunks = [8192]*14+[2800]
+
+    def text(self, tokens):
+        return ''.join('strata GDN storage: fp16;state=fp32;tokens='+str(t)+'\n'
+                       for t in tokens)
+
+    def test_all_layers_and_final_partial_chunk_are_accounted(self):
+        result = profile.storage_route(self.text(self.chunks*36))
+        self.assertEqual(result['GDN_FP16_storage_calls'], 540)
+        self.assertEqual(result['GDN_FP16_storage_tokens'], 36*117488)
+
+    def test_missing_duplicate_and_equal_sum_wrong_extents_are_refused(self):
+        full = self.chunks*36
+        same_sum = list(full)
+        same_sum[0] -= 1
+        same_sum[-1] += 1
+        for tokens in (full[:-1], full+self.chunks, same_sum, list(reversed(full))):
+            with self.subTest(length=len(tokens)), self.assertRaises(RuntimeError):
+                profile.storage_route(self.text(tokens))
+
+    def test_wrong_storage_or_recurrent_state_is_refused(self):
+        full = self.text(self.chunks*36)
+        for text in ('', full.replace('fp16;', 'fp32;'),
+                     full.replace('state=fp32', 'state=fp16')):
+            with self.assertRaises(RuntimeError):
+                profile.storage_route(text)
+
+
+class FixtureProtocolGates(unittest.TestCase):
+    def run_fixture(self, mode, third):
+        with tempfile.TemporaryDirectory() as temporary:
+            owner = profile.build.supervision.Owner(Path(temporary)/'owned')
+            phases = ['before-runtime','runtime-ready']+(['before-exit'] if third else [])
+            program = ('import sys\n'
+                'for phase in '+repr(phases)+':\n'
+                ' print("COMPONENT_READY "+phase,flush=True)\n'
+                ' assert sys.stdin.buffer.read(1)==b"X"\n'
+                'print("and lifecycle passed",flush=True)\n')
+            seen = []
+            def interact(io,entry):
+                profile.fixture_protocol(io,entry,mode,lambda phase,_:seen.append(phase))
+            entry,out,_ = owner.run('protocol',[sys.executable,'-u','-c',program],
+                dict(PATH='/usr/bin:/bin'),Path(temporary),interaction=interact,
+                wall=15,cpu=10,rss_cap=256<<20,text_cap=1<<20,file_cap=2<<20,total_cap=4<<20)
+            self.assertIsNone(owner.active)
+            self.assertTrue(entry['direct_child_reaped'])
+            self.assertTrue(entry['session_empty'])
+            return entry,seen,out.read_text()
+
+    def test_actual_two_graph_and_three_submission_gates_close_normally(self):
+        for mode,third in (('native',False),('submission',True)):
+            with self.subTest(mode=mode):
+                entry,seen,text = self.run_fixture(mode,third)
+                self.assertTrue(profile.build.supervision.closed(entry),entry)
+                self.assertEqual(entry['exit_code'],0)
+                self.assertEqual(len(seen),3 if third else 2)
+                self.assertIn('and lifecycle passed',text)
+
+    def test_unexpected_third_graph_gate_is_rejected_and_child_retired(self):
+        entry,seen,_ = self.run_fixture('native',True)
+        self.assertFalse(profile.build.supervision.closed(entry))
+        self.assertEqual(len(seen),2)
+        self.assertIn('unexpected extra fixture gate',entry['error'])
+
+
+if __name__ == '__main__':
+    unittest.main()

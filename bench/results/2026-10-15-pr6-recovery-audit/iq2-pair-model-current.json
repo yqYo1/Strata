@@ -1,0 +1,1357 @@
+{
+  "mode": "engine-compare",
+  "stage": "closed",
+  "source_commit": "f393d13798bedef66eefef15aa5008446208a330",
+  "build_source_commit": "6c7f7f36d4dfa7d773af1d4da7a4d92676270632",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22171736,
+    "sha256": "e1726ca28c89e72f92c11e0346fe9ad398c2846f9a0405a180c9aa6b8d5d081f"
+  },
+  "qualification": {
+    "original_inputs_recovered": 9845,
+    "build_receipt_sha256": "20413ff76494a3651de670495bf27d317450d604eada28721a64ca11283bb2ff",
+    "shared_component_sha256": "68a4b6dd1f201ad745a1f5a15b91b03417a0a639144a9765c488eba1d8a5d61a",
+    "pool_result_sha256": "18c0d7e8834ea3c4caa070a89a2c570ed0df50fdd1bd5d514919d7523f2275db",
+    "pilot_reference": {
+      "commit": "bedfdf312fe3cf28842c78263f1e5b69cdf5ec5c",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json",
+      "sha256": "336a926be0252d3c6f1ebddaafd6a227ac2af82042099ee534b4bb6d97879255"
+    }
+  },
+  "runtime_asset_delta": {
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "package": "libze-intel-gpu1:amd64",
+      "previous_version": "26.31.39395.14-1~24.04~ppa1",
+      "candidate_version": "26.31.39395.16-1~24.04~ppa1",
+      "upgrade_utc": "2026-10-19T08:32:29+00:00",
+      "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+      "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+    },
+    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+      "package": "libudev1:amd64",
+      "previous_version": "255.4-1ubuntu8.17",
+      "candidate_version": "255.4-1ubuntu8.18",
+      "upgrade_utc": "2026-10-19T08:31:15+00:00",
+      "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
+      "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
+    }
+  },
+  "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+  "source_count": 157,
+  "benchmark_fingerprint": "808cab172b4a42912b01cec9b158128cd99ce16f18970bdf003238a9dae09930",
+  "machine_identity": {
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "device": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+  },
+  "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "ownership_closed": true,
+  "clean_speed_qualified": false,
+  "hardware_saturation_qualified": false,
+  "model_adoption_qualified": false,
+  "model_hash_policy": "Full hashes at preparation and after each process; original model identities checked before every launch.",
+  "budgets": {
+    "wall": 3600,
+    "cpu": 108000,
+    "rss_cap": 103079215104,
+    "text_cap": 67108864,
+    "file_cap": 67108864,
+    "total_cap": 67108864
+  },
+  "plan": {
+    "question": "Does exact IQ2_S NT1 gate/up pairing improve repeated model generation on the same native binary?",
+    "order": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "requests_per_process": 2,
+    "independent_processes": 6,
+    "workloads": [
+      "regular-code",
+      "varied-prose"
+    ],
+    "workload_id": "generation_reference_20261021",
+    "constants": "Same native binary/model/profile/runtime/config:131072 resident INT8 context,1256 expert slots,8192 prefill,5 workers+host,pcie0,adapt0,spec4,suffix0,caches0,greedy,no token graph/no coupled draft,Q8 MTP,packed bank. Only PAIR0/1 differs; SINGLE_EXACT0,AUDIT1,CENSUS1,TIMING1 and validation/trace identical before exec.",
+    "eligibility": "Four official warmups then both thinking-on workloads per fresh native process. Each long request >=32768 fresh input,1024..16384 output including thinking,>=512 answer chars,normal stream/native exit,observed pair dispatch,six pinned physical CPUs and exact target census conservation. No output/hash equality requirement.",
+    "decision": "For each workload and each process pair use candidate/base token throughput computed from actual tokens/engine milliseconds. Judge prefill and decode separately. Faster screen: all three ratios>1 and geomean>1.01; slower screen: all<1 and geomean<1/1.01; otherwise inconclusive. Nonregression:geomean>=0.98 and every pair>=0.95. Advancement to clean comparison needs both decode workloads nonregressing,at least one faster,and both prefill workloads nonregressing. Confirm MTP classes separately in both arms:all three code acceptances>=0.60 and prose<=0.40. No speed-based stopping.",
+    "stopping": "Stop on first source/runtime/config/owner/fault/budget/native/request/dispatch/conservation failure. No retries,replaced samples or arm-order changes. Commit each process outcome before the next launch.",
+    "limits": "Counter/census/clock/parameter-validation observers are charged equally in both arms. This is an observed same-native screen,not clean speed,observer overhead,hardware saturation,task/agent quality,physical262144/session/RESTORE or adoption qualification. Two baseline-first pairs and one candidate-first pair cover both directions without exact chronology balance.",
+    "retention": "Keep twelve individual samples and compact format/NT/pair/clock/route/owner/fault evidence. Recover shared setup from pinned pilot Git reference. Successful logs,JIT and owner transcripts retire after each committed closed process; keep frozen generated inputs through cohort closure."
+  },
+  "decision": {
+    "cases": [
+      {
+        "workload": "regular-code",
+        "prefill": {
+          "candidate_base_ratios": [
+            0.7604109051266822,
+            1.0013197300604542,
+            0.9996053254245147
+          ],
+          "geomean": 0.9130261655841602,
+          "decision": "inconclusive",
+          "nonregression": false,
+          "individual_tok_s": [
+            637.4460702276949,
+            484.7209432312881,
+            638.0424196203711,
+            637.2014856651728,
+            636.5969452393227,
+            636.3456966102052
+          ]
+        },
+        "decode": {
+          "candidate_base_ratios": [
+            1.0164738855569622,
+            1.01668379795083,
+            1.0154722614669192
+          ],
+          "geomean": 1.0162098441276242,
+          "decision": "faster_screen",
+          "nonregression": true,
+          "individual_tok_s": [
+            14.552192641853654,
+            14.79192379803842,
+            14.676409754305276,
+            14.435569627337635,
+            14.528404217139895,
+            14.753191485884575
+          ]
+        },
+        "acceptance_by_arm": {
+          "0": [
+            0.8310767246937459,
+            0.8310767246937459,
+            0.8310767246937459
+          ],
+          "1": [
+            0.8310767246937459,
+            0.8310767246937459,
+            0.8310767246937459
+          ]
+        },
+        "mtp_class_confirmed": true
+      },
+      {
+        "workload": "varied-prose",
+        "prefill": {
+          "candidate_base_ratios": [
+            0.9996936064351795,
+            0.9995224079778434,
+            0.9790448179459803
+          ],
+          "geomean": 0.9927060625542092,
+          "decision": "inconclusive",
+          "nonregression": true,
+          "individual_tok_s": [
+            761.3697702716303,
+            761.1364914735701,
+            760.6738389258064,
+            761.0373042708898,
+            761.0407840859989,
+            745.0930359049429
+          ]
+        },
+        "decode": {
+          "candidate_base_ratios": [
+            1.015336528228069,
+            1.0108410645921486,
+            1.019018462617262
+          ],
+          "geomean": 1.0150598424252346,
+          "decision": "faster_screen",
+          "nonregression": true,
+          "individual_tok_s": [
+            9.353713412313269,
+            9.49716690209848,
+            9.459293717749919,
+            9.357844718711075,
+            9.29345432253214,
+            9.47020153615045
+          ]
+        },
+        "acceptance_by_arm": {
+          "0": [
+            0.390579163523594,
+            0.390579163523594,
+            0.390579163523594
+          ],
+          "1": [
+            0.390579163523594,
+            0.390579163523594,
+            0.390579163523594
+          ]
+        },
+        "mtp_class_confirmed": true
+      }
+    ],
+    "MTP_pair_confirmed": true,
+    "eligible_for_clean_comparison": false,
+    "clean_speed_qualified": false,
+    "hardware_saturation_qualified": false,
+    "model_adoption_qualified": false,
+    "limits": "Counter/census/clock/parameter-validation observers are charged equally in both arms. This is an observed same-native screen,not clean speed,observer overhead,hardware saturation,task/agent quality,physical262144/session/RESTORE or adoption qualification. Two baseline-first pairs and one candidate-first pair cover both directions without exact chronology balance."
+  },
+  "schema": "closed-iq2-model-screen-summary-v1",
+  "original_complete_result_reference": {
+    "commit": "d82f4f6a9601c3d2192459ece5ae87900ec3972d",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json"
+  },
+  "processes": [
+    {
+      "cohort": 0,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "boot_unchanged": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "effective_environment_verified": true,
+      "requests": [
+        {
+          "workload": "regular-code",
+          "read_tokens": 33214,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 52104.8,
+          "decode_ms": 248141.3,
+          "prompt_tps": 637.4,
+          "decode_tps": 14.6,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        },
+        {
+          "workload": "varied-prose",
+          "read_tokens": 33288,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43721.2,
+          "decode_ms": 923483.5,
+          "prompt_tps": 761.4,
+          "decode_tps": 9.4,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        }
+      ],
+      "iq2_pair_rows": [
+        0,
+        0
+      ],
+      "pool_ms": [
+        116521.61314,
+        408963.126676
+      ],
+      "IQ2_pool_ns_by_down_format": [
+        {
+          "42": 10701344124,
+          "20": 35681392813
+        },
+        {
+          "42": 38842365950,
+          "20": 125584654992
+        }
+      ],
+      "decode_timing": [
+        {
+          "windows": 1035,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 3.49,
+            "total": 239.75,
+            "verify": 206.54,
+            "GPU_reach_wait": 75.09,
+            "per_layer_host": 115.07,
+            "plan": 1.41,
+            "activation_quant": 0.44,
+            "jobs": 0.09,
+            "CPU_pool_run": 112.58,
+            "stage": 1.87,
+            "commit_emit": 0.04,
+            "draft": 33.14,
+            "CPU_experts": 27.59,
+            "CPU_entries": 35.67,
+            "VRAM_hits": 4.31,
+            "PCIe": 0.0
+          }
+        },
+        {
+          "windows": 3978,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 2.17,
+            "total": 232.15,
+            "verify": 199.03,
+            "GPU_reach_wait": 75.39,
+            "per_layer_host": 105.3,
+            "plan": 1.43,
+            "activation_quant": 0.45,
+            "jobs": 0.09,
+            "CPU_pool_run": 102.81,
+            "stage": 3.76,
+            "commit_emit": 0.04,
+            "draft": 33.05,
+            "CPU_experts": 24.12,
+            "CPU_entries": 36.42,
+            "VRAM_hits": 3.58,
+            "PCIe": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "cohort": 1,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "boot_unchanged": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "effective_environment_verified": true,
+      "requests": [
+        {
+          "workload": "regular-code",
+          "read_tokens": 33214,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 68521.9,
+          "decode_ms": 244119.7,
+          "prompt_tps": 484.7,
+          "decode_tps": 14.8,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        },
+        {
+          "workload": "varied-prose",
+          "read_tokens": 33288,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43734.6,
+          "decode_ms": 909534.4,
+          "prompt_tps": 761.1,
+          "decode_tps": 9.5,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        }
+      ],
+      "iq2_pair_rows": [
+        284695040,
+        855527680
+      ],
+      "pool_ms": [
+        112314.658928,
+        394248.028294
+      ],
+      "IQ2_pool_ns_by_down_format": [
+        {
+          "42": 9561466184,
+          "20": 31896491620
+        },
+        {
+          "42": 34762616634,
+          "20": 113406526458
+        }
+      ],
+      "decode_timing": [
+        {
+          "windows": 1035,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 3.49,
+            "total": 235.86,
+            "verify": 202.65,
+            "GPU_reach_wait": 75.21,
+            "per_layer_host": 111.08,
+            "plan": 1.48,
+            "activation_quant": 0.47,
+            "jobs": 0.09,
+            "CPU_pool_run": 108.52,
+            "stage": 1.96,
+            "commit_emit": 0.04,
+            "draft": 33.14,
+            "CPU_experts": 27.59,
+            "CPU_entries": 35.67,
+            "VRAM_hits": 4.31,
+            "PCIe": 0.0
+          }
+        },
+        {
+          "windows": 3978,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 2.17,
+            "total": 228.64,
+            "verify": 195.54,
+            "GPU_reach_wait": 75.29,
+            "per_layer_host": 101.64,
+            "plan": 1.48,
+            "activation_quant": 0.44,
+            "jobs": 0.09,
+            "CPU_pool_run": 99.11,
+            "stage": 4.1,
+            "commit_emit": 0.04,
+            "draft": 33.03,
+            "CPU_experts": 24.12,
+            "CPU_entries": 36.42,
+            "VRAM_hits": 3.58,
+            "PCIe": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "cohort": 2,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "boot_unchanged": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "effective_environment_verified": true,
+      "requests": [
+        {
+          "workload": "regular-code",
+          "read_tokens": 33214,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 52056.1,
+          "decode_ms": 246041.1,
+          "prompt_tps": 638.0,
+          "decode_tps": 14.7,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        },
+        {
+          "workload": "varied-prose",
+          "read_tokens": 33288,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43761.2,
+          "decode_ms": 913176.0,
+          "prompt_tps": 760.7,
+          "decode_tps": 9.5,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        }
+      ],
+      "iq2_pair_rows": [
+        284695040,
+        855527680
+      ],
+      "pool_ms": [
+        114037.90532,
+        396628.178136
+      ],
+      "IQ2_pool_ns_by_down_format": [
+        {
+          "42": 9672939840,
+          "20": 32404102733
+        },
+        {
+          "42": 35032136291,
+          "20": 114984455995
+        }
+      ],
+      "decode_timing": [
+        {
+          "windows": 1035,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 3.49,
+            "total": 237.72,
+            "verify": 204.46,
+            "GPU_reach_wait": 75.04,
+            "per_layer_host": 112.75,
+            "plan": 1.47,
+            "activation_quant": 0.45,
+            "jobs": 0.09,
+            "CPU_pool_run": 110.18,
+            "stage": 2.11,
+            "commit_emit": 0.04,
+            "draft": 33.19,
+            "CPU_experts": 27.59,
+            "CPU_entries": 35.67,
+            "VRAM_hits": 4.31,
+            "PCIe": 0.0
+          }
+        },
+        {
+          "windows": 3978,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 2.17,
+            "total": 229.56,
+            "verify": 196.46,
+            "GPU_reach_wait": 75.32,
+            "per_layer_host": 102.23,
+            "plan": 1.45,
+            "activation_quant": 0.45,
+            "jobs": 0.09,
+            "CPU_pool_run": 99.71,
+            "stage": 4.43,
+            "commit_emit": 0.04,
+            "draft": 33.03,
+            "CPU_experts": 24.12,
+            "CPU_entries": 36.42,
+            "VRAM_hits": 3.58,
+            "PCIe": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "cohort": 3,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "boot_unchanged": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "effective_environment_verified": true,
+      "requests": [
+        {
+          "workload": "regular-code",
+          "read_tokens": 33214,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 52124.8,
+          "decode_ms": 250146.0,
+          "prompt_tps": 637.2,
+          "decode_tps": 14.4,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        },
+        {
+          "workload": "varied-prose",
+          "read_tokens": 33288,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43740.3,
+          "decode_ms": 923075.8,
+          "prompt_tps": 761.0,
+          "decode_tps": 9.4,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        }
+      ],
+      "iq2_pair_rows": [
+        0,
+        0
+      ],
+      "pool_ms": [
+        117805.483791,
+        408418.037276
+      ],
+      "IQ2_pool_ns_by_down_format": [
+        {
+          "42": 10655177425,
+          "20": 36173338590
+        },
+        {
+          "42": 38875781648,
+          "20": 125199379494
+        }
+      ],
+      "decode_timing": [
+        {
+          "windows": 1035,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 3.49,
+            "total": 241.69,
+            "verify": 208.47,
+            "GPU_reach_wait": 75.04,
+            "per_layer_host": 116.34,
+            "plan": 1.44,
+            "activation_quant": 0.44,
+            "jobs": 0.09,
+            "CPU_pool_run": 113.82,
+            "stage": 2.66,
+            "commit_emit": 0.04,
+            "draft": 33.15,
+            "CPU_experts": 27.59,
+            "CPU_entries": 35.67,
+            "VRAM_hits": 4.31,
+            "PCIe": 0.0
+          }
+        },
+        {
+          "windows": 3978,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 2.17,
+            "total": 232.05,
+            "verify": 198.95,
+            "GPU_reach_wait": 75.28,
+            "per_layer_host": 105.16,
+            "plan": 1.43,
+            "activation_quant": 0.44,
+            "jobs": 0.09,
+            "CPU_pool_run": 102.67,
+            "stage": 4.01,
+            "commit_emit": 0.04,
+            "draft": 33.03,
+            "CPU_experts": 24.12,
+            "CPU_entries": 36.42,
+            "VRAM_hits": 3.58,
+            "PCIe": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "cohort": 4,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "boot_unchanged": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "effective_environment_verified": true,
+      "requests": [
+        {
+          "workload": "regular-code",
+          "read_tokens": 33214,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 52174.3,
+          "decode_ms": 248547.6,
+          "prompt_tps": 636.6,
+          "decode_tps": 14.5,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        },
+        {
+          "workload": "varied-prose",
+          "read_tokens": 33288,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43740.1,
+          "decode_ms": 929471.4,
+          "prompt_tps": 761.0,
+          "decode_tps": 9.3,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        }
+      ],
+      "iq2_pair_rows": [
+        0,
+        0
+      ],
+      "pool_ms": [
+        116853.970054,
+        414695.112032
+      ],
+      "IQ2_pool_ns_by_down_format": [
+        {
+          "42": 10656906668,
+          "20": 35767650249
+        },
+        {
+          "42": 39403860158,
+          "20": 127041260935
+        }
+      ],
+      "decode_timing": [
+        {
+          "windows": 1035,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 3.49,
+            "total": 240.14,
+            "verify": 206.93,
+            "GPU_reach_wait": 75.08,
+            "per_layer_host": 115.39,
+            "plan": 1.39,
+            "activation_quant": 0.44,
+            "jobs": 0.09,
+            "CPU_pool_run": 112.9,
+            "stage": 2.04,
+            "commit_emit": 0.04,
+            "draft": 33.15,
+            "CPU_experts": 27.59,
+            "CPU_entries": 35.67,
+            "VRAM_hits": 4.31,
+            "PCIe": 0.0
+          }
+        },
+        {
+          "windows": 3978,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 2.17,
+            "total": 233.65,
+            "verify": 200.54,
+            "GPU_reach_wait": 75.33,
+            "per_layer_host": 106.78,
+            "plan": 1.46,
+            "activation_quant": 0.44,
+            "jobs": 0.09,
+            "CPU_pool_run": 104.25,
+            "stage": 3.99,
+            "commit_emit": 0.04,
+            "draft": 33.04,
+            "CPU_experts": 24.12,
+            "CPU_entries": 36.42,
+            "VRAM_hits": 3.58,
+            "PCIe": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "cohort": 5,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "boot_unchanged": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "effective_environment_verified": true,
+      "requests": [
+        {
+          "workload": "regular-code",
+          "read_tokens": 33214,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 52194.9,
+          "decode_ms": 244760.6,
+          "prompt_tps": 636.3,
+          "decode_tps": 14.8,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        },
+        {
+          "workload": "varied-prose",
+          "read_tokens": 33288,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 44676.3,
+          "decode_ms": 912124.2,
+          "prompt_tps": 745.1,
+          "decode_tps": 9.5,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "finish_reason": "stop",
+          "completion_includes_thinking": true,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "ok": true,
+          "stream_complete": true,
+          "truncated": false
+        }
+      ],
+      "iq2_pair_rows": [
+        284695040,
+        855527680
+      ],
+      "pool_ms": [
+        112675.903077,
+        395406.072183
+      ],
+      "IQ2_pool_ns_by_down_format": [
+        {
+          "42": 9594801740,
+          "20": 32036007974
+        },
+        {
+          "42": 34874378896,
+          "20": 114499056033
+        }
+      ],
+      "decode_timing": [
+        {
+          "windows": 1035,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 3.49,
+            "total": 236.48,
+            "verify": 203.24,
+            "GPU_reach_wait": 75.1,
+            "per_layer_host": 111.39,
+            "plan": 1.45,
+            "activation_quant": 0.44,
+            "jobs": 0.09,
+            "CPU_pool_run": 108.87,
+            "stage": 2.3,
+            "commit_emit": 0.04,
+            "draft": 33.18,
+            "CPU_experts": 27.59,
+            "CPU_entries": 35.67,
+            "VRAM_hits": 4.31,
+            "PCIe": 0.0
+          }
+        },
+        {
+          "windows": 3978,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 2.17,
+            "total": 229.29,
+            "verify": 196.19,
+            "GPU_reach_wait": 75.27,
+            "per_layer_host": 101.9,
+            "plan": 1.44,
+            "activation_quant": 0.44,
+            "jobs": 0.09,
+            "CPU_pool_run": 99.4,
+            "stage": 4.43,
+            "commit_emit": 0.04,
+            "draft": 33.04,
+            "CPU_experts": 24.12,
+            "CPU_entries": 36.42,
+            "VRAM_hits": 3.58,
+            "PCIe": 0.0
+          }
+        }
+      ]
+    }
+  ],
+  "actual_work_by_workload": [
+    {
+      "request": 5,
+      "windows": 1035,
+      "rows": 4137,
+      "cpu_jobs": 1370846,
+      "cpu_entries": 1771839,
+      "vram_entries": 213921,
+      "jobs_NT": [
+        1058797,
+        239280,
+        56594,
+        16175,
+        0,
+        0,
+        0,
+        0
+      ],
+      "NT1_fraction": 0.7723675744759075,
+      "format_bins": [
+        {
+          "gu": 18,
+          "down": 20,
+          "calls": 14490,
+          "CPU": 513533,
+          "VRAM": 65647,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            312670,
+            65168,
+            16541,
+            5226,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 22,
+          "down": 42,
+          "calls": 5175,
+          "CPU": 189280,
+          "VRAM": 17570,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            105622,
+            28237,
+            6804,
+            1693,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 22,
+          "down": 20,
+          "calls": 15525,
+          "CPU": 567999,
+          "VRAM": 52551,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            339214,
+            78601,
+            17357,
+            4878,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 18,
+          "down": 42,
+          "calls": 3105,
+          "CPU": 114819,
+          "VRAM": 9291,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            70375,
+            15934,
+            3320,
+            654,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 21,
+          "down": 20,
+          "calls": 9315,
+          "CPU": 318119,
+          "VRAM": 54211,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            187015,
+            42554,
+            10760,
+            3429,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 21,
+          "down": 42,
+          "calls": 1035,
+          "CPU": 39047,
+          "VRAM": 2323,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            24201,
+            5344,
+            1146,
+            180,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 23,
+          "down": 20,
+          "calls": 1035,
+          "CPU": 29042,
+          "VRAM": 12328,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            19700,
+            3442,
+            666,
+            115,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+      "limits": "Actual target-verifier jobs/entries, excluding separate draft. Blob visits are logical,not physical RAM/PCIe traffic. Pool wall includes scheduling/waits. Diagnostic only; no clean speed or hardware saturation qualification."
+    },
+    {
+      "request": 6,
+      "windows": 3978,
+      "rows": 15909,
+      "cpu_jobs": 4605780,
+      "cpu_entries": 6953521,
+      "vram_entries": 682799,
+      "jobs_NT": [
+        3104475,
+        901153,
+        353868,
+        246284,
+        0,
+        0,
+        0,
+        0
+      ],
+      "NT1_fraction": 0.674038925002931,
+      "format_bins": [
+        {
+          "gu": 18,
+          "down": 20,
+          "calls": 55692,
+          "CPU": 2026867,
+          "VRAM": 200393,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            938910,
+            243552,
+            95139,
+            78859,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 22,
+          "down": 42,
+          "calls": 19890,
+          "CPU": 724192,
+          "VRAM": 71258,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            341836,
+            97944,
+            36520,
+            19227,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 22,
+          "down": 20,
+          "calls": 59670,
+          "CPU": 2182378,
+          "VRAM": 203972,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            994926,
+            296512,
+            113060,
+            63812,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 18,
+          "down": 42,
+          "calls": 11934,
+          "CPU": 434962,
+          "VRAM": 42308,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            206542,
+            61184,
+            21656,
+            10271,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 21,
+          "down": 20,
+          "calls": 35802,
+          "CPU": 1305568,
+          "VRAM": 126242,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            507964,
+            170717,
+            75034,
+            57767,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 21,
+          "down": 42,
+          "calls": 3978,
+          "CPU": 147808,
+          "VRAM": 11282,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            69187,
+            18707,
+            6545,
+            5393,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "gu": 23,
+          "down": 20,
+          "calls": 3978,
+          "CPU": 131746,
+          "VRAM": 27344,
+          "PCIe": 0,
+          "peer": 0,
+          "jobs_NT": [
+            45110,
+            12537,
+            5914,
+            10955,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+      "limits": "Actual target-verifier jobs/entries, excluding separate draft. Blob visits are logical,not physical RAM/PCIe traffic. Pool wall includes scheduling/waits. Diagnostic only; no clean speed or hardware saturation qualification."
+    }
+  ],
+  "actual_route_by_workload": [
+    {
+      "actual_GPU_BF16_rows": 33213,
+      "actual_MoE_mode": 10,
+      "draft_work": {
+        "read_tokens": 33214,
+        "draft_cells": 33213,
+        "batch_count": 5,
+        "path": "batched",
+        "mode": 2
+      },
+      "private_bank": {
+        "actual_private_layers": 48,
+        "stride_layers": {
+          "2176000": 14,
+          "1510400": 5,
+          "1971200": 15,
+          "1715200": 3,
+          "2329600": 9,
+          "1868800": 1,
+          "2662400": 1
+        },
+        "requested_work": {
+          "uploads": 19397,
+          "requested_H2D_bytes": 39622784000,
+          "permanent_hits": 0,
+          "permanent_slots": 314,
+          "total_slots": 384
+        },
+        "physical_PCIe_traffic_measured": false
+      },
+      "restored_dense_layers": 48,
+      "cache_payload_and_map_match": true,
+      "loan_generation": 5
+    },
+    {
+      "actual_GPU_BF16_rows": 33287,
+      "actual_MoE_mode": 10,
+      "draft_work": {
+        "read_tokens": 33288,
+        "draft_cells": 33287,
+        "batch_count": 5,
+        "path": "batched",
+        "mode": 2
+      },
+      "private_bank": {
+        "actual_private_layers": 48,
+        "stride_layers": {
+          "2176000": 14,
+          "1510400": 5,
+          "1971200": 15,
+          "1715200": 3,
+          "2329600": 9,
+          "1868800": 1,
+          "2662400": 1
+        },
+        "requested_work": {
+          "uploads": 19212,
+          "requested_H2D_bytes": 39273344000,
+          "permanent_hits": 0,
+          "permanent_slots": 307,
+          "total_slots": 384
+        },
+        "physical_PCIe_traffic_measured": false
+      },
+      "restored_dense_layers": 48,
+      "cache_payload_and_map_match": true,
+      "loan_generation": 6
+    }
+  ],
+  "actual_work_identical_all_six": true,
+  "actual_route_identical_all_six": true,
+  "execution_passed_not_adoption": true,
+  "additional_limits": "Source/metadata research ran during this observer-charged diagnostic; independent background CPU/I/O interference was not separately quantified. This does not change the frozen decision or qualify clean speed.",
+  "closed_input_recovery": "All six configs/plan JSONs reproduced byte-for-byte from committed controller and archived pilot; profiles matched the controller-source Git blob; frozen plan reproduced by resetting only status/process fields of the original complete receipt. No active controller consumer remains; original full fields and source are recoverable from the pinned Git commit.",
+  "artifact_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-iq2-comparison-5-20261022.jsonl",
+    "manifest_sha256": "8815fc0b001020ea11e78ad477636d02fb903b5b7b4d63219136409b6f16a178",
+    "files_deleted": 96,
+    "bytes_retired": 14243301,
+    "closed_comparison_root_deleted": true,
+    "all_generated_inputs_byte_recovery_verified": true,
+    "original_status_and_individual_samples_preserved": true,
+    "selected_build": "Current validated6c engine and ten fixtures remain; preserve that generation before any rebuild.",
+    "remaining_holds": "Unique legacy source/recipe exceptions remain unresolved; their obsolete products are already retired. Observer source/controller tests and GPU support remain unqualified."
+  }
+}

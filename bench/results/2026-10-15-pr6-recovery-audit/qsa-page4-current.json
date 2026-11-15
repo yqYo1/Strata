@@ -1,0 +1,2537 @@
+{
+  "schema": "closed_qsa_page4_address_v2",
+  "decision": "rejected; no model trial or inference adoption",
+  "source_commit": "760d22dc3178903cdeb0316d349bce06c09a0ffc",
+  "recipe_plan_commit": "1ebecb46a",
+  "clean_plan_commit": "bf9588c07",
+  "provenance": "Main-authoredMIT isolatedoverlay from ownnative6e40; noexternalimplementation/XeStratacode. All13selectednativeassets andsrc/include remainedexact; noenginebuild/modelrun.",
+  "build": {
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "commands_closed_normally": 13,
+    "project_inputs": 186,
+    "generated_inputs": 5,
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "compiler_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/compiler-inputs.json",
+      "files": 8700,
+      "sha256": "5cdf1a647648111b26159b441cff6082c4b7acaab051222ba3db275ebd1f37a2"
+    },
+    "binaries": {
+      "numerical": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/numerical",
+        "sha256": "5967e72210cf108a0b6d45d87d2e92ae1806a5a34331fe3860d3d2b7acedcf84",
+        "bytes": 1589880
+      },
+      "timing": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/timing",
+        "sha256": "573a4f3d0dcca87be801f5e2e1575a00131264f6db0cec25e017f020744f5c8e",
+        "bytes": 1564880
+      }
+    },
+    "device_IR": {
+      "control": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/control.ll",
+        "sha256": "dee43747a47f18b0a81268b79320c199f6005148a8ee32adb9fbb90cf1584793",
+        "bytes": 72122,
+        "division_analysis": {
+          "kernels": 2,
+          "rows": [
+            {
+              "operation": "udiv",
+              "dividend": "%27",
+              "divisor": "%29",
+              "variable": true
+            },
+            {
+              "operation": "udiv",
+              "dividend": "%27",
+              "divisor": "%31",
+              "variable": true
+            },
+            {
+              "operation": "sdiv",
+              "dividend": "%52",
+              "divisor": "2",
+              "variable": false
+            },
+            {
+              "operation": "sdiv",
+              "dividend": "%216",
+              "divisor": "%217",
+              "variable": true
+            }
+          ],
+          "variable_divisors": 3,
+          "constants": [
+            [
+              "sdiv",
+              "2"
+            ]
+          ]
+        }
+      },
+      "page4": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/page4.ll",
+        "sha256": "abdbb8936f6adb946b9ef2de2049be0f318c49bc74e86925f9113a862f1ea9b7",
+        "bytes": 71052,
+        "division_analysis": {
+          "kernels": 2,
+          "rows": [
+            {
+              "operation": "sdiv",
+              "dividend": "%49",
+              "divisor": "2",
+              "variable": false
+            }
+          ],
+          "variable_divisors": 0,
+          "constants": [
+            [
+              "sdiv",
+              "2"
+            ]
+          ]
+        }
+      }
+    },
+    "retired": true
+  },
+  "retained_engine": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "selected_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "selected_native_assets": 13,
+  "question": "Does compile-time Page4 address specialization reduce current long-prefill QSA latency without changing math or decode?",
+  "mechanism": "Current source/LLVM has2signed+2unsignedi64 divisions across pack/attention modules. Hardwarecountercollection is refused;divisioncriticality/finalISA remain unknown. Test constant page division/remainder strength reduction,not a claim of ALU/VRAM/PCIe saturation. Requested bytes,logical mappings and selected-cell order are unchanged.",
+  "qualification_criteria": "Freshv2 fixeshostpoisonmapping via table[cell/Page] andcell%Page withprewritebounds;v1originalfailuresremaininGit. Compile2executables+deviceIRfirst. Require2kernels/module,control3variablei64divisors,candidate0variablei64divisors,bothretainonlysdivconstant2;frontendnotfinalISA. Smoke3arms*Page4andnonpower7*2cases;full3arms*pages1,4,7,16*11exactorderedcaseidentities inclactualphysical262144lastslot/tail,INT_MIN/MAX/out-of-range/negative/duplicate/pageboundary IDs,missing/malformedpage andexistingrefusals. Independenttensororacle/exactbits/guards/immutability/ownedclosure/validatedfirstUR/noFault. Parse actualfast/genericcounts,comparedoutputextent,activepackedrows andactualfullphysicalcase. Normalzeroqueryfallbackremains. Componentaddressingdoesnotqualifymodelfullcontext/session/RESTORE.",
+  "performance_criteria": "After smoke/component/resources:Page4inall3arms.3independentcleanprocesses,6rotatedrounds,3arms,3artificialpatterns(32768/8192/2051gather;117488/8192/2051gatherandclustered),162samplesonce. Everyinvocationverifiescandidatefastincrement1/generic0 andcontrolsrouteunchanged outside timer;hostcounterincrementisinside candidatecall. Eachbatch>=100us and>=1000*positive128-pairclockfloor. AdvanceonlyifPage4/defaultandPage4/control latencygeomeans<=.95,no shape>1.05,andboth117488patternsbeatbothcontrolsineveryprocess. Failedgateforbidsmodeltrial;noafter-the-factrulechange.",
+  "numerical_route_criteria": "Parse exactfast/genericcounts:controls0/0;Page4smoke33/1,full51/1;otherpages0/34or0/52. Requiretheextendedduplicate/alias/first-laterKVdiagnosticfooter once. Timinghasper-invocationchecksplus7fastcalls/shape,0generic.",
+  "previous_closed_cohort": {
+    "result_commit": "760d22dc3178903cdeb0316d349bce06c09a0ffc",
+    "source_commit": "7134467319cd8eb7dd8987d547f63a0b5cd110fe",
+    "build_outcome": "RuntimeError('planned constant-divisor frontend transformation not established')",
+    "component_outcome": "RuntimeError('numerical fixture did not close normally')",
+    "fixture_failure_analysis": {
+      "status": "closed_failure_fixed_source_pending_newbuild",
+      "measured": "Original production baseline default@1 exits1 on first/later-tile invalidscale diagnostic. Ownerclosed,bootunchanged,freshfaultsnone. CandidatePage4wasnotexecutedbythisfullcohort;all6earlierPage4/Page7smokeprocessespassed.",
+      "cause": "Generatedmultipage fixture inheritedPage16diagnosticrow=(table[0]*KV+head)*Page+invalid_cell. ForPage1,cells97,pages97,table[0]=96,KV2,rows194,invalid_cell1:head0poisonsrow193(wronglogicalcell),head1computesrow194(onepastend of194-rowhostscalevector). This is host-testundefinedbehavior,not GPUkernel arithmetic evidence.",
+      "required_fix": "Resolve invalid_cell/Page through table[logical],then useinvalid_cell%Page. Checklogical/physical/row/scaleelementbounds beforewriting;retainallNaN/sticky/clearing and132componentcases,includingactualPage4full262144.",
+      "source_scope": "Fixonlygeneratedhostoracle. Preserveoriginalfailure,alltracedpasses,original6e40engine/12fixtures,compiledkernel math and0.95performancecriteria. Newcommittedsource/build/planandfullrequalificationrequired;do notcontinuefailedcohortorrefreshits hashes.",
+      "native_exit_code": 1,
+      "native_error": "first/later-tile invalid scale diagnostic"
+    },
+    "retirement": {
+      "complete": true,
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v1-retirement-20261023.jsonl",
+      "manifest_sha256": "b8d5f19b90cd24e43202831f16c95b5452d2dcb8666a87acabe04e571a88e811",
+      "files": 65,
+      "bytes": 12070722,
+      "source_recovery": {
+        "source_commit": "7134467319cd8eb7dd8987d547f63a0b5cd110fe",
+        "recipe_plan_commit": "3d8660e92",
+        "project_inputs_recovered": 186,
+        "generated_inputs_recovered": 5,
+        "compiler_inputs_verified": 8700,
+        "original_binaries_verified": true,
+        "all_owned_jobs_closed": true,
+        "selected_native_assets_verified": 13,
+        "original_failures_preserved": true
+      },
+      "pushed_ref_checked": "e50eb012bfe4ec0a9f7b2c76ecb8298b980f247f",
+      "selected_native_assets_before": 13,
+      "consumer_ended": "Native review completed; failed v1 will not be rerun. Fresh v2 rebuild replaces changed host fixture; no source or binary reuse.",
+      "selected_native_assets_after": 13
+    },
+    "smoke_processes_passed": 6,
+    "full_component_passed": false,
+    "model_adoption_qualified": false
+  },
+  "prior_failure_history": {
+    "v1_build_gate": "55949084a",
+    "separate_IR_analysis": "60cdc1bd3",
+    "tuple_list_prelaunch_failure": "9c0004bc3",
+    "Page1_host_fixture_failure": "18b0919af",
+    "original_failures_preserved": true
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "source_commit": "eedc461d4bafd1c2fd8c401c26fba58f1b79ceed",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "processes": 6,
+      "arms": [
+        {
+          "arm": "default@4",
+          "case_count": 2,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "control@4",
+          "case_count": 2,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "page4@4",
+          "case_count": 2,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "33",
+            "generic": "1",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "default@7",
+          "case_count": 2,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "control@7",
+          "case_count": 2,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "page4@7",
+          "case_count": 2,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "34",
+            "status": "PASS"
+          }
+        }
+      ],
+      "exact_prefix33_bits_guards_inputs_oracle": true,
+      "validated_first_UR": true
+    },
+    {
+      "mode": "component",
+      "source_commit": "e3a9f154ae6beb1cc94732f2e84bfc636ccc72cc",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "processes": 12,
+      "arms": [
+        {
+          "arm": "default@1",
+          "case_count": 11,
+          "page_size": 1,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "1",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "control@1",
+          "case_count": 11,
+          "page_size": 1,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "1",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "page4@1",
+          "case_count": 11,
+          "page_size": 1,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "1",
+            "fast": "0",
+            "generic": "52",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "default@4",
+          "case_count": 11,
+          "page_size": 4,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "4",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "control@4",
+          "case_count": 11,
+          "page_size": 4,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "4",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "page4@4",
+          "case_count": 11,
+          "page_size": 4,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "4",
+            "fast": "51",
+            "generic": "1",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "default@7",
+          "case_count": 11,
+          "page_size": 7,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "control@7",
+          "case_count": 11,
+          "page_size": 7,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "page4@7",
+          "case_count": 11,
+          "page_size": 7,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "52",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "default@16",
+          "case_count": 11,
+          "page_size": 16,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "16",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "control@16",
+          "case_count": 11,
+          "page_size": 16,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "16",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          }
+        },
+        {
+          "arm": "page4@16",
+          "case_count": 11,
+          "page_size": 16,
+          "physical262144_component_addressed": true,
+          "route": {
+            "page": "16",
+            "fast": "0",
+            "generic": "52",
+            "status": "PASS"
+          }
+        }
+      ],
+      "exact_prefix33_bits_guards_inputs_oracle": true,
+      "validated_first_UR": true
+    },
+    {
+      "mode": "resources",
+      "source_commit": "f183f4e978b8a70816ae2e0cf5cd2ab710de09ac",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "processes": 1,
+      "resources": {
+        "conserved_device_ns": 3938366,
+        "table_rows": 24,
+        "compute_calls": {
+          "0": 8,
+          "1": 7,
+          "2": 7
+        },
+        "properties": [
+          {
+            "arm": 0,
+            "compiled": "JIT",
+            "SIMD": 16,
+            "arguments": 18,
+            "raw_SLM": 32,
+            "private_memory_descriptor": 0,
+            "spill_memory_descriptor": 12480,
+            "GRF": 128
+          },
+          {
+            "arm": 1,
+            "compiled": "JIT",
+            "SIMD": 16,
+            "arguments": 18,
+            "raw_SLM": 32,
+            "private_memory_descriptor": 0,
+            "spill_memory_descriptor": 12480,
+            "GRF": 128
+          },
+          {
+            "arm": 2,
+            "compiled": "JIT",
+            "SIMD": 16,
+            "arguments": 17,
+            "raw_SLM": 32,
+            "private_memory_descriptor": 0,
+            "spill_memory_descriptor": 22208,
+            "GRF": 128
+          }
+        ],
+        "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+      },
+      "validated_first_UR": true
+    },
+    {
+      "mode": "perf",
+      "source_commit": "de44e99b58911e81bc1346f4e1b60473d42cf02c",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "processes": 3
+    }
+  ],
+  "case_columns": [
+    "cells",
+    "cap",
+    "queries",
+    "masked",
+    "live_cells"
+  ],
+  "full_case_identities": [
+    [
+      97,
+      33,
+      1,
+      0,
+      49
+    ],
+    [
+      97,
+      33,
+      3,
+      1,
+      71
+    ],
+    [
+      2113,
+      1,
+      3,
+      1,
+      2113
+    ],
+    [
+      2113,
+      17,
+      3,
+      1,
+      2113
+    ],
+    [
+      2113,
+      31,
+      3,
+      1,
+      2113
+    ],
+    [
+      2113,
+      32,
+      3,
+      1,
+      2113
+    ],
+    [
+      2113,
+      63,
+      3,
+      1,
+      2113
+    ],
+    [
+      2113,
+      65,
+      3,
+      1,
+      2113
+    ],
+    [
+      2113,
+      2051,
+      3,
+      1,
+      2113
+    ],
+    [
+      262144,
+      2051,
+      1,
+      0,
+      262144
+    ],
+    [
+      262144,
+      33,
+      1,
+      0,
+      13
+    ]
+  ],
+  "performance": {
+    "shapes": [
+      {
+        "cells": 32768,
+        "pattern": "gather",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 199.77941149999998,
+            "sample_sd_ms": 0.3121431440198138,
+            "process_medians_ms": [
+              199.7102405,
+              200.04075799999998,
+              199.88443949999998
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 200.027301,
+            "sample_sd_ms": 0.4015729849487592,
+            "process_medians_ms": [
+              200.0032965,
+              200.087361,
+              199.9806705
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 202.236208,
+            "sample_sd_ms": 0.42870347074120413,
+            "process_medians_ms": [
+              202.0535175,
+              202.377319,
+              202.4340005
+            ]
+          }
+        ],
+        "ratios": [
+          1.0122975459861139,
+          1.0110430275715214
+        ]
+      },
+      {
+        "cells": 117488,
+        "pattern": "gather",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 232.5256485,
+            "sample_sd_ms": 0.3203793729502578,
+            "process_medians_ms": [
+              232.3476645,
+              232.62921599999999,
+              232.6019625
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 232.440543,
+            "sample_sd_ms": 0.40002973362841665,
+            "process_medians_ms": [
+              232.64153750000003,
+              232.386325,
+              232.3436205
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 234.218698,
+            "sample_sd_ms": 0.30830158936560664,
+            "process_medians_ms": [
+              234.135052,
+              234.290882,
+              234.2399485
+            ]
+          }
+        ],
+        "ratios": [
+          1.0072811301072448,
+          1.0076499348050483
+        ]
+      },
+      {
+        "cells": 117488,
+        "pattern": "clustered",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 138.44621899999999,
+            "sample_sd_ms": 0.14146243096017755,
+            "process_medians_ms": [
+              138.4878505,
+              138.527704,
+              138.3718395
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 138.4723305,
+            "sample_sd_ms": 0.13558500795129957,
+            "process_medians_ms": [
+              138.4522835,
+              138.43611199999998,
+              138.5320355
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 140.3575065,
+            "sample_sd_ms": 0.1819373414241495,
+            "process_medians_ms": [
+              140.3980535,
+              140.195061,
+              140.340934
+            ]
+          }
+        ],
+        "ratios": [
+          1.013805270478351,
+          1.0136140988830977
+        ]
+      }
+    ],
+    "candidate_latency_geomeans_vs_default_and_control": [
+      1.0111241320452862,
+      1.010766068359021
+    ],
+    "advance_to_model": false,
+    "decode_preservation_qualified": false,
+    "model_adoption_qualified": false,
+    "sample_columns": [
+      "process",
+      "cells",
+      "queries",
+      "cap",
+      "pattern",
+      "round",
+      "order",
+      "arm",
+      "milliseconds"
+    ],
+    "samples": [
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        0,
+        200.325863
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        1,
+        200.204485
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        2,
+        201.94056
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        1,
+        200.07945
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        2,
+        201.298292
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        0,
+        199.559162
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        2,
+        202.166475
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        0,
+        199.75537
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        1,
+        199.927143
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        0,
+        199.665111
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        1,
+        200.331064
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        2,
+        202.246838
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        1,
+        199.511352
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        2,
+        202.225578
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        0,
+        199.505089
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        2,
+        201.904864
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        0,
+        199.786159
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        1,
+        199.417965
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        0,
+        232.418993
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        1,
+        232.610664
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        2,
+        234.055382
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        1,
+        232.89013
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        2,
+        234.214702
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        0,
+        232.829857
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        2,
+        234.623011
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        0,
+        231.978295
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        1,
+        231.586568
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        0,
+        232.497021
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        1,
+        232.829016
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        2,
+        234.16063
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        1,
+        232.155008
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        2,
+        234.109474
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        0,
+        232.276336
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        2,
+        233.939665
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        0,
+        232.245408
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        1,
+        232.672411
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        0,
+        0,
+        138.700926
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        1,
+        1,
+        138.442049
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        2,
+        2,
+        140.615057
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        0,
+        1,
+        138.450675
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        1,
+        2,
+        140.416643
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        2,
+        0,
+        138.403868
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        0,
+        2,
+        140.382429
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        1,
+        0,
+        138.301895
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        2,
+        1,
+        138.599365
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        0,
+        0,
+        138.728738
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        1,
+        1,
+        138.826242
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        2,
+        2,
+        140.355387
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        0,
+        1,
+        138.446998
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        1,
+        2,
+        140.413678
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        2,
+        0,
+        138.517391
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        0,
+        2,
+        140.359626
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        1,
+        0,
+        138.45831
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        2,
+        1,
+        138.453892
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        1,
+        200.168102
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        2,
+        202.046446
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        0,
+        200.107849
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        2,
+        202.496242
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        0,
+        200.160218
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        1,
+        199.012048
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        0,
+        199.579936
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        1,
+        200.245148
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        2,
+        202.425359
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        1,
+        200.00662
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        2,
+        202.459704
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        0,
+        199.771637
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        2,
+        201.840579
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        0,
+        200.043488
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        1,
+        199.855976
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        0,
+        200.038028
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        1,
+        200.216765
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        2,
+        202.329279
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        1,
+        232.490325
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        2,
+        234.296603
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        0,
+        232.68985
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        2,
+        234.35385
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        0,
+        232.554276
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        1,
+        232.813462
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        0,
+        232.580694
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        1,
+        232.18986
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        2,
+        234.610263
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        1,
+        232.813293
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        2,
+        234.285161
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        0,
+        231.893142
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        2,
+        234.222694
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        0,
+        232.677738
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        1,
+        232.23202
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        0,
+        232.899165
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        1,
+        232.282325
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        2,
+        233.977213
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        0,
+        1,
+        138.444147
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        1,
+        2,
+        140.153783
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        2,
+        0,
+        138.596002
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        0,
+        2,
+        140.14202
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        1,
+        0,
+        138.459406
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        2,
+        1,
+        138.42434
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        0,
+        0,
+        138.280469
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        1,
+        1,
+        138.518056
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        2,
+        2,
+        140.72608
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        0,
+        1,
+        138.513959
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        1,
+        2,
+        140.056219
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        2,
+        0,
+        138.434128
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        0,
+        2,
+        140.488021
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        1,
+        0,
+        138.662247
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        2,
+        1,
+        138.428077
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        0,
+        0,
+        138.639043
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        1,
+        1,
+        138.385186
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        2,
+        2,
+        140.236339
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        2,
+        201.996006
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        0,
+        199.996215
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        1,
+        199.913359
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        0,
+        199.084439
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        1,
+        200.118384
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        2,
+        202.393394
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        1,
+        199.476477
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        2,
+        202.000245
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        0,
+        199.772664
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        2,
+        202.60882
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        0,
+        199.686182
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        1,
+        200.047982
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        0,
+        200.015672
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        1,
+        200.640507
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        2,
+        202.474607
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        1,
+        199.490273
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        2,
+        203.399868
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        0,
+        200.295108
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        2,
+        233.258998
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        0,
+        232.249097
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        1,
+        233.352033
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        0,
+        232.81371
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        1,
+        232.291988
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        2,
+        234.393702
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        1,
+        232.395253
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        2,
+        234.214185
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        0,
+        232.087865
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        2,
+        234.265712
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        0,
+        233.001404
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        1,
+        232.485833
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        0,
+        232.734261
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        1,
+        232.033463
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        2,
+        234.362674
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        1,
+        232.219612
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        2,
+        233.831825
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        0,
+        232.469664
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        0,
+        2,
+        140.12367
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        1,
+        0,
+        138.344483
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        2,
+        1,
+        138.4971
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        0,
+        0,
+        138.331318
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        1,
+        1,
+        138.566971
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        2,
+        2,
+        140.437891
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        0,
+        1,
+        138.490769
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        1,
+        2,
+        140.326943
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        2,
+        0,
+        138.419024
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        0,
+        2,
+        140.056674
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        1,
+        0,
+        138.496489
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        2,
+        1,
+        138.299238
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        0,
+        0,
+        138.318565
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        1,
+        1,
+        138.80014
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        2,
+        2,
+        140.354925
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        0,
+        1,
+        138.662001
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        1,
+        2,
+        140.3683
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        2,
+        0,
+        138.399196
+      ]
+    ]
+  },
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": true,
+  "model_adoption_qualified": false,
+  "limits": "Componentaddressing doesnotqualifyfullmodel262144/session/RESTORE/handoff ordecode. IR/frontendremovalandJITdescriptors arenotfinalISA,actualspilltraffic/occupancy orresourcesaturation. Allcleanprocesses/numericalchecksclosednormally; nofreshfault. Decodehasnonewperformancequalification because noenginewaschanged.",
+  "next_action": "Useindexedcompiler/ISA methods toidentifywhyconstantPage4changesregisterallocation beforechoosinganotherboundedexperiment. Retainoriginal6e40engine/1256slots/8192prefill; nobroadGRF256retrywithoutnewmechanism.",
+  "legacy_provenance_holds": {
+    "result": "native-gdn-engine-build.json",
+    "review_sha256": "f1e578bb4919e37dc024b57fa9845df4b733cb796b39e1d8d3a3fb3bb04696da",
+    "next_action": "PR6 dependency receipt9709a316 is now recovered fromb1c0e1449; finish its final generated-command/dependency/ownership join. Primary build still needs exact final dependency/quoted-header/ownership proof. Do not renew the completed receipt search or clear either hold.",
+    "full_final_input_proof": false
+  },
+  "source_recovery": {
+    "source_commit": "760d22dc3178903cdeb0316d349bce06c09a0ffc",
+    "recipe_plan_commit": "1ebecb46a",
+    "project_inputs_recovered": 186,
+    "generated_inputs_recovered": 5,
+    "compiler_inputs_verified": 8700,
+    "original_binaries_verified": true,
+    "all_owned_jobs_closed": true,
+    "selected_native_assets_verified": 13,
+    "original_failures_preserved": true
+  },
+  "retention": "Closedsource/recipeandall162samples areinpushedreachableGit. Rejectedprobehelpers/rawoutputs/binaries/consumedreporttransactionsretired;manifestkeepspath/hash/reason. Original13nativeassetsretained. Olderexplicitprovenance/lifecycleholdsremainunresolved.",
+  "retirement": {
+    "complete": true,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2-retirement-20261023.jsonl",
+    "manifest_sha256": "ab67250992e7d62753e9c71f45dc582a8a1545909b123a5190d360c688f8a446",
+    "files": 117,
+    "bytes": 12835580,
+    "pushed_ref_checked": "dcc1e86eb809ab07b87968532e1c0706f885d501",
+    "source_recovery": {
+      "source_commit": "760d22dc3178903cdeb0316d349bce06c09a0ffc",
+      "recipe_plan_commit": "1ebecb46a",
+      "project_inputs_recovered": 186,
+      "generated_inputs_recovered": 5,
+      "compiler_inputs_verified": 8700,
+      "original_binaries_verified": true,
+      "all_owned_jobs_closed": true,
+      "selected_native_assets_verified": 13,
+      "original_failures_preserved": true
+    },
+    "selected_native_assets_before": 13,
+    "selected_native_assets_after": 13
+  }
+}

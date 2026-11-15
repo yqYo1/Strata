@@ -9,7 +9,10 @@
 #include <cstdint>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <stdexcept>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 namespace sb = strata::sycl_backend;
@@ -59,12 +62,19 @@ template<class T> struct Buffer {
     std::shared_ptr<sb::Runtime> runtime;
     sb::Allocation memory;
     size_t count;
-    Buffer(std::shared_ptr<sb::Runtime> r, size_t n) : runtime(r),
-        memory(r, n * sizeof(T), sb::MemoryKind::Device), count(n) {}
+    sb::MemoryKind kind;
+    Buffer(std::shared_ptr<sb::Runtime> r, size_t n,
+           sb::MemoryKind k = sb::MemoryKind::Device) : runtime(r),
+        memory(r, n * sizeof(T), k), count(n), kind(k) {}
     T* data() { return memory.as<T>(); }
     void put(const std::vector<T>& values) {
         require(values.size() == count, "upload size");
-        try { runtime->wait(runtime->compute().memcpy(data(), values.data(), memory.size())); }
+        try {
+            if (kind == sb::MemoryKind::Host) {
+                runtime->wait();
+                std::copy(values.begin(), values.end(), data());
+            } else runtime->wait(runtime->compute().memcpy(data(), values.data(), memory.size()));
+        }
         catch (...) {
             sb::checked_cleanup([&] { runtime->wait(); }, [] {}, "QSA16 upload drain failed");
             throw;
@@ -72,7 +82,14 @@ template<class T> struct Buffer {
     }
     std::vector<T> get() {
         std::vector<T> values(count);
-        try { runtime->wait(runtime->compute().memcpy(values.data(), data(), memory.size())); }
+        try {
+            if (kind == sb::MemoryKind::Host) {
+                // Test actual host publication after completion, without a
+                // device copy that could hide a missing visibility boundary.
+                runtime->wait();
+                std::copy_n(data(), count, values.data());
+            } else runtime->wait(runtime->compute().memcpy(values.data(), data(), memory.size()));
+        }
         catch (...) {
             sb::checked_cleanup([&] { runtime->wait(); }, [] {}, "QSA16 readback drain failed");
             throw;
@@ -99,6 +116,103 @@ template<class F> void invalid(F f) {
 }
 constexpr size_t G = 16;
 constexpr uint16_t guard = 0x449a;
+
+struct Q8Image {
+    std::vector<int8_t> k, v;
+    std::vector<uint16_t> ks, vs;
+    bool operator==(const Q8Image&) const = default;
+};
+struct Q8Cache {
+    Buffer<int8_t> k, v;
+    Buffer<uint16_t> ks, vs;
+    Q8Cache(std::shared_ptr<sb::Runtime> r, int pages, int page_size,
+            sb::MemoryKind kind = sb::MemoryKind::Device)
+        : k(r, G + size_t(pages) * 2 * page_size * 256 + G, kind),
+          v(r, k.count, kind),
+          ks(r, G + size_t(pages) * 2 * page_size * 4 + G, kind),
+          vs(r, ks.count, kind) {}
+    qa::Q8MirrorPools view() { return {k.data()+G,v.data()+G,ks.data()+G,vs.data()+G}; }
+    Q8Image empty() const {
+        return {std::vector<int8_t>(k.count,85),std::vector<int8_t>(v.count,85),
+                std::vector<uint16_t>(ks.count,0x3555),std::vector<uint16_t>(vs.count,0x3555)};
+    }
+    void put(const Q8Image& x) { k.put(x.k);v.put(x.v);ks.put(x.ks);vs.put(x.vs); }
+    Q8Image get() { return {k.get(),v.get(),ks.get(),vs.get()}; }
+};
+std::pair<std::vector<uint16_t>,std::vector<uint16_t>> q8_inputs(int T, int ld) {
+    std::vector<uint16_t> k(G+size_t(T)*ld+G,guard),v(k);
+    for (int t=0;t<T;++t) for (int h=0;h<2;++h) for (int d=0;d<256;++d) {
+        const double x=d%64==0 ? 127. : d%64==1 ? .5 : d%64==2 ? -1.5 :
+            double((t*11+h*7+d)%63-31);
+        k[G+size_t(t)*ld+h*256+d]=encode(x);
+        v[G+size_t(t)*ld+h*256+d]=encode(x/2.);
+    }
+    return {std::move(k),std::move(v)};
+}
+// FP64 arithmetic and the independent IEEE encoders above. Dyadic test data
+// avoids ambiguous FP32-division/FP16-rounding midpoints; this is not a text oracle.
+void q8_oracle_cell(Q8Image& out, size_t row, const std::vector<uint16_t>& k,
+                    const std::vector<uint16_t>& v, int t, int h, int ld) {
+    for (int which=0;which<2;++which) for (int g=0;g<4;++g) {
+        const auto& in=which ? v : k;
+        auto& codes=which ? out.v : out.k;
+        auto& scales=which ? out.vs : out.ks;
+        bool bad=false;double maximum=0.;
+        for (int d=0;d<64;++d) {
+            const double x=decode(in[G+size_t(t)*ld+h*256+g*64+d]);
+            bad|=!std::isfinite(x);
+            if (std::isfinite(x)) maximum=std::max(maximum,std::fabs(x));
+        }
+        const uint16_t bits=bad ? 0x7e00 : encode(maximum/127.,true);
+        const double scale=decode(bits,true);
+        scales[G+row*4+g]=bits;
+        for (int d=0;d<64;++d) {
+            const double x=decode(in[G+size_t(t)*ld+h*256+g*64+d]);
+            codes[G+row*256+g*64+d]=!bad && std::isfinite(scale) && scale>0. ?
+                int8_t(std::clamp(even(x/scale),-127.,127.)) : 0;
+        }
+    }
+}
+
+void host_registry_case(std::shared_ptr<sb::Runtime> r) {
+    sycl::context context(r->device());
+    sycl::queue other(context,r->device(),sycl::property::queue::in_order{});
+    sb::Allocation first(r,128,sb::MemoryKind::Host),second(r,96,sb::MemoryKind::Host),
+                   device(r,64,sb::MemoryKind::Device);
+    auto free_foreign=[context](void* p) {sycl::free(p,context);};
+    std::unique_ptr<void,decltype(free_foreign)> foreign(sycl::malloc_host(128,context),free_foreign);
+    require(bool(foreign),"foreign Host fixture allocation failed");
+    Drain drain{r,&other};
+    auto& queue=r->compute();void* p=first.data();void* retired=second.data();
+    sb::validate_host_span(static_cast<uint8_t*>(p)+16,112,queue);
+    invalid([&] {sb::validate_device_span(p,1,queue);});
+    invalid([&] {sb::validate_host_span(device.data(),1,queue);});
+    invalid([&] {sb::validate_host_span(p,129,queue);});
+    invalid([&] {sb::validate_host_span(p,0,queue);});
+    invalid([&] {sb::validate_host_span(nullptr,1,queue);});
+    invalid([&] {sb::validate_host_span(p,1,other);});
+    invalid([&] {sb::validate_host_span(foreign.get(),128,queue);});
+    invalid([&] {sb::validate_host_span(
+        reinterpret_cast<void*>(std::numeric_limits<uintptr_t>::max()-3),8,queue);});
+    std::vector<uint8_t> ordinary(128);
+    invalid([&] {sb::validate_host_span(ordinary.data(),ordinary.size(),queue);});
+    sb::Allocation moved(std::move(first));
+    require(!first.data() && first.size()==0,"Host move source not empty");
+    sb::validate_host_span(p,128,queue);
+    second=std::move(moved);
+    require(!moved.data() && moved.size()==0,"Host move assignment source not empty");
+    sb::validate_host_span(p,128,queue);
+    invalid([&] {sb::validate_host_span(retired,1,queue);});
+    retired=device.data();device=std::move(second);
+    sb::validate_host_span(p,128,queue);
+    invalid([&] {sb::validate_device_span(p,1,queue);});
+    invalid([&] {sb::validate_device_span(retired,1,queue);});
+    sb::Allocation replacement(r,32,sb::MemoryKind::Device);
+    device=std::move(replacement);
+    sb::validate_device_span(device.data(),32,queue);
+    invalid([&] {sb::validate_host_span(device.data(),1,queue);});
+    invalid([&] {sb::validate_host_span(p,1,queue);});
+}
 
 void norm_case(std::shared_ptr<sb::Runtime> r, int T, int heads, int pos0,
                int exponent, bool special = false, bool exact = false) {
@@ -275,10 +389,154 @@ void append_case(std::shared_ptr<sb::Runtime> r) {
     require(dkc.get() == kc && dvc.get() == vc && dks.get() == ks && dvs.get() == vs,
             "Q8 rejection/special recovery");
 }
+
+void streamed_case(std::shared_ptr<sb::Runtime> r, int pos0) {
+    constexpr int T=9,ld=526,pages=6,physical=2,page_size=4;
+    auto [k,v]=q8_inputs(T,ld);const auto original_k=k,original_v=v;
+    std::vector<int32_t> table(G+pages+G,123456);
+    const int32_t mapping[]={1,-1,physical,-2,0,INT32_MAX};
+    std::copy_n(mapping,pages,table.data()+G);
+    Buffer<uint16_t> dk(r,k.size()),dv(r,v.size());Buffer<int32_t> dt(r,table.size());
+    Q8Cache resident(r,physical,page_size),host(r,pages,page_size,sb::MemoryKind::Host),
+            stage(r,pages,page_size);
+    sycl::context context(r->device());
+    sycl::queue other(context,r->device(),sycl::property::queue::in_order{});
+    Drain drain{r,&other};
+    dk.put(k);dv.put(v);dt.put(table);
+    auto er=resident.empty(),eh=host.empty();resident.put(er);host.put(eh);stage.put(eh);
+    const auto rp=resident.view(),hp=host.view(),sp=stage.view();
+    const qa::Q8WritePools pools{rp.k_q,rp.v_q,rp.k_scale,rp.v_scale,dt.data()+G};
+    auto shapes=sk::qsa_real_shapes();shapes.page_size=page_size;
+    const sk::QsaPromptBf16Bounds bounds{pages,physical};
+    auto run=[&] {
+        qa::append_q8_streamed(dk.data()+G,dv.data()+G,T,ld,pos0,pools,hp,sp,
+                               shapes,bounds,&r->compute());
+        for (int t=0;t<T;++t) for (int h=0;h<2;++h) {
+            const int pos=pos0+t,logical=pos/page_size,slot=table[G+logical];
+            q8_oracle_cell(eh,(size_t(logical)*2+h)*page_size+pos%page_size,k,v,t,h,ld);
+            if (slot>=0 && slot<physical)
+                q8_oracle_cell(er,(size_t(slot)*2+h)*page_size+pos%page_size,k,v,t,h,ld);
+        }
+        require(host.get()==eh && stage.get()==eh && resident.get()==er,
+                "streamed Q8 oracle/publication/guards/resident absence");
+    };
+    qa::validate_streamed_storage(pools,hp,sp,shapes,bounds,&r->compute());run();
+    auto validate=[&](qa::Q8WritePools a,qa::Q8MirrorPools b,qa::Q8MirrorPools c,
+                      sk::QsaPromptBf16Bounds d) {
+        qa::validate_streamed_storage(a,b,c,shapes,d,&r->compute());
+    };
+    invalid([&] {validate(pools,sp,hp,bounds);});
+    invalid([&] {auto x=sp;x.v_q=x.k_q;validate(pools,hp,x,bounds);});
+    invalid([&] {auto x=pools;x.k_q=sp.k_q;validate(x,hp,sp,bounds);});
+    invalid([&] {auto x=pools;x.page_table=reinterpret_cast<int32_t*>(sp.k_q);
+        validate(x,hp,sp,bounds);});
+    invalid([&] {auto x=sp;x.k_q=stage.k.data()+stage.k.count-1;validate(pools,hp,x,bounds);});
+    invalid([&] {auto x=hp;x.k_scale=host.ks.data()+host.ks.count-1;validate(pools,x,sp,bounds);});
+    std::vector<int8_t> ordinary(host.k.count,85);
+    invalid([&] {auto x=hp;x.k_q=ordinary.data()+G;validate(pools,x,sp,bounds);});
+    invalid([&] {auto x=hp;x.k_q=nullptr;validate(pools,x,sp,bounds);});
+    invalid([&] {auto x=bounds;x.physical_pages=0;validate(pools,hp,sp,x);});
+    invalid([&] {auto x=bounds;x.physical_pages=pages;validate(pools,hp,sp,x);});
+    invalid([&] {auto x=bounds;x.logical_pages=65537;validate(pools,hp,sp,x);});
+    invalid([&] {qa::validate_streamed_storage(pools,hp,sp,shapes,bounds,&other);});
+    invalid([&] {qa::append_q8_streamed(reinterpret_cast<uint16_t*>(sp.k_q),dv.data()+G,
+        T,ld,pos0,pools,hp,sp,shapes,bounds,&r->compute());});
+    invalid([&] {qa::append_q8_streamed(dk.data()+dk.count-1,dv.data()+G,
+        T,ld,pos0,pools,hp,sp,shapes,bounds,&r->compute());});
+    invalid([&] {qa::append_q8_streamed(dk.data()+G,dv.data()+G,
+        T,ld-15,pos0,pools,hp,sp,shapes,bounds,&r->compute());});
+    invalid([&] {qa::append_q8_streamed(dk.data()+G,dv.data()+G,
+        T,ld,-1,pools,hp,sp,shapes,bounds,&r->compute());});
+    invalid([&] {qa::append_q8_streamed(dk.data()+G,dv.data()+G,
+        0,ld,pos0,pools,hp,sp,shapes,bounds,&r->compute());});
+    invalid([&] {qa::append_q8_streamed(dk.data()+G,dv.data()+G,
+        8193,ld,0,pools,hp,sp,shapes,bounds,&r->compute());});
+    invalid([&] {qa::append_q8_streamed(dk.data()+G,dv.data()+G,
+        1,ld,pages*page_size,pools,hp,sp,shapes,bounds,&r->compute());});
+    require(host.get()==eh && stage.get()==eh && resident.get()==er &&
+        dk.get()==k && dv.get()==v && dt.get()==table,"streamed Q8 refusal modified an owner");
+    // Nonfinite, zero, FP16-underflow and FP16-overflow groups retain the
+    // existing append policy in all three stores. Recover in the same owners.
+    k[G]=0x7fc1;v[G]=0x7f80;
+    for (int d=64;d<256;++d) {
+        const double x=d<128 ? 0. : d<192 ? std::ldexp(1.,-130) : std::ldexp(1.,120);
+        k[G+d]=encode(x);v[G+d]=encode(-x);
+    }
+    dk.put(k);dv.put(v);run();
+    k=original_k;v=original_v;dk.put(k);dv.put(v);run();
+    require(dk.get()==k && dv.get()==v && dt.get()==table,"streamed Q8 immutable input/tail");
+}
+
+void streamed_full_extent_case(std::shared_ptr<sb::Runtime> r) {
+    constexpr int cells=262144,T=8192,ld=526,page_size=4,pages=cells/page_size,physical=2;
+    auto [k,v]=q8_inputs(T,ld);
+    std::vector<int32_t> table(G+pages+G,123456);
+    std::fill_n(table.data()+G,pages,-1);table[G]=1;table[G+pages-1]=0;
+    Buffer<uint16_t> dk(r,k.size()),dv(r,v.size());Buffer<int32_t> dt(r,table.size());
+    Q8Cache resident(r,physical,page_size),host(r,pages,page_size,sb::MemoryKind::Host),
+            stage(r,pages,page_size);
+    Drain drain{r};
+    dk.put(k);dv.put(v);dt.put(table);
+    resident.put(resident.empty());host.put(host.empty());stage.put(stage.empty());
+    Q8Image expected{std::vector<int8_t>(G+size_t(T)*2*256+G,85),
+        std::vector<int8_t>(G+size_t(T)*2*256+G,85),
+        std::vector<uint16_t>(G+size_t(T)*2*4+G,0x3555),
+        std::vector<uint16_t>(G+size_t(T)*2*4+G,0x3555)};
+    for (int t=0;t<T;++t) for (int h=0;h<2;++h)
+        q8_oracle_cell(expected,(size_t(t/page_size)*2+h)*page_size+t%page_size,k,v,t,h,ld);
+    const auto rp=resident.view(),hp=host.view(),sp=stage.view();
+    const qa::Q8WritePools pools{rp.k_q,rp.v_q,rp.k_scale,rp.v_scale,dt.data()+G};
+    auto shapes=sk::qsa_real_shapes();shapes.page_size=page_size;
+    const sk::QsaPromptBf16Bounds bounds{pages,physical};
+    qa::validate_streamed_storage(pools,hp,sp,shapes,bounds,&r->compute());
+    for (int pos=0;pos<cells;pos+=T)
+        qa::append_q8_streamed(dk.data()+G,dv.data()+G,T,ld,pos,pools,hp,sp,
+                               shapes,bounds,&r->compute());
+    // Exercise an exact final-cell overwrite after filling every logical cell.
+    qa::append_q8_streamed(dk.data()+G,dv.data()+G,1,ld,cells-1,pools,hp,sp,
+                           shapes,bounds,&r->compute());
+    invalid([&] {qa::append_q8_streamed(dk.data()+G,dv.data()+G,1,ld,cells,
+        pools,hp,sp,shapes,bounds,&r->compute());});
+    auto check=[&](const Q8Image& image,int pool_pages,bool mapped) {
+        for (size_t i=0;i<G;++i) {
+            require(image.k[i]==85 && image.v[i]==85 &&
+                image.k[image.k.size()-1-i]==85 && image.v[image.v.size()-1-i]==85 &&
+                image.ks[i]==0x3555 && image.vs[i]==0x3555 &&
+                image.ks[image.ks.size()-1-i]==0x3555 && image.vs[image.vs.size()-1-i]==0x3555,
+                "full-extent Q8 outside owner guard modified");
+        }
+        for (int p=0;p<pool_pages;++p) for (int h=0;h<2;++h) for (int c=0;c<page_size;++c) {
+            const int logical=mapped ? (p==0 ? pages-1 : 0) : p;
+            const int pos=logical*page_size+c,t=pos==cells-1 ? 0 : pos%T;
+            const size_t row=(size_t(p)*2+h)*page_size+c,
+                         ref=(size_t(t/page_size)*2+h)*page_size+t%page_size;
+            for (int d=0;d<256;++d)
+                require(image.k[G+row*256+d]==expected.k[G+ref*256+d] &&
+                        image.v[G+row*256+d]==expected.v[G+ref*256+d],"full-extent Q8 code oracle");
+            for (int g=0;g<4;++g)
+                require(image.ks[G+row*4+g]==expected.ks[G+ref*4+g] &&
+                        image.vs[G+row*4+g]==expected.vs[G+ref*4+g],"full-extent Q8 scale oracle");
+        }
+    };
+    // Read the mapped Host allocation on the CPU only after a checked wait.
+    const auto published=host.get();check(published,pages,false);
+    const auto staged=stage.get();check(staged,pages,false);
+    require(staged==published,"full-extent Q8 mirrors differ");
+    check(resident.get(),physical,true);
+    require(dk.get()==k && dv.get()==v && dt.get()==table,"full-extent Q8 inputs modified");
+}
 } // namespace
-int main() try {
+int main(int argc,char** argv) try {
+    const bool full=argc==2 && std::string_view(argv[1])=="--streamed-full-extent";
+    require(argc==1 || full,"usage: sycl_native16_qsa_test [--streamed-full-extent]");
     auto runtime = sb::runtime_for();
     qa::validate_device(&runtime->compute());
+    host_registry_case(runtime);
+    if (full) {
+        streamed_full_extent_case(runtime);runtime->wait();
+        std::cout << "QSA16 streamed KV producer physical262144 component PASS; attention/model/RESTORE/performance unqualified\n";
+        return 0;
+    }
     for (int T : {1, 3, 17}) for (int heads : {2, 24}) {
         norm_case(runtime, T, heads, 5, 0);
         norm_case(runtime, T, heads, 0, 0, false, true);
@@ -288,6 +546,9 @@ int main() try {
     norm_case(runtime, 1, 24, 0, -128);
     for (int T : {1, 3, 17}) gate_case(runtime, T);
     append_case(runtime);
+    // Cover every partial-page offset: trailing-only, both ends, leading-only,
+    // and the final logical page. The oracle also checks untouched neighbours.
+    for (int pos0 : {0,1,2,3,15}) streamed_case(runtime,pos0);
     runtime->wait();
     std::cout << "QSA16 local component screen PASS; attention/model/physical262144/RESTORE/performance unqualified\n";
     return 0;

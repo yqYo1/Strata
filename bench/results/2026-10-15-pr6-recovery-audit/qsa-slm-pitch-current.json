@@ -1,0 +1,1679 @@
+{
+  "stage": "closed_rejected_speed",
+  "source_commit": "57fb85a80b394237456268221ff6d8c7d7ee5d04",
+  "execution_passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": true,
+  "model_adoption_qualified": false,
+  "archive": {
+    "commit": "cfabc1ee2b76a8703520bc373c1bd6e36973022e",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-slm-pitch-current.json",
+    "scope": "Complete original source/compiler/generated/dependency/recipe/runtime/admission/smoke/boundary/performance evidence. Native source39044cc68;build planecbdcc1e1;perf plan2342c9dcc."
+  },
+  "candidate": {
+    "BF16_pitches": [
+      32,
+      264,
+      32
+    ],
+    "cells": 32,
+    "scope": "Only local Vrow stride changes;cachedQ,global reads,FP32 arithmetic/online order,barriers,SG16/WG128 stay fixed. OwnMIT6e40+own4f2scaffolds;no XeStrata application derivation.",
+    "generated_sha256": {
+      "pitch_control.cpp": "68ec6f7b100fe95d3f5ed12f88f0985c3548cf81397b3334ad52dd3e9577e879",
+      "pitch_candidate.cpp": "b9365fc6411c30404c400eb87866d0e7fbc547fde6472f1b6cb4da7b0f80cf8a",
+      "qsa-slm-pitch.hpp": "a24b95e8174ea64434e4b793a81b607b62e1e6df44361aa3167cbed8b0f50228"
+    }
+  },
+  "native_harness": {
+    "source_commit": "39044cc68",
+    "build_source_commit": "57fb85a80b394237456268221ff6d8c7d7ee5d04",
+    "recipe_commit": "ecbdcc1e1",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/fixture",
+      "sha256": "296966baa258ed5de3c18d6833892b713a2f624eaae747373fa73f56e70f8da1",
+      "bytes": 1606112
+    },
+    "binary_retired": true,
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "project_input_count": 195,
+    "compiler_asset_count": 8700,
+    "actual_compiled_dependencies": 697,
+    "host_controls": {
+      "source": "tools/sycl/check_qsa_slm_pitch.py",
+      "passed": true,
+      "controls": 15,
+      "changed_pitch_bits_rejected": true,
+      "unexercised_boundary_rejected": true,
+      "one_slow_group_stops_advancement": true,
+      "failed_control_calibration_stops_advancement": true,
+      "GPU_executed": false,
+      "old_candidate_local_extent_rejected": true,
+      "wrong_score_argument_index_rejected": true,
+      "traced_dynamic_local_bytes": [
+        20032,
+        20032,
+        20544
+      ],
+      "source_sha256": "1ddf44219914e835d17f2c5916e52dd111339dac8fdc669fa8da741ae25a6454",
+      "source_commit": "5a8b09c08"
+    },
+    "reuse_admission": {
+      "passed": true,
+      "changed_source_digest_rejected": true
+    }
+  },
+  "selected_engine": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "selected_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "selected_fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+    "bytes": 53252180,
+    "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+    "header": [
+      0,
+      32768,
+      6491,
+      2051
+    ],
+    "consumer": "Committed source-only32/64-cell proposal52947b6b4 after contract review and committed qualification. Actual-ID512/6491 comparison;synthetic Q/K/V remain explicit.",
+    "review": "Retire at cell64 closure/supersession;no duplicate capture. API-spelling GRF proposal needs no further GPU trial."
+  },
+  "numerical": {
+    "policy": "All pitch/control outputs equal original32bits;scalar32spots use FP64dot/PVterms,FP32online recurrence,BF16probability/output. Sparse scalar spots do not establish model quality.",
+    "individual_process_checks": [
+      {
+        "mode": "smoke",
+        "process": 0,
+        "query_shapes": [
+          3
+        ],
+        "scalar_spot_queries_by_arm": [
+          3,
+          3,
+          3
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "mode": "smoke",
+        "process": 1,
+        "query_shapes": [
+          3
+        ],
+        "scalar_spot_queries_by_arm": [
+          3,
+          3,
+          3
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "mode": "smoke",
+        "process": 2,
+        "query_shapes": [
+          3
+        ],
+        "scalar_spot_queries_by_arm": [
+          3,
+          3,
+          3
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "mode": "boundary",
+        "process": 0,
+        "query_shapes": [
+          3
+        ],
+        "scalar_spot_queries_by_arm": [
+          3,
+          3,
+          3
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "mode": "boundary",
+        "process": 1,
+        "query_shapes": [
+          3
+        ],
+        "scalar_spot_queries_by_arm": [
+          3,
+          3,
+          3
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "mode": "boundary",
+        "process": 2,
+        "query_shapes": [
+          3
+        ],
+        "scalar_spot_queries_by_arm": [
+          3,
+          3,
+          3
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "mode": "perf",
+        "process": 0,
+        "query_shapes": [
+          512,
+          6491
+        ],
+        "scalar_spot_queries_by_arm": [
+          6,
+          6,
+          6,
+          8,
+          8,
+          8
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "mode": "perf",
+        "process": 1,
+        "query_shapes": [
+          512,
+          6491
+        ],
+        "scalar_spot_queries_by_arm": [
+          6,
+          6,
+          6,
+          8,
+          8,
+          8
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "mode": "perf",
+        "process": 2,
+        "query_shapes": [
+          512,
+          6491
+        ],
+        "scalar_spot_queries_by_arm": [
+          6,
+          6,
+          6,
+          8,
+          8,
+          8
+        ],
+        "scalar_max_abs": 0,
+        "scalar_max_budget_ratio": 0,
+        "changed_output_words": 0,
+        "passed": true,
+        "exit_code": 0
+      }
+    ],
+    "guards_inputs_and_packed_operands_exact": true,
+    "final_physical_slots": [
+      262141,
+      262142,
+      262143
+    ],
+    "physical_context_component_only": true,
+    "full_context_model_qualified": false
+  },
+  "resources": {
+    "property_kernel_submissions": 0,
+    "properties": [
+      {
+        "arm": 0,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 24164,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 12480
+      },
+      {
+        "arm": 1,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 24164,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 12480
+      },
+      {
+        "arm": 2,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20548,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 24676,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 12480
+      }
+    ],
+    "traced_dynamic_local_bytes": [
+      20032,
+      20032,
+      20544
+    ],
+    "source_local_bytes": [
+      20036,
+      20036,
+      20548
+    ],
+    "reported_static_local_bytes": 32,
+    "spill_descriptor_by_arm": [
+      12480,
+      12480,
+      12480
+    ],
+    "limits": "Spill descriptor is compiler scratch,not traffic;per-group local maximum and heuristic4096reserve are not occupancy. GRF residency is not measured by this query."
+  },
+  "comparison": {
+    "processes": 3,
+    "shapes": [
+      512,
+      6491
+    ],
+    "rounds": 6,
+    "arms": [
+      "original32",
+      "private32",
+      "V264pitch32"
+    ],
+    "order": "(process+round+offset)%3",
+    "repeats": {
+      "512": 64,
+      "6491": 4
+    },
+    "minimum_batch_ns": 100000000,
+    "minimum_clock_multiple": 1000,
+    "observed_minimum_batch_ns": 496956766,
+    "ordered_positive_attention_intervals": 2448,
+    "control_original_wall_bounds": [
+      0.99,
+      1.01
+    ],
+    "candidate_control_wall_and_service_max": 0.99,
+    "effective_environment": "Pinned tools/sycl/measurement_environment.json safety flags and qualified retained-loader preload;parameter validation only,command-profile0. Full URtrace only in smoke/boundary;input/reset/reference/eventqueries outside timed batch. Immutable pre-exec settings.",
+    "scope": "Actual selected-IDgeometry,synthetic finite Q/K/V,source-derived identity pages. Wrapper wall and private attention service;no PCIe/VRAM traffic or model throughput conclusion."
+  },
+  "samples": {
+    "columns": [
+      "process",
+      "queries",
+      "round",
+      "arm",
+      "repeats",
+      "batch_ns",
+      "attention_device_ns",
+      "event_calls",
+      "timer_floor_ns"
+    ],
+    "rows": [
+      [
+        0,
+        512,
+        0,
+        0,
+        64,
+        663582963,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        512,
+        0,
+        1,
+        64,
+        667989110,
+        628485005,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        0,
+        2,
+        64,
+        666364971,
+        629063847,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        1,
+        1,
+        64,
+        664990895,
+        627675621,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        1,
+        2,
+        64,
+        668000812,
+        630682079,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        1,
+        0,
+        64,
+        664564422,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        512,
+        2,
+        2,
+        64,
+        666306863,
+        628988538,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        2,
+        0,
+        64,
+        664415913,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        512,
+        2,
+        1,
+        64,
+        664719415,
+        627138130,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        3,
+        0,
+        64,
+        663725634,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        512,
+        3,
+        1,
+        64,
+        664375858,
+        627036563,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        3,
+        2,
+        64,
+        666443151,
+        629141564,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        4,
+        1,
+        64,
+        663289804,
+        625950417,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        4,
+        2,
+        64,
+        665672981,
+        628371148,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        4,
+        0,
+        64,
+        664184980,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        512,
+        5,
+        2,
+        64,
+        666139150,
+        628836976,
+        64,
+        10
+      ],
+      [
+        0,
+        512,
+        5,
+        0,
+        64,
+        663674058,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        512,
+        5,
+        1,
+        64,
+        665521398,
+        628200313,
+        64,
+        10
+      ],
+      [
+        0,
+        6491,
+        0,
+        0,
+        4,
+        498887768,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        6491,
+        0,
+        1,
+        4,
+        497875082,
+        495408854,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        0,
+        2,
+        4,
+        500802154,
+        498338854,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        1,
+        1,
+        4,
+        498900804,
+        496023125,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        1,
+        2,
+        4,
+        500655477,
+        498192083,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        1,
+        0,
+        4,
+        498030175,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        6491,
+        2,
+        2,
+        4,
+        500959521,
+        498464272,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        2,
+        0,
+        4,
+        501195525,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        6491,
+        2,
+        1,
+        4,
+        498475975,
+        496009999,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        3,
+        0,
+        4,
+        497469439,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        6491,
+        3,
+        1,
+        4,
+        499768849,
+        497304688,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        3,
+        2,
+        4,
+        500237733,
+        497764792,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        4,
+        1,
+        4,
+        497832334,
+        495358542,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        4,
+        2,
+        4,
+        500573105,
+        498105938,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        4,
+        0,
+        4,
+        497167623,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        6491,
+        5,
+        2,
+        4,
+        500563337,
+        498077918,
+        4,
+        10
+      ],
+      [
+        0,
+        6491,
+        5,
+        0,
+        4,
+        497246461,
+        null,
+        0,
+        10
+      ],
+      [
+        0,
+        6491,
+        5,
+        1,
+        4,
+        497960467,
+        495493750,
+        4,
+        10
+      ],
+      [
+        1,
+        512,
+        0,
+        1,
+        64,
+        663287494,
+        625902602,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        0,
+        2,
+        64,
+        667145197,
+        629840000,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        0,
+        0,
+        64,
+        664402123,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        512,
+        1,
+        2,
+        64,
+        666050035,
+        628722502,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        1,
+        0,
+        64,
+        666642010,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        512,
+        1,
+        1,
+        64,
+        663514422,
+        626204167,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        2,
+        0,
+        64,
+        664303668,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        512,
+        2,
+        1,
+        64,
+        663532035,
+        626211356,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        2,
+        2,
+        64,
+        667063415,
+        629751978,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        3,
+        1,
+        64,
+        664020997,
+        626683541,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        3,
+        2,
+        64,
+        667052746,
+        629746040,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        3,
+        0,
+        64,
+        664936762,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        512,
+        4,
+        2,
+        64,
+        666384387,
+        629064059,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        4,
+        0,
+        64,
+        663197598,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        512,
+        4,
+        1,
+        64,
+        663108260,
+        625799377,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        5,
+        0,
+        64,
+        664270839,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        512,
+        5,
+        1,
+        64,
+        663444794,
+        626129373,
+        64,
+        20
+      ],
+      [
+        1,
+        512,
+        5,
+        2,
+        64,
+        665882233,
+        628564586,
+        64,
+        20
+      ],
+      [
+        1,
+        6491,
+        0,
+        1,
+        4,
+        498394351,
+        495919479,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        0,
+        2,
+        4,
+        500937731,
+        498469168,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        0,
+        0,
+        4,
+        497508074,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        6491,
+        1,
+        2,
+        4,
+        499888576,
+        497422394,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        1,
+        0,
+        4,
+        497509857,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        6491,
+        1,
+        1,
+        4,
+        498819433,
+        496355104,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        2,
+        0,
+        4,
+        496999838,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        6491,
+        2,
+        1,
+        4,
+        498821597,
+        496356979,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        2,
+        2,
+        4,
+        501029325,
+        498567812,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        3,
+        1,
+        4,
+        496956766,
+        494489272,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        3,
+        2,
+        4,
+        499661160,
+        497194167,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        3,
+        0,
+        4,
+        498469285,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        6491,
+        4,
+        2,
+        4,
+        499851719,
+        497386770,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        4,
+        0,
+        4,
+        498818133,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        6491,
+        4,
+        1,
+        4,
+        501127952,
+        498659583,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        5,
+        0,
+        4,
+        499818005,
+        null,
+        0,
+        20
+      ],
+      [
+        1,
+        6491,
+        5,
+        1,
+        4,
+        498524450,
+        496050104,
+        4,
+        20
+      ],
+      [
+        1,
+        6491,
+        5,
+        2,
+        4,
+        500032049,
+        497564689,
+        4,
+        20
+      ],
+      [
+        2,
+        512,
+        0,
+        2,
+        64,
+        667438745,
+        630141250,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        0,
+        0,
+        64,
+        664324391,
+        null,
+        0,
+        10
+      ],
+      [
+        2,
+        512,
+        0,
+        1,
+        64,
+        663620116,
+        626304792,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        1,
+        0,
+        64,
+        665980631,
+        null,
+        0,
+        10
+      ],
+      [
+        2,
+        512,
+        1,
+        1,
+        64,
+        663355077,
+        626029582,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        1,
+        2,
+        64,
+        666268694,
+        628966668,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        2,
+        1,
+        64,
+        664534668,
+        627225828,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        2,
+        2,
+        64,
+        666297398,
+        628997188,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        2,
+        0,
+        64,
+        664528158,
+        null,
+        0,
+        10
+      ],
+      [
+        2,
+        512,
+        3,
+        2,
+        64,
+        666254839,
+        628942500,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        3,
+        0,
+        64,
+        664550019,
+        null,
+        0,
+        10
+      ],
+      [
+        2,
+        512,
+        3,
+        1,
+        64,
+        664098118,
+        626781877,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        4,
+        0,
+        64,
+        664500006,
+        null,
+        0,
+        10
+      ],
+      [
+        2,
+        512,
+        4,
+        1,
+        64,
+        664388455,
+        627054270,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        4,
+        2,
+        64,
+        667245375,
+        629677083,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        5,
+        1,
+        64,
+        664733436,
+        627414687,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        5,
+        2,
+        64,
+        666235975,
+        628925209,
+        64,
+        10
+      ],
+      [
+        2,
+        512,
+        5,
+        0,
+        64,
+        663676696,
+        null,
+        0,
+        10
+      ],
+      [
+        2,
+        6491,
+        0,
+        2,
+        4,
+        499942548,
+        497472082,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        0,
+        0,
+        4,
+        499096385,
+        null,
+        0,
+        20
+      ],
+      [
+        2,
+        6491,
+        0,
+        1,
+        4,
+        498815076,
+        496348438,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        1,
+        0,
+        4,
+        498339271,
+        null,
+        0,
+        20
+      ],
+      [
+        2,
+        6491,
+        1,
+        1,
+        4,
+        497812959,
+        495347812,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        1,
+        2,
+        4,
+        500050903,
+        497071248,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        2,
+        1,
+        4,
+        498540489,
+        496071146,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        2,
+        2,
+        4,
+        499170225,
+        496710938,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        2,
+        0,
+        4,
+        497996385,
+        null,
+        0,
+        20
+      ],
+      [
+        2,
+        6491,
+        3,
+        2,
+        4,
+        499798078,
+        497325105,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        3,
+        0,
+        4,
+        498612536,
+        null,
+        0,
+        20
+      ],
+      [
+        2,
+        6491,
+        3,
+        1,
+        4,
+        497013505,
+        494298959,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        4,
+        0,
+        4,
+        498466802,
+        null,
+        0,
+        20
+      ],
+      [
+        2,
+        6491,
+        4,
+        1,
+        4,
+        498109239,
+        495647501,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        4,
+        2,
+        4,
+        499771739,
+        497041250,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        5,
+        1,
+        4,
+        498370261,
+        495899478,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        5,
+        2,
+        4,
+        500666164,
+        498201564,
+        4,
+        20
+      ],
+      [
+        2,
+        6491,
+        5,
+        0,
+        4,
+        500701160,
+        null,
+        0,
+        20
+      ]
+    ]
+  },
+  "decision": {
+    "performance_gate_passed": false,
+    "advance_to_model": false,
+    "model_adopted": false,
+    "hardware_saturation_qualified": false,
+    "group_columns": [
+      "process",
+      "queries",
+      "control_original_wall_ratio",
+      "candidate_control_wall_ratio",
+      "candidate_control_service_ratio",
+      "performance_gate_passed"
+    ],
+    "groups": [
+      [
+        0,
+        512,
+        1.0013552839935354,
+        1.0022271948842751,
+        1.0025809678905886,
+        false
+      ],
+      [
+        0,
+        6491,
+        1.0009410631474138,
+        1.0048092781415958,
+        1.004835354384525,
+        false
+      ],
+      [
+        1,
+        512,
+        0.9986855065945897,
+        1.0048817755074093,
+        1.005171592705247,
+        false
+      ],
+      [
+        1,
+        6491,
+        1.0013702505830187,
+        1.0025836043554497,
+        1.0026016338680883,
+        false
+      ],
+      [
+        2,
+        512,
+        0.9995924909534122,
+        1.0030708018303773,
+        1.003292064126462,
+        false
+      ],
+      [
+        2,
+        6491,
+        0.9993984049441811,
+        1.0032726473550133,
+        1.0028736651518757,
+        false
+      ]
+    ],
+    "reason": "All6groups pass calibration butV264is0.223..0.488percent slower in wrapper wall and0.258..0.517percent slower in attention service. Failed prospectively required1percent gain;no model trial/adoption."
+  },
+  "faults_and_closure": {
+    "property_and_9native_processes_closed": true,
+    "quiet_parameter_validation": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "retained_UR_loader_reference_until_exit": true,
+    "ordinary_runtime_teardown_qualified": false
+  },
+  "retention": {
+    "retirement": {
+      "complete": true,
+      "files": 96,
+      "bytes": 9104951,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-rejected-retirement-20261027.jsonl",
+        "sha256": "59aa3c50daf843c9c37b9bc1053fc6360ea18cbf3245480bd9ae137ee8e77cb3"
+      },
+      "source_archive_commit": "cfabc1ee2b76a8703520bc373c1bd6e36973022e",
+      "remote_verified": "cfabc1ee2b76a8703520bc373c1bd6e36973022e",
+      "original_project_inputs_recovered": 195,
+      "actual_compiled_dependencies_verified": 697,
+      "compiler_assets_verified": 8700,
+      "generated_sources_regenerated": 3,
+      "recipe_recovered": "ecbdcc1e1",
+      "remaining_component_files": 0,
+      "selected_artifacts_verified": 13,
+      "selected_fixture_preserved": true,
+      "controller_inputs_recovered": 31,
+      "original_cohort_controller_identities_recovered": 3
+    },
+    "prototype_source_consumer": "Ended;five prototype files retired to original reachable commits.",
+    "selected_ID_fixture_consumer": "Main prepares next source/shape-matched QSA resource discriminator after reference curation;review when that plan is chosen. No duplicate capture.",
+    "legacy_holds": "Separate holds in native-gdn-engine-build.json remain unresolved;this retirement is not global cleanup.",
+    "prototype_sources_retired": {
+      "files": 5,
+      "bytes": 88843,
+      "source_archive_commit": "cfabc1ee2b76a8703520bc373c1bd6e36973022e",
+      "reason": "Rejected performance prototype has no production/export/build consumer. Restore code and its original recipe from reachable Git;no snapshot retained."
+    },
+    "audit_retirement": {
+      "files": 4,
+      "bytes": 36820,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-audit-retirement-20261027.jsonl",
+        "sha256": "245db472c43b11442d0b499a2b1d6ef5fd68c87a3cd914da7ffbc34e570c3a95"
+      }
+    },
+    "compaction_verified": {
+      "original_archive_commit": "cfabc1ee2b76a8703520bc373c1bd6e36973022e",
+      "all108individual_speed_samples_exact": true,
+      "only_discarded_sample_field": "kind=sample constant;verified in every archived row",
+      "all6decision_groups_independently_recomputed": true,
+      "timing_eligibility_and2448event_counts_preserved": true,
+      "selected_artifacts_after_prototype_source_retirement_verified": 13,
+      "GPU_executed": false
+    }
+  }
+}

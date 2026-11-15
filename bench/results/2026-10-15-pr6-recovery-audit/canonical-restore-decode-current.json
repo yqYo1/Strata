@@ -1,0 +1,671 @@
+{
+  "schema": "strata-canonical-decode-closed-v1",
+  "stage": "closed",
+  "archive": {
+    "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
+    "scope": "Full frozen source/qualification,input identities,six exact commands/environments,all original samples and exploratory capture/static diagnostics. Normal Git history supplies closed evidence."
+  },
+  "source_commit": "289105442ef5eaf0c25d3a2d067926a84373254d",
+  "host": {
+    "source_commit": "2da515523c1a6417ef039bc19cd246911f58cb32",
+    "passed": true,
+    "tests": 7,
+    "GPU_executed": false,
+    "controller_sha256": "488321520ce322bdebeed4c942d99907b4f35044dd38a8dbc86edcea0b199a83",
+    "test_sha256": "ea9917fcd69c5c07aae0511d3e1b3468c480bd3b86928371e35439fd637980d4",
+    "ownership_closed": true
+  },
+  "plan": {
+    "order": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "workloads": [
+      "regular-code",
+      "varied-prose"
+    ],
+    "question": "Does the prefill-only package preserve current sustained decode in both observed MTP regimes?",
+    "execution": "Six independent native processes,retained6e40/current362/current362/retained6e40/retained6e40/current362. Official bench.sh --long-generation-only --think --runs1,each with four official warmups then the two version4 long-generation workloads. Same fresh request bodies,>=32768 actual input,1024..16384 generated tokens including thinking,>=512 answer characters and>=256 offered drafts. No equal-output requirement.",
+    "constants": "Same1256-slot decode placement,131072 resident INT8 context,8192 prefill,5 workers+host,packed1,IQ2pair1,SINGLE_EXACT0,Q8 MTP,pcie0,adapt0,spec4,suffix0,caches0,no token graph/no coupled draft,no F16 MTP batch. Only native package and pre-exec prefill canonical chunk selector differ.",
+    "decision": "Repetition unit is one independent process per workload. Calculate exact achieved TG from actual completion tokens/engine decode_ms;retain printed TG separately. Conservative no-decline screen requires all three candidate/reference paired ratios>=1 for EACH workload. Any lower ratio leaves preservation unqualified;do not dismiss it as noise or permit a prefill/decode tradeoff. Confirm strong>=0.60 and weak<=0.40 acceptance in every sample of BOTH arms. This screen is not statistical proof of zero effect. TG70 requires every candidate workload sample>=70;passing preservation alone does not meet the goal.",
+    "admission": "Require the closed successful six-process clean prefill screen and its prospective performance gate,actual-model checked off/on state restoration,and recoverable same-build engine/fixtures for both packages. Pin all benchmark helpers,generated configuration,model/runtime,machine and immutable environment before launch. Verify original inputs and exact owned native exit.",
+    "route": "Bind all six native footers to the complete official journal. Require each long request to report full GPU BF16 residuals and mode10 with the correct row extent;verify1256-slot borrowed placement. Clean copy/MTP selections are source-verified through the pinned launch chain. Exact payload/map and dense restoration belong to the preceding checked model admission,not unlogged per-process measurements here.",
+    "models": "Full model hashes before the cohort and after process5;device/inode/size/mtime/ctime guards before and after every process. No model digest I/O during native execution.",
+    "stopping": "Stop on first source/model/runtime/configuration/journal/route/owner/fault/budget failure;never retry a root or replace a sample. Commit every closed outcome before the next process. Never stop early on speed or MTP acceptance.",
+    "limits": "No inference adoption,task-quality,agent-session,physical262144 or session/RESTORE qualification. No hardware arithmetic/RAM/PCIe saturation claim from TG or stage clocks. A demonstrated decode impact is a separation defect to fix.",
+    "retention": "Keep individual samples,source/configuration,actual route/journal/owner/fault outcomes and paired decisions. Retire successful raw output/JIT after committed closure;preserve attempt barriers while the cohort is active. Both native generations have this named immediate consumer;select and retire the extra only after comparison and provenance review."
+  },
+  "qualification": {
+    "prefill_sha256": "c5154d1244c28a11f1876b3e32bac9a86a1722db2b2ba1dd0fff5a7e02ad63b3",
+    "admission_sha256": "a3a2c2685b34ae36bfb1670e1aa0a3f68c676c9b1dc1b34b7c2e985a5db56d0e",
+    "retained": {
+      "original_inputs_recovered": 9853,
+      "source_build_sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2",
+      "model_evidence_scope": {
+        "component_groups": 18,
+        "phase_host_cases": 24,
+        "prefill_requests": 13,
+        "clean_prefill_processes": 3,
+        "prefill_read_tokens": [
+          117489
+        ],
+        "generated_tokens_per_request": 24,
+        "original_inputs_recovered": 9853,
+        "clean117K_speed_observed": true,
+        "sustained_decode_speed_qualified": false,
+        "hardware_saturation_qualified": false,
+        "model_adoption_qualified": false
+      },
+      "model_evidence_commits": {
+        "prefill-recovery-current.json": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+        "decode-query-profile-component-current.json": "483dcbb7df39bfd3fd6e4edc98d439dc353d6073"
+      }
+    }
+  },
+  "native_sources": [
+    "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "362c16aad19cb00dc158c03a279e6c28cc8cc7d3"
+  ],
+  "binaries": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-6e40afc1bedd/strata",
+      "bytes": 22190000,
+      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22199736,
+      "sha256": "af0aeb605b756e1ef007bb13cf3bd74b0ec632d3db5608f620232d80e496701b"
+    }
+  ],
+  "configuration": {
+    "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+    "args": [
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "131072",
+      "--expert-cache",
+      "1256",
+      "--expert-profile",
+      "${RUN_ROOT}/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--prompt-cache",
+      "0",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "0",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--prefill",
+      "8192",
+      "--vram-reserve-mib",
+      "700",
+      "--no-coupled-draft",
+      "--no-token-graph"
+    ],
+    "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+    "model_name": "qwen3.8-flash-next-iq3_s-primary",
+    "aliases": [
+      "strata"
+    ],
+    "host": "127.0.0.1",
+    "log": "${RUN_ROOT}/engine.stderr",
+    "engine_silence_s": 480,
+    "parallel": 1,
+    "open_browser": false,
+    "env": {}
+  },
+  "configuration_expansion": "Replace ${RUN_ROOT} with each archived plan root;serialize with json.dumps(indent=2)+newline. All six normalized input files were identical. Keep the one original profile asset,not six copies.",
+  "environment": "Exact per-process immutable environments and official bench commands remain in archive::plans;runtime safety settings were unchanged.",
+  "processes": [
+    {
+      "cohort": 0,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "native_identity": {
+        "pid": 4169538,
+        "start_ticks": 97727777,
+        "sid": 4169508
+      },
+      "requests": [
+        {
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 52294.4,
+          "decode_ms": 244458.7,
+          "decode_tps": 14.8,
+          "ttft_s": 52.428,
+          "total_s": 296.777,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        },
+        {
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43908.7,
+          "decode_ms": 909842.7,
+          "decode_tps": 9.5,
+          "ttft_s": 44.052,
+          "total_s": 953.773,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        }
+      ],
+      "route_verified": true,
+      "journal_verified": true
+    },
+    {
+      "cohort": 1,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "native_identity": {
+        "pid": 55130,
+        "start_ticks": 97902740,
+        "sid": 55104
+      },
+      "requests": [
+        {
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 52121.2,
+          "decode_ms": 248207.6,
+          "decode_tps": 14.5,
+          "ttft_s": 52.243,
+          "total_s": 300.352,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        },
+        {
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43846.8,
+          "decode_ms": 908612.5,
+          "decode_tps": 9.5,
+          "ttft_s": 43.965,
+          "total_s": 952.483,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        }
+      ],
+      "route_verified": true,
+      "journal_verified": true
+    },
+    {
+      "cohort": 2,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "native_identity": {
+        "pid": 145927,
+        "start_ticks": 98101461,
+        "sid": 145900
+      },
+      "requests": [
+        {
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 51195.8,
+          "decode_ms": 246343.7,
+          "decode_tps": 14.7,
+          "ttft_s": 51.309,
+          "total_s": 297.563,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        },
+        {
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 42886.0,
+          "decode_ms": 909866.1,
+          "decode_tps": 9.5,
+          "ttft_s": 42.995,
+          "total_s": 952.774,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        }
+      ],
+      "route_verified": true,
+      "journal_verified": true
+    },
+    {
+      "cohort": 3,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "native_identity": {
+        "pid": 218127,
+        "start_ticks": 98260098,
+        "sid": 218096
+      },
+      "requests": [
+        {
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 51364.7,
+          "decode_ms": 244579.5,
+          "decode_tps": 14.8,
+          "ttft_s": 51.474,
+          "total_s": 295.966,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        },
+        {
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43047.3,
+          "decode_ms": 903511.7,
+          "decode_tps": 9.6,
+          "ttft_s": 43.179,
+          "total_s": 946.589,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        }
+      ],
+      "route_verified": true,
+      "journal_verified": true
+    },
+    {
+      "cohort": 4,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "native_identity": {
+        "pid": 278021,
+        "start_ticks": 98437441,
+        "sid": 277997
+      },
+      "requests": [
+        {
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 51404.3,
+          "decode_ms": 242044.3,
+          "decode_tps": 14.9,
+          "ttft_s": 51.519,
+          "total_s": 293.471,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        },
+        {
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43061.8,
+          "decode_ms": 902847.2,
+          "decode_tps": 9.6,
+          "ttft_s": 43.196,
+          "total_s": 945.932,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        }
+      ],
+      "route_verified": true,
+      "journal_verified": true
+    },
+    {
+      "cohort": 5,
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "native_identity": {
+        "pid": 334417,
+        "start_ticks": 98607269,
+        "sid": 334392
+      },
+      "requests": [
+        {
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 51522.5,
+          "decode_ms": 243704.4,
+          "decode_tps": 14.8,
+          "ttft_s": 51.647,
+          "total_s": 295.248,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        },
+        {
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 42867.6,
+          "decode_ms": 900274.7,
+          "decode_tps": 9.6,
+          "ttft_s": 42.983,
+          "total_s": 943.165,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "completion_includes_thinking": true,
+          "stream_complete": true,
+          "truncated": false,
+          "controller_eligible": true
+        }
+      ],
+      "route_verified": true,
+      "journal_verified": true
+    }
+  ],
+  "analysis": {
+    "workloads": {
+      "regular-code": {
+        "pair_ratios": [
+          0.9848961111585623,
+          0.9928384610607051,
+          0.9931880589763664
+        ],
+        "ratio_geomean": 0.9903001274300675,
+        "no_decline_screen": false,
+        "observed_MTP_class_confirmed": true,
+        "candidate70_each_process": false
+      },
+      "varied-prose": {
+        "pair_ratios": [
+          1.0013539325069818,
+          0.9930161152283835,
+          1.0028574611726842
+        ],
+        "ratio_geomean": 0.9990664416767694,
+        "no_decline_screen": false,
+        "observed_MTP_class_confirmed": true,
+        "candidate70_each_process": false
+      }
+    },
+    "MTP_pair_confirmed": true,
+    "decode_preservation_screen": false,
+    "candidate70_each_workload_process": false,
+    "zero_effect_statistically_proven": false,
+    "adoption_qualified": false
+  },
+  "full_model_hashes_matched_after_cohort": 15,
+  "route": {
+    "expert_cache_slots": 1256,
+    "loan_first": 132,
+    "loan_slots": 1124,
+    "GPU_BF16_rows": [
+      33213,
+      33287
+    ],
+    "reported_MoE_mode": 10,
+    "native_API_clock_rounding_bound_ms": 0.55,
+    "all_six_routes_checked": true
+  },
+  "decision": "Reject current362/chunk64 package for adoption;retain6e40 as measured continuation baseline. No prefill/decode tradeoff or claimed causal explanation.",
+  "pending": [
+    "Restore selected native sources and qualify same-build artifact reuse or rebuild.",
+    "Resolve or avoid package-level decode effects before any prefill candidate adoption.",
+    "Agent/task quality,physical262144/session/RESTORE andTG70 remain open."
+  ],
+  "posthoc_static_diagnostic": {
+    "selection": "Exploratory static read after process3 closed;not a prospective gate or speed correction.",
+    "packages": [
+      "retained6e40",
+      "current362"
+    ],
+    "binary_hashes_verified": true,
+    "method": "nm -S -C --defined-only on both pinned binaries;objdump -d --no-show-raw-insn --start-address=0x40c450 --stop-address=0x40c490 on both.",
+    "main": {
+      "entry": [
+        "0x40c450",
+        "0x40c450"
+      ],
+      "size_bytes": [
+        149867,
+        149921
+      ],
+      "prologue_stack_subtract": [
+        "0x1d280",
+        "0x1d280"
+      ]
+    },
+    "native_gu_rows": {
+      "entry": [
+        "0x6bdf60",
+        "0x6bfbe0"
+      ],
+      "size_bytes": [
+        2097,
+        2097
+      ]
+    },
+    "iq2_pair_gu_rows": {
+      "entry": [
+        "0x6f0cb0",
+        "0x6f2930"
+      ],
+      "size_bytes": [
+        531,
+        531
+      ]
+    },
+    "observation": "Main size grows54 bytes with the same prologue stack reservation. Both inspected CPU entries move7296 bytes,retaining their64-byte offsets;their symbol sizes match.",
+    "limits": "Three symbols and main prologue only;not a normalized whole-function comparison or proof of identical instructions,codegen-caused TG loss,or a limiting hardware resource. No executable was run or modified.",
+    "consumer": "Bounded package-isolation diagnosis after the full cohort;retire this detail if the package is rejected without further diagnosis."
+  },
+  "artifact_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-canonical-decode-cohort-20261022.jsonl",
+    "sha256": "37e4ea59d1123af1de6ab9c54dca3471d544b24ec7e6df12185daa80c2510393",
+    "files": 92,
+    "bytes": 13870815,
+    "all_paths_removed": true,
+    "committed_full_record": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
+    "original_profile_kept": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin"
+  }
+}
