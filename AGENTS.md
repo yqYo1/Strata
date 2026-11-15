@@ -487,7 +487,11 @@ integration and testing.
   Give a report-only worker an isolated report workspace and enforce read-only
   access to product checkouts at launch. Its writable scope is the named report
   directory, not the shared product worktree. Keep the bounded Task/spec and
-  pinned inputs available there; after compaction the worker reloads that Task
+  source manifest in Main's control directory, with immutable source views in
+  a separate read-only input tree. Preflight the actual collector's file-count
+  and byte bounds before launch,including Main-generated files;see
+  [temporary collection](docs/ARTIFACT_RETENTION.md#temporary-diagnostic-collection).
+  After compaction the worker reloads that Task
   and returns its report or failure, rather than resuming Main's tuning work.
   Verify the actual submitted Task and write scope, not just terminal readiness.
   Include permissions for Orca lifecycle IPC; a custom workspace-write Codex

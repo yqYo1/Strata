@@ -1370,24 +1370,51 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   committed source and recipe for a newly planned reproduction. The U1C++
   helper and independent byte/lifetime oracles remain the concrete inputs for
   U2's next fresh image,which will include the U1individual-copy control itself.
-  U2contiguous-run copying remains a separate unmeasured unit. In the source-view case,
-  admission enforces source_stride==blob_bytes;private-bank/U1admission enforces
-  bank_stride==blob_bytes. ForNdistinct IDs across24full-fit512banks,the number
-  of contiguous runs is at most min(N,24*513-N). The observed first32Krequest
-  hasN=8697,so at most3615copy APIcalls are needed with unchanged16012825600B;
-  first64KhasN=9178,at most3134calls with unchanged16889804800B. These are
-  source-derived request-count bounds under those equal-stride admissions.
-  Verify actual per-layer source strides in the new native trial before relying
-  on the bounds;the startup flag alone is insufficient. They are not actual coalesced commands,physical
-  bus transactions or speed measurements. Retain individual/run-copy outcomes
-  separately before comparing the useful combination with JIT. Reducing the
-  expert-major streaming bank is a different possible placement unit:verify all
-  callers,owner/admission and fallback requirements before comparing it. Do not
-  combine that allocation change with U2or an independent-engine queue policy.
-  Existing copy-union10.309796s/kernel-union28.658416s includes24decode tokens,
-  so it gives neither isolated prefill attribution nor physical-bus saturation.
-  Native byte/lifetime and U1same-image PP/TTFTscreens are now closed;the
-  original-reference control is closed;broader adoption gates above remain open.
+  U2contiguous-run copying is now independently measured and **not adopted**.
+  Its native snapshot is14508base plus four owned overlays at`be82383e8`,not
+  the whole primary native tree. Fresh full compilation closes125unique TUs/
+  126objects,1461compiler/29link inputs and all four production Gemm includers.
+  The four native stages close normally0with25case executions,including
+  strided fallback,clustered IDs ending511,full readback/guards and one
+  1009254400-byte production-stride copy with checked cancellation. Actual33
+  initialized providers match the qualified runtime;no fresh fault occurs.
+  The closed`prefill_coalesced_unit_v1`cohort at`5c9ab0bae`contains14normal0
+  processes/42thinking-on requests:two diagnostics,then three independent
+  matched pairs at32Kand64K. All18matched clean request pairs have identical
+  request hashes,other actual routes,jobs,fused jobs,logical experts and bytes.
+  First32Kfull-fit copies fall8697→2507with16012825600Bunchanged;first64K
+  falls9178→2275with16889804800Bunchanged. Actual source/bank strides are equal
+  in all24eligible layers;the other24layers keep their original path.
+  Warmed coalesced/individual time ratios are1.006195/0.993623/0.961485at32K
+  and0.997323/1.039700/1.005200at64K. Geometric means are0.9869203and
+  1.0139086:32Kaverage time shortens1.308%,while64Klengthens1.391%.
+  Neither length passes the prospective all-three-pairs gain condition;64K
+  also fails TTFTpreservation. Process-median PPis763.084→767.981at32Kand
+  925.697→920.908at64K. These medians differ from paired geometric means.
+  Preserve each failed/positive pair and every first/warmed sample;do not
+  dismiss the observed decreases as noise. The combined/JITtrial is not
+  admitted by this failed unit screen. No decode or physical-context adoption
+  follows. Eight CSVpoints bring the cumulative index to548rows.
+  Adjacent warmed slopes are0.850054932ms/token(individual)and
+  0.869647217(coalesced);two lengths do not qualify a fitted/held-out law,
+  physical fixed cost or extrapolation. APIcounts and requested bytes do not
+  establish physical PCIe/VRAMtraffic,saturation or the cause of variance.
+  Copy aggregation alone has not established a reproducible model speedup.
+  Preserve U1's independently positive upload-order result and separate decode
+  selection. U2's unused selector/planner branch,fixtures and three one-shot
+  controllers are removed. Exact source/recipe/actual-input recovery precedes
+  physical retirement of2373files/286027510bytes. All26phase-reference ELFs
+  remain unchanged;42individual samples and6conserved request workloads stay
+  in the compact result. The trimmed U1source needs a fresh coherent engine
+  before further native/model qualification. The cleanup-only host/syntax
+  checker now closes normally0:production SYCLfixture syntax,6independent
+  byte cases and10refusals including failed-publication preservation pass.
+  It runs no GPUwork and does not relabel an existing executable or establish
+  model adoption.
+  Fast14508and namingAphase references remain the two validated generations.
+  Reducing the streaming-bank allocation or introducing an independent upload
+  engine is a separate future unit,requiring its own opportunity,safety and
+  ownership/dependency qualification. Neither is silently bundled here.
   Metadata and CPUtests themselves qualify neither model speed nor saturation;
   the U1speed claim comes only from its closed paired model cohort.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`

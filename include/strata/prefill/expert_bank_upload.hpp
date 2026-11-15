@@ -69,7 +69,7 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},
         {{slab,size_t(slab_bytes)}},1);
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},live_scratch,1);
-    const auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride,false);
+    const auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride);
     PrefillFullfitUploadReceipt result;
     enqueue_prefill_fullfit_upload(plan,slots,[&](const PrefillFullfitCopy& copy) {
         if (cudaMemcpyAsync(base+size_t(copy.destination_offset),slab+size_t(copy.source_offset),

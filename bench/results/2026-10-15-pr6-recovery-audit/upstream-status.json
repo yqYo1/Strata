@@ -1,13 +1,13 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-11-13T21:06:39.366569+00:00",
+  "queried_utc": "2026-11-15T20:52:36.498148+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "queried_utc": "2026-11-11T19:42:07.658258+00:00",
-    "observed_sha": "c1ff07f1a1817594811c960039571c6e268fe89a"
+    "queried_utc": "2026-11-13T21:06:39.366569+00:00",
+    "observed_sha": "13eedf552417a6a791a7d13c6597e24300ee3a09"
   },
-  "observed_sha": "13eedf552417a6a791a7d13c6597e24300ee3a09",
+  "observed_sha": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
   "changed_since_previous_observation": true,
   "source_fetched": true,
   "fetch_command": [
@@ -17,25 +17,28 @@
     "-C",
     "/home/yayoi/ghq/github.com/Niko1221/Strata",
     "fetch",
+    "--no-tags",
     "origin"
   ],
   "remote_check": [
-    "13eedf552417a6a791a7d13c6597e24300ee3a09\trefs/heads/main"
+    "baf16363b4403ef0ed4f538f5d5ed11c43fb9535\trefs/heads/main"
   ],
   "new_interval": {
     "start": "146df3c468739147f520ac3816de806f71232571",
-    "target": "13eedf552417a6a791a7d13c6597e24300ee3a09",
-    "commits": 379,
-    "changed_paths": 1000,
-    "describe": "v0.2.13.1-160-g13eedf55",
-    "source_access": "Fetched origin/main without changing the divergent legacy checkout or forcing/replacing tags;actual ls-remote origin refs/heads/main matches13eedf55. No new checkout,branch,native build or inference import.",
+    "target": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
+    "commits": 1121,
+    "changed_paths": 2816,
+    "describe": "v0.2.13.1-902-gbaf16363b",
+    "source_access": "Fetched origin/main --no-tags and matched actual ls-remote main atbaf16363;legacy checkout unchanged,no tags forced,no new engine/checkout/model launch.",
     "integration_state": "fetched_not_imported",
     "whole_function_ledger_complete": false,
     "unmodified_hardware_tuned_performance_complete": false,
     "since_previous_check": {
-      "start": "504b143342a9fe1aa8320a7b31e11f5c0ac265c3",
-      "commits": 151,
-      "changed_paths": 303
+      "start": "13eedf552417a6a791a7d13c6597e24300ee3a09",
+      "target": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
+      "commits": 742,
+      "changed_paths": 2086,
+      "status": "fetched_not_imported"
     },
     "source_only_review": {
       "state": "preliminary_not_full_ledger",
@@ -79,7 +82,23 @@
       },
       "reviewed_through": "504b143342a9fe1aa8320a7b31e11f5c0ac265c3"
     },
-    "latest_delta_review": "Scoped router/control/server source review,not the complete303-path ledger. Plain --gpu ordering and help from2b9df3fe are ported and18host tests pass;other functional ports,native capability and per-component inference decisions remain open.",
+    "latest_delta_review": {
+      "target": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
+      "state": "two_bounded_static_source_maps_curated_original_resource_samplers_refused",
+      "scopes": [
+        "drafting selection and launch/control/offline/Arc functional dependencies",
+        "CPU IQ3/native expert/pool changes and actual SYCL source resolver;phase-specific candidates"
+      ],
+      "all742commits_or2086paths_reviewed": false,
+      "code_imported": false,
+      "whole_function_ledger_complete": false,
+      "performance_evaluation_complete": false,
+      "retained_map": "docs/UPSTREAM_INTEGRATION.md",
+      "review_sha256": "c341e53691981d989c0a2ae621c6eb2d31e581bb41ea6eec36a5c7752f0198c1",
+      "source_license": "Root LICENSE unchanged;quant source provenance MIT ggml/llama.cpp per bounded review. Check individual components before integration.",
+      "qualified_research_resource_envelope": false,
+      "findings": "One drafting decision and Arc config/native adaptation are required ports. CPU IQ3_SxQ8_K is conditional decode only;no long GPU-prefill candidate from these scopes. Pool quota changes need actual quota evidence. No source imported or performance measured."
+    },
     "license_changed_since_previous_check": false,
     "initial_all_tags_fetch": {
       "exit_code": 1,
@@ -88,25 +107,13 @@
       "followup": "Verified successful main-only no-tags fetch and exact remote refs;no tag forced/replaced."
     },
     "last_check_delta": {
-      "start": "c1ff07f1a1817594811c960039571c6e268fe89a",
-      "target": "13eedf552417a6a791a7d13c6597e24300ee3a09",
-      "commits": 8,
-      "changed_paths": 11,
-      "source_only": true,
-      "inference_adopted": false,
-      "required_function_candidates": [
-        "Bound vision GPU-context retries by count and18s,with thread-local test clock;shared picture-reader recovery/retention behavior needs platform-specific applicability review.",
-        "Apply bounded serve-stop behavior on every backend,including this SYCL entrypoint."
-      ],
-      "inference_safety_candidate": "Dense MMQ row-id table padding matches speculative kernel reads;review actual SYCL dispatch/allocation before importing. No engine change in this check.",
-      "excluded_execution": [
-        "DeepSeek MTP MMQ execution",
-        "Qwen3.5/35B MMQ execution",
-        "CUDA/HIP execution"
-      ],
-      "pending": "No new source import or hardware-tuned unmodified upstream benchmark;older required ports remain open.",
-      "legacy_clone": "ghq default checkout has pre-existing divergent local history;fetch updated only origin/main. No reset,checkout replacement or branch mutation."
-    }
+      "start": "13eedf552417a6a791a7d13c6597e24300ee3a09",
+      "target": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
+      "commits": 742,
+      "changed_paths": 2086,
+      "status": "fetched_not_imported"
+    },
+    "license_check": "Root LICENSE bytes unchanged from13eed;subcomponent provenance still requires individual review."
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
   "unmodified_upstream_performance_evaluation_complete": false,
@@ -116,8 +123,8 @@
   "current_engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
   "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-11-15T21:06:39.366569+00:00",
-  "pending": "Complete the required-function ledger/imports through13eedf55,including the new Intel Arc setup fix;current630-path functional import remains146df3c4. Finish native SAVE/RESTORE/disk-session,BGEN/capability and desktop ports,full host validation,native v3.1 execution and unmodified hardware-tuned Niko performance evaluation. DFlash2 clean repeated agent/task/physical262144/RESTORE and default adoption remain open. Choose inference components separately;DeepSeek/35B execution remains excluded.",
+  "next_check_utc": "2026-11-17T20:52:36.498148+00:00",
+  "pending": "Complete the required-function ledger/imports throughbaf16363 (1121commits/2816changed paths beyond partial146df;new742commit delta remains source-review only),including the new Intel Arc setup fix;current630-path functional import remains146df3c4. Finish native SAVE/RESTORE/disk-session,BGEN/capability and desktop ports,full host validation,native v3.1 execution and unmodified hardware-tuned Niko performance evaluation. DFlash2 clean repeated agent/task/physical262144/RESTORE and default adoption remain open. Choose inference components separately;DeepSeek/35B execution remains excluded.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
@@ -752,7 +759,7 @@
     "source_access": "Immutable fetched Git objects via git show/diff;no additional branch,checkout or build created.",
     "inspection": "Fetched origin/main and actual ls-remote HEAD/main agree. Previous target is an ancestor. Source-delta review,functional integration and unmodified hardware-tuned performance evaluation remain pending;no inference change from this check."
   },
-  "current_engine_role": "Validated479a/552b worker/map fallback;clean117K warmed PP and input-length curve remain the reference. Closed05a9 decode gains are recorded,with117K PP/TTFT preservation inconclusive;its binary and the closed CPU-service observer build are retired. The new decode-only IQ3 candidate has an all-eight-cell CPU production-entry gain,exact arithmetic/pool parity and same-build small traced GPU admission. No new model speed,full-context or inference adoption follows.",
+  "current_engine_role": "Historical protocol/comparison image only;not the current prefill tuning reference. This fetch changes no executable. Validated fast reference is14508/dcb8;independent namingAphase reference remains9849/6d2b.",
   "web_api_key_input_port": {
     "stage": "ported_focused_host_tests_passed",
     "upstream": "Niko1221/Strata",
@@ -11208,5 +11215,6 @@
         }
       }
     }
-  }
+  },
+  "recurring_check_scope": "Actual ghq-clone fetch and matching remote main lookup near48hours. No checkout/model/engine changes. Functional integration and hardware-tuned unmodified-upstream evaluation remain incomplete and distinct from this check."
 }

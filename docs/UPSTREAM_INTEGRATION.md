@@ -16,10 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check and fetch | 2026-11-13 21:06:39 UTC / November 14 06:06:39 JST |
-| Observed upstream | `13eedf552417a6a791a7d13c6597e24300ee3a09`, `v0.2.13.1-160-g13eedf55` |
-| Next check at the approximate 48-hour cadence | 2026-11-15 21:06:39 UTC / November 16 06:06:39 JST |
-| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `13eedf55` are fetched, with the plain GPU-list ordering fix imported and tested |
+| Last actual check and fetch | 2026-11-15 20:52:36 UTC / November 16 05:52:36 JST |
+| Observed upstream | `baf16363b4403ef0ed4f538f5d5ed11c43fb9535` (latest fetched main;no engine import) |
+| Next check at the approximate 48-hour cadence | 2026-11-17 20:52:36 UTC / November 18 05:52:36 JST |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `baf16363` are fetched, with the plain GPU-list ordering fix imported and tested |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
 | New inference adoption from this check | None |
@@ -33,21 +33,40 @@ own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
-The November14JST check fetches eight further commits/11changed paths from
-`c1ff07f1` through `13eedf55`. Required candidates include the18-second vision
-context-retry bound and portable serve-stop bound;dense MMQ row-id padding
-needs an actual SYCL-path safety review. DeepSeek/35B and CUDA/HIP execution
-remain excluded. No new inference or functional import follows from this check.
-The complete interval now contains379commits/1000changed paths beyond
-the partial `146df3c4` import. The prior151-commit/303-path review through
-`c1ff07f1` remains partial,with its original evidence in Git. Bounded
-source reviews cover router, control/launch and server/reader changes; they do
-not complete the function ledger. The plain `--gpu` fix from Niko
-`2b9df3fe71cb24cef3052c332e032ea681729abe` now clears stale GPU ordering when
-replacing a saved selection, while preserving explicit roles and unchanged
-selections. Its four regression tests and14existing GPU-role tests pass with
-no skips; help text is updated. The source and evidence are recorded under
-`current_sync.functional_import.incremental_function_ports.plain_gpu_order`.
+The November16JST check fetches742additional commits/2086changed paths from
+`13eedf55` to`baf16363`. The cumulative unintegrated interval beyond the partial
+`146df3c4` import is1121commits/2816changed paths. This is an actual ghq-clone
+fetch and matching remote-main observation;the legacy checkout and native
+engines are unchanged. Root LICENSE bytes match the previous observation;
+individual component provenance still needs review. Two bounded source scopes
+are reviewed and their useful findings are below;they do not complete the
+742commit ledger or establish imports,tests or performance. Both original
+research samplers refused because Main put source views inside capture trees,
+exceeding256files;one also exceeds8MiB. Preserve those failures. The corrected
+future layout keeps immutable inputs outside report/control captures.
+DeepSeek/35B and CUDA/HIP execution remain excluded.
+
+| Reviewed source unit | Required action and qualification |
+| --- | --- |
+| One Off/MTP/DFlash2 decision through plan/fetch,setup,config,launch and visible status | Required functional port. Preserve existing MTP/legacy configurations and DFlash2 opt-in;do not silently replace the local default with upstream Auto. Start from [launch plan/argv](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/launch/runner.py#L1506),[CLI drafting](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/drafting_cmd.py#L117) and [draft selection](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_control/drafting.py#L467). The12GBIQ3_S example is at runner336-339/modelstate86-95;the old report's unrelated lines are not evidence. |
+| Arc prepared-file/pack/config adaptation | Required and unqualified. Verify the native setup entrypoint,accepted engine arguments and direct config writers before porting [the launch adaptation](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/launch/runner.py#L1364). Preserve existing config and avoid unsupported layer/vision/draft downloads. The existing Arc source map below remains the adapter consumer. |
+| CPU IQ3_S weights with Q8_K activations | Conditional decode candidate,not long GPU prefill. [The mapping](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/src/quant/types.cpp#L32) uses the AVX2 quant path. [SYCL CMake](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/sycl/CMakeLists.txt#L130) includes root pool/native-expert sources but does not wire that quant layer. Native-expert checks use ggml-cpu in the SYCL branch and Strata quant with STRATA_OWN_CPU_QUANT;quant parity is a separate gate. Prove local route,compiler/ISA/activation packing,parity and decode-sized performance before adoption. Reviewed quant provenance is MIT ggml/llama.cpp;retain per-component provenance checks before import. |
+| Nested cgroup quota discovery | Conditional pool-capacity candidate. [The helper](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/include/strata/kernels/cpu/cgroup_cpu.hpp) changes quota discovery,not row math. A real local quota and performance evidence are prerequisites. |
+
+These four pointers are the retained result of the scopes,not coverage of all
+245/732available source-view files or all2086changed paths. The original
+report/capture identities and refusals remain in the research index;Main read
+only the short review and the corrections needed for this map. Reopen a source
+scope for a concrete port/component evidence gap or a new upstream interval.
+
+Earlier router/control/server source reviews remain partial. Required candidates
+include vision context-retry and portable serve-stop bounds;dense MMQ row-id
+padding still needs an actual SYCL-path safety review. The plain `--gpu`fix from
+Niko`2b9df3fe71cb24cef3052c332e032ea681729abe`clears stale ordering when replacing
+a saved selection,preserving explicit roles and unchanged selections. Its four
+regressions and14existing GPU-role tests pass without skips. The existing
+`current_sync.functional_import.incremental_function_ports.plain_gpu_order`
+record remains the evidence;the new fetch does not complete its broader ports.
 
 The Control/App Intel Arc setup fix and expert-arena shortfall/warning changes
 remain required-function candidates. Fixed-order skinny BF16 GEMMs and compiled

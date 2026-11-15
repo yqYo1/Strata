@@ -254,6 +254,15 @@ A budget-triggered stop is incomplete. Keep all speed samples used by a
 comparison, but extract them from routine logs and discard the logs after
 verification. A different extension does not make generated output source.
 
+For report-only research, place immutable Git source views outside both the
+report directory and Main's control directory. Keep their pinned manifest and
+location in the Task. The research collector counts every file in both capture
+trees, including Main-generated inputs; preflight its actual file-count and
+byte bounds before launch. Keep source views under their own named consumer
+and retire them after review. Preserve a failed collection receipt when a
+layout exceeds its envelope; a useful source report does not make that envelope
+pass retroactively.
+
 Set SYCL, Level Zero, driver, profiler and experiment variables before native
 `exec`. Keep them immutable after runtime initialization. Use the pinned
 [shared measurement environment](../tools/sycl/measurement_environment.json)

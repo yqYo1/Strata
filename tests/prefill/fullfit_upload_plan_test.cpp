@@ -11,9 +11,9 @@ template<class F> static void refuses(F&& operation) {
     try { operation(); } catch (const std::exception&) { return; }
     throw std::runtime_error("invalid full-fit upload accepted");
 }
-static void bytes(const std::vector<int32_t>& ids,uint64_t source_stride,bool coalesced,size_t calls) {
+static void bytes(const std::vector<int32_t>& ids,uint64_t source_stride,size_t calls) {
     const auto bank=ExpertBankLayout::packed(512*256,256);
-    const auto plan=PrefillFullfitUploadPlan::make(ids,bank,source_stride,coalesced);
+    const auto plan=PrefillFullfitUploadPlan::make(ids,bank,source_stride);
     std::vector<uint8_t> source(512*source_stride),destination(bank.backing_bytes,0xa5);
     for (int e=0;e<512;++e)
         for (size_t i=0;i<source_stride;++i) source[size_t(e)*source_stride+i]=uint8_t((e+i*5)%251);
@@ -33,16 +33,16 @@ static void bytes(const std::vector<int32_t>& ids,uint64_t source_stride,bool co
 int main() try {
     const auto bank=ExpertBankLayout::packed(512*256,256);
     const std::vector<int32_t> ids{2,3,4,8,9,21};
-    bytes(ids,256,false,6);bytes(ids,256,true,3);bytes(ids,512,true,6);
-    bytes({},256,true,0);bytes({511},256,true,1);
+    bytes(ids,256,6);bytes(ids,512,6);bytes({0,1,510,511},256,4);
+    bytes({},256,0);bytes({511},256,1);
     std::vector<int32_t> all;for (int e=0;e<512;++e) all.push_back(e);
-    bytes(all,256,true,1);
+    bytes(all,256,512);
     for (const auto& invalid:std::vector<std::vector<int32_t>>{{-1},{512},{3,3},{3,2}})
-        refuses([&]{PrefillFullfitUploadPlan::make(invalid,bank,256,true);});
-    refuses([&]{PrefillFullfitUploadPlan::make(ids,bank,128,true);});
-    refuses([&]{PrefillFullfitUploadPlan::make(ids,bank,std::numeric_limits<uint64_t>::max()-255,true);});
-    refuses([&]{PrefillFullfitUploadPlan::make(ids,ExpertBankLayout::packed(511*256,256),256,true);});
-    ExpertBankSlots partial(511);const auto plan=PrefillFullfitUploadPlan::make(ids,bank,256,false);
+        refuses([&]{PrefillFullfitUploadPlan::make(invalid,bank,256);});
+    refuses([&]{PrefillFullfitUploadPlan::make(ids,bank,128);});
+    refuses([&]{PrefillFullfitUploadPlan::make(ids,bank,std::numeric_limits<uint64_t>::max()-255);});
+    refuses([&]{PrefillFullfitUploadPlan::make(ids,ExpertBankLayout::packed(511*256,256),256);});
+    ExpertBankSlots partial(511);const auto plan=PrefillFullfitUploadPlan::make(ids,bank,256);
     refuses([&]{enqueue_prefill_fullfit_upload(plan,partial,[](auto){return true;});});
     ExpertBankSlots failed(512,true);unsigned attempts=0;
     refuses([&]{enqueue_prefill_fullfit_upload(plan,failed,[&](auto){return ++attempts!=3;});});
