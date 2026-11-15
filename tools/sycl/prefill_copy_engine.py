@@ -18,9 +18,9 @@ import measurement_owner as owned
 import ur_validation
 
 P, B = original.P, original.B
-ROOT = B/'prefill-copy-engine-v4'
+ROOT = B/'prefill-copy-engine-v5'
 RESULT = P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-KEY = 'prefill_copy_engine_v4'
+KEY = 'prefill_copy_engine_v5'
 SOURCE = 'tests/sycl/prefill_copy_engine.cpp'
 PREFIXES = ['tools/sycl', SOURCE, 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
 LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
@@ -85,7 +85,7 @@ def prepare():
             'ZE_ENABLE_ALT_DRIVERS','ZES_ENABLE_SYSMAN','SYCL_CACHE_PERSISTENT']
     env = {k:v for k,v in seed['environment_template'].items() if k in keys}
     env.update(CUDA_MODULE_LOADING='EAGER', ZE_ENABLE_VALIDATION_LAYER='1', ZE_ENABLE_PARAMETER_VALIDATION='1',
-               ZE_ENABLE_THREADING_VALIDATION='1', ZE_ENABLE_HANDLE_LIFETIME='1', ZEL_ENABLE_LOADER_LOGGING='1')
+               ZE_ENABLE_THREADING_VALIDATION='1', ZE_ENABLE_HANDLE_LIFETIME='0', ZEL_ENABLE_LOADER_LOGGING='1')
     cases = []
     def case(label, policy, size, iterations, batches, trace=False, speed=False):
         root = ROOT/label
@@ -132,7 +132,7 @@ def prepare():
         reused_native=dict(record_path=str(B/'prefill-copy-engine-v1/record.json'),
             record_sha256=sha(B/'prefill-copy-engine-v1/record.json'),binary=old['binary']))
     for c in row['cases']: c['argv'][0] = old['binary']['path']
-    row['plan']['previous_failure'] = 'V1 metadata SYCL urContextCreate returned UNKNOWN before any work. Preserve V1failed. V2draft never executed. V3refused ENOENT before native launch because case argv still used the new output path. V4binds every launch argv to the guarded original ELF. Loader logging enablement is the only runtime change from V1;identical C++image/recipe/compiler/SDK/runtime/safety and validation settings. Metadata gates precede any transfer.'
+    row['plan']['previous_failure'] = 'V1 context initialization failed;V2draft unexecuted;V3exec-path refusal. V4logs zeDriverGetDefaultContext followed by validation ZE_RESULT_ERROR_INVALID_NULL_HANDLE for its nonnull context in an internal1-byte zeMemAllocHost. V5changes only ZE_ENABLE_HANDLE_LIFETIME1to0 from V4,retaining ZE parameter/thread validation and loader/API trace,original C++image,SDK/runtime and all qualified safety variables. This tests compatibility of default-context tracking;no causal conclusion before matched metadata success. Metadata gates precede transfer.'
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache','owned'): (ROOT/name).mkdir(mode=0o700)
     save(row)

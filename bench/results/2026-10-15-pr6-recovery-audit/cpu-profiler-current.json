@@ -14525,7 +14525,7 @@
     }
   },
   "prefill_copy_engine_v4": {
-    "stage": "built",
+    "stage": "failed",
     "external_inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
       "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
@@ -15354,7 +15354,7 @@
       "devcoredump": false
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "passed": true,
+    "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
@@ -15390,6 +15390,7 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v1/probe",
       "sha256": "770f72aae9eed67e94f73c18e88e48dd2103219f456012ab17be8dc66fb9d82f"
     },
+    "error": "RuntimeError('probe failed: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v4/owned/metadata-sycl.stderr')",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "4c556c889c6e0f0192c54e60ed996f00170d136a",
@@ -15410,6 +15411,15 @@
         "files": 1,
         "sha256": "3d81cdcc93ce7b9bf56a3628f369dfe4b49e6e512c07767ae07ba084e8e9893e"
       }
+    },
+    "failure_detail": {
+      "native_exit_code": 1,
+      "ownership_closed": true,
+      "data_transfer_executed": false,
+      "raw_copy_list_created": false,
+      "boundary": "Driver default context obtained;validation layer returns ZE_RESULT_ERROR_INVALID_NULL_HANDLE for nonnull hContext in internal size1 zeMemAllocHost;UR maps initialization toUNKNOWN",
+      "excerpt": "[2026-11-16 07:21:01.346] [thread-id: 125515573830208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xf036d68, phRootDevice=0x7ffe6271b530)\n[2026-11-16 07:21:01.346] [thread-id: 125515573830208] [trace] zeDriverGetDefaultContext(hDriver)\n[2026-11-16 07:21:01.346] [thread-id: 125515573830208] [trace] zeMemAllocHost(hContext, host_desc, size, alignment, pptr)\n[2026-11-16 07:21:01.346] [thread-id: 125515573830208] [trace] ERROR (ZE_RESULT_ERROR_INVALID_NULL_HANDLE) in zeMemAllocHost(hContext=0xf041888, host_desc={stype=0x7ffe6271afa0, flags=0}, size=1, alignment=0, pptr=0x7ffe6271af78)\ncopy probe: level_zero backend failed with error: 2147483646 (UR_RESULT_ERROR_UNKNOWN)\n   ---> urDeviceRelease\n   <--- urDeviceRelease(.hDevice = 0xf04c1d0) -> UR_RESULT_SUCCESS;\n   ---> urAdapterRelease\n   <--- urAdapterRelease(.hAdapter = 0xeea1990) -> UR_RESULT_SUCCESS;",
+      "next": "V5metadata changes only handle-lifetime checker flag;parameter/thread/URvalidation and all safety settings remain."
     }
   }
 }
