@@ -1307,17 +1307,35 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   end tuning. Main's next owned proposal instead preserves the same queue and
   bytes:U1compares JITper-expert with eager per-expert upload;U2compares eager
   per-expert with contiguous-run copies,then validates their useful combination.
-  `fullfit_upload_plan.hpp`and its independent byte/publication oracle are
-  prototypes with no production caller. CPUV2evidence`35041702b`passes6byte
+  `fullfit_upload_plan.hpp`and its independent byte/publication oracle remain
+  experimental. CPUV2evidence`35041702b`passes6byte
   cases/10refusals,including failed-enqueue nonpublication. V1's missing launch
   guard stays held;V2checks source/compiler/ELF/consumed bytes before launch.
   The initial resource annotation's28eligible layers is corrected to24from the
-  actual geometry counts;no C++input or sample changes. Before a native trial,
-  integrate only this prefill proposal onto the fast14508native source and pin
-  its complete recoverable inputs;do not bundle the pending KVengine changes.
-  Prove that the whole preloaded bank remains disjoint from live FFNscratch,
-  retain source/bank owners through error drains,and preserve the partial-bank
-  and nonempty-bank fallback before native execution.
+  actual geometry counts;no C++input or sample changes. U1now has an owned
+  long-prefill caller and native fixture:committed14508sources plus four
+  explicit overlays at`51ea99cae`,excluding pending KVengine changes. The
+  fresh coherent`prefill_eager_native_v1`build uses125unique TUs/126objects,
+  all four production Gemm-header includers,1461compiler and29external link
+  inputs,zero uncovered. Its engine SHAis
+  `7ea162eac831256af28e861059641501021a5fec194871b9bcb4dcaddc1b1f9d`.
+  `STRATA_SYCL_PREFILL_FULLFIT_UPLOAD=jit|eager`selects the upload position
+  before process initialization;U2coalescing is not selected. The eager caller
+  checks the whole bank against live FFNscratch and rejects unequal payload/
+  stride bytes;source/cache owners remain under the existing checked outer
+  drain. Partial,nonempty and staging banks retain their original route.
+  Fresh traced smoke and quiet validation in`prefill_eager_device_v1`,evidence
+  `04634f850`,pass all8cases across0/1/4/127/512experts,strided sources,full
+  readback/guards,refusals,reuse and cancellation. Both native processes close
+  normally0with quiet validation,verified actual initialized providers and no
+  new fault. This is byte/lifetime evidence,not model performance or adoption.
+  The prospectively committed`prefill_eager_model_v1`plan first checks actual
+ 32KJIT/eager model routes,then three independent matched pairs at each of
+ 32Kand64K,three thinking-on bench.sh requests per process. First-use and
+  warmed2samples remain separate;only U1varies in the same ELF. Model route,
+  matched speed and all broader gates are pending. Retain the two existing
+  phase references plus this explicitly bounded third candidate only through
+  the immediate U1decision;retire the superseded candidate before another build.
   Existing copy-union10.309796s/kernel-union28.658416s includes24decode tokens,
   so it gives neither isolated prefill attribution nor physical-bus saturation.
   Native events/lifetimes,matched32K/64KPP/TTFT,repeated decode preservation and
