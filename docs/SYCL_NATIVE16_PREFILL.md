@@ -1070,7 +1070,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   comes from0569e6924;the original build receipt SHAis
   9807e41d5d73074e03c8e553f4d2f0a977a57cfddc3b0eba7e7745aa180266e1.
   All26retained reference images remain unchanged. This is compilation only;
-  fresh native/oracle/model and both-phase comparisons remain pending.
+  all11fresh native stages now close normally0with reaped empty ownership,
+  quiet validation,unchanged boot/driver and no fresh GPUfault. Both head
+  modes pass four seeds,two restore cycles and12graph replays;packed head2's
+  maximum pair error is4.17232513428e-7. Fresh attention/producer small/full
+  and GUsmoke/numerics gates pass their original criteria. This remains
+  component qualification;KVoracle/model and both-phase comparisons are pending.
   Child`2734a78bb`also prepares its standalone B1device reader. Six committed
   host controls pass normally0with reaped empty ownership:one valid census
   and five generation/fixture/source/coverage/partial-link refusals. Its
@@ -1090,6 +1095,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   removed after verifying pushed permanent ancestry. The remaining child is
   the user's unfinished PR6verification task. Future
   Orca accounting uses the byte-identical permanent`tools/research/orca_scope.py`.
+  The next66-line`check_split_kv_oracle.py`adapter reuses the existing KV
+  oracle/graph driver,with explicit B1native selection and a fresh result root.
+  Commit its source and new smoke/full plan before execution;retain the
+  original14direct/20graph and795full/60graph/15physical-tail/12timing-shape
+  criteria. It adds no native build or inference setting and inherits no
+  old oracle/model/performance result.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
