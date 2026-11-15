@@ -1165,15 +1165,41 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `INTEL_LIBITTNOTIFY64=libunitrace_tool.so`. Fix`152b8d51c`accounts for that
   exact value and pinned version while still rejecting unknown keys;new
   environment gate closes at`79a63ad48`with normal0/closed ownership/no faults.
-  Source`cca56b17f`prepares a fresh clean/trace/trace/clean32Kcampaign with
-  three requests per process,first/subsequent scopes and a prospectively fixed
-  observer screen. Keep every earlier failed outcome;no source/pin refresh.
+  The third campaign remains failed:its trace reaches the predeclared256MiB
+  file cap and exits with SIGXFSZ(-25). Source`a8ee23524`prospectively permits
+  1GiB/4million events per trace;the new environment gate closes at`7ca3b66e2`.
+  The fourth campaign closes at`a1f90cdff`:four independent processes in
+  clean/trace/trace/clean order,three fresh32769-input/24-output thinking-on
+  requests each,all normal0,closed ownership and no fresh GPUfault.
+  Every paired first-use/warmed prompt,clientTTFT and total-duration ratio
+  passes the committed0.9..1.1observer screen. First-use prompt ratios are
+  1.058010/1.042343;warmed ratios1.081827/1.076385. Clean subsequent PP
+  observations are841.2/833.5and838.7/836.2;profiled observations remain
+  separate and are not clean speed/adoption evidence. Preserve all earlier
+  failed outcomes;no source/pin refresh.
   Orca Luna BDand native Luna-max BEreview are closed:the original no-defect
   report disposition is corrected,and actual`bench.sh`source pin coverage is
   verified. Main reads the short review,not the collection body.
-  Whole-request collection,observer-overhead and native prefill-drain proof
-  remain pending;the limiting hardware resource is still unknown. Existing
-  provider-origin and1.576/1.538overhead failures remain unchanged.
+  Main-authored offline analysis`d3557debd`passes11host controls and both
+  exact-trace/count/service/union conservation checks. In the four warmed
+  traced requests,median observed copy interval union is10.309796s and
+  kernel union28.658416s;copy/kernel overlap is about0.004s. The largest
+  individual kernel is the existing cached-Q/vector-KV ordered-exp QSA
+  prefix,6.799218/6.805407/6.798673/6.804860s. Copy types and top12normalized
+  kernel families plus conserved tail are retained in
+  `cpu-profiler-current.json:unitrace_current_request_resources_v1`.
+  Unknown-memory-to-device API requests total about46.2GB per warmed request;
+  PTI's`M`means unknown allocation type,not proof of host memory. These are
+  requested bytes and observed service intervals,not physical PCIe/VRAM
+  traffic,saturation or prefill critical-path attribution. Each request also
+  contains24decode tokens. Native prefill-drain proof and hardware saturation
+  remain unqualified;the limiting resource within the large kernel interval
+  is unresolved. Existing provider-origin and1.576/1.538overhead failures
+  remain unchanged. Do not select a native-exp2 API rename:the earlier pinned
+  Intel source audit found regular FP32exp2 forwarding to native_exp2,without
+  demonstrated different emitted code. Check prospective bank-slot changes
+  separately from kernel changes;the current scratch contract requires8192
+  chunks,so a larger chunk is not a settings-only experiment on this route.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
