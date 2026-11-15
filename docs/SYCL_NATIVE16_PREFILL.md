@@ -1142,6 +1142,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   validated scaling laws or measured physical setup costs;TTFT/first-use
   descriptions and individual samples remain in the result. Held-out48Kand
   longer/window-boundary checks on the retained fast path remain pending.
+  After source/recipe recovery and closed-owner checks,the ended B1prefill
+  and current PTIhost/probe raw roots are retired:887files/129719275bytes.
+  All40retained engine/fixture ELFs are unchanged;36PPsamples,failed phase
+  decision and current small-fixture clock/map evidence remain committed.
+  Do not resume the closed raw-parser plans;use a new committed plan.
   To keep that cohort's inputs frozen,temporary child`tune/request-profiler`
   from`10c6f2a69`holds the independent Main-authored request reader`5de1f6c49`.
   Its nine bounded host tests close normally0at`f0909e0f5`;normal raw output
