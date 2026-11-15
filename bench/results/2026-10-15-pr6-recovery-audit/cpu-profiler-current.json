@@ -12740,7 +12740,7 @@
     }
   },
   "prefill_copy_engine_v1": {
-    "stage": "built",
+    "stage": "failed",
     "external_inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
       "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
@@ -13555,7 +13555,7 @@
       "devcoredump": false
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "passed": true,
+    "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
@@ -13581,6 +13581,7 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v1/probe",
       "sha256": "770f72aae9eed67e94f73c18e88e48dd2103219f456012ab17be8dc66fb9d82f"
     },
+    "error": "RuntimeError('probe failed: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v1/owned/metadata-sycl.stderr')",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "1d58ab8f13816bf0bc61495d4ea89593908bd4a5",
@@ -13601,6 +13602,16 @@
         "files": 1,
         "sha256": "3d81cdcc93ce7b9bf56a3628f369dfe4b49e6e512c07767ae07ba084e8e9893e"
       }
+    },
+    "failure_detail": {
+      "native_exit_code": 1,
+      "owner_error": "RuntimeError('protocol EOF before expected line')",
+      "UR_boundary": "urContextCreate returns UR_RESULT_ERROR_UNKNOWN after successful B570 enumeration;no urEnqueue API calls",
+      "data_transfer_executed": false,
+      "raw_copy_list_created": false,
+      "trace_bytes": 9258,
+      "stderr_excerpt": " pid=1712099 operation=config-release result=0\nstrata UR validation API: pid=1712099 operation=postinit result=46\nstrata UR validation: pid=1712099 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\ncopy probe: level_zero backend failed with error: 2147483646 (UR_RESULT_ERROR_UNKNOWN)\n   ---> urDeviceRelease\n   <--- urDeviceRelease(.hDevice = 0xc8ef610) -> UR_RESULT_SUCCESS;\n   ---> urAdapterRelease\n   <--- urAdapterRelease(.hAdapter = 0xc745990) -> UR_RESULT_SUCCESS;\n",
+      "next": "Preserve failed attempt. Qualify increased loader logging in a new controller/plan with identical C++image and safety variables;do not advance transfer case."
     }
   }
 }
