@@ -11699,7 +11699,7 @@
         "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
       }
     },
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "56ce46ce46f801325a51b35cab0c87713214b6bb",
     "admission": {
       "schema": "strata-current-pti-host-admission-v1",
@@ -12020,7 +12020,7 @@
     ],
     "processes": [],
     "request_hashes": {},
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -12043,6 +12043,20 @@
       "stopping": "Stop first admission/owner/source/token/route/validation/fault/budget failure. No retry or changed hashes. Commit each closed process before the next. No default/adoption/full-context or sustainedTG claim from this screen."
     },
     "retention": "Retain individual18samples,actual bank/copy/placement/handoff outcomes and limits. Retire repeated routes/logs/caches/private receipts at closure;no new native build generation.",
+    "host_evidence": {
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_prefill_bank_compare",
+        "tools.test_current_request_profile",
+        "tools.test_request_profile_reader"
+      ]
+    },
     "sources_sha256": "5a84c71699efd0bf635e406b5821f7286cf44073a8b7c195bc2b3b6e3448375d",
     "environment_template_sha256": "acc519298717548ea5818dcabdfc1935be462f3dcb0c666021c2ee65839b526f",
     "model_assets_sha256": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e"
