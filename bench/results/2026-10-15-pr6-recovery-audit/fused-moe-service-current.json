@@ -376233,7 +376233,7 @@
       "remaining_paths": []
     },
     "build_controller_v2": {
-      "stage": "prepared",
+      "stage": "host_executed_postprocessing_failed",
       "prior_admission": {
         "source_commit": "07c323f9d6a090aa3147b3bc5b471d84b0878314",
         "passed": false,
@@ -376268,7 +376268,23 @@
       "ownership_closed": true,
       "GPU_executed": false,
       "native_built": false,
-      "retention": "Retain compact control/failure and source hashes;raw host logs only until verification at the next B1build boundary."
+      "retention": "Retain compact control/failure and source hashes;raw host logs only until verification at the next B1build boundary.",
+      "source_commit": "94799047b932dff3f97f07c5c92ebf000d9ed997",
+      "postprocessing_failure": "AttributeError(\"'tuple' object has no attribute 'get'\")",
+      "original_record_sha256": "3ee628f73a46dcd4434b724f03f055e6ce702a783846dbbb8e4021e0616c934b",
+      "observed_host_execution": {
+        "cases": 6,
+        "exit_code": 0,
+        "tests_passed": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "owner_absent": true,
+        "original_Git_source_files": 1193,
+        "source_unchanged": true,
+        "stderr_sha256": "8750d4b5acdce1e4d680a3a27eb5d68370ed8b7d37b619aa32e9e0049f881dae",
+        "record_unchanged": true
+      },
+      "decision": "Keep the original outer-controller failure. Its six committed test cases did execute normally0with unchanged inputs and closed ownership;no repeat or native/GPU result follows. The original Owner API returns(entry,stdout,stderr),which Main incorrectly passed as one entry after exit. Independent exact native/unit/recipe/build admission remains required;do not relabel the failed outer receipt as passed."
     }
   },
   "phase_kv_naming_reference_retirement_v1": {
