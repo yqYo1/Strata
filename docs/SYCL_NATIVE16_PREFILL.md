@@ -1243,72 +1243,53 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   29link-input recovery and14final-ELFchecks:197files/207539980bytes.
   Retain fast14508/12ELFs and namingA/14ELFs;shared receipts remain available.
   Four individual first/warmed arm aggregates bring the CSVto516points.
-  Main's next independent source question is a64-thread version of the current
-  measured QSA prefix,keeping its32-cell tile,cached Q,K/Vvector4and ordered
-  softmax. Main's separate`932e5d68d`prototype changes the required head
-  stepping,PVownership and eight accumulator fragments as one coherent unit;
-  `ee86239e5`adds an independent raw online-state probe for numerical checks.
-  No production dispatch uses it. Orca BHsource audit and native Luna-max BI
-  review find coherent ownership. The fresh9-object component build has725
-  compiler inputs/24link files,zero uncovered files and no archive reuse.
-  Original smokeV1fails a fixture assumption:real-head coverage expected
-  padded diagnostic head12to be refused,although both APIs accept0..15.
-  V2corrects that expectation but reaches its16MiBAPItrace budget;both failures
-  remain failed. Source`f20d1b751`keeps all12real-head checks and rejects16.
-  Controller`555b97bd8`separates the small traced padded-head smoke from full
-  real-head coverage. Its7stages close normally0,quiet/owned/no fresh fault,
-  with11cases each atpage4and16including262144physical cells and exactBF16
-  output/rawFP32online-state checks. These are component bounds,not model
-  physical-context qualification.
-  Clean geometry-only evidence`93db6b0e3`then records108eligible paired batches
-  across3independent processes. WG128/WG64aggregate milliseconds are
-  8.419768/12.238192(cap33gather),223.922593/306.412574(cap2051gather),and
-  138.013996/199.567987(cap2051clustered). All three processes are slower in
-  every shape;the original all-three-gain gates fail. RejectWG64and retain128;
-  do not launch its gated model comparison. This isolates geometry,not actual
-  production routing or modelPP/TG. Register pressure/occupancy remain unknown.
-  Original source/recipe,725compiler/24link inputs and all3finalELFs are
-  recovered before retiring the failed component:45files/8319408bytes.
-  Fast14508and namingAremain26ELFs. The six unused prototype/export/fixture/
-  controller files are retired to source`f20d1b751`and controller`555b97bd8`.
-  The independent padded-probe fixture correction remains for the next unit.
-  Closed traces and duplicate receipts are retired:30files/38054622bytes.
-  Six component CSVpoints bring the historical index to522rows.
-  Native Luna-max BJreview confirms that a256-thread/two-PV-fragment geometry
-  is distinct from the old256-GRFcompiler test. Main's next bounded unit starts
-  from ownedWG128,keeping32cells,pitch33,cachedQ,K/Vvec4,ordered-exp/math fixed.
-  Its16xSG16/head stepping/PVpartition/two accumulators must change together.
-  Main's separate`806e9a93c`prototype is now committed,with named kernel IDs
-  for fixture-only exact-device admission outside timing. Its first fresh build
-  from`561d30aa7`compiles six native objects but refuses the first oracle:
-  installedSYCL2026.2has no`kernel_device_specific::local_mem_size`descriptor.
-  Main also finds the selected ordered-exp loop still steps by8with16subgroups,
-  giving heads8..15duplicate writers;it must step16before any GPUexecution.
-  No fixture linked or GPUran. Original failure is preserved under
-  `qsa_prefill_workgroup256_build_v1`;after190Git source/721actual compiler-input
-  checks,its28partial files/2850941bytes are retired. Fast14508/namingA26ELFs
-  remain unchanged. Orca Luna BKreturns a9601-byte source report and its owned
-  process family/terminal closes;all14source pins match. Keep its softmax/QK
-  claims are corrected by native Luna-max BLreview:softmax ownership is wrong,
-  while the alleged inherited QKoverlap is false because paired subgroups write
-  distinct cell halves. All14source/report pins match. Main's repair uses
-  `Subgroups=Workgroup/16`for both head loops and a labelled device-local capacity
-  query alongside exact-kernel maximum/private queries. No baseline math changes.
-  Its fresh build_v2from`d1bd18deb`completes9objects/3ELFs,726compiler inputs
-  and24link files,with zero uncovered inputs. The first exact-kernel smoke then
-  refuses before anyURenqueue:`get_kernel_id`from anotherTUcannotfindtheID.
-  Native exits1,owners close,no new fault;preserve`check_v1`asfailed.
-  The installed2026.2lookup matches the known
-  [Intel cross-TU lookup report](https://github.com/intel/llvm/issues/22852).
-  After originalsource/recipe/census/all3ELFrecovery,the47files/8692224bytes
-  are retired. Main now co-locates reflection with the kernel submission and
-  returns scalar resource values to fixtures;the corrected math body is byte
-  identical apart from the kernel-name forward declaration. Freshbuild_v3and
-  check_v2must still prove exact normal/capture admission,traced smoke,all22
-  numerical/state/262144component cases and3-process timing.
-  No production route or performance is qualified yet.
-  M4and prefix-memory reuse remain conditional;fullmodel/handoff/decode/context
-  gates stay open. Source and reports are held only through this bounded decision.
+  The independent QSA workgroup experiments are now **closed and rejected**.
+  WG64source`f20d1b751`and WG256source`1fa754132`start from the owned WG128
+  kernel,holding32cells,pitch33,cachedQ,K/Vvec4,orderedFP32softmax and BF16
+  storage fixed. Required head stepping,PVpartition and8/2accumulator fragments
+  form each coherent geometry unit;no placement,chunk,decode or math change is
+  bundled. WG64evidence`93db6b0e3`and WG256evidence`2a2aca003`each retain108
+  eligible paired batches from3independent processes. Every shape is slower in
+  every process. The WG256cohort's WG128/WG256aggregate times are
+  8.532513/9.300179ms(cap33gather),223.887965/268.867288ms(cap2051gather),and
+  138.230953/184.714947ms(cap2051clustered). Preserve WG128;neither failed
+  performance gate permits a model trial. These direct-export comparisons
+  isolate geometry and include admission,prefix refresh and checked drain.
+  They do not qualify production dispatch,modelPP/TG or physical model context.
+  WG256executes all7stages normally0with closed owners,quiet validation and no
+  new fault. Its two11-case oracle suites include all12real heads,padded heads,
+  exactBF16output/rawFP32state and262144physical-cell boundaries. Exact normal/
+  capture kernels admit256threads;reported maximum1024,device-local capacity
+  131072B,requested dynamic local20036B and reported private0 are distinct
+  quantities. The last value does not prove zero spills or occupancy.
+  Original failed source/API checks remain failed. Before any GPUwork,Mainand
+  Luna-max BLcorrect the WG256softmax's duplicate head ownership;the report's
+  inheritedQKoverlap claim is false. The initial same-application,cross-TU
+  kernel-ID lookup then fails before anyURenqueue. Its observed2026.2symptom
+  matches the [Intel report](https://github.com/intel/llvm/issues/22852);
+  resolving IDs beside their submissions is verified by the fresh7-stage run.
+  Source/recipe and all final ELFs are recovered before retiring each ended
+  generation. The final WG256component alone retires47files/8679440bytes;
+  fast14508/12ELFs and namingA/14ELFs remain unchanged. Unused prototype
+  exports,fixtures,controllers and adapter-only hooks are retired to their
+  original Git commits;the shared oracle is restored exactly to`96d319326`.
+  Six additional component CSVpoints bring the cumulative index to528rows.
+  The source-derived demand model in`cpu-profiler-current.json`keeps padding
+  and32-cell tail work distinct from real-head work:the2051fixture executes
+  279172874240matrixMACs and has34410070016Bof logicalK/Vload upper demand.
+  These are not physical traffic or saturation measurements.
+  Native Luna-max BMretrieves three existing overlap/prefetch reports. Current
+  layer-major admission requires`m.copy==m.cs`;bank publication relies on that
+  ordering. An independent long-prefill upload/compute lane needs event-backed
+  publication,reader retirement,retained owners and checked drains as one
+  coherent unit,preserving math,decode and qualified runtime safety. The next
+  Orca source scope remains conditional until Main pins actual32Kroute/source/
+  staging and event/wait evidence plus current runtime/queue-group capabilities.
+  Recover existing committed route/provider evidence first;collect only its
+  missing capability/route facts. A separate transfer queue's existence and
+  about4msobserved overlap do not prove a usable independent engine or causal
+  speedup. A broader required redesign remains work to scope,not a reason to
+  end tuning. Full-model/task/RESTORE/physical262144gates stay open.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
