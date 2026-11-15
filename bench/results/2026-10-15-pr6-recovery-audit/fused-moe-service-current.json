@@ -388494,6 +388494,52 @@
       "fresh_faults": [],
       "model_speed_not_measured": true
     },
-    "resource_limit": "Exact normal/capture kernel maxima1024 admit256; device local capacity131072B and requested dynamic local20036B are different quantities. Reported private0 does not prove zero spills/occupancy. Source-derived matrix/load demand is under cpu-profiler-current.json:qsa_workgroup_resource_model_v1; physical VRAM/bus saturation remains unmeasured."
+    "resource_limit": "Exact normal/capture kernel maxima1024 admit256; device local capacity131072B and requested dynamic local20036B are different quantities. Reported private0 does not prove zero spills/occupancy. Source-derived matrix/load demand is under cpu-profiler-current.json:qsa_workgroup_resource_model_v1; physical VRAM/bus saturation remains unmeasured.",
+    "raw_retirement": {
+      "stage": "verified_for_retirement",
+      "roots": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-check-v1",
+          "files": 4,
+          "bytes": 87597,
+          "sha256_canonical_file_hashes": "9c814c1afbfd60783e729307cf2ca96ea33d4fcc4510db9c87173abcd1c343dc"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-check-v2",
+          "files": 22,
+          "bytes": 4156793,
+          "sha256_canonical_file_hashes": "052513e4eff9824560ffac8cb26e955e1af99e35f2a9d10853a874dae861089e"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-qsa-workgroup256-bk-20261115",
+          "files": 1,
+          "bytes": 9601,
+          "sha256_canonical_file_hashes": "c90eab39c002439eeb4a8ff820a64aa44cfd7335a02949c4f515177f49f6ccb2"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-qsa-workgroup256-bk-20261115-control",
+          "files": 22,
+          "bytes": 33921,
+          "sha256_canonical_file_hashes": "630a525a8460e4d8a6582578322886cdf53b4ec3cc9f9921db41a3425644f3df"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/qsa-workgroup256-source-review-bl-20261115",
+          "files": 3,
+          "bytes": 11212,
+          "sha256_canonical_file_hashes": "6386f5e13113c4dbb73f64aee2071751cab01ae986d6116cc5c0e039af6ca8e8"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-overlap-library-review-bm-20261115",
+          "files": 3,
+          "bytes": 32375,
+          "sha256_canonical_file_hashes": "408eb08a82dce46eaa6eb6d2e480b2cc9b387502dcfcf05bc73d89e5ed7b03db"
+        }
+      ],
+      "temporary_explicit_inventory": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-wg256-raw-retire-inventory.json",
+        "sha256": "405f9ba82965dbed6139d41c0dacd2d23bb91c0ce0bfb4c86e6d8ecfa0b0bafc"
+      },
+      "reason": "Closed rejected geometry cohort:all108batches/numerical/admission/provider/fault/source decisions preserved;known pre-enqueue lookup failure preserved separately. Consumed BK/BL source audit,repair proposal and BMduplicate review transactions have no remaining consumer. Existing three overlap/prefetch collection bodies remain at original paths for the next targeted audit;not included in this deletion."
+    }
   }
 }
