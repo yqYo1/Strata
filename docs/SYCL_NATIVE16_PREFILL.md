@@ -1329,18 +1329,46 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   readback/guards,refusals,reuse and cancellation. Both native processes close
   normally0with quiet validation,verified actual initialized providers and no
   new fault. This is byte/lifetime evidence,not model performance or adoption.
-  The prospectively committed`prefill_eager_model_v1`plan first checks actual
- 32KJIT/eager model routes,then three independent matched pairs at each of
- 32Kand64K,three thinking-on bench.sh requests per process. First-use and
-  warmed2samples remain separate;only U1varies in the same ELF. Model route,
-  matched speed and all broader gates are pending. Retain the two existing
-  phase references plus this explicitly bounded third candidate only through
-  the immediate U1decision;retire the superseded candidate before another build.
+  The closed`prefill_eager_model_v1`cohort,evidence`410f6cb8d`,passes two
+  traced model processes plus twelve clean processes:three independent matched
+  pairs at each of32Kand64K,three fresh thinking-on bench.sh requests per
+  process. All42requests and14native owners close normally0with quiet validation
+  and no new fault. Every paired request has identical actual job/fused-job/H2D
+  counts;its request hashes also match the historical fastest cohort. U1alone
+  passes its predeclared warmed PP/TTFTscreen in all three pairs at both lengths.
+  Eager/JITpaired geometric-mean warmed time ratios are0.9761108569at32Kand
+  0.9862228847at64K. Process-median PPis748.708→765.376at32Kand
+  911.589→926.929at64K;these medians and paired geometric means are different
+  summaries. Keep every first/warmed sample:the third32Kfirst eager/JITtime
+  ratio is1.103185748,so no all-pair first-use gain is claimed. Local warmed
+ 32K→64Kslopes are0.858330ms/token(JIT)and0.851109(eager);two lengths do
+  not qualify a fitted law,physical fixed cost or extrapolation. The CSVnow
+  has536points,including8first/warmed arm summaries from this cohort.
+  Absolute rates remain below historical fast14508PP871.574/1006.832.
+  `prefill_eager_original_control_v1`now reuses that exact retained dcb8ELF
+  under the current matched frontend/configuration/workloads. Its first32K
+  control closes normally at756.450warmed PP,also below its own historical
+  value;the64Kcontrol is pending. This is one process per length,not a new
+  paired cross-build gain/regression claim or a cause attribution. The normalized
+  shared compile commands have no differences;hardware saturation remains
+  unknown. Main keeps extended source-gap analysis delegated to bounded Orca
+  Luna. Preserve U1's positive same-image result and the faster historical
+  reference separately. Default adoption,source replacement,repeated sustained
+  decode/agent/task and fullphysical262144/tails/RESTORE remain unqualified.
+  Retain the two existing phase references plus this explicitly bounded third
+  candidate for the immediate original control/next-unit decision;retire the
+  superseded candidate before another build. U2contiguous-run copying remains
+  a separate unmeasured unit;first inspect actual demanded-ID runs rather than
+  assuming full-fit capacity512means all512experts are demanded. Reducing the
+  expert-major streaming bank is a different possible placement unit:verify all
+  callers,owner/admission and fallback requirements before comparing it. Do not
+  combine that allocation change with U2or an independent-engine queue policy.
   Existing copy-union10.309796s/kernel-union28.658416s includes24decode tokens,
   so it gives neither isolated prefill attribution nor physical-bus saturation.
-  Native events/lifetimes,matched32K/64KPP/TTFT,repeated decode preservation and
-  full-model/task/RESTORE/physical262144gates stay open. No new clean-speed or
-  throughput-target claim follows from these diagnostics or CPUtests.
+  Native byte/lifetime and U1same-image PP/TTFTscreens are now closed;the
+  original-reference control and broader adoption gates above remain open.
+  Metadata and CPUtests themselves qualify neither model speed nor saturation;
+  the U1speed claim comes only from its closed paired model cohort.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
