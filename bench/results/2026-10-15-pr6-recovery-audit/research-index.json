@@ -34319,7 +34319,7 @@
   },
   "upstream_baf_drafting_bw_20261115": {
     "classification": "decision support",
-    "state": "running",
+    "state": "worker_report_closed_resource_envelope_failed_review_pending",
     "model": "gpt-6-luna",
     "effort": "medium",
     "base": "13eedf552417a6a791a7d13c6597e24300ee3a09",
@@ -34331,7 +34331,7 @@
     "source_manifest_sha256": "742c1ecae75e99afc1dcf8a2b8326e64a433fd00e5d0037d101a322fcf6c7c39",
     "source_files": 245,
     "eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisites": {
         "actual_fetch": "2026-11-15T20:52:36.498148+00:00",
         "new_commits": 742,
@@ -34355,11 +34355,32 @@
       "worker_startup_status_before_investigation_verified": true,
       "scope": "strata-research-upstream-drafting-bw.scope"
     },
-    "launch_gap": "worker-start lacks required isolated --cd,strict-config,no-daemon,explicit network and excluded temporary directories;manual terminal plus Task/dispatch is the documented custom-argv lane."
+    "launch_gap": "worker-start lacks required isolated --cd,strict-config,no-daemon,explicit network and excluded temporary directories;manual terminal plus Task/dispatch is the documented custom-argv lane.",
+    "closure": {
+      "dispatch": "ctx_88495da6bec5",
+      "accepted_worker_done": "msg_ac6aa0a0cdcb",
+      "all_owned_pidfds_exited": true,
+      "full_native_age_seconds": 488.37000000011176,
+      "resource_sampler_qualified": false,
+      "terminal_closed": true,
+      "delivery_acknowledged": true
+    },
+    "resource_collection_failure": {
+      "cause": "Main put immutable source views inside capture/control directory,exceeding the collector256file cap. BXalso exceeds8MiB;not a worker code/output failure.",
+      "original_sampler_qualified": false,
+      "original_refusal_preserved": true,
+      "input_files": 245,
+      "captured_files": 262,
+      "captured_control_and_report_bytes": 5173738,
+      "native_session_bytes": 1036867,
+      "native_peak_RSS_bytes": 455856128,
+      "cgroup_peak_bytes": 353464320,
+      "future_rule": "Keep immutable source views in a separate read-only input tree and preflight actual capture count/bytes before launch. No retrospective gate change."
+    }
   },
   "upstream_baf_cpu_sycl_bx_20261115": {
     "classification": "decision support",
-    "state": "running",
+    "state": "worker_report_closed_resource_envelope_failed_review_pending",
     "model": "gpt-6-luna",
     "effort": "medium",
     "base": "13eedf552417a6a791a7d13c6597e24300ee3a09",
@@ -34371,7 +34392,7 @@
     "source_manifest_sha256": "1d78276c5b262c3a35f193fbc7e880e1c3b030a337afcdc2c36f77e2d7ed8ffb",
     "source_files": 732,
     "eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisites": {
         "actual_fetch": "2026-11-15T20:52:36.498148+00:00",
         "new_commits": 742,
@@ -34395,6 +34416,27 @@
       "worker_startup_status_before_investigation_verified": true,
       "scope": "strata-research-upstream-cpu-sycl-bx.scope"
     },
-    "launch_gap": "worker-start lacks required isolated --cd,strict-config,no-daemon,explicit network and excluded temporary directories;manual terminal plus Task/dispatch is the documented custom-argv lane."
+    "launch_gap": "worker-start lacks required isolated --cd,strict-config,no-daemon,explicit network and excluded temporary directories;manual terminal plus Task/dispatch is the documented custom-argv lane.",
+    "closure": {
+      "dispatch": "ctx_776bea0ba5c8",
+      "accepted_worker_done": "msg_4ed8016c71ce",
+      "all_owned_pidfds_exited": true,
+      "full_native_age_seconds": 555.7900000000373,
+      "resource_sampler_qualified": false,
+      "terminal_closed": true,
+      "delivery_acknowledged": true
+    },
+    "resource_collection_failure": {
+      "cause": "Main put immutable source views inside capture/control directory,exceeding the collector256file cap. BXalso exceeds8MiB;not a worker code/output failure.",
+      "original_sampler_qualified": false,
+      "original_refusal_preserved": true,
+      "input_files": 732,
+      "captured_files": 747,
+      "captured_control_and_report_bytes": 19403791,
+      "native_session_bytes": 1092852,
+      "native_peak_RSS_bytes": 435449856,
+      "cgroup_peak_bytes": 327925760,
+      "future_rule": "Keep immutable source views in a separate read-only input tree and preflight actual capture count/bytes before launch. No retrospective gate change."
+    }
   }
 }
