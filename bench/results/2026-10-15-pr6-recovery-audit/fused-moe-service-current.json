@@ -377784,6 +377784,188 @@
         "backing": 0,
         "head_mode": 0,
         "trace_errors_checked": true
+      },
+      {
+        "mode": "head2-backing0",
+        "passed": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "6698a5869a63147239dd66f17e4e04a67216eaacb8dcad53ed8b298441a7babc",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_immutable": true
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "d9e80d3149fdfe9b9d947a04b2a2f35e988e65cae0adf6a69c073622e6ea07f0",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_immutable": true
+          }
+        ],
+        "native_identity": {
+          "pid": 3569627,
+          "state": "S",
+          "ppid": 3565101,
+          "pgid": 3569627,
+          "sid": 3569627,
+          "start_ticks": 306542897,
+          "rss_bytes": 61960192
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3569627,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "owner": {
+          "dpas": 2,
+          "numeric": [
+            {
+              "cycle": -1,
+              "seed": 7,
+              "max_abs_pair_error": 4.17232513428e-07,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": -1,
+              "seed": 19,
+              "max_abs_pair_error": 3.8743019104e-07,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": 0,
+              "seed": 31,
+              "max_abs_pair_error": 4.17232513428e-07,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": 1,
+              "seed": 32,
+              "max_abs_pair_error": 4.17232513428e-07,
+              "outputs": 993280,
+              "oracle_rows": 543
+            }
+          ],
+          "transitions": [
+            {
+              "phase": "load",
+              "cycle": -1,
+              "wall_ns": 586548854,
+              "thread_cpu_ns": 572076005
+            },
+            {
+              "phase": "prepare",
+              "cycle": 0,
+              "wall_ns": 246433815,
+              "thread_cpu_ns": 246405613
+            },
+            {
+              "phase": "retire_readers",
+              "cycle": 0,
+              "wall_ns": 256372,
+              "thread_cpu_ns": 256541
+            },
+            {
+              "phase": "detach",
+              "cycle": 0,
+              "wall_ns": 94996993,
+              "thread_cpu_ns": 94316360
+            },
+            {
+              "phase": "restore",
+              "cycle": 0,
+              "wall_ns": 89650281,
+              "thread_cpu_ns": 68546991
+            },
+            {
+              "phase": "resume",
+              "cycle": 0,
+              "wall_ns": 38834025,
+              "thread_cpu_ns": 38833868
+            },
+            {
+              "phase": "prepare",
+              "cycle": 1,
+              "wall_ns": 249020764,
+              "thread_cpu_ns": 248827654
+            },
+            {
+              "phase": "retire_readers",
+              "cycle": 1,
+              "wall_ns": 225033,
+              "thread_cpu_ns": 225222
+            },
+            {
+              "phase": "detach",
+              "cycle": 1,
+              "wall_ns": 95374443,
+              "thread_cpu_ns": 94679616
+            },
+            {
+              "phase": "restore",
+              "cycle": 1,
+              "wall_ns": 188269080,
+              "thread_cpu_ns": 104319485
+            },
+            {
+              "phase": "resume",
+              "cycle": 1,
+              "wall_ns": 37064224,
+              "thread_cpu_ns": 37064772
+            }
+          ],
+          "restore_cycles": 2,
+          "blocked_cases": 4,
+          "graph_replays": 12,
+          "graphs_each_capture": 3,
+          "nodes_each_graph": 2,
+          "canonical_bytes": 521472000,
+          "layout": "sole-packed",
+          "primary_packed": true,
+          "partial_cases": 8,
+          "extra_device_weight_bytes": 0,
+          "extra_host_weight_bytes": 0,
+          "host_backed": false,
+          "max_alloc_bytes": 10132807680,
+          "canonical_immutable": true,
+          "scope": "Actual NativeHead and selector with fixture graphs;not production Verifier/model ownership or speed."
+        },
+        "assets_pre_post_match": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "backing": 0,
+        "head_mode": 2,
+        "trace_errors_checked": true
       }
     ],
     "passed": false,
@@ -377927,6 +378109,13 @@
       },
       {
         "label": "native-head0-backing0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "native-head2-backing0",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
