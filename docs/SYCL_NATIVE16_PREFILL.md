@@ -1338,8 +1338,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All26independently retained phase-reference ELFs remain unchanged. The CSV
   now contains550points,including two explicitly component-only transfer rows.
   Legacy/.cache/provenance holds remain separate from this closed cohort.
-  Material critical-path opportunity and that bounded plan are still
-  prerequisites to a further source-research scope. Initial source/header admission failures
+  The new E1safety prerequisite at`f411a5c40`isolates copy-ready and last-reader
+  tokens,explicit ordinal1work,source/bank retention,cancellation and dual-queue
+  drain. The fresh single-TUfixture closes compilation with641actual compiler
+  inputs/25link inputs;metadata alone is normal0with zero application enqueues,
+  verified providers and closed ownership. Event-dependent GPUwork,source-review
+  gates,ordinary RAMviews and actual Runtime integration remain pending.
+  `bench/sycl/prefill_upload_overlap.cpp`is an **unbuilt E2proposal**,not a
+  selected route:it fixes the copy primitive,payload,allocations and existing
+  Xe2dense kernel while moving only the readiness wait across independent
+  compute. A per-epoch reader fence limits lookahead to one expert. Its build,
+  Runtime-context safety,profiling and prospective timing plan are not yet
+  admitted;E1must qualify first. No model trial or new performance follows.
+  Generic feasibility scopes remain closed;any new audit needs its concrete
+  code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
   model library path selects its qualified /usr/local IGCwithout a system edit.
   A separate transfer queue's existence and
