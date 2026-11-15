@@ -1249,11 +1249,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stepping,PVownership and eight accumulator fragments as one coherent unit;
   `ee86239e5`adds an independent raw online-state probe for numerical checks.
   No production dispatch uses it. Orca BHsource audit and native Luna-max BI
-  review find coherent ownership;no speed or saturation follows. Build only a
-  bounded third component generation,with fresh baseline/runtime objects and
-  original compiler/SDKflags,then numerical/physical-cell fixtures before any
-  clean component timing. Direct-export timings isolate this geometry;actual
-  production routing and a whole-model screen would require later new gates.
+  review find coherent ownership. The fresh9-object component build has725
+  compiler inputs/24link files,zero uncovered files and no archive reuse.
+  Original smokeV1fails a fixture assumption:real-head coverage expected
+  padded diagnostic head12to be refused,although both APIs accept0..15.
+  V2corrects that expectation but reaches its16MiBAPItrace budget;both failures
+  remain failed. Source`f20d1b751`keeps all12real-head checks and rejects16.
+  Controller`555b97bd8`separates the small traced padded-head smoke from full
+  real-head coverage. Its7stages close normally0,quiet/owned/no fresh fault,
+  with11cases each atpage4and16including262144physical cells and exactBF16
+  output/rawFP32online-state checks. These are component bounds,not model
+  physical-context qualification.
+  Clean geometry-only evidence`93db6b0e3`then records108eligible paired batches
+  across3independent processes. WG128/WG64aggregate milliseconds are
+  8.419768/12.238192(cap33gather),223.922593/306.412574(cap2051gather),and
+  138.013996/199.567987(cap2051clustered). All three processes are slower in
+  every shape;the original all-three-gain gates fail. RejectWG64and retain128;
+  do not launch its gated model comparison. This isolates geometry,not actual
+  production routing or modelPP/TG. Register pressure/occupancy remain unknown.
+  Original source/recipe,725compiler/24link inputs and all3finalELFs are
+  recovered before retiring the failed component:45files/8319408bytes.
+  Fast14508and namingAremain26ELFs. The prototype source is held only until
+  the native Luna-max BJreview returns its short existing-library/next-unit
+  eligibility digest;then retire unused exports,fixtures and controllers.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
