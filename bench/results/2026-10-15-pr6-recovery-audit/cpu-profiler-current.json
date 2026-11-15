@@ -7527,7 +7527,7 @@
     "next": "Prepare and commit fresh v2fixture control/trace plan using current independently qualified environment."
   },
   "unitrace_current_runtime_probe_v2": {
-    "stage": "ready",
+    "stage": "closed",
     "controller": {
       "revision": "12e74253f017cf823177928b72739c95b52f082e",
       "files": 355
@@ -7735,11 +7735,76 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "label": "trace",
+        "passed": true,
+        "host_probe_accepted": true,
+        "clock_domain": "CLOCK_MONOTONIC_RAW",
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 33,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "981fa2dde82852838d3f4ced66ab8e5dd0faf4e09dee302cb36c446f5e127f5a"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 35,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "7bd6e35b2d050aacd2eaabf964b465ad413f7ac976fc7a3eef1ef3323476377d"
+          },
+          {
+            "phase": "before-exit",
+            "mapped_ELFs": 35,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "7bd6e35b2d050aacd2eaabf964b465ad413f7ac976fc7a3eef1ef3323476377d"
+          }
+        ],
+        "native_execution_attempted": true,
+        "GPU_work_admitted": true,
+        "GPU_executed": true,
+        "trace_sha256": "4b5bf838737ba79ce8509944958354b9dd0edfdea6121fd5729f145e841db69b",
+        "GPU_events": 680,
+        "GPU_service_ns": 3547077,
+        "observed_GPU_union_ns": 3547077,
+        "raw_clock_mapping_checked": true,
+        "native_exit_code": 0,
+        "enclosing_raw_ns": {
+          "begin": 3079234234410040,
+          "end": 3079239297118961
+        },
+        "preload_evidence": {
+          "pid": 4058181,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "active": false,
     "passed": true,
-    "complete": false,
+    "complete": true,
     "ownership_closed": true,
     "GPU_executed": true,
     "plan": "Commit source/plan;control then trace in separate owned processes,commit each closure. At before-runtime,runtime-ready,before-exit require actual target/preload/current mapped ELF hashes,first-init validation proof,ten submission cases and normal0. Trace needs nonempty complete GPUevents inside actual enclosing CLOCK_MONOTONIC_RAW process bounds with SystemTime1. Stop first identity,source,provider,owner,validation,fault,budget or clock failure;no retry.",

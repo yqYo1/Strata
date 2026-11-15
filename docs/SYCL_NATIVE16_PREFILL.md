@@ -1161,8 +1161,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source review rejects probe v1's historical provider environment:neither
   control nor trace was launched. Fix`74839ba48`uses the actual independently
   qualified environment and rejects old XeStrata provider paths before exec;
-  all four scoped host controls pass normally0. Fresh v2runtime/map/RAW-clock probing,32Krequest collection,
-  request draining and observer-overhead controls remain pending. Existing
+  all four scoped host controls pass normally0. Fresh v2control and trace
+  processes now close normally0with ten numerical cases each,exact actual
+  target/preload/current-provider maps and no fresh faults. The trace has
+  nonempty GPUintervals within the externally measured RAW process bounds.
+  This qualifies small-fixture safety/clock compatibility only;32Krequest
+  collection,request draining and observer-overhead controls remain pending. Existing
   provider-origin and1.576/1.538observer-overhead failures remain unchanged.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
