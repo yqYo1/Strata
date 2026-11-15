@@ -387874,5 +387874,101 @@
         "bytes": 1747992
       }
     }
+  },
+  "qsa_prefill_workgroup256_check_v1": {
+    "stage": "prepared",
+    "source_commit": "007772658e5ef3f9a7cbf2e6985940e3947ea4a8",
+    "source_sha256": "893d0681afd5b4f1d45f3ea97913e20220d81c1ce4cf2bcb9df9e8c084c99874",
+    "build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/record.json",
+      "sha256": "e6f985aeea3c255b4e034241a3f2527489d9b373b2e7f25997b6d774643692ea"
+    },
+    "build_evidence_sha256": "d0dac2f2769ab9e0d8ae45b950e0b4e3bf533ef8ef96f22fdc1be1dbbee5b247",
+    "binaries": {
+      "oracle4": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/oracle4",
+        "sha256": "3de2a9a7a8cff9588ac42188236fa8e81e7dcda8e315980e9545a6ee63e174c0",
+        "bytes": 1787344
+      },
+      "oracle16": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/oracle16",
+        "sha256": "2fca2f102a36ae330da80ae384c3ef15437c61e05199cda0ef8b19fe9cc0687b",
+        "bytes": 1787344
+      },
+      "bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/bench",
+        "sha256": "84d92b4120632b42d80dba8bad9a0340a931fa65599fa954d8431336500153a8",
+        "bytes": 1747992
+      }
+    },
+    "native_source_commit": "d1bd18deba205d426274dad303581398e93535af",
+    "baseline_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "environment_sha256": "4baaf4a0520288dcdeb9dde149db8a732813310184362e8b2bb16a175bcb772c",
+    "admission": {
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "files": 84
+      }
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "stages": [
+      "smoke",
+      "oracle4",
+      "oracle16",
+      "bench-smoke",
+      "timing0",
+      "timing1",
+      "timing2"
+    ],
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "whole_bytes": 805306368,
+    "budgets": {
+      "wall": 300,
+      "cpu": 600,
+      "rss_cap": 6442450944,
+      "text_cap": 16777216,
+      "file_cap": 67108864,
+      "total_cap": 134217728
+    },
+    "plan": {
+      "unit": "Only256versus128threads with required head stepping/PVpartition/twofragments. Named-kernel admission is fixture-only,outside timing;no compiler/workgroup attribute or runtime setting change. Same32cells,pitch33,cachedQ,KVvec4,orderedFP32softmax and BF16 storage;no kernel/model setting combination.",
+      "numerical": "First traced oracle16smoke(two real/padded boundary heads per KVhead) with actual maps/environment/pre-main validation. Then independent oracle4and16full cases:11cases each including262144live cells,masked/tail/invalid-input/alias/guard cases;all output bits match oldprefix33;rawFP32maximum/alpha/normalizer/sum match WG128ordered for all12realheads atpage4andreal/paddedheads atpage16. Then normal-export benchmark smoke. Any failure stops before timing.",
+      "timing": "Three independent normal bench processes0..2,each with3shapes(78453cells,8192queries,cap33gather or2051gather/clustered). Six paired rounds per shape,rotated order. Both direct exports refreshed/drained every call;references,resets and readbacks outside batches. cap33uses64calls,cap2051uses2calls;each timed batch>=50ms,inner clock-pair overhead*64<=1percent of50ms. Ineligible batch stops;no post-hoc size/criteria changes.",
+      "acceptance": "All source/ELF/actual-map/driver/boot/validation/owner/numerical gates pass,then per shape all3process candidate/baseline median ratios<1supports that shape only,without minimum gain. Model-stage planning is eligible only when both2051patterns pass;report33separately and retain128outside qualified shapes. This direct-export experiment explicitly isolates geometry;actual production dispatch/whole-model/handoff/quality/262144/TGneed later new gates.",
+      "stopping": "Stop first input,dependency,protocol,owner,validation,fault,clock,batch-floor or numerical failure;no retry/hashrefresh/speed-based exclusions. Commit each closed stage. All environment fixed before exec."
+    },
+    "retention": "Keep individual paired timings,conservation/numerical/actual-provider/closure outcomes and source/recipe identities;no modelPP/TG conversion. Retire raw/JITand extra component generation after selection/source recovery. No production route or model adoption.",
+    "environment_per_stage_sha256": {
+      "smoke": "05b89e6dc1595bc709118b45b02257b7892f4dcfa8d4fd4cd3b8898695164309",
+      "oracle4": "b1138a8f3dc19df6cd5dcf39534020b7c561c71d7a6c3d02c229a0267834483b",
+      "oracle16": "6d06aad521e6aebb6d0958fb639615ffb184fcb5e368deadcf857761635739dc",
+      "bench-smoke": "5681578dc82094a25e59d5060be97d1df6ef84b3c6004644f37d4dc11dd1c631",
+      "timing0": "254a80ff2c05527628a3c08489943bd677579f579d16e355a841c04b67774a06",
+      "timing1": "5f75dc0f7397f4449c84cbf409bc97ead06bbf7e83021fc2f50f5ca92519f320",
+      "timing2": "8c56da045e07a851bef45c7370fb1e8b2ef9675bb117eca0e771eb2fb13eedea"
+    }
   }
 }
