@@ -1331,6 +1331,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   around6.3GB/sbut does not establish either resource's physical saturation.
   Any copy/compute overlap test needs a new minimal ownership/dependency unit
   and prospective comparison;it cannot inherit this failed speed gate.
+  Exact Git source/recipe recovery for both probe images verifies355project
+  files,635actual compiler inputs and25link inputs each. The closed fixture,
+  one-shot controller and normal transaction output are retired to their
+  original commits;122external files/3000590bytes are physically removed.
+  All26independently retained phase-reference ELFs remain unchanged. The CSV
+  now contains550points,including two explicitly component-only transfer rows.
+  Legacy/.cache/provenance holds remain separate from this closed cohort.
   Material critical-path opportunity and that bounded plan are still
   prerequisites to a further source-research scope. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
