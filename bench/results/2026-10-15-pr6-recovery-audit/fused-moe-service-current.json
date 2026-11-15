@@ -386702,7 +386702,7 @@
     }
   },
   "qsa_prefill_workgroup256_build_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "561d30aa7b90f2fe14b2f146d66db2cac20c9a02",
     "input_sha256": "1f17780cf51c8895994cae1e2dc2be9b9042762b45463a8fe1c2a431f6e4947b",
     "SDK_sha256": "b188025f7ef99145cb418a0d550e2332c6ce4ea456a7c9e0625ef3f815c44c58",
@@ -387186,7 +387186,50 @@
         "output": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v1/bench"
       }
     ],
-    "results": [],
+    "results": [
+      {
+        "label": "native0",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native1",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native2",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native3",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native4",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native5",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "oracle4",
+        "passed": false,
+        "exit_code": 1,
+        "ownership_closed": true
+      }
+    ],
     "host_compile_only": true,
     "GPU_executed": false,
     "engine_built": false,
@@ -387204,6 +387247,13 @@
       "total_cap": 805306368
     },
     "plan": "Fresh nine-object/three-fixture component generation after B1retirement. No project archive/object reuse. Original five baseline/runtime source bytes and compiler/SDK/flags stay exact;new kernel and fixtures are committed. Validate actual-MD dependency closure and all owned headers before accepting each compile. Link only fresh objects through the pinned SYCL driver;capture actual external link files. Stop first source/dependency/compiler/owner/budget failure;no retry or hash refresh. This builds no inference engine and advances no GPU/model/speed gate.",
-    "retention": "Bounded third component generation,three ELFs,only through WG256numerical and matched timing decision;fast14508/12ELFs and namingA/14ELFs remain unchanged. Retire failed/rejected component after original source/recipe recovery."
+    "retention": "Bounded third component generation,three ELFs,only through WG256numerical and matched timing decision;fast14508/12ELFs and namingA/14ELFs remain unchanged. Retire failed/rejected component after original source/recipe recovery.",
+    "error": "ValueError(\"component build failed: oracle4 In file included from /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/qsa_prefill_workgroup256.cpp:5:\\n/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/qsa_prefill_workgroup256_admission.hpp:18:74: error: no member named 'local_mem_size' in namespace 'sycl::info::kernel_device_specific'\\n   18 |     const auto local=kernel.get_info<sycl::info::kernel_device_specific::local_mem_size>(device);\\n      |                                                                          ^~~~~~~~~~~~~~\\n1 error generated.\\n\")",
+    "pre_GPU_source_findings": {
+      "compile_refusal": "Diagnostic uses absent sycl::info::kernel_device_specific::local_mem_size in installed2026.2headers;first oracle compile exits1before anylink/GPUrun.",
+      "Main_source_review": "Selected OrderedExpbranch still has for(int h=subgroup;h<16;h+=8). With16subgroups this double-owns heads8..15;muststep16. Sourcecurrentlyheldfor independentOrcaaudit at806e9a93;do not edit pins or run GPU. Preservefailedbuild,thencommitnewcorrected source/recipe after report/review.",
+      "GPU_executed": false,
+      "next": "Finish existing ctx_e96dfe0ee932 audit without steering;verify source/API fixes and retire failed build before fresh generation."
+    }
   }
 }
