@@ -387876,7 +387876,7 @@
     }
   },
   "qsa_prefill_workgroup256_check_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "007772658e5ef3f9a7cbf2e6985940e3947ea4a8",
     "source_sha256": "893d0681afd5b4f1d45f3ea97913e20220d81c1ce4cf2bcb9df9e8c084c99874",
     "build_record": {
@@ -387939,11 +387939,60 @@
       "timing1",
       "timing2"
     ],
-    "results": [],
+    "results": [
+      {
+        "stage": "smoke",
+        "passed": false,
+        "complete": false,
+        "host_probe_accepted": false,
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 21,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "15d5ab306012b008b4d564b272dc18b67ef0aab7270491522ff62caaa8da543d"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "ed3aa506bd4371da8e594472782ae0daf2fc60cbedd7843a94ef82bf0c515610"
+          }
+        ],
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/oracle16",
+          "sha256": "2fca2f102a36ae330da80ae384c3ef15437c61e05199cda0ef8b19fe9cc0687b",
+          "bytes": 1787344
+        },
+        "process_observation": {
+          "pid": 502604,
+          "exit_code": 1,
+          "error": "RuntimeError('protocol EOF before expected line')",
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "observation_complete": false,
+          "elapsed_seconds": 1.9299934450536966
+        },
+        "error": "ValueError('normal closed fixture required')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "whole_bytes": 805306368,
     "budgets": {
       "wall": 300,
@@ -387969,6 +388018,25 @@
       "timing0": "254a80ff2c05527628a3c08489943bd677579f579d16e355a841c04b67774a06",
       "timing1": "5f75dc0f7397f4449c84cbf409bc97ead06bbf7e83021fc2f50f5ca92519f320",
       "timing2": "8c56da045e07a851bef45c7370fb1e8b2ef9675bb117eca0e771eb2fb13eedea"
+    },
+    "failure_detail": {
+      "pid": 502604,
+      "exit_code": 1,
+      "error": "RuntimeError('protocol EOF before expected line')",
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "observation_complete": false,
+      "elapsed_seconds": 1.9299934450536966,
+      "native_message": "No kernel found with the specified name",
+      "UR_enqueue_calls": 0,
+      "live_PID_absent": true,
+      "interpretation": "Exact kernel-name lookup from a differentfixtureTUfailsbefore any enqueue. Normal native exit1;no GPUfault/body/qualification. New recipe will co-locate get_kernel_id with namedkernel submissions and return scalar resources to fixture;math unchanged. Preserve original failed screen.",
+      "primary_source_reference": {
+        "spec": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+        "section": "4.11.6get_kernel_idrequiresnamedkernel somewhereinapplication,notnecessarilycallingTU",
+        "vendor_issue": "https://github.com/intel/llvm/issues/22852",
+        "limit": "Confirmedvendorreportis2026.1.1;this2026.2buildreproduces sameNoKernelerrorandinstalledCompileTimeKernelInfo lookup. Co-location workaround stillneedsfreshbuild/canary;do notattributeGPUfaultormathfailure."
+      }
     }
   }
 }
