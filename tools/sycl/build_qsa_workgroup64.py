@@ -18,7 +18,7 @@ import coherent_original_reuse as original
 import measurement_owner as owner
 
 P,B,RESULT=original.P,original.B,original.RESULT
-ROOT,KEY=B/'qsa-prefill-workgroup64-build-v1','qsa_prefill_workgroup64_build_v1'
+ROOT,KEY=B/'qsa-prefill-workgroup64-build-v2','qsa_prefill_workgroup64_build_v2'
 THIS='tools/sycl/build_qsa_workgroup64.py'
 BASE_SOURCE='14508acbf1b70eb994fdf37f97fb6d0f5cff7d43'
 BASE_ROOT=B/'coherent-prefill-native-v1'
@@ -56,8 +56,9 @@ def prepare():
     retirement=data['phase_kv_split_prefill_v1']['B1_build_retirement']
     require(retirement['stage']=='deleted_verified' and retirement['retained_ELFs']==26
         and not Path(retirement['root']).exists(),'retire ended B1before a bounded third generation')
-    proof=original.verify_original()
-    base=json.loads((BASE_ROOT/'record.json').read_text())
+    base,proof=original.verify_original()
+    require(type(proof) is dict and proof['original_native_source']==BASE_SOURCE,
+        'typed original native proof required')
     source_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
     names=subprocess.check_output(['git','ls-tree','-r','--name-only',source_commit,'--','include'],text=True).splitlines()
     names=sorted(set(names+SOURCES+NEW+[THIS,'tests/sycl/qsa_bf16_prefix.cpp',
