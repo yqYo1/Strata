@@ -34058,13 +34058,13 @@
     ]
   },
   "prefill_eager_upload_source_bp_20261115": {
-    "stage": "reviewed_pending_raw_retirement",
+    "stage": "reviewed_curated_reference",
     "classification": "decision support",
     "question": "Audit the newly implemented U1 eager-individual full-fit upload path, not generic independent-queue design. Follow actual caller to producer/consumer spans and outer owner drain; compare JIT/eager bytes, demanded expert map, source stride, reset/cancel/error behavior, private/full512 versus partial/nonempty/staging fallback, and unchanged decode. Identify concrete bugs or minimal coherent fixes with evidence, including counterexamples. Distinguish accepted enqueue from completion and shared in-order ordering from independent DMA overlap. No speed/adoption claims.",
     "policy_revision": "f0e3918f1d392b2dc107e36ad69a264fbc464b16",
     "task": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-upload-source-bp-20261115-control/Task.json",
-      "sha256": "cf11a7a100b7f39ca1ec3678bcef1d527d6081c38af26a797a4241d1f025ee9e"
+      "sha256": "cf11a7a100b7f39ca1ec3678bcef1d527d6081c38af26a797a4241d1f025ee9e",
+      "retired_after_curation": true
     },
     "launch_eligibility": {
       "schedulable_now": false,
@@ -34079,7 +34079,7 @@
       "words": 1600,
       "bytes": 24576
     },
-    "retention": "Curated source/protocol corrections suffice. Retire report/review/transaction roots at the next serialized safe boundary after active model1 closes;preserve compact hashes/ownership/resource evidence here. No model,performance or physical-context qualification.",
+    "retention": "Compact source/protocol corrections and original hashes are the maintained reference;31raw files/82176bytes and ended report/review/transaction roots physically retired. No model/performance/physical-context qualification.",
     "run": "run_46428b6b0f7d",
     "task_id": "task_8f49859a7321",
     "dispatch": "ctx_16f96a4c897e",
@@ -34098,7 +34098,8 @@
     "report": {
       "bytes": 6129,
       "words": 847,
-      "sha256": "b3ad4bb8875c8984ee7f2c10137fe55583986fdd688bcb23cd218776a72c23ef"
+      "sha256": "b3ad4bb8875c8984ee7f2c10137fe55583986fdd688bcb23cd218776a72c23ef",
+      "retired_verified": true
     },
     "review": {
       "agent": "/root/prefill_eager_upload_review_bq_20261115",
@@ -34106,7 +34107,8 @@
       "effort": "max",
       "sha256": "5b6d0c0249436cc4dcdb5e036bf64b768d7f2874342d7aef6508feda85fb379f",
       "digest_sha256": "1aefbc08e674020d3ac988b8cbd243c8925f4cbbf195308e94977ed924e075e1",
-      "Main_read_digest_only": true
+      "Main_read_digest_only": true,
+      "retired_verified": true
     },
     "closure": {
       "accepted_worker_done": true,
@@ -34137,7 +34139,6 @@
       "prerequisite": "A concrete changed failure/continuation implementation,or a new unresolved U1source defect."
     },
     "retirement": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-research-retirement-v1.json",
       "sha256": "b34ae2068b88c659a1aee451f4446e781a2cb8b27cf9209b0c3910f7d466254a",
       "files": 31,
       "bytes": 82176,
@@ -34146,7 +34147,9 @@
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-eager-upload-source-bp-20261115-control",
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-eager-upload-review-bq-20261115"
       ],
-      "stage": "planned_waiting_for_serialized_safe_boundary"
+      "stage": "retired_verified",
+      "manifest_retired": true,
+      "reason": "Completed source audit,Main digest curation and verified native/terminal closure;no remaining raw report,review or transaction consumer. Artifact deletion deferred until model1process closes."
     }
   }
 }
