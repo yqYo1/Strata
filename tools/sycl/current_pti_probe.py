@@ -20,7 +20,7 @@ import ur_validation as validation
 
 P, B = admission.CHECKOUT, admission.pti.B
 RESULT = admission.RESULT
-ROOT, KEY = B / 'current-pti-probe-v1', 'unitrace_current_runtime_probe_v1'
+ROOT, KEY = B / 'current-pti-probe-v2', 'unitrace_current_runtime_probe_v2'
 THIS = 'tools/sycl/current_pti_probe.py'
 require, digest = admission.require, admission.digest
 HOST_CHECK = dict(command=['/home/yayoi/.local/share/strata-sycl/venv/bin/python3',
@@ -65,6 +65,8 @@ def environment(row, label):
         STRATA_UR_PROBE_EXPECTED_LOADER=row['preload']['loader']['path'],
         LD_DEBUG='libs', UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
         UR_LOG_TRACING='level:info;flush:info;output:file,' + str(root / 'ur.log'))
+    require(not any('xestrata' in str(value).lower() for value in env.values()),
+            'historical XeStrata provider paths are not current runtime inputs')
     require(env.get('ZES_ENABLE_SYSMAN') == '0' and env.get('EnableDirectSubmission') == '0'
             and env.get('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD') == '1'
             and 'LD_PRELOAD' not in env and env.get('ZET_ENABLE_METRICS', '0') != '1',
@@ -101,8 +103,17 @@ def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'one fresh probe plan')
     admitted, fixture, preload = basis()
     require(set(preload)=={'loader','library'}, 'exact qualified validation preload schema')
+    qualified = validation.committed(admission.FUSED, ('phase_kv_split_device_v1',))
+    require(qualified['runtime_manifest'] == admitted['runtime_manifest']
+            and qualified['native_validation_probe'] == preload,
+            'environment and provider identity must come from the same qualified execution')
+    base = dict(qualified['environment'])
+    for name in ('TMPDIR', 'XDG_CACHE_HOME', 'STRATA_MEASUREMENT_ROOT'):
+        base.pop(name, None)
+    base['UR_LOG_VALIDATION'] = 'level:warning;flush:warning;output:stderr'
     row = dict(stage='prepared', controller=source_pin(), admission=admitted, fixture=fixture,
-        preload=preload, base_environment=json.loads((P/'tools/sycl/measurement_environment.json').read_text())['environment'],
+        preload=preload, base_environment=base,
+        qualified_environment_source='phase_kv_split_device_v1',
         boot=admitted['boot'], driver=admitted['driver'], results=[], active=False, passed=False, complete=False,
         ownership_closed=True, GPU_executed=False,
         plan='Commit source/plan;control then trace in separate owned processes,commit each closure. '
@@ -116,6 +127,9 @@ def prepare():
         retention='Use the existing fast14508same-build fixture and surviving collector;no binary generation. '
                   'Retain compact identity/map/clock/correctness/fault outcomes,retire normal trace/cache '
                   'after verification. Next consumer is a separately committed32Krequest/overhead plan.')
+    # Validate both pre-exec environments before creating any run directory.
+    for label in ('control', 'trace'):
+        environment(row,label);command(row,label)
     ROOT.mkdir(mode=0o700)
     for label in ('control', 'trace'):
         root=ROOT/label;root.mkdir()

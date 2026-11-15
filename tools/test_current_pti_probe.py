@@ -36,7 +36,9 @@ class CurrentPTIProbeTests(unittest.TestCase):
     def test_unsafe_flags_launcher_preload_and_unplanned_arm_are_refused(self):
         for key,value in [('ZES_ENABLE_SYSMAN','1'),('EnableDirectSubmission','1'),
                           ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','0'),('LD_PRELOAD','/unsafe'),
-                          ('ZET_ENABLE_METRICS','1')]:
+                          ('ZET_ENABLE_METRICS','1'),
+                          ('LD_LIBRARY_PATH','/old/XeStrata/runtime'),
+                          ('UR_ADAPTERS_FORCE_LOAD','/old/xestrata/libur.so')]:
             row=copy.deepcopy(self.row);row['base_environment'][key]=value
             with self.assertRaises(ValueError):probe.environment(row,'trace')
         with self.assertRaises(ValueError):probe.environment(self.row,'unknown')
