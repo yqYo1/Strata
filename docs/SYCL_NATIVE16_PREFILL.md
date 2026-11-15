@@ -1216,10 +1216,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The original host stage fails because its synthetic512completion footer
   still says384;no native model ran. Preserve that failure. Fixture-only
   correction`56ce46ce4`uses a fresh`prefill_bank512_compare_v2`root and plan,
-  whose19host controls pass. Cohort execution is pending;all3paired warmed
+  whose19host controls pass. Cohort execution is in progress;all3paired warmed
   prompt ratios must favor512before a separate64K/capacity/decode follow-up.
   Requested bank-copy reduction is a distinct mechanism result,not physical
   PCIe traffic. No kernel,chunk,decode or default change is bundled with it.
+  Orca Luna BFand native Luna-max BGreview are complete. All ten Taskpins
+  match;the report is consumed through its146-word review digest only.
+  Missing private-view/full-fit telemetry limits causal claims,without
+  invalidating the checked bank/allGPUplacement. No copy reduction rejects
+  that mechanism claim alone;a separate reproducible speed gain stays eligible.
+  The owned worker family and terminal are closed;CPU/wall upper bounds are
+  52.256379s/462.73s. Keep report/review bodies only through this cohort's
+  decision,then curate their findings and update the existing research-index
+  row at closure. Do not edit its frozen qualification metadata during the run.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
