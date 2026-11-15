@@ -33895,7 +33895,7 @@
   },
   "prefill_upload_event_lane_source_scope_20261115": {
     "classification": "decision support",
-    "schedulable_now": false,
+    "schedulable_now": true,
     "scope": "A bounded, source-specific feasibility audit of the actual 32K long-prefill H2D-to-compute graph under the retained avoidance settings. Trace layer-major admission and active route through copy_blob/source-view, ExpertCache fill/stage_private_expert_bank_enqueue, compat cudaMemcpyAsync/queue resolution, Runtime queue/event/wait APIs, GEMM/dequant submits, and checked drains. Establish whether a supported independent queue/index and explicit event edges can overlap the real upload with useful compute on the target while preserving source/cache/slot lifetimes. Compare only the smallest event-backed queue-split discriminator with the same-queue control. Do not repeat generic pipelining, command-list or profiler surveys; do not enable copy-offload, change math/decode placement, run hardware, or claim physical overlap from API possibility.",
     "first_source_cut": [
       "src/prefill/layer_major.inc: same-queue admission, source selection, per-layer upload, and checked drain",
@@ -33909,9 +33909,9 @@
       "Provide existing read-only records of the exact UR/Level Zero/driver versions and target queue-group/index capabilities under the qualified settings. Without them, the report can only restate architecture-level possibilities.",
       "Pin the compat source and relevant current inputs at source revision 2a2aca00361409d2c97dda65c99959df20109911. If the audit exposes a viable queue split, Main commits a separate matched plan before any build/run and retains numerical, event, bounds, failure-drain, dependency-path, and decode-preservation gates."
     ],
-    "eligibility_reason": "Queue capability prerequisite now partly supplied:one compute+copy and one copy-only engine under the original model provider selection. Actual effective source-view/staging markers and installed UR-to-engine selection remain unresolved. Do not dispatch a generic repeat or infer overlap from queue count.",
+    "eligibility_reason": "Actual first/warmed32Ksource-view1/staging0/private-layer geometries and checked same-queue/event mapping now supplied;metadata inventory verifies all production Runtime constructors on actual ordinal0/index0 under exact qualified providers/settings. Immutable14508source/compat and API contracts are pinned in the bounded Task.",
     "stop_condition": "If the active path cannot expose an independent supported engine/index under the required settings, or cannot preserve the bank/lifetime protocol without a broad redesign, return no eligible overlap candidate and retain the same-queue path.",
-    "stage": "conditional_not_dispatched",
+    "stage": "eligible_ready_for_Orca",
     "required_model": "gpt-6-luna",
     "required_effort": "medium",
     "required_via": "Orca",
@@ -33945,9 +33945,21 @@
       "fresh_faults": false,
       "copy_offload_force_disabled": true
     },
-    "remaining_prerequisites": [
-      "Exact active32K effective source-view/staging/full-fit markers and per-operation event/wait edges on14508/dcb8",
-      "Actual installed UR normal-queue/engine selection under copy-offload-disabled qualified settings;local llvm fbccb466 source is a reference,not proof of loaded adapter behavior"
-    ]
+    "remaining_prerequisites": [],
+    "task_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_upload_lane_bn_20261115-control/task.json",
+    "input_packet_sha256": "d9230e52de425a70eb9dc3b8f7ade6dcf933f03d30f0f769950a2a14bfb0febc",
+    "actual_route_evidence": {
+      "commit": "45260f03c",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "prefill_transfer_route_v1"
+    },
+    "actual_queue_evidence": {
+      "commit": "794bb2672269486793ea080303227e4c8f0cd3db",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "prefill_runtime_queues_v2",
+      "UR_enqueue_calls": 0,
+      "normal_exit": 0,
+      "closed": true
+    }
   }
 }
