@@ -492,6 +492,8 @@ def run(index, experiment=None):
                     if line.startswith('STRATA_PROFILE_GATE '):
                         break
                 require(json.loads(line.removeprefix('STRATA_PROFILE_GATE ')) == dict(stage=stage, phase='prefill-only', run=request), 'request gate differs')
+                if stage == 'end' and hasattr(policy, 'observe_gate'):
+                    policy.observe_gate(outcome, request, stage, time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
                 delta = [a - b for a, b in zip((time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns()), initial)]
                 require(min(delta) >= 0 and abs(delta[0] - delta[1]) <= 50000000, 'suspend/clock discontinuity')
                 claim = json.loads((root / 'engine-start.json').read_text())['native']
@@ -502,10 +504,14 @@ def run(index, experiment=None):
                 identity = claim
                 expected = engine_once.native_environment(native, env)
                 observed = dict(v.split(b'=', 1) for v in Path('/proc', str(claim['pid']), 'environ').read_bytes().split(b'\0') if b'=' in v)
-                require(all(observed.get(k.encode()) == v.encode() for k, v in expected.items())
-                        and set(observed) - {k.encode() for k in expected} <= {b'PWD', b'OLDPWD', b'SHLVL', b'_'}, 'native environment differs')
+                if hasattr(policy, 'check_native_environment'):
+                    policy.check_native_environment(observed, expected, plan)
+                else:
+                    require(all(observed.get(k.encode()) == v.encode() for k, v in expected.items())
+                            and set(observed) - {k.encode() for k in expected} <= {b'PWD', b'OLDPWD', b'SHLVL', b'_'}, 'native environment differs')
                 mapped = shared.runtime.executable_mappings(Path('/proc', str(claim['pid']), 'maps').read_text())
-                require(mapped <= set(files) | {native['binary']['path']} and {native['native_validation_probe']['loader']['path'],
+                extras = policy.native_extra_maps(plan) if hasattr(policy, 'native_extra_maps') else set()
+                require(mapped <= set(files) | {native['binary']['path']} | extras and extras <= mapped and {native['native_validation_probe']['loader']['path'],
                     native['native_validation_probe']['library']['path'], env['ZE_ENABLE_ALT_DRIVERS']} <= mapped, 'native providers differ')
                 shared.python_runtime.check_running(command['pid'], P / 'tools/strata_bench.py', manifest['selected'], env,
                     {v['realpath'] for v in manifest['inventory']['files'].values()}, plan['command'][2:])
@@ -520,6 +526,8 @@ def run(index, experiment=None):
                     persist()
                 print(f'Prefill process{index} read{plan["read"]} heads{plan["heads"]} '
                       f'kernel={plan.get("kernel", "original")} request{request} {stage}', flush=True)
+                if stage == 'begin' and hasattr(policy, 'observe_gate'):
+                    policy.observe_gate(outcome, request, stage, time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
                 io.send(b'continue\n')
             require(offsets['end'] > offsets['begin'], 'missing native request log window')
             log_windows.append(offsets)
@@ -534,7 +542,11 @@ def run(index, experiment=None):
         io.exit(1)
     try:
         owner = build.supervision.Owner(root / 'owned', persist)
+        if hasattr(policy, 'observe_lifetime'):
+            policy.observe_lifetime(outcome, 'begin', time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
         command, _, _ = owner.run('bench', plan['command'], env, P, interaction=interact, **row['budgets'])
+        if hasattr(policy, 'observe_lifetime'):
+            policy.observe_lifetime(outcome, 'end', time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
         require(build.supervision.closed(command) and command['exit_code'] == 0, 'model process failed')
         # The final request gate precedes native/runtime destruction. Only an
         # empty owned session proves that all validation-log producers exited.
@@ -589,6 +601,11 @@ def run(index, experiment=None):
             outcome['passed'] = False
             outcome.setdefault('error', 'Post-run driver differs from the frozen platform')
         outcome['passed'] = bool(outcome.get('passed') and outcome['complete'])
+        if outcome['passed'] and hasattr(policy, 'after_execution'):
+            try:
+                policy.after_execution(outcome, row, plan)
+            except BaseException as error:
+                outcome.update(passed=False, complete=False, error=repr(error))
         persist()
         row['processes'].append(outcome)
         row.update(stage='running' if outcome['passed'] else 'failed', active=bool(owner and owner.active),

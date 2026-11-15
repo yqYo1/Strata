@@ -57,7 +57,7 @@ def native_end(root, record, plan, boot, leader):
         native_plan=json.loads((root/'plan.json').read_text())
         guards.require(type(profiling) is dict and
             set(profiling)=={'mode','launcher','collector','session','environment'} and
-            profiling['mode'] in ('aggregate','trace') and
+            profiling['mode'] in ('aggregate','trace','whole_request') and
             type(profiling['environment']) is dict and
             set(profiling['environment']) <= {'UNITRACE_SystemTime','UNITRACE_TraceOutputDir','UNITRACE_FollowChildProcess','LD_DEBUG'} and
             profiling['environment'].get('UNITRACE_SystemTime')=='1' and

@@ -32,6 +32,11 @@ def native_environment(plan, parent):
 
 def profile_command(profiling, command):
     mode = profiling.get('mode', 'trace')
+    if mode == 'whole_request':
+        # Record from exec, including graph construction. Match the current
+        # qualified small fixture; no paused collection or host API tracing.
+        return [profiling['launcher']['path'], '--device-timing',
+                '--chrome-device-logging', '--chrome-event-buffer-size', '128', *command]
     if mode == 'trace':
         flags = ['--start-paused', '--host-timing', '--device-timing',
                  '--chrome-kernel-logging', '--chrome-call-logging',

@@ -19,7 +19,9 @@ import re
 SCHEMA = 'strata-request-profile-v1'
 PTI_REVISION = '4b6d74294cdc72766c00a9211fe2e4261ee94244'
 CLOCK = 'CLOCK_MONOTONIC_RAW'
-MAX_BYTES, MAX_EVENTS = 64 << 20, 1_000_000
+# Three actual long requests can emit hundreds of thousands of device events.
+# Controllers must predeclare this finite allowance and supervise their output.
+MAX_BYTES, MAX_EVENTS = 256 << 20, 1_000_000
 HOST_CHECK = dict(command=['/home/yayoi/.local/share/strata-sycl/venv/bin/python3',
     '-B', '-m', 'unittest', 'tools.test_request_profile_reader'],
     wall_seconds=90, CPU_seconds=60, RSS_bytes=1 << 30,
