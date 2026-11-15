@@ -247,6 +247,7 @@ def prepare():
     admitted,seed,gate=basis();revision=admission.pti.git(P,'rev-parse','HEAD').decode().strip()
     contract,python=runner.entry.python_manifest()
     row={k:copy.deepcopy(seed[k]) for k in ('configuration','environment_template','template','boot','driver','model_assets','native_validation_probe')}
+    row['model_assets']=runner.shared.models.model_pins(row['configuration'],row['model_assets'],full=True)
     row.update(stage='prepared',source_commit=revision,sources=source_pins(revision),admission=admitted,
         binary=admitted['binary'],native_source_commit=admitted['native_source_commit'],
         configuration_evidence_sha256=signature(core.compact(seed)),small_probe_evidence_sha256=gate,
