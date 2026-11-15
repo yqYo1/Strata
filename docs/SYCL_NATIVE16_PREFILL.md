@@ -1338,8 +1338,41 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All26independently retained phase-reference ELFs remain unchanged. The CSV
   now contains550points,including two explicitly component-only transfer rows.
   Legacy/.cache/provenance holds remain separate from this closed cohort.
-  Material critical-path opportunity and that bounded plan are still
-  prerequisites to a further source-research scope. Initial source/header admission failures
+  The new E1safety prerequisite at`f411a5c40`isolates copy-ready and last-reader
+  tokens,explicit ordinal1work,source/bank retention,cancellation and dual-queue
+  drain. The fresh single-TUfixture closes compilation with641actual compiler
+  inputs/25link inputs;metadata alone is normal0with zero application enqueues,
+  verified providers and closed ownership. Native Luna-max CCretracts the
+  unreachable event-leak claim and distinguishes fixture gaps from production
+  owner obligations. New committed host controls at`0a5513b67`expose two
+  bool/inttype-confusion cases in plain local/public dictionary equality;the
+  original failed outcome remains. Source`a49344a6f`uses typed JSONfingerprints
+  and adds actual exception unwinding after an accepted copy. Its fresh image
+  passes all three host test methods,five changed-input and two type-refusal
+  cases before compilation,and all seven E1native processes at`e0609f6fa`:
+  metadata,held forward,held second-reader overwrite,permanent hits,normal
+  cancellation,exception unwind and invalid/foreign-token refusal. Every
+  process is normal0,closed,quiet,with required providers through before-exit,
+  unchanged boot/driver and no fresh fault. The declared50msheld observations,
+  manual release and100mssubmission assertions pass. Its ELFis
+  b36d91d9ee7a28240bd25a7cf8732a2393cb262e40942e665b61fa965c7ea09b.
+  This qualifies these standalone hostUSMevent cases,not ordinary RAMviews,
+  actual Runtime::compute() integration,async-fault injection,overlap speed,
+  a production route,model quality or physical262144context.
+  Original Git source/recipe recovery verifies357/358project files and641
+  compiler/25link inputs for V1/V2. The ended metadata image and normal E1/audit
+  output are physically retired:85files/2431219bytes. Only V2's current ELF,
+  object,dependency file and private source/build record remain for the named
+  imminent E2qualification;review them at E2native build/closure. All26retained
+  phase-reference ELFs remain unchanged;legacy/.cache holds stay separate.
+  `bench/sycl/prefill_upload_overlap.cpp`is an **unbuilt E2proposal**,not a
+  selected route:it fixes the copy primitive,payload,allocations and existing
+  Xe2dense kernel while moving only the readiness wait across independent
+  compute. A per-epoch reader fence limits lookahead to one expert. Its build,
+  Runtime-context safety,profiling and prospective timing plan are not yet
+  admitted;E1must qualify first. No model trial or new performance follows.
+  Generic feasibility scopes remain closed;any new audit needs its concrete
+  code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
   model library path selects its qualified /usr/local IGCwithout a system edit.
   A separate transfer queue's existence and
