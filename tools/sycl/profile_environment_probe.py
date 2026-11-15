@@ -33,7 +33,10 @@ def save(row):
 def prepare():
     require(not ROOT.exists(),'one fresh diagnostic')
     prior=json.loads((campaign.ROOT/'record.json').read_text())
-    require(campaign.admission.committed_json(campaign.RESULT,P)[campaign.KEY]==campaign.compact(prior)
+    published=campaign.admission.committed_json(campaign.RESULT,P)[campaign.KEY]
+    # Only the later explanation is outside the original failed run receipt.
+    # Every original result/qualification field must still match exactly.
+    require({k:v for k,v in published.items() if k!='post_closure_analysis'}==campaign.compact(prior)
             and prior['stage']=='failed' and len(prior['processes'])==2
             and not prior['processes'][1]['model_executed'],'preserve the closed pre-long environment rejection')
     admitted,_,_=campaign.basis()
