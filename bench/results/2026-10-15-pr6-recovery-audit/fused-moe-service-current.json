@@ -385565,7 +385565,7 @@
     }
   },
   "qsa_prefill_workgroup64_check_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "844a5e8955bb50f928109866ecd2468e17d16925",
     "source_sha256": "948db2bb53e1b5992971825a12226e8c00233de9bc0f4e00b4a1961134a4e25e",
     "build_record": {
@@ -385628,11 +385628,51 @@
       "timing1",
       "timing2"
     ],
-    "results": [],
+    "results": [
+      {
+        "stage": "smoke",
+        "passed": false,
+        "complete": false,
+        "host_probe_accepted": false,
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 21,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "575eb61f3db879340be0c9921b2eee20217110df20f9d8a88aab640012b2c53d"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "873a8dd0ee850f4842419270053c34b1bc2b61dd9c7c340003a845123955ec4d"
+          }
+        ],
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v2/oracle4",
+          "sha256": "70fc7930c4d4429fa334b10f2009ac57747f598ab11e894105590e0f3b7debfa",
+          "bytes": 1780232
+        },
+        "error": "ValueError('normal closed fixture required')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "whole_bytes": 805306368,
     "budgets": {
       "wall": 300,
@@ -385658,6 +385698,16 @@
       "timing0": "01c7deb175383d18016d8629e89f5d78cb193e9de1019ad115a21eff4edbf6d2",
       "timing1": "0eddf89dad8190fc454076ccef259cbdfdc4d469e63738cad151b2a5745aed11",
       "timing2": "42e1590c100b4e820f4f24869fa2e862c1ec007e9403d7f562c4223391de0f64"
+    },
+    "failure_detail": {
+      "native_exit_code": 1,
+      "native_message": "invalid state capture submitted work",
+      "protocol_error": "RuntimeError('protocol EOF before expected line')",
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "live_PID_absent": true,
+      "original_owner_observation_complete": false,
+      "interpretation": "oracle4 adapts a padded16-head prefix probe but STRATA_QSA_REAL_HEAD_STATE expects head12 to be refused. Both unchanged WG128 and new WG64 probes accept0..15. No numerical case or timing gate passed;retain original failed outcome. Correct independent invalid-coordinate expectation to16 while retaining checks on all12real heads;new committed fixture/build/plan required."
     }
   }
 }
