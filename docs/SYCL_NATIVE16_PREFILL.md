@@ -1106,8 +1106,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   log-time95%Student interval(df2). Timing alone does not prove equivalence
   or speedup;this prospective criterion is only for the byte-identical naming
   control and changes neither prior failed preservation result. It does not
-  apply to the different B1/B2images. Both phase controls remain pending;
-  B1/B2stay unbuilt. The retained cross-build configuration receipt supplies
+  apply to the different B1/B2images. Prefill now closes all12processes and
+  36thinking-on exact24-output requests at32K/64K,with normal0,reaped empty
+  ownership,quiet validation,unchanged boot/driver,no fresh faults and15final
+  asset hashes. Evidence`0ec9f0132`passes all eight original median screens and
+  all eight naming-control intervals;individual slower pairs remain in place.
+  Named-image first/warmed medians are609.991/765.026PP at32769inputs and
+  798.745/919.334PP at65537;warmed client TTFT is43.0035/71.4715s.
+  Four CSVrows index this control,not a speedup. The added descriptive
+  `length_characterization`keeps both arms/first-use scopes separate:the named
+  warmed two-anchor interpolation is approximately
+  `T_ms(n)=14379.382+0.868334961*n`;its three block-local slopes are
+  0.868335/0.861969/0.843611ms/token. Two lengths cannot validate a law or
+  a held-out length,and the intercept is not a physical fixed cost. Source14508
+  remains the faster credible owned reference;this control does not replace it.
+  Sustained decode control remains pending;B1/B1s/B2stay unbuilt/unadopted.
+  The retained cross-build configuration receipt supplies
   its frozen environment/model manifest until these comparisons close;old
   generated configurations or full diagnostic captures are not their inputs.
   Its temporary-third-generation
