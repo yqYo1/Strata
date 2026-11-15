@@ -1406,8 +1406,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   physical retirement of2373files/286027510bytes. All26phase-reference ELFs
   remain unchanged;42individual samples and6conserved request workloads stay
   in the compact result. The trimmed U1source needs a fresh coherent engine
-  before further native/model qualification;host/syntax validation alone does
-  not relabel an existing executable or establish model adoption.
+  before further native/model qualification. The cleanup-only host/syntax
+  checker now closes normally0:production SYCLfixture syntax,6independent
+  byte cases and10refusals including failed-publication preservation pass.
+  It runs no GPUwork and does not relabel an existing executable or establish
+  model adoption.
   Fast14508and namingAphase references remain the two validated generations.
   Reducing the streaming-bank allocation or introducing an independent upload
   engine is a separate future unit,requiring its own opportunity,safety and

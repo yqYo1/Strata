@@ -12609,7 +12609,7 @@
     }
   },
   "prefill_individual_trim_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "compiler": {
       "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
       "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
@@ -12692,8 +12692,8 @@
       "PYTHONDONTWRITEBYTECODE": "1"
     },
     "expected": "prefill full-fit upload oracle: byte_cases=6 refusals=10 failure_publication=checked",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -12704,7 +12704,21 @@
       "oracle": "Six independent byte-layout cases,ten refusals including failed third enqueue;unchanged payload/guards/dense destination ranks and no failed-copy publication.",
       "gate": "Exact committed source/SDK/compiler/actual header/link inputs,normal0/empty owned sessions and exact oracle marker. Not native events,lifetimes,performance,model quality,handoff,decode or physical262144qualification."
     },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-individual-trim-host-v1/oracle",
+      "sha256": "d91bf636b33cd910a07d8115159512b9618408f4709a55995e4edb5bc0a2bebc"
+    },
     "source_commit": "f13b3baf46af5f104d11178a094f561ec1cfc8f6",
-    "source_sha256": "ea8de84992b846c2e89d12b676fe93e09bf5fadc085009ea5f267efc11c54ade"
+    "source_sha256": "ea8de84992b846c2e89d12b676fe93e09bf5fadc085009ea5f267efc11c54ade",
+    "actual_inputs": {
+      "compiled": {
+        "files": 709,
+        "sha256": "73f3a1d8de8087533a81987923502d5f1ed2b8290e361b10376aeb36ccb0cd1c"
+      },
+      "links": {
+        "files": 23,
+        "sha256": "4941a70116a0f6844b77f99afa652cfb5658e977775201391c7ff1664cc31c6b"
+      }
+    }
   }
 }
