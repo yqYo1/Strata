@@ -44,24 +44,33 @@ int run(bool overlap,std::size_t rows,std::size_t iterations) {
             for(std::size_t j=0;j<k;++j) hx.as<std::uint16_t>()[i*k+j]=half_bits(float(i%5+1)/32);
         for(std::size_t i=0;i<n;++i)
             for(std::size_t j=0;j<k;++j) hw.as<std::uint16_t>()[i*k+j]=half_bits(float(int(i%7)-3)/64);
-        for(std::size_t i=0;i<payload+2*guard;++i)
-            hb.as<std::uint8_t>()[i]=std::uint8_t(i*131u+17u);
+        for(std::size_t i=0;i<payload+2*guard;++i) {
+            const bool edge=i<guard || i>=guard+payload;
+            const auto at=edge ? 0 : i-guard;
+            hb.as<std::uint8_t>()[i]=edge ? 0xa5 : std::uint8_t((at*131u)^(at>>8)^(at>>16)^17u);
+            readback.as<std::uint8_t>()[i]=edge ? 0xa5 : 0xe7;
+        }
         runtime->wait(queue.memcpy(x.data(),hx.data(),xb));
         runtime->wait(queue.memcpy(w.data(),hw.data(),wb));
-        runtime->wait(queue.memcpy(bank.data(),hb.data(),payload+2*guard));
+        runtime->wait(queue.memcpy(bank.data(),readback.data(),payload+2*guard));
         gemm::Problem problem{x.as<std::uint16_t>(),w.as<std::uint16_t>(),y.as<std::uint16_t>(),
             std::int64_t(rows),std::int64_t(n),std::int64_t(k),0,gemm::Storage::fp16,gemm::Storage::fp16,0};
         runtime->wait(dense.beta0(problem,gemm::Tile::wide_128x128)); // Exact prewarm, outside timing.
-        auto verify=[&] {
+        auto verify=[&](bool copied) {
             runtime->wait(queue.memcpy(hy.data(),y.data(),yb));
             for(std::size_t i=0;i<rows;++i)
                 for(std::size_t j=0;j<n;++j)
                     need(hy.as<std::uint16_t>()[i*n+j]==half_bits(1.25f*float(i%5+1)*float(int(j%7)-3)),
                         "production dense output differs from exact fixture oracle");
             runtime->wait(queue.memcpy(readback.data(),bank.data(),payload+2*guard));
-            need(std::memcmp(hb.data(),readback.data(),payload+2*guard)==0,"copied bank/payload/guards changed");
+            for(std::size_t i=0;i<payload+2*guard;++i) {
+                const bool edge=i<guard || i>=guard+payload;
+                const auto expected=edge || copied ? hb.as<std::uint8_t>()[i] : std::uint8_t(0xe7);
+                need(readback.as<std::uint8_t>()[i]==expected,"copied bank/payload/guards changed");
+            }
         };
-        verify();gate("prewarm-ready");
+        verify(false);gate("prewarm-ready");
+        std::size_t accepted_copies=0;
         auto epoch=[&] {
             // Next epoch cannot copy until this epoch's compute and copy have
             // both retired on queue0. At most ONE transfer can look ahead.
@@ -69,17 +78,20 @@ int run(bool overlap,std::size_t rows,std::size_t iterations) {
             const auto copied=lane.copy_after(
                 {bank.as<std::uint8_t>()+guard,payload},
                 {hb.as<std::uint8_t>()+guard,payload},payload,prior);
+            need(copied.index==accepted_copies++,"timed copy generation/count differs");
             if(!overlap) lane.wait_ready(copied);
             dense.beta0(problem,gemm::Tile::wide_128x128);
             if(overlap) lane.wait_ready(copied);
         };
-        epoch();lane.drain();verify(); // Event path warmup, excluded.
+        epoch();lane.drain();verify(true); // Event path warmup, excluded.
+        runtime->wait(queue.memset(bank.as<std::uint8_t>()+guard,0xe7,payload));
         gate("before-timing");
         const auto begin=std::chrono::steady_clock::now();
         for(std::size_t i=0;i<iterations;++i) epoch();
         lane.drain();
         const auto seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();
-        verify();
+        need(accepted_copies==iterations+1,"timed upload count mismatch");
+        verify(true);
         std::cout.precision(17);
         std::cout << "{\"kind\":\"batch\",\"wall_s\":" << seconds << ",\"iterations\":" << iterations
                   << ",\"requested_H2D_bytes\":" << iterations*payload << ",\"gemm_rows\":" << rows
