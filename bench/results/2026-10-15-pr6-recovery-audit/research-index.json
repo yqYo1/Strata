@@ -33344,5 +33344,95 @@
       "aggregate_tree_RSS_peak_qualified": false,
       "closure_sha256": "a081d874b2a6be98e2d7319c6d49d06001ae477ae4b31deb50a5c1e64648c9dc"
     }
+  },
+  "prefill_expert_mn_tile_geometry_methods_20261115": {
+    "title": "Within-job M/N tile geometry for long-prefill routed-expert GEMM",
+    "finite_question": "Given Main-supplied, immutable long-prefill per-expert M-row counts, fixed K/N dimensions, operand formats, selected backend and current tile, compare a small set of documented M×N tile shapes and subgroup/workgroup mappings for the existing expert GEMM. Hold job formation/order, weight-decoding scheme, K reduction order, epilogue and runtime route fixed. For which M/N and tail regimes do useful matrix-engine operations, padding, A/B reuse, output-tile count, live registers/SLM and dispatch cost favor each shape? Separate source/spec facts from Xe2-specific resource claims that still require Main-owned measurement; give counterexamples and no local speed prediction.",
+    "classification": "knowledge_collection",
+    "related_prior_scope_keys": [
+      "long_prefill_skewed_expert_job_execution_scheduling_20261027",
+      "ragged_grouped_gemm_schedulers_20261031",
+      "native16-ragged-gemm-api-contract",
+      "intel_tile_programming_collection_scope",
+      "xe2_register_spill_collection_scope",
+      "current_operation_ceiling_scope"
+    ],
+    "why_nonduplicate_substantive": "The prior scopes cover mapping or balancing work across already-formed jobs, ragged adapter/API limits, generic tile-programming/autotuning, register-resource evidence, and source-derived ceilings. This scope freezes those choices and studies only the intra-job M×N tile shape and its useful-versus-padded work across an actual routed-row distribution. It yields a bounded candidate-selection reference if this stage is measured as relevant.",
+    "actual_offline_prerequisites": [
+      "Before dispatch, Main supplies the immutable current source/build revision, actual selected GEMM route and tile, M histogram from representative long-prefill chunks, K/N and operand-format facts, plus evidence that this stage is a candidate for tuning. Chunk length alone is insufficient.",
+      "Collection can use pinned official SYCL/oneAPI/Intel matrix-engine documentation and a few provenance-checked first-party GPU/HPC implementations or original papers/blogs. It needs no local build, test, GPU run, profiler, or code proposal; local hardware-performance claims remain out of scope."
+    ],
+    "report_working_budget_words": 4200,
+    "retrieval_consumer": "At the first source-pinned long-prefill expert-GEMM tile-shape decision after stage attribution. Main uses the report only to select a small bounded same-binary comparison; reassess and prune it after that decision if no concrete candidate uses it.",
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "AY native Luna-max nonduplication review of605short scope metadata entries.",
+      "missing_prerequisites": [
+        "Before dispatch, Main supplies the immutable current source/build revision, actual selected GEMM route and tile, M histogram from representative long-prefill chunks, K/N and operand-format facts, plus evidence that this stage is a candidate for tuning. Chunk length alone is insufficient."
+      ],
+      "reason": "The supplied task facts do not identify a measured GEMM stage, selected tile or routed M distribution. Keep conditional until Main supplies those pins and decides this is the next candidate; otherwise the report would be a generic tiling survey."
+    },
+    "review_digest_sha256": "92193273b309acdddc0dba0822b16489c5ce3ddf207c6928056e8893ea2c4179",
+    "stage": "conditional_not_dispatched"
+  },
+  "prefill_expert_split_k_occupancy_methods_20261115": {
+    "title": "Intra-job split-K for low-row long-prefill expert GEMM",
+    "finite_question": "For a source-confirmed long-prefill routed-expert GEMM with low or skewed M and large K, compare the existing unsplit K loop against a bounded split-K design that writes private FP32 partial tiles and performs one explicit final reduction. Keep job grouping, M/N output tile, weights, activation format and epilogue fixed. Identify the M/K and available-workgroup regimes where extra parallelism can beat scratch traffic, another dispatch and reduction work; trace numerical order, scratch bounds/lifetime, ownership and matrix-engine utilization. Contrast unsupported assumptions and examples where unsplit execution wins. Do not claim local benefit or broaden this to inter-job scheduling/atomic algorithms.",
+    "classification": "knowledge_collection",
+    "related_prior_scope_keys": [
+      "long_prefill_skewed_expert_job_execution_scheduling_20261027",
+      "ragged_grouped_gemm_schedulers_20261031",
+      "partial_sum_compression_methods_collection_20261027",
+      "gpu_native16_producer_consumer_materialization_methods_20261103",
+      "register_only_subgroup_gemm_barrier_methods_20261027"
+    ],
+    "why_nonduplicate_substantive": "Indexed scheduler scopes distribute or combine separate expert jobs; partial-sum compression concerns reducing distinct expert contributions; producer/consumer work covers stored precision and fusion. This question fixes those dimensions and isolates the K reduction of one GEMM across workgroups, including its extra FP32 scratch and final reduction. It is not a new name for job balancing, low-precision partial sums, or barrier removal.",
+    "actual_offline_prerequisites": [
+      "Before dispatch, Main supplies a pinned actual expert-GEMM shape distribution and selected output tile, plus stage evidence and a concrete reason to suspect insufficient independent work for the current unsplit K loop. No worker-side profiling or device trial is allowed.",
+      "Use official SYCL/Intel/TLA contracts and provenance-checked primary GPU/HPC/ASIC GEMM sources to compare only unsplit versus private-scratch split-K with a small bounded split-factor set. Preserve FP32 partial accumulation and exact final reduction requirements; no implementation proposal or local speed claim."
+    ],
+    "report_working_budget_words": 4200,
+    "retrieval_consumer": "Only if Main's attributed long-prefill expert-GEMM path shows an occupancy/work-availability question and the selected tile is pinned. Use the report to decide whether to commit a split-K comparison plan; otherwise do not dispatch or retain it.",
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "AY native Luna-max nonduplication review of605short scope metadata entries.",
+      "missing_prerequisites": [
+        "Before dispatch, Main supplies a pinned actual expert-GEMM shape distribution and selected output tile, plus stage evidence and a concrete reason to suspect insufficient independent work for the current unsplit K loop. No worker-side profiling or device trial is allowed."
+      ],
+      "reason": "No supplied fact establishes low CTA availability, a large-K bottleneck, or even that this GEMM is the current limiting stage. Wait for Main-owned stage/shape evidence; do not infer a need from the CPU thread or 8192-token chunk alone."
+    },
+    "review_digest_sha256": "92193273b309acdddc0dba0822b16489c5ce3ddf207c6928056e8893ea2c4179",
+    "stage": "conditional_not_dispatched"
+  },
+  "native16_chunk_capacity_16k_audit_az_20261115": {
+    "classification": "decision_support",
+    "stage": "eligible_source_audit",
+    "title": "Coherent native16 long-prefill 8192-to16384 chunk-capacity extension",
+    "question": "For the selected throughput/BF16 residual path with GDN_COLUMNS4,GDN_FP16=1,GDN_BARRIERS3=1,CHUNK64=0 and8192chunks,derive the smallest coherent extension supporting a16384outer chunk without disabling the fast family. Trace real typed producer/consumer limits,allocation/indexing/barrier assumptions,and GDN/QSA/MoE/MTPcallback/tail/full262144state boundaries. Separate true algorithmic/kernel capacities from admission guards. Compare extending typed kernels versus retaining8192internal tiles under a larger outer chunk. Give exact minimal files/required dependencies,workspace/max-single-allocation formulas and counterevidence. Do not merely recommend raising a guard,implement code,run tests or claim speed.",
+    "prior_evidence": "Owned fast14508 repeats1006.832PP64K at8192;hardware saturation is unknown. AX source review excludes scalar KV body as long-batch arithmetic. Current source explicitly limits GDNcolumns and typed execution to8192;the proposed size experiment is prospective resource/scheduling characterization,not an adopted optimization. Older6e40shape/time-model and generic hierarchical-scan collections do not audit this current native16 path.",
+    "scope_eligibility": {
+      "schedulable_now": true,
+      "prerequisite_evidence": "Concrete current path/settings and guard locations are supplied;Main pins current native9849source. This is a finite source extension/safety question needing no missing profiler or runtime metric. AQ/AR and subsequent source pilots prove the report-only constructor/lifecycle.",
+      "missing_prerequisites": [],
+      "nonduplication": "Current typed8192capacity and dependencies,not a generic chunk-size performance or scan survey. Preserve independent decode and both prefill strategies.",
+      "capacity": {
+        "checked_epoch": 1794709726.509338,
+        "MemAvailable_bytes": 28717338624,
+        "additional_workers": 1,
+        "hard_scope_memory_bytes": 4294967296,
+        "CPU_seconds": 180,
+        "native_age_seconds": 600,
+        "pids_max": 256,
+        "five_way_not_admitted": true
+      }
+    },
+    "assignment": {
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "via": "Orca",
+      "report_words": 1600
+    },
+    "review_point": "Native Luna-max source/safety/scope review;Main then implements only a justified minimum unit and owns bounded component/model/size comparisons. A capacity refusal is not evidence of a faster candidate.",
+    "retention": "Private report/review only through the imminent chunk-capacity unit decision. Retain compact source-backed constraints,not transaction history."
   }
 }
