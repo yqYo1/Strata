@@ -388673,7 +388673,7 @@
     }
   },
   "qsa_prefill_workgroup256_check_v2": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "47e35dc7e78365d87b0e5bff47f25849921a3ed4",
     "source_sha256": "45e60ec5ce3474fa6f1c7e76457cfa8a09fad823ee616fca278f1bdbd5864f82",
     "build_record": {
@@ -389976,10 +389976,457 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "timing2",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "maps": [
+          {
+            "phase": "before-runtime",
+            "mapped_ELFs": 21,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "34f3dfc64ad1552376d2e5132035567ea2f84af19ed0c877b18821421bdf7598"
+          },
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "754b5e4ead09c4742c771149dc131d4fb957b9535e50ab0614fae157383d9fa0"
+          },
+          {
+            "phase": "after-cleanup",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "754b5e4ead09c4742c771149dc131d4fb957b9535e50ab0614fae157383d9fa0"
+          }
+        ],
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/bench",
+          "sha256": "6358cd7e08fed19a1c74a6bd8aeb041a282f87460b68c6b516989c74870a5246",
+          "bytes": 1748280
+        },
+        "process_observation": {
+          "pid": 543214,
+          "exit_code": 0,
+          "error": null,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "observation_complete": true,
+          "elapsed_seconds": 34.590840318240225
+        },
+        "kernel_admission": [
+          {
+            "capture": 0,
+            "maximum": 1024,
+            "device_local": 131072,
+            "reported_private": 0,
+            "requested_dynamic_local": 20036
+          },
+          {
+            "capture": 1,
+            "maximum": 1024,
+            "device_local": 131072,
+            "reported_private": 0,
+            "requested_dynamic_local": 20036
+          }
+        ],
+        "samples": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 0,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 8.45433359375,
+            "batch_calls": 64,
+            "batch_ms": 541.07735
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 0,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 9.23994346875,
+            "batch_calls": 64,
+            "batch_ms": 591.356382
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 1,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 9.4210739375,
+            "batch_calls": 64,
+            "batch_ms": 602.948732
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 1,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 8.69555964062,
+            "batch_calls": 64,
+            "batch_ms": 556.515817
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 2,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 8.60611820312,
+            "batch_calls": 64,
+            "batch_ms": 550.791565
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 2,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 9.4249388125,
+            "batch_calls": 64,
+            "batch_ms": 603.196084
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 3,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 9.2507525,
+            "batch_calls": 64,
+            "batch_ms": 592.04816
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 3,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 8.45890721875,
+            "batch_calls": 64,
+            "batch_ms": 541.370062
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 4,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 8.448985375,
+            "batch_calls": 64,
+            "batch_ms": 540.735064
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 4,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 9.2406250625,
+            "batch_calls": 64,
+            "batch_ms": 591.400004
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 5,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 9.21902054688,
+            "batch_calls": 64,
+            "batch_ms": 590.017315
+          },
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "round": 5,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 8.775383375,
+            "batch_calls": 64,
+            "batch_ms": 561.624536
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 0,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 224.0646245,
+            "batch_calls": 2,
+            "batch_ms": 448.129249
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 0,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 269.128987,
+            "batch_calls": 2,
+            "batch_ms": 538.257974
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 1,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 268.4800535,
+            "batch_calls": 2,
+            "batch_ms": 536.960107
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 1,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 223.759934,
+            "batch_calls": 2,
+            "batch_ms": 447.519868
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 2,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 223.6928775,
+            "batch_calls": 2,
+            "batch_ms": 447.385755
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 2,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 268.849278,
+            "batch_calls": 2,
+            "batch_ms": 537.698556
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 3,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 269.3364955,
+            "batch_calls": 2,
+            "batch_ms": 538.672991
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 3,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 223.5718925,
+            "batch_calls": 2,
+            "batch_ms": 447.143785
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 4,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 223.684174,
+            "batch_calls": 2,
+            "batch_ms": 447.368348
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 4,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 268.823091,
+            "batch_calls": 2,
+            "batch_ms": 537.646182
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 5,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 268.754832,
+            "batch_calls": 2,
+            "batch_ms": 537.509664
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "round": 5,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 223.224035,
+            "batch_calls": 2,
+            "batch_ms": 446.44807
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 0,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 137.955296,
+            "batch_calls": 2,
+            "batch_ms": 275.910592
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 0,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 184.967794,
+            "batch_calls": 2,
+            "batch_ms": 369.935588
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 1,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 184.4530835,
+            "batch_calls": 2,
+            "batch_ms": 368.906167
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 1,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 138.011366,
+            "batch_calls": 2,
+            "batch_ms": 276.022732
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 2,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 137.972347,
+            "batch_calls": 2,
+            "batch_ms": 275.944694
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 2,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 184.6537965,
+            "batch_calls": 2,
+            "batch_ms": 369.307593
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 3,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 184.558376,
+            "batch_calls": 2,
+            "batch_ms": 369.116752
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 3,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 138.747518,
+            "batch_calls": 2,
+            "batch_ms": 277.495036
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 4,
+            "order": 0,
+            "variant": 0,
+            "milliseconds": 138.1046005,
+            "batch_calls": 2,
+            "batch_ms": 276.209201
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 4,
+            "order": 1,
+            "variant": 1,
+            "milliseconds": 184.525308,
+            "batch_calls": 2,
+            "batch_ms": 369.050616
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 5,
+            "order": 0,
+            "variant": 1,
+            "milliseconds": 184.7066395,
+            "batch_calls": 2,
+            "batch_ms": 369.413279
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "round": 5,
+            "order": 1,
+            "variant": 0,
+            "milliseconds": 138.269145,
+            "batch_calls": 2,
+            "batch_ms": 276.53829
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 543214,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "41dc5d1812b52c37b7b25248f34fbd417575a07d47107c2d70f357847406f311",
+        "stderr_sha256": "dd18870cccdb9573b5170a87605421b2f858593871a78535da2ef82ee822e57c",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "whole_bytes": 805306368,
@@ -390007,6 +390454,46 @@
       "timing0": "5ccbe6633fb98e6482a300ef7adecc71340e406f3d57a662c527bff2116ad40f",
       "timing1": "a53588c0d9bab2e27372e4681407b8e4f64cb80f19ccb1094d2510123893005e",
       "timing2": "b82b3ddf4e51937340096666b6210849e749e0686f9fb49aaf39a6bf3c4d7b47"
+    },
+    "decision": {
+      "shapes": [
+        {
+          "cap": 33,
+          "pattern": "gather",
+          "process_median_time_ratios": [
+            1.091364312687352,
+            1.0866569940261965,
+            1.0835833586747567
+          ],
+          "all_processes_faster": false
+        },
+        {
+          "cap": 2051,
+          "pattern": "gather",
+          "process_median_time_ratios": [
+            1.2033438608420244,
+            1.2004967587108892,
+            1.2018326983855139
+          ],
+          "all_processes_faster": false
+        },
+        {
+          "cap": 2051,
+          "pattern": "clustered",
+          "process_median_time_ratios": [
+            1.336255845998927,
+            1.336348913950646,
+            1.337163428758112
+          ],
+          "all_processes_faster": false
+        }
+      ],
+      "wide_geometry_screen_passed": false,
+      "production_dispatch_qualified": false,
+      "model_adopted": false,
+      "model_PP_qualified": false,
+      "physical262144_model_qualified": false,
+      "sustained_TG_qualified": false
     }
   }
 }
