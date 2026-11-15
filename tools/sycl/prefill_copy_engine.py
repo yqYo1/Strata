@@ -18,9 +18,9 @@ import measurement_owner as owned
 import ur_validation
 
 P, B = original.P, original.B
-ROOT = B/'prefill-copy-engine-v2'
+ROOT = B/'prefill-copy-engine-v3'
 RESULT = P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-KEY = 'prefill_copy_engine_v2'
+KEY = 'prefill_copy_engine_v3'
 SOURCE = 'tests/sycl/prefill_copy_engine.cpp'
 PREFIXES = ['tools/sycl', SOURCE, 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
 LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
@@ -32,20 +32,25 @@ write = original.coherent.build.common.write
 git = original.coherent.build.common.source.git
 
 
+def compact(row):
+    value = {k:v for k,v in row.items() if k not in ('project', 'foundation', 'actual_inputs', 'commands')}
+    value['project'] = {k:v for k,v in row['project'].items() if k != 'source_sha256'}
+    value['foundation_sha256'] = original.fingerprint(row['foundation'])
+    if 'actual_inputs' in row:
+        value['actual_inputs'] = {k:dict(files=len(v), sha256=original.fingerprint(v)) for k,v in row['actual_inputs'].items()}
+    return value
+
+
 def save(row):
     write(ROOT/'record.json', row)
     data = json.loads(RESULT.read_text())
-    data[KEY] = {k:v for k,v in row.items() if k not in ('project', 'foundation', 'actual_inputs', 'commands')}
-    data[KEY]['project'] = {k:v for k,v in row['project'].items() if k != 'source_sha256'}
-    data[KEY]['foundation_sha256'] = original.fingerprint(row['foundation'])
-    if 'actual_inputs' in row:
-        data[KEY]['actual_inputs'] = {k:dict(files=len(v), sha256=original.fingerprint(v)) for k,v in row['actual_inputs'].items()}
+    data[KEY] = compact(row)
     write(RESULT, data)
 
 
 def check(row, committed=True):
     if committed:
-        require(json.loads(RESULT.read_text())[KEY] == ur_validation.committed(RESULT, (KEY,)), 'commit exact stage first')
+        require(compact(row) == ur_validation.committed(RESULT, (KEY,)), 'commit exact local plan/stage first')
     pin = original.coherent.build.common.source.pin(P, PREFIXES)
     require(row['project']['source_sha256'] == pin['source_sha256'], 'frozen source/controller changed')
     native, _ = original.verify_original(expected=row['foundation'])
@@ -122,8 +127,8 @@ def prepare():
         'original probe native source must be recoverable and unchanged')
     row.update(recipe=old['recipe'],native_source_commit=old['project']['revision'],
         reused_native=dict(record_path=str(B/'prefill-copy-engine-v1/record.json'),
-            record_sha256=sha(B/'prefill-copy-engine-v1/record.json'),binary=old['binary'],actual_inputs=old['actual_inputs']))
-    row['plan']['previous_failure'] = 'V1 metadata SYCL urContextCreate returned UNKNOWN before any work. Preserve V1failed. V2changes only loader logging enablement;identical original C++image/recipe/compiler/SDK/runtime/safety and validation settings. Metadata gates precede any transfer.'
+            record_sha256=sha(B/'prefill-copy-engine-v1/record.json'),binary=old['binary']))
+    row['plan']['previous_failure'] = 'V1 metadata SYCL urContextCreate returned UNKNOWN before any work. Preserve V1failed. V2draft never executed. V3requires local plan to equal committed public plan and adds loader logging enablement;identical original C++image/recipe/compiler/SDK/runtime/safety and validation settings. Metadata gates precede any transfer.'
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache','owned'): (ROOT/name).mkdir(mode=0o700)
     save(row)
@@ -162,8 +167,9 @@ def execute(action):
                 reuse = row['reused_native']
                 require(sha(reuse['record_path']) == reuse['record_sha256']
                     and sha(reuse['binary']['path']) == reuse['binary']['sha256'], 'original probe receipt/ELF changed')
-                require(all(sha(p) == h for g in reuse['actual_inputs'].values() for p,h in g.items()), 'original actual compiler/link/object inputs changed')
-                row.update(stage='built',actual_inputs=reuse['actual_inputs'],binary=reuse['binary'],passed=True)
+                old = json.loads(Path(reuse['record_path']).read_text())
+                require(all(sha(p) == h for g in old['actual_inputs'].values() for p,h in g.items()), 'original actual compiler/link/object inputs changed')
+                row.update(stage='built',actual_inputs=old['actual_inputs'],binary=reuse['binary'],passed=True)
                 print('Reused exact V1 native image;only committed logging/controller plan changes.',flush=True)
                 return
             allowed = permit(native,row); actual = dict(compiled={},links={},objects={})
