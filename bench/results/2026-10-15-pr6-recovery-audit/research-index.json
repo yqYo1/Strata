@@ -34258,13 +34258,11 @@
   },
   "prefill_coalesced_upload_source_bu_20261115": {
     "classification": "decision support",
-    "state": "running",
+    "state": "reviewed_closed",
     "model": "gpt-6-luna",
     "effort": "medium",
-    "policy_commit": "b4e0b42e4a8564c7870d715c1b31186939c42524",
-    "task_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-coalesced-upload-source-bu-20261115-control/Task.json",
-    "task_sha256": "614b0caaebcf929f26bfcbd1005f1102013e9ae69971cc56e3f53392f84ee459",
-    "report_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-coalesced-upload-source-bu-20261115/report.md",
+    "source_commit": "b4e0b42e4a8564c7870d715c1b31186939c42524",
+    "native_overlay_commit": "be82383e8b6b9a15522272b31d587d9081a6e9b5",
     "eligibility": {
       "schedulable_now": true,
       "prerequisites": {
@@ -34273,61 +34271,49 @@
         "new_question": "Native coalesced address/publication/lifetime and production-size copy;not a repeat of U1 or generic queue work."
       }
     },
-    "retention": "Native Luna-max report review;Main digest only. Curate useful corrections and retire transactions after source/fixture decision. No source adoption from report.",
-    "run": "run_c4065074d3c1",
-    "task": "task_cd303f8df06c",
-    "dispatch": "ctx_f4e1d752ea08",
-    "terminal": "term_e3ead5be-2e39-4858-8c70-a72de53b0fea",
-    "execution": {
-      "native_identity": {
-        "pid": 1309989,
-        "parent": 1309857,
-        "sid": 1309857,
-        "start_ticks": 311806771,
-        "argv": [
-          "/home/yayoi/.local/bin/codex",
-          "--no-daemon",
-          "--strict-config",
-          "--model",
-          "gpt-6-luna",
-          "--config",
-          "model_reasoning_effort=\"medium\"",
-          "--sandbox",
-          "workspace-write",
-          "--ask-for-approval",
-          "never",
-          "--cd",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-coalesced-upload-source-bu-20261115",
-          "--config",
-          "sandbox_workspace_write.network_access=true",
-          "--config",
-          "sandbox_workspace_write.exclude_tmpdir_env_var=true",
-          "--config",
-          "sandbox_workspace_write.exclude_slash_tmp=true",
-          "--no-alt-screen",
-          "--search"
-        ],
-        "executable": {
-          "path": "/home/yayoi/.codex/packages/standalone/releases/0.167.1-x86_64-unknown-linux-musl/bin/codex",
-          "sha256": "dd5bfdf19d794dcc6fb482d2d5a2d9fb31d11f6caa44b303bb72890d461e8a02"
-        }
-      },
-      "turn_context": {
-        "cwd": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-coalesced-upload-source-bu-20261115",
-        "model": "gpt-6-luna",
-        "effort": "medium",
-        "approval_policy": "never",
-        "sandbox_policy": {
-          "type": "workspace-write",
-          "network_access": true,
-          "exclude_tmpdir_env_var": true,
-          "exclude_slash_tmp": true
-        }
-      },
+    "task_sha256": "614b0caaebcf929f26bfcbd1005f1102013e9ae69971cc56e3f53392f84ee459",
+    "source_pin_count": 13,
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-coalesced-upload-source-bu-20261115/report.md",
+      "sha256": "f5f717aa4287c3d8eecbc34bf99269647b67636793a5bda1e363ea7370b1bbac",
+      "bytes": 6033
+    },
+    "review": {
+      "agent": "/root/prefill_coalesced_source_review_bv_20261115",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-coalesced-source-review-bv-20261115/review.json",
+      "sha256": "c6307b96b3b7dd73890ca9db15c05c87004ca4b93501f23a0af84a41d1a721fd",
+      "digest_sha256": "101cda14434c019a3baff37ec646ebd69db9bf67fe8b7d03d64417c23e85d09d",
+      "Main_read_digest_only": true
+    },
+    "findings": [
+      "Static mapping,equal-stride coalescing,accepted-before-publication,strided individual fallback and per-expert accounting supported;no concrete reachable defect established.",
+      "Report alone does not qualify large native execution,speed,physical DMA/model/decode/fullcontext. Main separately completed all four same-build native stages."
+    ],
+    "correction": {
+      "transitive_header": "include/strata/prefill/layer_major_plan.hpp",
+      "sha256": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+      "meaning": "Not a Task pin. Main separately verifies current,Task revision b4e0b42e4,original14508 and actual compiler input all match."
+    },
+    "closure": {
+      "accepted_worker_done": true,
+      "all_owned_pidfds_exited": true,
+      "terminal_closed": true,
+      "delivery_acknowledged": true,
       "worker_status_before_investigation_verified": true,
-      "scope": "strata-research-prefill-coalesced-bu.scope",
-      "raw_control_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-coalesced-upload-source-bu-20261115-control",
-      "launch_gap": "worker-start cannot express isolated --cd,strict-config,no-daemon,explicit network and excluded temp directories;manual terminal+Task/dispatch required."
-    }
+      "full_native_age_seconds": 236.910000000149,
+      "CPU_seconds_upper": 35.765001,
+      "native_peak_RSS_bytes": 450416640,
+      "cgroup_peak_bytes": 343875584,
+      "captured_text_upper_bytes": 1205084,
+      "within_budgets": true
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "question": "Do not repeat this source audit;reopen only for changed copy/publication/continuation semantics or a concrete new failure. Whole-model matched U2timing is Main next.",
+      "prerequisite": "New source/measurement evidence beyond the now-tested same-queue run-copy unit."
+    },
+    "retention": "Useful static conclusion and transitive-pin caveat curated here. Raw report/transaction/review roots retire at U2 comparison closure after this result is pushed."
   }
 }
