@@ -17,10 +17,10 @@ import measurement_owner as owner_api
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'queue-capability-v1'
+ROOT = B / 'queue-capability-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
 FUSED = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'prefill_queue_capability_v1'
+KEY = 'prefill_queue_capability_v2'
 CC = Path('/usr/bin/gcc').resolve()
 LOADER = Path('/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0')
 NEO = Path('/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758')
@@ -71,7 +71,8 @@ def verify(row):
     require(all(sha(p) == h for p, h in row['external_inputs'].items()), 'external input changed')
     compiler = row['compiler_manifest']
     require(sha(compiler['path']) == compiler['sha256'], 'compiler manifest changed')
-    files = json.loads(Path(compiler['path']).read_text())['files']
+    files = {p: h for p, h in json.loads(Path(compiler['path']).read_text())['files'].items()
+             if not Path(p).is_relative_to(P)}
     require(str(CC) in files and all(sha(p) == h for p, h in files.items()), 'original C compiler closure changed')
     manifest = row['runtime_manifest']
     require(sha(manifest['path']) == manifest['sha256'], 'runtime manifest changed')
@@ -108,6 +109,10 @@ def main():
     guards.no_model_owners([])
     if action == 'prepare':
         require(KEY not in record and not ROOT.exists(), 'no implicit retry')
+        previous = record.get('prefill_queue_capability_v1', {})
+        require(previous.get('stage') == 'failed' and previous.get('ownership_closed')
+            and not previous.get('active') and previous.get('error') == 'original C compiler closure changed',
+            'retain the stopped broad-manifest admission; no repeated native inventory')
         rev = git('rev-parse', 'HEAD').decode().strip()
         pins = sources(rev)
         ROOT.mkdir(mode=0o700)
@@ -120,6 +125,8 @@ def main():
             driver=guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
             external_inputs={str(CC): sha(CC), str(LOADER): sha(LOADER)}, limits=LIMITS,
             plan=dict(question='Current B570 queue-group capabilities for a bounded prefill event-lane audit',
+                previous_refusal='V1 rejected an unrelated historical project-source file before any child/API work',
+                compiler_manifest_scope='Exact installed compiler/runtime/headers; historical metric probe source is not an input',
                 gate='Normal0,exact providers,all three protocol gates,unchanged boot/driver,no fault and closed owner',
                 repetitions=1, GPU_work_submitted=False, performance_or_overlap_claim=False,
                 retained_generations='Two unchanged engine references plus this temporary metadata-only C probe',
