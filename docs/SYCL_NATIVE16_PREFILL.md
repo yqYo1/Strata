@@ -5937,6 +5937,7 @@ upstream measurements remain incomplete. Source and evidence are published on
 `2192aba41ac199a8522cafbe5ef60db5cdf616c0`through PR186;the earlier PR180
 permission hold is no longer current. This boundary publishes source/evidence
 from the permanent primary while preserving original measured commit identities.
+The U1source/evidence publication is [PR187](https://github.com/yqYo1/Strata/pull/187).
 Source publication does not close the unfinished functional-import or inference
 adoption gates above. The current CSVcontains540points;verify its original
 source/evidence ancestors and disabled automatic head deletion before default
