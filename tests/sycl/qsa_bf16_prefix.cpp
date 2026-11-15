@@ -343,7 +343,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       QsaPrefixStateProbe probe{0,0,0,state.data()+16};
       if (invalid==0) probe.query=queries;
       if (invalid==1) {
-#if defined(STRATA_QSA_REAL_HEAD_STATE) && !defined(STRATA_QSA_PADDED_STATE_PROBE)
+#if defined(STRATA_QSA_REAL_HEAD_STATE)
         probe.head=12;
 #else
         probe.head=16;
@@ -436,9 +436,6 @@ int main(int argc,char **argv) {
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
              <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gates,"runtime-ready");
-#if defined(STRATA_QSA_ADMISSION_HOOK)
-    STRATA_QSA_ADMISSION_HOOK(rt->compute());
-#endif
     run(97,33,1,false,true,49);run(97,33,3,true,false,71);
     if (std::string(argv[1])=="--component") {
       for (int width : {1,17,31,32,63,65,2051}) run(2113,width,3,true,false);
