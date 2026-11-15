@@ -1278,10 +1278,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   is distinct from the old256-GRFcompiler test. Main's next bounded unit starts
   from ownedWG128,keeping32cells,pitch33,cachedQ,K/Vvec4,ordered-exp/math fixed.
   Its16xSG16/head stepping/PVpartition/two accumulators must change together.
-  No such kernel is implemented or qualified yet;commit it and recheck Orca
-  source-audit eligibility before build/numerical/timing. M4and prefix-memory
-  reuse remain conditional;neither a failedWG64trial nor this review adopts
-  another algorithm. Fullmodel/handoff/decode/context gates stay open.
+  Main's separate`806e9a93c`prototype is now committed,with named kernel IDs
+  for fixture-only exact-device admission outside timing. Its first fresh build
+  from`561d30aa7`compiles six native objects but refuses the first oracle:
+  installedSYCL2026.2has no`kernel_device_specific::local_mem_size`descriptor.
+  Main also finds the selected ordered-exp loop still steps by8with16subgroups,
+  giving heads8..15duplicate writers;it must step16before any GPUexecution.
+  No fixture linked or GPUran. Original failure is preserved under
+  `qsa_prefill_workgroup256_build_v1`;after190Git source/721actual compiler-input
+  checks,its28partial files/2850941bytes are retired. Fast14508/namingA26ELFs
+  remain unchanged. Orca Luna BKreturns a9601-byte source report and its owned
+  process family/terminal closes;all14source pins match. Keep its softmax/QK
+  claims unqualified pending native Luna-max BLreview. Main holds those pinned
+  files until review returns,then commits the ownership/APIrepair and a fresh
+  recipe before exact kernel admission,numerical/state/262144component checks
+  and3-process timing. No production route or performance is qualified yet.
+  M4and prefix-memory reuse remain conditional;fullmodel/handoff/decode/context
+  gates stay open. Source and reports are held only through this bounded decision.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
