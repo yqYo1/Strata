@@ -388298,7 +388298,7 @@
     }
   },
   "prefill_eager_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054",
     "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "native_source_identity": "Committed base plus explicit overlays;not the whole overlay revision native tree",
@@ -388408,8 +388408,8 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -388420,6 +388420,18 @@
       "limits": "CPUplanner qualification is reused only for its unchanged header/oracle. Native safety,model handoff,32K/64Kspeed,decode preservation,quality and physical262144/RESTORE are unqualified.",
       "retention": "Bounded third generation:original14508prefill reference plus namingAdecode/phase reference remain unchanged. This candidate is for the immediate U1safety/model comparison;retire after its decision before another candidate. No ended generation renewed."
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/strata",
+        "sha256": "7ea162eac831256af28e861059641501021a5fec194871b9bcb4dcaddc1b1f9d",
+        "bytes": 26461792
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-eager-native-v1/build/sycl_expert_bank_test",
+        "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+        "bytes": 513048
+      }
+    },
     "controller_sources": {
       "files": 356,
       "sha256": "67af94e0bdc8b0835e6566e02770aac403071bb8de6a6b1ace036f003c62a599"
@@ -388428,6 +388440,36 @@
       "files": 1165,
       "sha256": "fe28dd6e115d9e72c9364a08871ebc06b5f65cff2dfffa0911b56d95d86c1896"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1461,
+        "sha256": "69cef9cd245757e767925e553af5cd6ea63401b2b2075054a8330b34fa814d4d"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "e4eb11ae8af7ebcdc6ee75566efc235ef83cf16b03ae0259c1aad1e06631968a"
+      },
+      "links": {
+        "files": 29,
+        "sha256": "e5892521b3f3a86a1f8ce83f6db53c28593a581d1e667eafd9c7d3ffc9ee6de3"
+      },
+      "objects": {
+        "files": 126,
+        "sha256": "e6c99ea3442fc7acd3e300bd582cc21a4198a150dc034940f74ee5f314425905"
+      },
+      "produced": {
+        "files": 135,
+        "sha256": "1219ae6f07f99e8baa5bb8bb7712cc34b86a32ab86c313cdb8aad9237fce179a"
+      },
+      "Gemm_includers": {
+        "files": 4,
+        "sha256": "64fdb0497dab6281183e33efe329a8af70763aeeb1555b26f9ea733f46ea7410"
+      },
+      "translation_units": 125,
+      "fresh_objects": 126,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
