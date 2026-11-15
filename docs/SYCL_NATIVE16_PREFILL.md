@@ -1206,6 +1206,82 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   evidence plus512CSVpoints. Three ended diagnostic/analyzer source files
   are retired to their original Git commits;shared seed/runtime receipts,
   surviving collector and all40native ELFs remain available for named consumers.
+  PR#182publishes this boundary on fork default`11dc9765e`;normal merge-back
+  `01ca08f23`preserves179original CSVsource/evidence identities on permanent
+  `feature/sycl`. The clean ghq default mirror is pulled;no child branch is added.
+  Main's next unit is the existing prefill bank capacity only:384versus512,
+  with fast14508math,8192chunks,allGPU32Kresiduals and decode1256slots fixed.
+  Source`b28ac9e03`defines six independent512/384/384/512/512/384processes,
+  three fresh32769/24thinking requests each,first use separate from subsequent2.
+  The original host stage fails because its synthetic512completion footer
+  still says384;no native model ran. Preserve that failure. Fixture-only
+  correction`56ce46ce4`uses a fresh`prefill_bank512_compare_v2`root and plan,
+  whose19host controls pass. The six-process cohort closes at`6103815b9`with
+  18fresh thinking-on32769/24requests,all native0,quiet validation,closed
+  ownership,no fresh fault and15full model hashes matching. Candidate512/
+  reference384warmed prompt-time ratios are0.999155/1.001262/0.998744;
+  clientTTFT ratios0.999457/1.001176/0.998908. The all-three gain gate fails.
+  Warmed medians are832.050PP/39.5355sTTFT for384and831.895/39.554for512.
+  All arms request exactly the same bank bytes for each matched body;their
+  process medians are35326259200bytes. This is requested APIvolume,not
+  physical PCIe traffic. Keep384and reject this512change;do not start its
+  gated64K/decode follow-up. No kernel,chunk,decode or default change is bundled.
+  Orca Luna BFand native Luna-max BGreview are complete. All ten Taskpins
+  match;the report is consumed through its146-word review digest only.
+  Missing private-view/full-fit telemetry limits causal claims,without
+  invalidating the checked bank/allGPUplacement. No copy reduction rejects
+  that mechanism claim alone;a separate reproducible speed gain stays eligible.
+  The owned worker family and terminal are closed;CPU/wall upper bounds are
+  52.256379s/462.73s. Keep report/review bodies only through this cohort's
+  decision. The existing research-index row now holds the curated findings
+  and closure;report/review bodies and transactions have no remaining consumer.
+  Their467raw files/63432307bytes are physically retired. Six ended bank/
+  fixed-profile controller,test and fixture files are retired to their source
+  commits;the temporary bank-reader parameters are restored exactly to their
+  original bytes. The then-retained40native ELFs were unchanged;the failed B1
+  generation is now retired after2390Git source/dependency,1474compiler and
+  29link-input recovery and14final-ELFchecks:197files/207539980bytes.
+  Retain fast14508/12ELFs and namingA/14ELFs;shared receipts remain available.
+  Four individual first/warmed arm aggregates bring the CSVto516points.
+  Main's next independent source question is a64-thread version of the current
+  measured QSA prefix,keeping its32-cell tile,cached Q,K/Vvector4and ordered
+  softmax. Main's separate`932e5d68d`prototype changes the required head
+  stepping,PVownership and eight accumulator fragments as one coherent unit;
+  `ee86239e5`adds an independent raw online-state probe for numerical checks.
+  No production dispatch uses it. Orca BHsource audit and native Luna-max BI
+  review find coherent ownership. The fresh9-object component build has725
+  compiler inputs/24link files,zero uncovered files and no archive reuse.
+  Original smokeV1fails a fixture assumption:real-head coverage expected
+  padded diagnostic head12to be refused,although both APIs accept0..15.
+  V2corrects that expectation but reaches its16MiBAPItrace budget;both failures
+  remain failed. Source`f20d1b751`keeps all12real-head checks and rejects16.
+  Controller`555b97bd8`separates the small traced padded-head smoke from full
+  real-head coverage. Its7stages close normally0,quiet/owned/no fresh fault,
+  with11cases each atpage4and16including262144physical cells and exactBF16
+  output/rawFP32online-state checks. These are component bounds,not model
+  physical-context qualification.
+  Clean geometry-only evidence`93db6b0e3`then records108eligible paired batches
+  across3independent processes. WG128/WG64aggregate milliseconds are
+  8.419768/12.238192(cap33gather),223.922593/306.412574(cap2051gather),and
+  138.013996/199.567987(cap2051clustered). All three processes are slower in
+  every shape;the original all-three-gain gates fail. RejectWG64and retain128;
+  do not launch its gated model comparison. This isolates geometry,not actual
+  production routing or modelPP/TG. Register pressure/occupancy remain unknown.
+  Original source/recipe,725compiler/24link inputs and all3finalELFs are
+  recovered before retiring the failed component:45files/8319408bytes.
+  Fast14508and namingAremain26ELFs. The six unused prototype/export/fixture/
+  controller files are retired to source`f20d1b751`and controller`555b97bd8`.
+  The independent padded-probe fixture correction remains for the next unit.
+  Closed traces and duplicate receipts are retired:30files/38054622bytes.
+  Six component CSVpoints bring the historical index to522rows.
+  Native Luna-max BJreview confirms that a256-thread/two-PV-fragment geometry
+  is distinct from the old256-GRFcompiler test. Main's next bounded unit starts
+  from ownedWG128,keeping32cells,pitch33,cachedQ,K/Vvec4,ordered-exp/math fixed.
+  Its16xSG16/head stepping/PVpartition/two accumulators must change together.
+  No such kernel is implemented or qualified yet;commit it and recheck Orca
+  source-audit eligibility before build/numerical/timing. M4and prefix-memory
+  reuse remain conditional;neither a failedWG64trial nor this review adopts
+  another algorithm. Fullmodel/handoff/decode/context gates stay open.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file

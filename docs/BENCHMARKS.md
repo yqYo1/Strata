@@ -323,6 +323,13 @@ actual outcomes in the timing batches rather than inferring them from startup
 flags or an earlier preflight. Keep reference calculations, resets and validation
 outside the timed region unless they are the subject of the measurement.
 
+Compare each smallest coherent change separately before qualifying a combination,
+even when several parts were implemented together. Required headers, callers,
+producer/consumer layouts and their tests may form one inseparable unit; explain
+that dependency in the committed comparison plan. Independently variable kernels,
+placement and settings need individual comparisons. Preserve each unit's outcome
+and then check the combination, including both phases when common processing changes.
+
 Commit batch sizes, repetition order, timing eligibility and overhead checks
 before collection. A declared minimum batch duration screens timing granularity;
 it is not an accuracy or noise guarantee. A batch that fails the screen cannot
