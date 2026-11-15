@@ -1289,10 +1289,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   checks,its28partial files/2850941bytes are retired. Fast14508/namingA26ELFs
   remain unchanged. Orca Luna BKreturns a9601-byte source report and its owned
   process family/terminal closes;all14source pins match. Keep its softmax/QK
-  claims unqualified pending native Luna-max BLreview. Main holds those pinned
-  files until review returns,then commits the ownership/APIrepair and a fresh
-  recipe before exact kernel admission,numerical/state/262144component checks
-  and3-process timing. No production route or performance is qualified yet.
+  claims are corrected by native Luna-max BLreview:softmax ownership is wrong,
+  while the alleged inherited QKoverlap is false because paired subgroups write
+  distinct cell halves. All14source/report pins match. Main's repair uses
+  `Subgroups=Workgroup/16`for both head loops and a labelled device-local capacity
+  query alongside exact-kernel maximum/private queries. No baseline math changes.
+  The repaired source needs a fresh build_v2recipe,then exact normal/capture
+  kernel admission,numerical/state/262144component checks and3-process timing.
+  No production route or performance is qualified yet.
   M4and prefix-memory reuse remain conditional;fullmodel/handoff/decode/context
   gates stay open. Source and reports are held only through this bounded decision.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`

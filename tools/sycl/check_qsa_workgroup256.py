@@ -172,10 +172,10 @@ def run(stage):
             not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|teardown uncertain',errors[start.end():]),
             'validation activation/after-main failure')
         require('Intel(R) Arc(TM) B570' in output,'actual B570 runtime device required')
-        admission=re.findall(r'^prefill_kernel_admission capture=([01]) maximum=(\d+) required=256 reported_local=(\d+) reported_private=(\d+) requested_dynamic_local=20036 status=PASS$',output,re.M)
+        admission=re.findall(r'^prefill_kernel_admission capture=([01]) maximum=(\d+) required=256 device_local=(\d+) reported_private=(\d+) requested_dynamic_local=20036 status=PASS$',output,re.M)
         require(len(admission)==2 and {x[0] for x in admission}=={'0','1'}
-            and all(int(x[1])>=256 for x in admission),'actual normal/capture kernel-specific resource admission required')
-        result['kernel_admission']=[dict(capture=int(a),maximum=int(b),reported_local=int(c),reported_private=int(d),requested_dynamic_local=20036) for a,b,c,d in admission]
+            and all(int(x[1])>=256 and int(x[2])>=20036+4096 for x in admission),'actual normal/capture kernel-specific resource admission required')
+        result['kernel_admission']=[dict(capture=int(a),maximum=int(b),device_local=int(c),reported_private=int(d),requested_dynamic_local=20036) for a,b,c,d in admission]
         if name.startswith('oracle'):
             cases=2 if stage=='smoke' else 11
             require(len(re.findall(r'^case cells=.*status=PASS$',output,re.M))==cases

@@ -18,7 +18,7 @@ import coherent_original_reuse as original
 import measurement_owner as owner
 
 P,B,RESULT=original.P,original.B,original.RESULT
-ROOT,KEY=B/'qsa-prefill-workgroup256-build-v1','qsa_prefill_workgroup256_build_v1'
+ROOT,KEY=B/'qsa-prefill-workgroup256-build-v2','qsa_prefill_workgroup256_build_v2'
 THIS='tools/sycl/build_qsa_workgroup256.py'
 BASE_SOURCE='14508acbf1b70eb994fdf37f97fb6d0f5cff7d43'
 BASE_ROOT=B/'coherent-prefill-native-v1'
@@ -61,6 +61,9 @@ def prepare():
     require(prior['stage']=='deleted_verified' and prior['retained_engine_ELFs']==26
         and not any(Path(p).exists() for p in prior['paths']),
         'rejected WG64component retired before new coherent geometry')
+    failed=data['qsa_prefill_workgroup256_build_v1']['retirement']
+    require(failed['stage']=='deleted_verified' and failed['retained_engine_ELFs']==26
+        and not Path(failed['root']).exists(),'retire failed WG256partial objects before corrected build')
     base,proof=original.verify_original()
     require(type(proof) is dict and proof['original_native_source']==BASE_SOURCE,
         'typed original native proof required')

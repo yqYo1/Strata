@@ -26,6 +26,8 @@ namespace mx = sycl::ext::oneapi::experimental::matrix;
 namespace mi = sycl::ext::intel::experimental::matrix;
 using BFloat = sycl::ext::oneapi::bfloat16;
 constexpr int Dim = 256, Heads = 12, Cells = 32, Workgroup = 256;
+constexpr int Subgroups = Workgroup / 16;
+static_assert(Subgroups == 16);
 template<int Count> struct alignas(4) MatrixTile { BFloat values[Count]; };
 static_assert(std::is_trivially_copyable_v<MatrixTile<16 * Dim>>);
 static_assert(alignof(MatrixTile<16 * Dim>) >= 4);
@@ -197,7 +199,7 @@ static bool prefill_prefix_workgroup256_impl(const uint16_t *query, const QsaAtt
       const int kv_head = int(item.get_group_linear_id() % 2);
       const auto *q = query + (batch * 24 + kv_head * Heads) * Dim;
       // All subgroup lanes participate for real and padded head rows alike.
-      for (int head = subgroup; head < 16; head += 16) {
+      for (int head = subgroup; head < 16; head += Subgroups) {
         int bad = 0;
         for (int d = lane; d < Dim; d += 16) {
           float value = head < Heads
@@ -308,9 +310,9 @@ static bool prefill_prefix_workgroup256_impl(const uint16_t *query, const QsaAtt
         }
         item.barrier(sycl::access::fence_space::local_space);
         if constexpr (SubgroupSoftmax || OrderedExp) {
-          // Each SIMD16 subgroup owns two head rows. Every lane participates,
+          // Each SIMD16 subgroup owns one head row. Every lane participates,
           // including missing cells and padded heads; FP32 state stays local.
-          for (int h = subgroup; h < 16; h += 8) {
+          for (int h = subgroup; h < 16; h += Subgroups) {
             const int c0 = lane, c1 = lane + 16;
             const float s0 = scores[h * ScoreStride + c0];
             const float s1 = scores[h * ScoreStride + c1];

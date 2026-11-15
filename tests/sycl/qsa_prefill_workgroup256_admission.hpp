@@ -15,12 +15,12 @@ inline void admit_prefill_workgroup256(sycl::queue &queue) {
         queue.get_context(),{device},{ids[capture]});
     const auto kernel=bundle.get_kernel(ids[capture]);
     const auto maximum=kernel.get_info<sycl::info::kernel_device_specific::work_group_size>(device);
-    const auto local=kernel.get_info<sycl::info::kernel_device_specific::local_mem_size>(device);
+    const auto local=device.get_info<sycl::info::device::local_mem_size>();
     const auto private_bytes=kernel.get_info<sycl::info::kernel_device_specific::private_mem_size>(device);
-    if (maximum<256) throw std::runtime_error("WG256exact kernel maximum below required workgroup");
+    if (maximum<256 || local<20036+4096) throw std::runtime_error("WG256kernel maximum or device local capacity below requirement");
     // Reported local/private values alone do not establish occupancy or spills.
     std::cout<<"prefill_kernel_admission capture="<<capture<<" maximum="<<maximum
-        <<" required=256 reported_local="<<local<<" reported_private="<<private_bytes
+        <<" required=256 device_local="<<local<<" reported_private="<<private_bytes
         <<" requested_dynamic_local=20036 status=PASS\n";
   }
 }
