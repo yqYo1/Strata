@@ -33895,8 +33895,8 @@
   },
   "prefill_upload_event_lane_source_scope_20261115": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "scope": "A bounded, source-specific feasibility audit of the actual 32K long-prefill H2D-to-compute graph under the retained avoidance settings. Trace layer-major admission and active route through copy_blob/source-view, ExpertCache fill/stage_private_expert_bank_enqueue, compat cudaMemcpyAsync/queue resolution, Runtime queue/event/wait APIs, GEMM/dequant submits, and checked drains. Establish whether a supported independent queue/index and explicit event edges can overlap the real upload with useful compute on the target while preserving source/cache/slot lifetimes. Compare only the smallest event-backed queue-split discriminator with the same-queue control. Do not repeat generic pipelining, command-list or profiler surveys; do not enable copy-offload, change math/decode placement, run hardware, or claim physical overlap from API possibility.",
+    "schedulable_now": false,
+    "scope": "strata-research-bn-upload-lane-20261115.scope",
     "first_source_cut": [
       "src/prefill/layer_major.inc: same-queue admission, source selection, per-layer upload, and checked drain",
       "include/strata/prefill/expert_bank_plan.hpp and include/strata/prefill/expert_bank_upload.hpp: enqueue publication and slot lifetime",
@@ -33911,7 +33911,7 @@
     ],
     "eligibility_reason": "Actual first/warmed32Ksource-view1/staging0/private-layer geometries and checked same-queue/event mapping now supplied;metadata inventory verifies all production Runtime constructors on actual ordinal0/index0 under exact qualified providers/settings. Immutable14508source/compat and API contracts are pinned in the bounded Task.",
     "stop_condition": "If the active path cannot expose an independent supported engine/index under the required settings, or cannot preserve the bank/lifetime protocol without a broad redesign, return no eligible overlap candidate and retain the same-queue path.",
-    "stage": "eligible_ready_for_Orca",
+    "stage": "Orca_running",
     "required_model": "gpt-6-luna",
     "required_effort": "medium",
     "required_via": "Orca",
@@ -33960,6 +33960,18 @@
       "UR_enqueue_calls": 0,
       "normal_exit": 0,
       "closed": true
-    }
+    },
+    "active": true,
+    "ownership_closed": false,
+    "run": "run_f41ec7e3fbdf",
+    "task": "task_3131da64a1d5",
+    "dispatch": "ctx_0f90bd3489f4",
+    "terminal": "term_fa84b2b4-323b-4b35-9826-71fdfbf95cad",
+    "actual_model": "gpt-6-luna",
+    "actual_effort": "medium",
+    "actual_write_scope": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_upload_lane_bn_20261115",
+    "report_budget_bytes": 24576,
+    "task_context_and_sandbox_verified": true,
+    "startup_accounting_refusal": "Original helper admitted only review roots;no Task had started. Committed explicit research-root support before attachment;native scope and actual Task/sandbox then verified. Original native age remains charged."
   }
 }
