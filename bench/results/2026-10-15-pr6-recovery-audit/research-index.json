@@ -34058,7 +34058,7 @@
     ]
   },
   "prefill_eager_upload_source_bp_20261115": {
-    "stage": "running",
+    "stage": "reviewed_pending_raw_retirement",
     "classification": "decision support",
     "question": "Audit the newly implemented U1 eager-individual full-fit upload path, not generic independent-queue design. Follow actual caller to producer/consumer spans and outer owner drain; compare JIT/eager bytes, demanded expert map, source stride, reset/cancel/error behavior, private/full512 versus partial/nonempty/staging fallback, and unchanged decode. Identify concrete bugs or minimal coherent fixes with evidence, including counterexamples. Distinguish accepted enqueue from completion and shared in-order ordering from independent DMA overlap. No speed/adoption claims.",
     "policy_revision": "f0e3918f1d392b2dc107e36ad69a264fbc464b16",
@@ -34079,7 +34079,7 @@
       "words": 1600,
       "bytes": 24576
     },
-    "retention": "Immediate U1safety/model decision;curate useful findings after nativeLuna-max review and retire transaction/snapshot bodies when consumed.",
+    "retention": "Curated source/protocol corrections suffice. Retire report/review/transaction roots at the next serialized safe boundary after active model1 closes;preserve compact hashes/ownership/resource evidence here. No model,performance or physical-context qualification.",
     "run": "run_46428b6b0f7d",
     "task_id": "task_8f49859a7321",
     "dispatch": "ctx_16f96a4c897e",
@@ -34094,6 +34094,47 @@
       "exclude_slash_tmp": true,
       "approval": "never",
       "actual_turn_context": true
+    },
+    "report": {
+      "bytes": 6129,
+      "words": 847,
+      "sha256": "b3ad4bb8875c8984ee7f2c10137fe55583986fdd688bcb23cd218776a72c23ef"
+    },
+    "review": {
+      "agent": "/root/prefill_eager_upload_review_bq_20261115",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "sha256": "5b6d0c0249436cc4dcdb5e036bf64b768d7f2874342d7aef6508feda85fb379f",
+      "digest_sha256": "1aefbc08e674020d3ac988b8cbd243c8925f4cbbf195308e94977ed924e075e1",
+      "Main_read_digest_only": true
+    },
+    "closure": {
+      "accepted_worker_done": true,
+      "all_owned_pidfds_exited": true,
+      "terminal_closed": true,
+      "delivery_acknowledged": true,
+      "full_native_age_seconds": 377.49,
+      "CPU_seconds_upper": 36.510943,
+      "native_peak_RSS_bytes": 427917312,
+      "cgroup_peak_bytes": 319250432,
+      "captured_text_upper_bytes": 1210298,
+      "within_budgets": true
+    },
+    "findings": [
+      "Pinned U1helper checks bounds,accepted-enqueue publication,same in-order readers and outer checked owner drain. No eager-only correctness bug demonstrated. Same-queue submission does not prove independent DMA overlap or speedup.",
+      "Worker omitted route-builder from15pins. Main separately checks the actual compiled immutable moe_window_routes.hpp constructor:ascending expert loop,then bounded row chunks;strict plan ordering refuses malformed IDs before copy. Native source/census both bind SHA455b0d9cba3378b1781ad5b9894e2635b9ff7fd1b274e8880c68228d7442d030.",
+      "Current errors exit and drain without retry. A future continuation/retry path after ambiguous enqueue would need an independent publication/failure audit;not a demonstrated present bug."
+    ],
+    "operational_exception": {
+      "required_startup_status": false,
+      "successful_worker_orchestration_check_and_completion_IPC": true,
+      "meaning": "Reporter did not execute the exact required startup status --json command. Preserve this protocol failure;later completion does not qualify the missing startup gate.",
+      "next_dispatch": "Place exact startup status command in top-level injected spec and check its actual worker receipt;orchestration check is not a substitute."
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "question": "Re-audit failure publication only if a future caller can continue/retry after an ambiguous enqueue;no duplicate generic queue audit now.",
+      "prerequisite": "A concrete changed failure/continuation implementation,or a new unresolved U1source defect."
     }
   }
 }
