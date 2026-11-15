@@ -386700,5 +386700,1483 @@
       "files": 5,
       "bytes": 1373952
     }
+  },
+  "qsa_prefill_workgroup256_build_v1": {
+    "stage": "failed",
+    "source_commit": "561d30aa7b90f2fe14b2f146d66db2cac20c9a02",
+    "input_sha256": "1f17780cf51c8895994cae1e2dc2be9b9042762b45463a8fe1c2a431f6e4947b",
+    "SDK_sha256": "b188025f7ef99145cb418a0d550e2332c6ce4ea456a7c9e0625ef3f815c44c58",
+    "environment_sha256": "bd5a80a373544ff6534edceebf1b5aa7e5d71b9f67f73b9fce2785b7903fd29d",
+    "baseline_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "host_compile_only": true,
+    "GPU_executed": false,
+    "engine_built": false,
+    "production_selected": false,
+    "complete": false,
+    "passed": false,
+    "active": false,
+    "ownership_closed": true,
+    "retirement": {
+      "stage": "deleted_verified",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v1",
+      "files": 28,
+      "bytes": 2850941,
+      "sha256_canonical_file_hashes": "9aa013c0824919bb375bf80100d5137c9372072167119d523a7f7d982f25bea6",
+      "source_commit": "561d30aa7b90f2fe14b2f146d66db2cac20c9a02",
+      "source_files_recovered": 190,
+      "actual_compiler_input_files": 721,
+      "successful_native_objects": 6,
+      "final_ELFs": 0,
+      "original_Git_source_and_recipe_recovered": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "reason": "First oracle compile refuses unsupported query;Mainalsofound uncorrected WG256softmax ownership. No native fixture linked orGPUexecuted. Preserve failed source/recipe/outcome and all fourteenauditpins;retire partialobjects before corrected fresh component generation.",
+      "retained_engine_ELFs": 26
+    },
+    "error": "ValueError(\"component build failed: oracle4 In file included from /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/qsa_prefill_workgroup256.cpp:5:\\n/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/qsa_prefill_workgroup256_admission.hpp:18:74: error: no member named 'local_mem_size' in namespace 'sycl::info::kernel_device_specific'\\n   18 |     const auto local=kernel.get_info<sycl::info::kernel_device_specific::local_mem_size>(device);\\n      |                                                                          ^~~~~~~~~~~~~~\\n1 error generated.\\n\")",
+    "pre_GPU_source_findings": {
+      "compile_refusal": "Diagnostic uses absent sycl::info::kernel_device_specific::local_mem_size in installed2026.2headers;first oracle compile exits1before anylink/GPUrun.",
+      "Main_source_review": "Selected OrderedExpbranch still has for(int h=subgroup;h<16;h+=8). With16subgroups this double-owns heads8..15;muststep16. Sourcecurrentlyheldfor independentOrcaaudit at806e9a93;do not edit pins or run GPU. Preservefailedbuild,thencommitnewcorrected source/recipe after report/review.",
+      "GPU_executed": false,
+      "next": "Finish existing ctx_e96dfe0ee932 audit without steering;verify source/API fixes and retire failed build before fresh generation."
+    },
+    "original_recipe_and_build_evidence": {
+      "commit": "4367d0924a9f2651d85ec6e65990688b8b3e7bc8",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "qsa_prefill_workgroup256_build_v1"
+    }
+  },
+  "qsa_prefill_workgroup256_build_v2": {
+    "stage": "built",
+    "source_commit": "d1bd18deba205d426274dad303581398e93535af",
+    "input_sha256": "20e59245106d4baaacd9f1101aca0c49255e003e1acdc3cbb0e4cf3678a3e53b",
+    "SDK_sha256": "b188025f7ef99145cb418a0d550e2332c6ce4ea456a7c9e0625ef3f815c44c58",
+    "environment_sha256": "4baaf4a0520288dcdeb9dde149db8a732813310184362e8b2bb16a175bcb772c",
+    "baseline_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "host_compile_only": true,
+    "GPU_executed": false,
+    "engine_built": false,
+    "production_selected": false,
+    "complete": true,
+    "passed": true,
+    "active": false,
+    "ownership_closed": true,
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/actual-inputs.json",
+      "sha256": "ce95fc30252e64dd32fdfd47a7464ee9b6c94118d87b680c7ee9ce4fed95aaa0",
+      "compiler_files": 726,
+      "external_and_object_link_files": 24,
+      "uncovered": 0
+    },
+    "binaries": {
+      "oracle4": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/oracle4",
+        "sha256": "3de2a9a7a8cff9588ac42188236fa8e81e7dcda8e315980e9545a6ee63e174c0",
+        "bytes": 1787344
+      },
+      "oracle16": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/oracle16",
+        "sha256": "2fca2f102a36ae330da80ae384c3ef15437c61e05199cda0ef8b19fe9cc0687b",
+        "bytes": 1787344
+      },
+      "bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/bench",
+        "sha256": "84d92b4120632b42d80dba8bad9a0340a931fa65599fa954d8431336500153a8",
+        "bytes": 1747992
+      }
+    },
+    "retirement": {
+      "stage": "deleted_verified",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2",
+      "files": 47,
+      "bytes": 8692224,
+      "sha256_canonical_file_hashes": "a548374988acc44ce8d076dc8d8507eda4814f067a8f30910547ca456400737b",
+      "source_commit": "d1bd18deba205d426274dad303581398e93535af",
+      "source_files_recovered": 190,
+      "actual_compiler_input_files": 726,
+      "link_input_files": 24,
+      "final_ELFs": {
+        "oracle4": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/oracle4",
+          "sha256": "3de2a9a7a8cff9588ac42188236fa8e81e7dcda8e315980e9545a6ee63e174c0",
+          "bytes": 1787344
+        },
+        "oracle16": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/oracle16",
+          "sha256": "2fca2f102a36ae330da80ae384c3ef15437c61e05199cda0ef8b19fe9cc0687b",
+          "bytes": 1787344
+        },
+        "bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v2/bench",
+          "sha256": "84d92b4120632b42d80dba8bad9a0340a931fa65599fa954d8431336500153a8",
+          "bytes": 1747992
+        }
+      },
+      "original_Git_source_and_recipe_recovered": true,
+      "reason": "Builtcoherently,butrequiredexactkernelreflectionfailsbeforeenqueue;noalgorithm/numeric/speed/modelqualification. Source/recipe/all3finalELFs/censusrecovered;retirethiscomponentbeforeco-locatedreflectionbuild. Retaincoherent14508andnamingA26ELFs.",
+      "retained_engine_ELFs": 26
+    },
+    "original_recipe_and_build_evidence": {
+      "commit": "007772658e5ef3f9a7cbf2e6985940e3947ea4a8",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "qsa_prefill_workgroup256_build_v2"
+    }
+  },
+  "qsa_prefill_workgroup256_check_v1": {
+    "stage": "failed",
+    "source_commit": "007772658e5ef3f9a7cbf2e6985940e3947ea4a8",
+    "source_sha256": "893d0681afd5b4f1d45f3ea97913e20220d81c1ce4cf2bcb9df9e8c084c99874",
+    "native_source_commit": "d1bd18deba205d426274dad303581398e93535af",
+    "baseline_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "environment_sha256": "4baaf4a0520288dcdeb9dde149db8a732813310184362e8b2bb16a175bcb772c",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": false,
+    "failure_detail": {
+      "pid": 502604,
+      "exit_code": 1,
+      "error": "RuntimeError('protocol EOF before expected line')",
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "observation_complete": false,
+      "elapsed_seconds": 1.9299934450536966,
+      "native_message": "No kernel found with the specified name",
+      "UR_enqueue_calls": 0,
+      "live_PID_absent": true,
+      "interpretation": "Exact kernel-name lookup from a differentfixtureTUfailsbefore any enqueue. Normal native exit1;no GPUfault/body/qualification. New recipe will co-locate get_kernel_id with namedkernel submissions and return scalar resources to fixture;math unchanged. Preserve original failed screen.",
+      "primary_source_reference": {
+        "spec": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+        "section": "4.11.6get_kernel_idrequiresnamedkernel somewhereinapplication,notnecessarilycallingTU",
+        "vendor_issue": "https://github.com/intel/llvm/issues/22852",
+        "limit": "Confirmedvendorreportis2026.1.1;this2026.2buildreproduces sameNoKernelerrorandinstalledCompileTimeKernelInfo lookup. Co-location workaround stillneedsfreshbuild/canary;do notattributeGPUfaultormathfailure."
+      }
+    },
+    "original_failed_evidence": {
+      "commit": "b9f192045e849de6fd921c41eb1ccb39fe47c68e",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "qsa_prefill_workgroup256_check_v1"
+    }
+  },
+  "qsa_prefill_workgroup256_build_v3": {
+    "stage": "built",
+    "source_commit": "1fa754132a0673917bff1aa4acd6fec6a7fb9fad",
+    "input_sha256": "86c86f2ff4700fc5e1043c67b307dfee7c25d8c1ea3c4ca2c9e226675a61fd37",
+    "SDK_sha256": "b188025f7ef99145cb418a0d550e2332c6ce4ea456a7c9e0625ef3f815c44c58",
+    "environment_sha256": "aca6fdf10451efc6f1a90e7c44c2a524a7ad625d5ec271d3b4601ea2c9c6e8a5",
+    "baseline_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "host_compile_only": true,
+    "GPU_executed": false,
+    "engine_built": false,
+    "production_selected": false,
+    "complete": true,
+    "passed": true,
+    "active": false,
+    "ownership_closed": true,
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/actual-inputs.json",
+      "sha256": "1287a26f44a9255256c1bb6f76851eaced47a20d26cb4baa7a35ce9bb527647f",
+      "compiler_files": 726,
+      "external_and_object_link_files": 24,
+      "uncovered": 0
+    },
+    "binaries": {
+      "oracle4": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/oracle4",
+        "sha256": "1b23aac3fb850aa997941498fc883fc3f598c611a2686250e95d0ef340fcfca9",
+        "bytes": 1787624
+      },
+      "oracle16": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/oracle16",
+        "sha256": "772c3b601acfec8f8c5fe8edd912999d8e59c18440a77c187512b3c52c5ead3b",
+        "bytes": 1787624
+      },
+      "bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/bench",
+        "sha256": "6358cd7e08fed19a1c74a6bd8aeb041a282f87460b68c6b516989c74870a5246",
+        "bytes": 1748280
+      }
+    },
+    "retirement": {
+      "stage": "deleted_verified",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3",
+      "files": 47,
+      "bytes": 8679440,
+      "sha256_canonical_file_hashes": "53a3df2a787e3a6624b5d982d60982f30f9fe230f8af5c19104cc3667c8d15c3",
+      "source_commit": "1fa754132a0673917bff1aa4acd6fec6a7fb9fad",
+      "source_files_recovered": 190,
+      "actual_compiler_input_files": 726,
+      "link_input_files": 24,
+      "final_ELFs": {
+        "oracle4": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/oracle4",
+          "sha256": "1b23aac3fb850aa997941498fc883fc3f598c611a2686250e95d0ef340fcfca9",
+          "bytes": 1787624
+        },
+        "oracle16": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/oracle16",
+          "sha256": "772c3b601acfec8f8c5fe8edd912999d8e59c18440a77c187512b3c52c5ead3b",
+          "bytes": 1787624
+        },
+        "bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/bench",
+          "sha256": "6358cd7e08fed19a1c74a6bd8aeb041a282f87460b68c6b516989c74870a5246",
+          "bytes": 1748280
+        }
+      },
+      "original_Git_source_and_recipe_recovered": true,
+      "reason": "WG256all7execution/numeric/admission stagespass,but all3shapesare slowerinall3processes;all108batchesretained. Nogatedmodeltrial orproductionselection. Original source/fullrecipe/all3ELFs/census recovered;noexecutionconsumerofthecomponentremains. Retain14508/namingA26ELFs.",
+      "retained_engine_ELFs": 26
+    },
+    "original_recipe_and_build_evidence": {
+      "commit": "47e35dc7e78365d87b0e5bff47f25849921a3ed4",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "qsa_prefill_workgroup256_build_v3"
+    }
+  },
+  "qsa_prefill_workgroup256_check_v2": {
+    "stage": "closed",
+    "source_commit": "47e35dc7e78365d87b0e5bff47f25849921a3ed4",
+    "source_sha256": "45e60ec5ce3474fa6f1c7e76457cfa8a09fad823ee616fca278f1bdbd5864f82",
+    "native_source_commit": "1fa754132a0673917bff1aa4acd6fec6a7fb9fad",
+    "baseline_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "build_evidence_sha256": "478451eb859fc7528588e01813a50f5431ff0929796a931ccedf134cc4c2cd52",
+    "environment_sha256": "aca6fdf10451efc6f1a90e7c44c2a524a7ad625d5ec271d3b4601ea2c9c6e8a5",
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "plan": {
+      "unit": "Only256versus128threads with required head stepping/PVpartition/twofragments. Named-kernel admission is fixture-only,outside timing;no compiler/workgroup attribute or runtime setting change. Same32cells,pitch33,cachedQ,KVvec4,orderedFP32softmax and BF16 storage;no kernel/model setting combination.",
+      "numerical": "First traced oracle16smoke(two real/padded boundary heads per KVhead) with actual maps/environment/pre-main validation. Then independent oracle4and16full cases:11cases each including262144live cells,masked/tail/invalid-input/alias/guard cases;all output bits match oldprefix33;rawFP32maximum/alpha/normalizer/sum match WG128ordered for all12realheads atpage4andreal/paddedheads atpage16. Then normal-export benchmark smoke. Any failure stops before timing.",
+      "timing": "Three independent normal bench processes0..2,each with3shapes(78453cells,8192queries,cap33gather or2051gather/clustered). Six paired rounds per shape,rotated order. Both direct exports refreshed/drained every call;references,resets and readbacks outside batches. cap33uses64calls,cap2051uses2calls;each timed batch>=50ms,inner clock-pair overhead*64<=1percent of50ms. Ineligible batch stops;no post-hoc size/criteria changes.",
+      "acceptance": "All source/ELF/actual-map/driver/boot/validation/owner/numerical gates pass,then per shape all3process candidate/baseline median ratios<1supports that shape only,without minimum gain. Model-stage planning is eligible only when both2051patterns pass;report33separately and retain128outside qualified shapes. This direct-export experiment explicitly isolates geometry;actual production dispatch/whole-model/handoff/quality/262144/TGneed later new gates.",
+      "stopping": "Stop first input,dependency,protocol,owner,validation,fault,clock,batch-floor or numerical failure;no retry/hashrefresh/speed-based exclusions. Commit each closed stage. All environment fixed before exec."
+    },
+    "decision": {
+      "shapes": [
+        {
+          "cap": 33,
+          "pattern": "gather",
+          "process_median_time_ratios": [
+            1.091364312687352,
+            1.0866569940261965,
+            1.0835833586747567
+          ],
+          "all_processes_faster": false
+        },
+        {
+          "cap": 2051,
+          "pattern": "gather",
+          "process_median_time_ratios": [
+            1.2033438608420244,
+            1.2004967587108892,
+            1.2018326983855139
+          ],
+          "all_processes_faster": false
+        },
+        {
+          "cap": 2051,
+          "pattern": "clustered",
+          "process_median_time_ratios": [
+            1.336255845998927,
+            1.336348913950646,
+            1.337163428758112
+          ],
+          "all_processes_faster": false
+        }
+      ],
+      "wide_geometry_screen_passed": false,
+      "production_dispatch_qualified": false,
+      "model_adopted": false,
+      "model_PP_qualified": false,
+      "physical262144_model_qualified": false,
+      "sustained_TG_qualified": false
+    },
+    "original_complete_evidence": {
+      "commit": "2a2aca00361409d2c97dda65c99959df20109911",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "qsa_prefill_workgroup256_check_v2"
+    },
+    "actual_component_build": "qsa_prefill_workgroup256_build_v3",
+    "binaries": {
+      "oracle4": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/oracle4",
+        "sha256": "1b23aac3fb850aa997941498fc883fc3f598c611a2686250e95d0ef340fcfca9",
+        "bytes": 1787624
+      },
+      "oracle16": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/oracle16",
+        "sha256": "772c3b601acfec8f8c5fe8edd912999d8e59c18440a77c187512b3c52c5ead3b",
+        "bytes": 1787624
+      },
+      "bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-build-v3/bench",
+        "sha256": "6358cd7e08fed19a1c74a6bd8aeb041a282f87460b68c6b516989c74870a5246",
+        "bytes": 1748280
+      }
+    },
+    "qualification": "Execution, exact-kernel admission and all numerical/state/bounds checks pass; all three shape-specific performance gates fail. WG256 rejected, WG128 retained. No gated model trial or production/PP/TG/model262144 qualification.",
+    "stages": [
+      {
+        "stage": "smoke",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "elapsed_seconds": 9.154874183237553,
+        "numerical_cases": 2,
+        "component_physical262144_cells_checked": false
+      },
+      {
+        "stage": "oracle4",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "elapsed_seconds": 19.744478607084602,
+        "numerical_cases": 11,
+        "component_physical262144_cells_checked": true
+      },
+      {
+        "stage": "oracle16",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "elapsed_seconds": 17.232108257245272,
+        "numerical_cases": 11,
+        "component_physical262144_cells_checked": true
+      },
+      {
+        "stage": "bench-smoke",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "elapsed_seconds": 9.590992324985564
+      },
+      {
+        "stage": "timing0",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "elapsed_seconds": 34.50213014893234
+      },
+      {
+        "stage": "timing1",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "elapsed_seconds": 34.469744241796434
+      },
+      {
+        "stage": "timing2",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "elapsed_seconds": 34.590840318240225
+      }
+    ],
+    "paired_shapes": [
+      {
+        "process": 0,
+        "cap": 33,
+        "pattern": "gather",
+        "batch_calls": 64,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            0,
+            8.45015751562,
+            540.810081
+          ],
+          [
+            0,
+            1,
+            1,
+            9.40378054687,
+            601.841955
+          ],
+          [
+            1,
+            0,
+            1,
+            9.36405345313,
+            599.299421
+          ],
+          [
+            1,
+            1,
+            0,
+            8.72231904688,
+            558.228419
+          ],
+          [
+            2,
+            0,
+            0,
+            8.59245195312,
+            549.916925
+          ],
+          [
+            2,
+            1,
+            1,
+            9.49378892187,
+            607.602491
+          ],
+          [
+            3,
+            0,
+            1,
+            9.23630448437,
+            591.123487
+          ],
+          [
+            3,
+            1,
+            0,
+            8.45076425,
+            540.848912
+          ],
+          [
+            4,
+            0,
+            0,
+            8.43857453125,
+            540.06877
+          ],
+          [
+            4,
+            1,
+            1,
+            9.23105059375,
+            590.787238
+          ],
+          [
+            5,
+            0,
+            1,
+            9.22401354687,
+            590.336867
+          ],
+          [
+            5,
+            1,
+            0,
+            8.71082498437,
+            557.492799
+          ]
+        ],
+        "baseline_median_ms": 8.52160810156,
+        "candidate_median_ms": 9.30017896875,
+        "candidate_baseline_ratio": 1.091364312687352
+      },
+      {
+        "process": 0,
+        "cap": 2051,
+        "pattern": "gather",
+        "batch_calls": 2,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            0,
+            223.618247,
+            447.236494
+          ],
+          [
+            0,
+            1,
+            1,
+            269.297814,
+            538.595628
+          ],
+          [
+            1,
+            0,
+            1,
+            269.026141,
+            538.052282
+          ],
+          [
+            1,
+            1,
+            0,
+            224.1321195,
+            448.264239
+          ],
+          [
+            2,
+            0,
+            0,
+            224.4971065,
+            448.994213
+          ],
+          [
+            2,
+            1,
+            1,
+            269.574027,
+            539.148054
+          ],
+          [
+            3,
+            0,
+            1,
+            269.423382,
+            538.846764
+          ],
+          [
+            3,
+            1,
+            0,
+            223.643811,
+            447.287622
+          ],
+          [
+            4,
+            0,
+            0,
+            224.5316095,
+            449.063219
+          ],
+          [
+            4,
+            1,
+            1,
+            269.405035,
+            538.81007
+          ],
+          [
+            5,
+            0,
+            1,
+            269.623061,
+            539.246122
+          ],
+          [
+            5,
+            1,
+            0,
+            223.0921035,
+            446.184207
+          ]
+        ],
+        "baseline_median_ms": 223.88796524999998,
+        "candidate_median_ms": 269.4142085,
+        "candidate_baseline_ratio": 1.2033438608420244
+      },
+      {
+        "process": 0,
+        "cap": 2051,
+        "pattern": "clustered",
+        "batch_calls": 2,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            0,
+            138.132305,
+            276.26461
+          ],
+          [
+            0,
+            1,
+            1,
+            184.773919,
+            369.547838
+          ],
+          [
+            1,
+            0,
+            1,
+            185.2915195,
+            370.583039
+          ],
+          [
+            1,
+            1,
+            0,
+            138.5544645,
+            277.108929
+          ],
+          [
+            2,
+            0,
+            0,
+            138.3809275,
+            276.761855
+          ],
+          [
+            2,
+            1,
+            1,
+            184.655975,
+            369.31195
+          ],
+          [
+            3,
+            0,
+            1,
+            185.1845815,
+            370.369163
+          ],
+          [
+            3,
+            1,
+            0,
+            138.101495,
+            276.20299
+          ],
+          [
+            4,
+            0,
+            0,
+            138.334133,
+            276.668266
+          ],
+          [
+            4,
+            1,
+            1,
+            184.443313,
+            368.886626
+          ],
+          [
+            5,
+            0,
+            1,
+            184.4655295,
+            368.931059
+          ],
+          [
+            5,
+            1,
+            0,
+            138.1047495,
+            276.209499
+          ]
+        ],
+        "baseline_median_ms": 138.23321900000002,
+        "candidate_median_ms": 184.714947,
+        "candidate_baseline_ratio": 1.336255845998927
+      },
+      {
+        "process": 1,
+        "cap": 33,
+        "pattern": "gather",
+        "batch_calls": 64,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            1,
+            9.35619379688,
+            598.796403
+          ],
+          [
+            0,
+            1,
+            0,
+            8.78733196875,
+            562.389246
+          ],
+          [
+            1,
+            0,
+            0,
+            8.57606240625,
+            548.867994
+          ],
+          [
+            1,
+            1,
+            1,
+            9.53973067188,
+            610.542763
+          ],
+          [
+            2,
+            0,
+            1,
+            9.41439278125,
+            602.521138
+          ],
+          [
+            2,
+            1,
+            0,
+            8.61738773438,
+            551.512815
+          ],
+          [
+            3,
+            0,
+            0,
+            8.50406392187,
+            544.260091
+          ],
+          [
+            3,
+            1,
+            1,
+            9.27729096875,
+            593.746622
+          ],
+          [
+            4,
+            0,
+            1,
+            9.22258732812,
+            590.245589
+          ],
+          [
+            4,
+            1,
+            0,
+            8.74242851563,
+            559.515425
+          ],
+          [
+            5,
+            0,
+            0,
+            8.65631195312,
+            554.003965
+          ],
+          [
+            5,
+            1,
+            1,
+            9.47903009375,
+            606.657926
+          ]
+        ],
+        "baseline_median_ms": 8.63684984375,
+        "candidate_median_ms": 9.385293289065,
+        "candidate_baseline_ratio": 1.0866569940261965
+      },
+      {
+        "process": 1,
+        "cap": 2051,
+        "pattern": "gather",
+        "batch_calls": 2,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            1,
+            268.6704065,
+            537.340813
+          ],
+          [
+            0,
+            1,
+            0,
+            223.9411735,
+            447.882347
+          ],
+          [
+            1,
+            0,
+            0,
+            223.9855465,
+            447.971093
+          ],
+          [
+            1,
+            1,
+            1,
+            269.7783935,
+            539.556787
+          ],
+          [
+            2,
+            0,
+            1,
+            268.638885,
+            537.27777
+          ],
+          [
+            2,
+            1,
+            0,
+            224.6765775,
+            449.353155
+          ],
+          [
+            3,
+            0,
+            0,
+            224.2496225,
+            448.499245
+          ],
+          [
+            3,
+            1,
+            1,
+            268.589249,
+            537.178498
+          ],
+          [
+            4,
+            0,
+            1,
+            269.064169,
+            538.128338
+          ],
+          [
+            4,
+            1,
+            0,
+            223.7263745,
+            447.452749
+          ],
+          [
+            5,
+            0,
+            0,
+            223.673764,
+            447.347528
+          ],
+          [
+            5,
+            1,
+            1,
+            269.2511495,
+            538.502299
+          ]
+        ],
+        "baseline_median_ms": 223.96336,
+        "candidate_median_ms": 268.86728775,
+        "candidate_baseline_ratio": 1.2004967587108892
+      },
+      {
+        "process": 1,
+        "cap": 2051,
+        "pattern": "clustered",
+        "batch_calls": 2,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            1,
+            184.7443045,
+            369.488609
+          ],
+          [
+            0,
+            1,
+            0,
+            138.397669,
+            276.795338
+          ],
+          [
+            1,
+            0,
+            0,
+            138.1044105,
+            276.208821
+          ],
+          [
+            1,
+            1,
+            1,
+            184.8228015,
+            369.645603
+          ],
+          [
+            2,
+            0,
+            1,
+            184.705264,
+            369.410528
+          ],
+          [
+            2,
+            1,
+            0,
+            138.195672,
+            276.391344
+          ],
+          [
+            3,
+            0,
+            0,
+            138.16538,
+            276.33076
+          ],
+          [
+            3,
+            1,
+            1,
+            184.4252705,
+            368.850541
+          ],
+          [
+            4,
+            0,
+            1,
+            184.854249,
+            369.708498
+          ],
+          [
+            4,
+            1,
+            0,
+            138.2662345,
+            276.532469
+          ],
+          [
+            5,
+            0,
+            0,
+            138.3820825,
+            276.764165
+          ],
+          [
+            5,
+            1,
+            1,
+            184.588723,
+            369.177446
+          ]
+        ],
+        "baseline_median_ms": 138.23095325,
+        "candidate_median_ms": 184.72478425,
+        "candidate_baseline_ratio": 1.336348913950646
+      },
+      {
+        "process": 2,
+        "cap": 33,
+        "pattern": "gather",
+        "batch_calls": 64,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            0,
+            8.45433359375,
+            541.07735
+          ],
+          [
+            0,
+            1,
+            1,
+            9.23994346875,
+            591.356382
+          ],
+          [
+            1,
+            0,
+            1,
+            9.4210739375,
+            602.948732
+          ],
+          [
+            1,
+            1,
+            0,
+            8.69555964062,
+            556.515817
+          ],
+          [
+            2,
+            0,
+            0,
+            8.60611820312,
+            550.791565
+          ],
+          [
+            2,
+            1,
+            1,
+            9.4249388125,
+            603.196084
+          ],
+          [
+            3,
+            0,
+            1,
+            9.2507525,
+            592.04816
+          ],
+          [
+            3,
+            1,
+            0,
+            8.45890721875,
+            541.370062
+          ],
+          [
+            4,
+            0,
+            0,
+            8.448985375,
+            540.735064
+          ],
+          [
+            4,
+            1,
+            1,
+            9.2406250625,
+            591.400004
+          ],
+          [
+            5,
+            0,
+            1,
+            9.21902054688,
+            590.017315
+          ],
+          [
+            5,
+            1,
+            0,
+            8.775383375,
+            561.624536
+          ]
+        ],
+        "baseline_median_ms": 8.532512710934999,
+        "candidate_median_ms": 9.24568878125,
+        "candidate_baseline_ratio": 1.0835833586747567
+      },
+      {
+        "process": 2,
+        "cap": 2051,
+        "pattern": "gather",
+        "batch_calls": 2,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            0,
+            224.0646245,
+            448.129249
+          ],
+          [
+            0,
+            1,
+            1,
+            269.128987,
+            538.257974
+          ],
+          [
+            1,
+            0,
+            1,
+            268.4800535,
+            536.960107
+          ],
+          [
+            1,
+            1,
+            0,
+            223.759934,
+            447.519868
+          ],
+          [
+            2,
+            0,
+            0,
+            223.6928775,
+            447.385755
+          ],
+          [
+            2,
+            1,
+            1,
+            268.849278,
+            537.698556
+          ],
+          [
+            3,
+            0,
+            1,
+            269.3364955,
+            538.672991
+          ],
+          [
+            3,
+            1,
+            0,
+            223.5718925,
+            447.143785
+          ],
+          [
+            4,
+            0,
+            0,
+            223.684174,
+            447.368348
+          ],
+          [
+            4,
+            1,
+            1,
+            268.823091,
+            537.646182
+          ],
+          [
+            5,
+            0,
+            1,
+            268.754832,
+            537.509664
+          ],
+          [
+            5,
+            1,
+            0,
+            223.224035,
+            446.44807
+          ]
+        ],
+        "baseline_median_ms": 223.68852575,
+        "candidate_median_ms": 268.8361845,
+        "candidate_baseline_ratio": 1.2018326983855139
+      },
+      {
+        "process": 2,
+        "cap": 2051,
+        "pattern": "clustered",
+        "batch_calls": 2,
+        "columns": [
+          "round",
+          "order",
+          "variant_0_WG128_1_WG256",
+          "milliseconds",
+          "batch_ms"
+        ],
+        "samples": [
+          [
+            0,
+            0,
+            0,
+            137.955296,
+            275.910592
+          ],
+          [
+            0,
+            1,
+            1,
+            184.967794,
+            369.935588
+          ],
+          [
+            1,
+            0,
+            1,
+            184.4530835,
+            368.906167
+          ],
+          [
+            1,
+            1,
+            0,
+            138.011366,
+            276.022732
+          ],
+          [
+            2,
+            0,
+            0,
+            137.972347,
+            275.944694
+          ],
+          [
+            2,
+            1,
+            1,
+            184.6537965,
+            369.307593
+          ],
+          [
+            3,
+            0,
+            1,
+            184.558376,
+            369.116752
+          ],
+          [
+            3,
+            1,
+            0,
+            138.747518,
+            277.495036
+          ],
+          [
+            4,
+            0,
+            0,
+            138.1046005,
+            276.209201
+          ],
+          [
+            4,
+            1,
+            1,
+            184.525308,
+            369.050616
+          ],
+          [
+            5,
+            0,
+            1,
+            184.7066395,
+            369.413279
+          ],
+          [
+            5,
+            1,
+            0,
+            138.269145,
+            276.53829
+          ]
+        ],
+        "baseline_median_ms": 138.05798325,
+        "candidate_median_ms": 184.60608625,
+        "candidate_baseline_ratio": 1.337163428758112
+      }
+    ],
+    "aggregate_shapes": [
+      {
+        "cap": 33,
+        "pattern": "gather",
+        "processes": 3,
+        "paired_batches": 36,
+        "baseline_process_medians_ms": [
+          8.52160810156,
+          8.63684984375,
+          8.532512710934999
+        ],
+        "candidate_process_medians_ms": [
+          9.30017896875,
+          9.385293289065,
+          9.24568878125
+        ],
+        "baseline_aggregate_ms": 8.532512710934999,
+        "candidate_aggregate_ms": 9.30017896875,
+        "process_median_time_ratios": [
+          1.091364312687352,
+          1.0866569940261965,
+          1.0835833586747567
+        ],
+        "geomean_time_ratio": 1.0871968486290098,
+        "all_processes_faster": false
+      },
+      {
+        "cap": 2051,
+        "pattern": "gather",
+        "processes": 3,
+        "paired_batches": 36,
+        "baseline_process_medians_ms": [
+          223.88796524999998,
+          223.96336,
+          223.68852575
+        ],
+        "candidate_process_medians_ms": [
+          269.4142085,
+          268.86728775,
+          268.8361845
+        ],
+        "baseline_aggregate_ms": 223.88796524999998,
+        "candidate_aggregate_ms": 268.86728775,
+        "process_median_time_ratios": [
+          1.2033438608420244,
+          1.2004967587108892,
+          1.2018326983855139
+        ],
+        "geomean_time_ratio": 1.2018905432666194,
+        "all_processes_faster": false
+      },
+      {
+        "cap": 2051,
+        "pattern": "clustered",
+        "processes": 3,
+        "paired_batches": 36,
+        "baseline_process_medians_ms": [
+          138.23321900000002,
+          138.23095325,
+          138.05798325
+        ],
+        "candidate_process_medians_ms": [
+          184.714947,
+          184.72478425,
+          184.60608625
+        ],
+        "baseline_aggregate_ms": 138.23095325,
+        "candidate_aggregate_ms": 184.714947,
+        "process_median_time_ratios": [
+          1.336255845998927,
+          1.336348913950646,
+          1.337163428758112
+        ],
+        "geomean_time_ratio": 1.3365893340712103,
+        "all_processes_faster": false
+      }
+    ],
+    "conservation": {
+      "independent_timing_processes": 3,
+      "timed_batches": 108,
+      "arms_per_shape_per_process": 2,
+      "rounds_per_shape": 6,
+      "all_batch_floor_ms": 50,
+      "all_batch_floor_checks_passed": true,
+      "all_exact_bits_guards_inputs_checks_passed": true,
+      "all_native_exit_codes": 0,
+      "all_native_owners_closed": true,
+      "all_actual_maps_checked": true,
+      "all_driver_boot_checks_passed": true,
+      "fresh_faults": [],
+      "model_speed_not_measured": true
+    },
+    "resource_limit": "Exact normal/capture kernel maxima1024 admit256; device local capacity131072B and requested dynamic local20036B are different quantities. Reported private0 does not prove zero spills/occupancy. Source-derived matrix/load demand is under cpu-profiler-current.json:qsa_workgroup_resource_model_v1; physical VRAM/bus saturation remains unmeasured.",
+    "raw_retirement": {
+      "stage": "deleted_verified",
+      "roots": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-check-v1",
+          "files": 4,
+          "bytes": 87597,
+          "sha256_canonical_file_hashes": "9c814c1afbfd60783e729307cf2ca96ea33d4fcc4510db9c87173abcd1c343dc"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup256-check-v2",
+          "files": 22,
+          "bytes": 4156793,
+          "sha256_canonical_file_hashes": "052513e4eff9824560ffac8cb26e955e1af99e35f2a9d10853a874dae861089e"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-qsa-workgroup256-bk-20261115",
+          "files": 1,
+          "bytes": 9601,
+          "sha256_canonical_file_hashes": "c90eab39c002439eeb4a8ff820a64aa44cfd7335a02949c4f515177f49f6ccb2"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-qsa-workgroup256-bk-20261115-control",
+          "files": 22,
+          "bytes": 33921,
+          "sha256_canonical_file_hashes": "630a525a8460e4d8a6582578322886cdf53b4ec3cc9f9921db41a3425644f3df"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/qsa-workgroup256-source-review-bl-20261115",
+          "files": 3,
+          "bytes": 11212,
+          "sha256_canonical_file_hashes": "6386f5e13113c4dbb73f64aee2071751cab01ae986d6116cc5c0e039af6ca8e8"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-overlap-library-review-bm-20261115",
+          "files": 3,
+          "bytes": 32375,
+          "sha256_canonical_file_hashes": "408eb08a82dce46eaa6eb6d2e480b2cc9b387502dcfcf05bc73d89e5ed7b03db"
+        }
+      ],
+      "reason": "Closed rejected geometry cohort:all108batches/numerical/admission/provider/fault/source decisions preserved;known pre-enqueue lookup failure preserved separately. Consumed BK/BL source audit,repair proposal and BMduplicate review transactions have no remaining consumer. Existing three overlap/prefetch collection bodies remain at original paths for the next targeted audit;not included in this deletion.",
+      "files": 55,
+      "bytes": 4331499
+    },
+    "shared_execution_proof": {
+      "native_processes": 7,
+      "all_stages_passed": true,
+      "all_exit_codes": 0,
+      "all_owners_closed": true,
+      "all_boot_driver_fault_checks_passed": true,
+      "fresh_faults": [],
+      "validation_before_main": {
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "exact_kernel_admission": [
+        {
+          "capture": 0,
+          "maximum": 1024,
+          "device_local": 131072,
+          "reported_private": 0,
+          "requested_dynamic_local": 20036
+        },
+        {
+          "capture": 1,
+          "maximum": 1024,
+          "device_local": 131072,
+          "reported_private": 0,
+          "requested_dynamic_local": 20036
+        }
+      ],
+      "kernel_admission_processes": 7,
+      "actual_executable_mapping_checks": 21,
+      "unknown_mapped_ELFs": 0,
+      "missing_mapped_ELFs": 0,
+      "full_individual_protocol_evidence": {
+        "commit": "2a2aca00361409d2c97dda65c99959df20109911",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+        "key": "qsa_prefill_workgroup256_check_v2"
+      },
+      "retention": "Keep individual speed samples and meaningful scope/bounds fields. Repeated successful PID/provider/validation/map records and deleted-log hashes are available in original Git evidence;no current decision needs duplicate copies."
+    }
   }
 }

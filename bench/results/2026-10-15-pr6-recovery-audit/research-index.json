@@ -33819,23 +33819,104 @@
   },
   "qsa_workgroup256_source_audit_20261115": {
     "classification": "decision support",
-    "stage": "conditional_not_implemented_not_dispatched",
-    "scope_eligibility": {
-      "schedulable_now": false,
-      "satisfied": [
-        "WG64all3timing processes closed,all3shapes rejected;WG128reference unchanged",
-        "Existing-library review distinguishes actual256-thread geometry from oldGRF256test"
-      ],
-      "missing": [
-        "Main-authored coherentWG256kernel/header/adapter pinned to committed source",
-        "Fresh worker capacity/ownership/resource check before Orca dispatch"
-      ]
-    },
+    "source_revision": "806e9a93cd10d01baa414d64db86c7c7a603a1c0",
     "question": "After Mainauthors the minimum WG256unit from ownedWG128source,review complete16xSG16/head-step16/PVhead(sg/8)*8,dimension(sg%8)*32/two-fragment ownership and exact kernel/resource admission. Hold32cells,pitch33,cachedQ,vector4KV,ordered softmax/math/storage fixed;no other tuning bundled. Compare legal collective coverage,SLM/register/occupancy tradeoffs;do not claim speed/saturation from source.",
     "required_model": "gpt-6-luna",
     "required_effort": "medium",
     "required_via": "Orca",
+    "report_sha256": "8dabd89496b4ab7e362523347248635c39473c6baf6570da072f84dc7565c9be",
+    "report_bytes": 9601,
+    "ownership_closed": true,
+    "worker_completion_confirmed": true,
+    "captured_executors_gone": true,
+    "terminal_closed": true,
+    "operational_closure": {
+      "CPU_seconds_full_lifetime_upper_bound": 31.242757,
+      "wall_seconds_upper_bound": 546.4499999997206,
+      "native_process_VmHWM_bytes": 431501312,
+      "captured_text_upper_bound": 870158,
+      "source_hashes_unchanged": true
+    },
+    "native_review": {
+      "task": "qsa_workgroup256_source_review_bl_20261115",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "source_pins_checked": 14,
+      "report_sha256_checked": true,
+      "digest_sha256": "2ebbf7b526c6bd97e9a173ae750fe8d33c8d544159c91885d3445079b60a48d2",
+      "review_sha256": "2a115d3cb81609e17406a773af973cf28c783d8fdeabac7061a2229d00123ff8",
+      "main_read_only_digest": true
+    },
+    "curated_findings": [
+      "Originalsoftmaxcoherenceclaim iswrong:16subgroupswithh+=8double-own heads8..15andraceprobability/online state. MainandnativeBLidentifyitbeforeGPU;repairusesSubgroups=Workgroup/16withstaticassert16inbothheadloops.",
+      "OriginalinheritedQKstoreconcernisfalse:4subgroupspairon8headblocksbutwritecellhalves0..15and16..31disjointly. BaselineQKunchanged.",
+      "Installed2026.2supports exactkernel workgroupsize/private query anddeviceLocalcapacity,notkernel_device_specific::local_mem_size. Repairlabelsdevice capacityseparatelyfrom20036requestedDynamicSLM;neitherprovesoccupancy/spills.",
+      "Bothnormal/capture namedkernelsmustbeintargetexecutablebundleandadmit256beforefixturework. Thenall22numeric/rawstate/262144component cases plusnormalbenchsmoke,thennew3processpairedtimings;notmodelqualification."
+    ],
+    "reflection_followup": {
+      "original_check_key": "qsa_prefill_workgroup256_check_v1",
+      "outcome": "No kernel found with specifiedname;exit1,0URenqueuecalls,noGPUfault",
+      "vendor_reference": "https://github.com/intel/llvm/issues/22852",
+      "candidate_repair": "Same-TU ID lookup now verified in all7fresh native processes;both named kernels resolve/are distinct/admit256. Private0 isnot a spill/occupancy proof. Math remains unchanged;performance screen separately fails."
+    },
+    "stage": "closed_component_rejected_curated",
+    "original_metadata": {
+      "commit": "978f1304af6d6a7c52f2d863f4cd1de83dfb7732",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "key": "qsa_workgroup256_source_audit_20261115"
+    },
+    "component_evidence": {
+      "commit": "b99d0bd3ebae2a0ab83e43aac8d2357e3c4ad168",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "qsa_prefill_workgroup256_check_v2"
+    },
+    "current_decision": "Corrected WG256 passes exact kernel IDs,22 numerical/state/bounds cases and108eligible batches;all3shapes slower in all3processes. Reject WG256, retain WG128; no gated model trial or production/PP/TGqualification.",
+    "retention": "Retire consumed report/review,proposal and closed lifecycle bodies; keep corrections/provenance, tested same-TU workaround and exact Git evidence. Source/prototype consumer ended."
+  },
+  "prefill_overlap_library_review_bm_20261115": {
+    "classification": "native review of existing collection reports,not new Orca research",
+    "stage": "reviewed_curated_pending_evidence",
+    "model": "gpt-6-luna",
+    "effort": "max",
+    "source_revision": "2a2aca00361409d2c97dda65c99959df20109911",
+    "source_pins_checked": 10,
+    "report_hashes_checked": 3,
+    "main_read_only_digest": true,
+    "review_sha256": "9116dd8c509a80957d38fe529be4ddb3d68d008c7ffcf4d0b953c1864db81daf",
+    "digest_sha256": "53696d69dc6c755ced468c711b46a877bb1c6f1c8ea692a10c7bb418843ec8cf",
+    "digest_words": 180,
+    "curated_findings": [
+      "Current layer-major admission requires m.copy==m.cs; merely having a separate runtime transfer queue does not show this route uses it. Bank publication after enqueue relies on same-queue order.",
+      "An independent long-prefill upload/compute lane requires event-backed publication,reader retirement,retained source owners and checked drains as one coherent correctness unit;math/decode/safety unchanged.",
+      "Current whole-request copy/kernel unions and4msoverlap do not prove physical traffic,saturation orcausal headroom. Old forced-copy/CPU double-slab proposals remain conditional;active source-view selection must be verified. QSA K-prefetch is a separate ineligible topic."
+    ],
+    "next": "Main first recovers exact active32K route/source/staging and event/wait evidence plus current runtime/provider/queue-group capabilities. Then pin compat.cpp and audit the actual copy-to-queue seam through Orca. Do not launch a source worker lacking its prerequisite evidence.",
+    "retention": "Curated eligibility and corrections suffice;Main consumes no original collection body. Keep original three reports for the ensuing targeted audit;retire this duplicate Task/review transaction after metadata is recorded."
+  },
+  "prefill_upload_event_lane_source_scope_20261115": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "scope": "A bounded, source-specific feasibility audit of the actual 32K long-prefill H2D-to-compute graph under the retained avoidance settings. Trace layer-major admission and active route through copy_blob/source-view, ExpertCache fill/stage_private_expert_bank_enqueue, compat cudaMemcpyAsync/queue resolution, Runtime queue/event/wait APIs, GEMM/dequant submits, and checked drains. Establish whether a supported independent queue/index and explicit event edges can overlap the real upload with useful compute on the target while preserving source/cache/slot lifetimes. Compare only the smallest event-backed queue-split discriminator with the same-queue control. Do not repeat generic pipelining, command-list or profiler surveys; do not enable copy-offload, change math/decode placement, run hardware, or claim physical overlap from API possibility.",
+    "first_source_cut": [
+      "src/prefill/layer_major.inc: same-queue admission, source selection, per-layer upload, and checked drain",
+      "include/strata/prefill/expert_bank_plan.hpp and include/strata/prefill/expert_bank_upload.hpp: enqueue publication and slot lifetime",
+      "src/sycl/compat.cpp at the task source revision: actual cudaMemcpyAsync/stream-to-queue resolver",
+      "src/sycl/runtime.cpp and include/strata/sycl/runtime.hpp: active queue construction, event dependencies, waits, and error ownership",
+      "src/prefill/sycl/gemm.cpp and src/prefill/sycl/gemm16.cpp: consumers and event completion semantics"
+    ],
+    "prerequisites_before_dispatch": [
+      "Provide the completed profile receipt's exact active route markers (full/staged bank, source-view, upload-staging selection), per-operation event/dependency/wait mapping, and pinned executable/source identity; the supplied copy/kernel unions alone do not identify these.",
+      "Provide existing read-only records of the exact UR/Level Zero/driver versions and target queue-group/index capabilities under the qualified settings. Without them, the report can only restate architecture-level possibilities.",
+      "Pin the compat source and relevant current inputs at source revision 2a2aca00361409d2c97dda65c99959df20109911. If the audit exposes a viable queue split, Main commits a separate matched plan before any build/run and retains numerical, event, bounds, failure-drain, dependency-path, and decode-preservation gates."
+    ],
+    "eligibility_reason": "This review closes the generic overlap-library question, but the actual profile route and target queue topology are missing. Existing reports already cover general mechanisms; dispatching without those two facts would repeat conditional theory rather than resolve the current decision.",
+    "stop_condition": "If the active path cannot expose an independent supported engine/index under the required settings, or cannot preserve the bank/lifetime protocol without a broad redesign, return no eligible overlap candidate and retain the same-queue path.",
+    "stage": "conditional_not_dispatched",
+    "required_model": "gpt-6-luna",
+    "required_effort": "medium",
+    "required_via": "Orca",
     "previous_report_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-    "review_point": "After prospective source commit,before fresh component build/numerical/timing plan. Maincontinues implementation;no duplicate broadcollection."
+    "review_origin": "prefill_overlap_library_review_bm_20261115",
+    "Main_scope_note": "This stop condition limits one bounded audit; a needed architectural redesign is not a permanent rejection or completion of tuning. Pin its larger coherent ownership seam and compare it prospectively if evidence supports that work."
   }
 }

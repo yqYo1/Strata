@@ -343,7 +343,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       QsaPrefixStateProbe probe{0,0,0,state.data()+16};
       if (invalid==0) probe.query=queries;
       if (invalid==1) {
-#if defined(STRATA_QSA_REAL_HEAD_STATE) && !defined(STRATA_QSA_PADDED_STATE_PROBE)
+#if defined(STRATA_QSA_REAL_HEAD_STATE)
         probe.head=12;
 #else
         probe.head=16;
