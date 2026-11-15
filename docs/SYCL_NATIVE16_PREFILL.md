@@ -1125,19 +1125,40 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   PR#180publishes this closed validation/retirement boundary to default
   `f08f3a431`;normal merge-back`2e4147ba8`preserves every original measured
   identity in permanent`feature/sycl`,and the clean ghq default mirror is pulled.
-  The next source`9c2fc6005`pins B1-only A/B comparisons through the maintained
-  `bench.sh`drivers:12prefill processes with first/warmed32K/64K separate,
-  then a separately prepared six-process thinking-decode cohort. Its frontend
-  controls and10source/phase/decision tests pass;clean native speed samples
-  are pending. The new decision has no naming-only image-identity exception.
+  Source`9c2fc6005`now closes the B1-only`bench.sh`prefill comparison at
+  `b800ec706`:12independent processes/36fresh requests,first/warmed32K/64K
+  separate,all normal0/owners closed,no fresh faults,and15final model hashes.
+  Execution passes,but the predeclared performance gate fails six of eight
+  median screens. Warmed32Kfalls834.76945->827.13447tok/s and64K979.15722->
+  974.05859;clientTTFT rises39.397->39.7795s and67.1455->67.4405s respectively.
+  Only the64Kfirst-use prompt/TTFT median screens pass. Keep the candidate
+  unselected,the faster14508reference and every original failed outcome.
+  There is no naming-only image-identity exception and no B1s/B2advancement.
+  Decode remains a separate prospective comparison;this prefill loss cannot
+  be accepted in exchange for any decode gain. Eight CSVpoints index both arms
+  and scopes. The post-closure descriptive warmed-time lines are
+  `11.577405+0.000844632*n`s for A and`11.951756+0.000844266*n`s for B1,
+  using actual input count`n`. These are only two-anchor descriptions,not
+  validated scaling laws or measured physical setup costs;TTFT/first-use
+  descriptions and individual samples remain in the result. Held-out48Kand
+  longer/window-boundary checks on the retained fast path remain pending.
   To keep that cohort's inputs frozen,temporary child`tune/request-profiler`
   from`10c6f2a69`holds the independent Main-authored request reader`5de1f6c49`.
   Its nine bounded host tests close normally0at`f0909e0f5`;normal raw output
   is retired at`7d22d861c`. This qualifies synthetic schema/interval controls,
   not runtime admission,request draining,observer overhead or GPUattribution.
-  Finish direct admission against the surviving PTIartifacts and current
-  independent providers,then integrate after this frozen prefill cohort closes
-  and retire the child after pushed original-commit preservation. Existing
+  Direct host admission now closes at`178d9e6bb`:four controls,original457and
+  indexed460compiler-input closures,the exact surviving launcher/collector,
+  fast14508source/12ELFs and84declared current runtime assets all match.
+  The two Main host-harness failures remain failed;16private raw files/
+  25012bytes are retired at`35b91ee78`. No collector/GPUwas loaded by this gate.
+  The fresh existing-fixture control/trace probe is source-prepared at
+  `9e758d6cc`;the`4575174dd`attempt/execution reporting correction now also
+  closes all four scoped host controls normally0without GPUexecution.
+  Integrate this isolated observer work now that the
+  prefill cohort is closed,then retire the child after pushed original-commit
+  preservation. Fresh runtime/map/RAW-clock probing,32Krequest collection,
+  request draining and observer-overhead controls remain pending. Existing
   provider-origin and1.576/1.538observer-overhead failures remain unchanged.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:

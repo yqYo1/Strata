@@ -384731,6 +384731,124 @@
       "sha256": "74dc56e5909db6b7bc01e51cba8631035d51b609d0fb3c6b25407412bf40d645"
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "post_closure_characterization": {
+      "evidence_commit": "b800ec7066bf953ce6308d98afda79f404837279",
+      "method": "Descriptive affine line through two actual length/process-median anchors per arm and first/warmed scope. No independent fit validation;zero residual at two anchors is tautological.",
+      "points": [
+        {
+          "arm": "reference",
+          "sample_scope": "first",
+          "native_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e",
+          "anchors": [
+            {
+              "read_tokens": 32769,
+              "prefill_s": 49.8843,
+              "ttft_s": 50.056
+            },
+            {
+              "read_tokens": 65537,
+              "prefill_s": 78.0115,
+              "ttft_s": 78.164
+            }
+          ],
+          "descriptive_affine": {
+            "prefill_s": {
+              "intercept_s": 21.75624162597657,
+              "seconds_per_input_token": 0.0008583740234374998
+            },
+            "ttft_s": {
+              "intercept_s": 21.947142211914056,
+              "seconds_per_input_token": 0.0008577880859375001
+            }
+          }
+        },
+        {
+          "arm": "reference",
+          "sample_scope": "warmed",
+          "native_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e",
+          "anchors": [
+            {
+              "read_tokens": 32769,
+              "prefill_s": 39.25515,
+              "ttft_s": 39.397000000000006
+            },
+            {
+              "read_tokens": 65537,
+              "prefill_s": 66.93204999999999,
+              "ttft_s": 67.1455
+            }
+          ],
+          "descriptive_affine": {
+            "prefill_s": {
+              "intercept_s": 11.577405368042005,
+              "seconds_per_input_token": 0.0008446319580078122
+            },
+            "ttft_s": {
+              "intercept_s": 11.647653182983412,
+              "seconds_per_input_token": 0.0008468170166015623
+            }
+          }
+        },
+        {
+          "arm": "candidate",
+          "sample_scope": "first",
+          "native_source_commit": "0569e6924b0277ecc7cbd44033bd8751e0c6e666",
+          "anchors": [
+            {
+              "read_tokens": 32769,
+              "prefill_s": 50.2899,
+              "ttft_s": 50.45
+            },
+            {
+              "read_tokens": 65537,
+              "prefill_s": 77.1543,
+              "ttft_s": 77.31
+            }
+          ],
+          "descriptive_affine": {
+            "prefill_s": {
+              "intercept_s": 23.42468016357422,
+              "seconds_per_input_token": 0.0008198364257812501
+            },
+            "ttft_s": {
+              "intercept_s": 23.589180297851566,
+              "seconds_per_input_token": 0.0008197021484375
+            }
+          }
+        },
+        {
+          "arm": "candidate",
+          "sample_scope": "warmed",
+          "native_source_commit": "0569e6924b0277ecc7cbd44033bd8751e0c6e666",
+          "anchors": [
+            {
+              "read_tokens": 32769,
+              "prefill_s": 39.6175,
+              "ttft_s": 39.7795
+            },
+            {
+              "read_tokens": 65537,
+              "prefill_s": 67.2824,
+              "ttft_s": 67.4405
+            }
+          ],
+          "descriptive_affine": {
+            "prefill_s": {
+              "intercept_s": 11.951755734252934,
+              "seconds_per_input_token": 0.0008442657470703124
+            },
+            "ttft_s": {
+              "intercept_s": 12.117655853271483,
+              "seconds_per_input_token": 0.000844146728515625
+            }
+          }
+        }
+      ],
+      "held_out_validated": false,
+      "physical_fixed_cost_identified": false,
+      "nonlinear_or_window_boundary_models_tested": false,
+      "next": "Prioritize retained fast14508for48Kheld-out and longer same-route/window-boundary characterization. Do not adopt B1from these two-point fits or interpret the intercept as a measured physical setup cost."
+    }
   }
 }
