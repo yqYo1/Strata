@@ -15,7 +15,8 @@ import current_request_profile as campaign
 import current_pti_probe as small
 
 P,B=campaign.P,campaign.B
-ROOT,KEY=B/'current-pti-environment-probe-v1','unitrace_current_environment_probe_v1'
+ROOT,KEY=B/'current-pti-environment-probe-v2','unitrace_current_environment_probe_v2'
+PRIOR_ROOT,PRIOR_KEY=B/'current-request-profile-v2','unitrace_current_request_profile_v2'
 THIS='tools/sycl/profile_environment_probe.py'
 SCRIPT=('import os,json;print(json.dumps(dict(pid=os.getpid(),exe=os.readlink("/proc/self/exe"),'
     'environment=dict(v.split("=",1) for v in open("/proc/self/environ","rb").read().decode().split("\\0") if "=" in v))))')
@@ -32,8 +33,8 @@ def save(row):
 
 def prepare():
     require(not ROOT.exists(),'one fresh diagnostic')
-    prior=json.loads((campaign.ROOT/'record.json').read_text())
-    published=campaign.admission.committed_json(campaign.RESULT,P)[campaign.KEY]
+    prior=json.loads((PRIOR_ROOT/'record.json').read_text())
+    published=campaign.admission.committed_json(campaign.RESULT,P)[PRIOR_KEY]
     # Only the later explanation is outside the original failed run receipt.
     # Every original result/qualification field must still match exactly.
     require({k:v for k,v in published.items() if k!='post_closure_analysis'}==campaign.compact(prior)
@@ -50,7 +51,8 @@ def prepare():
             'diagnostic accepts only the controlled non-credential benchmark environment')
     revision=campaign.admission.pti.git(P,'rev-parse','HEAD').decode().strip()
     row=dict(stage='prepared',source_commit=revision,sources=campaign.source_pins(revision),admission=admitted,
-        prior_failure=campaign.KEY,python_contract=contract,python_selected=python['selected'],
+        prior_failure=PRIOR_KEY,python_contract=contract,python_selected=python['selected'],
+        checker_source_sha256=sha(P/campaign.THIS),
         boot=prior['boot'],driver=prior['driver'],environment=env,expected_environment=expected,plan=plan,
         native_profile=profiling,command=campaign.runner.engine_once.profile_command(profiling,[python['selected']['path'],'-I','-c',SCRIPT]),
         budgets=dict(wall=60,cpu=30,rss_cap=1<<30,text_cap=128<<10,file_cap=1<<20,total_cap=4<<20),
@@ -92,17 +94,18 @@ def run():
         except ValueError as error:checker=dict(accepted=False,error=str(error))
         selected={k:v for k,v in observed.items() if k.startswith('UNITRACE_') or k in
             ('LD_PRELOAD','INTEL_LIBITTNOTIFY64','ZE_ENABLE_TRACING_LAYER','ZES_ENABLE_SYSMAN','ZET_ENABLE_METRICS')}
-        row.update(passed=True,complete=True,old_checker=checker,native_exit_code=0,
+        row.update(passed=True,complete=True,host_probe_accepted=True,checker_result=checker,native_exit_code=0,
             added_environment_names=sorted(set(observed)-set(row['expected_environment'])),
             selected_public_trace_environment=selected,actual_environment_sha256=sha(out),
             actual_native_pid=actual['pid'])
     except BaseException as error:row['error']=repr(error)
     finally:
         small.validation.finish(row,owner,cursor,row['boot'])
+        row['passed']=bool(row['passed'] and row.get('driver_after')==row['driver'])
         row.update(active=False,stage='closed' if row['passed'] else 'failed')
         save(row)
     require(row['passed'],row.get('error','diagnostic failed'))
-    print('Launcher environment observed;old checker accepted='+str(row['old_checker']['accepted']))
+    print('Launcher environment observed;current checker accepted='+str(row['checker_result']['accepted']))
     print('Added names: '+','.join(row['added_environment_names']))
 
 

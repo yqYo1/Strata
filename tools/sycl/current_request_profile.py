@@ -24,7 +24,7 @@ import compare_owned_prefill as routes
 
 P, B, RESULT = admission.CHECKOUT, admission.pti.B, admission.RESULT
 FUSED = admission.FUSED
-ROOT, KEY = B/'current-request-profile-v2', 'unitrace_current_request_profile_v2'
+ROOT, KEY = B/'current-request-profile-v3', 'unitrace_current_request_profile_v3'
 THIS, TEST = 'tools/sycl/current_request_profile.py', 'tools/test_current_request_profile.py'
 FIXTURE = 'tests/fixtures/sycl-fast-prefill-route-32k.txt'
 fast_request_route = routes.context().request_route
@@ -127,12 +127,11 @@ def check_native_environment(observed,expected,plan):
             LD_PRELOAD=prof['collector']['path']+':'+shim,
             UNITRACE_DeviceTiming='1',UNITRACE_ChromeDeviceLogging='1',
             UNITRACE_ChromeEventBufferSize='128',UNITRACE_LD_PRELOAD_OLD=shim,
-            ZE_ENABLE_TRACING_LAYER='1')
-        version=actual.get('UNITRACE_VERSION','')
-        require(0<len(version)<=200 and version.isascii(),'pinned launcher version field required')
-        wanted['UNITRACE_VERSION']=version
-    require(all(actual.get(k)==v for k,v in wanted.items())
-            and set(actual)-set(wanted)<={'PWD','OLDPWD','SHLVL','_'},'actual native environment differs')
+            ZE_ENABLE_TRACING_LAYER='1',INTEL_LIBITTNOTIFY64='libunitrace_tool.so',
+            UNITRACE_VERSION='2.4.1 ('+reader.PTI_REVISION+')')
+    changed=sorted(k for k,v in wanted.items() if actual.get(k)!=v)
+    extras=sorted(set(actual)-set(wanted)-{'PWD','OLDPWD','SHLVL','_'})
+    require(not changed and not extras,'actual native environment differs;changed='+str(changed)+';extra='+str(extras))
 
 
 def native_extra_maps(plan):
@@ -170,6 +169,7 @@ def check_sample(sample,count,read,minimum_ms=10000):
 
 
 def after_execution(outcome,row,plan):
+    require(outcome['clean_speed']==(plan['arm']=='clean'),'collector observations cannot be labeled clean speed')
     bounds=outcome['enclosing_owned_run_raw_ns'];windows=outcome['external_request_raw_windows']
     require(len(windows)==RUNS and all(bounds['begin']<=w['begin']<w['end']<=bounds['end'] for w in windows),
             'actual request windows must be inside the closed owned run')
@@ -245,12 +245,18 @@ def current(row):
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'fresh profile plan required')
     admitted,seed,gate=basis();revision=admission.pti.git(P,'rev-parse','HEAD').decode().strip()
+    env_gate=admission.committed_json(RESULT,P)['unitrace_current_environment_probe_v2']
+    require(env_gate['passed'] and env_gate['complete'] and env_gate['ownership_closed']
+            and env_gate['checker_result']['accepted'] and env_gate['fresh_faults']==[]
+            and env_gate['checker_source_sha256']==sha(P/THIS),
+            'same-source strict checker must first accept the actual bounded launcher environment')
     contract,python=runner.entry.python_manifest()
     row={k:copy.deepcopy(seed[k]) for k in ('configuration','environment_template','template','boot','driver','model_assets','native_validation_probe')}
     row['model_assets']=runner.shared.models.model_pins(row['configuration'],row['model_assets'],full=True)
     row.update(stage='prepared',source_commit=revision,sources=source_pins(revision),admission=admitted,
         binary=admitted['binary'],native_source_commit=admitted['native_source_commit'],
         configuration_evidence_sha256=signature(core.compact(seed)),small_probe_evidence_sha256=gate,
+        environment_probe_evidence_sha256=signature(env_gate),
         python_contract=contract,python_selected=python['selected'],plans=[],processes=[],request_hashes={},
         host_passed=False,passed=False,complete=False,active=False,ownership_closed=True,whole_bytes=1536<<20,
         budgets=dict(wall=1500,cpu=9000,rss_cap=104<<30,text_cap=16<<20,file_cap=256<<20,total_cap=384<<20),

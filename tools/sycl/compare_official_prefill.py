@@ -473,7 +473,8 @@ def run(index, experiment=None):
     require(type(traced) is bool and env.get('STRATA_TRACE') == ('1' if traced else None),
             'frozen request-progress observer differs')
     outcome, owner = dict(index=index, read=plan['read'], heads=plan['heads'], complete=False,
-        host_probe_accepted=False, model_executed=False, clean_speed=not traced), None
+        host_probe_accepted=False, model_executed=False,
+        clean_speed=not traced and native.get('native_profile') is None), None
     if 'kernel' in plan:
         outcome['kernel'] = plan['kernel']
     if hasattr(policy, 'native_context'):

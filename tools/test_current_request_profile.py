@@ -44,11 +44,15 @@ class CurrentRequestProfileTests(unittest.TestCase):
             actual=dict(expected,**prof['environment'],STRATA_UNITRACE_TARGET_PRELOAD='/qualified/shim',
                 LD_PRELOAD='/qualified/collector:/qualified/shim',UNITRACE_DeviceTiming='1',
                 UNITRACE_ChromeDeviceLogging='1',UNITRACE_ChromeEventBufferSize='128',
-                UNITRACE_LD_PRELOAD_OLD='/qualified/shim',ZE_ENABLE_TRACING_LAYER='1',UNITRACE_VERSION='qualified')
+                UNITRACE_LD_PRELOAD_OLD='/qualified/shim',ZE_ENABLE_TRACING_LAYER='1',
+                INTEL_LIBITTNOTIFY64='libunitrace_tool.so',
+                UNITRACE_VERSION='2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)')
             def wire(env):return {k.encode():v.encode() for k,v in env.items()}
             profile.check_native_environment(wire(actual),expected,plan)
             for key,value in [('ZET_ENABLE_METRICS','1'),('UNITRACE_StartPaused','1'),
-                              ('ZES_ENABLE_SYSMAN','1'),('LD_PRELOAD','/qualified/shim:/qualified/collector')]:
+                              ('ZES_ENABLE_SYSMAN','1'),('LD_PRELOAD','/qualified/shim:/qualified/collector'),
+                              ('INTEL_LIBITTNOTIFY64','/unexpected/libunitrace_tool.so'),
+                              ('UNITRACE_VERSION','unqualified')]:
                 with self.assertRaises(ValueError):profile.check_native_environment(wire(dict(actual,**{key:value})),expected,plan)
             profile.check_native_environment(wire(expected),expected,dict(arm='clean'))
             with self.assertRaises(ValueError):profile.check_native_environment(wire(actual),expected,dict(arm='clean'))
@@ -82,7 +86,7 @@ class CurrentRequestProfileTests(unittest.TestCase):
         self.assertFalse(profile.decision(processes)['phase_attribution_qualified'])
 
     def test_no_postprocessing_without_complete_enclosing_request_windows(self):
-        out=dict(enclosing_owned_run_raw_ns=dict(begin=10,end=100),
+        out=dict(clean_speed=True,enclosing_owned_run_raw_ns=dict(begin=10,end=100),
             external_request_raw_windows=[dict(begin=20,end=50),dict(begin=51,end=60),dict(begin=61,end=110)])
         with self.assertRaises(ValueError):profile.after_execution(out,{},dict(arm='clean'))
         out['external_request_raw_windows'][-1]['end']=90
