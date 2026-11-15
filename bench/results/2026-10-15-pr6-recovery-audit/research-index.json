@@ -33011,7 +33011,7 @@
   },
   "kv_stream_gpu_resolver_design_20261114o": {
     "classification": "decision_support",
-    "stage": "running_read_only_source_pilot",
+    "stage": "report_closed_review_pending",
     "title": "Remaining KVphase ownership after cooperative and scalar decode isolation",
     "question": "Trace all scalar/cooperative KVresolver consumers and explicit/implicit phases in current primary and held73d88aa12. Separate long/short prompt,Verifier decode/fallback,Layer/Session single-token,MTP,and full-context/RESTORE paths. Identify exact remaining coupling and smallest coherent caller/state/kernel boundary before prefill scalar restoration. Give paths/lines,static versus observed evidence,required invariants and counterevidence;no implementation,tests or speed claim.",
     "prior_evidence": "The old scope never produced a qualified source report. Cooperative2/4algorithm and795oracle records already exist;do not redo that design survey. New held73d88aa12 isolates Verifier scalar/fallback only;Layer/Session phase attribution is a concrete remaining question. Prefill control0ec9 closes36samples;hardware saturation and actual non-Verifier route exposure remain unknown.",
@@ -33021,7 +33021,7 @@
       "missing_prerequisites": [],
       "nonduplication": "Fresh held scalar isolation postdates the unstarted old scope. Restrict to remaining actual phase/caller/state ownership;do not resurvey the implemented cooperative planner.",
       "capacity": "Only one source pilot;Main checks actual MemAvailable and live worker/process handles before creation.",
-      "pending": "This first source pilot is live;inspect its exact Task/Dispatch/process handles before another source dispatch. No steering,duplicate or automatic bulk start."
+      "pending": "AT native Luna-max scope/depth/source review pending;do not duplicate or steer this completed Task."
     },
     "assignment": {
       "model": "gpt-6-luna",
@@ -33038,7 +33038,8 @@
       "native_pid": 3119049,
       "start_ticks": 305335858,
       "sid": 3118946,
-      "scope": "strata-research-as-kv-20261115.scope"
+      "scope": "strata-research-as-kv-20261115.scope",
+      "state": "completed/succeeded;native and PTYclosed"
     },
     "source_packet_retired": true,
     "review_point": "After first fresh source report,required native Luna-max review;Main reads short digest and only relevant decision-support sections for the concrete boundary question.",
@@ -33046,7 +33047,28 @@
       "9849e35803f011aaafb2753c1e0f31411e40308e",
       "73d88aa123edfe15d29ed937974d919d597adc9e"
     ],
-    "report_review_required": true
+    "report_review_required": true,
+    "ownership_closed": true,
+    "report_sha256": "96f19a49941ec09a1fdf334ef3f48599f5d7bf449e72af835d9191280949dbc3",
+    "report_bytes": 6560,
+    "source_inputs_retained": true,
+    "review_task": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/kv-phase-source-review-at-20261115/task.json",
+    "review_digest": null,
+    "operational_closure": {
+      "worker_done_accepted": true,
+      "canonical_dispatch": "completed",
+      "canonical_worker": "succeeded",
+      "all18_source_hashes_unchanged": true,
+      "native_peak_RSS_bytes": 421187584,
+      "CPU_full_lifetime_upper_bound_s": 87.51533806255757,
+      "wall_upper_bound_s": 518.0806281720288,
+      "captured_text_upper_bound_bytes": 1043526,
+      "pids_peak": 139,
+      "pids_max": 256,
+      "pids_max_events": 0,
+      "aggregate_tree_RSS_peak_qualified": false,
+      "closure_sha256": "021877c0238f7b112717b024f7776bf89df7edf926a252c9d2dec369df425ec5"
+    }
   },
   "orca_research_wave_o_20261114": {
     "stage": "closed_failed_before_Codex_exec",
@@ -33131,8 +33153,10 @@
         "run": "run_5a7695a42ba0",
         "task": "task_41eae01c0228",
         "dispatch": "ctx_52ec87eb312e",
-        "state": "in_progress",
-        "ownership_closed": false
+        "state": "closed_report_review_pending",
+        "ownership_closed": true,
+        "source_input_hashes_unchanged": true,
+        "report_sha256": "96f19a49941ec09a1fdf334ef3f48599f5d7bf449e72af835d9191280949dbc3"
       }
     }
   },
