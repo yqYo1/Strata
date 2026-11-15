@@ -1310,6 +1310,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   validation error to normal0for both ordinal0and1metadata. Parameter/thread/UR
   validation,APIlogging and qualified runtime safety remain enabled. This is
   checker compatibility evidence,not copy bandwidth or model qualification.
+  The fresh`prefill_copy_engine_v6`cohort now closes all14normal0processes:
+  two metadata controls,two traced256-byte checks,four1MiB/256MiB checks,and
+  three alternating independent bandwidth pairs. Full source/readback/edge
+  guards,35actual initialized providers,quiet validation,closed owners and
+  unchanged boot/driver pass with no fresh GPUfault. Each speed process retains
+  one warmup and three8×256MiBhost-complete batches;all18timed batches exceed
+  the declared100msfloor. Source is`3d801e985`,ELF770f72aae9eed67e94f73c18e88e48dd2103219f456012ab17be8dc66fb9d82f.
+  Evidence`a0404d96e`preserves the full cohort. Process-median requested GB/s
+  are SYCL6.485465/6.292787/6.291627and copy-only5.801157/6.444878/6.259003.
+  Paired copy/SYCLtime ratios1.117961/0.976401/1.005212have geometric mean
+  1.031425;the predeclared independent replacement gate fails. Preserve all
+  slower batches,including the3.52..6.49GB/sSYCLand3.55..6.45copy-only range.
+  A queue replacement alone is not adopted or advanced to a model trial.
+  These are synchronized hostUSMrequested-byte rates,not physical pinning,
+  bus/VRAMtraffic,saturation,production-path cost or model PP. CPUtime covers
+  submission plus completion together and does not qualify disjoint attribution.
+  The current limiting-resource evidence remains the original~10.31scopy union,
+  ~28.66skernel union and~4msoverlap;this probe calibrates a transfer primitive
+  around6.3GB/sbut does not establish either resource's physical saturation.
+  Any copy/compute overlap test needs a new minimal ownership/dependency unit
+  and prospective comparison;it cannot inherit this failed speed gate.
   Material critical-path opportunity and that bounded plan are still
   prerequisites to a further source-research scope. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
