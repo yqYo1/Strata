@@ -7066,5 +7066,158 @@
     "runtime_admission_qualified": false,
     "next": "Fresh committed v3host attempt using the canonical scoped evidence reader;preserve v2failure unchanged.",
     "retention": "Retire original bounded failed raw output after corrected source/asset qualification;retain this compact failure and source/criteria."
+  },
+  "unitrace_current_admission_host_v3": {
+    "source_commit": "d0a8b2836a72cc9e50dc4779d926639a5589384d",
+    "source_sha256": {
+      "tools/sycl/current_pti_admission.py": "144d49370e69df375d63a2e70901f693eb9d01433771aa4ba4fe1f6005f52149",
+      "tools/test_current_pti_admission.py": "6f71d14f7644c531cae02b2f8e552a06101adbdab276d95af6bd26f19cc83e66",
+      "tools/sycl/request_profile_reader.py": "c60c8e209fe6acd9e3ff4385f3f9132897ddc18166322386c0a3af7e15084e5c"
+    },
+    "recipe": {
+      "unit_command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_current_pti_admission"
+      ],
+      "admission_command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "tools/sycl/current_pti_admission.py",
+        "--out",
+        "{root}/admission.json"
+      ],
+      "wall_seconds": 120,
+      "CPU_seconds": 90,
+      "RSS_bytes": 1073741824,
+      "text_bytes": 131072,
+      "total_bytes": 4194304,
+      "GPU_executed": false,
+      "lock_policy": "Parent locks only the unit stage;admission child owns its own exclusive lock."
+    },
+    "passed": true,
+    "complete": true,
+    "GPU_executed": false,
+    "collector_loaded": false,
+    "unit_tests": 4,
+    "admission": {
+      "schema": "strata-current-pti-host-admission-v1",
+      "scope": "host_source_asset_admission_only",
+      "controller_commit": "d0a8b2836a72cc9e50dc4779d926639a5589384d",
+      "controller_sha256": "144d49370e69df375d63a2e70901f693eb9d01433771aa4ba4fe1f6005f52149",
+      "tools": {
+        "artifacts": {
+          "libunitrace_tool.so": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+            "bytes": 2329704,
+            "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+          },
+          "unitrace": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+            "bytes": 513168,
+            "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+          }
+        },
+        "collector_source_commit": "e57b5ee7fce1de6391c793f1014c44cae3b85d9c",
+        "launcher_source_commit": "8fba6f3aaa22578bf0b7a3ae0cc945b6d3de89c9",
+        "recovered_launcher_source_sha256": "d033ab839454e1779689062f3932ceba830ebac4fe5504a06068078818e6be1f",
+        "original_compiler_inputs": 457,
+        "indexed_compiler_inputs": 460,
+        "original_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/dependencies.json",
+          "files": 457,
+          "sha256": "6fa2604f00edde615f2150815c0de23a90c2caac1c0ad7e75bfcd73e1b146a35",
+          "scope": "Complete preprocessor header closure plus compiler/linker/startup/runtime assets; retained externally for current build/qualification admission."
+        },
+        "indexed_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/compiler-inputs.json",
+          "files": 460,
+          "sha256": "e7d01b2a1a6fe76886e79062f6c25f71afd213cd8f26d88321876cb26db38e20"
+        },
+        "collector_recipe_sha256": "610301c464bbc27755acc4c93449d21b564a79d57e99c3977fd9f9434af4cb79",
+        "launcher_recipe_sha256": "edb1023cff562479c84867ffbc56d3600b130385d06bdba068217300d7c5afee",
+        "retired_artifact_or_fixture_readers_called": false
+      },
+      "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+        "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+        "bytes": 26448640,
+        "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+      },
+      "native_build_proof_sha256": "3bf9d637819c6a92636d4bf507bbd6818c7a5ae8f841200ca4ff085c9370dbd9",
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+      },
+      "runtime_files": 84,
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "required_pre_exec_controls": {
+        "UNITRACE_SystemTime": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0"
+      },
+      "source_and_artifact_recovery_passed": true,
+      "GPU_executed": false,
+      "collector_loaded": false,
+      "fresh_collector_probe_passed": false,
+      "observer_overhead_qualified": false,
+      "request_drain_qualified": false,
+      "physical_saturation_qualified": false,
+      "historical_provider_origin_hold_cleared": false,
+      "pending": "Commit this direct admission;fresh bounded known-work/current-map/RAW-clock probe;then prospective32Krequest collection and matched clean observer-overhead controls. Keep original1.576/1.538 failures and old provider-origin hold unchanged."
+    },
+    "ownership_closed": true,
+    "stage": "closed",
+    "native_model_qualification": false,
+    "observer_overhead_qualified": false,
+    "next_consumer": "Fresh bounded current-provider/RAW-clock probe on existing same-build submission fixture,then32Krequest collection with the tested reader. This host gate never loads PTI and does not qualify timing,phase attribution or saturation."
+  },
+  "unitrace_request_profile_host_raw_retirement": {
+    "state": "prepared",
+    "complete": false,
+    "roots": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-pti-admission-host-v1",
+        "record_sha256": "02f26870d1d1f84412c229a6ef977ecac949d5da5b5c219d7d321a90c4ef4dd8",
+        "files": 5,
+        "regular_bytes": 5484,
+        "tree_sha256": "45a9ab8a9a42ffe5db7555f5ec5a1bc8f352a1bd496444ccce9b40a331ddc1cc"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-pti-admission-host-v2",
+        "record_sha256": "91913eeef61959ca5599698b29de9047061608e518f29e10d8f35f49da3f5b75",
+        "files": 5,
+        "regular_bytes": 6324,
+        "tree_sha256": "cf3114cff7580c03d5eaa241745f5c76e2f577ec6275be112f71bbfaaa1b71be"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-pti-admission-host-v3",
+        "record_sha256": "d69c2f1b39069d4397289aca010f601f8d164472303eafec345898054a8d34e7",
+        "files": 6,
+        "regular_bytes": 13204,
+        "tree_sha256": "1e74bfd0042af76466fa26f41cc40aef97c126c7d7271ce7dfad56d6e22ffe79"
+      }
+    ],
+    "files": 16,
+    "regular_bytes": 25012,
+    "temporary_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-pti-host-retirement-manifest.json",
+      "sha256": "0f179fb1ca37e17d47be8caf8c241a5bb2239eb23cd2ae6c79c4bf319666831c"
+    },
+    "reason": "Keep committed compact original v1/v2failures and v3success/provenance. Normal host logs and duplicate private receipts have no next consumer;no executable was built.",
+    "next_consumer": "Fresh collector/native probe consumes committed v3admission and original build/runtime manifests,not closed private host readers."
   }
 }
