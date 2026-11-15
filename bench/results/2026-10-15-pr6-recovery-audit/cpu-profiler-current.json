@@ -13048,7 +13048,7 @@
     ]
   },
   "prefill_fullfit_upload_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "compiler": {
       "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
       "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
@@ -13109,7 +13109,7 @@
     },
     "expected": "prefill full-fit upload oracle: byte_cases=6 refusals=10 failure_publication=checked",
     "passed": false,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -13125,7 +13125,24 @@
       ],
       "gate": "Exact committed source/SDK/compiler/actual header/link inputs,normal0/empty owned sessions and exact oracle marker. Not native events,lifetimes,performance,model quality,handoff,decode or physical262144qualification."
     },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-upload-host-v1/oracle",
+      "sha256": "11024f5dd52d42f75ca71542861031f6c9a96b79438bfdbb49552e98ebbf9edc"
+    },
     "source_commit": "672e18a1067df8bc414c4f0b2c37169c35459808",
-    "source_sha256": "ae753db25fce89d55a4c93c83c3d9add6255e5af03ab4b70b10f23b9d183ffba"
+    "source_sha256": "ae753db25fce89d55a4c93c83c3d9add6255e5af03ab4b70b10f23b9d183ffba",
+    "actual_inputs": {
+      "compiled": {
+        "files": 195,
+        "sha256": "56595f012a629af4991b39a224298a5653367420dc50202a6febf31e4cb92ea6"
+      },
+      "links": {
+        "files": 23,
+        "sha256": "d2706e4ce04c517b6c158c3819530004afd53734244ca45c0c29a899fe1ba030"
+      }
+    },
+    "execution_and_byte_oracle_passed": true,
+    "qualification_hold": "Controller did not recheck the freshly linked ELF and consumed inputs immediately before oracle launch. Original successful output is retained;source/build inputs were pinned but the mandatory launch guard was incomplete.",
+    "next_action": "Fresh V2plan with per-command source/compiler checks and exact ELF/actual-input checks immediately before launch;no retrospective V1qualification."
   }
 }
