@@ -7492,5 +7492,38 @@
     "GPU_work_admitted": false,
     "error": "Main source review before native launch found that base_environment was loaded from historical measurement_environment.json,whose provider paths differ from the current independently qualified runtime manifest. No control/trace process was launched.",
     "next": "Keep this rejection unchanged;commit a new probe source/plan using the actual phase_kv_split_device_v1 qualified environment and reject historical XeStrata provider paths before exec."
+  },
+  "unitrace_current_probe_host_v4": {
+    "source_commit": "74839ba484d6cc0ec097916a113177711d7b985c",
+    "source_sha256": {
+      "tools/sycl/current_pti_probe.py": "bb3cf5ca3e7f6b4cc24fea36017ed3bec04045c8cd610f007461a29f7ce9d4e5",
+      "tools/test_current_pti_probe.py": "65c19e3f1af779815a82279b335e7bbf04e509770ce20fc1fd5e5ca493ef6700"
+    },
+    "recipe": {
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "tools.test_current_pti_probe"
+      ],
+      "wall_seconds": 90,
+      "CPU_seconds": 60,
+      "RSS_bytes": 1073741824,
+      "text_bytes": 131072,
+      "total_bytes": 4194304,
+      "GPU_executed": false
+    },
+    "tests": 4,
+    "exit_code": 0,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "passed": true,
+    "stage": "closed",
+    "complete": true,
+    "active": false,
+    "GPU_probe_qualified": false,
+    "scope": "Four scoped host guards on current provider-environment fix;old provider paths rejected before exec.",
+    "next": "Prepare and commit fresh v2fixture control/trace plan using current independently qualified environment."
   }
 }

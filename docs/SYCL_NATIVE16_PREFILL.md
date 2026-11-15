@@ -1155,9 +1155,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The fresh existing-fixture control/trace probe is source-prepared at
   `9e758d6cc`;the`4575174dd`attempt/execution reporting correction now also
   closes all four scoped host controls normally0without GPUexecution.
-  Integrate this isolated observer work now that the
-  prefill cohort is closed,then retire the child after pushed original-commit
-  preservation. Fresh runtime/map/RAW-clock probing,32Krequest collection,
+  Merge`ba5185424`integrates this isolated observer work into pushed
+  `feature/sycl`,preserving its original source/results through`7fb45de15`;
+  the finished child branch/worktree is retired. Before native execution,
+  source review rejects probe v1's historical provider environment:neither
+  control nor trace was launched. Fix`74839ba48`uses the actual independently
+  qualified environment and rejects old XeStrata provider paths before exec;
+  all four scoped host controls pass normally0. Fresh v2runtime/map/RAW-clock probing,32Krequest collection,
   request draining and observer-overhead controls remain pending. Existing
   provider-origin and1.576/1.538observer-overhead failures remain unchanged.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
