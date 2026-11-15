@@ -33819,9 +33819,9 @@
   },
   "qsa_workgroup256_source_audit_20261115": {
     "classification": "decision support",
-    "stage": "eligible_source_pinned",
+    "stage": "dispatched_source_audit",
     "scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "satisfied": [
         "WG64all3timing processes closed,all3shapes rejected;WG128reference unchanged",
         "Existing-library review distinguishes actual256-thread geometry from oldGRF256test"
@@ -33832,7 +33832,8 @@
       "CPU_seconds": 180,
       "wall_seconds": 600,
       "memory_bytes": 4294967296,
-      "prerequisites_met": "Committed806e9a93WG256kernel/header/fixture/controller;WG64closed/rejected and all artifacts retired;fresh bound Orca list has no active dispatch;native reviews completed. Actual new native scope and report-only configuration will be verified before injection."
+      "prerequisites_met": "Committed806e9a93WG256kernel/header/fixture/controller;WG64closed/rejected and all artifacts retired;fresh bound Orca list has no active dispatch;native reviews completed. Actual new native scope and report-only configuration will be verified before injection.",
+      "reason": "Same scope alreadydispatched;do not duplicate or steer it. Actual turn_context confirms gpt-6-luna medium/report-only workspace-write/networktrue/tmpwriteexclusions;startupupdate skipped,4GiB/180CPU/600wall accounting attached before injection."
     },
     "question": "After Mainauthors the minimum WG256unit from ownedWG128source,review complete16xSG16/head-step16/PVhead(sg/8)*8,dimension(sg%8)*32/two-fragment ownership and exact kernel/resource admission. Hold32cells,pitch33,cachedQ,vector4KV,ordered softmax/math/storage fixed;no other tuning bundled. Compare legal collective coverage,SLM/register/occupancy tradeoffs;do not claim speed/saturation from source.",
     "required_model": "gpt-6-luna",
@@ -33865,6 +33866,21 @@
     ],
     "report_budget_words": 1700,
     "report_budget_bytes": 24576,
-    "next": "OrcaLuna medium source audit;Main prepares fresh coherent component build concurrently,holdsGPUuntil accepted report and nativeLuna-max review."
+    "next": "OrcaLuna medium source audit;Main prepares fresh coherent component build concurrently,holdsGPUuntil accepted report and nativeLuna-max review.",
+    "run": "run_b350ab09e36a",
+    "task": "task_be3d0e41ad7a",
+    "dispatch": "ctx_e96dfe0ee932",
+    "terminal": "term_aa00978c-52a8-47dd-8bdc-01b4897b2191",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/orca-qsa-workgroup256-bk-20261115",
+    "scope": "strata-research-bk-qsa256-20261115.scope",
+    "native_identity": {
+      "pid": 452698,
+      "start_ticks": 309487387,
+      "sid": 452555
+    },
+    "actual_model_and_report_only_workspace_checked": true,
+    "actual_task_submitted": true,
+    "main_reads_body_on_arrival": false,
+    "ownership_closed": false
   }
 }
