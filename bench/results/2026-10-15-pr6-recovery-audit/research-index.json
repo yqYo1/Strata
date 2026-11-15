@@ -33713,7 +33713,7 @@
   },
   "qsa_workgroup64_source_bh_20261115": {
     "classification": "decision support",
-    "stage": "dispatched",
+    "stage": "reviewed_bounded_component_support",
     "source_revision": "96d319326da3c7c6f0477752f0e870713f10fafe",
     "source_pins": {
       "AGENTS.md": "dcf1f25f5d87a022b8a49b5f398c31149901d377b977fc090d9f366c862f610f",
@@ -33755,7 +33755,34 @@
     "scope": "strata-research-bh-qsa64-20261115.scope",
     "actual_model_and_report_only_workspace_checked": true,
     "main_reads_body_on_arrival": false,
-    "ownership_closed": false,
-    "next": "Do not steer or duplicate. Main prepares separate prototype/build recovery without changing pinned source;native Luna-max reviews returned report."
+    "ownership_closed": true,
+    "next": "Main owns fresh component build,numerical/state/physical-cell checks and matched timings. No new source survey until a measured implementation leaves a concrete question.",
+    "worker_completion_confirmed": true,
+    "captured_executors_gone": true,
+    "terminal_closed": true,
+    "report_sha256": "8b4969dabdb0a79f37c02081a25ec8dfbd24591a53c66e7d35127f1ae8d4bb1c",
+    "report_bytes": 8762,
+    "operational_closure": {
+      "CPU_seconds_full_lifetime_upper_bound": 52.86532699999999,
+      "wall_seconds_upper_bound": 503.4399999999441,
+      "native_process_VmHWM_bytes": 413712384,
+      "source_hashes_unchanged": true
+    },
+    "native_review": {
+      "task": "qsa_workgroup64_report_review_bi_20261115",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "digest_sha256": "fe5b222844f448621bd06426cb2a0ee427d128ddcb27029fc1e8daff52a31032",
+      "review_sha256": "70303abf1f45f0281e19fa37d58876d6afa5e88539efeae2a087c10009ee0c4a",
+      "explicit_source_pins_checked": 9,
+      "main_reads_only_digest": true,
+      "scope_deviation": "Reviewer ran one forbidden read-only git status/rev-parse startup command,reported it and made no changes. No research-worker deviation or added qualification inferred."
+    },
+    "curated_findings": [
+      "WG64requires head initialization/softmax step4,PVheadsg/2*8,dimension(sg%2)*128and8accumulator fragments. Source ownership/collective coverage is coherent;literalWGsize-only edit is wrong.",
+      "Eight fragments may increase register pressure;actual emitted code and component timings are unknown. No hardware saturation/model speed follows.",
+      "Prototype direct exports isolate the geometry only;actual production entrypoint/routing needs later qualification. Main added matched raw-state probes at ee86239e5for numerical comparison."
+    ],
+    "retention": "Keep substantive source mapping and reviewed tradeoff through the first component decision;retire full report/review and transactions afterward unless a concrete unresolved contract needs original text."
   }
 }
