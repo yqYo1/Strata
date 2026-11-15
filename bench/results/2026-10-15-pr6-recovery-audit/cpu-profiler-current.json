@@ -8972,7 +8972,7 @@
     }
   },
   "unitrace_current_environment_probe_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "1eb994f56a9b0d07d698265480479c8234a16909",
     "admission": {
       "schema": "strata-current-pti-host-admission-v1",
@@ -9153,7 +9153,7 @@
       "total_cap": 4194304
     },
     "passed": false,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_workload_executed": false,
@@ -9161,6 +9161,56 @@
     "question": "Which exact pinned launcher additions cause the pre-long native environment checker to reject? Run only Python self environment/maps,not model inference;keep the old checker result separate from execution success.",
     "retention": "Keep added environment names and selected public tracing fields,source/normal-exit/owner/fault results;retire normal private environment dump/logs at the correction boundary. No credentials,model or hardware-speed claim.",
     "generated_plan_sha256": "b2827fe18ebd5f703f74aada55dcc2290daf667ecb807386893440d4745928d5",
-    "source_inputs_sha256": "4d4f8d9b3a40e4717bfd4df9d5b69464fce45fbd1c557f966d8116a217c5c74d"
+    "old_checker": {
+      "accepted": false,
+      "error": "actual native environment differs"
+    },
+    "native_exit_code": 0,
+    "added_environment_names": [
+      "INTEL_LIBITTNOTIFY64",
+      "STRATA_UNITRACE_TARGET_PRELOAD",
+      "UNITRACE_ChromeDeviceLogging",
+      "UNITRACE_ChromeEventBufferSize",
+      "UNITRACE_DeviceTiming",
+      "UNITRACE_FollowChildProcess",
+      "UNITRACE_LD_PRELOAD_OLD",
+      "UNITRACE_SystemTime",
+      "UNITRACE_TraceOutputDir",
+      "UNITRACE_VERSION",
+      "ZE_ENABLE_TRACING_LAYER"
+    ],
+    "selected_public_trace_environment": {
+      "ZES_ENABLE_SYSMAN": "0",
+      "UNITRACE_SystemTime": "1",
+      "UNITRACE_FollowChildProcess": "1",
+      "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/current-pti-environment-probe-v1/trace",
+      "UNITRACE_VERSION": "2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)",
+      "UNITRACE_DeviceTiming": "1",
+      "UNITRACE_ChromeDeviceLogging": "1",
+      "UNITRACE_ChromeEventBufferSize": "128",
+      "INTEL_LIBITTNOTIFY64": "libunitrace_tool.so",
+      "UNITRACE_LD_PRELOAD_OLD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "ZE_ENABLE_TRACING_LAYER": "1",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so:/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+    },
+    "actual_environment_sha256": "12773598eba654b311c000870f18823435456a68211c16b52fd04d4970a5cd28",
+    "actual_native_pid": 4179578,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "source_inputs_sha256": "4d4f8d9b3a40e4717bfd4df9d5b69464fce45fbd1c557f966d8116a217c5c74d",
+    "post_closure_analysis": {
+      "cause": "Diagnostic completed normally and captured exec environment,but shared finish requires host_probe_accepted,which this new harness omitted. Original aggregate failure stays failed.",
+      "observed_trace_variable": "INTEL_LIBITTNOTIFY64=libunitrace_tool.so",
+      "scope": "Small Python target only;the previous live model environment was not captured,so no sole-cause model proof.",
+      "next": "New v2diagnostic with explicit host acceptance and unchanged strict environment checking,then a separately committed v3model campaign."
+    }
   }
 }
