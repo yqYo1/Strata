@@ -33819,23 +33819,52 @@
   },
   "qsa_workgroup256_source_audit_20261115": {
     "classification": "decision support",
-    "stage": "conditional_not_implemented_not_dispatched",
+    "stage": "eligible_source_pinned",
     "scope_eligibility": {
-      "schedulable_now": false,
+      "schedulable_now": true,
       "satisfied": [
         "WG64all3timing processes closed,all3shapes rejected;WG128reference unchanged",
         "Existing-library review distinguishes actual256-thread geometry from oldGRF256test"
       ],
-      "missing": [
-        "Main-authored coherentWG256kernel/header/adapter pinned to committed source",
-        "Fresh worker capacity/ownership/resource check before Orca dispatch"
-      ]
+      "missing": [],
+      "MemAvailable_bytes": 91002007552,
+      "workers": 1,
+      "CPU_seconds": 180,
+      "wall_seconds": 600,
+      "memory_bytes": 4294967296,
+      "prerequisites_met": "Committed806e9a93WG256kernel/header/fixture/controller;WG64closed/rejected and all artifacts retired;fresh bound Orca list has no active dispatch;native reviews completed. Actual new native scope and report-only configuration will be verified before injection."
     },
     "question": "After Mainauthors the minimum WG256unit from ownedWG128source,review complete16xSG16/head-step16/PVhead(sg/8)*8,dimension(sg%8)*32/two-fragment ownership and exact kernel/resource admission. Hold32cells,pitch33,cachedQ,vector4KV,ordered softmax/math/storage fixed;no other tuning bundled. Compare legal collective coverage,SLM/register/occupancy tradeoffs;do not claim speed/saturation from source.",
     "required_model": "gpt-6-luna",
     "required_effort": "medium",
     "required_via": "Orca",
     "previous_report_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-    "review_point": "After prospective source commit,before fresh component build/numerical/timing plan. Maincontinues implementation;no duplicate broadcollection."
+    "review_point": "After prospective source commit,before fresh component build/numerical/timing plan. Maincontinues implementation;no duplicate broadcollection.",
+    "source_revision": "806e9a93cd10d01baa414d64db86c7c7a603a1c0",
+    "source_pins": {
+      "AGENTS.md": "dcf1f25f5d87a022b8a49b5f398c31149901d377b977fc090d9f366c862f610f",
+      "docs/ARTIFACT_RETENTION.md": "5d2328f25f2f06ca9264e8b9c5f96a6b7f97eaddd1dbaa59ae85ee9619ecafa6",
+      "LICENSE": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "eeebba1dd68db3c4c3ffa88d5156475408ac27fac37f594d9277d5df6c18306d",
+      "src/kernels/sycl/qsa_prefill_workgroup256.cpp": "3911d031cd3ad3ea30d257d823ebef285d98ee783b111f59380e8d773c053808",
+      "include/strata/kernels/qsa_prefill_workgroup256.hpp": "17ba2e23570b3e22a3e8400c7534abcffa207849d471765265901af96e82894d",
+      "include/strata/kernels/qsa_bf16_prefix.hpp": "fca4df929e893f75e719697f353210d8f65eec7f52beaeda10fe2b8a62ec4de5",
+      "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+      "tests/sycl/qsa_bf16_prefix.cpp": "e450be9afc1c3260eded7ec9907ede68a6f723f34dea1fa5af85f76a6e14dae8",
+      "tests/sycl/qsa_prefill_workgroup256.cpp": "93e085dc9a86b022040f3e50f93c0d256213c243a13afaffbf8165120a65f52d",
+      "tests/sycl/qsa_prefill_workgroup256_admission.hpp": "6eff824cb6dd10afeee019002b0d225e7942f9c60b743872e324fca1fe213f97",
+      "tests/sycl/qsa_prefill_workgroup256_bench.cpp": "0709956e654110f4a116ea425191c162ca7a27507a25788b283406c6c05ebabb",
+      "tools/sycl/build_qsa_workgroup256.py": "5d35382992302f31664526c8a82b4875e3ebf97471c6fa7753817b38130a2f18",
+      "tools/sycl/check_qsa_workgroup256.py": "d485982419d2309b5b6186f5557dac3f44ad0257a3f49afd3a664244edcf6a51"
+    },
+    "previous_report_keys": [
+      "qsa_workgroup64_source_bh_20261115",
+      "qsa_next_unit_review_bj_20261115",
+      "xe2-qsa-logical-slm-vs-runtime-resource",
+      "qsa_prefix_memory_reuse_20261110"
+    ],
+    "report_budget_words": 1700,
+    "report_budget_bytes": 24576,
+    "next": "OrcaLuna medium source audit;Main prepares fresh coherent component build concurrently,holdsGPUuntil accepted report and nativeLuna-max review."
   }
 }
