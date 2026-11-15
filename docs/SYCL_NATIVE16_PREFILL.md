@@ -1358,16 +1358,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Luna. Preserve U1's positive same-image result and the faster historical
   reference separately. Default adoption,source replacement,repeated sustained
   decode/agent/task and fullphysical262144/tails/RESTORE remain unqualified.
-  Retain the two existing phase references plus this explicitly bounded third
-  candidate only through this boundary's source recovery,then retire it before
-  U2's fresh image;the individual-copy control will be in that same new image.
-  U2contiguous-run copying remains a separate unmeasured unit. Actual source-view
+  This boundary recovered the exact1165native source inputs,original recipe,
+  1461compiler/29link inputs and final two ELFs from their original commits
+  against the actual files before retirement. Its2540files/302703511bytes,
+  including the ended candidate build,raw model/device output and BR/BS/BT
+  source/review transactions,are physically retired. Useful individual samples
+  and source/protocol corrections remain in compact results and Git. The two
+  independently retained phase references remain unchanged:fast14508/12ELFs
+  and namingA/14ELFs. Existing legacy/orphan/.cache holds remain separate.
+  The four ended one-shot controllers are retired to Git;restore their original
+  committed source and recipe for a newly planned reproduction. The U1C++
+  helper and independent byte/lifetime oracles remain the concrete inputs for
+  U2's next fresh image,which will include the U1individual-copy control itself.
+  U2contiguous-run copying remains a separate unmeasured unit. In the source-view case,
   admission enforces source_stride==blob_bytes;private-bank/U1admission enforces
   bank_stride==blob_bytes. ForNdistinct IDs across24full-fit512banks,the number
   of contiguous runs is at most min(N,24*513-N). The observed first32Krequest
   hasN=8697,so at most3615copy APIcalls are needed with unchanged16012825600B;
   first64KhasN=9178,at most3134calls with unchanged16889804800B. These are
-  source-derived request-count bounds,not actual coalesced commands,physical
+  source-derived request-count bounds under those equal-stride admissions.
+  Verify actual per-layer source strides in the new native trial before relying
+  on the bounds;the startup flag alone is insufficient. They are not actual coalesced commands,physical
   bus transactions or speed measurements. Retain individual/run-copy outcomes
   separately before comparing the useful combination with JIT. Reducing the
   expert-major streaming bank is a different possible placement unit:verify all
@@ -5922,19 +5933,14 @@ Fresh bounded model/frontend checks now pass for both fixed-width routes;
 their sustained comparison and broader model qualification remain pending.
 Required tracking/recovery/alias/API/CLI imports and hardware-tuned unmodified
 upstream measurements remain incomplete. Source and evidence are published on
-`feature/sycl`. Default integration is pending through PR180 under main's
-squash-only rule24638744. All 172 CSV source/evidence commits are verified ancestors
-of the pushed permanent primary and automatic head deletion is disabled. The
-project workflow permits a default content snapshot while preserving all those
-original identities on `feature/sycl`. The latest ordinary squash attempt at
-`fbe45f1b1` on November 14 UTC is rejected: the active ruleset restricts updates,with
-`update_allows_fetch_and_merge=false`. Admin merge permission for this concrete
-PR is pending; PR 180 remains open and no protection bypass or rule change was
-performed. Continue tuning on the pushed primary while default publication
-awaits an authorized route. After an
-authorized merge, merge the updated default back normally and verify the original
-identities again. The last
-verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce5c`.
+`feature/sycl`. The published default before this U1round is
+`2192aba41ac199a8522cafbe5ef60db5cdf616c0`through PR186;the earlier PR180
+permission hold is no longer current. This boundary publishes source/evidence
+from the permanent primary while preserving original measured commit identities.
+Source publication does not close the unfinished functional-import or inference
+adoption gates above. The current CSVcontains540points;verify its original
+source/evidence ancestors and disabled automatic head deletion before default
+publication,then merge the updated default back normally and pull the clean ghq mirror.
 
 ## Expert upload chain decision
 
