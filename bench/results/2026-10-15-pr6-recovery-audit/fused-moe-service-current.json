@@ -385759,7 +385759,7 @@
     }
   },
   "qsa_prefill_workgroup64_build_v3": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "f20d1b7518075e46a0b668e43f1764bc4dc3d84c",
     "input_sha256": "50bb64a0b38ef578827252e7254ca7a1fd52a4d85a6450d42aa3dff7cd1a77d0",
     "SDK_sha256": "b188025f7ef99145cb418a0d550e2332c6ce4ea456a7c9e0625ef3f815c44c58",
@@ -386243,13 +386243,86 @@
         "output": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v3/bench"
       }
     ],
-    "results": [],
+    "results": [
+      {
+        "label": "native0",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native1",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native2",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native3",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native4",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "native5",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "oracle4",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "oracle16",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "bench",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "link-oracle4",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "link-oracle16",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "link-bench",
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ],
     "host_compile_only": true,
     "GPU_executed": false,
     "engine_built": false,
     "production_selected": false,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
@@ -386261,6 +386334,30 @@
       "total_cap": 805306368
     },
     "plan": "Fresh nine-object/three-fixture component generation after B1retirement. No project archive/object reuse. Original five baseline/runtime source bytes and compiler/SDK/flags stay exact;new kernel and fixtures are committed. Validate actual-MD dependency closure and all owned headers before accepting each compile. Link only fresh objects through the pinned SYCL driver;capture actual external link files. Stop first source/dependency/compiler/owner/budget failure;no retry or hash refresh. This builds no inference engine and advances no GPU/model/speed gate.",
-    "retention": "Bounded third component generation,three ELFs,only through WG64numerical and matched timing decision;fast14508/12ELFs and namingA/14ELFs remain unchanged. Retire failed/rejected component after original source/recipe recovery."
+    "retention": "Bounded third component generation,three ELFs,only through WG64numerical and matched timing decision;fast14508/12ELFs and namingA/14ELFs remain unchanged. Retire failed/rejected component after original source/recipe recovery.",
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v3/actual-inputs.json",
+      "sha256": "c27a82491161ce8b9577d1a46de248f1c934b3839669163bff4f7d37e890a196",
+      "compiler_files": 725,
+      "external_and_object_link_files": 24,
+      "uncovered": 0
+    },
+    "binaries": {
+      "oracle4": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v3/oracle4",
+        "sha256": "4c029679c8a98f5618c4daed681cc53deb4c61c5a0bb1bea372fd0946ec51b0d",
+        "bytes": 1780232
+      },
+      "oracle16": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v3/oracle16",
+        "sha256": "ff66e6de1a17f1c2833defaac5c7e228b03a45742f7383618db745999acb779b",
+        "bytes": 1780232
+      },
+      "bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-prefill-workgroup64-build-v3/bench",
+        "sha256": "740ea846e6884e8fec5b8bbcf7de8d9547b298fc74b424965b47ad74cc12e559",
+        "bytes": 1740896
+      }
+    }
   }
 }
