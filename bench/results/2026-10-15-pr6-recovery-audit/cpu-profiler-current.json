@@ -12221,5 +12221,64 @@
       "deleted_bytes": 63432307,
       "native_builds_and_shared_receipts_unchanged": true
     }
+  },
+  "qsa_workgroup_resource_model_v1": {
+    "classification": "deterministic source-derived demand model;not a measured bandwidth ceiling",
+    "native_source_commit": "1fa754132a0673917bff1aa4acd6fec6a7fb9fad",
+    "source_paths": [
+      "src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "src/kernels/sycl/qsa_prefill_workgroup256.cpp",
+      "tests/sycl/qsa_prefill_workgroup256_bench.cpp"
+    ],
+    "source_sha256": {
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "eeebba1dd68db3c4c3ffa88d5156475408ac27fac37f594d9277d5df6c18306d",
+      "src/kernels/sycl/qsa_prefill_workgroup256.cpp": "cccf2a41bde5cd7878f49d992562fa647dada02d23bd65c12ff2071296794e41",
+      "tests/sycl/qsa_prefill_workgroup256_bench.cpp": "0709956e654110f4a116ea425191c162ca7a27507a25788b283406c6c05ebabb"
+    },
+    "formula": {
+      "logical_KV_load_upper_bytes": "queries*2KVheads*cap*256dimensions*2byteBF16*2(K+V);invalid/missing rows andcachescanreducephysicaltraffic;excludesrefresh/metadata/query/output",
+      "matrix_MAC": "queries*2KVheads*16paddedheads*256dimensions*ceil(cap/32)*32*2(QK+PV);matrixFMAsinthisfixture,notallFP32scale/softmax/reductionops",
+      "matrix_FLOPs": "2*matrix_MAC;includes4paddedheadsperKVand32celltails",
+      "consumer": "Interpret matchedWG128/WG256geometryresult;same math/load-demandupperbound inbotharms. One declaredgeometryunit changes partitioning,not tensorprecision/tile/cache/math. Hardware-saturation cause isstillunknown."
+    },
+    "rows": [
+      {
+        "cap": 33,
+        "queries": 8192,
+        "kv_heads": 2,
+        "real_heads_per_KV": 12,
+        "padded_heads_per_KV": 16,
+        "head_dim": 256,
+        "tiles": 2,
+        "logical_KV_load_upper_bytes": 553648128,
+        "matrix_QK_PV_MAC": 8589934592,
+        "matrix_QK_PV_FLOPs": 17179869184,
+        "query_bytes": 100663296,
+        "output_bytes": 100663296
+      },
+      {
+        "cap": 2051,
+        "queries": 8192,
+        "kv_heads": 2,
+        "real_heads_per_KV": 12,
+        "padded_heads_per_KV": 16,
+        "head_dim": 256,
+        "tiles": 65,
+        "logical_KV_load_upper_bytes": 34410070016,
+        "matrix_QK_PV_MAC": 279172874240,
+        "matrix_QK_PV_FLOPs": 558345748480,
+        "query_bytes": 100663296,
+        "output_bytes": 100663296
+      }
+    ],
+    "measured_resource_context": "Current32Kwhole-request deviceprofile has~6.8s/48QSAcalls,28.658s kernelunion and10.310s copyunion,~4ms overlap;notadditive service/phase drain or busbandwidth. Dedicated component geometry is a bounded latency-hiding/resource-partition hypothesis.",
+    "unmeasured": [
+      "physicalVRAMbytes/bandwidth",
+      "cachehit rates",
+      "GPUarithmeticutilization/occupancy",
+      "GRFspills",
+      "fractionofmodelcriticalpathremoved"
+    ],
+    "qualification": "No GPUexecutedfor this calculation;not PP/TG/modeladoption. Use actual admission and matchedcomponenttimings next."
   }
 }
