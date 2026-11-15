@@ -1359,6 +1359,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   This qualifies these standalone hostUSMevent cases,not ordinary RAMviews,
   actual Runtime::compute() integration,async-fault injection,overlap speed,
   a production route,model quality or physical262144context.
+  Original Git source/recipe recovery verifies357/358project files and641
+  compiler/25link inputs for V1/V2. The ended metadata image and normal E1/audit
+  output are physically retired:85files/2431219bytes. Only V2's current ELF,
+  object,dependency file and private source/build record remain for the named
+  imminent E2qualification;review them at E2native build/closure. All26retained
+  phase-reference ELFs remain unchanged;legacy/.cache holds stay separate.
   `bench/sycl/prefill_upload_overlap.cpp`is an **unbuilt E2proposal**,not a
   selected route:it fixes the copy primitive,payload,allocations and existing
   Xe2dense kernel while moving only the readiness wait across independent
