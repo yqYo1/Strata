@@ -1147,32 +1147,33 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All40retained engine/fixture ELFs are unchanged;36PPsamples,failed phase
   decision and current small-fixture clock/map evidence remain committed.
   Do not resume the closed raw-parser plans;use a new committed plan.
-  To keep that cohort's inputs frozen,temporary child`tune/request-profiler`
-  from`10c6f2a69`holds the independent Main-authored request reader`5de1f6c49`.
-  Its nine bounded host tests close normally0at`f0909e0f5`;normal raw output
-  is retired at`7d22d861c`. This qualifies synthetic schema/interval controls,
-  not runtime admission,request draining,observer overhead or GPUattribution.
-  Direct host admission now closes at`178d9e6bb`:four controls,original457and
-  indexed460compiler-input closures,the exact surviving launcher/collector,
-  fast14508source/12ELFs and84declared current runtime assets all match.
-  The two Main host-harness failures remain failed;16private raw files/
-  25012bytes are retired at`35b91ee78`. No collector/GPUwas loaded by this gate.
-  The fresh existing-fixture control/trace probe is source-prepared at
-  `9e758d6cc`;the`4575174dd`attempt/execution reporting correction now also
-  closes all four scoped host controls normally0without GPUexecution.
-  Merge`ba5185424`integrates this isolated observer work into pushed
-  `feature/sycl`,preserving its original source/results through`7fb45de15`;
-  the finished child branch/worktree is retired. Before native execution,
-  source review rejects probe v1's historical provider environment:neither
-  control nor trace was launched. Fix`74839ba48`uses the actual independently
-  qualified environment and rejects old XeStrata provider paths before exec;
-  all four scoped host controls pass normally0. Fresh v2control and trace
-  processes now close normally0with ten numerical cases each,exact actual
-  target/preload/current-provider maps and no fresh faults. The trace has
-  nonempty GPUintervals within the externally measured RAW process bounds.
-  This qualifies small-fixture safety/clock compatibility only;32Krequest
-  collection,request draining and observer-overhead controls remain pending. Existing
-  provider-origin and1.576/1.538observer-overhead failures remain unchanged.
+  Current PTItools are Main-authored and integrated through`ba5185424`;
+  their original child identities remain in permanent`feature/sycl`,and the
+  finished child is retired. Admission recovers the original457/460compiler
+  closures,surviving launcher/collector,fast14508source/12ELFs and84current
+  independent runtime assets. Small control/trace fixtures each close normally0
+  with ten numerical cases,actual target/preload/provider maps,no fresh faults,
+  and680GPUintervals within externally measured RAW bounds. These are safety
+  and clock gates,not model attribution or overhead qualification.
+  The first two current model-profile attempts remain failed:the first used
+  the wrong32K/packed-draft reader;the second's clean arm closes three fresh
+  32769/24thinking requests normally0,but its trace arm rejects the environment
+  before a long request. Clean observations are654.0/838.4/825.5tok/s with
+  clientTTFT50.251/39.225/39.893s;they are comparison observations,not a new best.
+  Actual model exec-environment differences were not captured in that failure.
+  Bounded Python-target observation confirms the launcher adds
+  `INTEL_LIBITTNOTIFY64=libunitrace_tool.so`. Fix`152b8d51c`accounts for that
+  exact value and pinned version while still rejecting unknown keys;new
+  environment gate closes at`79a63ad48`with normal0/closed ownership/no faults.
+  Source`cca56b17f`prepares a fresh clean/trace/trace/clean32Kcampaign with
+  three requests per process,first/subsequent scopes and a prospectively fixed
+  observer screen. Keep every earlier failed outcome;no source/pin refresh.
+  Orca Luna BDand native Luna-max BEreview are closed:the original no-defect
+  report disposition is corrected,and actual`bench.sh`source pin coverage is
+  verified. Main reads the short review,not the collection body.
+  Whole-request collection,observer-overhead and native prefill-drain proof
+  remain pending;the limiting hardware resource is still unknown. Existing
+  provider-origin and1.576/1.538overhead failures remain unchanged.
   Main`9849e3580`integrates`build_named_kv.py`from the reviewed child`7776f66a0`
   (original controller`1d0beb514`)for the first unit only:
   it checks the original six-file mechanical rename and complete native-file
