@@ -147,7 +147,7 @@ template<class F> auto bounded(const char* name,F&& fn) {
 
 int run(const std::string& mode) {
     need(mode=="metadata" || mode=="forward" || mode=="reverse" || mode=="permanent" ||
-         mode=="cancel" || mode=="refuse", "known fixture case required");
+         mode=="cancel" || mode=="cancel-throw" || mode=="refuse", "known fixture case required");
     gate("before-runtime");
     {
         sycl::queue queue(sycl::gpu_selector_v,
@@ -196,12 +196,21 @@ int run(const std::string& mode) {
                 const auto last=lane.readers_done();
                 const auto next=lane.copy_after(dst,b,64*4,last);lane.wait_ready(next);memory.reader(5);
                 lane.drain();memory.verify({{1,expected_a},{2,expected_a},{3,expected_a},{4,expected_a},{5,expected_b}},memory.b);
-            } else if(mode=="cancel") {
+            } else if(mode=="cancel" || mode=="cancel-throw") {
+              bool unwound=false;
+              try {
                 { Held hold(lane,queue);
                   const auto prior=lane.readers_done();(void)lane.copy_after(dst,a,64*4,prior);
                   // Simulated stop after accepted enqueue: scope exit releases
                   // the host dependency, then drains before either source frees.
+                  if(mode=="cancel-throw") throw std::runtime_error("injected accepted-upload cancellation");
                 }
+              } catch(const std::runtime_error& error) {
+                  need(mode=="cancel-throw" && std::string(error.what())=="injected accepted-upload cancellation",
+                       "unexpected cancellation failure");
+                  unwound=true;
+              }
+                need(unwound==(mode=="cancel-throw"),"cancellation unwind was not exercised");
                 lane.drain();memory.verify({},memory.a);
             } else {
                 refuses([&] {(void)lane.copy_after(dst,a,65*4);});

@@ -19,12 +19,13 @@ import measurement_owner as owner_api
 import ur_validation
 
 P,B=original.P,original.B
-ROOT=B/'prefill-upload-event-lane-v1'
+ROOT=B/'prefill-upload-event-lane-v2'
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-KEY='prefill_upload_event_lane_v1'
+KEY='prefill_upload_event_lane_v2'
 SOURCE='tests/sycl/upload_event_lane.cpp'
 HEADER='include/strata/prefill/upload_event_lane.hpp'
-PREFIXES=['tools/sycl',SOURCE,HEADER,'include/strata/sycl/checked_cleanup.hpp','AGENTS.md','docs/ARTIFACT_RETENTION.md']
+HOST_TEST='tests/core/test_upload_event_lane_plan.py'
+PREFIXES=['tools/sycl',SOURCE,HEADER,HOST_TEST,'include/strata/sycl/checked_cleanup.hpp','AGENTS.md','docs/ARTIFACT_RETENTION.md']
 LOADER='/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
 VALIDATION='/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0'
 BUILD=dict(wall=180,cpu=240,rss_cap=4<<30,text_cap=8<<20,file_cap=64<<20,total_cap=128<<20)
@@ -49,11 +50,13 @@ def save(row):
 
 
 def check(row,committed=True):
-    if committed:require(compact(row)==ur_validation.committed(RESULT,(KEY,)),'commit exact local event plan/stage')
+    if committed:require(original.fingerprint(compact(row))==original.fingerprint(ur_validation.committed(RESULT,(KEY,))),
+        'commit exact typed local event plan/stage')
     current=original.coherent.build.common.source.pin(P,PREFIXES)
     require(current['source_sha256']==row['project']['source_sha256'],'frozen event source/controller changed')
     native,_=original.verify_original(expected=row['foundation'])
     require(sha(VALIDATION)==row['validation_provider']['sha256'],'ZE validation image changed')
+    require(sha(row['host_interpreter']['path'])==row['host_interpreter']['sha256'],'host control interpreter changed')
     require(sha(row['runtime_manifest']['path'])==row['runtime_manifest']['sha256'],'runtime manifest changed')
     require(guards.driver_guard()==row['driver'] and row['boot']==Path('/proc/sys/kernel/random/boot_id').read_text().strip(),'boot/driver changed')
     if 'binary' in row:
@@ -71,16 +74,20 @@ def prepare():
         and prior['analysis']['all_three_pair_gain_gate_passed'] is False,
         'preserve closed copy-only replacement failure;new safety question must not inherit its performance gate')
     native,proof=original.verify_original()
+    previous=ur_validation.committed(RESULT,('prefill_upload_event_lane_v1',))
+    require(previous['stage']=='closed_metadata_review_boundary' and previous['ownership_closed']
+        and len(previous['results'])==1,'preserve metadata-only V1and original failed host controls')
     cc='/opt/intel/oneapi/compiler/2026.2/bin/icpx'
     flags=['-std=c++17','-O2','-fsycl','--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
         '-Wall','-Wextra','-Werror','-I'+str(P/'include')]
-    recipe=[('compile',[cc,*flags,'-MD','-MF',str(ROOT/'probe.d'),'-c',str(P/SOURCE),'-o',str(ROOT/'probe.o')]),
+    recipe=[('host-controls',['/usr/bin/python3','-B','-m','unittest','discover','-s','tests/core','-p',Path(HOST_TEST).name,'-v']),
+        ('compile',[cc,*flags,'-MD','-MF',str(ROOT/'probe.d'),'-c',str(P/SOURCE),'-o',str(ROOT/'probe.o')]),
         ('link',[cc,*flags,str(ROOT/'probe.o'),LOADER,'-Wl,-t','-o',str(ROOT/'probe')])]
     env=dict(prior['observer_environment'])
     require(env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD']=='1' and env['EnableDirectSubmission']=='0'
         and env['ZE_ENABLE_HANDLE_LIFETIME']=='0','qualified runtime/checker envelope required')
     cases=[]
-    for mode in ['metadata','forward','reverse','permanent','cancel','refuse']:
+    for mode in ['metadata','forward','reverse','permanent','cancel','cancel-throw','refuse']:
         root=ROOT/mode
         child=dict(env,TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'),
             UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
@@ -91,6 +98,7 @@ def prepare():
     row=dict(stage='prepared',project=original.coherent.build.common.source.pin(P,PREFIXES),foundation=proof,
         external_inputs=native['external_inputs'],runtime_manifest=prior['runtime_manifest'],
         validation_provider=prior['validation_provider'],native_validation_probe=native['native_validation_probe'],
+        host_interpreter=dict(path='/usr/bin/python3',sha256=sha('/usr/bin/python3')),
         native_source_commit=git(P,'rev-parse','HEAD').decode().strip(),recipe=recipe,
         build_environment=native['recipe']['environment'],driver=guards.driver_guard(),boot=prior['boot'],
         cases=cases,results=[],commands=[],passed=False,complete=False,active=False,ownership_closed=True,
@@ -99,8 +107,8 @@ def prepare():
             measured_opportunity='Original current-route trace has~10.31scopy union,~28.66skernel union,~4msoverlap;requested bank bytes35.2GB. Standalone synchronized host-USM rate~6.3GB/s did not improve from engine replacement. This motivates a DIFFERENT bounded scheduling/dependency question,not a saturation or model-speed claim.',
             minimal_coherent_unit='Per-transfer completion token,queue-bound last-reader token,native/SYCLevent ownership,one scratch-overwrite dependency,source/destination retention,cancellation and dual-queue drain. No changed inference math,placement,bank sizing,source-view copying,decode or general Runtime policy.',
             source='Main-authored header and single fresh test TU,repository LICENSE. Official installed SYCL/LevelZero API declarations are behavior references;no external implementation or XeStrata source. Independent serialized probe is archived at3d801e985.',
-            cases='Metadata first,no application GPU work;then held forward copy/reader,held second-reader reverse overwrite,permanent repeated readers,cancel after accepted upload,and bad range/null/foreign/stale token refusals. Each native process is fresh;no event reset/recycling or graph capture.',
-            gates='Commit source/recipe/SDK/compiler/ELF;required actual providers before first application enqueue and again after exact-kernel prewarm;private pre-main URactivation;full traces and quiet parameter/thread validation;host hold remains pending>=50ms then manual release;dependency submission/import<100ms where asserted;full payload/source/edge guards;normal0/positive closed ownership;unchanged boot/driver,no fresh fault.',
+            cases='Metadata first,no application GPU work;then held forward copy/reader,held second-reader reverse overwrite,permanent repeated readers,normal cancellation and explicit exception unwind after accepted upload,and bad range/null/foreign/stale token refusals. Fresh processes,no event reset/recycling or graph capture. Pinned host negative controls run before native compilation.',
+            gates='Commit source/recipe/SDK/compiler/ELF;typed JSONlocal/public plan equality;required actual providers before first application enqueue,after exact-kernel prewarm,and before exit;private pre-main URactivation;full traces and quiet parameter/thread validation;host hold remains pending>=50ms then manual release;dependency submission/import<100ms where asserted;full payload/source/edge guards;normal0/positive closed ownership;unchanged boot/driver,no fresh fault.',
             stop='Stop first identity,source,build,API,guard,validation,deadline,ownership or GPUfault failure. Independent2s host release runs before any wait;raw drain5s and owned native90s wall. No retry,driver reset,foreign process signals or hash refresh.',
             limits='No timing discriminator,overlap gain,model,decode,quality,agent,physical262144 or ordinary runtime teardown qualification. HostUSM only;ordinary immutable RAMsource views remain a separate required source-kind check before production. No throughput derived from uint reader fixture.',
             next='Only after E1source/safety gates pass,commit a separate E2comparison using representative production consumer work and fixed bytes/math,serialized versus event overlap,then actual32K+model only if its own component gate passes. Prior replacement gate stays failed.',
@@ -138,7 +146,11 @@ def execute(action):
             for label,argv in row['recipe']:
                 entry,out,err=supervisor.run(label,argv,row['build_environment'],P,**BUILD)
                 require(owner_api.closed(entry) and entry['exit_code']==0,'event fixture compiler/link failed: '+str(err))
-                if label=='compile':
+                if label=='host-controls':
+                    require('Ran 3 tests' in err.read_text() and '\nOK\n' in err.read_text(),'host controls did not complete all assertions')
+                    row['host_admission_controls']=dict(test_methods=3,changed_launch_safety_identity_cases=5,typed_cases=2,
+                        exact_plan_positive=True,passed=True,exit_code=0,GPU_executed=False)
+                elif label=='compile':
                     for name in shlex.split((ROOT/'probe.d').read_text().replace('\\\n',' ').split(':',1)[1]):
                         p=str(Path(name).resolve());h=sha(p);require(allowed.get(p)==h,'unfrozen compiler input: '+p);actual['compiled'][p]=h
                     actual['objects'][str(ROOT/'probe.o')]=sha(ROOT/'probe.o')
@@ -166,7 +178,7 @@ def execute(action):
                     if item['kind']=='gate':
                         name=item['name'];require(name==expected[len(gates)],'event fixture gate order')
                         providers[name]=mappings(channel.proc.pid,row)
-                        if name in ['runtime-ready','buffers-ready']:
+                        if name in ['runtime-ready','buffers-ready','before-exit']:
                             needed=[VALIDATION,LOADER,case['environment']['ZE_ENABLE_ALT_DRIVERS'],case['environment']['UR_ADAPTERS_FORCE_LOAD'],'/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so']
                             require(all(str(Path(p).resolve()) in providers[name] for p in needed),'missing required initialized provider')
                         gates.append(name);channel.send(b'continue\n')
