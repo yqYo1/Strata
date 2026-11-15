@@ -38,11 +38,26 @@ The November16JST check fetches742additional commits/2086changed paths from
 `146df3c4` import is1121commits/2816changed paths. This is an actual ghq-clone
 fetch and matching remote-main observation;the legacy checkout and native
 engines are unchanged. Root LICENSE bytes match the previous observation;
-individual component provenance still needs review. Two bounded read-only
-scopes cover drafting/launch/control dependencies and CPUexpert/pool/SYCL
-resolver changes. They are source reviews,not a complete742commit functional
-ledger,performance evaluation or code import. DeepSeek/35B and CUDA/HIP execution
-remain excluded. The new source/validation obligations remain in`new_interval`.
+individual component provenance still needs review. Two bounded source scopes
+are reviewed and their useful findings are below;they do not complete the
+742commit ledger or establish imports,tests or performance. Both original
+research samplers refused because Main put source views inside capture trees,
+exceeding256files;one also exceeds8MiB. Preserve those failures. The corrected
+future layout keeps immutable inputs outside report/control captures.
+DeepSeek/35B and CUDA/HIP execution remain excluded.
+
+| Reviewed source unit | Required action and qualification |
+| --- | --- |
+| One Off/MTP/DFlash2 decision through plan/fetch,setup,config,launch and visible status | Required functional port. Preserve existing MTP/legacy configurations and DFlash2 opt-in;do not silently replace the local default with upstream Auto. Start from [launch plan/argv](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/launch/runner.py#L1506),[CLI drafting](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/drafting_cmd.py#L117) and [draft selection](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_control/drafting.py#L467). The12GBIQ3_S example is at runner336-339/modelstate86-95;the old report's unrelated lines are not evidence. |
+| Arc prepared-file/pack/config adaptation | Required and unqualified. Verify the native setup entrypoint,accepted engine arguments and direct config writers before porting [the launch adaptation](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/launch/runner.py#L1364). Preserve existing config and avoid unsupported layer/vision/draft downloads. The existing Arc source map below remains the adapter consumer. |
+| CPU IQ3_S weights with Q8_K activations | Conditional decode candidate,not long GPU prefill. [The mapping](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/src/quant/types.cpp#L32) uses the AVX2 quant path. [SYCL CMake](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/sycl/CMakeLists.txt#L130) includes root pool/native-expert sources but does not wire that quant layer. Native-expert checks use ggml-cpu in the SYCL branch and Strata quant with STRATA_OWN_CPU_QUANT;quant parity is a separate gate. Prove local route,compiler/ISA/activation packing,parity and decode-sized performance before adoption. Reviewed quant provenance is MIT ggml/llama.cpp;retain per-component provenance checks before import. |
+| Nested cgroup quota discovery | Conditional pool-capacity candidate. [The helper](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/include/strata/kernels/cpu/cgroup_cpu.hpp) changes quota discovery,not row math. A real local quota and performance evidence are prerequisites. |
+
+These four pointers are the retained result of the scopes,not coverage of all
+245/732available source-view files or all2086changed paths. The original
+report/capture identities and refusals remain in the research index;Main read
+only the short review and the corrections needed for this map. Reopen a source
+scope for a concrete port/component evidence gap or a new upstream interval.
 
 Earlier router/control/server source reviews remain partial. Required candidates
 include vision context-retry and portable serve-stop bounds;dense MMQ row-id
