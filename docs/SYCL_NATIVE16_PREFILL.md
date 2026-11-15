@@ -1401,9 +1401,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   establish physical PCIe/VRAMtraffic,saturation or the cause of variance.
   Copy aggregation alone has not established a reproducible model speedup.
   Preserve U1's independently positive upload-order result and separate decode
-  selection. Retire U2's unused selector/planner branch,fixtures,one-shot
-  controllers and candidate/raw products at this closure after exact input
-  recovery;the existing compact result carries the retirement proof and state.
+  selection. U2's unused selector/planner branch,fixtures and three one-shot
+  controllers are removed. Exact source/recipe/actual-input recovery precedes
+  physical retirement of2373files/286027510bytes. All26phase-reference ELFs
+  remain unchanged;42individual samples and6conserved request workloads stay
+  in the compact result. The trimmed U1source needs a fresh coherent engine
+  before further native/model qualification;host/syntax validation alone does
+  not relabel an existing executable or establish model adoption.
   Fast14508and namingAphase references remain the two validated generations.
   Reducing the streaming-bank allocation or introducing an independent upload
   engine is a separate future unit,requiring its own opportunity,safety and

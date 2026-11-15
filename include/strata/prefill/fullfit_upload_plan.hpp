@@ -24,7 +24,7 @@ public:
     uint64_t payload_bytes() const { return payload_bytes_; }
 
     static PrefillFullfitUploadPlan make(const std::vector<int32_t>& ids,
-            const ExpertBankLayout& bank, uint64_t source_stride, bool coalesce) {
+            const ExpertBankLayout& bank, uint64_t source_stride) {
         const auto checked=ExpertBankLayout::packed(bank.backing_bytes,bank.stride);
         if (!checked.full_fit() || checked.slots!=bank.slots ||
             checked.used_bytes!=bank.used_bytes || source_stride<bank.stride ||
@@ -39,8 +39,6 @@ public:
         plan.payload_bytes_=layer_major_mul(ids.size(),bank.stride);
         for (size_t first=0;first<ids.size();) {
             size_t end=first+1;
-            if (coalesce && source_stride==bank.stride)
-                while (end<ids.size() && ids[end]==ids[end-1]+1) ++end;
             const auto source=layer_major_mul(uint64_t(ids[first]),source_stride);
             const auto destination=layer_major_mul(first,bank.stride);
             const auto bytes=layer_major_mul(end-first,bank.stride);

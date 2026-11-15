@@ -39,15 +39,12 @@ private:
     ExpertBankLayout layout_;
 };
 
-enum class PrefillFullfitUploadPolicy { jit, eager, coalesced };
-
-inline PrefillFullfitUploadPolicy prefill_fullfit_upload_policy() {
-    static const auto selected=[] {
+inline bool prefill_fullfit_eager_requested() {
+    static const bool selected=[] {
         const char* value=std::getenv("STRATA_SYCL_PREFILL_FULLFIT_UPLOAD");
-        if (!value || !std::strcmp(value,"jit")) return PrefillFullfitUploadPolicy::jit;
-        if (!std::strcmp(value,"eager")) return PrefillFullfitUploadPolicy::eager;
-        if (!std::strcmp(value,"coalesced")) return PrefillFullfitUploadPolicy::coalesced;
-        throw std::invalid_argument("prefill full-fit upload: expected jit, eager or coalesced");
+        if (!value || !std::strcmp(value,"jit")) return false;
+        if (!std::strcmp(value,"eager")) return true;
+        throw std::invalid_argument("prefill full-fit upload: expected jit or eager");
     }();
     return selected;
 }
@@ -57,12 +54,12 @@ struct PrefillFullfitUploadReceipt {
     uint64_t experts=0,copy_commands=0,payload_bytes=0;
 };
 
-// U1 moves individual copies before compute; U2 additionally joins contiguous
-// equal-stride runs. Both retain the outer checked lease and same in-order queue.
+// U1 changes only the position of the existing individual copies. Source and
+// bank owners belong to the outer checked lease; no wait or queue is added.
 inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& slots,
         const PrivateExpertBank& bank,const uint8_t* slab,uint64_t slab_bytes,
         uint64_t source_stride,const std::vector<int32_t>& experts,void* stream,
-        std::initializer_list<sycl_backend::Span> live_scratch, bool coalesce=false) {
+        std::initializer_list<sycl_backend::Span> live_scratch) {
     if (!stream || !slab || slab_bytes!=layer_major_mul(512,source_stride))
         throw std::invalid_argument("prefill eager upload source/queue extent");
     auto& queue=sycl_backend::queue_for(stream);
@@ -72,7 +69,7 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},
         {{slab,size_t(slab_bytes)}},1);
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},live_scratch,1);
-    const auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride,coalesce);
+    const auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride);
     PrefillFullfitUploadReceipt result;
     enqueue_prefill_fullfit_upload(plan,slots,[&](const PrefillFullfitCopy& copy) {
         if (cudaMemcpyAsync(base+size_t(copy.destination_offset),slab+size_t(copy.source_offset),
