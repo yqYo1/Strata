@@ -393742,6 +393742,68 @@
       "whole_goal_complete": false,
       "U2coalescing_measured": false
     },
+    "post_cohort_review": {
+      "original_closure_evidence": "410f6cb8d",
+      "original_mechanism_outcome_preserved": true,
+      "source_and_work": {
+        "same_requests_as_historical_fast_reference": true,
+        "matched_request_job_and_H2D_checks": 18,
+        "all_equal": true,
+        "compile_command_root_normalization_deltas": 0,
+        "other_inference_source_excluded": true
+      },
+      "local_length_characterization": {
+        "jit": {
+          "points": [
+            {
+              "read": 32769,
+              "warm_ms": 43767.399999999994,
+              "warm_ttft_s": 43.9585
+            },
+            {
+              "read": 65537,
+              "warm_ms": 71893.15,
+              "warm_ttft_s": 72.0795
+            }
+          ],
+          "adjacent_ms_per_token": 0.8583297729492188,
+          "adjacent_TTFT_ms_per_token": 0.8581848144531249
+        },
+        "eager": {
+          "points": [
+            {
+              "read": 32769,
+              "warm_ms": 42814.25,
+              "warm_ttft_s": 43.0135
+            },
+            {
+              "read": 65537,
+              "warm_ms": 70703.4,
+              "warm_ttft_s": 70.939
+            }
+          ],
+          "adjacent_ms_per_token": 0.8511093139648436,
+          "adjacent_TTFT_ms_per_token": 0.8522186279296873
+        }
+      },
+      "two_length_model_limit": "Two same-route lengths supply local slopes only;no held-out fit,physical fixed cost,linear law or extrapolation.",
+      "historical_absolute_reference": {
+        "native": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "PP32": 871.5739184786221,
+        "PP64": 1006.8318,
+        "comparison": "Historical measurement,not a matched current-period arm. Both present JIT/eager rates are lower;do not replace the faster retained image from U1alone."
+      },
+      "decision": "U1same-image warmed mechanism screen passes bothlengths/all3pairs. Keep optional candidate for further qualification;default adoption and fastest-image replacement remain held for current-period original controls,decode preservation and broader gates.",
+      "first_use_limit": "Retain all first samples:the third32K eager/JITtime ratio is1.103185748;no reliable all-pair first-use gain claim.",
+      "resource": "Same queue0and identical requested H2D/job volumes. Current GPUarithmetic/VRAM/physicalPCIe saturation and cause of historical gap remain unknown. U1gain is causal scheduling evidence,not hardware-ceiling proof.",
+      "observed_idle_link": {
+        "current": "2.5GT/s x1",
+        "maximum_reported": "2.5GT/s x1",
+        "virtualization_probe": "systemd-detect-virt:none",
+        "limitation": "Reported sysfs ceiling conflicts with existing transfer evidence;do not convert it into a physical bandwidth ceiling without validation."
+      },
+      "next_unit": "Keep U1result separate. Before U2contiguous-run copy comparison,check actual demanded-ID run opportunities;full-fit capacity512does not mean512demanded IDs. A smaller streaming bank is a separate possible placement unit,requiring source/owner/admission proof and its own comparison."
+    },
     "source_inputs": {
       "files": 763,
       "sha256": "7f36b3039c1f25d22c131c7d3e6e23e96a816963338943c607af9758b309a6bd"
