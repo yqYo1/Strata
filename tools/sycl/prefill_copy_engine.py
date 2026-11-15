@@ -18,9 +18,9 @@ import measurement_owner as owned
 import ur_validation
 
 P, B = original.P, original.B
-ROOT = B/'prefill-copy-engine-v3'
+ROOT = B/'prefill-copy-engine-v4'
 RESULT = P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-KEY = 'prefill_copy_engine_v3'
+KEY = 'prefill_copy_engine_v4'
 SOURCE = 'tests/sycl/prefill_copy_engine.cpp'
 PREFIXES = ['tools/sycl', SOURCE, 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md']
 LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
@@ -59,6 +59,9 @@ def check(row, committed=True):
     require(sha(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'], 'runtime manifest changed')
     if 'binary' in row:
         require(sha(row['binary']['path']) == row['binary']['sha256'], 'actual executable changed')
+        require(all(c['argv'] == [row['binary']['path'],'--policy',c['policy'],'--bytes',str(c['bytes']),
+            '--iterations',str(c['iterations']),'--batches',str(c['batches'])] for c in row['cases']),
+            'launch argv must name the actual guarded executable and frozen case')
         for group in row['actual_inputs'].values():
             require(all(sha(p) == h for p,h in group.items()), 'compiler/link inputs changed')
     return native
@@ -128,7 +131,8 @@ def prepare():
     row.update(recipe=old['recipe'],native_source_commit=old['project']['revision'],
         reused_native=dict(record_path=str(B/'prefill-copy-engine-v1/record.json'),
             record_sha256=sha(B/'prefill-copy-engine-v1/record.json'),binary=old['binary']))
-    row['plan']['previous_failure'] = 'V1 metadata SYCL urContextCreate returned UNKNOWN before any work. Preserve V1failed. V2draft never executed. V3requires local plan to equal committed public plan and adds loader logging enablement;identical original C++image/recipe/compiler/SDK/runtime/safety and validation settings. Metadata gates precede any transfer.'
+    for c in row['cases']: c['argv'][0] = old['binary']['path']
+    row['plan']['previous_failure'] = 'V1 metadata SYCL urContextCreate returned UNKNOWN before any work. Preserve V1failed. V2draft never executed. V3refused ENOENT before native launch because case argv still used the new output path. V4binds every launch argv to the guarded original ELF. Loader logging enablement is the only runtime change from V1;identical C++image/recipe/compiler/SDK/runtime/safety and validation settings. Metadata gates precede any transfer.'
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache','owned'): (ROOT/name).mkdir(mode=0o700)
     save(row)

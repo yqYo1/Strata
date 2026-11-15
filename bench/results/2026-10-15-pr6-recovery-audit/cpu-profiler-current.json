@@ -13628,7 +13628,7 @@
     "retention": "Unexecuted draft roots contain no binary and have no current consumer;retire after compact record is pushed."
   },
   "prefill_copy_engine_v3": {
-    "stage": "built",
+    "stage": "failed",
     "external_inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
       "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
@@ -14457,10 +14457,10 @@
       "devcoredump": false
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "passed": true,
+    "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "plan": {
       "question": "Synchronized pinned-host H2D throughput: qualified SYCL ordinal0 versus explicit immediate copy-only ordinal1/index0. Actual bus traffic/saturation remain unknown.",
       "unit": "Transfer primitive and its required queue creation/checked drain only. Same pinned source/device destination/payload/guards/host completion. No concurrent work,events,inference scheduling,math,bank layout,placement or decode changes.",
@@ -14493,6 +14493,7 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v1/probe",
       "sha256": "770f72aae9eed67e94f73c18e88e48dd2103219f456012ab17be8dc66fb9d82f"
     },
+    "error": "RuntimeError('probe failed: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-engine-v3/owned/metadata-sycl.stderr')",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "8d15f7748ba40b364b16051c4bb3c44bdb6979a6",
@@ -14513,6 +14514,14 @@
         "files": 1,
         "sha256": "3d81cdcc93ce7b9bf56a3628f369dfe4b49e6e512c07767ae07ba084e8e9893e"
       }
+    },
+    "prelaunch_failure": {
+      "operation": "Popen exec of absent new output path;actual original ELF existed but case argv differed",
+      "native_process_created": false,
+      "GPU_executed": false,
+      "raw_owner_record_ownership_closed": false,
+      "reconciliation": "FileNotFoundError ENOENT with no returned process,PID or owned identities;no native child to resume. Preserve original failed owner record. V4checks argv against the guarded binary before launch.",
+      "ownership_closed_after_reconciliation": true
     }
   }
 }
