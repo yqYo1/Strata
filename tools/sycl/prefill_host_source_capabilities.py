@@ -16,8 +16,8 @@ import prefill_upload_overlap_reuse as reference
 import ur_validation
 
 P, B, RESULT = reference.P, reference.B, reference.RESULT
-ROOT = B/'prefill-host-source-capabilities-v1'
-KEY = 'prefill_host_source_capabilities_v1'
+ROOT = B/'prefill-host-source-capabilities-v2'
+KEY = 'prefill_host_source_capabilities_v2'
 SOURCE = 'tools/sycl/prefill_host_source_capabilities.py'
 PREFIXES = ['tools/sycl', 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md', 'docs/BENCHMARKS.md']
 component = reference.component
@@ -61,6 +61,7 @@ def native():
     require(count.value == 1 and drivers[0], 'driver enumeration changed')
     driver = drivers[0]; api = C.c_uint32()
     call('zeDriverGetApiVersion', [C.c_void_p, C.POINTER(C.c_uint32)], driver, C.byref(api))
+    count.value = 0
     call('zeDeviceGet', [C.c_void_p, C.POINTER(C.c_uint32), C.POINTER(C.c_void_p)], driver, C.byref(count), None)
     require(count.value == 1, 'one unambiguous root device required')
     devices = (C.c_void_p*1)()
@@ -120,6 +121,9 @@ def prepare():
     failed = ur_validation.committed(RESULT, ('prefill_upload_overlap_profile_v2',))
     require(failed['stage'] == 'failed' and not failed['active'] and failed['physical_ownership_closed'],
             'close failed collector cohort before independent capability query')
+    prior = ur_validation.committed(RESULT, ('prefill_host_source_capabilities_v1',))
+    require(prior['stage'] == 'failed' and not prior['active'] and prior['physical_ownership_closed'],
+            'preserve original count-initialization failure before corrected discovery')
     project = component.original.coherent.build.common.source.pin(P, PREFIXES)
     allowed = json.loads(Path(basis['runtime_manifest']['path']).read_text()) | executable_maps(__import__('os').getpid())
     allowed[component.event.VALIDATION] = sha(component.event.VALIDATION)
