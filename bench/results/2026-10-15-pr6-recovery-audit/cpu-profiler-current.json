@@ -18392,11 +18392,11 @@
     "controller_scheduling": "One outer scheduler pause after M1024pair0direct for independent source/syntax/metadata work. Native child untouched;source/configuration/order/criteria unchanged;all samples retained."
   },
   "prefill_sycl_copy_lane_v1": {
-    "stage": "built",
-    "passed": true,
+    "stage": "failed",
+    "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "prior_wrapper": {
       "key": "prefill_weight_wrapper_v1",
       "sha256": "306a6776a46a5e91aa41555b5008230d166bfe628ac25f16deaee50382ff078c",
@@ -25233,6 +25233,29 @@
     "lifetime_binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-sycl-copy-lane-v1/lifetime",
       "sha256": "39feb1410d4e53ff9c062ebd2ef318b7d095b5cf3eda407c3db13c69ff84fd56"
+    },
+    "error": "RuntimeError('actual-reader native failed:/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-sycl-copy-lane-v1/lifetime-metadata-compute-math/owned/lifetime-metadata-compute-math.stderr')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "failed_admission_closure": {
+      "positive_process_closure": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "survivors": 0,
+      "exit_code": -15,
+      "normal_exit_qualified": false,
+      "failure": "Lifetime ELF was pinned in its build record,but mappings admitted only the math ELF. Stopped at before-runtime gate;no Runtime initialization or application command.",
+      "native_entry_unchanged": true,
+      "fresh_faults": [],
+      "next": "New committed controller admission must select the pinned ELF matching each case;preserve this failed cohort. Reuse requires exact native source/recipe/census/both-ELF proof."
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
