@@ -16087,9 +16087,9 @@
     }
   },
   "prefill_mapped_wait_order_v2": {
-    "stage": "testing",
+    "stage": "closed",
     "passed": true,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "reuse": {
@@ -16858,6 +16858,51 @@
           "runtime_teardown_qualified": false
         },
         "providers_sha256": "30298fd5fe5aa05477b11982a071cb1aa682976831c495dee09508d949ccda0d"
+      },
+      {
+        "label": "clean-pair2-overlap",
+        "arm": "overlap",
+        "pair": 2,
+        "clean": true,
+        "batch": {
+          "kind": "batch",
+          "wall_s": 0.164569696,
+          "iterations": 512,
+          "arm": "overlap",
+          "timer_pair_max_s": 5e-08,
+          "requested_H2D_bytes": 1009254400,
+          "gemm_rows": 1024,
+          "gemm_n": 1280,
+          "gemm_k": 2560,
+          "lookahead": 1,
+          "oracle_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "source": "mapped-neo",
+          "preparation_s": 0.003862903,
+          "import_s": 5.6427e-05,
+          "retirement_s": 0.000561163,
+          "import_property_type": 1,
+          "import_allocation_id": 21
+        },
+        "lifecycle_plus_batch_s": 0.168993762,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 2817321,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "30298fd5fe5aa05477b11982a071cb1aa682976831c495dee09508d949ccda0d"
       }
     ],
     "model_trial_allowed": false,
@@ -16882,6 +16927,21 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
+    },
+    "analysis": {
+      "paired_overlap_over_serial": [
+        0.322322111185332,
+        0.7953410434107322,
+        0.6675748681811012
+      ],
+      "geometric_mean_ratio": 0.5551979119695005,
+      "paired_lifecycle_ratios": [
+        0.3269883735078265,
+        0.7985658470104902,
+        0.6736160070209163
+      ],
+      "repeated_component_wall_gain": true,
+      "model_trial_allowed": false
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
