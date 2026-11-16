@@ -34947,5 +34947,40 @@
       "consumed_report_view_control_review_and_owned_native_session_retired": true,
       "evidence_key": "prefill_weight_lookahead_v1.retention"
     }
+  },
+  "prefill_production_upload_contract_cu_20261116": {
+    "classification": "decision support",
+    "original_fast_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "source_commit": "7f6f315d9c2a9f27200831f0a8f440eccec9403a",
+    "source_manifest_sha256": "1d895c350f4c5d8fc40459db10869bd3d11e0ba84d1781152452ffabb69cbcd3",
+    "native_model": "gpt-6-luna",
+    "native_effort": "medium",
+    "report_sha256": "29eff4396950a00585b3ff65c50a370b69abafcd51e0d3902b24f7b7be5dd682",
+    "review_verdict": "accept_with_targeted_clarifications",
+    "review_model": "gpt-6-luna",
+    "review_effort": "max",
+    "verified_source_files": 20,
+    "useful_finding": "Ordinary RAM reaches queue::memcpy through the production compatibility wrapper. Distinguish its complete wrapper cost from CPU source memcpy/device service;separate four host source slots from device expert-bank capacity. Pin backend/fused dispatch before exec;IQ blob and GEMM workspace have different retirement readers.",
+    "correction": "Add SYCL4.6.5.3 queue-shortcut equivalence to4.9.4.3 host-pointer permission. Raw Level Zero needs its separate admitted accessible-source contract. SYCL Gemm stores workspace_ but does not consume it.",
+    "status": "curated_closed_decision_support",
+    "schedulable_now": false,
+    "active": false,
+    "ownership_closed": true,
+    "normal_native_exit_and_code_mode_family_closure": true,
+    "worker_RPC_now": "Completed/succeeded,no resource,exact terminal exited/disconnected;Main checked after SourceSclosure.",
+    "next_action": "Generic lifetime/host-pointer surveys remain closed. New bounded scope needs concrete Q/Osource-ring/copy contract and actual Ssamples;Main keeps implementation/serialized measurements moving.",
+    "retention": {
+      "stage": "complete",
+      "shared_retirement_manifest_sha256": "9bef8f110880a4c118e1da37e6d855fef0378bf5e2b13735cdaa055ba8f51552",
+      "source_snapshot_Git_recovered_files": 20,
+      "report_hash_verified": true,
+      "consumer": "Source/configuration/ownership correction curated;all consumed private bytes retired.",
+      "all_consumed_report_source_control_review_session_paths_absent": true
+    },
+    "source_references": [
+      "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:queue-shortcut-functions",
+      "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list.html",
+      "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43:src/sycl/compat.cpp and src/prefill/moe_window.inc"
+    ]
   }
 }

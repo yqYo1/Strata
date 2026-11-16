@@ -16642,5 +16642,669 @@
         }
       }
     }
+  },
+  "prefill_weight_source_v1": {
+    "stage": "failed",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "native_source_commit": "dc3d2ea367b17c696e0fb1894f21c7401df25d2c",
+    "archive": {
+      "commit": "1896d6a18e4f5ba2b37e1702220bd3cfd774c5c9",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "prefill_weight_source_v1"
+    },
+    "failure_summary": "Fixture compilation omitted explicit cuda_runtime.h;cudaMemcpyHostToDevice/cudaSuccess undeclared. Eight other fresh TUs and all8host admission methods passed. No link or GPU execution;original failure remains failed.",
+    "host_admission_controls": {
+      "methods": 8,
+      "passed": true,
+      "device_executed": false
+    },
+    "partial_build_inputs_recovery": {
+      "source_commit": "dc3d2ea367b17c696e0fb1894f21c7401df25d2c",
+      "recipe_commit": "2a813610f",
+      "native_math_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "project_files_recovered": 364,
+      "source_view_files": 398,
+      "compiler_inputs": 959,
+      "compiler_inputs_sha256": "32efe6830e5bc187a00ead607574cd2f5f3a616259f5d71cd8f102719e4ae254",
+      "recipe_sha256": "30f9499f9c0d7a8e6733fdf92e39d39cb3a696cdc5f22592b29382c1864a01cb",
+      "current_source_and_original_dependencies_checked": true,
+      "final_executable_created": false,
+      "GPU_executed": false
+    },
+    "retention": {
+      "stage": "complete",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-source-v1",
+      "manifest_sha256": "4b51c9cb98983f63b82b17668d109d2c923db32c7c036935b2a2b2111d30aaa6",
+      "regular_files": 438,
+      "regular_content_bytes": 1021541924,
+      "original_source_recipe_recovered": true,
+      "final_ELF_created": false,
+      "reason": "Closed failed fixture compile;no GPUwork. Keep compact failure/partial compilation proof and rebuild corrected source coherently. Both phase references preserved.",
+      "review_point": "Closed failed no-ELFgeneration retired before V2preparation;both phase references preserved.",
+      "all_selected_paths_absent": true,
+      "pushed_original_source_and_plan_reachable": true,
+      "temporary_inventory_retired": true
+    },
+    "GPU_executed": false
+  },
+  "prefill_weight_source_v2": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "native_source_commit": "1896d6a18e4f5ba2b37e1702220bd3cfd774c5c9",
+    "admission_source_commit": "d7e0a146d342c97ae10c7eade4c1e7af6a975ad4",
+    "original_Runtime_math_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "archive": {
+      "commit": "8bb58356bac1fc3be9797b4b34c2d2b733b5986d",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "prefill_weight_source_v2",
+      "reason": "Full frozen recipe,42case configurations and original results;retrieve only for concrete recovery."
+    },
+    "build": {
+      "source_view": {
+        "original_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "files": 398,
+        "sha256": "b17d00a280dbf6b5b2c6e13930a0ac41cba63a70c96f3862dde468eb041f844a"
+      },
+      "compiler_inputs": 961,
+      "external_link_inputs": 29,
+      "fresh_objects": 11,
+      "native_TUs": 9,
+      "host_admission_methods": 8,
+      "no_partial_archive_or_object_reuse": true,
+      "controller_only_capture_admission_reused_same_native": true,
+      "recipe_sha256": "fa5a84fd7d278a65c1d82382911c830654c555c3dfd3ffb28af69d72ed2916f3"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-source-v2/benchmark",
+      "sha256": "b96d3beadacc26f535ab7c973744f7e07ea33bf9354c0810bf42224dd42742fe"
+    },
+    "weights": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-source-v2/weights.bin",
+      "bytes": 1009254400,
+      "sha256": "5b682a735dde5826fce507ab62edaf4471ddbf133417285c389447f4448da4c5",
+      "layer": 2,
+      "experts": 512,
+      "layout": {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+        "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+      },
+      "source_file": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "original_source_file_identity": {
+        "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "dev": 40,
+        "ino": 2640848,
+        "bytes": 54817524224,
+        "mtime_ns": 1791009083688077826,
+        "ctime_ns": 1791009083692077878
+      },
+      "original_full_file_sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3",
+      "full_file_rehashed": false,
+      "roles": [
+        {
+          "role": "gate",
+          "base": 3491172096,
+          "expert_stride": 524800,
+          "bytes": 524800,
+          "experts": 512,
+          "ordered_concatenated_role_sha256": "91a9c2d02de915ad3fd08c6d9c4c07375ae312d866b44f352b7b57ea20313726"
+        },
+        {
+          "role": "up",
+          "base": 3763417856,
+          "expert_stride": 524800,
+          "bytes": 524800,
+          "experts": 512,
+          "ordered_concatenated_role_sha256": "70501ba18a0f0e9a6cf4a8f457eb3139fc74978888b7da0f3a005d28dfcf5542"
+        },
+        {
+          "role": "down",
+          "base": 3018391296,
+          "expert_stride": 921600,
+          "bytes": 921600,
+          "experts": 512,
+          "ordered_concatenated_role_sha256": "e903b0e0e346bee0d0232b113456e5db0b22b8b7434c8745726dbceb6b9ac997"
+        }
+      ],
+      "order": "expert0..511,each gate/up/down;source offset=role base+expert*role stride"
+    },
+    "environment": {
+      "native16": "bf16",
+      "backend": "vllm",
+      "tile": "auto",
+      "GU": "large",
+      "Down": "large",
+      "split": "original",
+      "parallel_IQ": 1,
+      "same_inorder_compute_queue": true,
+      "safety": "tools/sycl/measurement_environment.json",
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "files": 84
+      }
+    },
+    "comparison": {
+      "unit": "S:existing whole source adapter only;ordinary RAM+complete production cudaMemcpyAsync wrapper versus four-slot Host-USMstaging. It does not isolate CPUmemcpy from wrapper overhead.",
+      "fixed": "Same production Gemm entrypoint,FP16operands/BF16GU-Down/FP16hidden/FP32split accumulators,512real layer2experts,512jobs,1009254400requested H2Dbytes,one scratch blob,order/math/queues/placement.",
+      "rows": [
+        16,
+        128,
+        1024,
+        4096,
+        8192
+      ],
+      "order": "Per shape three independent pairs direct/staged,staged/direct,direct/staged;no exclusions/retries/reordering.",
+      "timing": "512same-ordered reference jobs and2warmups/reset/verification outside timing;512source copies+math+checked drain inside. Adapter-specific setup/retirement recorded separately;common baselineUSMpopulation/mapping/Runtime excluded.",
+      "captures": "Case-scoped native output caps128MiBclean/160MiBtrace;64MiBtrace text/96MiBfile. Immutable1GBmodel corpus outside raw capture. Replaced earlier unrun capture layout before any GPUprocess."
+    },
+    "validation": {
+      "native_processes": 42,
+      "metadata_only": 2,
+      "traced_math": 10,
+      "clean_speed": 30,
+      "all_normal_exit0": true,
+      "all_owned_families_closed": true,
+      "quiet_parameter_validation": true,
+      "private_pre_main_UR_activation": true,
+      "no_fresh_faults": true,
+      "boot_and_driver_unchanged": true,
+      "full_bitwise_reference_finite_status_and_all_guards": true,
+      "ordinary_readonly_RAM_source": true,
+      "staged_host_source_slots": 4,
+      "all_timed_batches_at_least100ms": true,
+      "all_timer_overhead_gates_passed": true,
+      "peak_native_session_RSS_bytes": 1309741056,
+      "native_RSS_limit_bytes": 4294967296,
+      "physical_context_or_model_qualified": false
+    },
+    "validated_dispatch": [
+      {
+        "rows": 16,
+        "both_source_arms_passed": true,
+        "math_launches": 6156,
+        "payload_sized_native_copy_calls": 1027,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        },
+        "actual_native16_dispatch": {
+          "compact_dense": 2052,
+          "wide_dense": 0,
+          "GU_SwiGLU": 0,
+          "split_Down_scatter": 0
+        }
+      },
+      {
+        "rows": 128,
+        "both_source_arms_passed": true,
+        "math_launches": 6156,
+        "payload_sized_native_copy_calls": 1027,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        },
+        "actual_native16_dispatch": {
+          "compact_dense": 0,
+          "wide_dense": 2052,
+          "GU_SwiGLU": 0,
+          "split_Down_scatter": 0
+        }
+      },
+      {
+        "rows": 1024,
+        "both_source_arms_passed": true,
+        "math_launches": 6156,
+        "payload_sized_native_copy_calls": 1027,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        },
+        "actual_native16_dispatch": {
+          "compact_dense": 0,
+          "wide_dense": 2052,
+          "GU_SwiGLU": 0,
+          "split_Down_scatter": 0
+        }
+      },
+      {
+        "rows": 4096,
+        "both_source_arms_passed": true,
+        "math_launches": 4104,
+        "payload_sized_native_copy_calls": 1027,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        },
+        "actual_native16_dispatch": {
+          "compact_dense": 0,
+          "wide_dense": 0,
+          "GU_SwiGLU": 1026,
+          "split_Down_scatter": 1026
+        }
+      },
+      {
+        "rows": 8192,
+        "both_source_arms_passed": true,
+        "math_launches": 4104,
+        "payload_sized_native_copy_calls": 1027,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        },
+        "actual_native16_dispatch": {
+          "compact_dense": 0,
+          "wide_dense": 0,
+          "GU_SwiGLU": 1026,
+          "split_Down_scatter": 1026
+        }
+      }
+    ],
+    "clean_samples": [
+      {
+        "rows": 16,
+        "pair": 0,
+        "arm": "direct",
+        "wall_s": 0.257578243,
+        "preparation_s": 4e-08,
+        "retirement_s": 4e-08
+      },
+      {
+        "rows": 16,
+        "pair": 0,
+        "arm": "staged",
+        "wall_s": 0.254972567,
+        "preparation_s": 0.00184858,
+        "retirement_s": 8.487e-05
+      },
+      {
+        "rows": 16,
+        "pair": 1,
+        "arm": "staged",
+        "wall_s": 0.265041724,
+        "preparation_s": 0.001782957,
+        "retirement_s": 7.8889e-05
+      },
+      {
+        "rows": 16,
+        "pair": 1,
+        "arm": "direct",
+        "wall_s": 0.256536099,
+        "preparation_s": 7e-08,
+        "retirement_s": 4e-08
+      },
+      {
+        "rows": 16,
+        "pair": 2,
+        "arm": "direct",
+        "wall_s": 0.256937397,
+        "preparation_s": 5.1e-08,
+        "retirement_s": 3e-08
+      },
+      {
+        "rows": 16,
+        "pair": 2,
+        "arm": "staged",
+        "wall_s": 0.497721743,
+        "preparation_s": 0.001781133,
+        "retirement_s": 9.2836e-05
+      },
+      {
+        "rows": 128,
+        "pair": 0,
+        "arm": "direct",
+        "wall_s": 0.277134169,
+        "preparation_s": 5e-08,
+        "retirement_s": 4e-08
+      },
+      {
+        "rows": 128,
+        "pair": 0,
+        "arm": "staged",
+        "wall_s": 0.273096487,
+        "preparation_s": 0.00177467,
+        "retirement_s": 7.3118e-05
+      },
+      {
+        "rows": 128,
+        "pair": 1,
+        "arm": "staged",
+        "wall_s": 0.282039519,
+        "preparation_s": 0.002242792,
+        "retirement_s": 6.7277e-05
+      },
+      {
+        "rows": 128,
+        "pair": 1,
+        "arm": "direct",
+        "wall_s": 0.277453316,
+        "preparation_s": 4e-08,
+        "retirement_s": 4e-08
+      },
+      {
+        "rows": 128,
+        "pair": 2,
+        "arm": "direct",
+        "wall_s": 0.273070896,
+        "preparation_s": 7e-08,
+        "retirement_s": 4e-08
+      },
+      {
+        "rows": 128,
+        "pair": 2,
+        "arm": "staged",
+        "wall_s": 0.459060901,
+        "preparation_s": 0.002027303,
+        "retirement_s": 9.1182e-05
+      },
+      {
+        "rows": 1024,
+        "pair": 0,
+        "arm": "direct",
+        "wall_s": 0.535759126,
+        "preparation_s": 5e-08,
+        "retirement_s": 3.1e-08
+      },
+      {
+        "rows": 1024,
+        "pair": 0,
+        "arm": "staged",
+        "wall_s": 0.404212517,
+        "preparation_s": 0.001940549,
+        "retirement_s": 8.458e-05
+      },
+      {
+        "rows": 1024,
+        "pair": 1,
+        "arm": "staged",
+        "wall_s": 0.422649038,
+        "preparation_s": 0.001996543,
+        "retirement_s": 8.2616e-05
+      },
+      {
+        "rows": 1024,
+        "pair": 1,
+        "arm": "direct",
+        "wall_s": 0.424316594,
+        "preparation_s": 5e-08,
+        "retirement_s": 4.1e-08
+      },
+      {
+        "rows": 1024,
+        "pair": 2,
+        "arm": "direct",
+        "wall_s": 0.409146424,
+        "preparation_s": 7.1e-08,
+        "retirement_s": 5e-08
+      },
+      {
+        "rows": 1024,
+        "pair": 2,
+        "arm": "staged",
+        "wall_s": 0.411882401,
+        "preparation_s": 0.001794272,
+        "retirement_s": 0.00012207
+      },
+      {
+        "rows": 4096,
+        "pair": 0,
+        "arm": "direct",
+        "wall_s": 0.753077262,
+        "preparation_s": 4e-08,
+        "retirement_s": 3e-08
+      },
+      {
+        "rows": 4096,
+        "pair": 0,
+        "arm": "staged",
+        "wall_s": 0.917269551,
+        "preparation_s": 0.001766409,
+        "retirement_s": 9.7704e-05
+      },
+      {
+        "rows": 4096,
+        "pair": 1,
+        "arm": "staged",
+        "wall_s": 0.742539902,
+        "preparation_s": 0.002205536,
+        "retirement_s": 8.517e-05
+      },
+      {
+        "rows": 4096,
+        "pair": 1,
+        "arm": "direct",
+        "wall_s": 0.74461294,
+        "preparation_s": 4e-08,
+        "retirement_s": 4e-08
+      },
+      {
+        "rows": 4096,
+        "pair": 2,
+        "arm": "direct",
+        "wall_s": 1.010893399,
+        "preparation_s": 5.1e-08,
+        "retirement_s": 5e-08
+      },
+      {
+        "rows": 4096,
+        "pair": 2,
+        "arm": "staged",
+        "wall_s": 0.885907353,
+        "preparation_s": 0.001762461,
+        "retirement_s": 8.4048e-05
+      },
+      {
+        "rows": 8192,
+        "pair": 0,
+        "arm": "direct",
+        "wall_s": 2.231125794,
+        "preparation_s": 1.5e-07,
+        "retirement_s": 5e-08
+      },
+      {
+        "rows": 8192,
+        "pair": 0,
+        "arm": "staged",
+        "wall_s": 2.384473448,
+        "preparation_s": 0.001782379,
+        "retirement_s": 8.9899e-05
+      },
+      {
+        "rows": 8192,
+        "pair": 1,
+        "arm": "staged",
+        "wall_s": 1.480717894,
+        "preparation_s": 0.002381286,
+        "retirement_s": 9.8094e-05
+      },
+      {
+        "rows": 8192,
+        "pair": 1,
+        "arm": "direct",
+        "wall_s": 1.440822054,
+        "preparation_s": 5e-08,
+        "retirement_s": 4e-08
+      },
+      {
+        "rows": 8192,
+        "pair": 2,
+        "arm": "direct",
+        "wall_s": 1.773815613,
+        "preparation_s": 4e-08,
+        "retirement_s": 1.1e-07
+      },
+      {
+        "rows": 8192,
+        "pair": 2,
+        "arm": "staged",
+        "wall_s": 1.740897209,
+        "preparation_s": 0.00197468,
+        "retirement_s": 0.000103745
+      }
+    ],
+    "analysis": {
+      "16": {
+        "paired_staged_over_direct": [
+          0.9898839437304493,
+          1.0331556651604028,
+          1.9371323474566062
+        ],
+        "geometric_mean_ratio": 1.2559425618243159,
+        "paired_adapter_lifecycle_ratios": [
+          0.9973898968198502,
+          1.0404128564946555,
+          1.9444252192745504
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "128": {
+        "paired_staged_over_direct": [
+          0.9854305875938381,
+          1.016529638449158,
+          1.681105191818025
+        ],
+        "geometric_mean_ratio": 1.1897261056142323,
+        "paired_adapter_lifecycle_ratios": [
+          0.9920977507151146,
+          1.0248553166024323,
+          1.6888625151217995
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "1024": {
+        "paired_staged_over_direct": [
+          0.754466881447018,
+          0.9960700193591768,
+          1.0066870363261442
+        ],
+        "geometric_mean_ratio": 0.9111883847267896,
+        "paired_adapter_lifecycle_ratios": [
+          0.7582466912229844,
+          1.0009698228105266,
+          1.0113704931811167
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "4096": {
+        "paired_staged_over_direct": [
+          1.2180284776676737,
+          0.9972159522234464,
+          0.8763608050822775
+        ],
+        "geometric_mean_ratio": 1.0210410473408418,
+        "paired_adapter_lifecycle_ratios": [
+          1.2205036919103547,
+          1.0002922162172236,
+          0.8781873283387419
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "8192": {
+        "paired_staged_over_direct": [
+          1.0687310659095899,
+          1.0276896372381596,
+          0.9814420372902648
+        ],
+        "geometric_mean_ratio": 1.0253332055032802,
+        "paired_adapter_lifecycle_ratios": [
+          1.0695701329362037,
+          1.0294103822435423,
+          0.9826136797049085
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      }
+    },
+    "source_cost_characterized": true,
+    "performance_qualified": false,
+    "model_trial_allowed": false,
+    "model_adoption_qualified": false,
+    "decision": "No shape wins all3paired steady samples;all have preparation+wall+retirement losses in at least one pair. Keep production direct source and global staging disabled. Sdata supports separately committed Qcopy-wrapper/primitive and Oreadiness-order comparisons,then net original-direct-source combination;no model trial follows from this result.",
+    "limits": "Real layer2weights and production Gemm,synthetic10route jobs/two route patterns. Not whole layer/model routing,physical bus bytes,PCIe/VRAM/compute/CPU saturation,PP/TG/TTFT,decode/agent/quality/full262144RESTORE or a model time-fit. Saturating hardware resource remains unknown. Original global-stage/mapped-source failures and immutable-USMlookahead win remain unchanged.",
+    "retention": {
+      "stage": "complete",
+      "roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-source-v2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-production-upload-cu-20261116-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-production-upload-cu-20261116",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-production-upload-cu-20261116",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-production-upload-cv-20261116",
+        "/home/yayoi/.codex/sessions/2026/11/16/rollout-2026-11-16T19-32-24-01a1e3ea-4a6f-7251-8608-d59cf481183a.jsonl",
+        "/tmp/strata-source-v2-original-recovery-20261116.json"
+      ],
+      "manifest_sha256": "9bef8f110880a4c118e1da37e6d855fef0378bf5e2b13735cdaa055ba8f51552",
+      "regular_files": 737,
+      "regular_content_bytes": 1283624160,
+      "original_source_recipe_final_ELF_recovery": {
+        "native_source": "1896d6a18e4f5ba2b37e1702220bd3cfd774c5c9",
+        "native_project_files_recovered": 364,
+        "admission_source": "d7e0a146d342c97ae10c7eade4c1e7af6a975ad4",
+        "admission_project_files_recovered": 364,
+        "original_Runtime_math_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "immutable_source_view_files": 398,
+        "immutable_source_view_sha256": "b17d00a280dbf6b5b2c6e13930a0ac41cba63a70c96f3862dde468eb041f844a",
+        "original_plan_evidence": "b9696e30a62ecc9ad08b4ac918c609be9aab4339",
+        "original_build_evidence": "ed2d3dbee94c970f6e020a5c1ad807b8b719512c",
+        "full_results_evidence": "8bb58356bac1fc3be9797b4b34c2d2b733b5986d",
+        "recipe_sha256": "fa5a84fd7d278a65c1d82382911c830654c555c3dfd3ffb28af69d72ed2916f3",
+        "compiler_inputs": 961,
+        "link_inputs": 29,
+        "fresh_objects": 11,
+        "actual_inputs_sha256": "4617414589771d107e7670ef902a799b958acb37aa7b5c935f43165cb702c232",
+        "final_ELF": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-source-v2/benchmark",
+          "sha256": "b96d3beadacc26f535ab7c973744f7e07ea33bf9354c0810bf42224dd42742fe"
+        },
+        "corpus_sha256": "5b682a735dde5826fce507ab62edaf4471ddbf133417285c389447f4448da4c5",
+        "all56commands_closed_and_original_identities_absent": true,
+        "no_archive_or_object_reuse": true,
+        "only_controller_capture_admission_changed": true,
+        "retirement_not_new_validation": true
+      },
+      "reason": "Source unit Sclosed and all useful samples/dispatch/correctness limits preserved. Ended component/extracted corpus/source view/raw output and consumed closed CU/CVresearch have no current byte consumer. Preserve both independent phase-reference engines and remaining named legacy holds.",
+      "review_point": "Closed:SourceSgeneration/corpus/raw and consumed CU/CVtransactions/session absent. Both phase-reference engines unchanged. Six legacy prototype roots remain queued before Q/Obuild.",
+      "all_selected_paths_absent": true,
+      "original_inputs_reachable_from_verified_pushed_primary": "40b6032ff2c446e79d400608f5e85dbb6bc4176a",
+      "deleted_regular_files": 737,
+      "deleted_regular_content_bytes": 1283624160,
+      "temporary_inventory_retired": true,
+      "post_deletion_controls": {
+        "current_host_methods": 8,
+        "passed": true,
+        "real_closed_CLI_refusals": [
+          "next",
+          "build",
+          "capture-plan"
+        ],
+        "expected_exit_code": 1,
+        "public_result_unchanged_by_refusal": true,
+        "retired_private_input_not_recreated": true,
+        "Git_only_seed_recipe_passed": true,
+        "GPU_executed": false,
+        "native_source_unchanged": "1896d6a18e4f5ba2b37e1702220bd3cfd774c5c9",
+        "closed_migration_mode_retired": {
+          "source_commit": "f1477aa4d564a80d28c0e11a2fbd70a3b6357e66",
+          "removed_lines": 50,
+          "current_host_methods": 8,
+          "passed": true,
+          "native_recompiled": false,
+          "GPU_executed": false
+        }
+      }
+    }
   }
 }

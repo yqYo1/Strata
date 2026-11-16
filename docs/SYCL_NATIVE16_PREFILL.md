@@ -1611,6 +1611,49 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Ordinary RAMsource views,actual production consumers,32K+model/decode/agent/quality
   and physical262144/RESTORE remain separate required gates. No model trial
   or engine adoption is authorized by this component result.
+  The source unit now closes at`8bb58356b`,native source`1896d6a18`:
+  ordinary readonly RAMthrough the complete production copy wrapper versus
+  existing four-slot Host-USMstaging. Nine fresh TUs/961compiler inputs/29link
+  inputs/11objects use original14508math;no partial archive reuse. All42native
+  processes close normal0/quiet/no fault,including2metadata controls,10traced
+  readers and30clean samples. Both split planes agree bitwise and all guards
+  pass. Actual kernels confirm compact at16rows,wide at128/1024,and fused
+  GU/Down at4096/8192in both arms. Each timed batch copies all512real layer2
+  experts/1009254400requested bytes,with512math jobs;this is not modelPP or
+  measured physical bus traffic. Three paired staged/direct ratios per shape:
+
+  | Expert rows | Pair ratios | Geometric mean | Repeated source gain |
+  | --- | --- | --- | --- |
+  | 16 | .989884,1.033156,1.937132 | 1.255943 | No |
+  | 128 | .985431,1.016530,1.681105 | 1.189726 | No |
+  | 1024 | .754467,.996070,1.006687 | .911188 | No |
+  | 4096 | 1.218028,.997216,.876361 | 1.021041 | No |
+  | 8192 | 1.068731,1.027690,.981442 | 1.025333 | No |
+
+  Keep every sample,including slow samples from both arms. All shapes also
+  have at least one adapter preparation+wall+retirement loss. Keep production
+  direct copying/global staging disabled;the1024geometric mean alone does not
+  establish a repeated gain. Scharacterizes the whole existing adapter,not
+  CPUmemcpy or wrapper overhead alone. Compare copy wrapper/primitive Qand
+  readiness order Oseparately next,then their combination against the complete
+  original direct-source path. No model trial/adoption,PP/TG/TTFT,decode,
+  hardware saturation or physical262144/RESTORE qualification follows.
+  The request-length model/held-out curve remains a separate pending check;
+  these expert-row batches do not establish a model time law.
+  V1plan`2a813610f`failed at fixture compilation before any executable/GPUwork
+  because its compatibility header was missing;preserve that outcome. V2then
+  built coherently. Its original unrun capture layout would count the1GBcorpus
+  against raw capture caps;controller-only admission`d7e0a146d`replaced it with
+  case-scoped capture before any GPUwork,retaining the exact native ELF.
+  Eight current host controls pass. CU/CVreview confirms the actual source
+  entrypoint and separate IQ/workspace-reader retirement. After exact original
+  source/recipe/final-ELF recovery from the pushed primary,737regular files/
+  1283624160content bytes of ended component/corpus/raw and consumed research
+  are physically retired. Both phase references retain their original hashes.
+  Six closed prototype roots and the three configured deployment source/migration
+  holds remain explicit in the existing retention ledger;this is scoped cleanup.
+  The CSVnow has562points,including all five Scomparisons with model metrics blank.
+  See`prefill_weight_source_v2`and the retained-build ledger for actual state.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
