@@ -1526,11 +1526,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   This permits an independently planned actual model-weight source/selected-expert
   reader fixture,then a separate wait-order comparison;no model trial or
   production adoption follows. Both ended component ELFs/objects/source view
-  and consumed research/raw output are selected for retirement at this boundary;
-  preserve the two independent phase-reference generations. Normal source-cohort
-  traces/build output are
-  now retired:159files/24022908bytes;the private original record,compiled
-  inputs,source view,objects and two ELFs remain unchanged. The reviewed CL/CM
+  and consumed research/raw output are now retired:484files/24029387bytes.
+  Both independent phase-reference engines and the original private source-build
+  receipt remain unchanged. The three closed controller/test files are retired
+  to measured source`d1f3868e2`;keep the actual source-adapter headers and recipe/
+  fixture sources for the next actual-bank producer/reader plan. The earlier
+  normal source-cohort traces/build output retirement was159files/24022908bytes.
+  The reviewed CL/CM
   audit's consumed report/view/control/closed transcript are also retired:
   40files/2033262bytes,with its correction and source hashes in the index.
   Four-Ksource-cost attribution needs its own bounded diagnostic. Compare the
