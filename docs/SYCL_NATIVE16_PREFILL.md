@@ -1790,7 +1790,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source reviews find no blocker under caller contracts. The fresh05eceacd
   build now passes13host controls and all15owned build commands,with962actual
   compiler inputs,29link inputs and12fresh objects. Both fixtures are compiled
-  and their ELF hashes are pinned;**no new native GPU case has run**.
+  and their ELF hashes are pinned. Small traced native qualification is now
+  in progress;the linked result's individual case outcomes and actual owned
+  process state govern advancement. **No new performance or model qualification
+  follows from the build or partial native checks.**
   Submission/async/drain-fault and active
   observer coverage remain explicit holds;source review is not safety,
   precision,performance or model qualification. The committed recipe/order/gates
