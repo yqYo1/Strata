@@ -18438,9 +18438,9 @@
     "retention": "Unexecuted original plan and full build receipt recover from original Git evidence;private original build input proof stays only through V2closure/retirement. Original failure unchanged."
   },
   "prefill_sycl_copy_lane_v2": {
-    "stage": "testing",
+    "stage": "closed",
     "passed": true,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "prior_wrapper": {
@@ -31873,6 +31873,65 @@
           "full_bitwise_reference_and_guards": true
         },
         "lifecycle_plus_batch_s": 1.5900449600000002
+      },
+      {
+        "label": "clean-8192-block2-shortcut",
+        "family": "math",
+        "arm": "shortcut",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": 2,
+        "clean": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 383172,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "7f4205c8c0bbd905a4c3bcff089d6831ebc08e7707c13c88d1f60449921c961c",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "shortcut",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.3e-07,
+          "retirement_s": 4e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.657651149,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.6576513190000002
       }
     ],
     "model_trial_allowed": false,
@@ -31942,6 +32001,358 @@
       ],
       "native_recompiled": false,
       "qualification": "Exact original successful build with its original12host controls only;no native/device qualification reused."
+    },
+    "analysis": {
+      "16": {
+        "R0": {
+          "reference": "shortcut",
+          "candidate": "bridge",
+          "paired_time_ratios": [
+            3.756996878075446,
+            3.8177122567858204,
+            3.4853182125395397
+          ],
+          "geometric_mean_ratio": 3.6837952824244775,
+          "paired_lifecycle_ratios": [
+            3.7581850089580175,
+            3.818875490881915,
+            3.486473169484085
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "Q1": {
+          "reference": "bridge",
+          "candidate": "queue",
+          "paired_time_ratios": [
+            1.0895741076070729,
+            0.8434173007039474,
+            0.9686525791398658
+          ],
+          "geometric_mean_ratio": 0.9619572516572573,
+          "paired_lifecycle_ratios": [
+            1.0896627899241362,
+            0.843767826899428,
+            0.9688178644259564
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "O": {
+          "reference": "queue",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            0.7790406457587542,
+            1.1924258625560886,
+            0.874275344358826
+          ],
+          "geometric_mean_ratio": 0.9329962789629794,
+          "paired_lifecycle_ratios": [
+            0.7792609134837597,
+            1.1922521175375478,
+            0.8745120699568726
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "net": {
+          "reference": "direct",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            3.1292665006761275,
+            2.5262579420488795,
+            2.6968713073038835
+          ],
+          "geometric_mean_ratio": 2.772852842583582,
+          "paired_lifecycle_ratios": [
+            3.131396150587051,
+            2.527710090867052,
+            2.6989566748616816
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        }
+      },
+      "128": {
+        "R0": {
+          "reference": "shortcut",
+          "candidate": "bridge",
+          "paired_time_ratios": [
+            2.8193412490785916,
+            3.3684619961528255,
+            2.6736966485877183
+          ],
+          "geometric_mean_ratio": 2.93920905105787,
+          "paired_lifecycle_ratios": [
+            2.8202875173034223,
+            3.3693496894104626,
+            2.674537476704461
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "Q1": {
+          "reference": "bridge",
+          "candidate": "queue",
+          "paired_time_ratios": [
+            1.0668176459529461,
+            0.9282514445611306,
+            0.9910613002882153
+          ],
+          "geometric_mean_ratio": 0.9937690053102013,
+          "paired_lifecycle_ratios": [
+            1.0669470399850767,
+            0.9287696317092772,
+            0.9913999016355685
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "O": {
+          "reference": "queue",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            0.943916503280785,
+            0.8950488854028217,
+            1.2029465308667409
+          ],
+          "geometric_mean_ratio": 1.0054077296725454,
+          "paired_lifecycle_ratios": [
+            0.9439830544752541,
+            0.894953009524522,
+            1.2027611053100244
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "net": {
+          "reference": "direct",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            2.2396805451058,
+            2.7399532824197537,
+            2.8912593882347246
+          ],
+          "geometric_mean_ratio": 2.608187227591841,
+          "paired_lifecycle_ratios": [
+            2.2408625838974174,
+            2.741913399752753,
+            2.892710669408065
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        }
+      },
+      "1024": {
+        "R0": {
+          "reference": "shortcut",
+          "candidate": "bridge",
+          "paired_time_ratios": [
+            2.225960770495845,
+            2.2166150435716587,
+            1.9669827343004698
+          ],
+          "geometric_mean_ratio": 2.133058551450449,
+          "paired_lifecycle_ratios": [
+            2.2266659325018074,
+            2.218040861534991,
+            1.9674752516498961
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "Q1": {
+          "reference": "bridge",
+          "candidate": "queue",
+          "paired_time_ratios": [
+            1.0440279523598193,
+            1.1440273001626993,
+            0.9046579551131644
+          ],
+          "geometric_mean_ratio": 1.026150293578472,
+          "paired_lifecycle_ratios": [
+            1.0441668916732878,
+            1.1438682001927092,
+            0.9048738929231313
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "O": {
+          "reference": "queue",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            0.8570559989380188,
+            0.9850347087422703,
+            0.8290010606020551
+          ],
+          "geometric_mean_ratio": 0.8878479704944461,
+          "paired_lifecycle_ratios": [
+            0.8572912953286781,
+            0.9849789706972271,
+            0.8293609047509151
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "net": {
+          "reference": "direct",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            1.5603952780111119,
+            1.8734434401763722,
+            1.41501960079373
+          ],
+          "geometric_mean_ratio": 1.6052618692544212,
+          "paired_lifecycle_ratios": [
+            1.5615260289078743,
+            1.8742820400609277,
+            1.4163261546385475
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        }
+      },
+      "4096": {
+        "R0": {
+          "reference": "shortcut",
+          "candidate": "bridge",
+          "paired_time_ratios": [
+            1.0772276906320248,
+            1.3623645831003857,
+            1.310989274043104
+          ],
+          "geometric_mean_ratio": 1.2437506784983081,
+          "paired_lifecycle_ratios": [
+            1.077516892732709,
+            1.3628011393286605,
+            1.3113578133896648
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "Q1": {
+          "reference": "bridge",
+          "candidate": "queue",
+          "paired_time_ratios": [
+            0.9953180957470135,
+            0.8993219923536345,
+            0.9461704923029147
+          ],
+          "geometric_mean_ratio": 0.9461256964185706,
+          "paired_lifecycle_ratios": [
+            0.9956331277770423,
+            0.8994789235418376,
+            0.9465349485113249
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "O": {
+          "reference": "queue",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            1.1478208283984863,
+            0.9563269699035654,
+            0.9036485442454796
+          ],
+          "geometric_mean_ratio": 0.9973019910331216,
+          "paired_lifecycle_ratios": [
+            1.1478256958275188,
+            0.9566909874259372,
+            0.9036869574161267
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "net": {
+          "reference": "direct",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            1.4240905419262657,
+            0.9861159690973798,
+            0.8490684556945169
+          ],
+          "geometric_mean_ratio": 1.060399302594688,
+          "paired_lifecycle_ratios": [
+            1.42492966841696,
+            0.986979668438032,
+            0.8496705199415228
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        }
+      },
+      "8192": {
+        "R0": {
+          "reference": "shortcut",
+          "candidate": "bridge",
+          "paired_time_ratios": [
+            1.1448899193952597,
+            1.243945381775796,
+            1.287218482180173
+          ],
+          "geometric_mean_ratio": 1.2238807485952499,
+          "paired_lifecycle_ratios": [
+            1.145103569469352,
+            1.2442719132711368,
+            1.2874258232349043
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "Q1": {
+          "reference": "bridge",
+          "candidate": "queue",
+          "paired_time_ratios": [
+            0.9448335625447203,
+            0.8494320740390677,
+            0.7447789680199696
+          ],
+          "geometric_mean_ratio": 0.8423717436692186,
+          "paired_lifecycle_ratios": [
+            0.9450467992284555,
+            0.8495964823533667,
+            0.745064729801055
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "O": {
+          "reference": "queue",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            0.9637837543556319,
+            1.00594303450209,
+            1.3123759839178137
+          ],
+          "geometric_mean_ratio": 1.0836035551085028,
+          "paired_lifecycle_ratios": [
+            0.964036769056307,
+            1.0061569161054653,
+            1.3123354581118256
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "net": {
+          "reference": "direct",
+          "candidate": "lookahead",
+          "paired_time_ratios": [
+            1.0892340861677228,
+            0.9265557991997432,
+            1.275210926113167
+          ],
+          "geometric_mean_ratio": 1.0877396069802139,
+          "paired_lifecycle_ratios": [
+            1.0899692688254141,
+            0.9271754873492135,
+            1.2758662607165645
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        }
+      }
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
