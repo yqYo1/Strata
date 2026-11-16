@@ -15909,5 +15909,452 @@
         "device_executed": false
       }
     }
+  },
+  "prefill_weight_pipeline_v1": {
+    "stage": "preparation_closed",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_build_executed": false,
+    "reason": "Preparation review found the inherited copy-only environment omitted STRATA_SYCL_PARALLEL_IQ_DEQUANT=1 used by qualified model. Close unrun plan;new source/plan must match production selection before native build. Original source0e18and generated recipe preserved;no input hashes refreshed.",
+    "archive": {
+      "commit": "95b6e20ef",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "prefill_weight_pipeline_v1"
+    },
+    "retirement_evidence_key": "prefill_weight_pipeline_v2.retention"
+  },
+  "prefill_weight_pipeline_v2": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "native_source_commit": "2187bfa5ddff6d8331187b8cfc22157852c2d461",
+    "original_Runtime_math_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "archive": {
+      "commit": "07735df239679929be29c859561ae0501a9a3ab7",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "prefill_weight_pipeline_v2"
+    },
+    "plan_commit": "5c6c68938",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/benchmark",
+      "sha256": "7b78aa0e8fbb1ceb6689f15ffeb75470d649982a65801daa504182be2b06e5c5"
+    },
+    "weights": {
+      "sha256": "a20e0106d7bc8613c82572cb642f810fb0eb1975c81b467e626d644a94c83e79",
+      "layer": 2,
+      "experts": [
+        0,
+        1
+      ],
+      "source_layout_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+      "full_source_file_rehashed": false
+    },
+    "unit": "Only source ownership differs:hostUSM versus page-aligned read-only imported heap. Exact layer2experts0/1bytes and original14508dequantGU22/Down20,FP16operands,BF16GU/Down,FP16hidden,FP32accumulation held fixed. Serial copy/read order,one private quantized bank,1024rows,128expert jobs,all buffers/queues fixed. Not a scheduling comparison.",
+    "acceptance": "All three mapped/USM steady ratios and all three preparation+wall+retirement ratios must<=1.10 to permit a newly committed actual-reader scheduling plan. Import is a subset of preparation. Keep all individual samples and ratios;not a speedup,production/model or target gate. Preserve old source4096failure and old E2USM1024failure.",
+    "workload": {
+      "rows": 1024,
+      "expert_jobs": 128,
+      "payload_bytes": 1971200,
+      "requested_H2D_bytes": 252313600,
+      "quantized_bank_is_math_operand": true,
+      "gu_type": 22,
+      "down_type": 20,
+      "copy_order": "serial"
+    },
+    "analysis": {
+      "paired_mapped_over_usm": [
+        1.703074355673803,
+        1.0202030427619484,
+        1.6172385320254647
+      ],
+      "geometric_mean_ratio": 1.4111226671351647,
+      "paired_lifecycle_ratios": [
+        1.7036381829586835,
+        1.0293663784814702,
+        1.6215603332587136
+      ],
+      "source_cost_eligible": false,
+      "speedup_or_model_adoption_qualified": false
+    },
+    "samples": [
+      {
+        "label": "metadata-usm",
+        "source": "usm",
+        "clean": false,
+        "pair": null,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002394446,
+          "import_s": 0,
+          "retirement_s": 0.000649092
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "usm",
+          "property_type": 0,
+          "allocation_ids": [
+            0,
+            0
+          ]
+        },
+        "validated_counts": {
+          "math_launches": 0,
+          "payload_sized_native_copy_calls": 0
+        }
+      },
+      {
+        "label": "metadata-mapped-neo",
+        "source": "mapped-neo",
+        "clean": false,
+        "pair": null,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002605795,
+          "import_s": 0.00062117,
+          "retirement_s": 0.000817598
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "mapped-neo",
+          "property_type": 1,
+          "allocation_ids": [
+            28,
+            29
+          ]
+        },
+        "validated_counts": {
+          "math_launches": 0,
+          "payload_sized_native_copy_calls": 0
+        }
+      },
+      {
+        "label": "validated-usm",
+        "source": "usm",
+        "clean": false,
+        "pair": null,
+        "wall_s": 0.217341684,
+        "timer_pair_max_s": 4.1e-08,
+        "lifecycle_plus_batch_s": 0.219416691,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.001845154,
+          "import_s": 0,
+          "retirement_s": 0.000229853
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "usm",
+          "property_type": 0,
+          "allocation_ids": [
+            0,
+            0
+          ]
+        },
+        "validated_counts": {
+          "math_launches": 1548,
+          "payload_sized_native_copy_calls": 259,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 258,
+            "parallel_iq_launchILi20ELb0": 258
+          }
+        }
+      },
+      {
+        "label": "validated-mapped-neo",
+        "source": "mapped-neo",
+        "clean": false,
+        "pair": null,
+        "wall_s": 0.217293604,
+        "timer_pair_max_s": 4e-08,
+        "lifecycle_plus_batch_s": 0.221272675,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002814328,
+          "import_s": 0.000655884,
+          "retirement_s": 0.001164743
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "mapped-neo",
+          "property_type": 1,
+          "allocation_ids": [
+            28,
+            29
+          ]
+        },
+        "validated_counts": {
+          "math_launches": 1548,
+          "payload_sized_native_copy_calls": 259,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 258,
+            "parallel_iq_launchILi20ELb0": 258
+          }
+        }
+      },
+      {
+        "label": "clean-pair0-usm",
+        "source": "usm",
+        "clean": true,
+        "pair": 0,
+        "wall_s": 0.124446011,
+        "timer_pair_max_s": 4e-08,
+        "lifecycle_plus_batch_s": 0.12627778899999997,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.00175335,
+          "import_s": 0,
+          "retirement_s": 7.8428e-05
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "usm",
+          "property_type": 0,
+          "allocation_ids": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "label": "clean-pair0-mapped-neo",
+        "source": "mapped-neo",
+        "clean": true,
+        "pair": 0,
+        "wall_s": 0.21194081,
+        "timer_pair_max_s": 5e-08,
+        "lifecycle_plus_batch_s": 0.215131663,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002228934,
+          "import_s": 3.704e-05,
+          "retirement_s": 0.000961919
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "mapped-neo",
+          "property_type": 1,
+          "allocation_ids": [
+            28,
+            29
+          ]
+        }
+      },
+      {
+        "label": "clean-pair1-mapped-neo",
+        "source": "mapped-neo",
+        "clean": true,
+        "pair": 1,
+        "wall_s": 0.123119608,
+        "timer_pair_max_s": 4e-08,
+        "lifecycle_plus_batch_s": 0.12617434400000002,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002029391,
+          "import_s": 3.2279999999999996e-05,
+          "retirement_s": 0.001025345
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "mapped-neo",
+          "property_type": 1,
+          "allocation_ids": [
+            28,
+            29
+          ]
+        }
+      },
+      {
+        "label": "clean-pair1-usm",
+        "source": "usm",
+        "clean": true,
+        "pair": 1,
+        "wall_s": 0.120681475,
+        "timer_pair_max_s": 3.1e-08,
+        "lifecycle_plus_batch_s": 0.122574767,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.001824823,
+          "import_s": 0,
+          "retirement_s": 6.8469e-05
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "usm",
+          "property_type": 0,
+          "allocation_ids": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "label": "clean-pair2-usm",
+        "source": "usm",
+        "clean": true,
+        "pair": 2,
+        "wall_s": 0.11382895,
+        "timer_pair_max_s": 5e-08,
+        "lifecycle_plus_batch_s": 0.115567991,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.001691321,
+          "import_s": 0,
+          "retirement_s": 4.772e-05
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "usm",
+          "property_type": 0,
+          "allocation_ids": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "label": "clean-pair2-mapped-neo",
+        "source": "mapped-neo",
+        "clean": true,
+        "pair": 2,
+        "wall_s": 0.184088564,
+        "timer_pair_max_s": 4e-08,
+        "lifecycle_plus_batch_s": 0.18740047,
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002336416,
+          "import_s": 4.9563e-05,
+          "retirement_s": 0.00097549
+        },
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "mapped-neo",
+          "property_type": 1,
+          "allocation_ids": [
+            28,
+            29
+          ]
+        }
+      }
+    ],
+    "validation": {
+      "native_processes": 10,
+      "metadata_without_app_work": 2,
+      "reader_processes": 8,
+      "normal_exit_zero": 10,
+      "bitwise_reference_finite_status_and_guards": true,
+      "quiet_validation": true,
+      "fresh_faults": [],
+      "boot_and_driver_unchanged": true,
+      "host_control_methods": 3,
+      "compiler_inputs": 943,
+      "link_inputs": 25,
+      "fresh_objects": 8
+    },
+    "source_cost_eligible": false,
+    "performance_qualified": false,
+    "model_trial_allowed": false,
+    "decision": "Imported-source cost fails(two slow pairs and one near equal);no promotion or noise exclusion. Main next selects the faster numerically verified host-USM reference for a NEW independent scheduling plan,not the failed mapped candidate. Preserve failed128-job ratios and old E2M1024failure. Use512jobs for timing headroom in a new serial/lookahead comparison;freeze source,math and placement and move only the dependency-safe upload schedule. Hardware limiting resource remains unknown.",
+    "retention": {
+      "stage": "complete",
+      "selection_roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/runtime.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/clean-pair1-mapped-neo",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/metadata-usm",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/dense-image.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/clean-pair1-usm",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/ops.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/dense.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/source",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/clean-pair0-usm",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/tmp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/cache",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/validated-usm",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/owned",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/iq.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/commands.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/fixture.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/dense-host.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/ops.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/dense.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/clean-pair2-mapped-neo",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/runtime.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/ownership.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/commands.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/fixture.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/metadata-mapped-neo",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/iq.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/validated-mapped-neo",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/benchmark",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/clean-pair0-mapped-neo",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/weights.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/clean-pair2-usm",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-weight-pipeline-cq-20261116",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-weight-pipeline-cq-20261116-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-weight-pipeline-cq-20261116",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-weight-pipeline-cr-20261116",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-weight-pipeline-cr-20261116-control",
+        "/home/yayoi/.codex/sessions/2026/11/16/rollout-2026-11-16T16-43-03-01a1e34f-3c6f-7482-a88f-2d8dc5adea10.jsonl"
+      ],
+      "external_inventory_sha256": "531679642ed4dea6781e4149f04c1bd7df0bd53db3db34abde32f275580230b1",
+      "selected_files": 941,
+      "selected_bytes": 57321828,
+      "original_source_recipe_ELF_recovery": {
+        "native_source_commit": "2187bfa5ddff6d8331187b8cfc22157852c2d461",
+        "original_Runtime_math_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "evidence_commit": "07735df239679929be29c859561ae0501a9a3ab7",
+        "private_record_sha256": "f11df8d86d6845e2e7100c46560b09338827398890ab6e57e5e4e661f54c247f",
+        "recipe_sha256": "c5eccfdbc9f133d30a0dd568762d4545344d200a1f199230f7f7702ef400a75b",
+        "source_view_sha256": "b62dac171e064ccb83b649e7e3d2513f0dd82f2172b5aafde91dd4800716e21b",
+        "source_view_files": 401,
+        "actual_input_sha256": "711fe18ddf3857345845525be1c947abcf3960445abe4e5ee5ade65ec945faca",
+        "compiler_inputs": 943,
+        "link_inputs": 25,
+        "fresh_objects": 8,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/benchmark",
+          "sha256": "7b78aa0e8fbb1ceb6689f15ffeb75470d649982a65801daa504182be2b06e5c5"
+        },
+        "weights_sha256": "a20e0106d7bc8613c82572cb642f810fb0eb1975c81b467e626d644a94c83e79",
+        "all_native_owners_closed": true,
+        "performance_candidate_eligible": false,
+        "new_GPU_or_model_qualification": false
+      },
+      "private_original_record_retained": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/record.json",
+        "sha256": "f11df8d86d6845e2e7100c46560b09338827398890ab6e57e5e4e661f54c247f",
+        "consumer": "Exact actual-reader baseline source/recipe/census for next separately planned host-USM lookahead unit;no execution dependency after retirement.",
+        "review_point": "Before next fresh native build;retire source-only receipt after required comparison/provenance fields are curated."
+      },
+      "reason": "Closed failed imported-source overhead cohort. Retire ended component binary/objects/source views,normal raw output,duplicate unrun V1preparation/extracted weight fixture and consumed CQ/CRresearch transactions. Preserve all individual samples,failed decisions,source identities and both independent phase-reference engines.",
+      "all_selected_paths_absent": true,
+      "removed_files": 941,
+      "removed_bytes": 57321828,
+      "private_original_record_unchanged": true,
+      "phase_reference_engines_unchanged": true,
+      "superseded_proxy_source_retirement": {
+        "original_source_commit": "0a3295b89619cdc9cb4c6c4b2333043325fc8695",
+        "path": "bench/sycl/prefill_upload_overlap.cpp",
+        "files": 1,
+        "bytes": 9287,
+        "reason": "The copied-bank proxy has no remaining live workload or build target;actual-weight readers supersede it. Only a closed legacy builder constant/uncompiled prefix referred to it. Preserve original source/results in Git and the independent event-lane safety fixtures."
+      },
+      "post_retirement_host_controls": {
+        "source_commit": "63fdf8c0784da094b8d0f722d89bdae3e29303cb",
+        "current_plan_methods": 4,
+        "legacy_source_capability_methods": 14,
+        "passed": true,
+        "device_executed": false,
+        "closed_CLI_refused_exit": 1,
+        "closed_private_and_public_receipts_unchanged": true,
+        "native_source_remains": "2187bfa5ddff6d8331187b8cfc22157852c2d461",
+        "controller_only": "Exclude superseded proxy fingerprint and reject terminal cohorts before source checks/receipt writes;no new native build or GPU qualification."
+      }
+    }
   }
 }

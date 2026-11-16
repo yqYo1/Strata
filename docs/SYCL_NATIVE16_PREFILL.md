@@ -1367,7 +1367,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source views and owned native transcript,39more files/1589907bytes are
   physically removed. All26retained phase-reference ELFs remain unchanged;
   legacy/.cache holds stay separate.
-  `bench/sycl/prefill_upload_overlap.cpp`is an **E2component proposal**,not a
+  The copied-bank E2component source is archived at`0a3295b89`
+  (`bench/sycl/prefill_upload_overlap.cpp`);it is not a
   selected route:it fixes the copy primitive,payload,allocations and existing
   Xe2dense kernel while moving only the readiness wait across independent
   compute. A per-epoch reader fence limits lookahead to one expert. Its build,
@@ -1532,6 +1533,40 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   to measured source`d1f3868e2`;keep the actual source-adapter headers and recipe/
   fixture sources for the next actual-bank producer/reader plan. The earlier
   normal source-cohort traces/build output retirement was159files/24022908bytes.
+  The actual-weight proposal is now `prefill_weight_pipeline_v2`,native source
+  `2187bfa5d`,plan`5c6c68938`,with six fresh TUs/943compiler inputs/25link inputs/
+  eight objects. No archive/object reuse;the isolated dense AOTrecipe is unchanged.
+  It extracts actual layer2experts0/1(IQ2_Sgate/up,IQ4_NLDown),then holds serial
+  copying and the M1024production fallback math fixed while comparing hostUSM
+  with the pinned imported heap. Both metadata processes close normal0with zero
+  app work;imported HOST1IDs28/29are observed. The first USMmath batch closes
+  normal0/quiet/no fresh fault,with full bitwise FP32accumulator agreement,
+  all guards,1548math launches and258actual parallel-IQlaunches per role.
+  The cohort now closes at`07735df23`:all10native processes pass with quiet
+  validation,closed owners and no fresh fault. Both traced readers verify the
+  same counts/bitwise output/guards. Clean USMtimes are
+  .124446/.120681/.113829s;imported times .211941/.123120/.184089s.
+  Paired imported/USMratios1.703074/1.020203/1.617239,geometric mean1.411123,
+  **fail** the prospective all-three<=1.10source-cost gate,including lifecycle.
+  Preserve every sample;no noise exclusion or mapped scheduling/model promotion.
+  V1closed before any native build/execution because its inherited copy-only
+  environment omitted the model's parallel-IQflag;V2matches flag1before exec
+  and checks actual named launches. No job remains live. CQ/CRreview confirms
+  the ownership seam with corrections:IQ4_NLblocks contain32values/18bytes;
+  Main verifies the model's vllm/auto backend and M1024fallback call path,while
+  dispatcher/gather costs remain omitted. The next independent unit starts
+  from the faster,numerically verified **host-USMreference**,not the failed
+  mapped candidate:one private scratch blob may be overwritten only after both
+  IQreaders retire;GU/Down retain their separate dequantized workspace until
+  their readers finish. Commit a new serial/lookahead plan with512jobs for
+  timing headroom,holding source,math and placement fixed. This is not a relaxed
+  old gate or model trial. Hardware resource saturation remains unknown.
+  The ended component generation,unrun V1preparation and consumed research/raw
+  output are retired:941files/57321828bytes,after exact original source/recipe/
+  final-ELF recovery. Both phase-reference engines remain unchanged. Retain only
+  the original actual-reader record for the next source/recipe/census comparison;
+  the older mapped-source record is still read by the maintained builder's
+  seed-recipe reader and must be retired when that dependency is migrated.
   The reviewed CL/CM
   audit's consumed report/view/control/closed transcript are also retired:
   40files/2033262bytes,with its correction and source hashes in the index.
