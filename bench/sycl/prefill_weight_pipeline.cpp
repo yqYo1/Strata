@@ -28,6 +28,7 @@ using Staging=strata::prefill::detail::ExpertUploadStaging;
 constexpr std::size_t k=2560,ff=640,epochs=512;
 constexpr std::size_t gate_bytes=524800,down_bytes=921600;
 constexpr std::size_t payload=2*gate_bytes+down_bytes,edge=256;
+constexpr std::size_t source_experts=512,source_bytes=source_experts*payload;
 using Clock=std::chrono::steady_clock;
 void need(bool ok,const char* why) {if(!ok) throw std::runtime_error(why);}
 double elapsed(Clock::time_point at) {return std::chrono::duration<double>(Clock::now()-at).count();}
@@ -42,12 +43,12 @@ struct ReadOnlyWeights {
         need(fd>=0,"actual-weight source open");
         struct stat st{};
         const bool valid=::fstat(fd,&st)==0 && S_ISREG(st.st_mode) &&
-            st.st_size>=0 && std::uint64_t(st.st_size)==2*payload;
-        if(valid) pointer=::mmap(nullptr,2*payload,PROT_READ,MAP_PRIVATE,fd,0);
+            st.st_size>=0 && std::uint64_t(st.st_size)==source_bytes;
+        if(valid) pointer=::mmap(nullptr,source_bytes,PROT_READ,MAP_PRIVATE,fd,0);
         ::close(fd);
         need(valid && pointer!=MAP_FAILED,"exact read-only actual-weight mapping required");
     }
-    ~ReadOnlyWeights() {if(pointer!=MAP_FAILED) ::munmap(pointer,2*payload);}
+    ~ReadOnlyWeights() {if(pointer!=MAP_FAILED) ::munmap(pointer,source_bytes);}
     ReadOnlyWeights(const ReadOnlyWeights&)=delete;
     ReadOnlyWeights& operator=(const ReadOnlyWeights&)=delete;
     const std::uint8_t* data() const {return static_cast<const std::uint8_t*>(pointer);}
@@ -69,13 +70,14 @@ struct PrefillSourceDrain {
 };
 int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
     // POSIX file mapping matches the production ordinary-RAM source category.
-    // The frozen extraction manifest pins both actual expert blobs and roles.
+    // All512real layer2experts form a1GBsource footprint,avoiding a two-expert
+    // CPU-cache-hot copy loop. The frozen extraction recipe pins every role.
     ReadOnlyWeights weights(path);
     const auto primary_rows=rows/2,tail_rows=rows-primary_rows;
     gate("before-runtime");
     auto runtime=sb::runtime_for();auto& q=runtime->compute();
     {
-        sb::Allocation baseline(runtime,2*payload,sb::MemoryKind::Host);
+        sb::Allocation baseline(runtime,source_bytes,sb::MemoryKind::Host);
         Buffer<std::uint8_t> bank(runtime,payload,edge);
         Buffer<std::uint16_t> x(runtime,rows*k),gu_weights(runtime,2*ff*k),
             down_weights(runtime,k*ff),gu(runtime,rows*2*ff),hidden(runtime,rows*ff),
@@ -94,7 +96,7 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
         std::string error;
         if(!dense.init_external(&q,gu_weights.data(),2*ff*k,nullptr,0,error))
             throw std::runtime_error(error);
-        std::memcpy(baseline.data(),weights.data(),2*payload);
+        std::memcpy(baseline.data(),weights.data(),source_bytes);
         const auto prep=Clock::now();
         if(staged) staging=std::make_unique<Staging>(bank.data(),payload,payload,&q);
         const double preparation_s=elapsed(prep);
@@ -150,7 +152,7 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
             };
             reset();
             for(std::size_t i=0;i<epochs;++i) {
-                q.memcpy(bank.data(),baseline.as<std::uint8_t>()+(i%2)*payload,payload);
+                q.memcpy(bank.data(),baseline.as<std::uint8_t>()+i*payload,payload);
                 prefill_consume(i%2);
             }
             runtime->wait(q.memcpy(golden.data(),accumulator.data(),primary_rows*k*4));
@@ -170,7 +172,7 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
             double clock_max=0;
             for(int i=0;i<128;++i) {const auto at=Clock::now();clock_max=std::max(clock_max,elapsed(at));}
             const auto at=Clock::now();
-            for(std::size_t i=0;i<epochs;++i) {prefill_upload(i%2);prefill_consume(i%2);}
+            for(std::size_t i=0;i<epochs;++i) {prefill_upload(i);prefill_consume(i%2);}
             runtime->wait();const double wall_s=elapsed(at);
             need(uploads==epochs && (!staged || (staging->copies()==epochs+2 &&
                 staging->copied_bytes()==(epochs+2)*payload)),"actual source-copy accounting");
@@ -188,8 +190,8 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
             guards(hidden);guards(down);guards(accumulator);guards(job_weights);
             guards(source_rows);guards(original);guards(status);guards(tail);
             runtime->wait(q.memcpy(host.data(),bank.data(),payload));
-            need(std::memcmp(host.data(),weights.data()+payload,payload)==0,"final bank expert differs");
-            need(std::memcmp(baseline.data(),weights.data(),2*payload)==0,"source mapping changed");
+            need(std::memcmp(host.data(),weights.data()+(source_experts-1)*payload,payload)==0,"final bank expert differs");
+            need(std::memcmp(baseline.data(),weights.data(),source_bytes)==0,"source mapping changed");
             if(staged) staging->check_guards();
             std::cout.precision(17);
             std::cout<<"{\"kind\":\"batch\",\"arm\":\""<<(staged?"staged":"direct")
@@ -197,6 +199,7 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
                      <<",\"copies\":"<<uploads<<",\"gu_fused\":"<<gu_fused<<",\"down_fused\":"<<down_fused
                      <<",\"wall_s\":"<<wall_s<<",\"timer_pair_max_s\":"<<clock_max
                      <<",\"production_gemm_dispatch\":true,\"split_primary_rows\":"<<primary_rows
+                     <<",\"actual_source_experts\":"<<source_experts<<",\"source_footprint_bytes\":"<<source_bytes
                      <<",\"split_tail_checked\":true"
                      <<",\"full_bitwise_reference_and_guards\":true}"<<std::endl;
         }
