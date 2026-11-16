@@ -15,6 +15,7 @@
 #include <optional>
 #include <span>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 namespace strata::prefill::detail {
@@ -79,10 +80,8 @@ public:
             // submitted predecessor from this lane, so no future-event cycle.
             const auto after = states_.empty() ? std::optional<sycl::event>{}
                                                : states_.back().readers;
-            auto event = queue.submit([&](sycl::handler& h) {
-                if (after) h.depends_on(*after);
-                h.memcpy(bank_, source.data(), bytes_);
-            });
+            auto event = after ? queue.memcpy(bank_, source.data(), bytes_, *after)
+                               : queue.memcpy(bank_, source.data(), bytes_);
             states_.push_back(State{event, {}, {}});
             sycl_backend::command_profile::observe(&queue, event);
         } catch (...) { poisoned_ = true; throw; }

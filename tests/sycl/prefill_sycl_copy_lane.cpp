@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <sys/mman.h>
@@ -39,6 +40,7 @@ struct Source {
     }
     ~Source() { if (mapping != MAP_FAILED) munmap(mapping, 4096); }
     Source(const Source&) = delete;
+    Source& operator=(const Source&) = delete;
     std::span<const std::byte> slice(std::size_t index) const {
         need(index < 2, "finite source index");
         return {static_cast<const std::byte*>(mapping) + index * bytes, bytes};

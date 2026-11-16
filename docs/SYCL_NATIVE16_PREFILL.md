@@ -1672,8 +1672,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ordinary host sources and both IQreaders distinct from dequantized-weight
   consumers. Q1will compare compute with a separate same-context queue whose
   in-order/profiling properties match;Owill then move only the reader marker.
+  Before Q1,compare the new dependency/ownership bridge on the compute queue
+  against Q0resolved-queue with no bridge,holding full-math retirement fixed.
+  The bridge keeps the same queue::memcpy shortcut,using its event overload
+  only when a predecessor exists. Required token checks and barriers form that
+  coherent safety adapter;their overhead must be recorded separately.
   This avoids silently combining queue placement with a profiling-property
-  change. No raw LevelZero import,engine selection or validation follows.
+  or copy-primitive change. Then compare the combined path against the original
+  full compatibility wrapper. No raw LevelZero import,engine selection or
+  validation follows.
   These files are outside Q0actual compiler/source inputs;Q0remains frozen.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
