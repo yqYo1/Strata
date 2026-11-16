@@ -10,6 +10,7 @@ import unittest
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
 import prefill_mapped_source_reuse as target
+import prefill_mapped_wait_order as wait
 
 
 class MappedHistoricalAdmission(unittest.TestCase):
@@ -57,6 +58,21 @@ class MappedHistoricalAdmission(unittest.TestCase):
             else:row['model_trial_allowed']=True
             with self.subTest(which=which),self.assertRaises(RuntimeError):
                 target.original_gate(target.component.compact(row),row)
+
+
+class WaitMetadataAdmission(unittest.TestCase):
+    def test_transitive_provider_inputs_are_required_before_launch(self):
+        native=dict(binaries={'benchmark':{'path':'/qualified/benchmark','sha256':'a'*64}},
+            native_source_commit=target.NATIVE,native_validation_probe={'library':{'sha256':'b'*64}},
+            runtime_manifest={'sha256':'c'*64},validation_provider={'sha256':'d'*64},
+            driver={'driver':'xe'},boot='qualified-boot')
+        wait.native_metadata_gate(copy.deepcopy(native),native)
+        for key in native:
+            row=copy.deepcopy(native);del row[key]
+            with self.subTest(missing=key),self.assertRaises(RuntimeError):
+                wait.native_metadata_gate(row,native)
+        row=copy.deepcopy(native);row['runtime_manifest']['sha256']='e'*64
+        with self.assertRaises(RuntimeError):wait.native_metadata_gate(row,native)
 
 
 if __name__=='__main__':unittest.main()

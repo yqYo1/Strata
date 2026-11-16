@@ -15,8 +15,8 @@ import prefill_mapped_source_reuse as reuse
 
 c = reuse.component
 P, B, RESULT = c.P, c.B, c.RESULT
-ROOT = B/'prefill-mapped-wait-order-v1'
-KEY = 'prefill_mapped_wait_order_v1'
+ROOT = B/'prefill-mapped-wait-order-v2'
+KEY = 'prefill_mapped_wait_order_v2'
 PREFIXES = [*c.PREFIXES, 'tests/core/test_mapped_source_reuse.py']
 require, sha, signature = c.require, c.sha, c.fingerprint
 
@@ -32,6 +32,14 @@ def save(row):
     data=json.loads(RESULT.read_text());data[KEY]=compact(row);c.write(RESULT,data)
 
 
+def native_metadata_gate(row,native):
+    # These are consumed transitively by the actual provider/first-init reader.
+    for key in ['binaries','native_source_commit','native_validation_probe',
+                'runtime_manifest','validation_provider','driver','boot']:
+        require(key in row and signature(row[key])==signature(native[key]),
+                'original native metadata missing/changed:'+key)
+
+
 def check(row, committed=True):
     if committed:
         require(signature(compact(row))==signature(c.ur_validation.committed(RESULT,(KEY,))),
@@ -39,10 +47,7 @@ def check(row, committed=True):
     require(c.original.coherent.build.common.source.pin(P,PREFIXES)['source_sha256']
             ==row['project']['source_sha256'], 'frozen wait-order inputs changed')
     native,_=reuse.verify(expected=row['reuse'])
-    require(row['binaries']==native['binaries']
-        and row['native_source_commit']==reuse.NATIVE
-        and signature(row['native_validation_probe'])==signature(native['native_validation_probe']),
-        'original executable,fixture and validation bytes required')
+    native_metadata_gate(row,native)
     for case in row['cases']:
         require(case['rows']==1024 and case['source']=='mapped-neo'
             and case['arm'] in ['serial','overlap']
@@ -55,6 +60,11 @@ def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),
             'existing wait-order attempt:inspect its owner;no retry')
     native,proof=reuse.verify()
+    failed=c.ur_validation.committed(RESULT,('prefill_mapped_wait_order_v1',))
+    require(failed['stage']=='failed' and failed['active'] is False
+        and failed['failure_closure']['physical_process_closed'] is True
+        and failed['failure_closure']['application_GPU_commands']==0,
+        'preserve original pre-runtime controller failure and positive process closure')
     project=c.original.coherent.build.common.source.pin(P,PREFIXES)
     ROOT.mkdir(mode=0o700);(ROOT/'owned').mkdir(mode=0o700)
     cases=[]
@@ -72,6 +82,7 @@ def prepare():
     row=dict(stage='prepared',passed=True,complete=False,active=False,ownership_closed=True,
         project=project,reuse=proof,native_source_commit=reuse.NATIVE,binaries=native['binaries'],
         native_validation_probe=native['native_validation_probe'],runtime_manifest=native['runtime_manifest'],
+        validation_provider=native['validation_provider'],
         driver=native['driver'],boot=native['boot'],cases=cases,results=[],commands=[],
         model_trial_allowed=False,performance_qualified=False,
         plan=dict(unit='Only move lane.wait_ready(copied) from before dense.beta0 to after it. Same coherent original Runtime,source adapter,payload,1024-row FP16dense,tile,queues,allocation and512epochs. No native source/build change. Previous source-admission/producer/consumer checks were one necessary coherent ownership unit and are reused only after exact historical recovery.',
@@ -83,6 +94,7 @@ def prepare():
             retention='Reuse the same two component ELFs as the named temporary third generation;no fourth build. Keep compact useful samples,census/reuse proof and decision. Retire routine raw traces after closure and the component generation if no named next consumer remains. Existing independent phase references remain unchanged.',
             limits='Explicit component entrypoint only. Resident dense A is math input;copied next-bank B is not an operand. Same2MBsource is reused,not production50GBRAM or physicalPCIe evidence. Hardware saturation,modelPP/TTFT/TG,decode/handoff,agent/task,physical262144/RESTORE remain unqualified. Production prefill and decode selectors are unchanged.',
             provenance='Main-authored controller/reuse of own historical code under repository LICENSE;native original14508owned dense with previously checked Intel TLA provenance. No XeStrata code/design.'))
+    native_metadata_gate(row,native)
     save(row);print('Prepared sole-variable mapped1024wait-order plan;commit before execution.',flush=True)
 
 
