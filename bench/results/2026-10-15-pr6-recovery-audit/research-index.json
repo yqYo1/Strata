@@ -35119,8 +35119,8 @@
   },
   "prefill_copy_math_audit_dc_20261117": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "status": "eligible_before_launch",
+    "schedulable_now": false,
+    "status": "review_in_progress",
     "active": false,
     "ownership_closed": true,
     "scope": "New five-arm full-math/controller source audit;not generic lane feasibility.",
@@ -35144,6 +35144,35 @@
     },
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-copy-math-dc-20261117/report.md",
     "input_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-copy-math-dc-20261117",
-    "control_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-copy-math-dc-20261117-control"
+    "control_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-copy-math-dc-20261117-control",
+    "task_id": "task_80e9f551e0dc",
+    "dispatch_id": "ctx_161e99faaa8e",
+    "terminal": "term_91ab166b-dc51-4138-9d9f-143f9c0b89d5",
+    "native_pid": 4056014,
+    "isolation": "Native strict-config/no-daemon,report cwd only,workspace-write/network enabled,both temporary writable roots excluded. Actual worker filesystem proof still required.",
+    "accounting": "Attached Main-owned systemd scope600s/180sCPU/4GiB/256tasks,8MiBtext;no worker task injected before account attachment.",
+    "manual_launch_reason": "worker-start cannot express this strict-config/no-daemon isolated-cwd sandbox contract;manual Task/Dispatch only,no ownership handoff.",
+    "report_sha256": "c152c94fe5362547cbc1edb345c24064b4030fc9b97f383bd1bacc5a5c016755",
+    "report_bytes": 9572,
+    "report_words": 839,
+    "review_model": "gpt-6-luna",
+    "review_effort": "max",
+    "review_agent": "/root/prefill_copy_math_dc_review_dd_20261117",
+    "worker_side_Orca_first_tool_verified": true,
+    "filesystem_admission_inputs": 20,
+    "filesystem_readonly_and_no_gpu": true,
+    "positive_native_pidfd_and_code_mode_family_closure": true,
+    "normal_exit_code_qualified": false,
+    "closure_signal": "SIGTERM after worker_done;all owned process/TID cgroup membership verified;no SIGKILL",
+    "resource_envelope_passed": true,
+    "resource_sample": {
+      "wall_seconds": 413.93,
+      "CPU_seconds_conservative_bound": 40.735327,
+      "native_process_peak_RSS_bytes": 442851328,
+      "cgroup_memory_peak_bytes": 333537280,
+      "captured_text_bytes_upper_bound": 1139358,
+      "native_session_counted": true
+    },
+    "lifecycle": "Actual worker_done succeeded;unsupervised worker-release reports no_owned_resource/processAction none. Native closure independently proved;terminal close and delivery acknowledgement succeeded."
   }
 }
