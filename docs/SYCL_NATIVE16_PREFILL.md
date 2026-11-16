@@ -1650,10 +1650,91 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source/recipe/final-ELF recovery from the pushed primary,737regular files/
   1283624160content bytes of ended component/corpus/raw and consumed research
   are physically retired. Both phase references retain their original hashes.
-  Six closed prototype roots and the three configured deployment source/migration
-  holds remain explicit in the existing retention ledger;this is scoped cleanup.
+  Six closed prototype roots subsequently pass exact source/recipe recovery
+  and retire228files/56083842content bytes. Both phase references remain.
+  Three configured deployment source/migration holds remain in the ledger;
+  this is scoped cleanup.
   The CSVnow has562points,including all five Scomparisons with model metrics blank.
   See`prefill_weight_source_v2`and the retained-build ledger for actual state.
+  The owned Q0copy-wrapper control now closes42native processes at source
+  `d3ca4956b1bfda8ef64ef19d50827cff2abbafa4`and evidence`39d2c8ead3549d684c327d67991cbf415ce4f59a`:
+  two metadata,ten traced dispatch/number/guard checks and30clean samples.
+  Every child closes normally0with quiet validation,closed ownership and no
+  fresh fault. Both arms keep ordinary immutable RAM,the compute queue,math,
+  Runtime::check and command_profile::observe;only repeated handle/context
+  lookup and status translation differ. All original samples remain in the
+  compact result,including losses. Shortcut/direct geometric-mean time ratios:
+
+  | Expert rows | Ratio | All3pairs faster |
+  | --- | --- | --- |
+  | 16 | 1.192071 | no |
+  | 128 | 1.190276 | no |
+  | 1024 | 0.883954 | yes |
+  | 4096 | 1.019456 | no |
+  | 8192 | 1.005329 | no |
+
+  OnlyM1024passes its prospective repeated component-gain condition. The other
+  shapes remain non-gains;the complete compatibility wrapper stays the engine
+  reference. No model trial/adoption or PP/TG/TTFT/physical-context result
+  follows. Limiting hardware remains unknown. A recorded outer scheduling pause
+  after M1024pair0direct did not stop a native child or change order/inputs;
+  preserve all independent samples. Five CSVrows bring the index to567points.
+  Exact original364controller/source and398math-view files,961compiler/29link
+  inputs,nine fresh TUs/11objects,recipe/final-ELF and all1GBrole bytes are
+  recovered and verified. The ended Q0generation/corpus/view/raw output now
+  retires691files/1279279287regular content bytes;both phase hashes remain
+  unchanged. The next fresh R0/Q1/Obuild needs its own committed recipe/plan. Sresults retain
+  their original1896d6a18source;the two phase references remain selected.
+  An additional owned standard-SYCLcopy-lane header and bounded lifetime fixture
+  are authored but unbuilt. They keep one quantized bank,borrowed immutable
+  ordinary host sources and both IQreaders distinct from dequantized-weight
+  consumers. Q1will compare compute with a separate same-context queue whose
+  in-order/profiling properties match;Owill then move only the reader marker.
+  Before Q1,compare the new dependency/ownership bridge on the compute queue
+  against Q0resolved-queue with no bridge,holding full-math retirement fixed.
+  The bridge keeps the same queue::memcpy shortcut,using its event overload
+  only when a predecessor exists. Required token checks and barriers form that
+  coherent safety adapter;their overhead must be recorded separately.
+  This avoids silently combining queue placement with a profiling-property
+  or copy-primitive change. Then compare the combined path against the original
+  full compatibility wrapper. No raw LevelZero import,engine selection or
+  validation follows.
+  DA/DBsource review identifies a drain/lifetime APIgap:the old public drain
+  did not prevent another submission after borrowed owners could be released.
+  The unbuilt prototype now seals on drain,including failed drains,and rejects
+  every later copy/readiness/reader operation. Its fixture separates that check
+  from capacity rejection,checks constructor/property admission and reads back
+  the accepted exceptional reader output. Fourteen source/report hashes passed
+  review;these are source corrections,not executed safety/precision evidence.
+  Controlled submission/marker/async-fault and active observer coverage remain
+  pending before qualification. No production path is enabled.
+  The bounded syntax-only check now passes at source
+  `c20e7d7a20d171ba6ae0cbdc55cd38fd9effc6fc`,using compiler2026.2and
+  original14508headers from the still-owned Q0view,plus the two new files.
+  All671actual compiler inputs match the pinned source/SDKmanifest;their
+  census hash is`2ecc58f6092e85d56902b2806d16194e6e7f2565774c369c8c0eb890085aeb6f`.
+  The finite child closes normally0with empty diagnostics and closed ownership.
+  No object,image,link or device execution occurs. This is syntax evidence,
+  with the same command below;native/device/model gates remain pending.
+  After original input/owner verification,the consumed CW/CX/DAresearch,
+  source views,review/native-session transactions and syntax output retire
+  115files/links,3336211regular content bytes. CXretrieval knowledge remains
+  in`docs/research/sycl-event-progress.md`;the current Q0inputs are untouched.
+
+  ```text
+  /opt/intel/oneapi/compiler/2026.2/bin/icpx --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -std=c++20 -DSTRATA_ENABLE_SYCL=1 -fsycl -fsyntax-only -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/source/include -I/home/yayoi/orca/workspaces/Strata/sycl/include -MD -MF /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-lane-syntax-v1/fixture.d /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_sycl_copy_lane.cpp
+  ```
+
+  The next full-math fixture`bench/sycl/prefill_sycl_copy_math.cpp`is authored
+  from the owned Q0fixture and remains unbuilt. Its five explicit policies
+  support shortcut/bridge(R0),bridge/queue(Q1),queue/lookahead(O),and
+  direct/lookahead(net original)comparisons with unchanged real weights and
+  production Gemm dispatch. Both IQreaders precede the early marker;the
+  separate GU/Down weight buffers retain compute order. Final lane drain is
+  inside timing. After Q0closure/recovery/retirement,replace the old fixture
+  and commit the new controller/recipe/order/gates before compiling it;do not
+  run it with the current Q0controller or retain duplicate closed fixtures.
+  These files are outside Q0actual compiler/source inputs;Q0remains frozen.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original

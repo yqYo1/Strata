@@ -17306,5 +17306,1089 @@
         }
       }
     }
+  },
+  "prefill_weight_wrapper_v1": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "native_source_commit": "d3ca4956b1bfda8ef64ef19d50827cff2abbafa4",
+    "original_math_runtime_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "model_trial_allowed": false,
+    "performance_qualified": false,
+    "analysis": {
+      "16": {
+        "paired_shortcut_over_direct": [
+          0.98421584662836,
+          0.9611402855469297,
+          1.7907269368531717
+        ],
+        "geometric_mean_ratio": 1.1920711207563737,
+        "paired_adapter_lifecycle_ratios": [
+          0.9842158516598642,
+          0.9611400539885123,
+          1.7907265880544192
+        ],
+        "repeated_wrapper_gain": false,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "128": {
+        "paired_shortcut_over_direct": [
+          1.5840659515957987,
+          1.118062340503402,
+          0.9521460150532179
+        ],
+        "geometric_mean_ratio": 1.1902758193719656,
+        "paired_adapter_lifecycle_ratios": [
+          1.5840661463720145,
+          1.1180623078272056,
+          0.9521460384042295
+        ],
+        "repeated_wrapper_gain": false,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "1024": {
+        "paired_shortcut_over_direct": [
+          0.8870200581707938,
+          0.7961334713021072,
+          0.9780681711217243
+        ],
+        "geometric_mean_ratio": 0.8839536292780668,
+        "paired_adapter_lifecycle_ratios": [
+          0.8870200625909282,
+          0.7961335436079372,
+          0.978068134473834
+        ],
+        "repeated_wrapper_gain": true,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "4096": {
+        "paired_shortcut_over_direct": [
+          0.8428862913139152,
+          1.0151151534747265,
+          1.2382863538537812
+        ],
+        "geometric_mean_ratio": 1.0194559449406564,
+        "paired_adapter_lifecycle_ratios": [
+          0.8428862889245534,
+          1.0151151518489359,
+          1.2382862427943753
+        ],
+        "repeated_wrapper_gain": false,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "8192": {
+        "paired_shortcut_over_direct": [
+          0.9918499933974276,
+          1.027518731145454,
+          0.9969858347852653
+        ],
+        "geometric_mean_ratio": 1.0053290761545381,
+        "paired_adapter_lifecycle_ratios": [
+          0.99185003816803,
+          1.0275188140631826,
+          0.996985841038186
+        ],
+        "repeated_wrapper_gain": false,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "schema": "closed_copy_wrapper_component_summary",
+    "original_evidence_commit": "39d2c8ead3549d684c327d67991cbf415ce4f59a",
+    "original_evidence_key": "prefill_weight_wrapper_v1",
+    "binary": {
+      "sha256": "e5d72e142971c9a0f118bc28a4a735927e75ed79c3885ed1f24904639bc4d984",
+      "retired": true
+    },
+    "source_view": {
+      "original_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "files": 398
+    },
+    "source": {
+      "experts": 512,
+      "bytes": 1009254400,
+      "sha256": "5b682a735dde5826fce507ab62edaf4471ddbf133417285c389447f4448da4c5",
+      "layer": 2,
+      "source_category": "ordinary immutable read-only mapping"
+    },
+    "plan": {
+      "unit": "Q0copy wrapper only:ordinary immutable read-only mapped RAM through complete production cudaMemcpyAsync versus a resolved queue::memcpy. Both retain Runtime::check and the identical command_profile::observe. Common destination/context admission is outside timing. The candidate removes repeated Runtime/queue/context lookup and status/error translation together as one wrapper adapter;its throwing submission remains owned and drained. Source mapping/lifetime,zero host-staging slots,one scratch bank,same in-order compute queue,production Gemm/math/precision and upload/consume order remain fixed. Q1transfer-queue placement and Ooverwrite-after-two-IQ-readers are separate later units,then combined/net comparison against original full direct source.",
+      "order": "Two traced metadata controls before appwork. Then traced direct/shortcut batches at16,128,1024,4096,8192rows in that order. Then for each shape three independent clean pairs direct/shortcut,shortcut/direct,direct/shortcut.42native processes total,no retry/reorder/exclusion. Each process has512reference jobs and two same-arm warmups outside timing,then512uploads/math plus checked drain timed. Reference/reset/correctness checks outside timing. Trace captures64MiBtext/96MiBfile/160MiBtotal;all children120swall/240sCPU/4GiBRSS.",
+      "decision": "Characterize Q0wrapper cost by shape:retain all three steady shortcut/direct ratios,their geometric mean,and lifecycle ratios. A repeated component gain requires all three matched shortcut/direct ratios below1for that shape;no arbitrary minimum gain. Slower valid samples remain evidence. A loss does not forbid separately scoped Q1/Oplumbing,which needs its own committed plan;it does not justify changing Q0criteria or model promotion. Final production promotion requires repeated net gain over the original complete direct-source entrypoint and all model/phase/context gates. Preserve old global-stage and mapped-source failures and immutable-USMlookahead win unchanged.",
+      "limits": "Actual production Gemm and source wrapper entrypoints at five representative shapes;fixed10route jobs and two route index patterns over512real expert weights are synthetic,not actual model routing. Common baseline-USMallocation/population,source mapping,Runtime/setup,device-span/context admission and reference work are outside timing. Both wrapper arms have zero host-staging preparation/retirement;their tiny lifecycle clocks do not attribute wrapper work. No gather/cache publication/modelPP/TG/TTFT/hardware saturation/decode/agent/262144RESTORE qualification. Current limiting hardware remains unknown."
+    },
+    "verified": {
+      "native_processes": 42,
+      "metadata_controls": 2,
+      "traced_math_cases": 10,
+      "clean_samples": 30,
+      "all_native_exit_codes_zero": true,
+      "all_source_proofs_and_provider_checks": true,
+      "all_full_bitwise_split_tail_and_guards": true,
+      "quiet_validation": true,
+      "boot_driver_unchanged": true,
+      "fresh_faults": [],
+      "timed_copies_per_batch": 512,
+      "timed_requested_H2D_bytes": 1009254400,
+      "actual_math_dispatch": "M16compact,M128/M1024wide,M4096/M8192fused;two IQroles1026each in traced batches",
+      "traced_launches": {
+        "fallback": 6156,
+        "fused": 4104,
+        "payload_native_copies": 1027
+      }
+    },
+    "samples": [
+      {
+        "label": "clean-16-pair0-direct",
+        "arm": "direct",
+        "rows": 16,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.313706341,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 6e-08,
+          "retirement_s": 4e-08
+        },
+        "lifecycle_plus_batch_s": 0.313706441
+      },
+      {
+        "label": "clean-16-pair0-shortcut",
+        "arm": "shortcut",
+        "rows": 16,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.308754752,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.30875485199999997
+      },
+      {
+        "label": "clean-16-pair1-shortcut",
+        "arm": "shortcut",
+        "rows": 16,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.308628544,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 4e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.30862863399999996
+      },
+      {
+        "label": "clean-16-pair1-direct",
+        "arm": "direct",
+        "rows": 16,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.321106657,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 1.21e-07
+        },
+        "lifecycle_plus_batch_s": 0.321106828
+      },
+      {
+        "label": "clean-16-pair2-direct",
+        "arm": "direct",
+        "rows": 16,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.311843579,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 6e-08,
+          "retirement_s": 5.1e-08
+        },
+        "lifecycle_plus_batch_s": 0.31184369
+      },
+      {
+        "label": "clean-16-pair2-shortcut",
+        "arm": "shortcut",
+        "rows": 16,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.558426697,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 4e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.558426787
+      },
+      {
+        "label": "clean-128-pair0-direct",
+        "arm": "direct",
+        "rows": 128,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.367567391,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.36756749099999997
+      },
+      {
+        "label": "clean-128-pair0-shortcut",
+        "arm": "shortcut",
+        "rows": 128,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.582250989,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.8e-07,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.5822512190000001
+      },
+      {
+        "label": "clean-128-pair1-shortcut",
+        "arm": "shortcut",
+        "rows": 128,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.369750489,
+          "timer_pair_max_s": 4.1e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5.1e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.36975059
+      },
+      {
+        "label": "clean-128-pair1-direct",
+        "arm": "direct",
+        "rows": 128,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.330706505,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.33070660499999993
+      },
+      {
+        "label": "clean-128-pair2-direct",
+        "arm": "direct",
+        "rows": 128,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.612686802,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 4e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.612686892
+      },
+      {
+        "label": "clean-128-pair2-shortcut",
+        "arm": "shortcut",
+        "rows": 128,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.583367297,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.5833673970000001
+      },
+      {
+        "label": "clean-1024-pair0-direct",
+        "arm": "direct",
+        "rows": 1024,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.549257762,
+          "timer_pair_max_s": 3.1e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 7e-08,
+          "retirement_s": 4e-08
+        },
+        "lifecycle_plus_batch_s": 0.549257872
+      },
+      {
+        "label": "clean-1024-pair0-shortcut",
+        "arm": "shortcut",
+        "rows": 1024,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.487202652,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 6e-08,
+          "retirement_s": 4e-08
+        },
+        "lifecycle_plus_batch_s": 0.487202752
+      },
+      {
+        "label": "clean-1024-pair1-shortcut",
+        "arm": "shortcut",
+        "rows": 1024,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.53234222,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 7e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.53234234
+      },
+      {
+        "label": "clean-1024-pair1-direct",
+        "arm": "direct",
+        "rows": 1024,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.668659514,
+          "timer_pair_max_s": 3e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 4e-08
+        },
+        "lifecycle_plus_batch_s": 0.668659604
+      },
+      {
+        "label": "clean-1024-pair2-direct",
+        "arm": "direct",
+        "rows": 1024,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.506592955,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 6.1e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.5065930660000001
+      },
+      {
+        "label": "clean-1024-pair2-shortcut",
+        "arm": "shortcut",
+        "rows": 1024,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.495482445,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 4e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 0.49548253499999995
+      },
+      {
+        "label": "clean-4096-pair0-direct",
+        "arm": "direct",
+        "rows": 4096,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.137329508,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 6e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 1.137329618
+      },
+      {
+        "label": "clean-4096-pair0-shortcut",
+        "arm": "shortcut",
+        "rows": 4096,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 0.958639451,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 4e-08
+        },
+        "lifecycle_plus_batch_s": 0.958639541
+      },
+      {
+        "label": "clean-4096-pair1-shortcut",
+        "arm": "shortcut",
+        "rows": 4096,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.141954,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 7e-08,
+          "retirement_s": 5.1e-08
+        },
+        "lifecycle_plus_batch_s": 1.141954121
+      },
+      {
+        "label": "clean-4096-pair1-direct",
+        "arm": "direct",
+        "rows": 4096,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.124950205,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 7.1e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 1.124950326
+      },
+      {
+        "label": "clean-4096-pair2-direct",
+        "arm": "direct",
+        "rows": 4096,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 0.89469311,
+          "timer_pair_max_s": 4.1e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.01e-07,
+          "retirement_s": 6e-08
+        },
+        "lifecycle_plus_batch_s": 0.894693271
+      },
+      {
+        "label": "clean-4096-pair2-shortcut",
+        "arm": "shortcut",
+        "rows": 4096,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.107886269,
+          "timer_pair_max_s": 4.1e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 1.1078863689999998
+      },
+      {
+        "label": "clean-8192-pair0-direct",
+        "arm": "direct",
+        "rows": 8192,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.563216525,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 7.1e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 1.563216646
+      },
+      {
+        "label": "clean-8192-pair0-shortcut",
+        "arm": "shortcut",
+        "rows": 8192,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.5504763,
+          "timer_pair_max_s": 7e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 4e-08,
+          "retirement_s": 1.5e-07
+        },
+        "lifecycle_plus_batch_s": 1.5504764899999999
+      },
+      {
+        "label": "clean-8192-pair1-shortcut",
+        "arm": "shortcut",
+        "rows": 8192,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.344823747,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 7e-08,
+          "retirement_s": 1.31e-07
+        },
+        "lifecycle_plus_batch_s": 1.344823948
+      },
+      {
+        "label": "clean-8192-pair1-direct",
+        "arm": "direct",
+        "rows": 8192,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.308807038,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 4e-08
+        },
+        "lifecycle_plus_batch_s": 1.308807128
+      },
+      {
+        "label": "clean-8192-pair2-direct",
+        "arm": "direct",
+        "rows": 8192,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.642636235,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 4e-08
+        },
+        "lifecycle_plus_batch_s": 1.6426363249999998
+      },
+      {
+        "label": "clean-8192-pair2-shortcut",
+        "arm": "shortcut",
+        "rows": 8192,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.637685058,
+          "timer_pair_max_s": 6e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 5e-08
+        },
+        "lifecycle_plus_batch_s": 1.6376851579999998
+      }
+    ],
+    "source_recipe_recovery": {
+      "original_evidence": "39d2c8ead3549d684c327d67991cbf415ce4f59a",
+      "native_source": "d3ca4956b1bfda8ef64ef19d50827cff2abbafa4",
+      "project_files_recovered": 364,
+      "original_math_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "immutable_source_view_files": 398,
+      "actual_project_dependency_compiler_inputs": 212,
+      "SDK_compiler_inputs": 749,
+      "total_compiler_inputs": 961,
+      "link_inputs": 29,
+      "fresh_TUs": 9,
+      "fresh_objects": 11,
+      "recipe_sha256": "82001cab94cfcc1187ba31ef8385720d848f998befeec5e96fe735051bef86ef",
+      "final_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/benchmark",
+        "sha256": "e5d72e142971c9a0f118bc28a4a735927e75ed79c3885ed1f24904639bc4d984"
+      },
+      "corpus_recovered_from_original_role_recipe": true,
+      "corpus_sha256": "5b682a735dde5826fce507ab62edaf4471ddbf133417285c389447f4448da4c5",
+      "current_admission_passed": true,
+      "scope": "Exact final Q0source/recipe/corpus recovery;not new GPU/model qualification."
+    },
+    "retention": {
+      "stage": "complete",
+      "files": 691,
+      "regular_content_bytes": 1279279287,
+      "manifest_sha256": "33ea21c897e65a6d9c8e62c8efccc13120e55e47c77dd25a978fca7d46117951",
+      "all_selected_paths_absent": true,
+      "original_source_and_recipe_from_pushed_feature": true,
+      "retired_native_executable": true,
+      "phase_reference_hashes_unchanged": true,
+      "reason": "Current Q0consumer ended. Rebuild next component and regenerate source corpus from the original committed recipe;no duplicate fixtures/binaries/corpus kept."
+    },
+    "decision": "M1024passes only its repeated wrapper-gain condition. Other shapes fail repeated gain;compat remains production reference. Continue independent R0/Q1/Ocontrols and net original comparison,no model trial/adoption from this component.",
+    "limiting_hardware_resource": "Unknown;requested bytes/stage wall do not prove bus or arithmetic saturation.",
+    "controller_scheduling": "One outer scheduler pause after M1024pair0direct for independent source/syntax/metadata work. Native child untouched;source/configuration/order/criteria unchanged;all samples retained."
   }
 }

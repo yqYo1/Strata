@@ -1,5 +1,5 @@
 // Main-authored production-adapter source comparison; repository LICENSE.
-// Source unit S only. Queue/order/math fixed; no production selector changes.
+// Source/copy-wrapper diagnostics. Queue/order/math fixed; no engine selection.
 #include "strata/prefill/expert_upload_staging.hpp"
 #include "strata/prefill/gemm.hpp"
 #include "strata/prefill/native16.hpp"
@@ -69,7 +69,7 @@ struct PrefillSourceDrain {
                             "prefill source fixture retirement");
     }
 };
-int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
+int run(bool staged,bool shortcut,bool metadata,std::size_t rows,const std::string& path) {
     // POSIX file mapping matches the production ordinary-RAM source category.
     // All512real layer2experts form a1GBsource footprint,avoiding a two-expert
     // CPU-cache-hot copy loop. The frozen extraction recipe pins every role.
@@ -104,8 +104,12 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
         gate("runtime-ready");
         need(sycl::get_pointer_type(weights.data(),q.get_context())==sycl::usm::alloc::unknown,
              "source must remain an ordinary host file mapping");
+        sb::validate_device_span(bank.data(),payload,q);
+        need(q.get_context()==runtime->context(),"copy queue must retain its Runtime context");
         std::cout<<"{\"kind\":\"source-proof\",\"ordinary_readonly_mapping\":true,\"staged\":"
-                 <<(staged?"true":"false")<<",\"host_slots\":"<<(staged?4:0)<<"}"<<std::endl;
+                 <<(staged?"true":"false")<<",\"host_slots\":"<<(staged?4:0)
+                 <<",\"copy_wrapper\":\""<<(staged?"staging":shortcut?"resolved-queue":"compat")
+                 <<"\",\"runtime_check_and_observer_retained\":true}"<<std::endl;
         if(!metadata) {
             auto initialise=[&](auto& b) {runtime->wait(q.memset(b.owner.data(),0xa5,b.bytes()));};
             initialise(bank);initialise(x);initialise(gu_weights);initialise(down_weights);
@@ -161,6 +165,15 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
             auto prefill_upload=[&](std::size_t e) {
                 const auto* input=weights.data()+e*payload;
                 if(staged) need(staging->enqueue(bank.data(),input,payload,&q),"staged upload rejected");
+                else if(shortcut) {
+                    // Q0 isolates repeated handle lookup/context checks and
+                    // status translation. Keep the Runtime's sticky-error check
+                    // and the same observer. Sources/queue/owner spans are fixed
+                    // and admitted before application work in both arms.
+                    runtime->check();
+                    auto event=q.memcpy(bank.data(),input,payload);
+                    sb::command_profile::observe(&q,event);
+                }
                 else need(cudaMemcpyAsync(bank.data(),input,payload,cudaMemcpyHostToDevice,&q)==cudaSuccess,
                           "ordinary mapped upload rejected");
                 ++uploads;
@@ -195,7 +208,7 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
             need(std::memcmp(baseline.data(),weights.data(),source_bytes)==0,"source mapping changed");
             if(staged) staging->check_guards();
             std::cout.precision(17);
-            std::cout<<"{\"kind\":\"batch\",\"arm\":\""<<(staged?"staged":"direct")
+            std::cout<<"{\"kind\":\"batch\",\"arm\":\""<<(staged?"staged":shortcut?"shortcut":"direct")
                      <<"\",\"rows\":"<<rows<<",\"epochs\":512,\"requested_H2D_bytes\":"<<epochs*payload
                      <<",\"copies\":"<<uploads<<",\"gu_fused\":"<<gu_fused<<",\"down_fused\":"<<down_fused
                      <<",\"wall_s\":"<<wall_s<<",\"timer_pair_max_s\":"<<clock_max
@@ -215,14 +228,14 @@ int run(bool staged,bool metadata,std::size_t rows,const std::string& path) {
 } // namespace
 int main(int argc,char** argv) {
     try {
-        need(argc==5,"use metadata|batch direct|staged ROWS ACTUAL_WEIGHTS");
+        need(argc==5,"use metadata|batch direct|staged|shortcut ROWS ACTUAL_WEIGHTS");
         const std::string mode=argv[1],source=argv[2];
         need(mode=="metadata" || mode=="batch","explicit source comparison mode required");
-        need(source=="direct" || source=="staged","explicit source adapter required");
+        need(source=="direct" || source=="staged" || source=="shortcut","explicit copy adapter required");
         const std::string value=argv[3];std::size_t consumed=0;
         const auto rows=std::stoull(value,&consumed);
         need(consumed==value.size() && (rows==16 || rows==128 || rows==640 || rows==1024 ||
              rows==1280 || rows==4096 || rows==8192),"finite source comparison shape required");
-        return run(source=="staged",mode=="metadata",rows,argv[4]);
+        return run(source=="staged",source=="shortcut",mode=="metadata",rows,argv[4]);
     } catch(const std::exception& e) {std::cerr<<"prefill source adapter failure: "<<e.what()<<std::endl;return 1;}
 }
