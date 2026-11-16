@@ -1488,9 +1488,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   dense math stay fixed. The zero-command Runtime case must reject the standard
   contract,then report positive HOST/id proof before any copy test. Every mapped
   timing process reports its actual import proof. Four new host controls cover
-  typed historical property admission and ended-observer recovery. A fresh
-  coherent five-TUbuild and new31-case source-cost plan are required;no V1pass
-  or raw-context observation qualifies this implementation. Compare the
+  typed historical property admission and ended-observer recovery. The new
+  coherent build at`0a3295b89`passes14host methods,with928actual compiler,
+  25link and seven object pins. All31native processes now close normally0,
+  with quiet validation,unchanged boot/driver and no fresh fault,evidence
+  `9cc26a79b`. Fifteen safety cases cover actual Runtime HOST1/id12admission,
+  strict-default rejection,reader/overwrite order,reuse,cancel/unwind,
+  unknown/proofless/foreign references and held-copy retirement/stale/reimport.
+  Four traced serial batches validate full exact dense output,source/bank guards
+  and513payload copies/514dense launches. Three independent alternating pairs
+  per shape then measure clean source cost,holding math and wait order fixed:
+
+  | Dense rows | Host-USMwall s | Mapped-Neowall s | Paired time ratios | Source-cost gate |
+  | --- | --- | --- | --- | --- |
+  | 1024 | .247883,.247614,.343656 | .246534,.246326,.253677 | .994560,.994800,.738172 | Pass |
+  | 4096 | .356052,.367439,.357758 | .523874,.534236,.462948 | 1.471341,1.453943,1.294027 | Fail |
+
+  Geometric-mean steady ratios are .900550and1.404111;including preparation and
+  retirement gives approximately .905745and1.404121. Import is a subset of
+  preparation,not an extra term. Keep every sample,including the slow1024USM
+  third process and all slow4096Neo processes. The prospective gate requires
+  all three steady and lifecycle ratios<=1.10;it permits only a separately
+  committed1024readiness-order comparison. It is neither a speedup/adoption
+  gate nor model/physical-PCIe evidence. Allocation ID is an additional
+  consistency check;the header does not establish global uniqueness/nonreuse.
+  Owned lifetime,range and distinct tombstone state remain essential. Keep the
+  two fixture ELFs/private original receipt/source/objects only for the immediate
+  1024comparison beside both phase references;retire normal raw output now.
+  Four-Ksource-cost attribution needs its own bounded diagnostic. Compare the
   source adapter with readiness order fixed,and
   only then compare readiness order with source and compute fixed.
   After original source/recipe and both final-ELF recovery from pushed history,
