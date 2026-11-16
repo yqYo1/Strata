@@ -34982,5 +34982,79 @@
       "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list.html",
       "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43:src/sycl/compat.cpp and src/prefill/moe_window.inc"
     ]
+  },
+  "prefill_sycl_direct_dependency_cw_20261116": {
+    "classification": "decision support",
+    "status": "eligible_pinned_source",
+    "schedulable_now": true,
+    "rule_revision": "727737201e50a0a6ead6f8d5f4a4aa74504aa33e",
+    "fast_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "scope": "Audit the legal minimal dependency chain for ordinary borrowed read-only model RAM -> single device quantized scratch -> two IQ readers -> separate GU/Down workspaces -> native16 math. Compare same compute-queue copy with Runtime::copy transfer queue plus explicit SYCL events,then moving next overwrite from full-math retirement to both-IQ retirement. Establish source/destination/context/event/error/cancellation ownership and what additional barriers or event exposure are necessary. Check the current Runtime::copy and production wrappers against installed-header/official SYCL/Intel contracts. Assess whether ordinary host RAM may make submit block and which observations could distinguish CPU preparation/wait/submission from device-copy service. Do not repeat generic raw Level Zero import feasibility;this candidate intentionally keeps standard SYCL copies and ordinary RAM. Identify the smallest independently testable units and a concrete safe bounded comparison;do not implement code.",
+    "prerequisite_evidence": {
+      "source_S": "8bb58356bac1fc3be9797b4b34c2d2b733b5986d;all42normal0/closed,no repeated source-only gain",
+      "Q0_proposal": "727737201e50a0a6ead6f8d5f4a4aa74504aa33e",
+      "source_files": 19,
+      "source_manifest_sha256": "c8de095f99a5c2e7c681bef1e3e79febe55b3810dea3fb4346b169db363e75ed",
+      "existing_Runtime_copy_and_ring_source": true,
+      "live_Orca_workers": 0,
+      "available_RAM_kB": 86466716
+    },
+    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sycl-direct-dependency-cw-20261116",
+    "control_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sycl-direct-dependency-cw-20261116-control",
+    "source_view": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-sycl-direct-dependency-cw-20261116",
+    "report_budget": {
+      "words": 2200,
+      "bytes": 28672
+    },
+    "envelope": {
+      "wall_s": 900,
+      "CPU_cores": 1,
+      "memory_bytes": 2147483648,
+      "capture_files": 64,
+      "capture_bytes": 67108864
+    },
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "review_model": "native gpt-6-luna max",
+    "source_proposals_allowed": false,
+    "active": false,
+    "ownership_closed": true
+  },
+  "prefill_source_event_progress_cx_20261116": {
+    "classification": "knowledge collection",
+    "status": "eligible_pinned_source",
+    "schedulable_now": true,
+    "rule_revision": "727737201e50a0a6ead6f8d5f4a4aa74504aa33e",
+    "fast_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "scope": "Investigate Intel SYCL/Unified Runtime Level Zero v2 event completion and queue progress mechanisms affecting a bounded four-slot host-USM source ring. Compare wait/retire behavior,command batching and flush/pacing,larger rings and whole-layer immutable host preparation using official source/docs and substantive first-party non-LLM HPC reports. Explain evidence/counterexamples for logging/profiling changing performance through host submission pacing. Use the actual ring/wrapper and measured full-layer Scomparison to ground applicability,without diagnosing a particular slow sample or claiming saturation. Separate source-copy completion from IQ scratch readers and GEMM workspace readers. Distinguish current documented/runtime-version facts from hypotheses. Provide retrieval guidance and alternatives worth testing only when a concrete implementation needs them;do not implement code.",
+    "prerequisite_evidence": {
+      "source_S": "8bb58356bac1fc3be9797b4b34c2d2b733b5986d;all42normal0/closed,no repeated source-only gain",
+      "Q0_proposal": "727737201e50a0a6ead6f8d5f4a4aa74504aa33e",
+      "source_files": 19,
+      "source_manifest_sha256": "e49484c708cfd65427baa573f65138f8bb2decf67a4b8c45a6a72fe20c617e0a",
+      "existing_Runtime_copy_and_ring_source": true,
+      "live_Orca_workers": 0,
+      "available_RAM_kB": 86466716
+    },
+    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-source-event-progress-cx-20261116",
+    "control_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-source-event-progress-cx-20261116-control",
+    "source_view": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-source-event-progress-cx-20261116",
+    "report_budget": {
+      "words": 2200,
+      "bytes": 28672
+    },
+    "envelope": {
+      "wall_s": 900,
+      "CPU_cores": 1,
+      "memory_bytes": 2147483648,
+      "capture_files": 64,
+      "capture_bytes": 67108864
+    },
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "review_model": "native gpt-6-luna max",
+    "source_proposals_allowed": false,
+    "active": false,
+    "ownership_closed": true
   }
 }
