@@ -26419,6 +26419,74 @@
             "parallel_iq_launchILi20ELb0": 1026
           }
         }
+      },
+      {
+        "label": "validated-128-lookahead",
+        "family": "math",
+        "arm": "lookahead",
+        "rows": 128,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4160895,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "lookahead",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-both-IQ",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000329148,
+          "retirement_s": 0.018923271
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "lookahead",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 2.017463031,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 2.03671545,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
       }
     ],
     "model_trial_allowed": false,
