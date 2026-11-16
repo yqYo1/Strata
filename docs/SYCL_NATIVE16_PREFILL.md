@@ -1411,9 +1411,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   one expected error). Prospective V2matches the two GPUside t/s markers,
   owned native-PID category suffix and HOSTmetadata with no PMI/PMIXrank,
   as emitted by pinned PTIchromelogger.h. It claims no host API timeline.
-  Commit V2's exact plan and pass all ten host controls before native work;
-  no rebuild or model route is implied. Preserve this failed1024gate and qualify
-  observer cost;do not change its criteria retroactively. The current E2images,
+  V2's committed plan passes all ten host controls,metadata and forward native
+  checks. The next profiled reverse process exits1with
+  `scratch overwrite escaped last reader`;P1interoperation fails and P2speed
+  sampling does not start. Its saved LevelZero sequence spends approximately2s
+  in a query/collector chain until the independent host gate auto-releases.
+  This does not establish an early scratch overwrite or a GPUhang. Copy/compute
+  drain succeeds,the direct child is reaped and its owned session is empty;
+  record physical closure separately from the failed protocol-observation flag.
+  Boot/driver remain unchanged and no fresh fault appears. The actual
+  PTIevent-cache helper guards release/reset by ownership,so merely passing an
+  application event to that helper does not establish event corruption. Native
+  Luna-max reviews the source audit with that supplemental compiler input and
+  the separate ordinary-RAMsource investigation. Do not reuse this failed
+  collector/event combination for P2or model work. No rebuild or model route
+  is implied. Preserve the failed1024gate and qualify observer cost separately;
+  do not change its criteria retroactively. The current E2images,
   fresh objects,source view and private build/census record have that imminent
   consumer;retire them at profile qualification/closure if superseded. Normal
   output is retired after source/recipe and both final-ELF recovery:

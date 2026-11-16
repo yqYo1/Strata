@@ -15057,7 +15057,7 @@
     "tools_proof_sha256": "e274ff009946fd8f624e573e7c450a05c2bb574786fee2915f036b2cf81feccf"
   },
   "prefill_upload_overlap_profile_v2": {
-    "stage": "testing",
+    "stage": "failed",
     "interpreters": {
       "controller": {
         "path": "/usr/bin/python3.12",
@@ -15610,8 +15610,8 @@
       }
     ],
     "active": false,
-    "ownership_closed": true,
-    "passed": true,
+    "ownership_closed": false,
+    "passed": false,
     "complete": false,
     "prior_failure": {
       "key": "prefill_upload_overlap_profile_v1",
@@ -15673,6 +15673,39 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
+    "error": "RuntimeError('profiled native child failed:/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/owned/interop-reverse.stderr')",
+    "failure_observation": {
+      "native_label": "interop-reverse",
+      "native_pid": 2247473,
+      "native_start_ticks": 314467080,
+      "native_exit_code": 1,
+      "elapsed_seconds": 6.830540741793811,
+      "physical_ownership_closed": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "survivors": [],
+      "protocol_observation_complete": false,
+      "protocol_error": "RuntimeError('protocol EOF before expected line')",
+      "ownership_flag_limit": "Original strict Owner.closed also requires successful protocol completion. Its false flag is preserved;physical process closure is established separately from native safety success.",
+      "native_error": "upload lane failure: scratch overwrite escaped last reader",
+      "stderr": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/owned/interop-reverse.stderr",
+        "bytes": 669813,
+        "sha256": "57246508ccc1f1e69a09648c90e122c56f699c7faf0b0be3e7a6c3beffc96483"
+      },
+      "before_error_trace": [
+        "11:25:11.378 main thread:Held event0x404440f8 NOT_READY;prior ready0x40459528 SUCCESS.",
+        "11:25:11.378 main thread:collector event0x403bfb78 NOT_READY;next query begins.",
+        "11:25:13.376 release thread:auto host-signal0x404440f8;pending collector event0x403c0098 query returns SUCCESS.",
+        "Held destruction drains copy and compute successfully;native exits1 after safety assertion."
+      ],
+      "interpretation": "The observed query/collector chain consumes approximately2s until the independent host-gate timeout. It does not establish an early overwrite or a GPU hang. Event-cache ReleaseEvent/ResetEvent guard excludes unowned application events;the original missing-helper allegation is unproved.",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "decision": "P1collector/event interoperation failed. Do not launch P2speed or a model run under this collector/event combination. Keep original unprofiled E2and V1schema outcomes unchanged.",
+      "next": "Review actual event-cache/helper and bounded call-chain evidence;select an independently qualified observation or source-kind unit before further GPUwork."
+    },
+    "physical_ownership_closed": true,
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "a2c9e8d771b410ae9b8eb48c9592bca752d15194",
