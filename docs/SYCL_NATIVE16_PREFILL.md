@@ -1465,10 +1465,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   API1.17specification requires`HOST_IMPORTED`,while inspected Intel source/tests
   return`HOST`;that source is not proven to match the installed package.
   Native Luna-max confirms the pinned static owner/lifetime audit,not runtime
-  acceptance. Next record the numeric property and complete allocation/unimport
-  lifecycle in an independently committed zero-command discovery before choosing
-  a new admission contract. Do not relax unknown-pointer admission or infer a
-  copy/model result. Compare the source adapter with readiness order fixed,and
+  acceptance. The independently committed zero-command discovery at`37017156e`,
+  native source`b777f52f8`,now closes normally0with quiet validation,closed owners
+  and no fresh fault. A4096Bpage-aligned read-only heap map reports type0/id0
+  before import,type1(`HOST`)/id1/page4096during import,and type0/id0after
+  successful unimport. Its queried range has the same base and4096Bextent,and
+  the original heap remains unchanged. This uses an explicit native context,
+  not the production Runtime;it enqueues no application commands and qualifies
+  no source admission,copy,math or model route. It does not supply the missing
+  numeric value from the earlier failed process. The next eligible unit is a
+  newly planned,explicit pinned-provider `HOST` property contract with positive
+  owner/context/range/allocation-ID/lifetime proof;keep standard admission and
+  unknown-pointer refusal intact. Requalify that contract in the actual Runtime
+  before any copy,then compare source costs with readiness order fixed. No
+  implementation of that compatibility contract is adopted yet. Compare the
+  source adapter with readiness order fixed,and
   only then compare readiness order with source and compute fixed.
   After original source/recipe and both final-ELF recovery from pushed history,
   its failed temporary generation and consumed CHreport are retired:446files,
