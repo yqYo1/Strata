@@ -1361,16 +1361,57 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a production route,model quality or physical262144context.
   Original Git source/recipe recovery verifies357/358project files and641
   compiler/25link inputs for V1/V2. The ended metadata image and normal E1/audit
-  output are physically retired:85files/2431219bytes. Only V2's current ELF,
-  object,dependency file and private source/build record remain for the named
-  imminent E2qualification;review them at E2native build/closure. All26retained
-  phase-reference ELFs remain unchanged;legacy/.cache holds stay separate.
-  `bench/sycl/prefill_upload_overlap.cpp`is an **unbuilt E2proposal**,not a
+  output are physically retired:85files/2431219bytes. The final four E1files
+  are now retired after exact original source/recipe/ELF recovery and fresh
+  production Runtime qualification. Together with the ended CD/CEaudit output,
+  source views and owned native transcript,39more files/1589907bytes are
+  physically removed. All26retained phase-reference ELFs remain unchanged;
+  legacy/.cache holds stay separate.
+  `bench/sycl/prefill_upload_overlap.cpp`is an **E2component proposal**,not a
   selected route:it fixes the copy primitive,payload,allocations and existing
   Xe2dense kernel while moving only the readiness wait across independent
   compute. A per-epoch reader fence limits lookahead to one expert. Its build,
-  Runtime-context safety,profiling and prospective timing plan are not yet
-  admitted;E1must qualify first. No model trial or new performance follows.
+  source/recipe and prospective timing plan are pinned at`d4e45762a`/
+  `7b0afbd77`. Five fresh coherent TUs use the original14508Runtime/class
+  definitions and dense math,925actual compiler inputs and25link inputs;
+  no original archive/object is reused. E1bchanges only the fixture's queue
+  factory to that production Runtime and passes all seven safety cases at
+  `3782c0f31`,normal0/closed/quiet/no fresh fault. The separate E2then fixes
+  that context,original dense math,copy primitive,bytes,placement and lookahead,
+  changing only the readiness-wait position. Its committed comparison plan
+  must retain three alternating independent-process pairs per shape. U1eager
+  upload,U2aggregation and copy-only replacement keep their separate outcomes;
+  no combined result qualifies those units. CD/CEsource review retracts the
+  false missing-exit-provider allegation:the controller requires provider
+  paths at every gate except before-runtime,including before-exit. Generic
+  enqueue presence is a sanity check,not device-overlap attribution. Full cohort
+  `3ee710401`closes23normal0processes:seven Runtime safety cases,four validated
+  arm/shape batches and twelve clean processes. Every payload,oracle,guard,
+  provider,timer,ownership and fresh-fault gate passes;all33owned build/native
+  commands close. The actual timed boundary is512epochs plus dual drain,
+  not a model request. At1024rows serial seconds are0.247889/0.292666/0.248008,
+  overlap0.165671/0.165638/0.248944;paired ratios0.668329/0.565964/1.003774,
+  geometric mean0.724111. Its all-three gain gate **fails**. At4096rows serial
+  seconds are0.357760/0.357830/0.367523,overlap0.205792/0.209515/0.364216;
+  ratios0.575224/0.585516/0.991001,geometric mean0.693665. Its component
+  wall-time gate **passes**,including the small third-pair gain. Preserve both
+  slow third overlap samples;do not relabel them as noise. The CSVrecords both
+  shapes with model PP/TTFT/TGblank. Kernel/transfer critical-path attribution
+  and resource saturation remain unresolved:wall-time gain alone does not prove
+  actual device overlap or explain the variation. Next commit a bounded plan
+  using the already qualified non-counter unitrace stack,first checking its
+  interaction with this event protocol,then separate clean/profiled samples
+  and executed-copy/kernel counts. Preserve this failed1024gate and qualify
+  observer cost;do not change its criteria retroactively. The current E2images,
+  fresh objects,source view and private build/census record have that imminent
+  consumer;retire them at profile qualification/closure if superseded. Normal
+  output is retired after source/recipe and both final-ELF recovery:
+  113files/22007248bytes,with all26phase-reference ELFs unchanged. Keep the
+  individual clean samples and both failed/passed shape decisions in the compact
+  current result;the complete original receipt is reachable at`3ee710401`.
+  Ordinary RAMsource views,actual production consumers,32K+model/decode/agent/quality
+  and physical262144/RESTORE remain separate required gates. No model trial
+  or engine adoption is authorized by this component result.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
