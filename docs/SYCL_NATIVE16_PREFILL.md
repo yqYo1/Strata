@@ -1654,6 +1654,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   holds remain explicit in the existing retention ledger;this is scoped cleanup.
   The CSVnow has562points,including all five Scomparisons with model metrics blank.
   See`prefill_weight_source_v2`and the retained-build ledger for actual state.
+  The next owned Q0fixture keeps ordinary immutable RAMand the same compute
+  queue. It compares the complete compatibility wrapper with a resolved queue
+  shortcut,retaining Runtime::check and command_profile::observe in both arms.
+  Common destination/context admission precedes application work. Only repeated
+  Runtime/queue lookup,context checks and status/error translation differ;math,
+  copy ordering and source preparation remain fixed. This isolates wrapper
+  cost before Q1queue placement and Oreadiness-order changes. The shortcut is
+  an unbuilt diagnostic,not a selected production path. A new committed recipe,
+  prospective plan and all legacy build-retention prerequisites are still needed
+  before execution. Sresults keep their original1896d6a18native identity.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
