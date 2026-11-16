@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -20,6 +21,8 @@
 
 namespace strata::prefill::detail {
 
+class PrefillMappedHostSource;
+
 // The caller retains every source/destination and all GPU readers through
 // drain(). Tokens are local to this nonmovable lane and never recycled.
 // Reader fences are minted on this lane's compute queue, not imported from
@@ -27,7 +30,24 @@ namespace strata::prefill::detail {
 class PrefillUploadEventLane {
 public:
     struct Region { void* data; std::size_t bytes; };
-    struct Source { const void* data; std::size_t bytes; };
+    struct Source {
+        const void* data;
+        std::size_t bytes;
+        Source(const void* pointer, std::size_t size) : data(pointer), bytes(size) {}
+    private:
+        struct Imported {
+            ze_context_handle_t context = nullptr;
+            std::uint64_t owner = 0;
+            std::uintptr_t base = 0;
+            std::size_t bytes = 0;
+            std::atomic<bool> live{false};
+        };
+        // A view keeps only this tombstone alive,not the mapping or heap owner.
+        // Reimporting the same address creates a different live state.
+        std::shared_ptr<const Imported> imported_;
+        friend class PrefillMappedHostSource;
+        friend class PrefillUploadEventLane;
+    };
     struct Ready { std::uint64_t owner; std::size_t index; };
     struct Readers { std::uint64_t owner; std::size_t index; };
 
@@ -85,9 +105,33 @@ public:
                      std::optional<Readers> after = {}) {
         need(!poisoned_ && dst.data && src.data && bytes && bytes <= dst.bytes && bytes <= src.bytes &&
              ready_.size() < capacity_, "prefill upload copy range/capacity");
-        need(sycl::get_pointer_type(dst.data, compute_.get_context()) == sycl::usm::alloc::device &&
-             sycl::get_pointer_type(src.data, compute_.get_context()) == sycl::usm::alloc::host,
-             "prefill upload fixture requires same-context device/host USM");
+        need(sycl::get_pointer_type(dst.data, compute_.get_context()) == sycl::usm::alloc::device,
+             "prefill upload requires same-context device destination");
+        const auto context = sycl::get_native<sycl::backend::ext_oneapi_level_zero>(compute_.get_context());
+        if (src.imported_) {
+            const auto& lease = *src.imported_;
+            const auto pointer = reinterpret_cast<std::uintptr_t>(src.data);
+            need(lease.live.load(std::memory_order_acquire) && lease.context == context &&
+                 lease.owner == identity_ && pointer >= lease.base && pointer - lease.base <= lease.bytes &&
+                 src.bytes <= lease.bytes - (pointer - lease.base),
+                 "prefill upload stale/foreign imported-source lease/range");
+        }
+        ze_memory_allocation_properties_t props{};
+        props.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
+        ze(zeMemGetAllocProperties(context, src.data, &props, nullptr));
+        if (src.imported_) {
+            need(props.type == ZE_MEMORY_TYPE_HOST_IMPORTED, "prefill upload source import no longer live");
+            void* base = nullptr; std::size_t extent = 0;
+            ze(zeMemGetAddressRange(context, src.data, &base, &extent));
+            const auto pointer = reinterpret_cast<std::uintptr_t>(src.data);
+            const auto start = reinterpret_cast<std::uintptr_t>(base);
+            need(pointer >= start && pointer - start <= extent && src.bytes <= extent - (pointer - start),
+                 "prefill upload imported-source range");
+        } else {
+            need(props.type == ZE_MEMORY_TYPE_HOST &&
+                 sycl::get_pointer_type(src.data, compute_.get_context()) == sycl::usm::alloc::host,
+                 "prefill upload requires same-context host USM or a checked imported-source lease");
+        }
         ze_event_handle_t dependency = nullptr;
         if (after) { validate(*after); dependency = readers_[after->index].native; }
         ReadyState state;
@@ -140,6 +184,7 @@ public:
         compute_.wait_and_throw(); check_();
     }
 private:
+    friend class PrefillMappedHostSource;
     struct ReadyState { ze_event_handle_t native = nullptr; std::optional<sycl::event> imported; };
     struct ReaderState { sycl::event event; ze_event_handle_t native = nullptr; };
     inline static std::atomic<std::uint64_t> next_identity_{1};

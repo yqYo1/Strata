@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Owned E2 component: fresh original Runtime/dense, only readiness-wait order.
+"""Owned source-adapter component: fresh original Runtime/dense, fixed wait order.
 
 Source -> prepare -> commit recipe -> build -> commit images -> next (one child).
 No model trial is authorized by this component's timing result.
@@ -7,6 +7,7 @@ Main-authored; repository LICENSE.
 """
 import fcntl
 import json
+import math
 from pathlib import Path
 import re
 import shlex
@@ -21,14 +22,16 @@ import upload_event_lane as event
 import ur_validation
 
 P, B = original.P, original.B
-ROOT = B/'prefill-upload-overlap-v1'
+ROOT = B/'prefill-mapped-source-v1'
 VIEW = ROOT/'source'
 RESULT = event.RESULT
-KEY = 'prefill_upload_overlap_v1'
+KEY = 'prefill_mapped_source_v1'
 SOURCE = 'bench/sycl/prefill_upload_overlap.cpp'
 SAFETY = event.SOURCE
 HEADER = event.HEADER
-PREFIXES = ['tools/sycl', SOURCE, SAFETY, HEADER, 'AGENTS.md',
+MAPPED = 'include/strata/prefill/mapped_host_source.hpp'
+PAGES = 'tests/sycl/prefill_host_pages.hpp'
+PREFIXES = ['tools/sycl', SOURCE, SAFETY, HEADER, MAPPED, PAGES, 'AGENTS.md',
             'docs/ARTIFACT_RETENTION.md', 'docs/BENCHMARKS.md', 'tests/core/test_upload_event_lane_plan.py']
 BUILD = dict(wall=900, cpu=1800, rss_cap=8<<30, text_cap=32<<20,
              file_cap=256<<20, total_cap=512<<20)
@@ -56,28 +59,48 @@ def save(row):
 
 
 def parent_evidence():
-    evidence = git(P, 'rev-parse', 'e0609f6fa').decode().strip()
-    prior = json.loads(git(P, 'show', evidence+':'+str(RESULT.relative_to(P))))[event.KEY]
-    full = json.loads((event.ROOT/'record.json').read_text())
-    require(fingerprint(event.compact(full)) == fingerprint(prior)
-            and prior['stage']=='closed' and prior['ownership_closed']
-            and not prior['active'] and len(prior['results'])==7
-            and all(v['passed'] and v['native_exit_code']==0 for v in prior['results']),
-            'original closed seven-case E1 evidence required')
-    recovered = original.coherent.recover(full['project'])
-    allowed = recovered | json.loads(Path(full['external_inputs']['path']).read_text())
-    allowed.update(json.loads(Path(full['runtime_manifest']['path']).read_text()))
-    allowed.update(full['actual_inputs']['objects'])
-    require(all(allowed.get(p)==h and (p in recovered or sha(p)==h)
-                for group in full['actual_inputs'].values() for p,h in group.items())
-            and sha(full['binary']['path'])==full['binary']['sha256'],
-            'E1 original source/recipe/census and retained exact ELF required')
-    require(recovered[str(P/HEADER)]==sha(P/HEADER), 'E1 native lane header changed')
-    return dict(evidence_commit=evidence, native_source_commit=full['native_source_commit'],
-                binary=full['binary'], recovered_project_files=len(recovered),
-                recipe_sha256=fingerprint(full['recipe']),
-                actual_inputs_sha256=fingerprint(full['actual_inputs']),
-                execution_input=False, Runtime_context_qualified=False)
+    evidence = '3ee710401f9cb8323757161dd53a17dce6689094'
+    overlap = json.loads(git(P, 'show', evidence+':'+str(RESULT.relative_to(P))))['prefill_upload_overlap_v1']
+    safety=['runtime-'+name for name in ['metadata','forward','reverse','permanent','cancel','cancel-throw','refuse']]
+    require(overlap['stage']=='closed' and overlap['ownership_closed'] and not overlap['active']
+            and len(overlap['results'])==23
+            and [v['label'] for v in overlap['results'][:7]]==safety
+            and all(v['passed'] is True and v['native_exit_code']==0 and v['ownership_closed'] is True
+                    for v in overlap['results'])
+            and overlap['analysis']['1024']['repeated_component_wall_gain'] is False
+            and overlap['analysis']['4096']['repeated_component_wall_gain'] is True,
+            'preserve original Runtime/E2qualification and both shape outcomes')
+    return dict(evidence_commit=evidence, native_source_commit=overlap['native_source_commit'],
+                original_result_sha256=fingerprint(overlap), execution_input=False,
+                new_source_or_performance_qualification=False)
+
+
+def capability_gate(value, archived):
+    require(all(value.get(k) is True and archived.get(k) is True
+                for k in ['passed','complete','ownership_closed'])
+        and value.get('stage')==archived.get('stage')=='closed'
+        and value.get('active') is False and archived.get('active') is False
+        and fingerprint(value['capabilities'])==fingerprint(archived['capabilities']),
+        'exact closed original capability evidence required')
+    cap=value['capabilities']
+    require(type(cap['api_version']) is int and cap['api_version']>=65552
+        and type(cap['external_sysmem_mapping_version']) is int and cap['external_sysmem_mapping_version']>=65536
+        and cap['read_only_mapping_reported_eligible'] is True
+        and cap['mapping_or_transfer_attempted'] is False,
+        'standard external mapping plus read-only API prerequisite required')
+    return cap
+
+
+def source_capability():
+    key='prefill_host_source_capabilities_v2'
+    value=ur_validation.committed(RESULT,(key,)); archive=value['archive']
+    archived=json.loads(git(P,'show',archive['commit']+':'+archive['path']))[key]
+    cap=capability_gate(value,archived)
+    asset=value['queried_runtime_provider']
+    require(sha(asset['path'])==asset['sha256'] and sha(value['header']['path'])==value['header']['sha256'],
+            'queried driver/header changed before source-adapter qualification')
+    return dict(evidence=archive,capabilities=cap,driver=asset,header=value['header'],
+                mapping_or_transfer_qualified=False)
 
 
 def check(row, committed=True):
@@ -87,6 +110,7 @@ def check(row, committed=True):
     current = original.coherent.build.common.source.pin(P, PREFIXES)
     require(current['source_sha256']==row['project']['source_sha256'], 'frozen E2 source changed')
     native,_ = original.verify_original(expected=row['foundation'])
+    require(fingerprint(source_capability())==fingerprint(row['source_capability']), 'frozen source capability changed')
     require(all(sha(p)==h for p,h in row['allowed'].items()), 'frozen source/SDK/dependency changed')
     require(all(sha(p)==h for p,h in row['recipe_tools'].items()), 'recipe tool changed')
     require(guards.driver_guard()==row['driver'] and
@@ -96,7 +120,7 @@ def check(row, committed=True):
         require(all(sha(p)==h for group in row['actual_inputs'].values() for p,h in group.items()),
                 'fresh actual compiler/link inputs changed')
         for case in row['cases']:
-            args = [case['mode']] if case['kind']=='safety' else [case['arm'],str(case['rows']),'512']
+            args = [case['mode'],case['source']] if case['kind']=='safety' else [case['arm'],str(case['rows']),'512',case['source']]
             require(case['argv']==[row['binaries'][case['kind']]['path'],*args], 'E2 launch identity differs')
     return native
 
@@ -104,7 +128,10 @@ def check(row, committed=True):
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'existing E2 root;inspect owner,no retry')
     native, proof = original.verify_original()
-    parent = parent_evidence()
+    parent = parent_evidence(); capability=source_capability()
+    retired=ur_validation.committed(RESULT,('prefill_upload_overlap_v1',))['retirement']
+    require(retired['stage']=='complete' and retired['all_selected_paths_absent']
+            and not (B/'prefill-upload-overlap-v1').exists(), 'retire ended component generation before new build')
     project = original.coherent.build.common.source.pin(P, PREFIXES)
     # A fresh, immutable original view keeps ALL class definitions coherent.
     # No retained archive/object is linked. Current pending engine math is excluded.
@@ -117,7 +144,7 @@ def prepare():
         path = VIEW/name; path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(raw)
         require(sha(path)==sources[name], 'recovered original view differs')
         generated[str(path)] = sources[name]
-    for name in [HEADER]:
+    for name in [HEADER,MAPPED,PAGES]:
         path = VIEW/name; path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes((P/name).read_bytes())
         generated[str(path)] = sha(P/name)
     allowed = generated | json.loads(Path(native['external_inputs']['path']).read_text())
@@ -127,7 +154,7 @@ def prepare():
     for dependency in native['dependencies']:
         if 'sycl-tla' in dependency['root']:
             allowed.update(original.coherent.recover(dependency))
-    allowed.update({str(P/name):sha(P/name) for name in [SOURCE,SAFETY]})
+    allowed.update({str(P/name):sha(P/name) for name in [SOURCE,SAFETY,PAGES]})
     require(all(sha(p)==h for p,h in allowed.items()), 'original live dependency/SDK differs before build')
     cc = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
     commands = json.loads((original.ROOT/'build/compile_commands.json').read_text())
@@ -141,6 +168,7 @@ def prepare():
         flags = [v.replace(str(P),str(VIEW)) for v in flags]
         dep, obj = ROOT/(label+'.d'), ROOT/(label+'.o')
         recipes.append(dict(label=label, argv=[cc,*flags,*extra,'-I'+str(VIEW/'src'),
+            '-I'+str(VIEW/'tests/sycl'),
             '-MD','-MF',str(dep),'-c',str(source),'-o',str(obj)],dep=str(dep),outputs=[str(obj)]))
     compile_one('runtime',VIEW/'src/sycl/runtime.cpp','src/sycl/runtime.cpp')
     compile_one('commands',VIEW/'src/sycl/command_profile.cpp','src/sycl/command_profile.cpp')
@@ -174,38 +202,44 @@ def prepare():
         if trace: env['UR_LOG_TRACING']='level:info;flush:info;output:file,'+str(root/'ur.trace')
         cases.append(dict(kind=kind,label=label,root=str(root),argv=[str(ROOT/kind),*args],
                           environment=env,trace=trace,**fields))
-    for mode in ['metadata','forward','reverse','permanent','cancel','cancel-throw','refuse']:
-        case('safety','runtime-'+mode,[mode],mode=mode)
+    case('safety','runtime-metadata-usm',['metadata','usm'],mode='metadata',source='usm')
+    case('safety','mapped-import',['import','mapped'],mode='import',source='mapped')
+    for source in ['usm','mapped']:
+        for mode in ['forward','reverse','permanent','cancel','cancel-throw','refuse']:
+            case('safety',f'{source}-{mode}',[mode,source],mode=mode,source=source)
+    case('safety','mapped-retire',['retire','mapped'],mode='retire',source='mapped')
     for rows in [1024,4096]:
-        for arm in ['serial','overlap']:
-            case('benchmark',f'validated-{rows}-{arm}',[arm,str(rows),'512'],arm=arm,rows=rows)
+        for source in ['usm','mapped']:
+            case('benchmark',f'validated-{rows}-{source}',['serial',str(rows),'512',source],
+                 arm='serial',source=source,rows=rows)
     for rows in [1024,4096]:
         for pair in range(3):
-            for arm in (['serial','overlap'] if pair%2==0 else ['overlap','serial']):
-                case('benchmark',f'clean-{rows}-pair{pair}-{arm}',[arm,str(rows),'512'],
-                     trace=False,arm=arm,rows=rows,pair=pair)
+            for source in (['usm','mapped'] if pair%2==0 else ['mapped','usm']):
+                case('benchmark',f'clean-{rows}-pair{pair}-{source}',['serial',str(rows),'512',source],
+                     trace=False,arm='serial',source=source,rows=rows,pair=pair)
     row = dict(stage='prepared',project=project,foundation=proof,allowed=allowed,
         source_view=dict(original_commit=original.SOURCE,files=len(generated),sha256=fingerprint(generated)),
-        parent_component=parent,native_source_commit=project['revision'],recipe=recipes,
+        parent_component=parent,source_capability=capability,native_source_commit=project['revision'],recipe=recipes,
         recipe_tools={v:sha(v) for v in [cc,bundler]},runtime_manifest=prior['runtime_manifest'],
         validation_provider=prior['validation_provider'],native_validation_probe=native['native_validation_probe'],
         build_environment=dict(native['recipe']['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
         driver=guards.driver_guard(),boot=prior['boot'],cases=cases,results=[],commands=[],
         passed=False,complete=False,active=False,ownership_closed=True,
         performance_qualified=False,model_trial_allowed=False,
-        plan=dict(question='E2: does one-expert ordinal1 H2D overlap with existing original14508 dense compute lower synchronized component wall time?',
+        plan=dict(question='U3:does bounded standard read-only external RAMmapping satisfy the existing copy/reader protocol with acceptable total source-path cost?',
             opportunity='Original whole-request trace:copy union~10.31s,kernel union~28.66s,overlap~4ms. Copy-only replacement failed. No hardware-saturation claim;this studies scheduling,not copy throughput replacement.',
-            units='U1 eager position is separately positive;U2copy aggregation and copy-only replacement retain their original failed gates. E1event ownership is a safety prerequisite. E1b tests ONLY production Runtime context. E2 changes ONLY readiness-wait position across independent dense compute;kernel,precision,bytes,allocation,copy primitive,lookahead,batch and device fixed. No U1/U2 or pending engine math is bundled.',
-            build='Fresh original14508 include/src view plus unchanged E1lane header and two current fixtures. Five fresh TUs,all class definitions from the same view. Original isolated AOT-link/host-slice recipe. No archive/object reuse. Full actual compiler/link census against committed original source and SDK/dependency allowlist.',
-            boundary='Explicitly isolated adapter scheduling discriminator,NOT whole production dispatcher. Current dense A uses resident fixed operands;copied next-bank B is independently byte-checked,not used by dense A. One reader fence per epoch prevents more than ONE lookahead. HostUSM only;ordinary RAM source view and actual production consumers remain separate.',
-            order='Seven Runtime-context safety processes first,then serial/overlap validated batch at1024and4096rows,then three independent-process alternating pairs per shape:S/O,O/S,S/O. No retries/reordering/exclusions. One prewarmed dense and one event epoch excluded;512epochs and final dual drain timed;input setup,poison reset,full oracle/guards outside.',
-            gates='Exact source/recipe/SDK/tool/ELF/typed plan;actual initialized providers before application work and at exit;all seven Runtime safety cases;both arm/shapes exact oracle,poison-to-payload and guards;quiet validation,normal0,closed owners,unchanged boot/driver/no fault. Each timed batch>=100ms;128empty clock-pair max<=0.001of batch. Missing/mismatched/ineligible data fails without hash refresh.',
-            decision='Keep all individual process samples. Per shape independently,three overlap/serial time ratios must each<1 and geometric mean<1 for a reproducible component speed screen. No blanket minimum gain. Actual device-overlap attribution requires a separately committed bounded unitrace plan;until then no overlap-mechanism or model-trial qualification,even if wall time improves.',
+            units='Change only source production/admission/lifetime as one coherent unit:page-aligned read-only ordinary heap import,typed same-lane/context/range proof,overlap rejection and drain-before-unimport. These parts are inseparable because import without admission is rejected,and admission without ownership violates the mapping contract. Existing host-USM remains the reference. Hold serial readiness order,Runtime/queue ordinals,device destination,dense kernel/math/precision,bytes,lookahead,iterations and fixed operands constant. Do not combine readiness-order tuning,U1eager,U2aggregation or engine math.',
+            build='Fresh original14508 include/src view plus the committed lane/mapped-source headers and heap-page fixture. Five fresh TUs,all changed class includers rebuilt;no archive/object reuse. Preserve original isolated AOT-link/host split and full compiler/link census. The previous E2generation is physically retired;this is one temporary component generation beside two unchanged independent phase references.',
+            boundary='Explicit source-adapter component,not the production model dispatcher. Resident dense A is fixed;copied immutable next-bank B is byte/guard-checked and is not its math operand. One reader fence per epoch bounds lookahead. The same source blob is repeatedly copied,so cache/residency behavior is not a production50GBsource or physical-bus claim. No PTIcollector or new runtime settings.',
+            order='Metadata USM,zero-command mapped import/unimport,all six existing USMcases,all six mapped cases,then held-copy mapped retirement/stale-view refusal (15safety processes). Four validated serial shape/source batches;then three independent-process pairs per1024/4096shape:USM/Mapped,Mapped/USM,USM/Mapped. No retry,reordering,exclusion or criterion change. One exact dense and one event epoch prewarmed;512epochs plus dual drain timed.',
+            gates='Exact committed source/recipe/SDK/tool/ELF/typed plan and capability history;actual native argv/environment/providers before work and at exit;all15safety cases;full exact dense oracle and poison-to-payload/source/edge guards. Full UR/LevelZero validation in safety/validated batches;clean parameter-validation timing processes. Validate actual513payload-copy/514dense URlaunch counts in traced batches. Quiet validation,normal0,closed owners,unchanged boot/driver/no fault. Every batch>=100ms;128clock-pair max<=0.001batch. A mapping refusal is a failed candidate,not permission to accept raw unknown pointers.',
+            source_cost='Record allocation/touch/protection/import/fixture readback-poison preparation outside the timed512epochs;resident matrix fixture setup and Main gate pauses are excluded. Import is a subset of preparation,not an additive cost. Source retirement includes dual drain,unimport and original heap/host-USM release. Report steady wall and preparation+wall+retirement;no model TTFT or whole-process claim.',
+            decision='Keep all individual samples and per-pair mapped/USM ratios separately per shape. Source-cost eligibility requires each of three steady-wall ratios<=1.10 AND each preparation+steady+retirement ratio<=1.10. This prospective10percent overhead budget only permits a later independently committed scheduling comparison;it is not a speedup/adoption/target gate. Report geometric means and spread. Old E2M1024failed/M4096passed outcomes remain unchanged. No model trial is allowed by this result.',
             stop='First source/build/numerical/guard/validation/ownership/deadline/fault failure stops this cohort. Fixed timing samples complete even if slower;never change acceptance after results. No reset/unbind/foreign process action.',
-            retention='One temporary two-fixture component besides unchanged two independent phase references. E1old executable is provenance-only during fresh build;retire at E2native qualification/closure after original input recovery. Retire E2at its scoped decision;no raw trace archive.',
+            retention='One temporary two-fixture component beside26unchanged phase-reference executables. Preserve source/recipe/census and useful samples;retire ordinary traces/build output at scoped closure. Retire failed source implementation if unsupported and no next consumer;keep independent safety fixes. A useful qualified source candidate may remain only for its named immediate scheduling comparison.',
             limits='No model PP/TG/TTFT,agent/quality,ordinary-RAM pinning,physical PCIe traffic/saturation,full262144/RESTORE,handoff or model adoption. Decoder and production selectors unchanged.',
-            provenance='Main-authored fixtures/controller/event protocol,repository LICENSE. Dense is exact owned14508 implementation with its checked Intel TLA provenance. No XeStrata implementation reference.'))
-    save(row);print('Prepared smallest-unit Runtime/E2 plan;commit recipe before build.',flush=True)
+            provenance='Main-authored source owner,fixtures/controller/event protocol under repository LICENSE;API concepts from official oneapi-src/level-zero-spec EXT_ExternalMemMap and installed1.32headers with API1.16flag gate. No external implementation copied. Dense is exact owned14508with checked Intel TLA provenance. No XeStrata code/design.'))
+    save(row);print('Prepared independent mapped-source plan;commit recipe before build.',flush=True)
 
 
 def execute(action):
@@ -221,8 +255,8 @@ def execute(action):
                 entry,out,err = supervisor.run(recipe['label'],recipe['argv'],row['build_environment'],ROOT,**BUILD)
                 require(owner_api.closed(entry) and entry['exit_code']==0,'fresh E2 build failed:'+str(err))
                 if recipe['label']=='host-controls':
-                    require('Ran 6 tests' in err.read_text() and '\nOK\n' in err.read_text(), 'all E1/E2 negative controls required')
-                    row['host_admission_controls']=dict(methods=6,passed=True,device_executed=False)
+                    require('Ran 10 tests' in err.read_text() and '\nOK\n' in err.read_text(), 'all historical/source-capability controls required')
+                    row['host_admission_controls']=dict(methods=10,passed=True,device_executed=False)
                 if 'dep' in recipe:
                     for name in shlex.split(Path(recipe['dep']).read_text().replace('\\\n',' ').split(':',1)[1]):
                         p = str(Path(name).resolve()); h = sha(p)
@@ -251,11 +285,17 @@ def execute(action):
                 expected=['before-runtime','runtime-ready']+(['buffers-ready'] if case['mode']!='metadata' else [])+['before-exit']
             else:expected=['before-runtime','runtime-ready','prewarm-ready','before-timing','before-exit']
             gates,records,providers = [],[],{}
+            native_environment=engine_once.native_environment(row,case['environment'])
             def interaction(channel,_entry):
                 while True:
                     item = json.loads(channel.line(45))
                     if item['kind']=='gate':
                         name=item['name'];require(name==expected[len(gates)],'E2 gate order')
+                        actual=dict(v.split('=',1) for v in Path('/proc',str(channel.proc.pid),'environ').read_text().strip('\0').split('\0'))
+                        require(all(actual.get(k)==v for k,v in native_environment.items())
+                            and set(actual)-set(native_environment)<= {'PWD','OLDPWD','SHLVL','_'}, 'actual native source environment differs')
+                        require(Path('/proc',str(channel.proc.pid),'cmdline').read_bytes().rstrip(b'\0').decode().split('\0')==case['argv'],
+                                'actual source/shape argv differs')
                         mapping_row=dict(row,binary=row['binaries'][case['kind']])
                         providers[name]=event.mappings(channel.proc.pid,mapping_row)
                         if name!='before-runtime':
@@ -267,7 +307,7 @@ def execute(action):
                     else:
                         records.append(item)
                         if item['kind']=='done':channel.exit(30);break
-            entry,out,err=supervisor.run(case['label'],case['argv'],engine_once.native_environment(row,case['environment']),
+            entry,out,err=supervisor.run(case['label'],case['argv'],native_environment,
                 P,interaction=interaction,**RUN)
             require(owner_api.closed(entry) and entry['exit_code']==0,'E2 native failed:'+str(err))
             validation=ur_validation.preload_evidence(err.read_text(),entry['pid'])
@@ -275,21 +315,38 @@ def execute(action):
             require(not re.search(r'\[(?:error|critical)\]|upload (?:lane|overlap) failure:|Strata SYCL cleanup:',err.read_text(),re.I),
                     'ZE validation/cleanup error')
             require(gates==expected,'incomplete E2 gates')
-            result=dict(label=case['label'],passed=True,native_exit_code=0,ownership_closed=True,validation=validation,gates=gates,
+            result=dict(label=case['label'],source=case['source'],passed=True,native_exit_code=0,ownership_closed=True,validation=validation,gates=gates,
                         initialized_providers=providers['runtime-ready'],after_work_providers=providers['before-exit'])
             if case['kind']=='safety':
-                require(records==[dict(kind='done',passed=True,case=case['mode'])],'incomplete Runtime safety result')
+                require(records==[dict(kind='done',passed=True,case=case['mode'],source=case['source'])], 'incomplete source safety result')
+                enqueues=re.findall(r'---> (urEnqueue\w+)',(root/'ur.trace').read_text())
+                expected_count={'metadata':0,'import':0,'forward':10,'reverse':12,'permanent':16,
+                                'cancel':7,'cancel-throw':7,'refuse':6,'retire':9}[case['mode']]
+                require(len(enqueues)==expected_count, 'source safety application count differs')
+                result.update(mode=case['mode'],application_enqueues=len(enqueues))
             else:
-                require(len(records)==2 and records[0]['kind']=='batch' and records[1]==dict(kind='done',passed=True),'incomplete E2 batch')
+                require(len(records)==3 and records[0]['kind']=='batch' and records[1]['kind']=='source'
+                    and records[1]['source']==case['source'] and records[2]==dict(kind='done',passed=True), 'incomplete source batch')
                 batch=records[0]
                 require(batch['arm']==case['arm'] and batch['gemm_rows']==case['rows'] and batch['gemm_n']==1280
                     and batch['gemm_k']==2560 and batch['iterations']==512 and batch['requested_H2D_bytes']==512*1971200
                     and batch['lookahead']==1 and batch['oracle_and_guards'] is True,'actual E2 dispatch/workload differs')
                 require(batch['wall_s']>=0.1 and 0<=batch['timer_pair_max_s']<=batch['wall_s']*.001,'ineligible timing batch/clock overhead')
-                result.update(batch=batch,clean=not case['trace'],pair=case.get('pair'))
+                source=records[1]
+                require(all(type(source[k]) in (int,float) and math.isfinite(source[k]) and source[k]>=0
+                    for k in ['preparation_s','import_s','retirement_s'])
+                    and source['preparation_s']>=source['import_s'], 'invalid/double-counted source lifecycle interval')
+                if case['trace']:
+                    text=err.read_text();trace=(root/'ur.trace').read_text()
+                    payloads=[v for v in text.splitlines() if 'SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(' in v and 'size=1971200,' in v]
+                    kernels=re.findall(r'---> (urEnqueueKernelLaunch\w*)',trace)
+                    require(len(payloads)==513 and len(kernels)==514, 'actual validated copy/dense call count differs')
+                    result['validated_counts']=dict(payload_copies=len(payloads),dense_launches=len(kernels))
+                result.update(batch=batch,clean=not case['trace'],pair=case.get('pair'),source_lifecycle=source,
+                    source_lifecycle_plus_batch_s=source['preparation_s']+batch['wall_s']+source['retirement_s'])
             if case['trace']:
                 trace=(root/'ur.trace').read_text();enqueues=re.findall(r'---> (urEnqueue\w+)',trace)
-                require(bool(enqueues)==(case.get('mode')!='metadata'),'actual E2 application work differs')
+                require(bool(enqueues)==(case.get('mode') not in ['metadata','import']),'actual source application work differs')
                 result['application_enqueues']=len(enqueues)
             check(row,False);row['results'].append(result)
             row.update(passed=True,active=False,ownership_closed=True)
@@ -297,14 +354,17 @@ def execute(action):
                 analysis={}
                 for rows in [1024,4096]:
                     samples=[v for v in row['results'] if v.get('clean') and v['batch']['gemm_rows']==rows]
-                    ratios=[]
+                    ratios=[];lifecycle=[]
                     for pair in range(3):
-                        s={v['batch']['arm']:v['batch']['wall_s'] for v in samples if v['pair']==pair}
-                        ratios.append(s['overlap']/s['serial'])
-                    analysis[str(rows)]=dict(paired_time_ratios=ratios,geometric_mean=__import__('math').prod(ratios)**(1/3),
-                        repeated_component_wall_gain=all(v<1 for v in ratios),actual_device_overlap_qualified=False)
+                        s={v['source']:v for v in samples if v['pair']==pair}
+                        require(set(s)=={'mapped','usm'}, 'complete source pair required')
+                        ratios.append(s['mapped']['batch']['wall_s']/s['usm']['batch']['wall_s'])
+                        lifecycle.append(s['mapped']['source_lifecycle_plus_batch_s']/s['usm']['source_lifecycle_plus_batch_s'])
+                    analysis[str(rows)]=dict(paired_mapped_over_usm=ratios,geometric_mean_ratio=math.prod(ratios)**(1/3),
+                        paired_lifecycle_plus_batch_ratios=lifecycle,source_cost_eligible=all(v<=1.10 for v in ratios+lifecycle),
+                        speedup_or_model_adoption_qualified=False)
                 row.update(stage='closed',complete=True,analysis=analysis,
-                    performance_qualified=any(v['repeated_component_wall_gain'] for v in analysis.values()))
+                    performance_qualified=False,source_cost_eligible=any(v['source_cost_eligible'] for v in analysis.values()))
     except BaseException as error:
         row.update(stage='failed',passed=False,complete=False,error=repr(error));raise
     finally:

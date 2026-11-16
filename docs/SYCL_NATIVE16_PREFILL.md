@@ -1452,10 +1452,44 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   its reported single-allocation limit is10132807680bytes. This is prerequisite
   discovery only:no allocation,import,queue,copy or kernel was attempted.
   V1's reused nonzero device count was rejected by validation before device
-  enumeration;its failed outcome remains. The next coherent unit is a bounded
-  page-aligned,read-only same-context import with ownership/range proof and
-  checked drain-before-unimport. Compare the source adapter with readiness order
-  fixed,and only then compare readiness order with source and compute fixed.
+  enumeration;its failed outcome remains. The new source-adapter unit
+  `prefill_mapped_source_v1`uses fresh original14508Runtime/dense code and five
+  coherent TUs at`08b7289ea`;ten host admission controls and native metadata pass.
+  Its next zero-command import process exits1at the`HOST_IMPORTED`property
+  check,after successful same-address,read-only allocation. Rejected mapping
+  release and queue drains succeed;the process is reaped,its owned session is
+  empty,and no fresh fault appears. The actual numeric type was not printed.
+  Keep this31-case cohort failed;the remaining29cases and all source-cost timing
+  are unrun. Full evidence is at`c35fe4199`;the current result preserves physical
+  closure separately from its incomplete protocol-observation flag. The official
+  API1.17specification requires`HOST_IMPORTED`,while inspected Intel source/tests
+  return`HOST`;that source is not proven to match the installed package.
+  Native Luna-max confirms the pinned static owner/lifetime audit,not runtime
+  acceptance. The independently committed zero-command discovery at`37017156e`,
+  native source`b777f52f8`,now closes normally0with quiet validation,closed owners
+  and no fresh fault. A4096Bpage-aligned read-only heap map reports type0/id0
+  before import,type1(`HOST`)/id1/page4096during import,and type0/id0after
+  successful unimport. Its queried range has the same base and4096Bextent,and
+  the original heap remains unchanged. This uses an explicit native context,
+  not the production Runtime;it enqueues no application commands and qualifies
+  no source admission,copy,math or model route. It does not supply the missing
+  numeric value from the earlier failed process. The next eligible unit is a
+  newly planned,explicit pinned-provider `HOST` property contract with positive
+  owner/context/range/allocation-ID/lifetime proof;keep standard admission and
+  unknown-pointer refusal intact. Requalify that contract in the actual Runtime
+  before any copy,then compare source costs with readiness order fixed. No
+  implementation of that compatibility contract is adopted yet. Compare the
+  source adapter with readiness order fixed,and
+  only then compare readiness order with source and compute fixed.
+  After original source/recipe and both final-ELF recovery from pushed history,
+  its failed temporary generation and consumed CHreport are retired:446files,
+  16557507bytes. All26phase-reference executables and eight CMake probe ELFs
+  remain unchanged;this is scoped cleanup,not resolution of legacy holds.
+  The completed property observer and consumed CJ/CKresearch transactions,
+  source views and positively closed native transcript are also retired after
+  source recovery and the compact decision:41external files/2286503bytes and
+  the one-question observer. Its original source/result remain in Git;the two
+  independent phase-reference generations remain unchanged.
   Keep bounded host-USM staging as an independent control if import fails.
   Intel's vendor malloc/new-copy behavior does not itself establish the standard
   external-map contract;unknown pointers remain refused. No debug import flag,

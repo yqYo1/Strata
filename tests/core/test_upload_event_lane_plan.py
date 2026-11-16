@@ -68,4 +68,42 @@ class UploadOverlapPlanAdmission(UploadPlanAdmission):
         self.public=self.target.compact(self.row)
 
 
+class MappedSourceCapabilityAdmission(unittest.TestCase):
+    def setUp(self):
+        self.row=dict(stage='closed',passed=True,complete=True,ownership_closed=True,active=False,
+            capabilities=dict(api_version=65553,external_sysmem_mapping_version=65536,
+                read_only_mapping_reported_eligible=True,mapping_or_transfer_attempted=False))
+
+    def test_exact_closed_discovery_reaches_source_unit(self):
+        self.assertEqual(overlap.capability_gate(self.row,copy.deepcopy(self.row)),self.row['capabilities'])
+
+    def test_original_runtime_cases_survive_e1_receipt_retirement(self):
+        proof=overlap.parent_evidence()
+        self.assertEqual(proof['evidence_commit'],'3ee710401f9cb8323757161dd53a17dce6689094')
+        self.assertEqual(proof['native_source_commit'],'d4e45762a56b169036a67eb9535cd3ce9b238a46')
+        self.assertIs(proof['execution_input'],False)
+        self.assertIs(proof['new_source_or_performance_qualification'],False)
+
+    def test_changed_discovery_or_open_owner_is_rejected(self):
+        original=copy.deepcopy(self.row)
+        for which in ['history','open','partial','type']:
+            row=copy.deepcopy(self.row)
+            if which=='history':row['capabilities']['api_version']=65554
+            elif which=='open':row['active']=True
+            elif which=='partial':row['complete']=False
+            else:row['ownership_closed']=1
+            with self.subTest(which=which),self.assertRaises(RuntimeError):
+                overlap.capability_gate(row,original)
+
+    def test_external_map_and_read_only_floor_are_both_required(self):
+        for name,value in [('api_version',65551),('api_version',True),
+                           ('external_sysmem_mapping_version',0),
+                           ('external_sysmem_mapping_version',True),
+                           ('read_only_mapping_reported_eligible',False),
+                           ('mapping_or_transfer_attempted',True)]:
+            row=copy.deepcopy(self.row);row['capabilities'][name]=value
+            with self.subTest(name=name,value=value),self.assertRaises(RuntimeError):
+                overlap.capability_gate(row,copy.deepcopy(row))
+
+
 if __name__=='__main__':unittest.main()
