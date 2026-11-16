@@ -1795,8 +1795,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   owners and no fresh fault. This includes both placements and the full128-slot
   independent-marker matrix. DK/DL and DM/DN source audits find no blocker after
   correcting the reports' slot-count,citation,readback and performance-failure
-  statements. Math metadata,traced full math and clean comparisons remain
-  pending. **These small checks establish no performance or model qualification.**
+  statements. All9math metadata cases and all9traced128-row policies now pass;
+  the1024-row reference/shortcut also pass. Actual kernel/copy/marker counts,
+  bitwise reference,split/tails and guards agree,with normal0/quiet/closed/no
+  fresh fault. Remaining traced shapes and all81clean comparisons are pending.
+  **These checks establish no speed gain or model qualification.**
+  For subsequent shape selection,the original14508model evidence at
+  `9c678595231882266623373cb84e4b65071c53dd` retains a conserved16-bin planned
+  router census for32769input tokens and48completed windows:22479jobs and
+  15728640expert-row assignments. M<128accounts for42.190489%of jobs but
+  2.248859%of rows;M>=2334accounts for7.535922%of jobs and45.219930%of rows.
+  These are planned-job aggregates after router drain/success,not measured
+  kernel work,upload traffic or hardware saturation. Exact within-bin tails and
+  row/weight-format correlation remain unavailable. The current layer2fixture
+  has K=2560,FF=640;its128/1024-row traces select the actual
+  `DenseKernel<half,bfloat16,Tile1>`with2052launches,which the original source
+  maps towide128x128. This does not qualify a tile change or a model-wide
+  arithmetic ceiling. The M/Ngeometry research scope remains conditional until
+  measured stage/resource evidence makes it the next tuning candidate.
   Submission/async/drain-fault and active
   observer coverage remain explicit holds;source review is not safety,
   precision,performance or model qualification. The committed recipe/order/gates
