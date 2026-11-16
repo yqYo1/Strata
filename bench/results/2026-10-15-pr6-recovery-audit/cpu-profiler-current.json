@@ -19515,9 +19515,9 @@
     }
   },
   "prefill_weight_source_v2": {
-    "stage": "testing",
+    "stage": "closed",
     "passed": true,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "previous_failure": {
@@ -24643,6 +24643,60 @@
           "full_bitwise_reference_and_guards": true
         },
         "lifecycle_plus_batch_s": 1.773815763
+      },
+      {
+        "label": "clean-8192-pair2-staged",
+        "arm": "staged",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": 2,
+        "clean": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "staged": true,
+          "host_slots": 4
+        },
+        "validation": {
+          "pid": 3560677,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "ed0085198ce9de0df1476de5cf9ea0e80e8e2e2bd02659d1c18627d03f161e07",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.00197468,
+          "retirement_s": 0.000103745
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "staged",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.740897209,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.742975634
       }
     ],
     "model_trial_allowed": false,
@@ -24692,6 +24746,88 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
+    },
+    "analysis": {
+      "16": {
+        "paired_staged_over_direct": [
+          0.9898839437304493,
+          1.0331556651604028,
+          1.9371323474566062
+        ],
+        "geometric_mean_ratio": 1.2559425618243159,
+        "paired_adapter_lifecycle_ratios": [
+          0.9973898968198502,
+          1.0404128564946555,
+          1.9444252192745504
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "128": {
+        "paired_staged_over_direct": [
+          0.9854305875938381,
+          1.016529638449158,
+          1.681105191818025
+        ],
+        "geometric_mean_ratio": 1.1897261056142323,
+        "paired_adapter_lifecycle_ratios": [
+          0.9920977507151146,
+          1.0248553166024323,
+          1.6888625151217995
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "1024": {
+        "paired_staged_over_direct": [
+          0.754466881447018,
+          0.9960700193591768,
+          1.0066870363261442
+        ],
+        "geometric_mean_ratio": 0.9111883847267896,
+        "paired_adapter_lifecycle_ratios": [
+          0.7582466912229844,
+          1.0009698228105266,
+          1.0113704931811167
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "4096": {
+        "paired_staged_over_direct": [
+          1.2180284776676737,
+          0.9972159522234464,
+          0.8763608050822775
+        ],
+        "geometric_mean_ratio": 1.0210410473408418,
+        "paired_adapter_lifecycle_ratios": [
+          1.2205036919103547,
+          1.0002922162172236,
+          0.8781873283387419
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "8192": {
+        "paired_staged_over_direct": [
+          1.0687310659095899,
+          1.0276896372381596,
+          0.9814420372902648
+        ],
+        "geometric_mean_ratio": 1.0253332055032802,
+        "paired_adapter_lifecycle_ratios": [
+          1.0695701329362037,
+          1.0294103822435423,
+          0.9826136797049085
+        ],
+        "repeated_source_adapter_gain": false,
+        "source_cost_characterized": true,
+        "model_adoption_qualified": false
+      }
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
