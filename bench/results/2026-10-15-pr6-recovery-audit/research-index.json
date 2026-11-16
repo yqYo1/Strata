@@ -35119,51 +35119,27 @@
   },
   "prefill_copy_math_audit_dc_20261117": {
     "classification": "decision support",
-    "schedulable_now": false,
-    "status": "review_in_progress",
+    "status": "curated_closed",
     "active": false,
     "ownership_closed": true,
+    "schedulable_now": false,
     "scope": "New five-arm full-math/controller source audit;not generic lane feasibility.",
     "source_revision": "148e6dac73b8cc964503be9decef0e6912abc8d4",
     "rule_revision": "148e6dac73b8cc964503be9decef0e6912abc8d4",
-    "prerequisite_evidence": {
-      "new_full_math_and_controller_committed": true,
-      "build_inputs": 962,
-      "link_inputs": 29,
-      "objects": 12,
-      "small_V1_stopped_before_runtime": true,
-      "prior_DA_review_closed": true,
-      "source_files": 19,
-      "source_manifest_sha256": "172b73d665e2d2c21ac1d2d4cb3ae0fb79d19a7808de93710382b58cae3803b4"
-    },
+    "report_sha256": "c152c94fe5362547cbc1edb345c24064b4030fc9b97f383bd1bacc5a5c016755",
+    "source_manifest_sha256": "172b73d665e2d2c21ac1d2d4cb3ae0fb79d19a7808de93710382b58cae3803b4",
+    "source_files": 19,
     "model": "gpt-6-luna",
     "effort": "medium",
-    "report_budget": {
-      "words": 1800,
-      "bytes": 24576
-    },
-    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-copy-math-dc-20261117/report.md",
-    "input_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-copy-math-dc-20261117",
-    "control_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-copy-math-dc-20261117-control",
-    "task_id": "task_80e9f551e0dc",
-    "dispatch_id": "ctx_161e99faaa8e",
-    "terminal": "term_91ab166b-dc51-4138-9d9f-143f9c0b89d5",
-    "native_pid": 4056014,
-    "isolation": "Native strict-config/no-daemon,report cwd only,workspace-write/network enabled,both temporary writable roots excluded. Actual worker filesystem proof still required.",
-    "accounting": "Attached Main-owned systemd scope600s/180sCPU/4GiB/256tasks,8MiBtext;no worker task injected before account attachment.",
-    "manual_launch_reason": "worker-start cannot express this strict-config/no-daemon isolated-cwd sandbox contract;manual Task/Dispatch only,no ownership handoff.",
-    "report_sha256": "c152c94fe5362547cbc1edb345c24064b4030fc9b97f383bd1bacc5a5c016755",
-    "report_bytes": 9572,
-    "report_words": 839,
     "review_model": "gpt-6-luna",
     "review_effort": "max",
-    "review_agent": "/root/prefill_copy_math_dc_review_dd_20261117",
+    "review_sha256": "e59da2b735e2af400df63479562db617e36a85a6a4ab0bb67f4d5babeb5df63c",
+    "review_verdict": "accept_with_targeted_qualification_clarifications_after_type_misread_correction",
     "worker_side_Orca_first_tool_verified": true,
-    "filesystem_admission_inputs": 20,
-    "filesystem_readonly_and_no_gpu": true,
-    "positive_native_pidfd_and_code_mode_family_closure": true,
+    "readonly_inputs_checked": 20,
+    "positive_native_pidfd_family_closure": true,
     "normal_exit_code_qualified": false,
-    "closure_signal": "SIGTERM after worker_done;all owned process/TID cgroup membership verified;no SIGKILL",
+    "closure": "SIGTERM after actual worker_done succeeded;no SIGKILL;release(no owned resource),terminal close and delivery ACK succeeded.",
     "resource_envelope_passed": true,
     "resource_sample": {
       "wall_seconds": 413.93,
@@ -35173,6 +35149,22 @@
       "captured_text_bytes_upper_bound": 1139358,
       "native_session_counted": true
     },
-    "lifecycle": "Actual worker_done succeeded;unsupervised worker-release reports no_owned_resource/processAction none. Native closure independently proved;terminal close and delivery acknowledgement succeeded."
+    "useful_finding": "Five-arm R0/Q1/O/net isolates the required same-queue dependency adapter,matching-property queue placement and overwrite marker. Keep all enabling losses and compare complete net path. Full-math golden checks scheduling/copy-arm equivalence,not independent math accuracy. V2is exact-native-build reuse with one matching per-case ELF;V1pre-runtime failure stays failed.",
+    "correction": {
+      "initial_review_sha256": "5324fda254c98e4be8347aea751516df0f4500e400a55e4607ca7e34858e9c36",
+      "claim": "Reviewer incorrectly called job_weights uint16_t and required a rebuild.",
+      "actual": "Unchanged line93 is Buffer<float>;allocation/copy/API agree. Main current/immutable/compiler-census SHAand reviewer reread resolve it;no native edit or rebuild.",
+      "source_sha256": "981e24ee9d7edc9b52ca03583b34a1b8bcc781380040104503dd4f32a580d592",
+      "blocking_claim_withdrawn": true
+    },
+    "next_consumer": "Main continues unchanged committed115case plan. No fresh generic research scope;new investigation needs actual measured/trace gap and installed-runtime identity.",
+    "limits": "Source audit and reviewed correction only. Small native and metadata/full-math evidence belong to the actual controller record;no speed/model/phase/physical-context adoption.",
+    "retention": {
+      "stage": "planned",
+      "files": 46,
+      "regular_content_bytes": 1356501,
+      "manifest_sha256": "7e2de925b13343f99ae95d203f442b704d321dda706a67b4c835ba1503991258",
+      "reason": "Consumed report/source/control/review/native transcript;keep compact independently verified finding and correction only. Active component and two phase references excluded."
+    }
   }
 }

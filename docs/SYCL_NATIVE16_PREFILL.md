@@ -1769,8 +1769,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0/6/0/1kernel and0/4/2/3payload-copy counts,and no fresh fault. Constructor,
   token,capacity,terminal drain,source/bank guards and actual reader outputs
   pass. This qualifies those small assertions only. All five actual-math
-  metadata,25traced math and75clean processes remain pending;there is no new
-  speed,model,phase or physical-context result. V1's unexecuted115case plan
+  metadata cases now pass normal0with no application commands. The first
+  traced M16direct actual-math case also passes bitwise split/tail/status/
+  source/device guards,6156kernel launches,1027payload copies,and1026launches
+  of each parallel-IQrole. The other24traced math and75clean processes remain
+  pending;there is no new speed,model,phase or physical-context result.
+  DC/DDsource review accepts the separate unit boundaries and admission reuse
+  limits. Its initial job-weight type/OOB claim was a review misread:line93is
+  `Buffer<float>`,matching its allocation/copy/API;all three current,immutable
+  and actual compiler source hashes agree. The corrected review withdraws
+  the blocker without a native edit or rebuild. Keep that correction and
+  continue the existing gates;do not turn source review into runtime evidence.
+  V1's unexecuted115case plan
   is now retained only in its original Git evidence;the active result keeps
   its compact unchanged failure and V2's current plan.
   Generic feasibility scopes remain closed;any new audit needs its concrete
