@@ -1,5 +1,8 @@
 // Main-authored safety fixture; repository LICENSE. No inference or speed claim.
 #include "strata/prefill/upload_event_lane.hpp"
+#ifdef STRATA_PREFILL_EVENT_RUNTIME_CONTEXT
+#include "strata/sycl/runtime.hpp"
+#endif
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
@@ -150,13 +153,20 @@ int run(const std::string& mode) {
          mode=="cancel" || mode=="cancel-throw" || mode=="refuse", "known fixture case required");
     gate("before-runtime");
     {
+#ifdef STRATA_PREFILL_EVENT_RUNTIME_CONTEXT
+        auto runtime = strata::sycl_backend::runtime_for();
+        sycl::queue queue = runtime->compute();
+        const auto check = [runtime] { runtime->check(); };
+#else
         sycl::queue queue(sycl::gpu_selector_v,
             [](sycl::exception_list) {strata::sycl_backend::cleanup_fail_stop("upload fixture asynchronous SYCL error");},
             sycl::property_list{sycl::property::queue::in_order{},sycl::property::queue::enable_profiling{}});
+        const auto check = [] {};
+#endif
         need(queue.get_device().get_info<sycl::info::device::name>().find("B570")!=std::string::npos,"B570 required");
         // Declaration order retains buffers until lane and host-gate retirement.
         std::unique_ptr<Memory> memory_owner;
-        Lane lane(queue,[] {},16);
+        Lane lane(queue,check,16);
         gate("runtime-ready");
         if(mode!="metadata") {
             memory_owner.reset(new Memory(queue));auto& memory=*memory_owner;
@@ -217,7 +227,7 @@ int run(const std::string& mode) {
                 refuses([&] {(void)lane.copy_after({nullptr,64*4},a,64*4);});
                 refuses([&] {lane.wait_ready({0,0});});
                 refuses([&] {(void)lane.copy_after(dst,a,64*4,Lane::Readers{0,0});});
-                Lane other(queue,[] {},4);
+                Lane other(queue,check,4);
                 const auto r=lane.copy_after(dst,a,64*4);lane.wait_ready(r);lane.drain();
                 refuses([&] {other.wait_ready(r);});
                 memory.verify({},memory.a);

@@ -4,6 +4,7 @@
 #include "strata/prefill/upload_event_lane.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "prefill/sycl/vllm_xe2/native16.hpp"
+#include <algorithm>
 #include <chrono>
 #include <cstring>
 #include <iostream>
@@ -86,6 +87,12 @@ int run(bool overlap,std::size_t rows,std::size_t iterations) {
         epoch();lane.drain();verify(true); // Event path warmup, excluded.
         runtime->wait(queue.memset(bank.as<std::uint8_t>()+guard,0xe7,payload));
         gate("before-timing");
+        double timer_pair_max_s=0;
+        for(int i=0;i<128;++i) {
+            const auto a=std::chrono::steady_clock::now();
+            const auto b=std::chrono::steady_clock::now();
+            timer_pair_max_s=std::max(timer_pair_max_s,std::chrono::duration<double>(b-a).count());
+        }
         const auto begin=std::chrono::steady_clock::now();
         for(std::size_t i=0;i<iterations;++i) epoch();
         lane.drain();
@@ -94,6 +101,7 @@ int run(bool overlap,std::size_t rows,std::size_t iterations) {
         verify(true);
         std::cout.precision(17);
         std::cout << "{\"kind\":\"batch\",\"wall_s\":" << seconds << ",\"iterations\":" << iterations
+                  << ",\"arm\":\"" << (overlap ? "overlap" : "serial") << "\",\"timer_pair_max_s\":" << timer_pair_max_s
                   << ",\"requested_H2D_bytes\":" << iterations*payload << ",\"gemm_rows\":" << rows
                   << ",\"gemm_n\":" << n << ",\"gemm_k\":" << k
                   << ",\"lookahead\":1,\"oracle_and_guards\":true}" << std::endl;

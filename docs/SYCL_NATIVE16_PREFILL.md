@@ -1370,7 +1370,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Xe2dense kernel while moving only the readiness wait across independent
   compute. A per-epoch reader fence limits lookahead to one expert. Its build,
   Runtime-context safety,profiling and prospective timing plan are not yet
-  admitted;E1must qualify first. No model trial or new performance follows.
+  admitted. The next E1bunit changes only the fixture's queue factory to the
+  original production Runtime and repeats all seven safety cases. E2then fixes
+  that context,original dense math,copy primitive,bytes,placement and lookahead,
+  changing only the readiness-wait position. Its committed comparison plan
+  must retain three alternating independent-process pairs per shape. U1eager
+  upload,U2aggregation and copy-only replacement keep their separate outcomes;
+  no combined result qualifies those units. No model trial or new performance follows.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original

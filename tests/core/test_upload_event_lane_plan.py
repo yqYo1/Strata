@@ -12,6 +12,7 @@ from unittest.mock import patch
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
 import upload_event_lane as target
+import prefill_upload_overlap as overlap
 
 
 class ReachedSourcePin(Exception):
@@ -19,18 +20,19 @@ class ReachedSourcePin(Exception):
 
 
 class UploadPlanAdmission(unittest.TestCase):
+    target=target
     def setUp(self):
         self.row=dict(stage='built',passed=True,complete=False,active=False,ownership_closed=True,
-            project=dict(count=1,revision='a'*40,source_sha256={'unit.cpp':'b'*64}),foundation={},
+            project=dict(count=1,revision='a'*40,source_sha256={'unit.cpp':'b'*64}),foundation={},allowed={},
             binary=dict(path='/guarded/probe',sha256='c'*64),plan=dict(gates='frozen'),
             cases=[dict(mode='forward',argv=['/guarded/probe','forward'],
                 environment=dict(EnableDirectSubmission='0'))])
-        self.public=target.compact(self.row)
+        self.public=self.target.compact(self.row)
 
     def invoke(self,row,exception):
-        with patch.object(target.ur_validation,'committed',return_value=copy.deepcopy(self.public)), \
-             patch.object(target.original.coherent.build.common.source,'pin',side_effect=ReachedSourcePin) as pin:
-            with self.assertRaises(exception):target.check(row)
+        with patch.object(self.target.ur_validation,'committed',return_value=copy.deepcopy(self.public)), \
+             patch.object(self.target.original.coherent.build.common.source,'pin',side_effect=ReachedSourcePin) as pin:
+            with self.assertRaises(exception):self.target.check(row)
             if exception is RuntimeError:pin.assert_not_called()
             else:pin.assert_called_once()
 
@@ -55,6 +57,15 @@ class UploadPlanAdmission(unittest.TestCase):
                 if mutation=='ownership':row['ownership_closed']=1
                 else:row['project']['count']=True
                 self.invoke(row,RuntimeError)
+
+
+class UploadOverlapPlanAdmission(UploadPlanAdmission):
+    target=overlap
+    def setUp(self):
+        super().setUp()
+        # Both controllers reject changed inputs before source admission.
+        self.row['allowed']={}
+        self.public=self.target.compact(self.row)
 
 
 if __name__=='__main__':unittest.main()
