@@ -16945,9 +16945,9 @@
     "reason": "Preparation review found the inherited copy-only environment omitted STRATA_SYCL_PARALLEL_IQ_DEQUANT=1 used by qualified model. Close unrun plan;new source/plan must match production selection before native build. Original source0e18and generated recipe preserved;no input hashes refreshed."
   },
   "prefill_weight_pipeline_v2": {
-    "stage": "testing",
+    "stage": "closed",
     "passed": true,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "native_source_commit": "2187bfa5ddff6d8331187b8cfc22157852c2d461",
@@ -18420,6 +18420,57 @@
           "full_bitwise_reference_and_guards": true
         },
         "lifecycle_plus_batch_s": 0.115567991
+      },
+      {
+        "label": "clean-pair2-mapped-neo",
+        "source": "mapped-neo",
+        "mode": "serial",
+        "pair": 2,
+        "clean": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "mapped-neo",
+          "property_type": 1,
+          "allocation_ids": [
+            28,
+            29
+          ]
+        },
+        "validation": {
+          "pid": 2998466,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "1a6534405be6f9254ad4d220b8021b203a819b54f5bc67db8525966b7df61ce7",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002336416,
+          "import_s": 4.9563e-05,
+          "retirement_s": 0.00097549
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "serial",
+          "source": "mapped-neo",
+          "rows": 1024,
+          "epochs": 128,
+          "requested_H2D_bytes": 252313600,
+          "wall_s": 0.184088564,
+          "timer_pair_max_s": 4e-08,
+          "actual_weight_reader": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.18740047
       }
     ],
     "model_trial_allowed": false,
@@ -18454,6 +18505,21 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
+    },
+    "analysis": {
+      "paired_mapped_over_usm": [
+        1.703074355673803,
+        1.0202030427619484,
+        1.6172385320254647
+      ],
+      "geometric_mean_ratio": 1.4111226671351647,
+      "paired_lifecycle_ratios": [
+        1.7036381829586835,
+        1.0293663784814702,
+        1.6215603332587136
+      ],
+      "source_cost_eligible": false,
+      "speedup_or_model_adoption_qualified": false
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
