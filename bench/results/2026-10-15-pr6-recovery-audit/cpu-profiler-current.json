@@ -17308,7 +17308,7 @@
     }
   },
   "prefill_weight_wrapper_v1": {
-    "stage": "prepared",
+    "stage": "built",
     "passed": true,
     "complete": false,
     "active": false,
@@ -20128,6 +20128,15 @@
       "limits": "Actual production Gemm and source wrapper entrypoints at five representative shapes;fixed10route jobs and two route index patterns over512real expert weights are synthetic,not actual model routing. Common baseline-USMallocation/population,source mapping,Runtime/setup,device-span/context admission and reference work are outside timing. Both wrapper arms have zero host-staging preparation/retirement;their tiny lifecycle clocks do not attribute wrapper work. No gather/cache publication/modelPP/TG/TTFT/hardware saturation/decode/agent/262144RESTORE qualification. Current limiting hardware remains unknown.",
       "provenance": "Main-authored fixture/controller/extraction under repository LICENSE. Original owned14508source and previously checked Intel TLA dense implementation,with existing checked provenance. No XeStrata code/design or external copied proposal."
     },
+    "host_admission_controls": {
+      "methods": 9,
+      "passed": true,
+      "device_executed": false
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/benchmark",
+      "sha256": "e5d72e142971c9a0f118bc28a4a735927e75ed79c3885ed1f24904639bc4d984"
+    },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "d3ca4956b1bfda8ef64ef19d50827cff2abbafa4",
@@ -20138,6 +20147,20 @@
     "allowed": {
       "files": 21091,
       "sha256": "33227d5b8c5d39fc9eee1d59516d54bc6317059217fa16afd42cdc34fb10d6be"
+    },
+    "actual_inputs": {
+      "compiled": {
+        "files": 961,
+        "sha256": "9cbac70a82d64423f72fa1b9717d5dc2bbf949329a22917ef40f50fd9923d0a1"
+      },
+      "links": {
+        "files": 29,
+        "sha256": "4cf6290c3fe9b6a3d571dc21a73983a40928f55f7d9c8c735eddcd833e86d9e7"
+      },
+      "objects": {
+        "files": 11,
+        "sha256": "4cde005c856c37cb62f4c5f8faddfb8dbe76f875100660240c1f27eb9dbc43ee"
+      }
     }
   }
 }
