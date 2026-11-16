@@ -33366,14 +33366,26 @@
     "retrieval_consumer": "At the first source-pinned long-prefill expert-GEMM tile-shape decision after stage attribution. Main uses the report only to select a small bounded same-binary comparison; reassess and prune it after that decision if no concrete candidate uses it.",
     "scope_eligibility": {
       "schedulable_now": false,
-      "prerequisite_evidence": "AY native Luna-max nonduplication review of605short scope metadata entries.",
+      "prerequisite_evidence": "Main recovered coherent14508model32769input16-bin planned row census at9c678595;totals22479jobs/15728640rows conserved. Actual05eceacd component traces at M128/1024 each show2052DenseKernel<half,bfloat16,Tile1> launches,original Runtime14508auto chooseswide128x128. Fixture K2560/FF640;GUN1280,K2560 andDownN2560,K640. Counts/rows do not establish physical saturation.",
       "missing_prerequisites": [
-        "Before dispatch, Main supplies the immutable current source/build revision, actual selected GEMM route and tile, M histogram from representative long-prefill chunks, K/N and operand-format facts, plus evidence that this stage is a candidate for tuning. Chunk length alone is insufficient."
+        "Measured GEMM stage/resource evidence and a Main decision to choose intra-job tile geometry after the current copy/marker comparison.",
+        "Exact within-bin M tails and row/format correlation are not available;any future scope must explicitly bound those uncertainties rather than assume exact shapes."
       ],
-      "reason": "The supplied task facts do not identify a measured GEMM stage, selected tile or routed M distribution. Keep conditional until Main supplies those pins and decides this is the next candidate; otherwise the report would be a generic tiling survey."
+      "reason": "Actual workload and selected component tile are now pinned;do not repeat a generic tile survey or claim the histogram alone proves the bottleneck. Reassess after the committed141case comparison/resource attribution."
     },
     "review_digest_sha256": "92193273b309acdddc0dba0822b16489c5ce3ddf207c6928056e8893ea2c4179",
-    "stage": "conditional_not_dispatched"
+    "stage": "conditional_not_dispatched",
+    "known_workload_evidence": {
+      "record_commit": "9c678595231882266623373cb84e4b65071c53dd",
+      "evidence_path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "evidence_key": "coherent_prefill_model_v3.results[0].routes.moe_host_census.requests[0].planned",
+      "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "scope": "32769input/48completed windows,planned job bins after router drain;not actual GPU/PCIe work.",
+      "jobs": 22479,
+      "expert_rows": 15728640,
+      "bins": 16,
+      "exact_rows_within_bins": false
+    }
   },
   "prefill_expert_split_k_occupancy_methods_20261115": {
     "title": "Intra-job split-K for low-row long-prefill expert GEMM",
