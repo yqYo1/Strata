@@ -14738,7 +14738,7 @@
     }
   },
   "prefill_mapped_source_v1": {
-    "stage": "testing",
+    "stage": "failed",
     "source_view": {
       "original_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
       "files": 401,
@@ -16631,10 +16631,10 @@
         "application_enqueues": 0
       }
     ],
-    "passed": true,
+    "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "performance_qualified": false,
     "model_trial_allowed": false,
     "plan": {
@@ -16667,7 +16667,7 @@
         "sha256": "a8e3c4a56b13607c996f2fac2e9289a19912a8fb3cdc30c5416de36f09ad651b"
       }
     },
-    "journal_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=cbbeef1;b=cfda0b6a7c134fe2bdf58f9202770840;m=2dda8e1f413;t=6605cf85bcbc1;x=1e7b3572c1868115",
+    "journal_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=cbbf3d3;b=cfda0b6a7c134fe2bdf58f9202770840;m=2ddbf5d8363;t=6605d0ed75b11;x=b647fb6605163efd",
     "fresh_faults": [],
     "boot_unchanged": true,
     "driver_after": {
@@ -16677,6 +16677,30 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
+    },
+    "error": "RuntimeError('E2 native failed:/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v1/owned/mapped-import.stderr')",
+    "failure_closure": {
+      "case": "mapped-import",
+      "native_exit_code": 1,
+      "pid": 2488070,
+      "observed_gates": [
+        "before-runtime",
+        "runtime-ready"
+      ],
+      "application_enqueues": 0,
+      "failure": "Imported allocation type did not equal ZE_MEMORY_TYPE_HOST_IMPORTED after successful same-address read-only zeMemAllocHost;actual numeric type was not logged.",
+      "release": "Trace confirms zeMemFree success on rejected mapping before exception;compute/copy queue drains and releases succeed.",
+      "physical_process_closed": true,
+      "direct_child_reaped": true,
+      "owned_session_empty": true,
+      "pid_absent_after_reap": true,
+      "original_protocol_ownership_flag_preserved": false,
+      "validation_log_empty": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "decision": "Stop original31-case cohort at its second process. No copy,math,source-cost or model qualification;do not retry,relax raw-pointer admission or change original outcome.",
+      "next_action": "Resolve official historical API contract and pinned NEO allocation-property behavior before any new source admission plan. A new source unit requires separate commit/plan/build.",
+      "review_point": "Next independent source-adapter decision;hold temporary generation only for exact source/recipe recovery and impending retirement."
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
