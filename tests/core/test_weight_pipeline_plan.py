@@ -19,7 +19,7 @@ class WeightPipelineAdmission(unittest.TestCase):
             native_validation_probe={'library':'pin'},runtime_manifest={'sha256':'b'*64},
             validation_provider={'sha256':'c'*64},driver={'driver':'xe'},boot='original',
             weights=dict(path='/exact/weights',sha256='d'*64),
-            cases=[dict(argv=['/exact/exe','serial','mapped-neo','/exact/weights'],environment={'EnableDirectSubmission':'0'})])
+            cases=[dict(source='usm',argv=['/exact/exe','serial','/exact/weights'],environment={'EnableDirectSubmission':'0'})])
         self.public=t.compact(self.row)
 
     def test_exact_metadata_and_plan_reaches_source_check(self):
@@ -32,7 +32,7 @@ class WeightPipelineAdmission(unittest.TestCase):
             row=copy.deepcopy(self.row)
             if which=='weights':row['weights']['sha256']='e'*64
             elif which=='environment':row['cases'][0]['environment']['EnableDirectSubmission']='1'
-            elif which=='argv':row['cases'][0]['argv'][2]='usm'
+            elif which=='argv':row['cases'][0]['argv'][1]='lookahead'
             else:del row['validation_provider']
             with self.subTest(which=which),patch.object(t.base.ur_validation,'committed',return_value=self.public), \
                  patch.object(t.base.original.coherent.build.common.source,'pin') as source:
@@ -50,11 +50,51 @@ class WeightPipelineAdmission(unittest.TestCase):
         for stage in ['closed','failed']:
             for action in ['build','next']:
                 with self.subTest(stage=stage,action=action), \
-                     patch.object(t.Path,'read_text',return_value=json.dumps(dict(stage=stage))), \
+                     patch.object(t.base.ur_validation,'committed',return_value=dict(stage=stage)), \
+                     patch.object(t.Path,'read_text',side_effect=AssertionError('retired checkpoint read')) as read, \
                      patch.object(t,'check',side_effect=RuntimeError('must not requalify')) as check, \
                      patch.object(t,'save') as save:
                     with self.assertRaises(RuntimeError):t.execute(action)
-                    check.assert_not_called();save.assert_not_called()
+                    read.assert_not_called();check.assert_not_called();save.assert_not_called()
+
+    def test_seed_recipe_recovers_from_git_without_private_checkpoint(self):
+        with patch.object(t.Path,'read_text',side_effect=AssertionError('external receipt read')):
+            seed=t.seed_recipe()
+        self.assertEqual(seed['native_source_commit'],t.SEED_SOURCE)
+        self.assertTrue(seed['recipe'])
+
+    def test_seed_recipe_rejects_wrong_source_open_or_missing_provider(self):
+        original=t.seed_recipe()
+        for field in ['native_source_commit','ownership_closed','active','provider']:
+            value=copy.deepcopy(original)
+            if field=='native_source_commit':value[field]='f'*40
+            elif field=='ownership_closed':value[field]=1
+            elif field=='active':value[field]=True
+            else:del value['native_validation_probe']
+            with self.subTest(field=field),patch.object(t,'git',return_value=json.dumps({'prefill_weight_pipeline_v2':value})):
+                with self.assertRaises(RuntimeError):t.seed_recipe()
+
+    def test_matching_serial_and_lookahead_work_are_admitted(self):
+        for arm in ['serial','lookahead']:
+            with self.subTest(arm=arm):t.batch_gate(self.batch(arm),arm)
+
+    def test_changed_dependency_counts_work_or_timer_are_rejected(self):
+        for arm in ['serial','lookahead']:
+            for field,value in [('copies_after_iq',2),('copies_after_math',2),
+                                ('epochs',128),('source','mapped-neo'),('wall_s',.099),
+                                ('timer_pair_max_s',.002)]:
+                batch=self.batch(arm);batch[field]=value
+                with self.subTest(arm=arm,field=field):
+                    with self.assertRaises(RuntimeError):t.batch_gate(batch,arm)
+            with self.assertRaises(RuntimeError):
+                t.batch_gate(self.batch(arm),'serial' if arm=='lookahead' else 'lookahead')
+
+    @staticmethod
+    def batch(arm):
+        return dict(kind='batch',arm=arm,source='usm',rows=1024,epochs=512,
+            requested_H2D_bytes=512*1971200,copies_after_iq=511 if arm=='lookahead' else 0,
+            copies_after_math=1 if arm=='lookahead' else 512,actual_weight_reader=True,
+            full_bitwise_reference_and_guards=True,wall_s=.5,timer_pair_max_s=.000001)
 
 
 if __name__=='__main__':unittest.main()

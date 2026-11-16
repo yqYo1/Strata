@@ -34886,5 +34886,66 @@
       "consumed_report_view_control_review_and_owned_native_session_retired": true,
       "evidence_key": "prefill_weight_pipeline_v2.retention"
     }
+  },
+  "prefill_weight_lookahead_source_cs_20261116": {
+    "classification": "decision support",
+    "status": "native_reviewed_curated_reference",
+    "schedulable_now": false,
+    "source_commit": "e2ef5ebe8871feeb642fa811332d492b3b3b7795",
+    "plan_commit": "1d55e9f6f",
+    "rule_revision": "a0794bf6cf4de5efd5c4f17e51e98ecf84cf102c",
+    "prerequisite_evidence": "Closed actual-reader 07735df23 verifies real expert math/USM;failed mapped-source cost preserved. New independent USM-only scratch scheduling source e2ef5ebe8 and frozen plan1d55e9f6f;fresh six-TU build a0794bf6c and six admission controls pass. No scheduling GPU result yet.",
+    "scope": "Audit only the concrete new serial/lookahead scratch-bank DAG,distinct IQblob/workspace last-reader fences,reset/warm/reference/exception/drain ordering,and actual production fallback boundaries. Compare alternatives/counterexamples;no repeated generic import or profiler survey.",
+    "prior_index_keys": [
+      "prefill_weight_pipeline_source_scope_cq_20261116",
+      "prefill_upload_profile_source_cf_20261116"
+    ],
+    "report_budget": {
+      "words": 2000,
+      "bytes": 28672
+    },
+    "constraints": "Orca gpt-6-luna medium;report-only isolated writable report directory;no Git/build/test/GPU/profiler/process inspection/product edit. Main continues serialized native work;native Luna-max review before curation.",
+    "source_manifest_sha256": "6856f02ba4bf9ba2b2a15f7aabc266356757c0cdc793ab9f973875261eacd1ed",
+    "envelope": {
+      "wall_seconds": 900,
+      "CPU_seconds_upper_bound": 900,
+      "memory_max_bytes": 2147483648,
+      "report_control_total_bytes": 67108864,
+      "report_control_files": 64,
+      "scope": "strata-research-weight-lookahead-cs-20261116"
+    },
+    "native_model": "gpt-6-luna",
+    "native_effort": "medium",
+    "report_only_cli_verified": true,
+    "pre_dispatch_startup_failure": "Undispatched SIGXFSZ from32MiBper-file startup cap;positive exit verified,corrected before first Task injection. No research result/retry relabelling.",
+    "worker_and_terminal_closed": true,
+    "worker_side_status_ok_reachable": true,
+    "report_only_sandbox_verified": true,
+    "report_sha256": "6ee899a125fb93ca1309b0e80c15752c7e161a5ff4316862a8232c52aa68af4e",
+    "report_bytes": 7092,
+    "report_words": 915,
+    "resource_envelope_passed": true,
+    "resource_summary": {
+      "wall_seconds": 691.0625253352337,
+      "CPU_seconds_conservative_upper_bound": 15.945933,
+      "cgroup_memory_peak_bytes": 310480896,
+      "native_process_peak_RSS_bytes": 403771392,
+      "captured_bytes_upper_bound": 831936
+    },
+    "review_digest": "# Review digest\n\n**Verdict: accept with targeted clarification.** The report is correctly bounded, source-pinned, and technically sound on the one-bank DAG: the IQ-reader event protects quantized-bank overwrite, while the in-order ready barrier keeps the next IQ writers behind current GU/Down workspace readers. The valid alternatives and overwrite/deadlock counterexamples are useful; no overlap, speedup, production integration, or model adoption is established.\n\nThe manifest and report hashes match, and all 16 source hashes verify. Clarify the fixture counters before treating them as literal branch-edge counts: `after_math` includes the initial copy (serial: initial + 511 post-math; lookahead: initial + zero post-math), while lookahead has 511 post-IQ copies. Also keep dispatcher/backend facts attributed to Main's context, since the pinned manifest omits that callsite; fixture limits are otherwise stated. Normal-path source retirement follows an explicit batch drain; exception unwinding uses reverse owner order.\n\nNo fresh research scope is schedulable while Main's frozen clean pairs remain in progress. Preserve the existing ratios and wait for cohort closure; a pass can motivate a separately committed production-dependency plan, not adoption.\n",
+    "native_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "review_sha256": "794d198b4be4d68da870d56a1c8b26fed65c3ab144acab03174ac07925205ffe",
+      "digest_sha256": "8fd2df5d7806e76d5d12310faafcfd6fff06b4c3cc93de27962e25af59363cbb"
+    },
+    "corrections": "after_math includes initial copy;not literal post-math at first job. Report manifest does not pin dispatcher;production-backend confirmation belongs to Main prior context. No new production qualification.",
+    "actual_cohort_update": "Closed41b00bc09:all9native normal0/quiet/closed/no fault;bitwise/guards and exact named launch/copy counts pass. Three clean ratios .580523/.394064/.691294,GM.540775;component gate passes only.",
+    "next_scope": "No fresh generic survey. First pin concrete production job/source-preparation/scratch-publication proposal using Main-owned code;then reassess eligibility before research.",
+    "body_retention": {
+      "stage": "complete",
+      "consumed_report_view_control_review_and_owned_native_session_retired": true,
+      "evidence_key": "prefill_weight_lookahead_v1.retention"
+    }
   }
 }

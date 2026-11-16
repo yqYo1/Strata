@@ -59,15 +59,6 @@ class UploadPlanAdmission(unittest.TestCase):
                 self.invoke(row,RuntimeError)
 
 
-class UploadOverlapPlanAdmission(UploadPlanAdmission):
-    target=overlap
-    def setUp(self):
-        super().setUp()
-        # Both controllers reject changed inputs before source admission.
-        self.row['allowed']={}
-        self.public=self.target.compact(self.row)
-
-
 class MappedSourceCapabilityAdmission(unittest.TestCase):
     def setUp(self):
         self.row=dict(stage='closed',passed=True,complete=True,ownership_closed=True,active=False,

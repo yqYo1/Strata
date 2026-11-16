@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Coherent actual-weight reader/source comparison; Main owns all native work.
+"""Coherent actual-weight serial/lookahead comparison; Main owns native work.
 
 Main-authored from this project's owned fixture controllers; repository LICENSE.
 """
@@ -17,14 +17,15 @@ import prefill_upload_overlap as base
 import kernel_trace
 
 P,B,RESULT=base.P,base.B,base.RESULT
-ROOT=B/'prefill-weight-pipeline-v2'
+ROOT=B/'prefill-weight-lookahead-v1'
 VIEW=ROOT/'source'
-KEY='prefill_weight_pipeline_v2'
+KEY='prefill_weight_lookahead_v1'
 SOURCE='bench/sycl/prefill_weight_pipeline.cpp'
 TEST='tests/core/test_weight_pipeline_plan.py'
-PREFIXES=[*(p for p in base.PREFIXES if p!=base.SOURCE),SOURCE,TEST]
-SEED_EVIDENCE='9cc26a79bca65a4e2ca4327c7b79d4ae492843fe'
-SEED_SOURCE='0a3295b89619cdc9cb4c6c4b2333043325fc8695'
+PREFIXES=[*base.PREFIXES,SOURCE,TEST]
+SEED_EVIDENCE='07735df239679929be29c859561ae0501a9a3ab7'
+SEED_SOURCE='2187bfa5ddff6d8331187b8cfc22157852c2d461'
+TRACED_RUN=dict(base.RUN,text_cap=64<<20,file_cap=96<<20,total_cap=160<<20)
 require,sha,fingerprint=base.require,base.sha,base.fingerprint
 git,write=base.git,base.write
 
@@ -49,6 +50,19 @@ def metadata_gate(row):
         require(name in row and bool(row[name]),'missing transitive native input:'+name)
 
 
+def seed_recipe():
+    # Closed preparation needs the committed recipe,not a disposable checkpoint
+    # or the retired native executable. Fresh source/dependency checks follow.
+    seed=json.loads(git(P,'show',SEED_EVIDENCE+':'+str(RESULT.relative_to(P))))['prefill_weight_pipeline_v2']
+    require(seed['stage']=='closed' and seed['passed'] is True and seed['complete'] is True
+        and seed['active'] is False and seed['ownership_closed'] is True
+        and seed['native_source_commit']==seed['project']['revision']==SEED_SOURCE
+        and seed['original_math_runtime_source']==base.original.SOURCE,
+        'exact committed closed seed recipe required')
+    metadata_gate(seed)
+    return seed
+
+
 def check(row,committed=True):
     if committed:
         require(fingerprint(compact(row))==fingerprint(base.ur_validation.committed(RESULT,(KEY,))),
@@ -69,8 +83,21 @@ def check(row,committed=True):
         require(all(sha(p)==h for group in row['actual_inputs'].values() for p,h in group.items()),
                 'actual compiler/link/object census changed')
         for case in row['cases']:
-            require(case['argv']==[row['binary']['path'],case['mode'],case['source'],row['weights']['path']],
-                    'frozen actual reader/source argv differs')
+            require(case['source']=='usm' and
+                    case['argv']==[row['binary']['path'],case['mode'],row['weights']['path']],
+                    'frozen actual reader/schedule argv differs')
+
+
+def batch_gate(batch,arm):
+    require(arm in ['serial','lookahead'] and batch['kind']=='batch'
+        and batch['arm']==arm and batch['source']=='usm' and batch['rows']==1024
+        and batch['epochs']==512 and batch['requested_H2D_bytes']==512*1971200
+        and batch['copies_after_iq']==(511 if arm=='lookahead' else 0)
+        and batch['copies_after_math']==(1 if arm=='lookahead' else 512)
+        and batch['actual_weight_reader'] is True and batch['full_bitwise_reference_and_guards'] is True,
+        'actual production-kernel scheduling workload differs')
+    require(batch['wall_s']>=.1 and 0<=batch['timer_pair_max_s']<=.001*batch['wall_s'],
+            'ineligible actual reader batch/clock overhead')
 
 
 def extract_weights():
@@ -108,22 +135,16 @@ def extract_weights():
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'existing actual-reader attempt;inspect owner,no retry')
-    prior=base.ur_validation.committed(RESULT,('prefill_mapped_wait_order_v2',))
-    require(prior['stage']=='closed' and prior['analysis']['repeated_component_wall_gain'] is True
+    prior=base.ur_validation.committed(RESULT,('prefill_weight_pipeline_v2',))
+    require(prior['stage']=='closed' and prior['source_cost_eligible'] is False
+        and prior['model_trial_allowed'] is False
         and prior['retention']['stage']=='complete' and prior['retention']['all_selected_paths_absent'] is True,
-        'preserve completed source/wait units and retire ended component before next generation')
-    earlier=base.ur_validation.committed(RESULT,('prefill_weight_pipeline_v1',))
-    require(earlier['stage']=='preparation_closed' and earlier['GPU_executed'] is False
-        and earlier['native_build_executed'] is False,'preserve unrun V1production-flag correction')
+        'preserve failed imported-source gate;use verified host-USMreference independently')
     production=base.ur_validation.committed(base.original.RESULT,('coherent_prefill_model_v3',))
     require(production['environment']['STRATA_SYCL_PARALLEL_IQ_DEQUANT']=='1',
             'qualified model parallel-IQpolicy required')
     native,proof=base.original.verify_original()
-    seed=json.loads((base.ROOT/'record.json').read_text())
-    historical=json.loads(git(P,'show',SEED_EVIDENCE+':'+str(RESULT.relative_to(P))))[base.KEY]
-    require(fingerprint(base.compact(seed))==fingerprint(historical)
-        and seed['native_source_commit']==SEED_SOURCE,'exact original source/recipe receipt required')
-    base.original.coherent.recover(seed['project'])
+    seed=seed_recipe();seed_root=str(Path(seed['binary']['path']).parent)
     project=base.original.coherent.build.common.source.pin(P,PREFIXES)
     ROOT.mkdir(mode=0o700)
     for name in ['tmp','cache','owned']:(ROOT/name).mkdir(mode=0o700)
@@ -159,51 +180,54 @@ def prepare():
     compile_one('fixture',P/SOURCE,'src/sycl/runtime.cpp',['-fno-fast-math','-ffp-contract=off'])
     for label in ['dense-image','dense-host']:
         old=next(v for v in seed['recipe'] if v['label']==label)
-        recipes.append({k:([x.replace(str(base.ROOT),str(ROOT)) for x in v] if isinstance(v,list) else v)
+        recipes.append({k:([x.replace(seed_root,str(ROOT)) for x in v] if isinstance(v,list) else v)
                         for k,v in old.items()})
     recipes.append(dict(label='link',argv=[cc,'--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
         '-fsycl',*[str(ROOT/(x+'.o')) for x in ['runtime','commands','iq','ops','dense-image','dense-host','fixture']],
         base.event.LOADER,'-Wl,-t','-Wl,--gc-sections','-o',str(ROOT/'benchmark')],
         outputs=[str(ROOT/'benchmark')],link=True))
     cases=[]
-    def case(label,mode,source,trace,pair=None):
+    def case(label,mode,trace,pair=None):
         root=ROOT/label
-        old=next(v for v in seed['cases'] if v.get('rows')==1024 and v['source']==source and v['trace'] is trace)
+        old=next(v for v in seed['cases'] if v['source']=='usm' and v['mode']=='serial' and v['trace'] is trace)
         env={k:v.replace(old['root'],str(root)) for k,v in old['environment'].items()}
         env['STRATA_SYCL_PARALLEL_IQ_DEQUANT']=production['environment']['STRATA_SYCL_PARALLEL_IQ_DEQUANT']
-        cases.append(dict(label=label,root=str(root),mode=mode,source=source,trace=trace,pair=pair,
-            argv=[str(ROOT/'benchmark'),mode,source,weights['path']],environment=env))
-    for source in ['usm','mapped-neo']:case('metadata-'+source,'metadata',source,True)
-    for source in ['usm','mapped-neo']:case('validated-'+source,'serial',source,True)
+        cases.append(dict(label=label,root=str(root),mode=mode,source='usm',trace=trace,pair=pair,
+            argv=[str(ROOT/'benchmark'),mode,weights['path']],environment=env))
+    case('metadata-usm','metadata',True)
+    for arm in ['serial','lookahead']:case('validated-'+arm,arm,True)
     for pair in range(3):
-        for source in (['usm','mapped-neo'] if pair%2==0 else ['mapped-neo','usm']):
-            case(f'clean-pair{pair}-{source}','serial',source,False,pair)
+        for arm in (['serial','lookahead'] if pair%2==0 else ['lookahead','serial']):
+            case(f'clean-pair{pair}-{arm}',arm,False,pair)
     row=dict(stage='prepared',passed=True,complete=False,active=False,ownership_closed=True,
         project=project,native_source_commit=project['revision'],original_math_runtime_source=base.original.SOURCE,
-        foundation=proof,seed_receipt=dict(path=str(base.ROOT/'record.json'),sha256=sha(base.ROOT/'record.json'),
-            source=SEED_SOURCE,evidence=SEED_EVIDENCE,old_ELFs_not_inputs=True),allowed=allowed,
+        foundation=proof,seed_recipe=dict(source=SEED_SOURCE,evidence=SEED_EVIDENCE,
+            sha256=fingerprint(seed),external_receipt_needed=False,old_ELFs_not_inputs=True),allowed=allowed,
         source_view=dict(original_commit=base.original.SOURCE,files=len(generated),sha256=fingerprint(generated)),
         source_capability=base.source_capability(),property_evidence=base.property_evidence(),weights=weights,
         production_iq_policy=dict(native_source=base.original.SOURCE,evidence_key='coherent_prefill_model_v3.environment.STRATA_SYCL_PARALLEL_IQ_DEQUANT',value='1'),
         recipe=recipes,recipe_tools={p:sha(p) for p in seed['recipe_tools']},runtime_manifest=seed['runtime_manifest'],
         validation_provider=seed['validation_provider'],native_validation_probe=seed['native_validation_probe'],
-        build_environment={k:v.replace(str(base.ROOT),str(ROOT)) for k,v in seed['build_environment'].items()},
+        build_environment={k:v.replace(seed_root,str(ROOT)) for k,v in seed['build_environment'].items()},
         driver=base.guards.driver_guard(),boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         cases=cases,results=[],commands=[],model_trial_allowed=False,performance_qualified=False,
-        plan=dict(unit='Only source ownership differs:hostUSM versus page-aligned read-only imported heap. Exact layer2experts0/1bytes and original14508dequantGU22/Down20,FP16operands,BF16GU/Down,FP16hidden,FP32accumulation held fixed. Serial copy/read order,one private quantized bank,1024rows,128expert jobs,all buffers/queues fixed. Not a scheduling comparison.',
-            build='Fresh six TUs with original Runtime/class/production math plus existing owned source headers. No archive/object reuse. IQ/ops host function sections and link garbage collection omit unrelated uncalled MMVQ APIs,identically in both source arms;dense AOTrecipe unchanged. One new temporary component generation beside the two retained independent phase references;ended prior generation physically retired.',
+        plan=dict(unit='Only the quantized scratch-bank reader fence moves:serial copies follow full expert math;lookahead copies follow both IQdequant kernels while current GU/SwiGLU/Down/accumulate use separate workspaces. The next IQpair always follows current math on the same in-order compute queue. Fixed hostUSMsource,one scratch blob,actual layer2experts0/1,original14508math,FP16operands,BF16GU/Down,FP16hidden,FP32accumulation,1024rows,512jobs,queues,placement and event counts. Splitting the fixture helper at its actual blob/workspace reader seam and matching controller/tests are inseparable scheduling plumbing,not new kernels. Both arms use the same binary;512jobs replaces128only for timing headroom,not as a historical speed comparison. No mapped-source trial.',
+            build='Fresh six TUs with original Runtime/class/production math plus existing owned source headers. No archive/object reuse. IQ/ops function sections and link garbage collection are identical in both arms;dense AOTrecipe unchanged. One temporary third component generation beside the two retained independent phase references;ended V2native generation physically retired. Seed recipe migrates from the old mapped-source receipt to the exact closed actual-reader receipt;old ELFbytes are not inputs.',
             inputs='Committed extraction recipe reads only actual layer2roles for experts0/1 from the existing pinned model. Hash each selected role and combined3942400Bbundle,with original file identity and prior full hash labelled not rehashed. Bundle is an external model fixture,not project source or synthetic packed data. No asset download or model edit.',
-            order='Two traced metadata-only Runtime source admissions,then two traced serial actual-reader batches. Then three independent clean pairs USM/Neo,Neo/USM,USM/Neo. No retry,exclusion or reordering.128ordinary-USM/SYCL-copy reference jobs and two event-source warmup jobs outside timing.128actual source copies and identical six-kernel math jobs plus dual drain timed.',
-            gates='Typed committed source/plan,original Git/SDK/compiler/link/object/ELF/weights,actual argv/startup environment/providers,source type1and positive imported IDs. Match qualified model parallel-IQflag1before exec and verify258actual named IQ22-GU/258IQ20-Down launches in each traced math batch. Metadata zero app enqueues;serial full bitwise FP32output against identical ordered production math using independent hostUSM/SYCLcopies,finite outputs,sticky status0,all device/source/bank guards and final expert1payload. Traced1548math launches and259payload-sized native copies(reference128,lane130,finalreadback1);counts are APIwork,not bus traffic. Batch>=100ms;128timer-pair max<=.001batch. Quiet validation,normal0,closed owners,unchanged boot/driver,no fresh fault.',
-            decision='All three mapped/USM steady ratios and all three preparation+wall+retirement ratios must<=1.10 to permit a newly committed actual-reader scheduling plan. Import is a subset of preparation. Keep all individual samples and ratios;not a speedup,production/model or target gate. Preserve old source4096failure and old E2USM1024failure.',
+            order='One traced metadata-only Runtime admission,then traced serial and lookahead actual-reader batches. Three independent clean pairs serial/lookahead,lookahead/serial,serial/lookahead. No retry,exclusion or reordering.512ordinary-USM/SYCL-copy reference jobs and two selected-schedule warmup jobs outside timing.512actual source copies and identical six-kernel math jobs plus checked copy/compute drain timed;reset/reference/verification remain outside. Trace budgets per child:64MiBcaptured stdout/stderr,96MiBper file,160MiBtotal to retain6156kernel/1027copy APIvalidation;clean budget unchanged. All children keep120swall/240sCPU/4GiBRSS.',
+            gates='Typed committed source/plan,original Git/SDK/compiler/link/object/ELF/weights,actual argv/startup environment/providers,same-context hostUSMsource. Match qualified model parallel-IQflag1before exec;verify1026actual named IQ22-GU/1026IQ20-Down launches per traced math child. Metadata zero app enqueues;both arms full bitwise FP32output against identical ordered math using independent hostUSM/SYCLcopies,finite outputs,status0,all device/source/bank guards,final expert1payload. Traced6156math launches and1027payload-sized copies(reference512,lane514,finalreadback1). Timed actual branch counts:serial0after-IQ/512after-math,lookahead511after-IQ/1after-math. Counts are APIwork,not bus traffic. Every batch>=100ms;128timer-pair max<=.001batch. Quiet validation,normal0,closed owners,unchanged boot/driver,no fresh fault.',
+            decision='All three lookahead/serial wall ratios must<1,with geometric mean<1,and all three preparation+wall+retirement ratios<=1.10 for component scheduling eligibility. Keep all samples,including slow first processes. A component pass permits only a new separately committed production-integration/attribution plan,not model adoption or a target claim. Preserve failed V2imported-source,old4096source and E2USM1024gates unchanged.',
             stop='First source/build/reference/guard/validation/ownership/deadline/fault failure stops this cohort. Timing samples complete even if slower. No implicit fallback,hash refresh,GPUreset or foreign process action.',
-            retention='Keep minimum useful samples,source/recipe/census,asset-slice identities and failures. Retire routine traces and ended component/raw/extracted weight fixture when its immediate consumer closes. Preserve both phase-reference engines;no fourth generation. Review the old source-only receipt hold during this recovery.',
-            limits='Exact production fallback math kernels for M1024;explicit isolated entrypoint omits full dispatcher/gather/model costs. Only two real experts,not a whole layer/model,ordinary Arena direct import,physicalPCIe saturation,modelPP/TG/TTFT,agent,decode/handoff,262144/RESTORE or adoption. No current production prefill/decode selector changes.',
+            retention='Keep useful individual samples,source/recipe/census,asset-slice identities and failures. Retire routine traces and ended component/raw/extracted weights when this scheduling question closes. Preserve both phase-reference engines;no fourth generation. Next seed-receipt review occurs at source/recipe recovery before native retirement;the migrated old source-only receipt has no new execution role.',
+            limits='Exact production fallback math kernels for M1024;isolated entrypoint omits dispatcher/gather/model costs and production permanent cache publication. Only two experts and private scratch bank,not whole layer/model,physicalPCIe saturation,modelPP/TG/TTFT,agent,decode/handoff,262144/RESTORE or adoption. Saturating hardware resource remains unknown. No production selectors change.',
             provenance='Main-authored fixture/controller/extraction under repository LICENSE. Math/kernel/source-owner headers are exact owned14508or0a3295with previously checked Intel TLA provenance;no external implementation or XeStrata code/design.'))
-    metadata_gate(row);save(row);print('Prepared actual-weight reader/source plan;commit before build.',flush=True)
+    metadata_gate(row);save(row);print('Prepared actual-weight scheduling plan;commit before build.',flush=True)
 
 
 def execute(action):
+    public=base.ur_validation.committed(RESULT,(KEY,))
+    require(public['stage'] in (['prepared'] if action=='build' else ['built','testing']),
+            'terminal or wrong-stage actual-reader cohort;preserve its original receipt')
     row=json.loads((ROOT/'record.json').read_text())
     require(row['stage'] in (['prepared'] if action=='build' else ['built','testing']),
             'terminal or wrong-stage actual-reader cohort;preserve its original receipt')
@@ -218,8 +242,8 @@ def execute(action):
                 entry,out,err=supervisor.run(recipe['label'],recipe['argv'],row['build_environment'],ROOT,**base.BUILD)
                 require(base.owner_api.closed(entry) and entry['exit_code']==0,'fresh actual-reader build failed:'+str(err))
                 if recipe['label']=='host-controls':
-                    require('Ran 4 tests' in err.read_text() and '\nOK\n' in err.read_text(),'source/metadata host controls required')
-                    row['host_admission_controls']=dict(methods=4,passed=True,device_executed=False)
+                    require('Ran 8 tests' in err.read_text() and '\nOK\n' in err.read_text(),'source/metadata/scheduling controls required')
+                    row['host_admission_controls']=dict(methods=8,passed=True,device_executed=False)
                 if 'dep' in recipe:
                     for name in shlex.split(Path(recipe['dep']).read_text().replace('\\\n',' ').split(':',1)[1]):
                         path=str(Path(name).resolve());h=sha(path);require(allowed.get(path)==h,'unfrozen compiler input:'+path);actual['compiled'][path]=h
@@ -260,7 +284,8 @@ def execute(action):
                     else:
                         records.append(item)
                         if item['kind']=='done':channel.exit(30);break
-            entry,out,err=supervisor.run(case['label'],case['argv'],env,P,interaction=interaction,**base.RUN)
+            entry,out,err=supervisor.run(case['label'],case['argv'],env,P,interaction=interaction,
+                **(TRACED_RUN if case['trace'] else base.RUN))
             require(base.owner_api.closed(entry) and entry['exit_code']==0,'actual-reader native failed:'+str(err))
             validation=base.ur_validation.preload_evidence(err.read_text(),entry['pid'])
             require(not (root/'validation.log').exists() or (root/'validation.log').stat().st_size==0,'UR validation output')
@@ -275,38 +300,37 @@ def execute(action):
                 and math.isfinite(lifecycle[k]) and lifecycle[k]>=0 for k in ['preparation_s','import_s','retirement_s'])
                 and lifecycle['preparation_s']>=lifecycle['import_s'],'invalid source lifecycle')
             result['source_lifecycle']=lifecycle
-            if case['mode']=='serial':
+            if case['mode']!='metadata':
                 require(len(records)==4,'actual reader batch required');batch=records[1]
-                require(batch['kind']=='batch' and batch['arm']=='serial' and batch['source']==case['source']
-                    and batch['rows']==1024 and batch['epochs']==128 and batch['requested_H2D_bytes']==128*1971200
-                    and batch['actual_weight_reader'] is True and batch['full_bitwise_reference_and_guards'] is True,'actual production-kernel workload differs')
-                require(batch['wall_s']>=.1 and 0<=batch['timer_pair_max_s']<=.001*batch['wall_s'],'ineligible actual reader batch/clock overhead')
+                batch_gate(batch,case['mode'])
                 result.update(batch=batch,lifecycle_plus_batch_s=lifecycle['preparation_s']+batch['wall_s']+lifecycle['retirement_s'])
             else:require(len(records)==3,'metadata contains unexpected work')
             if case['trace']:
                 trace=(root/'ur.trace').read_text();kernels=len(re.findall(r'---> (urEnqueueKernelLaunch\w*)',trace))
                 copies=sum('SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(' in v and 'size=1971200,' in v for v in err.read_text().splitlines())
-                require(kernels==(0 if case['mode']=='metadata' else 1548) and copies==(0 if case['mode']=='metadata' else 259),'actual reader math/copy count differs')
+                require(kernels==(0 if case['mode']=='metadata' else 6156) and copies==(0 if case['mode']=='metadata' else 1027),'actual reader math/copy count differs')
                 result['validated_counts']=dict(math_launches=kernels,payload_sized_native_copy_calls=copies)
-                if case['mode']=='serial':
+                if case['mode']!='metadata':
                     named=kernel_trace.launch_census(trace)
                     names=named['per_kernel']
                     parallel={key:sum(v['launches'] for name,v in names.items() if key in name)
                               for key in ['parallel_iq_launchILi22ELb1','parallel_iq_launchILi20ELb0']}
-                    require(named['launches']==1548 and all(v==258 for v in parallel.values()),
+                    require(named['launches']==6156 and all(v==1026 for v in parallel.values()),
                             'actual production parallel-IQlaunch selection differs')
                     result['validated_counts']['parallel_IQ_launches']=parallel
             check(row,False);row['results'].append(result);row.update(passed=True,active=False,ownership_closed=True)
             if len(row['results'])==len(row['cases']):
                 ratios=[];lifecycle_ratios=[]
                 for pair in range(3):
-                    values={v['source']:v for v in row['results'] if v['clean'] and v['pair']==pair}
-                    require(set(values)=={'usm','mapped-neo'},'complete actual reader source pair required')
-                    ratios.append(values['mapped-neo']['batch']['wall_s']/values['usm']['batch']['wall_s'])
-                    lifecycle_ratios.append(values['mapped-neo']['lifecycle_plus_batch_s']/values['usm']['lifecycle_plus_batch_s'])
-                row.update(stage='closed',complete=True,analysis=dict(paired_mapped_over_usm=ratios,
+                    values={v['mode']:v for v in row['results'] if v['clean'] and v['pair']==pair}
+                    require(set(values)=={'serial','lookahead'},'complete actual reader scheduling pair required')
+                    ratios.append(values['lookahead']['batch']['wall_s']/values['serial']['batch']['wall_s'])
+                    lifecycle_ratios.append(values['lookahead']['lifecycle_plus_batch_s']/values['serial']['lifecycle_plus_batch_s'])
+                row.update(stage='closed',complete=True,analysis=dict(paired_lookahead_over_serial=ratios,
                     geometric_mean_ratio=math.prod(ratios)**(1/3),paired_lifecycle_ratios=lifecycle_ratios,
-                    source_cost_eligible=all(x<=1.10 for x in ratios+lifecycle_ratios),speedup_or_model_adoption_qualified=False))
+                    scheduling_component_eligible=all(x<1 for x in ratios)
+                        and math.prod(ratios)**(1/3)<1 and all(x<=1.10 for x in lifecycle_ratios),
+                    model_adoption_qualified=False))
     except BaseException as error:row.update(stage='failed',passed=False,complete=False,error=repr(error));raise
     finally:
         row['commands'].extend(supervisor.commands);row['active']=supervisor.active is not None
