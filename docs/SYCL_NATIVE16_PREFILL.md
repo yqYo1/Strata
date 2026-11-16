@@ -1690,11 +1690,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   review;these are source corrections,not executed safety/precision evidence.
   Controlled submission/marker/async-fault and active observer coverage remain
   pending before qualification. No production path is enabled.
-  A bounded syntax-only check is planned before the next native build. It uses
-  compiler2026.2,original14508headers from the still-owned Q0view,plus the two
-  new candidate files,with no object/image/link/device generation. Main pins
-  this command and checks its actual dependency output under the same source/
-  compiler manifest;source/census success would not be native execution.
+  The bounded syntax-only check now passes at source
+  `c20e7d7a20d171ba6ae0cbdc55cd38fd9effc6fc`,using compiler2026.2and
+  original14508headers from the still-owned Q0view,plus the two new files.
+  All671actual compiler inputs match the pinned source/SDKmanifest;their
+  census hash is`2ecc58f6092e85d56902b2806d16194e6e7f2565774c369c8c0eb890085aeb6f`.
+  The finite child closes normally0with empty diagnostics and closed ownership.
+  No object,image,link or device execution occurs. This is syntax evidence,
+  with the same command below;native/device/model gates remain pending.
 
   ```text
   /opt/intel/oneapi/compiler/2026.2/bin/icpx --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -std=c++20 -DSTRATA_ENABLE_SYCL=1 -fsycl -fsyntax-only -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/source/include -I/home/yayoi/orca/workspaces/Strata/sycl/include -MD -MF /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-lane-syntax-v1/fixture.d /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_sycl_copy_lane.cpp
