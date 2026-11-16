@@ -1740,9 +1740,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prototype/controller is retired to the original source/admission revisions;
   neither the code nor the timings imply adoption. Two source-audit transactions
   retire70files,1699499bytes after source commits and curation. Only compact
-  corrections remain;new fixtures still need their own committed build/run plan.
+  corrections remain;the new fixtures' committed build/run plan follows below.
 
-  Main's next **unbuilt/unselected** proposal is`prefill/sycl_copy_groups.hpp`
+  Main's next **unselected** proposal is`prefill/sycl_copy_groups.hpp`
   and`tests/sycl/prefill_sycl_copy_groups.cpp`,source
   `695565fbda8802363b2c91b49a6021ba39326b55`. The earlier audited prototype is
   recoverable at`dbb3506bc1f295f16d500a87ef1f924c2003dea3`. Both are independently
@@ -1787,11 +1787,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   modes exercise256experts/full128-slot window/reuse and independent marker
   policies. Their occupied-bank refusals are not capacity checks. Readiness
   explicitly depends on copy completion in both placements. DG/DH and DI/DJ
-  source reviews find no blocker under caller contracts;**none of these new
-  fixtures has compiled or executed**. Submission/async/drain-fault and active
+  source reviews find no blocker under caller contracts. The fresh05eceacd
+  build now passes13host controls and all15owned build commands,with962actual
+  compiler inputs,29link inputs and12fresh objects. Both fixtures are compiled
+  and their ELF hashes are pinned;**no new native GPU case has run**.
+  Submission/async/drain-fault and active
   observer coverage remain explicit holds;source review is not safety,
-  precision,performance or model qualification. New recipe/order/gates and
-  rebuilding affected translation units are required before any execution.
+  precision,performance or model qualification. The committed recipe/order/gates
+  and coherent rebuild now permit the small traced checks before full math.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
