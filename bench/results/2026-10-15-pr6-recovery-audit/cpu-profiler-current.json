@@ -17308,9 +17308,9 @@
     }
   },
   "prefill_weight_wrapper_v1": {
-    "stage": "testing",
+    "stage": "closed",
     "passed": true,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "prior_source_adapter": {
@@ -22459,6 +22459,62 @@
           "full_bitwise_reference_and_guards": true
         },
         "lifecycle_plus_batch_s": 1.6426363249999998
+      },
+      {
+        "label": "clean-8192-pair2-shortcut",
+        "arm": "shortcut",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": 2,
+        "clean": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "staged": false,
+          "host_slots": 0,
+          "copy_wrapper": "resolved-queue",
+          "runtime_check_and_observer_retained": true
+        },
+        "validation": {
+          "pid": 3924085,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "1533af7f2f4379eaeccc9bcc3f8f347742ceb6a4dac45e6acc9c96f2bf78dec4",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 5e-08,
+          "retirement_s": 5e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.637685058,
+          "timer_pair_max_s": 6e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.6376851579999998
       }
     ],
     "model_trial_allowed": false,
@@ -22493,6 +22549,88 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
+    },
+    "analysis": {
+      "16": {
+        "paired_shortcut_over_direct": [
+          0.98421584662836,
+          0.9611402855469297,
+          1.7907269368531717
+        ],
+        "geometric_mean_ratio": 1.1920711207563737,
+        "paired_adapter_lifecycle_ratios": [
+          0.9842158516598642,
+          0.9611400539885123,
+          1.7907265880544192
+        ],
+        "repeated_wrapper_gain": false,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "128": {
+        "paired_shortcut_over_direct": [
+          1.5840659515957987,
+          1.118062340503402,
+          0.9521460150532179
+        ],
+        "geometric_mean_ratio": 1.1902758193719656,
+        "paired_adapter_lifecycle_ratios": [
+          1.5840661463720145,
+          1.1180623078272056,
+          0.9521460384042295
+        ],
+        "repeated_wrapper_gain": false,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "1024": {
+        "paired_shortcut_over_direct": [
+          0.8870200581707938,
+          0.7961334713021072,
+          0.9780681711217243
+        ],
+        "geometric_mean_ratio": 0.8839536292780668,
+        "paired_adapter_lifecycle_ratios": [
+          0.8870200625909282,
+          0.7961335436079372,
+          0.978068134473834
+        ],
+        "repeated_wrapper_gain": true,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "4096": {
+        "paired_shortcut_over_direct": [
+          0.8428862913139152,
+          1.0151151534747265,
+          1.2382863538537812
+        ],
+        "geometric_mean_ratio": 1.0194559449406564,
+        "paired_adapter_lifecycle_ratios": [
+          0.8428862889245534,
+          1.0151151518489359,
+          1.2382862427943753
+        ],
+        "repeated_wrapper_gain": false,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      },
+      "8192": {
+        "paired_shortcut_over_direct": [
+          0.9918499933974276,
+          1.027518731145454,
+          0.9969858347852653
+        ],
+        "geometric_mean_ratio": 1.0053290761545381,
+        "paired_adapter_lifecycle_ratios": [
+          0.99185003816803,
+          1.0275188140631826,
+          0.996985841038186
+        ],
+        "repeated_wrapper_gain": false,
+        "wrapper_cost_characterized": true,
+        "model_adoption_qualified": false
+      }
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
