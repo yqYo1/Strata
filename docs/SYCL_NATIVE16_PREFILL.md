@@ -1398,10 +1398,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   slow third overlap samples;do not relabel them as noise. The CSVrecords both
   shapes with model PP/TTFT/TGblank. Kernel/transfer critical-path attribution
   and resource saturation remain unresolved:wall-time gain alone does not prove
-  actual device overlap or explain the variation. Next commit a bounded plan
-  using the already qualified non-counter unitrace stack,first checking its
-  interaction with this event protocol,then separate clean/profiled samples
-  and executed-copy/kernel counts. Preserve this failed1024gate and qualify
+  actual device overlap or explain the variation. The new unexecuted
+  `profile_prefill_upload_overlap.py`proposal reuses these exact two images
+  through a historical source/recipe/census reader. It separates seven
+  collector/event safety cases from C/T/T/Cper arm/shape attribution,with
+  native-origin RAW-clock joins,exact513copy/514dense calls and one-lookahead
+  dependency checks. Commit its exact plan and pass the nine host controls
+  before native work;no new build or model route is implied. Preserve this failed1024gate and qualify
   observer cost;do not change its criteria retroactively. The current E2images,
   fresh objects,source view and private build/census record have that imminent
   consumer;retire them at profile qualification/closure if superseded. Normal
