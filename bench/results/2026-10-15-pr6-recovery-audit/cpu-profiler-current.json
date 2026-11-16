@@ -15015,5 +15015,585 @@
       "native"
     ],
     "shared_environment": "Exact observer settings in the full committed result;qualified baseline tools/sycl/measurement_environment.json remains unchanged."
+  },
+  "prefill_mapped_source_v2": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "native_source_commit": "0a3295b89619cdc9cb4c6c4b2333043325fc8695",
+    "source_view": {
+      "original_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "files": 401,
+      "sha256": "eb9cd867708fec6c884b9044cc46141ba9ed455a513dbc0a5f21587a436f8f74"
+    },
+    "binaries": {
+      "safety": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/safety",
+        "sha256": "ca684b97850c2d660ead5c9b2b37dfec1909ed4d502706db2bbb694c54d24bef"
+      },
+      "benchmark": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/benchmark",
+        "sha256": "9759e975732e45af66df8a2f86c781d5cb627b2b49736f40e1c27e89cf879da7"
+      }
+    },
+    "host_admission_controls": {
+      "methods": 14,
+      "passed": true,
+      "device_executed": false
+    },
+    "actual_inputs": {
+      "compiled": {
+        "files": 928,
+        "sha256": "e6ae76c1171ade20237a0046094a25aa28daaa420ff7f5173ca459997b2229d8"
+      },
+      "links": {
+        "files": 25,
+        "sha256": "1e787926abf385d742a4fe21b1968f4b3d808fd18ca903a96eb913f343ba5d32"
+      },
+      "objects": {
+        "files": 7,
+        "sha256": "824c911db16ea3a8b4eb8baa657939a2466801e87c6b6882438c59c3d279411c"
+      }
+    },
+    "analysis": {
+      "1024": {
+        "paired_mapped_over_usm": [
+          0.9945602242764505,
+          0.9947997153873782,
+          0.7381715600785077
+        ],
+        "geometric_mean_ratio": 0.9005503842639945,
+        "paired_lifecycle_plus_batch_ratios": [
+          0.9982924743742162,
+          1.0013418525691788,
+          0.7433222335961823
+        ],
+        "source_cost_eligible": true,
+        "speedup_or_model_adoption_qualified": false
+      },
+      "4096": {
+        "paired_mapped_over_usm": [
+          1.471340695973242,
+          1.4539428030243888,
+          1.2940271428827266
+        ],
+        "geometric_mean_ratio": 1.4041106015917046,
+        "paired_lifecycle_plus_batch_ratios": [
+          1.4714475546756973,
+          1.452518468751045,
+          1.2952297235236547
+        ],
+        "source_cost_eligible": false,
+        "speedup_or_model_adoption_qualified": false
+      }
+    },
+    "performance_qualified": false,
+    "model_trial_allowed": false,
+    "source_cost_eligible": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "archive": {
+      "commit": "9cc26a79bca65a4e2ca4327c7b79d4ae492843fe",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "prefill_mapped_source_v2"
+    },
+    "plan_commit": "90dd40bbe29602ad660b0ee4f6484a3768031ee4",
+    "original_math_runtime_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "unit": "One coherent source-admission unit:explicit pinned-NEO HOST-property opt-in,positive native allocation ID recorded in private lease and rechecked on every copy,and a shared active-import range registry that rejects proofless aliases through the plain-USM branch. These are inseparable:HOST is also the USMtype,so accepting its enum without the lease/registry would bypass imported ownership. Keep default standard HOST_IMPORTED admission strict. Existing host-USM is the reference under the same coherent wrapper. Preserve page-aligned read-only heap ownership,context/lane/range checks,tombstones,overlap rejection and checked drain-before-unimport. Hold serial readiness order,Runtime/queue ordinals,device destination,dense math/precision,bytes,lookahead,iterations and fixed operands constant. No readiness-order,U1eager,U2aggregation or engine-math change.",
+    "acceptance": "Keep all individual samples and per-pair mapped/USM ratios separately per shape. Source-cost eligibility requires each of three steady-wall ratios<=1.10 AND each preparation+steady+retirement ratio<=1.10. This prospective10percent overhead budget only permits a later independently committed scheduling comparison;it is not a speedup/adoption/target gate. Report geometric means and spread. Old E2M1024failed/M4096passed outcomes remain unchanged. No model trial is allowed by this result.",
+    "workload": {
+      "storage": "FP16",
+      "kernel": "original14508wide_128x128",
+      "k": 2560,
+      "n": 1280,
+      "rows": [
+        1024,
+        4096
+      ],
+      "iterations": 512,
+      "requested_H2D_bytes_per_epoch": 1971200,
+      "requested_H2D_bytes_per_batch": 1009254400,
+      "lookahead": 1,
+      "wait_order": "serial",
+      "copied_B_is_math_operand": false,
+      "source": "same immutable blob repeated",
+      "setup_and_validation_outside_timed_batch": true
+    },
+    "native_summary": {
+      "processes": 31,
+      "normal0": 31,
+      "validation_quiet": true,
+      "ownership_closed": true,
+      "all_gates_and_source_proofs_pass": true,
+      "all_oracles_and_guards_pass": true,
+      "fresh_faults": []
+    },
+    "safety_results": [
+      {
+        "label": "runtime-metadata-usm",
+        "source": "usm",
+        "mode": "metadata",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 0
+      },
+      {
+        "label": "mapped-import",
+        "source": "mapped-neo",
+        "mode": "import",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 0,
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "contract": "mapped-neo",
+          "property_type": 1,
+          "allocation_id": 12,
+          "strict_standard_rejected": true
+        }
+      },
+      {
+        "label": "usm-forward",
+        "source": "usm",
+        "mode": "forward",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 10
+      },
+      {
+        "label": "usm-reverse",
+        "source": "usm",
+        "mode": "reverse",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 12
+      },
+      {
+        "label": "usm-permanent",
+        "source": "usm",
+        "mode": "permanent",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 16
+      },
+      {
+        "label": "usm-cancel",
+        "source": "usm",
+        "mode": "cancel",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 7
+      },
+      {
+        "label": "usm-cancel-throw",
+        "source": "usm",
+        "mode": "cancel-throw",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 7
+      },
+      {
+        "label": "usm-refuse",
+        "source": "usm",
+        "mode": "refuse",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 6
+      },
+      {
+        "label": "mapped-neo-forward",
+        "source": "mapped-neo",
+        "mode": "forward",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 10
+      },
+      {
+        "label": "mapped-neo-reverse",
+        "source": "mapped-neo",
+        "mode": "reverse",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 12
+      },
+      {
+        "label": "mapped-neo-permanent",
+        "source": "mapped-neo",
+        "mode": "permanent",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 16
+      },
+      {
+        "label": "mapped-neo-cancel",
+        "source": "mapped-neo",
+        "mode": "cancel",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 7
+      },
+      {
+        "label": "mapped-neo-cancel-throw",
+        "source": "mapped-neo",
+        "mode": "cancel-throw",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 7
+      },
+      {
+        "label": "mapped-neo-refuse",
+        "source": "mapped-neo",
+        "mode": "refuse",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 6
+      },
+      {
+        "label": "mapped-retire",
+        "source": "mapped-neo",
+        "mode": "retire",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "application_enqueues": 9
+      }
+    ],
+    "samples": [
+      {
+        "label": "validated-1024-usm",
+        "source": "usm",
+        "rows": 1024,
+        "pair": null,
+        "clean": false,
+        "wall_s": 0.360910239,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.002534961,
+        "import_s": 0,
+        "retirement_s": 0.000137851,
+        "lifecycle_plus_batch_s": 0.36358305100000005,
+        "import_property_type": 0,
+        "import_allocation_id": 0,
+        "validated_counts": {
+          "payload_copies": 513,
+          "dense_launches": 514
+        }
+      },
+      {
+        "label": "validated-1024-mapped-neo",
+        "source": "mapped-neo",
+        "rows": 1024,
+        "pair": null,
+        "clean": false,
+        "wall_s": 0.526840293,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.004320123,
+        "import_s": 0.000463055,
+        "retirement_s": 0.000561872,
+        "lifecycle_plus_batch_s": 0.531722288,
+        "import_property_type": 1,
+        "import_allocation_id": 21,
+        "validated_counts": {
+          "payload_copies": 513,
+          "dense_launches": 514
+        }
+      },
+      {
+        "label": "validated-4096-usm",
+        "source": "usm",
+        "rows": 4096,
+        "pair": null,
+        "clean": false,
+        "wall_s": 0.357766059,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.002993024,
+        "import_s": 0,
+        "retirement_s": 0.000206991,
+        "lifecycle_plus_batch_s": 0.360966074,
+        "import_property_type": 0,
+        "import_allocation_id": 0,
+        "validated_counts": {
+          "payload_copies": 513,
+          "dense_launches": 514
+        }
+      },
+      {
+        "label": "validated-4096-mapped-neo",
+        "source": "mapped-neo",
+        "rows": 4096,
+        "pair": null,
+        "clean": false,
+        "wall_s": 0.356714583,
+        "timer_pair_max_s": 6.1e-08,
+        "preparation_s": 0.003480043,
+        "import_s": 0.000403282,
+        "retirement_s": 0.000600394,
+        "lifecycle_plus_batch_s": 0.36079501999999997,
+        "import_property_type": 1,
+        "import_allocation_id": 21,
+        "validated_counts": {
+          "payload_copies": 513,
+          "dense_launches": 514
+        }
+      },
+      {
+        "label": "clean-1024-pair0-usm",
+        "source": "usm",
+        "rows": 1024,
+        "pair": 0,
+        "clean": true,
+        "wall_s": 0.247882646,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.003046211,
+        "import_s": 0,
+        "retirement_s": 4.9514e-05,
+        "lifecycle_plus_batch_s": 0.250978371,
+        "import_property_type": 0,
+        "import_allocation_id": 0,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-1024-pair0-mapped-neo",
+        "source": "mapped-neo",
+        "rows": 1024,
+        "pair": 0,
+        "clean": true,
+        "wall_s": 0.24653422,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.003507821,
+        "import_s": 5.4272e-05,
+        "retirement_s": 0.000507778,
+        "lifecycle_plus_batch_s": 0.250549819,
+        "import_property_type": 1,
+        "import_allocation_id": 21,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-1024-pair1-mapped-neo",
+        "source": "mapped-neo",
+        "rows": 1024,
+        "pair": 1,
+        "clean": true,
+        "wall_s": 0.246326093,
+        "timer_pair_max_s": 5e-08,
+        "preparation_s": 0.003572141,
+        "import_s": 5.4463e-05,
+        "retirement_s": 0.000562491,
+        "lifecycle_plus_batch_s": 0.250460725,
+        "import_property_type": 1,
+        "import_allocation_id": 21,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-1024-pair1-usm",
+        "source": "usm",
+        "rows": 1024,
+        "pair": 1,
+        "clean": true,
+        "wall_s": 0.247613755,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.002450504,
+        "import_s": 0,
+        "retirement_s": 6.0835e-05,
+        "lifecycle_plus_batch_s": 0.250125094,
+        "import_property_type": 0,
+        "import_allocation_id": 0,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-1024-pair2-usm",
+        "source": "usm",
+        "rows": 1024,
+        "pair": 2,
+        "clean": true,
+        "wall_s": 0.34365559,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.002916132,
+        "import_s": 0,
+        "retirement_s": 5.6306e-05,
+        "lifecycle_plus_batch_s": 0.34662802800000003,
+        "import_property_type": 0,
+        "import_allocation_id": 0,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-1024-pair2-mapped-neo",
+        "source": "mapped-neo",
+        "rows": 1024,
+        "pair": 2,
+        "clean": true,
+        "wall_s": 0.253676783,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.003513478,
+        "import_s": 5.4673e-05,
+        "retirement_s": 0.000466059,
+        "lifecycle_plus_batch_s": 0.25765632000000005,
+        "import_property_type": 1,
+        "import_allocation_id": 21,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-4096-pair0-usm",
+        "source": "usm",
+        "rows": 4096,
+        "pair": 0,
+        "clean": true,
+        "wall_s": 0.356052453,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.002453037,
+        "import_s": 0,
+        "retirement_s": 5.4272e-05,
+        "lifecycle_plus_batch_s": 0.358559762,
+        "import_property_type": 0,
+        "import_allocation_id": 0,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-4096-pair0-mapped-neo",
+        "source": "mapped-neo",
+        "rows": 4096,
+        "pair": 0,
+        "clean": true,
+        "wall_s": 0.523874464,
+        "timer_pair_max_s": 5.1e-08,
+        "preparation_s": 0.003236905,
+        "import_s": 5.4393e-05,
+        "retirement_s": 0.000490516,
+        "lifecycle_plus_batch_s": 0.527601885,
+        "import_property_type": 1,
+        "import_allocation_id": 21,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-4096-pair1-mapped-neo",
+        "source": "mapped-neo",
+        "rows": 4096,
+        "pair": 1,
+        "clean": true,
+        "wall_s": 0.534235861,
+        "timer_pair_max_s": 4e-08,
+        "preparation_s": 0.003366971,
+        "import_s": 5.2028e-05,
+        "retirement_s": 0.000469947,
+        "lifecycle_plus_batch_s": 0.5380727790000001,
+        "import_property_type": 1,
+        "import_allocation_id": 21,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-4096-pair1-usm",
+        "source": "usm",
+        "rows": 4096,
+        "pair": 1,
+        "clean": true,
+        "wall_s": 0.367439393,
+        "timer_pair_max_s": 5e-08,
+        "preparation_s": 0.002946417,
+        "import_s": 0,
+        "retirement_s": 5.5455e-05,
+        "lifecycle_plus_batch_s": 0.37044126499999996,
+        "import_property_type": 0,
+        "import_allocation_id": 0,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-4096-pair2-usm",
+        "source": "usm",
+        "rows": 4096,
+        "pair": 2,
+        "clean": true,
+        "wall_s": 0.357757947,
+        "timer_pair_max_s": 3.81e-07,
+        "preparation_s": 0.002569516,
+        "import_s": 0,
+        "retirement_s": 5.6135e-05,
+        "lifecycle_plus_batch_s": 0.360383598,
+        "import_property_type": 0,
+        "import_allocation_id": 0,
+        "validated_counts": null
+      },
+      {
+        "label": "clean-4096-pair2-mapped-neo",
+        "source": "mapped-neo",
+        "rows": 4096,
+        "pair": 2,
+        "clean": true,
+        "wall_s": 0.462948494,
+        "timer_pair_max_s": 3.1e-08,
+        "preparation_s": 0.003279043,
+        "import_s": 5.6135e-05,
+        "retirement_s": 0.000552011,
+        "lifecycle_plus_batch_s": 0.466779548,
+        "import_property_type": 1,
+        "import_allocation_id": 21,
+        "validated_counts": null
+      }
+    ],
+    "source_cost_eligible_rows": [
+      1024
+    ],
+    "source_cost_failed_rows": [
+      4096
+    ],
+    "decision": "Source/ownership and31native processes pass. Only1024meets the prospective10percent steady/lifecycle overhead gate;4096fails all3pairs. No clean-speed/model/performance qualification. Keep the slow USM1024third sample and all slow Neo4096samples. Next:independent readiness-order comparison at1024only;4Kcost attribution needs a separately planned diagnostic.",
+    "limits": "No generic standards-conformance claim:official specification says HOST_IMPORTED while exact pinned driver was independently observed returning HOST. Registry covers this owned interface;other components must not independently map its heaps. Same-lane admission/copy/retirement is serialized. No model PP/TG/TTFT,agent/quality,ordinary-RAM pinning,physical PCIe saturation,full262144/RESTORE,handoff or model adoption. Decoder and production selectors unchanged.",
+    "retention": {
+      "component_generation": "Temporary third generation beside independent coherent14508prefill and phase9849decode references;two current fixture ELFs.",
+      "consumer": "Immediate separately committed1024-row mapped-neo serial-versus-overlap comparison. Failed4096is not eligible for that gated trial.",
+      "review_point": "At readiness-order comparison closure or abandonment;retire component generation if no named next consumer.",
+      "private_record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/record.json",
+      "native_source_commit": "0a3295b89619cdc9cb4c6c4b2333043325fc8695",
+      "source_and_recipe_recovery": "Pinned original0a3295b89 plus original14508source/complete actual compiler/link/object census and full plan/results at9cc26a79b. New historical reuse admission must verify these exact inputs and both ELFs;do not substitute changed current controller/source.",
+      "raw_output_consumer_ended": true,
+      "raw_retirement": {
+        "stage": "complete",
+        "selection_roots": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/runtime-metadata-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/mapped-import",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/usm-forward",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/usm-reverse",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/usm-permanent",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/usm-cancel",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/usm-cancel-throw",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/usm-refuse",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/mapped-neo-forward",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/mapped-neo-reverse",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/mapped-neo-permanent",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/mapped-neo-cancel",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/mapped-neo-cancel-throw",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/mapped-neo-refuse",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/mapped-retire",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/validated-1024-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/validated-1024-mapped-neo",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/validated-4096-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/validated-4096-mapped-neo",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-1024-pair0-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-1024-pair0-mapped-neo",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-1024-pair1-mapped-neo",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-1024-pair1-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-1024-pair2-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-1024-pair2-mapped-neo",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-4096-pair0-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-4096-pair0-mapped-neo",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-4096-pair1-mapped-neo",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-4096-pair1-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-4096-pair2-usm",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/clean-4096-pair2-mapped-neo",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/owned",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/tmp",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/cache",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-source-v2/ownership.json"
+        ],
+        "external_inventory_sha256": "03d6cc4b81f63556903d9b92169663a0a4a840ce264d8c71ccab166565269f24",
+        "selected_files": 159,
+        "selected_bytes": 24022908,
+        "reason": "31native cases/4validated/12clean samples and useful individual outcomes are committed. No ordinary full trace/build-output consumer remains. Preserve the private original record,actual compiled/header/link/object inputs and both ELFs for the named1024comparison;never relax failed4096gate.",
+        "all_selected_paths_absent": true,
+        "removed_files": 159,
+        "removed_bytes": 24022908,
+        "private_original_record_unchanged": true,
+        "source_objects_ELFs_preserved_for_named_comparison": true
+      }
+    }
   }
 }

@@ -22,10 +22,10 @@ import upload_event_lane as event
 import ur_validation
 
 P, B = original.P, original.B
-ROOT = B/'prefill-mapped-source-v1'
+ROOT = B/'prefill-mapped-source-v2'
 VIEW = ROOT/'source'
 RESULT = event.RESULT
-KEY = 'prefill_mapped_source_v1'
+KEY = 'prefill_mapped_source_v2'
 SOURCE = 'bench/sycl/prefill_upload_overlap.cpp'
 SAFETY = event.SOURCE
 HEADER = event.HEADER
@@ -103,6 +103,50 @@ def source_capability():
                 mapping_or_transfer_qualified=False)
 
 
+def property_gate(value, archived):
+    require(all(value.get(k) is True and archived.get(k) is True
+                for k in ['passed','complete','ownership_closed'])
+        and value.get('stage')==archived.get('stage')=='closed'
+        and value.get('active') is False and archived.get('active') is False
+        and fingerprint(value['properties'])==fingerprint(archived['properties']),
+        'exact closed original property observation required')
+    prop=value['properties']
+    require(prop['kind']=='mapping-properties' and type(prop['bytes']) is int and prop['bytes']==4096
+        and prop['read_only'] is True and prop['same_address'] is True
+        and prop['allocation_and_unimport_executed'] is True and prop['original_heap_unchanged'] is True
+        and prop['explicit_native_context'] is True and prop['production_runtime_context_qualified'] is False
+        and prop['source_admission_or_transfer_qualified'] is False
+        and type(prop['application_commands']) is int and prop['application_commands']==0,
+        'zero-command read-only heap lifecycle prerequisite required')
+    for when in ['before','during','after']:
+        require(all(type(prop[when][k]) is int for k in ['type','allocation_id','page_bytes']),
+                'typed native allocation properties required')
+    require(prop['before']==prop['after']==dict(type=0,allocation_id=0,page_bytes=0)
+        and prop['during']['type']==1 and prop['during']['allocation_id']>0
+        and prop['during']['page_bytes']==4096
+        and type(prop['address_range']['result']) is int and prop['address_range']['result']==0
+        and prop['address_range']['same_base'] is True
+        and type(prop['address_range']['bytes']) is int and prop['address_range']['bytes']==4096,
+        'pinned HOST property,positive ID,range and unimport removal required')
+    return prop
+
+
+def property_evidence():
+    key='prefill_host_mapping_properties_v1'
+    value=ur_validation.committed(RESULT,(key,));archive=value['archive']
+    require(archive['commit']=='37017156e3d27a1f9a594a834bec320eeab350c5',
+            'pin original property observation,not later metadata')
+    archived=json.loads(git(P,'show',archive['commit']+':'+archive['path']))[key]
+    prop=property_gate(value,archived);capability=source_capability()
+    require(archived['project']['revision']==value['native_source_commit']=='b777f52f8ddfc60b71166cce9a68afb952c71dde'
+        and fingerprint(value['queried_provider'])==fingerprint(capability['driver'])
+        and archived['environment']['ZE_ENABLE_ALT_DRIVERS']==capability['driver']['path']
+        and capability['capabilities']['api_version']==65553,
+        'exact source,installed provider and API1.17 prerequisite required')
+    return dict(evidence=archive,properties=prop,driver=capability['driver'],
+                native_source_commit=value['native_source_commit'],new_source_admission_qualified=False)
+
+
 def check(row, committed=True):
     if committed:
         require(fingerprint(compact(row))==fingerprint(ur_validation.committed(RESULT,(KEY,))),
@@ -111,6 +155,7 @@ def check(row, committed=True):
     require(current['source_sha256']==row['project']['source_sha256'], 'frozen E2 source changed')
     native,_ = original.verify_original(expected=row['foundation'])
     require(fingerprint(source_capability())==fingerprint(row['source_capability']), 'frozen source capability changed')
+    require(fingerprint(property_evidence())==fingerprint(row['property_evidence']), 'frozen property observation changed')
     require(all(sha(p)==h for p,h in row['allowed'].items()), 'frozen source/SDK/dependency changed')
     require(all(sha(p)==h for p,h in row['recipe_tools'].items()), 'recipe tool changed')
     require(guards.driver_guard()==row['driver'] and
@@ -128,7 +173,12 @@ def check(row, committed=True):
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'existing E2 root;inspect owner,no retry')
     native, proof = original.verify_original()
-    parent = parent_evidence(); capability=source_capability()
+    parent = parent_evidence(); capability=source_capability();properties=property_evidence()
+    failed=ur_validation.committed(RESULT,('prefill_mapped_source_v1',))
+    require(failed['stage']=='failed' and not failed['active']
+        and failed['failure_closure']['physical_process_closed'] is True
+        and failed['retirement']['stage']=='complete' and failed['retirement']['all_selected_paths_absent'] is True
+        and not (B/'prefill-mapped-source-v1').exists(), 'preserve/retire failed strict source contract before V2')
     retired=ur_validation.committed(RESULT,('prefill_upload_overlap_v1',))['retirement']
     require(retired['stage']=='complete' and retired['all_selected_paths_absent']
             and not (B/'prefill-upload-overlap-v1').exists(), 'retire ended component generation before new build')
@@ -203,42 +253,43 @@ def prepare():
         cases.append(dict(kind=kind,label=label,root=str(root),argv=[str(ROOT/kind),*args],
                           environment=env,trace=trace,**fields))
     case('safety','runtime-metadata-usm',['metadata','usm'],mode='metadata',source='usm')
-    case('safety','mapped-import',['import','mapped'],mode='import',source='mapped')
-    for source in ['usm','mapped']:
+    case('safety','mapped-import',['import','mapped-neo'],mode='import',source='mapped-neo')
+    for source in ['usm','mapped-neo']:
         for mode in ['forward','reverse','permanent','cancel','cancel-throw','refuse']:
             case('safety',f'{source}-{mode}',[mode,source],mode=mode,source=source)
-    case('safety','mapped-retire',['retire','mapped'],mode='retire',source='mapped')
+    case('safety','mapped-retire',['retire','mapped-neo'],mode='retire',source='mapped-neo')
     for rows in [1024,4096]:
-        for source in ['usm','mapped']:
+        for source in ['usm','mapped-neo']:
             case('benchmark',f'validated-{rows}-{source}',['serial',str(rows),'512',source],
                  arm='serial',source=source,rows=rows)
     for rows in [1024,4096]:
         for pair in range(3):
-            for source in (['usm','mapped'] if pair%2==0 else ['mapped','usm']):
+            for source in (['usm','mapped-neo'] if pair%2==0 else ['mapped-neo','usm']):
                 case('benchmark',f'clean-{rows}-pair{pair}-{source}',['serial',str(rows),'512',source],
                      trace=False,arm='serial',source=source,rows=rows,pair=pair)
     row = dict(stage='prepared',project=project,foundation=proof,allowed=allowed,
         source_view=dict(original_commit=original.SOURCE,files=len(generated),sha256=fingerprint(generated)),
-        parent_component=parent,source_capability=capability,native_source_commit=project['revision'],recipe=recipes,
+        parent_component=parent,source_capability=capability,property_evidence=properties,
+        failed_standard_source=failed['archive'],native_source_commit=project['revision'],recipe=recipes,
         recipe_tools={v:sha(v) for v in [cc,bundler]},runtime_manifest=prior['runtime_manifest'],
         validation_provider=prior['validation_provider'],native_validation_probe=native['native_validation_probe'],
         build_environment=dict(native['recipe']['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
         driver=guards.driver_guard(),boot=prior['boot'],cases=cases,results=[],commands=[],
         passed=False,complete=False,active=False,ownership_closed=True,
         performance_qualified=False,model_trial_allowed=False,
-        plan=dict(question='U3:does bounded standard read-only external RAMmapping satisfy the existing copy/reader protocol with acceptable total source-path cost?',
+        plan=dict(question='U3V2:does the explicit pinned-NEO HOST-property source contract satisfy the existing copy/reader protocol with acceptable total source-path cost?',
             opportunity='Original whole-request trace:copy union~10.31s,kernel union~28.66s,overlap~4ms. Copy-only replacement failed. No hardware-saturation claim;this studies scheduling,not copy throughput replacement.',
-            units='Change only source production/admission/lifetime as one coherent unit:page-aligned read-only ordinary heap import,typed same-lane/context/range proof,overlap rejection and drain-before-unimport. These parts are inseparable because import without admission is rejected,and admission without ownership violates the mapping contract. Existing host-USM remains the reference. Hold serial readiness order,Runtime/queue ordinals,device destination,dense kernel/math/precision,bytes,lookahead,iterations and fixed operands constant. Do not combine readiness-order tuning,U1eager,U2aggregation or engine math.',
+            units='One coherent source-admission unit:explicit pinned-NEO HOST-property opt-in,positive native allocation ID recorded in private lease and rechecked on every copy,and a shared active-import range registry that rejects proofless aliases through the plain-USM branch. These are inseparable:HOST is also the USMtype,so accepting its enum without the lease/registry would bypass imported ownership. Keep default standard HOST_IMPORTED admission strict. Existing host-USM is the reference under the same coherent wrapper. Preserve page-aligned read-only heap ownership,context/lane/range checks,tombstones,overlap rejection and checked drain-before-unimport. Hold serial readiness order,Runtime/queue ordinals,device destination,dense math/precision,bytes,lookahead,iterations and fixed operands constant. No readiness-order,U1eager,U2aggregation or engine-math change.',
             build='Fresh original14508 include/src view plus the committed lane/mapped-source headers and heap-page fixture. Five fresh TUs,all changed class includers rebuilt;no archive/object reuse. Preserve original isolated AOT-link/host split and full compiler/link census. The previous E2generation is physically retired;this is one temporary component generation beside two unchanged independent phase references.',
             boundary='Explicit source-adapter component,not the production model dispatcher. Resident dense A is fixed;copied immutable next-bank B is byte/guard-checked and is not its math operand. One reader fence per epoch bounds lookahead. The same source blob is repeatedly copied,so cache/residency behavior is not a production50GBsource or physical-bus claim. No PTIcollector or new runtime settings.',
-            order='Metadata USM,zero-command mapped import/unimport,all six existing USMcases,all six mapped cases,then held-copy mapped retirement/stale-view refusal (15safety processes). Four validated serial shape/source batches;then three independent-process pairs per1024/4096shape:USM/Mapped,Mapped/USM,USM/Mapped. No retry,reordering,exclusion or criterion change. One exact dense and one event epoch prewarmed;512epochs plus dual drain timed.',
-            gates='Exact committed source/recipe/SDK/tool/ELF/typed plan and capability history;actual native argv/environment/providers before work and at exit;all15safety cases;full exact dense oracle and poison-to-payload/source/edge guards. Full UR/LevelZero validation in safety/validated batches;clean parameter-validation timing processes. Validate actual513payload-copy/514dense URlaunch counts in traced batches. Quiet validation,normal0,closed owners,unchanged boot/driver/no fault. Every batch>=100ms;128clock-pair max<=0.001batch. A mapping refusal is a failed candidate,not permission to accept raw unknown pointers.',
+            order='Metadata USM;zero-command actual-Runtime import that first rejects the standard contract,then admits explicit mapped-neo and reports positive HOST/id proof;all six USMcases;all six mapped-neo cases;held-copy retirement/stale/reimport refusal (15safety processes). Refusal cases include ordinary unknown heap and proofless mapped aliases. Four validated serial shape/source batches;then three independent-process pairs per1024/4096shape:USM/Neo,Neo/USM,USM/Neo. No retry,reordering,exclusion or criterion change. One exact dense and one event epoch prewarmed;512epochs plus dual drain timed.',
+            gates='Exact committed source/recipe/SDK/tool/ELF/typed plan,original APIcapabilities and closed37017156e property observation;exact installed NEOimage/unchanged safety environment. Actual native argv/providers before work/at exit;positive HOST/id proof in actual-Runtime zero-command case and every mapped benchmark;all15safety cases;full exact dense oracle and poison-to-payload/source/edge guards. Full UR/LevelZero validation in safety/validated batches;clean parameter-validation timing processes. Validate actual513payload-copy/514dense URlaunch counts in traced batches. Quiet validation,normal0,closed owners,unchanged boot/driver/no fault. Every batch>=100ms;128clock-pair max<=0.001batch. A mapping refusal fails this new cohort;no raw unknown admission or further implicit compatibility fallback.',
             source_cost='Record allocation/touch/protection/import/fixture readback-poison preparation outside the timed512epochs;resident matrix fixture setup and Main gate pauses are excluded. Import is a subset of preparation,not an additive cost. Source retirement includes dual drain,unimport and original heap/host-USM release. Report steady wall and preparation+wall+retirement;no model TTFT or whole-process claim.',
             decision='Keep all individual samples and per-pair mapped/USM ratios separately per shape. Source-cost eligibility requires each of three steady-wall ratios<=1.10 AND each preparation+steady+retirement ratio<=1.10. This prospective10percent overhead budget only permits a later independently committed scheduling comparison;it is not a speedup/adoption/target gate. Report geometric means and spread. Old E2M1024failed/M4096passed outcomes remain unchanged. No model trial is allowed by this result.',
             stop='First source/build/numerical/guard/validation/ownership/deadline/fault failure stops this cohort. Fixed timing samples complete even if slower;never change acceptance after results. No reset/unbind/foreign process action.',
             retention='One temporary two-fixture component beside26unchanged phase-reference executables. Preserve source/recipe/census and useful samples;retire ordinary traces/build output at scoped closure. Retire failed source implementation if unsupported and no next consumer;keep independent safety fixes. A useful qualified source candidate may remain only for its named immediate scheduling comparison.',
-            limits='No model PP/TG/TTFT,agent/quality,ordinary-RAM pinning,physical PCIe traffic/saturation,full262144/RESTORE,handoff or model adoption. Decoder and production selectors unchanged.',
-            provenance='Main-authored source owner,fixtures/controller/event protocol under repository LICENSE;API concepts from official oneapi-src/level-zero-spec EXT_ExternalMemMap and installed1.32headers with API1.16flag gate. No external implementation copied. Dense is exact owned14508with checked Intel TLA provenance. No XeStrata code/design.'))
+            limits='No generic standards-conformance claim:official specification says HOST_IMPORTED while exact pinned driver was independently observed returning HOST. Registry covers this owned interface;other components must not independently map its heaps. Same-lane admission/copy/retirement is serialized. No model PP/TG/TTFT,agent/quality,ordinary-RAM pinning,physical PCIe saturation,full262144/RESTORE,handoff or model adoption. Decoder and production selectors unchanged.',
+            provenance='Main-authored owner,private source proof,registry,fixtures/controller under repository LICENSE. API concepts from official oneapi-src/level-zero-spec EXT_ExternalMemMap/installed1.32headers;compatibility fact from Main-owned committed37017156e installed-provider observation,not an unproven driver-source checkout. No external implementation copied. Dense is exact owned14508with checked Intel TLA provenance. No XeStrata code/design.'))
     save(row);print('Prepared independent mapped-source plan;commit recipe before build.',flush=True)
 
 
@@ -255,8 +306,8 @@ def execute(action):
                 entry,out,err = supervisor.run(recipe['label'],recipe['argv'],row['build_environment'],ROOT,**BUILD)
                 require(owner_api.closed(entry) and entry['exit_code']==0,'fresh E2 build failed:'+str(err))
                 if recipe['label']=='host-controls':
-                    require('Ran 10 tests' in err.read_text() and '\nOK\n' in err.read_text(), 'all historical/source-capability controls required')
-                    row['host_admission_controls']=dict(methods=10,passed=True,device_executed=False)
+                    require('Ran 14 tests' in err.read_text() and '\nOK\n' in err.read_text(), 'historical/capability/property controls required')
+                    row['host_admission_controls']=dict(methods=14,passed=True,device_executed=False)
                 if 'dep' in recipe:
                     for name in shlex.split(Path(recipe['dep']).read_text().replace('\\\n',' ').split(':',1)[1]):
                         p = str(Path(name).resolve()); h = sha(p)
@@ -318,6 +369,13 @@ def execute(action):
             result=dict(label=case['label'],source=case['source'],passed=True,native_exit_code=0,ownership_closed=True,validation=validation,gates=gates,
                         initialized_providers=providers['runtime-ready'],after_work_providers=providers['before-exit'])
             if case['kind']=='safety':
+                if case['mode']=='import':
+                    require(len(records)==2 and records[0]['kind']=='mapping-proof'
+                        and records[0]['contract']=='mapped-neo' and records[0]['strict_standard_rejected'] is True
+                        and type(records[0]['property_type']) is int and records[0]['property_type']==1
+                        and type(records[0]['allocation_id']) is int and records[0]['allocation_id']>0,
+                        'actual Runtime pinned import/standard refusal proof required')
+                    result['mapping_proof']=records.pop(0)
                 require(records==[dict(kind='done',passed=True,case=case['mode'],source=case['source'])], 'incomplete source safety result')
                 enqueues=re.findall(r'---> (urEnqueue\w+)',(root/'ur.trace').read_text())
                 expected_count={'metadata':0,'import':0,'forward':10,'reverse':12,'permanent':16,
@@ -333,6 +391,11 @@ def execute(action):
                     and batch['lookahead']==1 and batch['oracle_and_guards'] is True,'actual E2 dispatch/workload differs')
                 require(batch['wall_s']>=0.1 and 0<=batch['timer_pair_max_s']<=batch['wall_s']*.001,'ineligible timing batch/clock overhead')
                 source=records[1]
+                require(type(source['import_property_type']) is int and type(source['import_allocation_id']) is int
+                    and ((source['import_property_type']==1 and source['import_allocation_id']>0)
+                         if case['source']=='mapped-neo' else
+                         (source['import_property_type']==0 and source['import_allocation_id']==0)),
+                    'actual benchmark source lease proof differs')
                 require(all(type(source[k]) in (int,float) and math.isfinite(source[k]) and source[k]>=0
                     for k in ['preparation_s','import_s','retirement_s'])
                     and source['preparation_s']>=source['import_s'], 'invalid/double-counted source lifecycle interval')
@@ -357,9 +420,9 @@ def execute(action):
                     ratios=[];lifecycle=[]
                     for pair in range(3):
                         s={v['source']:v for v in samples if v['pair']==pair}
-                        require(set(s)=={'mapped','usm'}, 'complete source pair required')
-                        ratios.append(s['mapped']['batch']['wall_s']/s['usm']['batch']['wall_s'])
-                        lifecycle.append(s['mapped']['source_lifecycle_plus_batch_s']/s['usm']['source_lifecycle_plus_batch_s'])
+                        require(set(s)=={'mapped-neo','usm'}, 'complete source pair required')
+                        ratios.append(s['mapped-neo']['batch']['wall_s']/s['usm']['batch']['wall_s'])
+                        lifecycle.append(s['mapped-neo']['source_lifecycle_plus_batch_s']/s['usm']['source_lifecycle_plus_batch_s'])
                     analysis[str(rows)]=dict(paired_mapped_over_usm=ratios,geometric_mean_ratio=math.prod(ratios)**(1/3),
                         paired_lifecycle_plus_batch_ratios=lifecycle,source_cost_eligible=all(v<=1.10 for v in ratios+lifecycle),
                         speedup_or_model_adoption_qualified=False)

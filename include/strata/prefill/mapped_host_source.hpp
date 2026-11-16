@@ -24,9 +24,6 @@ class PrefillMappedHostSource {
     void* mapped_ = nullptr;
     std::size_t bytes_ = 0;
     std::shared_ptr<PrefillUploadEventLane::Source::Imported> lease_;
-    struct Range { std::size_t bytes; const PrefillMappedHostSource* owner; };
-    inline static std::mutex mutex_;
-    inline static std::map<std::uintptr_t, Range> active_;
 
     static void need(bool ok, const char* message) {
         if (!ok) throw std::invalid_argument(message);
@@ -36,6 +33,11 @@ class PrefillMappedHostSource {
             throw std::runtime_error("prefill host mapping LevelZero result=" + std::to_string(unsigned(code)));
     }
 public:
+    enum class PropertyContract { StandardImported, PinnedNeoHost };
+    struct PropertyProof {
+        ze_memory_type_t type = ZE_MEMORY_TYPE_UNKNOWN;
+        std::uint64_t allocation_id = 0;
+    };
     static bool supported(ze_driver_handle_t driver) {
         ze_api_version_t version{};
         ze(zeDriverGetApiVersion(driver, &version));
@@ -53,7 +55,8 @@ public:
         return false;
     }
 
-    PrefillMappedHostSource(PrefillUploadEventLane& lane, void* heap, std::size_t bytes)
+    PrefillMappedHostSource(PrefillUploadEventLane& lane, void* heap, std::size_t bytes,
+                           PropertyContract contract = PropertyContract::StandardImported)
         : lane_(lane), context_(sycl::get_native<sycl::backend::ext_oneapi_level_zero>(
               lane.compute_.get_context())), bytes_(bytes) {
         const long page = ::sysconf(_SC_PAGESIZE);
@@ -64,11 +67,25 @@ public:
         auto driver = sycl::get_native<sycl::backend::ext_oneapi_level_zero>(
             lane.compute_.get_device().get_platform());
         need(supported(driver), "prefill read-only external host mapping unsupported");
-        const std::lock_guard lock(mutex_);
-        auto next = active_.lower_bound(start);
-        need(next == active_.end() || start + bytes <= next->first,
+        need(contract == PropertyContract::StandardImported || contract == PropertyContract::PinnedNeoHost,
+             "prefill host mapping explicit property contract");
+        if (contract == PropertyContract::PinnedNeoHost) {
+            // Experimental opt-in only. Main must also pin the exact provider
+            // image/environment to the37017156e native-property observation.
+            // No generic conformance or production qualification is implied.
+            ze_api_version_t version{}; ze(zeDriverGetApiVersion(driver, &version));
+            ze_device_properties_t device{}; device.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
+            ze(zeDeviceGetProperties(sycl::get_native<sycl::backend::ext_oneapi_level_zero>(
+                lane.compute_.get_device()), &device));
+            need(version == ZE_MAKE_VERSION(1, 17) && device.vendorId == 0x8086 && device.deviceId == 0xe20c,
+                 "prefill pinned NEO property contract requires the qualified API1.17 B570");
+        }
+        const std::lock_guard lock(PrefillUploadEventLane::source_mutex_);
+        auto& active = PrefillUploadEventLane::imported_sources_;
+        auto next = active.lower_bound(start);
+        need(next == active.end() || start + bytes <= next->first,
              "prefill host mapping overlaps an existing import");
-        if (next != active_.begin()) {
+        if (next != active.begin()) {
             const auto prior = std::prev(next);
             need(prior->first + prior->second.bytes <= start, "prefill host mapping overlaps an existing import");
         }
@@ -91,11 +108,16 @@ public:
             ze_memory_allocation_properties_t props{};
             props.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
             ze(zeMemGetAllocProperties(context_, mapped_, &props, nullptr));
-            need(props.type == ZE_MEMORY_TYPE_HOST_IMPORTED, "prefill host mapping allocation type");
+            const auto expected = contract == PropertyContract::StandardImported ?
+                ZE_MEMORY_TYPE_HOST_IMPORTED : ZE_MEMORY_TYPE_HOST;
+            need(props.type == expected && (contract != PropertyContract::PinnedNeoHost || props.id != 0),
+                 "prefill host mapping allocation type/id");
             void* base = nullptr; std::size_t extent = 0;
             ze(zeMemGetAddressRange(context_, mapped_, &base, &extent));
             need(base == mapped_ && extent >= bytes, "prefill host mapping allocation extent");
-            need(active_.emplace(start, Range{bytes, this}).second, "prefill host mapping duplicate owner");
+            need(active.emplace(start, PrefillUploadEventLane::SourceRange{bytes, this}).second,
+                 "prefill host mapping duplicate owner");
+            lease_->allocation_type = props.type; lease_->allocation_id = props.id;
             lease_->live.store(true, std::memory_order_release);
         } catch (...) {
             if (mapped_ && zeMemFree(context_, mapped_) != ZE_RESULT_SUCCESS)
@@ -110,15 +132,21 @@ public:
         // copy_after/retirement on the same lane is outside this interface.
         lease_->live.store(false, std::memory_order_release);
         sycl_backend::checked_cleanup([&] { lane_.drain(); }, [&] {
-            const std::lock_guard lock(mutex_);
+            const std::lock_guard lock(PrefillUploadEventLane::source_mutex_);
+            auto& active = PrefillUploadEventLane::imported_sources_;
             const auto key = reinterpret_cast<std::uintptr_t>(mapped_);
-            const auto found = active_.find(key);
-            if (!mapped_ || found == active_.end() || found->second.owner != this)
+            const auto found = active.find(key);
+            if (!mapped_ || found == active.end() || found->second.owner != this)
                 sycl_backend::cleanup_fail_stop("prefill host mapping retirement owner");
             if (zeMemFree(context_, mapped_) != ZE_RESULT_SUCCESS)
                 sycl_backend::cleanup_fail_stop("prefill host mapping unimport");
-            active_.erase(found); mapped_ = nullptr;
+            active.erase(found); mapped_ = nullptr;
         }, "prefill mapped host source retirement");
+    }
+
+    PropertyProof property_proof() const {
+        need(mapped_ && lease_->live.load(std::memory_order_acquire), "prefill host mapping retired proof");
+        return {lease_->allocation_type, lease_->allocation_id};
     }
 
     PrefillUploadEventLane::Source view(std::size_t offset, std::size_t bytes) const {
