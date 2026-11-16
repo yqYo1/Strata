@@ -1667,6 +1667,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and42-process prospective plan now isolate direct/shortcut at five shapes;
   nine host admission controls pass. The six legacy prototype roots are retired
   after exact recovery. Commit the prepared plan before the fresh build. Sresults keep their original1896d6a18native identity.
+  An additional owned standard-SYCLcopy-lane header and bounded lifetime fixture
+  are authored but unbuilt. They keep one quantized bank,borrowed immutable
+  ordinary host sources and both IQreaders distinct from dequantized-weight
+  consumers. Q1will compare compute with a separate same-context queue whose
+  in-order/profiling properties match;Owill then move only the reader marker.
+  This avoids silently combining queue placement with a profiling-property
+  change. No raw LevelZero import,engine selection or validation follows.
+  These files are outside Q0actual compiler/source inputs;Q0remains frozen.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
