@@ -1740,9 +1740,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prototype/controller is retired to the original source/admission revisions;
   neither the code nor the timings imply adoption. Two source-audit transactions
   retire70files,1699499bytes after source commits and curation. Only compact
-  corrections remain;new fixtures still need their own committed build/run plan.
+  corrections remain;the new fixtures' committed build/run plan follows below.
 
-  Main's next **unbuilt/unselected** proposal is`prefill/sycl_copy_groups.hpp`
+  Main's next **unselected** proposal is`prefill/sycl_copy_groups.hpp`
   and`tests/sycl/prefill_sycl_copy_groups.cpp`,source
   `695565fbda8802363b2c91b49a6021ba39326b55`. The earlier audited prototype is
   recoverable at`dbb3506bc1f295f16d500a87ef1f924c2003dea3`. Both are independently
@@ -1755,27 +1755,52 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bank reuse requires its submitted reader marker. Physical slots are layout
   width times bank count;capacity bounds submitted groups,not payloads.
 
-  The next consumer is a separately committed bounded lifetime/full-math plan
-  after the ended component generation retires. Isolate L(slot capacity1->128
-  at one-expert window),R(required adapter),Q(queue),then W(window1->128).
+  The new`prefill_sycl_copy_groups_v1`plan uses native source
+  `05eceacdd807628e4b27834f7167c5672f72fccb`,with the same695565fbdheader/lifetime.
+  Its fresh owned recipe creates ten-TU/twelve-object math/lifetime fixtures;
+  neither retained phase reference is overwritten. The bounded third generation
+  retires at comparison closure before another build. It first runs13host
+  admission controls,then24small traced lifetime,9math metadata,27traced math
+  and81clean processes:141native cases. Matrix rows128/1024/8192are a bounded
+  lower/intermediate/fused component screen;old16/4096evidence stays separate.
+  Three full nine-arm blocks use forward,reverse and a predeclared permutation.
+  Isolate S(complete compatibility->queue shortcut),L(slot capacity1->128 at
+  one-expert window),R(required adapter),Q(queue),then W(window1->128).
   At fixed128one-expert slots/window,compare readiness1->64with reader width1,
   and independently reader width1->64with readiness1,then both64and their
-  interaction. Compare any later64-wide/two-bank Gpartition separately as a
-  bundled reuse/bookkeeping policy. Keep512individual copies,source order/bytes,
-  full-math retirement,math and precision fixed;no IQ-early retirement or copy
-  coalescing is included. Compare the useful combination with the original
-  complete compatibility path;never infer constituent gains from that net result.
+  interaction. Also compare window,ready64,readers64and both64with the complete
+  original separately;a losing combination cannot reject a faster valid variant.
+  These13contrasts across three shapes retain39unit decisions and three
+  multiplicative interaction points. Any later64-wide/two-bank Gpartition
+  remains a separately scoped bundled policy,not part of this campaign.
+  Keep512individual copies,source order/bytes,full-math retirement,math and
+  precision fixed;slot phase includes the same two warm copies in every arm.
+  All128final slots are checked. Timed branch counters prove actual compat/
+  shortcut/adapter calls and each marker's count;these scalar counters are
+  included in timing,without per-expert clocks. Terminal drain is timed;
+  reference/reset/validation is outside. Each batch must reach100ms,with
+  maximum128clock-pair overhead<=.001batch. Every unit's gain condition remains
+  all three paired ratios below1,no minimum gain. No model trial is authorized.
   Source-reviewed fixtures include widths1/2/64,partial groups,other-bank
   prequeue,reuse/refusals and accepted-copy/reader host exceptions. The ordered
   mode now consumes/readbacks its ticket after capacity refusal;four additional
   modes exercise256experts/full128-slot window/reuse and independent marker
   policies. Their occupied-bank refusals are not capacity checks. Readiness
   explicitly depends on copy completion in both placements. DG/DH and DI/DJ
-  source reviews find no blocker under caller contracts;**none of these new
-  fixtures has compiled or executed**. Submission/async/drain-fault and active
+  source reviews find no blocker under caller contracts. The fresh05eceacd
+  build now passes13host controls and all15owned build commands,with962actual
+  compiler inputs,29link inputs and12fresh objects. Both fixtures are compiled
+  and their ELF hashes are pinned. All24small traced native cases now close
+  normally0,with the exact declared kernel/copy counts,quiet validation,closed
+  owners and no fresh fault. This includes both placements and the full128-slot
+  independent-marker matrix. DK/DL and DM/DN source audits find no blocker after
+  correcting the reports' slot-count,citation,readback and performance-failure
+  statements. Math metadata,traced full math and clean comparisons remain
+  pending. **These small checks establish no performance or model qualification.**
+  Submission/async/drain-fault and active
   observer coverage remain explicit holds;source review is not safety,
-  precision,performance or model qualification. New recipe/order/gates and
-  rebuilding affected translation units are required before any execution.
+  precision,performance or model qualification. The committed recipe/order/gates
+  and coherent rebuild now permit the small traced checks before full math.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
