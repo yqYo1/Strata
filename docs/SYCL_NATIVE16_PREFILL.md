@@ -1748,6 +1748,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   This cohort does not permit model trials. Controlled submission/marker/
   asynchronous faults,active observers and broader phase/context gates remain
   pending. Both retained phase references remain unchanged.
+  Native source`e5cd35836c1e0e608970eec19ad63bcf69823e4a`now builds both
+  executables coherently:962compiler inputs,29link inputs and12fresh objects;
+  all15build children close normally0and12host controls pass. V1first lifetime
+  metadata admission fails before Runtime initialization because the provider
+  reader was given the math ELF instead of the separately pinned lifetime ELF.
+  Its owned process is positively terminated/reaped(-15),session empty,no
+  application commands or fresh fault;this remains a failed cohort at`44e1fb7ee`.
+  The corrected controller selects only the matching fixture ELF. A new
+  `prefill_sycl_copy_lane_v2`plan may reuse the exact original native inputs,
+  recipe,census,objects and both ELFhashes after verifying them;it must keep
+  native source identity separate from the later admission commit. New case
+  directories preserve the original115case order. No runtime allowlist is
+  broadened,no native hashes refreshed,and no device qualification follows
+  from build reuse.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original

@@ -19,7 +19,11 @@ import kernel_trace
 P,B,RESULT=base.P,base.B,base.RESULT
 ROOT=B/'prefill-sycl-copy-lane-v1'
 VIEW=ROOT/'source'
-KEY='prefill_sycl_copy_lane_v1'
+FAILED_KEY='prefill_sycl_copy_lane_v1'
+KEY='prefill_sycl_copy_lane_v2'
+RECORD=ROOT/'record-v2.json'
+OWNERSHIP=ROOT/'ownership-v2.json'
+FAILED_EVIDENCE='44e1fb7eea0b9ff4ea8eb1c1496ae1d28a613fb8'
 SOURCE='bench/sycl/prefill_sycl_copy_math.cpp'
 LIFETIME='tests/sycl/prefill_sycl_copy_lane.cpp'
 LANE='include/strata/prefill/sycl_copy_lane.hpp'
@@ -58,7 +62,7 @@ def compact(row):
 
 
 def save(row):
-    write(ROOT/'record.json',row)
+    write(RECORD,row)
     data=json.loads(RESULT.read_text());data[KEY]=compact(row);write(RESULT,data)
 
 
@@ -116,6 +120,13 @@ def case_gate(case,weights):
             and case['rows'] in ROWS and case['mode'] in ['metadata','batch']
             and case['argv']==[str(ROOT/'benchmark'),case['mode'],case['arm'],str(case['rows']),weights],
             'frozen production math argv/source policy differs')
+
+
+def case_mappings(pid,row,case):
+    require(case['family'] in ['math','lifetime'],'unknown fixture provider scope')
+    image=row['lifetime_binary'] if case['family']=='lifetime' else row['binary']
+    require(case['argv'][0]==image['path'],'fixture argv does not name its pinned image')
+    return base.event.mappings(pid,dict(row,binary=image))
 
 
 def batch_gate(batch,arm,rows):
@@ -200,7 +211,59 @@ def extract_weights():
         order='expert0..511,each gate/up/down;source offset=role base+expert*role stride')
 
 
+def prepare_reuse():
+    require(not RECORD.exists() and KEY not in json.loads(RESULT.read_text()),
+            'existing corrected admission;inspect owner,no retry')
+    prior=base.ur_validation.committed(RESULT,(FAILED_KEY,))
+    row=json.loads((ROOT/'record.json').read_text())
+    require(fingerprint(compact(row))==fingerprint(prior) and prior['stage']=='failed'
+        and prior['passed'] is False and prior['active'] is False
+        and prior['failed_admission_closure']['positive_process_closure'] is True
+        and len(row['commands'])==16 and len(row['results'])==0,
+        'preserve the exact failed first admission before reuse')
+    frozen=json.loads(git(P,'show',FAILED_EVIDENCE+':'+str(RESULT.relative_to(P))))[FAILED_KEY]
+    require(fingerprint(frozen)==fingerprint(prior),'original failed evidence differs')
+    failed=row['commands'][-1]
+    require(failed['label']=='lifetime-metadata-compute-math'
+        and failed['error']=="RuntimeError('unfrozen initialized provider: "+str(ROOT/'lifetime')+"')"
+        and failed['exit_code']==-15 and failed['direct_child_reaped'] is True
+        and failed['session_empty'] is True and not failed['survivors']
+        and not Path('/proc',str(failed['pid'])).exists()
+        and all(base.owner_api.closed(v) and v['exit_code']==0 for v in row['commands'][:-1]),
+        'only this positively closed pre-runtime admission defect permits reuse')
+    native=row['project'];recovered=base.original.coherent.recover(native)
+    current_native={p:h for p,h in row['actual_inputs']['compiled'].items()
+        if Path(p).is_relative_to(P)}
+    require(set(current_native)=={str(P/n) for n in [SOURCE,LIFETIME,LANE]}
+        and all(recovered.get(p)==h==sha(p) for p,h in current_native.items()),
+        'all current native fixture/header bytes must match the original source commit')
+    # Reuse the original immutable recipe,source/SDK manifest,compiler census,
+    # objects and both final ELFs. Only the separately pinned controller changes.
+    project=base.original.coherent.build.common.source.pin(P,PREFIXES)
+    case_root=ROOT/'admission-v2';require(not case_root.exists(),'existing corrected case root')
+    for case in row['cases']:
+        old=case['root'];case['root']=str(case_root/case['label'])
+        case['environment']={k:v.replace(old,case['root']) for k,v in case['environment'].items()}
+    row.update(stage='built',passed=True,complete=False,active=False,ownership_closed=True,
+        project=project,native_project=native,commands=[],results=[],fresh_faults=[],
+        controller_admission_commit=project['revision'],
+        original_failed_admission=dict(key=FAILED_KEY,evidence_commit=FAILED_EVIDENCE,
+            sha256=fingerprint(prior),outcome='failed;not retroactively qualified'),
+        native_reuse=dict(original_source=row['native_source_commit'],
+            original_recipe_sha256=fingerprint(row['recipe']),
+            actual_inputs_sha256=fingerprint(row['actual_inputs']),
+            native_project_sha256=fingerprint(native),current_native_inputs=current_native,
+            binaries=[row['binary'],row['lifetime_binary']],native_recompiled=False,
+            qualification='Exact original successful build with its original12host controls only;no native/device qualification reused.'))
+    row.pop('error',None);row.pop('failed_admission_closure',None)
+    row['plan']['admission']='New controller-only cohort after preserved V1pre-runtime refusal. Select the one pinned ELF matching each case;do not broaden the runtime allowlist or refresh native hashes. Original source/recipe/census/objects/both ELFs remain exact;new case directories and original115case order. No original failure is relabeled or automatically retried.'
+    check(row,False);case_root.mkdir(mode=0o700);save(row)
+    print('Prepared corrected admission with exact native reuse;commit before any device case.',flush=True)
+
+
 def prepare():
+    if ROOT.exists():
+        prepare_reuse();return
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'existing actual-reader attempt;inspect owner,no retry')
     wrapper=base.ur_validation.committed(RESULT,('prefill_weight_wrapper_v1',))
     require(wrapper['stage']=='closed' and wrapper['complete'] is True and wrapper['passed'] is True
@@ -346,13 +409,13 @@ def execute(action):
     public=base.ur_validation.committed(RESULT,(KEY,))
     require(public['stage'] in (['prepared'] if action=='build' else ['built','testing']),
             'terminal or wrong-stage actual-reader cohort;preserve its original receipt')
-    row=json.loads((ROOT/'record.json').read_text())
+    row=json.loads(RECORD.read_text())
     require(row['stage'] in (['prepared'] if action=='build' else ['built','testing']),
             'terminal or wrong-stage actual-reader cohort;preserve its original receipt')
     try:check(row)
     except BaseException as error:
         row.update(stage='failed',passed=False,complete=False,prelaunch_error=repr(error));save(row);raise
-    supervisor=base.owner_api.Owner(ROOT/'owned',lambda:write(ROOT/'ownership.json',supervisor.commands));cursor=None
+    supervisor=base.owner_api.Owner(ROOT/'owned',lambda:write(OWNERSHIP,supervisor.commands));cursor=None
     try:
         if action=='build':
             actual=dict(compiled={},links={},objects={});allowed=dict(row['allowed'])
@@ -360,8 +423,8 @@ def execute(action):
                 entry,out,err=supervisor.run(recipe['label'],recipe['argv'],row['build_environment'],ROOT,**BUILD)
                 require(base.owner_api.closed(entry) and entry['exit_code']==0,'fresh actual-reader build failed:'+str(err))
                 if recipe['label']=='host-controls':
-                    require('Ran 12 tests' in err.read_text() and '\nOK\n' in err.read_text(),'source/metadata/scheduling controls required')
-                    row['host_admission_controls']=dict(methods=12,passed=True,device_executed=False)
+                    require('Ran 13 tests' in err.read_text() and '\nOK\n' in err.read_text(),'source/metadata/scheduling controls required')
+                    row['host_admission_controls']=dict(methods=13,passed=True,device_executed=False)
                 if 'dep' in recipe:
                     for name in shlex.split(Path(recipe['dep']).read_text().replace('\\\n',' ').split(':',1)[1]):
                         path=str(Path(name).resolve());h=sha(path);require(allowed.get(path)==h,'unfrozen compiler input:'+path);actual['compiled'][path]=h
@@ -381,7 +444,7 @@ def execute(action):
             case=row['cases'][len(row['results'])];root=Path(case['root']);require(not root.exists(),'existing case:no retry')
             root.mkdir(mode=0o700)
             for name in ['tmp','cache']:(root/name).mkdir(mode=0o700)
-            supervisor=base.owner_api.Owner(root/'owned',lambda:write(ROOT/'ownership.json',supervisor.commands))
+            supervisor=base.owner_api.Owner(root/'owned',lambda:write(OWNERSHIP,supervisor.commands))
             cursor=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).split('-- cursor: ',1)[1].strip()
             row.update(stage='testing',active=True,ownership_closed=False);save(row)
             expected=['before-runtime','runtime-ready']+(['prewarm-ready','before-timing']
@@ -396,7 +459,7 @@ def execute(action):
                         actual=dict(v.split('=',1) for v in Path('/proc',str(channel.proc.pid),'environ').read_text().strip('\0').split('\0'))
                         require(all(actual.get(k)==v for k,v in env.items()) and set(actual)-set(env)<= {'PWD','OLDPWD','SHLVL','_'},'actual startup environment differs')
                         require(Path('/proc',str(channel.proc.pid),'cmdline').read_bytes().rstrip(b'\0').decode().split('\0')==case['argv'],'actual source/reader argv differs')
-                        providers[name]=base.event.mappings(channel.proc.pid,row)
+                        providers[name]=case_mappings(channel.proc.pid,row,case)
                         if name!='before-runtime':
                             needed=[base.event.LOADER,env['ZE_ENABLE_ALT_DRIVERS'],env['UR_ADAPTERS_FORCE_LOAD'],'/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so']
                             if case['trace']:needed.append(base.event.VALIDATION)

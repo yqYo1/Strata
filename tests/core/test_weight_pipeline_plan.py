@@ -165,6 +165,20 @@ class WeightPipelineAdmission(unittest.TestCase):
         duplicated=copy.deepcopy(results);duplicated[0]['arm']='shortcut'
         with self.assertRaises(RuntimeError):t.analyze(duplicated)
 
+    def test_provider_scope_selects_only_the_pinned_case_executable(self):
+        row=dict(binary=dict(path='/math',sha256='a'*64),
+            lifetime_binary=dict(path='/lifetime',sha256='b'*64))
+        for family,path in [('math','/math'),('lifetime','/lifetime')]:
+            case=dict(family=family,argv=[path])
+            with patch.object(t.base.event,'mappings',return_value={'proof':'unchanged'}) as maps:
+                self.assertEqual(t.case_mappings(123,row,case),{'proof':'unchanged'})
+                selected=maps.call_args.args[1]
+                self.assertEqual(selected['binary']['path'],path)
+                self.assertEqual(row['binary']['path'],'/math')
+            with patch.object(t.base.event,'mappings') as maps,self.assertRaises(RuntimeError):
+                t.case_mappings(123,row,dict(family=family,argv=['/wrong']))
+            maps.assert_not_called()
+
     @staticmethod
     def batch(arm,rows):
         return dict(kind='batch',arm=arm,rows=rows,epochs=512,
