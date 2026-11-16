@@ -27,11 +27,14 @@ namespace strata::prefill::detail {
 // A returned device span must only be read by the ordered compute queue, after
 // prefill_wait_ready() and before prefill_record_readers() for that group.
 //
-// Groups are submitted/consumed in sequence, using a fixed number of rotating
-// banks. Copying the next use of a bank requires its previous readers marker.
-// Free banks can be filled ahead of compute. Copies remain separate commands;
-// this class changes readiness/retirement granularity, not payload or kernels.
-// Keep total slots fixed when comparing group width independently of capacity.
+// Copies, readiness and retirement each advance in sequence. Readiness can
+// cover several consecutive tickets independently of reader-marker batching.
+// On the width1 layout this varies both marker granularities while preserving
+// the exact same physical slots and per-expert source/destination ownership.
+// Only a retired bank can be recycled; ready unretired banks remain accessible.
+// Free banks can be filled ahead of compute. All payload copies stay separate.
+// Layout width changes are a further comparison, after the independent marker
+// controls. capacity bounds submitted groups, not slots, payloads or markers.
 class PrefillSyclCopyGroups {
 public:
     enum class Placement { Compute, Separate };
@@ -131,34 +134,51 @@ public:
     }
 
     void prefill_wait_ready(Ready ticket) {
-        auto& state = current(ticket);
-        require(ticket.index_ == next_consumer_ && !state.wait && !state.readers,
-                "prefill copy groups consumption order/readiness");
+        prefill_wait_ready(std::span<const Ready>(&ticket, 1));
+    }
+
+    void prefill_wait_ready(std::span<const Ready> tickets) {
+        validate_sequence(tickets, next_wait_);
+        for (const auto ticket : tickets) {
+            const auto& state = current(ticket);
+            require(!state.wait && !state.readers, "prefill copy groups duplicate readiness");
+        }
         try {
             runtime_->check();
-            state.wait = runtime_->compute().ext_oneapi_submit_barrier({state.copy});
+            // The copy queue is in order even across distinct banks. Its last
+            // copy covers every earlier payload in this consecutive sequence.
+            const auto event = runtime_->compute().ext_oneapi_submit_barrier(
+                {states_[tickets.back().index_].copy});
+            for (const auto ticket : tickets) states_[ticket.index_].wait = event;
+            next_wait_ += tickets.size();
         } catch (...) { poisoned_ = true; throw; }
     }
 
     std::span<const std::byte> prefill_expert(Ready ticket, std::size_t slot) {
         const auto& state = current(ticket);
-        require(ticket.index_ == next_consumer_ && state.wait && !state.readers &&
-                slot < state.count, "prefill copy groups expert outside active readers");
+        require(state.wait && !state.readers && slot < state.count,
+                "prefill copy groups expert outside active readers");
         return {slots_ + (state.bank * layout_.group_width + slot) * layout_.expert_bytes,
                 layout_.expert_bytes};
     }
 
     void prefill_record_readers(Ready ticket) {
-        auto& state = current(ticket);
-        require(ticket.index_ == next_consumer_ && state.wait && !state.readers,
-                "prefill copy groups readers/readiness order");
+        prefill_record_readers(std::span<const Ready>(&ticket, 1));
+    }
+
+    void prefill_record_readers(std::span<const Ready> tickets) {
+        validate_sequence(tickets, next_retirement_);
+        for (const auto ticket : tickets) {
+            const auto& state = current(ticket);
+            require(state.wait && !state.readers, "prefill copy groups readers/readiness order");
+        }
         try {
             runtime_->check();
-            // Caller has submitted EVERY quantized reader for this group.
-            // Separate GU/Down weights, activations and accumulators remain
-            // owned and ordered by their own compute consumers.
-            state.readers = runtime_->compute().ext_oneapi_submit_barrier();
-            ++next_consumer_;
+            // Caller has submitted EVERY reader of every named ticket. Their
+            // separate math buffers remain owned/ordered by compute consumers.
+            const auto event = runtime_->compute().ext_oneapi_submit_barrier();
+            for (const auto ticket : tickets) states_[ticket.index_].readers = event;
+            next_retirement_ += tickets.size();
         } catch (...) { poisoned_ = true; throw; }
     }
 
@@ -190,7 +210,7 @@ private:
     std::optional<sycl::queue> separate_;
     std::vector<State> states_;
     std::vector<std::optional<std::size_t>> bank_owners_;
-    std::size_t next_consumer_ = 0;
+    std::size_t next_wait_ = 0, next_retirement_ = 0;
     bool poisoned_ = false, sealed_ = false, drained_ = false;
     inline static std::atomic<std::uint64_t> next_identity_{1};
 
@@ -213,6 +233,16 @@ private:
         require(bank_owners_[state.bank] == ticket.index_,
                 "prefill copy groups bank was recycled");
         return state;
+    }
+    void validate_sequence(std::span<const Ready> tickets, std::size_t first) {
+        require(!sealed_ && !poisoned_ && !tickets.empty() && first <= states_.size() &&
+                tickets.size() <= states_.size() - first,
+                "prefill copy groups empty/oversized marker sequence");
+        for (std::size_t i = 0; i < tickets.size(); ++i) {
+            require(tickets[i].index_ == first + i,
+                    "prefill copy groups nonconsecutive marker sequence");
+            (void)current(tickets[i]);
+        }
     }
 };
 } // namespace strata::prefill::detail
