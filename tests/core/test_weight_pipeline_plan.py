@@ -19,7 +19,9 @@ class WeightPipelineAdmission(unittest.TestCase):
             native_validation_probe={'library':'pin'},runtime_manifest={'sha256':'b'*64},
             validation_provider={'sha256':'c'*64},driver={'driver':'xe'},boot='original',
             weights=dict(path='/exact/weights',sha256='d'*64),
-            cases=[dict(arm='direct',mode='batch',rows=16,argv=['/exact/exe','batch','direct','16','/exact/weights'],environment={'EnableDirectSubmission':'0',**t.BACKEND})])
+            cases=[dict(family='math',arm='direct',mode='batch',rows=16,
+                argv=[str(t.ROOT/'benchmark'),'batch','direct','16','/exact/weights'],
+                environment={'EnableDirectSubmission':'0',**t.BACKEND})])
         self.public=t.compact(self.row)
 
     def test_exact_metadata_and_plan_reaches_source_check(self):
@@ -96,17 +98,86 @@ class WeightPipelineAdmission(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     t.batch_gate(self.batch(arm,rows),'shortcut' if arm=='direct' else 'direct',rows)
 
-    def test_exact_wrapper_and_lifetime_controls_are_required(self):
+    def test_exact_dependency_queue_and_reader_policy_are_required(self):
         for arm in t.ARMS:
-            proof=dict(kind='source-proof',ordinary_readonly_mapping=True,staged=False,host_slots=0,
-                copy_wrapper='compat' if arm=='direct' else 'resolved-queue',
+            bridge=arm in ['bridge','queue','lookahead']
+            proof=dict(kind='source-proof',ordinary_readonly_mapping=True,host_slots=0,policy=arm,
+                dependency_bridge=bridge,separate_queue=arm in ['queue','lookahead'],
+                reader_marker=('after-both-IQ' if arm=='lookahead' else 'after-math') if bridge else 'none',
                 runtime_check_and_observer_retained=True)
             t.source_proof_gate(proof,arm)
-            for key,value in [('ordinary_readonly_mapping',False),('staged',True),('host_slots',4),
-                ('runtime_check_and_observer_retained',False),('copy_wrapper','staging')]:
+            for key,value in [('ordinary_readonly_mapping',False),('host_slots',4),
+                ('runtime_check_and_observer_retained',False),('policy','staged'),
+                ('dependency_bridge',int(bridge)),('separate_queue',not proof['separate_queue']),
+                ('reader_marker','after-one-IQ'),('unexpected_field',True)]:
                 with self.subTest(arm=arm,key=key),self.assertRaises(RuntimeError):
                     t.source_proof_gate(dict(proof,**{key:value}),arm)
             with self.assertRaises(RuntimeError):t.source_proof_gate(proof,'staged')
+
+    def test_changed_math_protocol_is_rejected_before_source_access(self):
+        for field,value in [('family','other'),('mode','ordered'),('arm','staged'),
+                ('rows',True),('rows',640),('argv',['wrong']),
+                ('environment',dict(t.BACKEND,STRATA_SYCL_PARALLEL_IQ_DEQUANT='0'))]:
+            row=copy.deepcopy(self.row);row['cases'][0][field]=value
+            with self.subTest(field=field,value=value), \
+                 patch.object(t.base.ur_validation,'committed',return_value=t.compact(row)), \
+                 patch.object(t.base.original.coherent.build.common.source,'pin') as source:
+                with self.assertRaises(RuntimeError):t.check(row)
+                source.assert_not_called()
+
+    def test_explicit_lifetime_mode_placement_and_marker_are_required(self):
+        for mode in ['metadata','ordered','throw-copy','throw-reader']:
+            for placement in ['compute','separate']:
+                for retirement in ['math','iq']:
+                    case=dict(family='lifetime',mode=mode,arm='lifetime',rows=0,trace=True,
+                        placement=placement,retirement=retirement,environment=t.BACKEND,
+                        argv=[str(t.ROOT/'lifetime'),mode,placement,retirement])
+                    t.case_gate(case,'/exact/weights')
+                    for field,value in [('mode','batch'),('placement','transfer'),
+                            ('retirement','after-one-IQ'),('trace',False),('arm','direct'),
+                            ('rows',16),('argv',[str(t.ROOT/'benchmark'),mode,placement,retirement])]:
+                        with self.subTest(mode=mode,placement=placement,field=field), \
+                             self.assertRaises(RuntimeError):
+                            t.case_gate(dict(case,**{field:value}),'/exact/weights')
+
+    def test_unit_losses_survive_a_faster_combination_and_missing_arms_refuse(self):
+        results=[]
+        for rows in t.ROWS:
+            for pair in range(3):
+                # R0 loses in every block; O loses once although net always wins.
+                times=dict(direct=10,shortcut=8,bridge=9,queue=6,
+                    lookahead=7 if pair==2 else 5)
+                for arm,value in times.items():
+                    value*=1+pair*.1
+                    results.append(dict(family='math',clean=True,rows=rows,pair=pair,arm=arm,
+                        batch=dict(wall_s=value),lifecycle_plus_batch_s=value+2))
+        analysis=t.analyze(results)
+        for value in analysis.values():
+            self.assertFalse(value['R0']['repeated_component_gain'])
+            self.assertTrue(value['Q1']['repeated_component_gain'])
+            self.assertFalse(value['O']['repeated_component_gain'])
+            self.assertTrue(value['net']['repeated_component_gain'])
+            self.assertEqual(len(value['O']['paired_time_ratios']),3)
+            self.assertGreater(value['O']['paired_time_ratios'][2],1)
+            self.assertAlmostEqual(value['R0']['geometric_mean_ratio'],9/8)
+            self.assertTrue(all(v['model_adoption_qualified'] is False for v in value.values()))
+        with self.assertRaises(RuntimeError):t.analyze(results[:-1])
+        duplicated=copy.deepcopy(results);duplicated[0]['arm']='shortcut'
+        with self.assertRaises(RuntimeError):t.analyze(duplicated)
+
+    def test_provider_scope_selects_only_the_pinned_case_executable(self):
+        row=dict(binary=dict(path='/math',sha256='a'*64),
+            lifetime_binary=dict(path='/lifetime',sha256='b'*64))
+        for family,path in [('math','/math'),('lifetime','/lifetime')]:
+            case=dict(family=family,argv=[path])
+            with patch.object(t.base.event,'mappings',return_value={'proof':'unchanged'}) as maps:
+                self.assertEqual(t.case_mappings(123,row,case),{'proof':'unchanged'})
+                selected=maps.call_args.args[1]
+                self.assertEqual(selected['binary']['path'],path)
+                self.assertEqual(row['binary']['path'],'/math')
+            with patch.object(t.base.event,'mappings') as maps,self.assertRaises(RuntimeError):
+                t.case_mappings(123,row,dict(family=family,argv=['/wrong']))
+            maps.assert_not_called()
 
     @staticmethod
     def batch(arm,rows):

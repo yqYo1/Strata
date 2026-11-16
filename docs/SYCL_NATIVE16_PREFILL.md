@@ -1686,7 +1686,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   unchanged. The next fresh R0/Q1/Obuild needs its own committed recipe/plan. Sresults retain
   their original1896d6a18source;the two phase references remain selected.
   An additional owned standard-SYCLcopy-lane header and bounded lifetime fixture
-  are authored but unbuilt. They keep one quantized bank,borrowed immutable
+  keep one quantized bank,borrowed immutable
   ordinary host sources and both IQreaders distinct from dequantized-weight
   consumers. Q1will compare compute with a separate same-context queue whose
   in-order/profiling properties match;Owill then move only the reader marker.
@@ -1701,7 +1701,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   validation follows.
   DA/DBsource review identifies a drain/lifetime APIgap:the old public drain
   did not prevent another submission after borrowed owners could be released.
-  The unbuilt prototype now seals on drain,including failed drains,and rejects
+  The prototype seals on drain,including failed drains,and rejects
   every later copy/readiness/reader operation. Its fixture separates that check
   from capacity rejection,checks constructor/property admission and reads back
   the accepted exceptional reader output. Fourteen source/report hashes passed
@@ -1725,16 +1725,64 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   /opt/intel/oneapi/compiler/2026.2/bin/icpx --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -std=c++20 -DSTRATA_ENABLE_SYCL=1 -fsycl -fsyntax-only -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/source/include -I/home/yayoi/orca/workspaces/Strata/sycl/include -MD -MF /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-lane-syntax-v1/fixture.d /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_sycl_copy_lane.cpp
   ```
 
-  The next full-math fixture`bench/sycl/prefill_sycl_copy_math.cpp`is authored
-  from the owned Q0fixture and remains unbuilt. Its five explicit policies
+  The full-math fixture`bench/sycl/prefill_sycl_copy_math.cpp`is authored
+  from the owned Q0fixture. The ended Q0fixture is removed
+  from the active tree;its exact original source remains at`d3ca4956b1bfda8ef64ef19d50827cff2abbafa4`.
+  The maintained`tools/sycl/prefill_weight_pipeline.py`now prepares a fresh
+  copy-lane cohort rather than rerunning that closed Q0cohort.
+  Its five explicit policies
   support shortcut/bridge(R0),bridge/queue(Q1),queue/lookahead(O),and
   direct/lookahead(net original)comparisons with unchanged real weights and
   production Gemm dispatch. Both IQreaders precede the early marker;the
   separate GU/Down weight buffers retain compute order. Final lane drain is
-  inside timing. After Q0closure/recovery/retirement,replace the old fixture
-  and commit the new controller/recipe/order/gates before compiling it;do not
-  run it with the current Q0controller or retain duplicate closed fixtures.
-  These files are outside Q0actual compiler/source inputs;Q0remains frozen.
+  inside timing. A fresh coherent ten-TU/twelve-object build produces both
+  the lifetime and actual-math executables,without old objects or archives.
+  The finite plan first runs ten traced small lifetime processes,then five
+  math metadata and25traced actual-math processes,before75clean samples.
+  Each shape uses three complete five-arm blocks:forward,reverse,and
+  bridge/lookahead/direct/queue/shortcut. All four contrasts keep their own
+  three ratios,lifecycle costs and decisions,including enabling-plumbing
+  losses. A combined win never relabels a losing unit. Commit the exact
+  controller/source and generated recipe/order/gates before building;the
+  owned processes have120swall/240sCPU/4GiBRSS bounds and no retry/exclusion.
+  This cohort does not permit model trials. Controlled submission/marker/
+  asynchronous faults,active observers and broader phase/context gates remain
+  pending. Both retained phase references remain unchanged.
+  Native source`e5cd35836c1e0e608970eec19ad63bcf69823e4a`now builds both
+  executables coherently:962compiler inputs,29link inputs and12fresh objects;
+  all15build children close normally0and12host controls pass. V1first lifetime
+  metadata admission fails before Runtime initialization because the provider
+  reader was given the math ELF instead of the separately pinned lifetime ELF.
+  Its owned process is positively terminated/reaped(-15),session empty,no
+  application commands or fresh fault;this remains a failed cohort at`44e1fb7ee`.
+  The corrected controller selects only the matching fixture ELF. A new
+  `prefill_sycl_copy_lane_v2`plan may reuse the exact original native inputs,
+  recipe,census,objects and both ELFhashes after verifying them;it must keep
+  native source identity separate from the later admission commit. New case
+  directories preserve the original115case order. No runtime allowlist is
+  broadened,no native hashes refreshed,and no device qualification follows
+  from build reuse.
+  Corrected V2now passes all ten traced small lifetime cases:two zero-command
+  metadata,four ordered compute/separate x full-math/IQ-marker cases,and four
+  accepted-copy/accepted-reader exceptional exits. Every native child exits
+  normally0with quiet validation,positive ownership closure,exact planned
+  0/6/0/1kernel and0/4/2/3payload-copy counts,and no fresh fault. Constructor,
+  token,capacity,terminal drain,source/bank guards and actual reader outputs
+  pass. This qualifies those small assertions only. All five actual-math
+  metadata cases now pass normal0with no application commands. The first
+  traced M16direct actual-math case also passes bitwise split/tail/status/
+  source/device guards,6156kernel launches,1027payload copies,and1026launches
+  of each parallel-IQrole. The other24traced math and75clean processes remain
+  pending;there is no new speed,model,phase or physical-context result.
+  DC/DDsource review accepts the separate unit boundaries and admission reuse
+  limits. Its initial job-weight type/OOB claim was a review misread:line93is
+  `Buffer<float>`,matching its allocation/copy/API;all three current,immutable
+  and actual compiler source hashes agree. The corrected review withdraws
+  the blocker without a native edit or rebuild. Keep that correction and
+  continue the existing gates;do not turn source review into runtime evidence.
+  V1's unexecuted115case plan
+  is now retained only in its original Git evidence;the active result keeps
+  its compact unchanged failure and V2's current plan.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
