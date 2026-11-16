@@ -16358,9 +16358,9 @@
     }
   },
   "prefill_weight_lookahead_v1": {
-    "stage": "testing",
+    "stage": "closed",
     "passed": true,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "native_source_commit": "e2ef5ebe8871feeb642fa811332d492b3b3b7795",
@@ -17751,6 +17751,59 @@
           "full_bitwise_reference_and_guards": true
         },
         "lifecycle_plus_batch_s": 0.428141442
+      },
+      {
+        "label": "clean-pair2-lookahead",
+        "source": "usm",
+        "mode": "lookahead",
+        "pair": 2,
+        "clean": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "usm",
+          "property_type": 0,
+          "allocation_ids": [
+            0,
+            0
+          ]
+        },
+        "validation": {
+          "pid": 3193372,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "eb828983480870d48bba6469a906e7f0c84d02fcd9f9e5d3e44417f162860097",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.001661351,
+          "import_s": 0,
+          "retirement_s": 4.793e-05
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "lookahead",
+          "source": "usm",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies_after_iq": 511,
+          "copies_after_math": 1,
+          "wall_s": 0.294671557,
+          "timer_pair_max_s": 4e-08,
+          "actual_weight_reader": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.2963808379999999
       }
     ],
     "model_trial_allowed": false,
@@ -17785,6 +17838,21 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
+    },
+    "analysis": {
+      "paired_lookahead_over_serial": [
+        0.5805228520392374,
+        0.39406393958065783,
+        0.6912941589816051
+      ],
+      "geometric_mean_ratio": 0.5407746199916511,
+      "paired_lifecycle_ratios": [
+        0.5815676185855911,
+        0.3954578821899762,
+        0.6922498242998862
+      ],
+      "scheduling_component_eligible": true,
+      "model_adoption_qualified": false
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
