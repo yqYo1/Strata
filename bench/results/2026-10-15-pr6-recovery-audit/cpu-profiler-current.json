@@ -16584,6 +16584,55 @@
           "payload_copies": 513,
           "dense_launches": 514
         }
+      },
+      {
+        "label": "validated-overlap",
+        "arm": "overlap",
+        "pair": null,
+        "clean": false,
+        "batch": {
+          "kind": "batch",
+          "wall_s": 0.541805686,
+          "iterations": 512,
+          "arm": "overlap",
+          "timer_pair_max_s": 4e-08,
+          "requested_H2D_bytes": 1009254400,
+          "gemm_rows": 1024,
+          "gemm_n": 1280,
+          "gemm_k": 2560,
+          "lookahead": 1,
+          "oracle_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "source": "mapped-neo",
+          "preparation_s": 0.00382069,
+          "import_s": 0.000414881,
+          "retirement_s": 0.000596623,
+          "import_property_type": 1,
+          "import_allocation_id": 21
+        },
+        "lifecycle_plus_batch_s": 0.5462229989999999,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 2800801,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "40a1f794cd95d4599d1947608becf1189ea51ce0290893d34056fb0075353e64",
+        "validated_counts": {
+          "payload_copies": 513,
+          "dense_launches": 514
+        }
       }
     ],
     "model_trial_allowed": false,
