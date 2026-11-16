@@ -56,6 +56,11 @@ class WeightPipelineAdmission(unittest.TestCase):
                      patch.object(t,'save') as save:
                     with self.assertRaises(RuntimeError):t.execute(action)
                     read.assert_not_called();check.assert_not_called();save.assert_not_called()
+            with self.subTest(stage=stage,action='capture-plan'), \
+                 patch.object(t.base.ur_validation,'committed',return_value=dict(stage=stage)), \
+                 patch.object(t.Path,'read_text',side_effect=AssertionError('retired checkpoint read')) as read:
+                with self.assertRaises(RuntimeError):t.capture_plan()
+                read.assert_not_called()
 
     def test_seed_recipe_recovers_from_git_without_private_checkpoint(self):
         with patch.object(t.Path,'read_text',side_effect=AssertionError('external receipt read')):
