@@ -1398,8 +1398,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   slow third overlap samples;do not relabel them as noise. The CSVrecords both
   shapes with model PP/TTFT/TGblank. Kernel/transfer critical-path attribution
   and resource saturation remain unresolved:wall-time gain alone does not prove
-  actual device overlap or explain the variation. The new unexecuted
-  `profile_prefill_upload_overlap.py`proposal reuses these exact two images
+  actual device overlap or explain the variation. The archived
+  `profile_prefill_upload_overlap.py`controller reused those two images
   through a historical source/recipe/census reader. It separates seven
   collector/event safety cases from C/T/T/Cper arm/shape attribution,with
   owned-process RAW-clock associations,exact513copy/514dense calls and
@@ -1427,10 +1427,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   import proof and API1.16for the read-only flag. Do not reuse this failed
   collector/event combination for P2or model work. No rebuild or model route
   is implied. Preserve the failed1024gate and qualify observer cost separately;
-  do not change its criteria retroactively. The current E2images,
-  fresh objects,source view and private build/census record have that imminent
-  consumer;retire them at profile qualification/closure if superseded. Normal
-  output is retired after source/recipe and both final-ELF recovery:
+  do not change its criteria retroactively. After this cohort and the capability
+  query close,the E2images,fresh objects,source view and private census are
+  retired. Their original399Git-source files,925compiler/25link/7object inputs
+  and both final ELFs were verified against the original14508/d4recipe and
+  pushed retained history first. Including closed profiler/capability output,
+  reviewed research inputs/control/review files and two closed task-only native
+  transcripts,534files/21698392bytes are physically removed. Three ended
+  observer/reuse/capability tools and two tests are retired to Git;keep the
+  event-lane header,two C++fixtures and E2recipe/host controls only for the next
+  source-adapter unit,reviewing them at its prepare boundary. One17688Bquery
+  excerpt and the9546Bordinary-RAMreport have named next consumers. All26phase
+  reference ELFs remain unchanged;legacy/.cache holds remain separate. The next
+  native unit must qualify its rebuilt baseline/candidate;the old component
+  generation is not retained for an unspecified future comparison. Earlier normal
+  output was retired after source/recipe and both final-ELF recovery:
   113files/22007248bytes,with all26phase-reference ELFs unchanged. Keep the
   individual clean samples and both failed/passed shape decisions in the compact
   current result;the complete original receipt is reachable at`3ee710401`.
