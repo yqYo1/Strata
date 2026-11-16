@@ -77,12 +77,12 @@ class WeightPipelineAdmission(unittest.TestCase):
 
     def test_matching_production_shapes_and_fused_dispatch_are_admitted(self):
         for rows in t.ROWS:
-            for arm in ['direct','staged']:
+            for arm in t.ARMS:
                 with self.subTest(arm=arm,rows=rows):t.batch_gate(self.batch(arm,rows),arm,rows)
 
     def test_changed_source_dispatch_work_or_timer_are_rejected(self):
         for rows in [16,4096]:
-            for arm in ['direct','staged']:
+            for arm in t.ARMS:
                 changes=[('copies',1),('epochs',128),('actual_source_experts',2),
                     ('source_footprint_bytes',3942400),('split_primary_rows',rows),
                     ('gu_fused',512 if rows==16 else 0),('down_fused',512 if rows==16 else 0),
@@ -94,7 +94,19 @@ class WeightPipelineAdmission(unittest.TestCase):
                     with self.subTest(arm=arm,rows=rows,field=field):
                         with self.assertRaises(RuntimeError):t.batch_gate(batch,arm,rows)
                 with self.assertRaises(RuntimeError):
-                    t.batch_gate(self.batch(arm,rows),'direct' if arm=='staged' else 'staged',rows)
+                    t.batch_gate(self.batch(arm,rows),'shortcut' if arm=='direct' else 'direct',rows)
+
+    def test_exact_wrapper_and_lifetime_controls_are_required(self):
+        for arm in t.ARMS:
+            proof=dict(kind='source-proof',ordinary_readonly_mapping=True,staged=False,host_slots=0,
+                copy_wrapper='compat' if arm=='direct' else 'resolved-queue',
+                runtime_check_and_observer_retained=True)
+            t.source_proof_gate(proof,arm)
+            for key,value in [('ordinary_readonly_mapping',False),('staged',True),('host_slots',4),
+                ('runtime_check_and_observer_retained',False),('copy_wrapper','staging')]:
+                with self.subTest(arm=arm,key=key),self.assertRaises(RuntimeError):
+                    t.source_proof_gate(dict(proof,**{key:value}),arm)
+            with self.assertRaises(RuntimeError):t.source_proof_gate(proof,'staged')
 
     @staticmethod
     def batch(arm,rows):

@@ -1650,8 +1650,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source/recipe/final-ELF recovery from the pushed primary,737regular files/
   1283624160content bytes of ended component/corpus/raw and consumed research
   are physically retired. Both phase references retain their original hashes.
-  Six closed prototype roots and the three configured deployment source/migration
-  holds remain explicit in the existing retention ledger;this is scoped cleanup.
+  Six closed prototype roots subsequently pass exact source/recipe recovery
+  and retire228files/56083842content bytes. Both phase references remain.
+  Three configured deployment source/migration holds remain in the ledger;
+  this is scoped cleanup.
   The CSVnow has562points,including all five Scomparisons with model metrics blank.
   See`prefill_weight_source_v2`and the retained-build ledger for actual state.
   The next owned Q0fixture keeps ordinary immutable RAMand the same compute
