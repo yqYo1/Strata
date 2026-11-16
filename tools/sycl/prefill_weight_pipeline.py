@@ -14,11 +14,12 @@ import subprocess
 import sys
 sys.dont_write_bytecode=True
 import prefill_upload_overlap as base
+import kernel_trace
 
 P,B,RESULT=base.P,base.B,base.RESULT
-ROOT=B/'prefill-weight-pipeline-v1'
+ROOT=B/'prefill-weight-pipeline-v2'
 VIEW=ROOT/'source'
-KEY='prefill_weight_pipeline_v1'
+KEY='prefill_weight_pipeline_v2'
 SOURCE='bench/sycl/prefill_weight_pipeline.cpp'
 TEST='tests/core/test_weight_pipeline_plan.py'
 PREFIXES=[*base.PREFIXES,SOURCE,TEST]
@@ -111,6 +112,12 @@ def prepare():
     require(prior['stage']=='closed' and prior['analysis']['repeated_component_wall_gain'] is True
         and prior['retention']['stage']=='complete' and prior['retention']['all_selected_paths_absent'] is True,
         'preserve completed source/wait units and retire ended component before next generation')
+    earlier=base.ur_validation.committed(RESULT,('prefill_weight_pipeline_v1',))
+    require(earlier['stage']=='preparation_closed' and earlier['GPU_executed'] is False
+        and earlier['native_build_executed'] is False,'preserve unrun V1production-flag correction')
+    production=base.ur_validation.committed(base.original.RESULT,('coherent_prefill_model_v3',))
+    require(production['environment']['STRATA_SYCL_PARALLEL_IQ_DEQUANT']=='1',
+            'qualified model parallel-IQpolicy required')
     native,proof=base.original.verify_original()
     seed=json.loads((base.ROOT/'record.json').read_text())
     historical=json.loads(git(P,'show',SEED_EVIDENCE+':'+str(RESULT.relative_to(P))))[base.KEY]
@@ -163,6 +170,7 @@ def prepare():
         root=ROOT/label
         old=next(v for v in seed['cases'] if v.get('rows')==1024 and v['source']==source and v['trace'] is trace)
         env={k:v.replace(old['root'],str(root)) for k,v in old['environment'].items()}
+        env['STRATA_SYCL_PARALLEL_IQ_DEQUANT']=production['environment']['STRATA_SYCL_PARALLEL_IQ_DEQUANT']
         cases.append(dict(label=label,root=str(root),mode=mode,source=source,trace=trace,pair=pair,
             argv=[str(ROOT/'benchmark'),mode,source,weights['path']],environment=env))
     for source in ['usm','mapped-neo']:case('metadata-'+source,'metadata',source,True)
@@ -176,6 +184,7 @@ def prepare():
             source=SEED_SOURCE,evidence=SEED_EVIDENCE,old_ELFs_not_inputs=True),allowed=allowed,
         source_view=dict(original_commit=base.original.SOURCE,files=len(generated),sha256=fingerprint(generated)),
         source_capability=base.source_capability(),property_evidence=base.property_evidence(),weights=weights,
+        production_iq_policy=dict(native_source=base.original.SOURCE,evidence_key='coherent_prefill_model_v3.environment.STRATA_SYCL_PARALLEL_IQ_DEQUANT',value='1'),
         recipe=recipes,recipe_tools={p:sha(p) for p in seed['recipe_tools']},runtime_manifest=seed['runtime_manifest'],
         validation_provider=seed['validation_provider'],native_validation_probe=seed['native_validation_probe'],
         build_environment={k:v.replace(str(base.ROOT),str(ROOT)) for k,v in seed['build_environment'].items()},
@@ -185,7 +194,7 @@ def prepare():
             build='Fresh six TUs with original Runtime/class/production math plus existing owned source headers. No archive/object reuse. IQ/ops host function sections and link garbage collection omit unrelated uncalled MMVQ APIs,identically in both source arms;dense AOTrecipe unchanged. One new temporary component generation beside the two retained independent phase references;ended prior generation physically retired.',
             inputs='Committed extraction recipe reads only actual layer2roles for experts0/1 from the existing pinned model. Hash each selected role and combined3942400Bbundle,with original file identity and prior full hash labelled not rehashed. Bundle is an external model fixture,not project source or synthetic packed data. No asset download or model edit.',
             order='Two traced metadata-only Runtime source admissions,then two traced serial actual-reader batches. Then three independent clean pairs USM/Neo,Neo/USM,USM/Neo. No retry,exclusion or reordering.128ordinary-USM/SYCL-copy reference jobs and two event-source warmup jobs outside timing.128actual source copies and identical six-kernel math jobs plus dual drain timed.',
-            gates='Typed committed source/plan,original Git/SDK/compiler/link/object/ELF/weights,actual argv/startup environment/providers,source type1and positive imported IDs. Metadata zero app enqueues;serial full bitwise FP32output against identical ordered production math using independent hostUSM/SYCLcopies,finite outputs,sticky status0,all device/source/bank guards and final expert1payload. Traced1548math launches and259payload-sized native copies(reference128,lane130,finalreadback1);counts are APIwork,not bus traffic. Batch>=100ms;128timer-pair max<=.001batch. Quiet validation,normal0,closed owners,unchanged boot/driver,no fresh fault.',
+            gates='Typed committed source/plan,original Git/SDK/compiler/link/object/ELF/weights,actual argv/startup environment/providers,source type1and positive imported IDs. Match qualified model parallel-IQflag1before exec and verify258actual named IQ22-GU/258IQ20-Down launches in each traced math batch. Metadata zero app enqueues;serial full bitwise FP32output against identical ordered production math using independent hostUSM/SYCLcopies,finite outputs,sticky status0,all device/source/bank guards and final expert1payload. Traced1548math launches and259payload-sized native copies(reference128,lane130,finalreadback1);counts are APIwork,not bus traffic. Batch>=100ms;128timer-pair max<=.001batch. Quiet validation,normal0,closed owners,unchanged boot/driver,no fresh fault.',
             decision='All three mapped/USM steady ratios and all three preparation+wall+retirement ratios must<=1.10 to permit a newly committed actual-reader scheduling plan. Import is a subset of preparation. Keep all individual samples and ratios;not a speedup,production/model or target gate. Preserve old source4096failure and old E2USM1024failure.',
             stop='First source/build/reference/guard/validation/ownership/deadline/fault failure stops this cohort. Timing samples complete even if slower. No implicit fallback,hash refresh,GPUreset or foreign process action.',
             retention='Keep minimum useful samples,source/recipe/census,asset-slice identities and failures. Retire routine traces and ended component/raw/extracted weight fixture when its immediate consumer closes. Preserve both phase-reference engines;no fourth generation. Review the old source-only receipt hold during this recovery.',
@@ -278,6 +287,14 @@ def execute(action):
                 copies=sum('SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(' in v and 'size=1971200,' in v for v in err.read_text().splitlines())
                 require(kernels==(0 if case['mode']=='metadata' else 1548) and copies==(0 if case['mode']=='metadata' else 259),'actual reader math/copy count differs')
                 result['validated_counts']=dict(math_launches=kernels,payload_sized_native_copy_calls=copies)
+                if case['mode']=='serial':
+                    named=kernel_trace.launch_census(trace)
+                    names=named['per_kernel']
+                    parallel={key:sum(v['launches'] for name,v in names.items() if key in name)
+                              for key in ['parallel_iq_launchILi22ELb1','parallel_iq_launchILi20ELb0']}
+                    require(named['launches']==1548 and all(v==258 for v in parallel.values()),
+                            'actual production parallel-IQlaunch selection differs')
+                    result['validated_counts']['parallel_IQ_launches']=parallel
             check(row,False);row['results'].append(result);row.update(passed=True,active=False,ownership_closed=True)
             if len(row['results'])==len(row['cases']):
                 ratios=[];lifecycle_ratios=[]
