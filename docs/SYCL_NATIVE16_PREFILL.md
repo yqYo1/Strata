@@ -1679,8 +1679,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   follows. Limiting hardware remains unknown. A recorded outer scheduling pause
   after M1024pair0direct did not stop a native child or change order/inputs;
   preserve all independent samples. Five CSVrows bring the index to567points.
-  Exact source/recipe/final-ELF recovery and retirement of this ended temporary
-  component must precede the next fresh R0/Q1/Onative build. Sresults retain
+  Exact original364controller/source and398math-view files,961compiler/29link
+  inputs,nine fresh TUs/11objects,recipe/final-ELF and all1GBrole bytes are
+  recovered and verified. The ended Q0generation/corpus/view/raw output now
+  retires691files/1279279287regular content bytes;both phase hashes remain
+  unchanged. The next fresh R0/Q1/Obuild needs its own committed recipe/plan. Sresults retain
   their original1896d6a18source;the two phase references remain selected.
   An additional owned standard-SYCLcopy-lane header and bounded lifetime fixture
   are authored but unbuilt. They keep one quantized bank,borrowed immutable
