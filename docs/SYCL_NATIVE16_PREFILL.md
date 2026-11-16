@@ -1485,6 +1485,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   its failed temporary generation and consumed CHreport are retired:446files,
   16557507bytes. All26phase-reference executables and eight CMake probe ELFs
   remain unchanged;this is scoped cleanup,not resolution of legacy holds.
+  The completed property observer and consumed CJ/CKresearch transactions,
+  source views and positively closed native transcript are also retired after
+  source recovery and the compact decision:41external files/2286503bytes and
+  the one-question observer. Its original source/result remain in Git;the two
+  independent phase-reference generations remain unchanged.
   Keep bounded host-USM staging as an independent control if import fails.
   Intel's vendor malloc/new-copy behavior does not itself establish the standard
   external-map contract;unknown pointers remain refused. No debug import flag,
