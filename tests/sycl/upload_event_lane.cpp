@@ -1,5 +1,6 @@
 // Main-authored safety fixture; repository LICENSE. No inference or speed claim.
-#include "strata/prefill/upload_event_lane.hpp"
+#include "strata/prefill/mapped_host_source.hpp"
+#include "prefill_host_pages.hpp"
 #ifdef STRATA_PREFILL_EVENT_RUNTIME_CONTEXT
 #include "strata/sycl/runtime.hpp"
 #endif
@@ -13,6 +14,8 @@
 
 namespace {
 using Lane = strata::prefill::detail::PrefillUploadEventLane;
+using Mapped = strata::prefill::detail::PrefillMappedHostSource;
+using Pages = strata::prefill::test_detail::PrefillHostPages;
 using Clock = std::chrono::steady_clock;
 void need(bool ok, const char* text) { if (!ok) throw std::runtime_error(text); }
 void ze(ze_result_t code) { need(code == ZE_RESULT_SUCCESS, "fixture LevelZero call"); }
@@ -24,17 +27,25 @@ void gate(const char* name) {
 void progress(const char* name) { std::cerr << "upload lane progress: " << name << std::endl; }
 struct Memory {
     sycl::queue queue;
+    std::unique_ptr<Pages> ordinary_a, ordinary_b;
     std::uint32_t *a = nullptr, *b = nullptr, *seen = nullptr, *storage = nullptr, *output = nullptr;
-    explicit Memory(sycl::queue q) : queue(std::move(q)) {
+    explicit Memory(sycl::queue q, bool mapped) : queue(std::move(q)) {
       try {
-        a = sycl::malloc_host<std::uint32_t>(66, queue);
-        b = sycl::malloc_host<std::uint32_t>(66, queue);
+        if (mapped) {
+            ordinary_a.reset(new Pages(66 * 4)); ordinary_b.reset(new Pages(66 * 4));
+            a = static_cast<std::uint32_t*>(ordinary_a->data());
+            b = static_cast<std::uint32_t*>(ordinary_b->data());
+        } else {
+            a = sycl::malloc_host<std::uint32_t>(66, queue);
+            b = sycl::malloc_host<std::uint32_t>(66, queue);
+        }
         seen = sycl::malloc_host<std::uint32_t>(66, queue);
         storage = sycl::malloc_device<std::uint32_t>(66, queue);
         output = sycl::malloc_device<std::uint32_t>(66, queue);
         need(a && b && seen && storage && output, "fixture allocation");
         for (int i = 0; i < 66; ++i) a[i] = b[i] = seen[i] = 0x7162abcd;
         for (int i = 1; i <= 64; ++i) { a[i] = std::uint32_t(i * 7919); b[i] = a[i] ^ 0x5ac31e07; }
+        if (mapped) { ordinary_a->read_only(); ordinary_b->read_only(); }
         queue.memcpy(storage, seen, 66 * 4).wait_and_throw();
         queue.memcpy(output, seen, 66 * 4).wait_and_throw();
         // Prewarm the EXACT reader lambda before a two-second host gate exists.
@@ -44,7 +55,9 @@ struct Memory {
     ~Memory() noexcept { retire(); }
     void retire() noexcept {
         strata::sycl_backend::checked_cleanup([&] { queue.wait_and_throw(); }, [&] {
-            for (auto* p : {a,b,seen,storage,output}) if (p) sycl::free(p, queue);
+            if (!ordinary_a && a) sycl::free(a, queue);
+            if (!ordinary_b && b) sycl::free(b, queue);
+            for (auto* p : {seen,storage,output}) if (p) sycl::free(p, queue);
             a=b=seen=storage=output=nullptr;
         }, "upload fixture memory retirement");
     }
@@ -148,9 +161,10 @@ template<class F> auto bounded(const char* name,F&& fn) {
     return value;
 }
 
-int run(const std::string& mode) {
+int run(const std::string& mode, bool mapped) {
     need(mode=="metadata" || mode=="forward" || mode=="reverse" || mode=="permanent" ||
-         mode=="cancel" || mode=="cancel-throw" || mode=="refuse", "known fixture case required");
+         mode=="cancel" || mode=="cancel-throw" || mode=="refuse" ||
+         (mapped && (mode=="import" || mode=="retire")), "known fixture case required");
     gate("before-runtime");
     {
 #ifdef STRATA_PREFILL_EVENT_RUNTIME_CONTEXT
@@ -168,11 +182,34 @@ int run(const std::string& mode) {
         std::unique_ptr<Memory> memory_owner;
         Lane lane(queue,check,16);
         gate("runtime-ready");
-        if(mode!="metadata") {
-            memory_owner.reset(new Memory(queue));auto& memory=*memory_owner;
+        // Imported owners retire BEFORE the lane; heap pages retire AFTER it.
+        std::unique_ptr<Mapped> imported_a, imported_b;
+        if(mode=="import") {
+            Pages pages(4096);
+            auto* data=static_cast<std::uint32_t*>(pages.data());data[0]=0x73621eab;
+            pages.read_only();
+            {
+                Mapped imported(lane,pages.data(),pages.bytes());
+                need(imported.view(4,64*4).bytes==64*4,"mapped interior view");
+                refuses([&] {(void)imported.view(pages.bytes(),1);});
+                refuses([&] {Mapped overlap(lane,pages.data(),pages.bytes());});
+                refuses([&] {Mapped unaligned(lane,static_cast<std::byte*>(pages.data())+1,pages.bytes());});
+                refuses([&] {Mapped empty(lane,pages.data(),0);});
+                gate("buffers-ready");
+            }
+            need(data[0]==0x73621eab,"unimport modified/freed original heap owner");
+            need(sycl::get_pointer_type(pages.data(),queue.get_context())==sycl::usm::alloc::unknown,
+                 "unimport left a registered heap pointer");
+        } else if(mode!="metadata") {
+            memory_owner.reset(new Memory(queue,mapped));auto& memory=*memory_owner;
+            if(mapped) {
+                imported_a.reset(new Mapped(lane,memory.ordinary_a->data(),memory.ordinary_a->bytes()));
+                imported_b.reset(new Mapped(lane,memory.ordinary_b->data(),memory.ordinary_b->bytes()));
+            }
             gate("buffers-ready");
             const Lane::Region dst{memory.storage+1,64*4};
-            const Lane::Source a{memory.a+1,64*4},b{memory.b+1,64*4};
+            const Lane::Source a=mapped ? imported_a->view(4,64*4) : Lane::Source{memory.a+1,64*4};
+            const Lane::Source b=mapped ? imported_b->view(4,64*4) : Lane::Source{memory.b+1,64*4};
             const auto expected_a=memory.a[1]+3u*memory.a[64], expected_b=memory.b[1]+3u*memory.b[64];
             need(expected_a!=expected_b,"fixture patterns must distinguish overwrites");
             progress(mode.c_str());
@@ -222,12 +259,39 @@ int run(const std::string& mode) {
               }
                 need(unwound==(mode=="cancel-throw"),"cancellation unwind was not exercised");
                 lane.drain();memory.verify({},memory.a);
+            } else if(mode=="retire") {
+                Held hold(lane,queue);
+                const auto prior=lane.readers_done();
+                const auto copied=lane.copy_after(dst,a,64*4,prior);
+                std::mutex release_mutex; std::condition_variable release_condition;
+                bool armed=false;
+                struct Release {
+                    std::thread thread;
+                    ~Release() { if(thread.joinable()) thread.join(); }
+                } release{std::thread([&] {
+                    {std::unique_lock lock(release_mutex);release_condition.wait(lock,[&] {return armed;});}
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));hold.release();
+                })};
+                const auto before=Clock::now();
+                {std::lock_guard lock(release_mutex);armed=true;release_condition.notify_all();}
+                imported_a.reset(); // Must drain the accepted held transfer before unimport.
+                need(Clock::now()-before>=std::chrono::milliseconds(40),"mapped source retired before held copy");
+                release.thread.join();
+                refuses([&] {(void)lane.copy_after(dst,a,64*4);}); // Stale mapped view after unimport.
+                imported_a.reset(new Mapped(lane,memory.ordinary_a->data(),memory.ordinary_a->bytes()));
+                refuses([&] {(void)lane.copy_after(dst,a,64*4);}); // Also stale after the same address is reimported.
+                lane.wait_ready(copied);memory.reader(1);lane.drain();
+                memory.verify({{1,expected_a}},memory.a);
             } else {
                 refuses([&] {(void)lane.copy_after(dst,a,65*4);});
                 refuses([&] {(void)lane.copy_after({nullptr,64*4},a,64*4);});
                 refuses([&] {lane.wait_ready({0,0});});
                 refuses([&] {(void)lane.copy_after(dst,a,64*4,Lane::Readers{0,0});});
                 Lane other(queue,check,4);
+                if(mapped) {
+                    refuses([&] {(void)other.copy_after(dst,a,64*4);});
+                    refuses([&] {(void)lane.copy_after(dst,{memory.a+1,64*4},64*4);});
+                }
                 const auto r=lane.copy_after(dst,a,64*4);lane.wait_ready(r);lane.drain();
                 refuses([&] {other.wait_ready(r);});
                 memory.verify({},memory.a);
@@ -237,11 +301,17 @@ int run(const std::string& mode) {
         lane.drain();
     }
     gate("before-exit");
-    std::cout << "{\"kind\":\"done\",\"passed\":true,\"case\":\"" << mode << "\"}" << std::endl;
+    std::cout << "{\"kind\":\"done\",\"passed\":true,\"case\":\"" << mode
+              << "\",\"source\":\"" << (mapped ? "mapped" : "usm") << "\"}" << std::endl;
     return 0;
 }
 } // namespace
 int main(int argc,char** argv) {
-    try {need(argc==2,"one case required");return run(argv[1]);}
+    try {
+        need(argc==2 || argc==3,"case and optional source required");
+        const std::string source=argc==3 ? argv[2] : "usm";
+        need(source=="usm" || source=="mapped","source must be usm or mapped");
+        return run(argv[1],source=="mapped");
+    }
     catch(const std::exception& error) {std::cerr << "upload lane failure: " << error.what() << std::endl;return 1;}
 }
