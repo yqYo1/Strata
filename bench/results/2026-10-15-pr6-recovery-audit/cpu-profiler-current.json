@@ -15002,7 +15002,41 @@
         "sha256": "4fd63992296f298e5b0b4cf446a63ee3558d2db0c7a3b3aba9902feef8b5c244"
       },
       "consumer": "Actual-schema regression and finite source audit;retire at corrected-reader qualification/review closure.",
-      "next": "Commit an observed-device-only-format red host control,then a prospectively corrected reader/new v2plan. Keep v1failed;reuse unchanged native images only after exact historical proof."
+      "next": "Commit an observed-device-only-format red host control,then a prospectively corrected reader/new v2plan. Keep v1failed;reuse unchanged native images only after exact historical proof.",
+      "host_red_plan": {
+        "source_commit": "f9e82a5789b8a1afdc89abd5d3398aa1e3950e6d",
+        "source_sha256": {
+          "tests/core/test_upload_overlap_profile.py": "d94f9c3880c02d0efd3f510381b3f7573ae36c731b48dcf883c6b965205e87c8",
+          "tools/sycl/profile_prefill_upload_overlap.py": "8c9970bcfbe859e12a5d8ad1865c91306034ce3a8294f4826a0cc489f5de2532",
+          "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+        },
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/core",
+          "-p",
+          "test_upload_overlap_profile.py",
+          "-v"
+        ],
+        "expected_exit_code": 1,
+        "expected_methods": 6,
+        "expected_errors": 1,
+        "expected_failure": "test_observed_device_only_markers_are_admitted / unique native-origin GPU event required",
+        "budgets": {
+          "wall": 90,
+          "cpu": 60,
+          "rss_cap": 1073741824,
+          "text_cap": 131072,
+          "file_cap": 1048576,
+          "total_cap": 4194304
+        },
+        "GPU_executed": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v1/host-red"
+      }
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
