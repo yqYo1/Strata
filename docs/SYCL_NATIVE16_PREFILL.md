@@ -1560,7 +1560,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   IQreaders retire;GU/Down retain their separate dequantized workspace until
   their readers finish. Commit a new serial/lookahead plan with512jobs for
   timing headroom,holding source,math and placement fixed. This is not a relaxed
-  old gate or model trial. Hardware resource saturation remains unknown.
+  old gate or model trial. That separate `prefill_weight_lookahead_v1`unit now
+  closes at`41b00bc09`,native source`e2ef5ebe8`:six fresh TUs,941compiler inputs,
+  25link inputs/eight objects and six host admission controls. One metadata and
+  both traced readers plus six clean processes all close normally0/quiet/no fault;
+  full bitwise accumulator/finite/status/guards and6156math/1027payload-copy API
+  counts pass per traced reader,including1026actual IQlaunches per role.
+  Serial clean seconds are .503431/.684353/.426261;lookahead .292253/.269679/
+  .294672. Paired ratios .580523/.394064/.691294 and geometric mean .540775
+  pass the predeclared component gain and lifecycle gates;no sample is excluded.
+  Only the scratch upload fence moves;this is not whole-model PP/TG/TTFT or
+  production adoption. `after_math`includes the initial reset-fenced copy.
+  CS/CTreview validates the two-reader seam;dispatcher confirmation remains
+  Main's prior context,not a newly audited callsite. Next pin actual production
+  job geometry,source preparation and scratch publication/reader lifetimes;
+  keep those independent units and decode preservation separately qualified.
+  Hardware resource saturation remains unknown.
   The ended component generation,unrun V1preparation and consumed research/raw
   output are retired:941files/57321828bytes,after exact original source/recipe/
   final-ELF recovery. Both phase-reference engines remain unchanged. Retain only
