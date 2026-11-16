@@ -1404,13 +1404,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and executed-copy/kernel counts. Preserve this failed1024gate and qualify
   observer cost;do not change its criteria retroactively. The current E2images,
   fresh objects,source view and private build/census record have that imminent
-  consumer;retire them at profile qualification/closure if superseded. Ordinary
-  normal output is retired after source/recipe and both final-ELF recovery:
+  consumer;retire them at profile qualification/closure if superseded. Normal
+  output is retired after source/recipe and both final-ELF recovery:
   113files/22007248bytes,with all26phase-reference ELFs unchanged. Keep the
   individual clean samples and both failed/passed shape decisions in the compact
   current result;the complete original receipt is reachable at`3ee710401`.
-  Ordinary
-  RAMsource views,actual production consumers,32K+model/decode/agent/quality
+  Ordinary RAMsource views,actual production consumers,32K+model/decode/agent/quality
   and physical262144/RESTORE remain separate required gates. No model trial
   or engine adoption is authorized by this component result.
   Generic feasibility scopes remain closed;any new audit needs its concrete
