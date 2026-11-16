@@ -15812,9 +15812,9 @@
     }
   },
   "prefill_host_source_capabilities_v2": {
-    "stage": "prepared",
-    "passed": false,
-    "complete": false,
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "interpreter": {
@@ -15875,6 +15875,62 @@
       "budget": "30s wall,30sCPU,1GiB RSS,4MiB text/file,16MiB total;stop first mismatch/failure,no retry or GPUreset.",
       "next": "If reported API>=1.16 and external-map extension>=1.0,plan a bounded same-context read-only import and event-lifetime fixture. Otherwise use the documented bounded host-USM staging baseline;do not relax pointer admission or assume vendor raw-RAM accessibility.",
       "retention": "Keep the compact feature result and exact source/header/runtime IDs. Retire routine provider/log output after closure;no performance CSVrow or model/adoption claim. Existing E2component generation receives no extended lifetime from this read-only query."
+    },
+    "capabilities": {
+      "kind": "capabilities",
+      "device": "Intel(R) Arc(TM) B570 Graphics",
+      "vendor": 32902,
+      "device_id": 57868,
+      "api_version": 65553,
+      "api_major": 1,
+      "api_minor": 17,
+      "max_single_allocation_bytes": 10132807680,
+      "driver_extension_count": 63,
+      "driver_extensions_sha256": "c1254ea769d02d70a828a2265207a0b9ac08b8faae9e55142314cfa314d2e7ab",
+      "relevant_extensions": {
+        "ZE_extension_external_memmap_sysmem": 65536,
+        "ZE_extension_external_semaphores": 65536,
+        "ZEX_driver_import_host_pointer": 65536
+      },
+      "external_sysmem_mapping_version": 65536,
+      "read_only_mapping_reported_eligible": true,
+      "mapping_or_transfer_attempted": false
+    },
+    "providers": [
+      {
+        "gate": "before-runtime",
+        "files": 20,
+        "sha256": "ba0ce34b226c604b822893174f71533f3a3e4cca04d6efbe1cd564c92ccb544e"
+      },
+      {
+        "gate": "after-queries",
+        "files": 33,
+        "sha256": "d8cec36af076df495a0e9c1e02574f6b47dd3e886a2a72bb520a48d6b9a570b0"
+      }
+    ],
+    "model_trial_allowed": false,
+    "mapping_or_transfer_qualified": false,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "decision": {
+      "next_unit": "Same-context,read-only standard external system-memory mapping;not an arbitrary raw-pointer admission change.",
+      "prerequisites_reported": {
+        "API": "1.17",
+        "external_sysmem_extension": "1.0",
+        "read_only_flag_API_floor": "1.16"
+      },
+      "pending": "Actual page-aligned allocation/import,HOST_IMPORTED properties and context/range proof,source/readers/drain/unimport lifetime,all held/overwrite/cancel/refusal cases and total preparation/transfer cost;capability enumeration alone qualifies none of these.",
+      "independent_comparisons": "Compare the source adapter with wait ordering fixed. Only after its gates,compare readiness-wait ordering with source/compute/placement/settings fixed. Preserve E2M1024failed/M4096passed outcomes;no inherited throughput gate,model route,decode or physical-context qualification.",
+      "raw_host_contract": "Intel39758.13 programmers guide documents malloc/new copies through command-list-backed allocation;this is vendor behavior,not the same-context standard external-map proof. Do not silently admit unknown pointers or enable ForceHostPointerImport.",
+      "alternatives": "Retain bounded host-USM staging as a separately measured control if standard import fails;account for CPU preparation,source ownership and total dependency path."
+    },
+    "closure": {
+      "native_pid": 2337096,
+      "native_exit_code": 0,
+      "elapsed_seconds": 2.4176537208259106,
+      "same_boot_and_driver": true,
+      "provider_gates": 2,
+      "no_GPU_work_commands": true
     },
     "reference_sha256": "93b19a1fbb656ba7da54e1ac1bd5a9de201f052ad24ad82fb1ce6713c42c39cd",
     "allowed": {

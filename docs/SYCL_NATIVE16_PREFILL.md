@@ -1422,8 +1422,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Boot/driver remain unchanged and no fresh fault appears. The actual
   PTIevent-cache helper guards release/reset by ownership,so merely passing an
   application event to that helper does not establish event corruption. Native
-  Luna-max reviews the source audit with that supplemental compiler input and
-  the separate ordinary-RAMsource investigation. Do not reuse this failed
+  Luna-max confirms that ownership guard and retracts the source audit's
+  event-reset concern. The separate ordinary-RAMreview requires same-context
+  import proof and API1.16for the read-only flag. Do not reuse this failed
   collector/event combination for P2or model work. No rebuild or model route
   is implied. Preserve the failed1024gate and qualify observer cost separately;
   do not change its criteria retroactively. The current E2images,
@@ -1433,6 +1434,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   113files/22007248bytes,with all26phase-reference ELFs unchanged. Keep the
   individual clean samples and both failed/passed shape decisions in the compact
   current result;the complete original receipt is reachable at`3ee710401`.
+  The separate zero-command capability check at
+  `prefill_host_source_capabilities_v2`is normal0/closed,with verified before/after
+  loader/validation/NEOproviders,unchanged boot/driver and no fresh fault. The
+  actual B570 reports API1.17and standard external-system-memory mapping1.0;
+  its reported single-allocation limit is10132807680bytes. This is prerequisite
+  discovery only:no allocation,import,queue,copy or kernel was attempted.
+  V1's reused nonzero device count was rejected by validation before device
+  enumeration;its failed outcome remains. The next coherent unit is a bounded
+  page-aligned,read-only same-context import with ownership/range proof and
+  checked drain-before-unimport. Compare the source adapter with readiness order
+  fixed,and only then compare readiness order with source and compute fixed.
+  Keep bounded host-USM staging as an independent control if import fails.
+  Intel's vendor malloc/new-copy behavior does not itself establish the standard
+  external-map contract;unknown pointers remain refused. No debug import flag,
+  relaxed source check,production adoption or model-speed claim follows.
   Ordinary RAMsource views,actual production consumers,32K+model/decode/agent/quality
   and physical262144/RESTORE remain separate required gates. No model trial
   or engine adoption is authorized by this component result.
