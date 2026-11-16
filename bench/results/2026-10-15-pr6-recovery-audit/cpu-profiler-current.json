@@ -27606,5 +27606,103 @@
         "sha256": "a5c9e75cab50d333f64d445f35d3544e1e9a2edc9a9679dbf14b03c281fa997b"
       }
     }
+  },
+  "prefill_scaling_analysis_v1": {
+    "stage": "closed",
+    "passed": true,
+    "device_executed": false,
+    "source_commit": "afa2e02f9163d03a2c48e8730520695be178d248",
+    "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "input_evidence": {
+      "commit": "f9662f7abfebb1c5f20e7e9e4677fad8f1f5e695",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "coherent_prefill_speed_v1",
+      "scope_sha256": "dff41850b09b8374fd349a4a0a7318689af3df184db90689e62bf28d46ccbfe7"
+    },
+    "analysis_code": "tools/prefill_scaling.py",
+    "shared_fitter": "tools/prefill_scaling_bench.py",
+    "host_controls": {
+      "methods": 7,
+      "passed": true,
+      "exit_code": 0
+    },
+    "normalized_requests": 18,
+    "independent_processes": 6,
+    "actual_routes": 1,
+    "scopes": [
+      "first-use",
+      "subsequent-request"
+    ],
+    "points": [
+      {
+        "scope": "first-use",
+        "input_tokens": 32769,
+        "processes": 3,
+        "requests": 3,
+        "prefill_s": 48.4107,
+        "client_TTFT_s": 48.555
+      },
+      {
+        "scope": "first-use",
+        "input_tokens": 65537,
+        "processes": 3,
+        "requests": 3,
+        "prefill_s": 75.68360000000001,
+        "client_TTFT_s": 75.84
+      },
+      {
+        "scope": "subsequent-request",
+        "input_tokens": 32769,
+        "processes": 3,
+        "requests": 6,
+        "prefill_s": 37.5975,
+        "client_TTFT_s": 37.741
+      },
+      {
+        "scope": "subsequent-request",
+        "input_tokens": 65537,
+        "processes": 3,
+        "requests": 6,
+        "prefill_s": 65.0923,
+        "client_TTFT_s": 65.2565
+      }
+    ],
+    "adjacent_slopes_ms_per_token": [
+      {
+        "scope": "first-use",
+        "prefill_s": 0.8323028564453129,
+        "ttft_s": 0.8326721191406251
+      },
+      {
+        "scope": "subsequent-request",
+        "prefill_s": 0.83907470703125,
+        "ttft_s": 0.8397064208984376
+      }
+    ],
+    "models_eligible": false,
+    "distinct_lengths": 2,
+    "minimum_fit_lengths": 5,
+    "physical_fixed_cost_established": false,
+    "physical_law_established": false,
+    "inference_adopted": false,
+    "limits": "Offline recomputation of the original committed coherent baseline only;no new timing,PP gain,hardware saturation,model/decode/context qualification. First/warmed and route/config/source groups are separate;one process median per length. Whole-length holdouts reuse the existing benchmark fitter.",
+    "next": "After copy-lane component closure and selection,use a new committed current-build matched-length/repetition/route plan with at least five compatible lengths;do not combine timing periods.",
+    "temporary_artifacts": {
+      "stage": "planned",
+      "files": [
+        {
+          "path": "/tmp/strata-prefill-scaling-input-20261117.json",
+          "sha256": "2171cc9ef1619830a7a24af77a41da76cf74867a6a68fbb52e5a826a8dfab553",
+          "bytes": 86608,
+          "reason": "Consumed offline input/output;original data is exactly recoverable from pinned Git evidence and maintained analysis source."
+        },
+        {
+          "path": "/tmp/strata-prefill-scaling-output-20261117.json",
+          "sha256": "5516282e04dfa3b28136fe115dd37017b3a039f8504d3f4f43fa5e993c9915d7",
+          "bytes": 5828,
+          "reason": "Consumed offline input/output;original data is exactly recoverable from pinned Git evidence and maintained analysis source."
+        }
+      ]
+    }
   }
 }
