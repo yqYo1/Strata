@@ -1398,17 +1398,68 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   slow third overlap samples;do not relabel them as noise. The CSVrecords both
   shapes with model PP/TTFT/TGblank. Kernel/transfer critical-path attribution
   and resource saturation remain unresolved:wall-time gain alone does not prove
-  actual device overlap or explain the variation. Next commit a bounded plan
-  using the already qualified non-counter unitrace stack,first checking its
-  interaction with this event protocol,then separate clean/profiled samples
-  and executed-copy/kernel counts. Preserve this failed1024gate and qualify
-  observer cost;do not change its criteria retroactively. The current E2images,
-  fresh objects,source view and private build/census record have that imminent
-  consumer;retire them at profile qualification/closure if superseded. Normal
-  output is retired after source/recipe and both final-ELF recovery:
+  actual device overlap or explain the variation. The archived
+  `profile_prefill_upload_overlap.py`controller reused those two images
+  through a historical source/recipe/census reader. It separates seven
+  collector/event safety cases from C/T/T/Cper arm/shape attribution,with
+  owned-process RAW-clock associations,exact513copy/514dense calls and
+  one-lookahead dependency checks. V1passes nine host controls and zero-work
+  metadata. Its forward native process is normal0with the expected10URcalls,
+  two reader kernels and one256Bcopy,but the reader wrongly requires a host
+  API flow endpoint in device-only capture;the cohort remains failed. A new
+  observed-schema host control at`f9e82a578`reproduces that refusal(six tests,
+  one expected error). Prospective V2matches the two GPUside t/s markers,
+  owned native-PID category suffix and HOSTmetadata with no PMI/PMIXrank,
+  as emitted by pinned PTIchromelogger.h. It claims no host API timeline.
+  V2's committed plan passes all ten host controls,metadata and forward native
+  checks. The next profiled reverse process exits1with
+  `scratch overwrite escaped last reader`;P1interoperation fails and P2speed
+  sampling does not start. Its saved LevelZero sequence spends approximately2s
+  in a query/collector chain until the independent host gate auto-releases.
+  This does not establish an early scratch overwrite or a GPUhang. Copy/compute
+  drain succeeds,the direct child is reaped and its owned session is empty;
+  record physical closure separately from the failed protocol-observation flag.
+  Boot/driver remain unchanged and no fresh fault appears. The actual
+  PTIevent-cache helper guards release/reset by ownership,so merely passing an
+  application event to that helper does not establish event corruption. Native
+  Luna-max confirms that ownership guard and retracts the source audit's
+  event-reset concern. The separate ordinary-RAMreview requires same-context
+  import proof and API1.16for the read-only flag. Do not reuse this failed
+  collector/event combination for P2or model work. No rebuild or model route
+  is implied. Preserve the failed1024gate and qualify observer cost separately;
+  do not change its criteria retroactively. After this cohort and the capability
+  query close,the E2images,fresh objects,source view and private census are
+  retired. Their original399Git-source files,925compiler/25link/7object inputs
+  and both final ELFs were verified against the original14508/d4recipe and
+  pushed retained history first. Including closed profiler/capability output,
+  reviewed research inputs/control/review files and two closed task-only native
+  transcripts,534files/21698392bytes are physically removed. Three ended
+  observer/reuse/capability tools and two tests are retired to Git;keep the
+  event-lane header,two C++fixtures and E2recipe/host controls only for the next
+  source-adapter unit,reviewing them at its prepare boundary. One17688Bquery
+  excerpt and the9546Bordinary-RAMreport have named next consumers. All26phase
+  reference ELFs remain unchanged;legacy/.cache holds remain separate. The next
+  native unit must qualify its rebuilt baseline/candidate;the old component
+  generation is not retained for an unspecified future comparison. Earlier normal
+  output was retired after source/recipe and both final-ELF recovery:
   113files/22007248bytes,with all26phase-reference ELFs unchanged. Keep the
   individual clean samples and both failed/passed shape decisions in the compact
   current result;the complete original receipt is reachable at`3ee710401`.
+  The separate zero-command capability check at
+  `prefill_host_source_capabilities_v2`is normal0/closed,with verified before/after
+  loader/validation/NEOproviders,unchanged boot/driver and no fresh fault. The
+  actual B570 reports API1.17and standard external-system-memory mapping1.0;
+  its reported single-allocation limit is10132807680bytes. This is prerequisite
+  discovery only:no allocation,import,queue,copy or kernel was attempted.
+  V1's reused nonzero device count was rejected by validation before device
+  enumeration;its failed outcome remains. The next coherent unit is a bounded
+  page-aligned,read-only same-context import with ownership/range proof and
+  checked drain-before-unimport. Compare the source adapter with readiness order
+  fixed,and only then compare readiness order with source and compute fixed.
+  Keep bounded host-USM staging as an independent control if import fails.
+  Intel's vendor malloc/new-copy behavior does not itself establish the standard
+  external-map contract;unknown pointers remain refused. No debug import flag,
+  relaxed source check,production adoption or model-speed claim follows.
   Ordinary RAMsource views,actual production consumers,32K+model/decode/agent/quality
   and physical262144/RESTORE remain separate required gates. No model trial
   or engine adoption is authorized by this component result.
