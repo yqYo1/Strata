@@ -16945,7 +16945,7 @@
     "reason": "Preparation review found the inherited copy-only environment omitted STRATA_SYCL_PARALLEL_IQ_DEQUANT=1 used by qualified model. Close unrun plan;new source/plan must match production selection before native build. Original source0e18and generated recipe preserved;no input hashes refreshed."
   },
   "prefill_weight_pipeline_v2": {
-    "stage": "built",
+    "stage": "testing",
     "passed": true,
     "complete": false,
     "active": false,
@@ -17963,7 +17963,50 @@
         }
       }
     ],
-    "results": [],
+    "results": [
+      {
+        "label": "metadata-usm",
+        "source": "usm",
+        "mode": "metadata",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "usm",
+          "property_type": 0,
+          "allocation_ids": [
+            0,
+            0
+          ]
+        },
+        "validation": {
+          "pid": 2932435,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "2046e45c524053b5993a2c23a6393456201066a6a7f3cd31af37917a9142cbe5",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002394446,
+          "import_s": 0,
+          "retirement_s": 0.000649092
+        },
+        "validated_counts": {
+          "math_launches": 0,
+          "payload_sized_native_copy_calls": 0
+        }
+      }
+    ],
     "model_trial_allowed": false,
     "performance_qualified": false,
     "plan": {
@@ -17986,6 +18029,16 @@
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/benchmark",
       "sha256": "7b78aa0e8fbb1ceb6689f15ffeb75470d649982a65801daa504182be2b06e5c5"
+    },
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
