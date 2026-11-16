@@ -17308,7 +17308,7 @@
     }
   },
   "prefill_weight_wrapper_v1": {
-    "stage": "built",
+    "stage": "testing",
     "passed": true,
     "complete": false,
     "active": false,
@@ -20113,7 +20113,49 @@
         }
       }
     ],
-    "results": [],
+    "results": [
+      {
+        "label": "metadata-direct",
+        "arm": "direct",
+        "rows": 16,
+        "mode": "metadata",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "staged": false,
+          "host_slots": 0,
+          "copy_wrapper": "compat",
+          "runtime_check_and_observer_retained": true
+        },
+        "validation": {
+          "pid": 3769939,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "e56fe8b3812b7b0d77b85b0032d5b79b5fd3933ec84e3d76cf3922821893bc5d",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000288133,
+          "retirement_s": 6e-08
+        },
+        "validated_counts": {
+          "math_launches": 0,
+          "payload_sized_native_copy_calls": 0
+        }
+      }
+    ],
     "model_trial_allowed": false,
     "performance_qualified": false,
     "plan": {
@@ -20136,6 +20178,16 @@
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/benchmark",
       "sha256": "e5d72e142971c9a0f118bc28a4a735927e75ed79c3885ed1f24904639bc4d984"
+    },
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
