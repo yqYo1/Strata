@@ -65,9 +65,11 @@ int run(bool overlap,std::size_t rows,std::size_t iterations,bool mapped) {
         if(mapped) {
             ordinary_source->read_only();
             const auto begin=std::chrono::steady_clock::now();
-            imported.reset(new Mapped(lane,ordinary_source->data(),ordinary_source->bytes()));
+            imported.reset(new Mapped(lane,ordinary_source->data(),ordinary_source->bytes(),
+                Mapped::PropertyContract::PinnedNeoHost));
             import_s=std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();
         }
+        const auto import_proof=mapped ? imported->property_proof() : Mapped::PropertyProof{};
         const auto source_view=mapped ? imported->view(guard,payload) : Lane::Source{source+guard,payload};
         const double preparation_s=std::chrono::duration<double>(std::chrono::steady_clock::now()-preparation_begin).count();
         runtime->wait(queue.memcpy(x.data(),hx.data(),xb));
@@ -132,9 +134,11 @@ int run(bool overlap,std::size_t rows,std::size_t iterations,bool mapped) {
                   << ",\"requested_H2D_bytes\":" << iterations*payload << ",\"gemm_rows\":" << rows
                   << ",\"gemm_n\":" << n << ",\"gemm_k\":" << k
                   << ",\"lookahead\":1,\"oracle_and_guards\":true}" << std::endl;
-        std::cout << "{\"kind\":\"source\",\"source\":\"" << (mapped ? "mapped" : "usm")
+        std::cout << "{\"kind\":\"source\",\"source\":\"" << (mapped ? "mapped-neo" : "usm")
                   << "\",\"preparation_s\":" << preparation_s << ",\"import_s\":" << import_s
-                  << ",\"retirement_s\":" << retirement_s << "}" << std::endl;
+                  << ",\"retirement_s\":" << retirement_s
+                  << ",\"import_property_type\":" << unsigned(import_proof.type)
+                  << ",\"import_allocation_id\":" << import_proof.allocation_id << "}" << std::endl;
     }
     runtime->wait();runtime->check();gate("before-exit");
     std::cout << "{\"kind\":\"done\",\"passed\":true}" << std::endl;
@@ -143,11 +147,11 @@ int run(bool overlap,std::size_t rows,std::size_t iterations,bool mapped) {
 } // namespace
 int main(int argc,char** argv) {
     try {
-        need(argc==4 || argc==5,"use serial|overlap ROWS1024or4096 ITERATIONS512 [usm|mapped]");
+        need(argc==4 || argc==5,"use serial|overlap ROWS1024or4096 ITERATIONS512 [usm|mapped-neo]");
         const std::string arm=argv[1];need(arm=="serial" || arm=="overlap","explicit arm required");
         const std::string source=argc==5 ? argv[4] : "usm";
-        need(source=="usm" || source=="mapped","explicit source kind required");
-        return run(arm=="overlap",std::stoull(argv[2]),std::stoull(argv[3]),source=="mapped");
+        need(source=="usm" || source=="mapped-neo","explicit source kind required");
+        return run(arm=="overlap",std::stoull(argv[2]),std::stoull(argv[3]),source=="mapped-neo");
     } catch(const std::exception& error) {
         std::cerr << "upload overlap failure: " << error.what() << std::endl;return 1;
     }

@@ -1478,7 +1478,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   owner/context/range/allocation-ID/lifetime proof;keep standard admission and
   unknown-pointer refusal intact. Requalify that contract in the actual Runtime
   before any copy,then compare source costs with readiness order fixed. No
-  implementation of that compatibility contract is adopted yet. Compare the
+  implementation of that compatibility contract is adopted yet. The new
+  `prefill_mapped_source_v2`proposal keeps the default standard contract strict
+  and opts the fixtures into a pinned B570/API1.17HOST-property contract.
+  Its private lease captures type/allocation ID and rechecks them on each copy.
+  A shared active-import registry rejects proofless aliases through the plain
+  host-USMbranch,which otherwise also sees typeHOST. Those checks and their
+  producer/consumer changes are one inseparable admission unit;timing order and
+  dense math stay fixed. The zero-command Runtime case must reject the standard
+  contract,then report positive HOST/id proof before any copy test. Every mapped
+  timing process reports its actual import proof. Four new host controls cover
+  typed historical property admission and ended-observer recovery. A fresh
+  coherent five-TUbuild and new31-case source-cost plan are required;no V1pass
+  or raw-context observation qualifies this implementation. Compare the
   source adapter with readiness order fixed,and
   only then compare readiness order with source and compute fixed.
   After original source/recipe and both final-ELF recovery from pushed history,

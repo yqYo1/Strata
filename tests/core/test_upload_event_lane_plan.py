@@ -106,4 +106,45 @@ class MappedSourceCapabilityAdmission(unittest.TestCase):
                 overlap.capability_gate(row,copy.deepcopy(row))
 
 
+class MappedSourcePropertyAdmission(unittest.TestCase):
+    def setUp(self):
+        self.row=dict(stage='closed',passed=True,complete=True,ownership_closed=True,active=False,
+            properties=dict(kind='mapping-properties',bytes=4096,read_only=True,same_address=True,
+                before=dict(type=0,allocation_id=0,page_bytes=0),
+                during=dict(type=1,allocation_id=1,page_bytes=4096),
+                after=dict(type=0,allocation_id=0,page_bytes=0),
+                address_range=dict(result=0,same_base=True,bytes=4096),
+                original_heap_unchanged=True,explicit_native_context=True,
+                production_runtime_context_qualified=False,allocation_and_unimport_executed=True,
+                application_commands=0,source_admission_or_transfer_qualified=False))
+
+    def test_exact_closed_property_observation(self):
+        self.assertEqual(overlap.property_gate(self.row,copy.deepcopy(self.row)),self.row['properties'])
+
+    def test_changed_history_open_owner_and_false_qualification(self):
+        for which in ['history','owner','active','qualification']:
+            row=copy.deepcopy(self.row)
+            if which=='history':row['properties']['during']['allocation_id']=2
+            elif which=='owner':row['ownership_closed']=1
+            elif which=='active':row['active']=True
+            else:row['properties']['source_admission_or_transfer_qualified']=True
+            with self.subTest(which=which),self.assertRaises(RuntimeError):
+                overlap.property_gate(row,self.row)
+
+    def test_host_identity_range_and_removal_are_required(self):
+        for key,field,value in [('during','type',4),('during','type',True),
+                               ('during','allocation_id',0),('during','allocation_id',True),
+                               ('address_range','bytes',8192),('address_range','same_base',False),
+                               ('after','type',1),('before','allocation_id',True)]:
+            row=copy.deepcopy(self.row);row['properties'][key][field]=value
+            with self.subTest(key=key,field=field,value=value),self.assertRaises(RuntimeError):
+                overlap.property_gate(row,copy.deepcopy(row))
+
+    def test_original_property_survives_observer_retirement(self):
+        proof=overlap.property_evidence()
+        self.assertEqual(proof['properties']['during']['type'],1)
+        self.assertEqual(proof['native_source_commit'],'b777f52f8ddfc60b71166cce9a68afb952c71dde')
+        self.assertIs(proof['new_source_admission_qualified'],False)
+
+
 if __name__=='__main__':unittest.main()

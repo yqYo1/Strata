@@ -11,7 +11,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <iterator>
+#include <limits>
+#include <map>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -40,6 +44,8 @@ public:
             std::uint64_t owner = 0;
             std::uintptr_t base = 0;
             std::size_t bytes = 0;
+            ze_memory_type_t allocation_type = ZE_MEMORY_TYPE_UNKNOWN;
+            std::uint64_t allocation_id = 0;
             std::atomic<bool> live{false};
         };
         // A view keeps only this tombstone alive,not the mapping or heap owner.
@@ -108,6 +114,12 @@ public:
         need(sycl::get_pointer_type(dst.data, compute_.get_context()) == sycl::usm::alloc::device,
              "prefill upload requires same-context device destination");
         const auto context = sycl::get_native<sycl::backend::ext_oneapi_level_zero>(compute_.get_context());
+        // On the explicit pinned NEO property contract an imported heap reports
+        // HOST,just like host USM. Query and reject active mapped ranges under
+        // the same registry lock used for import/unimport; a bare Source must
+        // not borrow a mapping while bypassing its lane/lifetime proof.
+        std::unique_lock source_guard(source_mutex_, std::defer_lock);
+        if (!src.imported_) source_guard.lock();
         if (src.imported_) {
             const auto& lease = *src.imported_;
             const auto pointer = reinterpret_cast<std::uintptr_t>(src.data);
@@ -120,7 +132,8 @@ public:
         props.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
         ze(zeMemGetAllocProperties(context, src.data, &props, nullptr));
         if (src.imported_) {
-            need(props.type == ZE_MEMORY_TYPE_HOST_IMPORTED, "prefill upload source import no longer live");
+            need(props.type == src.imported_->allocation_type && props.id == src.imported_->allocation_id,
+                 "prefill upload source import identity no longer live");
             void* base = nullptr; std::size_t extent = 0;
             ze(zeMemGetAddressRange(context, src.data, &base, &extent));
             const auto pointer = reinterpret_cast<std::uintptr_t>(src.data);
@@ -128,10 +141,22 @@ public:
             need(pointer >= start && pointer - start <= extent && src.bytes <= extent - (pointer - start),
                  "prefill upload imported-source range");
         } else {
+            const auto pointer = reinterpret_cast<std::uintptr_t>(src.data);
+            need(bytes <= std::numeric_limits<std::uintptr_t>::max() - pointer,
+                 "prefill upload source span overflow");
+            const auto next = imported_sources_.lower_bound(pointer);
+            need(next == imported_sources_.end() || pointer + bytes <= next->first,
+                 "prefill upload mapped source requires its owned lease");
+            if (next != imported_sources_.begin()) {
+                const auto prior = std::prev(next);
+                need(prior->first + prior->second.bytes <= pointer,
+                     "prefill upload mapped source requires its owned lease");
+            }
             need(props.type == ZE_MEMORY_TYPE_HOST &&
                  sycl::get_pointer_type(src.data, compute_.get_context()) == sycl::usm::alloc::host,
                  "prefill upload requires same-context host USM or a checked imported-source lease");
         }
+        if (source_guard.owns_lock()) source_guard.unlock();
         ze_event_handle_t dependency = nullptr;
         if (after) { validate(*after); dependency = readers_[after->index].native; }
         ReadyState state;
@@ -185,6 +210,9 @@ public:
     }
 private:
     friend class PrefillMappedHostSource;
+    struct SourceRange { std::size_t bytes; const PrefillMappedHostSource* owner; };
+    inline static std::mutex source_mutex_;
+    inline static std::map<std::uintptr_t, SourceRange> imported_sources_;
     struct ReadyState { ze_event_handle_t native = nullptr; std::optional<sycl::event> imported; };
     struct ReaderState { sycl::event event; ze_event_handle_t native = nullptr; };
     inline static std::atomic<std::uint64_t> next_identity_{1};

@@ -15,6 +15,7 @@
 namespace {
 using Lane = strata::prefill::detail::PrefillUploadEventLane;
 using Mapped = strata::prefill::detail::PrefillMappedHostSource;
+constexpr auto imported_contract = Mapped::PropertyContract::PinnedNeoHost;
 using Pages = strata::prefill::test_detail::PrefillHostPages;
 using Clock = std::chrono::steady_clock;
 void need(bool ok, const char* text) { if (!ok) throw std::runtime_error(text); }
@@ -188,8 +189,18 @@ int run(const std::string& mode, bool mapped) {
             Pages pages(4096);
             auto* data=static_cast<std::uint32_t*>(pages.data());data[0]=0x73621eab;
             pages.read_only();
+            // The pinned provider reports HOST rather than HOST_IMPORTED.
+            // Generic standard admission must still reject it and unimport.
+            refuses([&] {Mapped standard(lane,pages.data(),pages.bytes());});
+            need(sycl::get_pointer_type(pages.data(),queue.get_context())==sycl::usm::alloc::unknown,
+                 "rejected standard import left a registered heap pointer");
             {
-                Mapped imported(lane,pages.data(),pages.bytes());
+                Mapped imported(lane,pages.data(),pages.bytes(),imported_contract);
+                const auto proof=imported.property_proof();
+                need(proof.type==ZE_MEMORY_TYPE_HOST && proof.allocation_id>0,"explicit NEO import proof");
+                std::cout << "{\"kind\":\"mapping-proof\",\"contract\":\"mapped-neo\",\"property_type\":"
+                          << unsigned(proof.type) << ",\"allocation_id\":" << proof.allocation_id
+                          << ",\"strict_standard_rejected\":true}" << std::endl;
                 need(imported.view(4,64*4).bytes==64*4,"mapped interior view");
                 refuses([&] {(void)imported.view(pages.bytes(),1);});
                 refuses([&] {Mapped overlap(lane,pages.data(),pages.bytes());});
@@ -203,8 +214,8 @@ int run(const std::string& mode, bool mapped) {
         } else if(mode!="metadata") {
             memory_owner.reset(new Memory(queue,mapped));auto& memory=*memory_owner;
             if(mapped) {
-                imported_a.reset(new Mapped(lane,memory.ordinary_a->data(),memory.ordinary_a->bytes()));
-                imported_b.reset(new Mapped(lane,memory.ordinary_b->data(),memory.ordinary_b->bytes()));
+                imported_a.reset(new Mapped(lane,memory.ordinary_a->data(),memory.ordinary_a->bytes(),imported_contract));
+                imported_b.reset(new Mapped(lane,memory.ordinary_b->data(),memory.ordinary_b->bytes(),imported_contract));
             }
             gate("buffers-ready");
             const Lane::Region dst{memory.storage+1,64*4};
@@ -278,7 +289,7 @@ int run(const std::string& mode, bool mapped) {
                 need(Clock::now()-before>=std::chrono::milliseconds(40),"mapped source retired before held copy");
                 release.thread.join();
                 refuses([&] {(void)lane.copy_after(dst,a,64*4);}); // Stale mapped view after unimport.
-                imported_a.reset(new Mapped(lane,memory.ordinary_a->data(),memory.ordinary_a->bytes()));
+                imported_a.reset(new Mapped(lane,memory.ordinary_a->data(),memory.ordinary_a->bytes(),imported_contract));
                 refuses([&] {(void)lane.copy_after(dst,a,64*4);}); // Also stale after the same address is reimported.
                 lane.wait_ready(copied);memory.reader(1);lane.drain();
                 memory.verify({{1,expected_a}},memory.a);
@@ -288,6 +299,8 @@ int run(const std::string& mode, bool mapped) {
                 refuses([&] {lane.wait_ready({0,0});});
                 refuses([&] {(void)lane.copy_after(dst,a,64*4,Lane::Readers{0,0});});
                 Lane other(queue,check,4);
+                Pages unknown(4096);unknown.read_only();
+                refuses([&] {(void)lane.copy_after(dst,{unknown.data(),64*4},64*4);});
                 if(mapped) {
                     refuses([&] {(void)other.copy_after(dst,a,64*4);});
                     refuses([&] {(void)lane.copy_after(dst,{memory.a+1,64*4},64*4);});
@@ -302,7 +315,7 @@ int run(const std::string& mode, bool mapped) {
     }
     gate("before-exit");
     std::cout << "{\"kind\":\"done\",\"passed\":true,\"case\":\"" << mode
-              << "\",\"source\":\"" << (mapped ? "mapped" : "usm") << "\"}" << std::endl;
+              << "\",\"source\":\"" << (mapped ? "mapped-neo" : "usm") << "\"}" << std::endl;
     return 0;
 }
 } // namespace
@@ -310,8 +323,8 @@ int main(int argc,char** argv) {
     try {
         need(argc==2 || argc==3,"case and optional source required");
         const std::string source=argc==3 ? argv[2] : "usm";
-        need(source=="usm" || source=="mapped","source must be usm or mapped");
-        return run(argv[1],source=="mapped");
+        need(source=="usm" || source=="mapped-neo","source must be usm or mapped-neo");
+        return run(argv[1],source=="mapped-neo");
     }
     catch(const std::exception& error) {std::cerr << "upload lane failure: " << error.what() << std::endl;return 1;}
 }
