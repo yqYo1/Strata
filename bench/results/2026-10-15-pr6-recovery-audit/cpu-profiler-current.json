@@ -15055,5 +15055,520 @@
     },
     "native_proof_sha256": "93b19a1fbb656ba7da54e1ac1bd5a9de201f052ad24ad82fb1ce6713c42c39cd",
     "tools_proof_sha256": "e274ff009946fd8f624e573e7c450a05c2bb574786fee2915f036b2cf81feccf"
+  },
+  "prefill_upload_overlap_profile_v2": {
+    "stage": "prepared",
+    "interpreters": {
+      "controller": {
+        "path": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      },
+      "host": {
+        "path": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "cases": [
+      {
+        "label": "interop-metadata",
+        "kind": "safety",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/interop-metadata",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/safety",
+          "metadata"
+        ],
+        "mode": "metadata",
+        "arm": null,
+        "rows": null,
+        "environment_sha256": "7d8b7246c728be69de819f740cc03b7df3c61ee436990a2083b8503528539b22"
+      },
+      {
+        "label": "interop-forward",
+        "kind": "safety",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/interop-forward",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/safety",
+          "forward"
+        ],
+        "mode": "forward",
+        "arm": null,
+        "rows": null,
+        "environment_sha256": "5008f6227d923fdfa50f3b30de73b07ecdf93598cb2911d924875fd6dce559ea"
+      },
+      {
+        "label": "interop-reverse",
+        "kind": "safety",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/interop-reverse",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/safety",
+          "reverse"
+        ],
+        "mode": "reverse",
+        "arm": null,
+        "rows": null,
+        "environment_sha256": "0268ae1339b4635cdbb7e7c204f877cc0521fed4959a12ad31c1f6639d426090"
+      },
+      {
+        "label": "interop-permanent",
+        "kind": "safety",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/interop-permanent",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/safety",
+          "permanent"
+        ],
+        "mode": "permanent",
+        "arm": null,
+        "rows": null,
+        "environment_sha256": "3040ac5823f68b227894a5e3e30614de18ed86244b3cc969f1f83a2a9ca7bce0"
+      },
+      {
+        "label": "interop-cancel",
+        "kind": "safety",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/interop-cancel",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/safety",
+          "cancel"
+        ],
+        "mode": "cancel",
+        "arm": null,
+        "rows": null,
+        "environment_sha256": "0129e893121d381b78ff8b33f49faa33de31301287ef7f45bbaa08f405495cc1"
+      },
+      {
+        "label": "interop-cancel-throw",
+        "kind": "safety",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/interop-cancel-throw",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/safety",
+          "cancel-throw"
+        ],
+        "mode": "cancel-throw",
+        "arm": null,
+        "rows": null,
+        "environment_sha256": "e19e580ba1141fc5ea4ebe9edc66982accd63c5625f60dd5c545b991dbf05555"
+      },
+      {
+        "label": "interop-refuse",
+        "kind": "safety",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/interop-refuse",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/safety",
+          "refuse"
+        ],
+        "mode": "refuse",
+        "arm": null,
+        "rows": null,
+        "environment_sha256": "f917a12e38d1980a45d2df474efdfa22f66134b37632e3c39f6f295315efc853"
+      },
+      {
+        "label": "1024-serial-0-clean",
+        "kind": "benchmark",
+        "profiled": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/1024-serial-0-clean",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "serial",
+          "1024",
+          "512"
+        ],
+        "mode": null,
+        "arm": "serial",
+        "rows": 1024,
+        "environment_sha256": "88dcf624f1ed37e23d8f6790647041002c2611addf32f93a3a89b6d920e30a0f"
+      },
+      {
+        "label": "1024-serial-1-profiled",
+        "kind": "benchmark",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/1024-serial-1-profiled",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "serial",
+          "1024",
+          "512"
+        ],
+        "mode": null,
+        "arm": "serial",
+        "rows": 1024,
+        "environment_sha256": "acd72e88688f81418df2994b5b9a0dd10bf2e137525cdb82e2d80764b3797459"
+      },
+      {
+        "label": "1024-serial-2-profiled",
+        "kind": "benchmark",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/1024-serial-2-profiled",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "serial",
+          "1024",
+          "512"
+        ],
+        "mode": null,
+        "arm": "serial",
+        "rows": 1024,
+        "environment_sha256": "6237e0f61590d228b87abd4872fd565a3fe2680ea21d50fcf96fa8541ab02655"
+      },
+      {
+        "label": "1024-serial-3-clean",
+        "kind": "benchmark",
+        "profiled": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/1024-serial-3-clean",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "serial",
+          "1024",
+          "512"
+        ],
+        "mode": null,
+        "arm": "serial",
+        "rows": 1024,
+        "environment_sha256": "36da6e74206856802ed60f24ead8c5c187410b93d0682a58745e0a55cc4505af"
+      },
+      {
+        "label": "1024-overlap-0-clean",
+        "kind": "benchmark",
+        "profiled": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/1024-overlap-0-clean",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "overlap",
+          "1024",
+          "512"
+        ],
+        "mode": null,
+        "arm": "overlap",
+        "rows": 1024,
+        "environment_sha256": "4969d57d9655e22d1eb3b8561b16b8382f3efa8f98fc2a36a5db46f6f64c751f"
+      },
+      {
+        "label": "1024-overlap-1-profiled",
+        "kind": "benchmark",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/1024-overlap-1-profiled",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "overlap",
+          "1024",
+          "512"
+        ],
+        "mode": null,
+        "arm": "overlap",
+        "rows": 1024,
+        "environment_sha256": "39095fe52c57b72129179ccbacb0ac88470f09d8dae76d8868c81eb53ae6fa93"
+      },
+      {
+        "label": "1024-overlap-2-profiled",
+        "kind": "benchmark",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/1024-overlap-2-profiled",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "overlap",
+          "1024",
+          "512"
+        ],
+        "mode": null,
+        "arm": "overlap",
+        "rows": 1024,
+        "environment_sha256": "2d23257c6b89b8b0a9185c085c56747a43150b03ef4e9f75bcdd60183fbba7f0"
+      },
+      {
+        "label": "1024-overlap-3-clean",
+        "kind": "benchmark",
+        "profiled": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/1024-overlap-3-clean",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "overlap",
+          "1024",
+          "512"
+        ],
+        "mode": null,
+        "arm": "overlap",
+        "rows": 1024,
+        "environment_sha256": "f4b86bcf77a6bfe30152ff9e61d97b36028160e5101f4795affd6b5664baa2e2"
+      },
+      {
+        "label": "4096-serial-0-clean",
+        "kind": "benchmark",
+        "profiled": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/4096-serial-0-clean",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "serial",
+          "4096",
+          "512"
+        ],
+        "mode": null,
+        "arm": "serial",
+        "rows": 4096,
+        "environment_sha256": "daf150312fc8123d6e177d6f2da857ba980cb14612e602d969f13115257358b8"
+      },
+      {
+        "label": "4096-serial-1-profiled",
+        "kind": "benchmark",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/4096-serial-1-profiled",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "serial",
+          "4096",
+          "512"
+        ],
+        "mode": null,
+        "arm": "serial",
+        "rows": 4096,
+        "environment_sha256": "3f844f28182ea35bfb48ec8df946d6c422de6f43c240cd983a85f736c7805154"
+      },
+      {
+        "label": "4096-serial-2-profiled",
+        "kind": "benchmark",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/4096-serial-2-profiled",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "serial",
+          "4096",
+          "512"
+        ],
+        "mode": null,
+        "arm": "serial",
+        "rows": 4096,
+        "environment_sha256": "f9a033fa4218dee7f103c9adac27895a575a0d44192a84bed5a2fd27f364bbca"
+      },
+      {
+        "label": "4096-serial-3-clean",
+        "kind": "benchmark",
+        "profiled": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/4096-serial-3-clean",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "serial",
+          "4096",
+          "512"
+        ],
+        "mode": null,
+        "arm": "serial",
+        "rows": 4096,
+        "environment_sha256": "63421af4362f8b1c4fdad22702d6dedfebb31b23033f55a8b2ba62f5ed9ad8c1"
+      },
+      {
+        "label": "4096-overlap-0-clean",
+        "kind": "benchmark",
+        "profiled": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/4096-overlap-0-clean",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "overlap",
+          "4096",
+          "512"
+        ],
+        "mode": null,
+        "arm": "overlap",
+        "rows": 4096,
+        "environment_sha256": "b1f7013aef18a8504453d85db10c4198abfa20698f06088ced831970b24194c6"
+      },
+      {
+        "label": "4096-overlap-1-profiled",
+        "kind": "benchmark",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/4096-overlap-1-profiled",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "overlap",
+          "4096",
+          "512"
+        ],
+        "mode": null,
+        "arm": "overlap",
+        "rows": 4096,
+        "environment_sha256": "9ffe27ef26e217d33b36412a8abb67027aa02a389a43075b2d5c9f48c393761a"
+      },
+      {
+        "label": "4096-overlap-2-profiled",
+        "kind": "benchmark",
+        "profiled": true,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/4096-overlap-2-profiled",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "overlap",
+          "4096",
+          "512"
+        ],
+        "mode": null,
+        "arm": "overlap",
+        "rows": 4096,
+        "environment_sha256": "ddfb2b263dbb39e4be12461da0b3c49eba4634f607eccef2da2dbc8be2cbec97"
+      },
+      {
+        "label": "4096-overlap-3-clean",
+        "kind": "benchmark",
+        "profiled": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-profile-v2/4096-overlap-3-clean",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-upload-overlap-v1/benchmark",
+          "overlap",
+          "4096",
+          "512"
+        ],
+        "mode": null,
+        "arm": "overlap",
+        "rows": 4096,
+        "environment_sha256": "68660992eb50d27bef04bf2cd5df5ad709953cf51c03d80ad29d12c6c4215c18"
+      }
+    ],
+    "results": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "prior_failure": {
+      "key": "prefill_upload_overlap_profile_v1",
+      "outcome": "Native forward normal0/no fault;reader incorrectly required host API flow source in device-only capture. Original failed cohort and red test remain failed/expected-red,respectively.",
+      "new_contract": "GPUside H2Dt/D2Hs markers plus native-PID suffix and HOSTmetadata,under absent PMI/PMIXrank;no host API endpoints inferred. Same original native images/collector/bytes/math and E2speed gates."
+    },
+    "interoperability_qualified": false,
+    "observer_overhead_qualified": false,
+    "model_trial_allowed": false,
+    "host_command": [
+      "/usr/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/core",
+      "-p",
+      "test_upload_overlap*.py",
+      "-v"
+    ],
+    "environment_recipe": {
+      "native_evidence": "3ee710401f9cb8323757161dd53a17dce6689094",
+      "source": "d4e45762a56b169036a67eb9535cd3ce9b238a46",
+      "safety_case": 0,
+      "benchmark_case": 11,
+      "collector_flags": [
+        "--device-timing",
+        "--chrome-device-logging",
+        "--chrome-event-buffer-size",
+        "128"
+      ],
+      "safety_UR_full_trace": true,
+      "benchmark_UR_full_trace": false
+    },
+    "plan": {
+      "question": "P1:does the qualified device-only PTI collector preserve the actual Runtime event bridge? P2:which device intervals explain E2wait-order wall gain and variability?",
+      "opportunity": "E2M4096ratios0.575224/0.585516/0.991001pass its component screen;M1024ratios0.668329/0.565964/1.003774fail. These outcomes remain immutable. Native/provider/recipe reuse is historical admission,not a new model/overlap claim.",
+      "units": "No native,math,placement,copy primitive or readiness-order code changes. P1collector/event interoperation is a separate safety prerequisite. P2changes only device collector on/off for fixed serial or overlap arms and fixed shape. Compare each shape/arm independently;no combination or model claim.",
+      "order": "Commit source and plan,host historical/trace controls,seven fresh profiled E1bprocesses metadata/forward/reverse/permanent/cancel/cancel-throw/refuse,then C/T/T/Cper serial and overlap arm at1024and4096rows. One child per next,commit each closure;no reordering,retries or exclusions.",
+      "safety": "Original six host admission methods and E2seven-case safety already qualified exact6231/824eimages. Ten new host controls include the observed device-only schema,missing/foreign/duplicate marker refusal,historical eligibility and trace count/dependency interpretation. P1full UR/L0validation traces;required before/after provider+actual non-MPIprocess environment/argv+private first-init proof;50msheld/manual release and original100mssubmit assertions. Every owner normal0/closed,no warning/error,new fault or changed boot/driver.",
+      "counts": "P1URenqueue counts0/10/12/16/7/7/6;reader kernels0/2/4/6/1/1/1;raw256Bcopies0/1/2/2/1/1/1. P2each trace exactly513payload1971200Bcopies and514DenseKernelcalls;exclude first copy and first two dense warmups. Pinned PTIdevice-only format associates each unique GPUwork ID with one GPUside H2Dt and one D2Hs marker,matching lane,id,timestamp and native-PID category suffix with HOSTmetadata. This is not a host API/enqueue endpoint join. All device intervals/markers must fit actual owned CLOCK_MONOTONIC_RAWlifetime.",
+      "timing": "Native512epoch wall/100msfloor/clock-pair<=0.001batch unchanged. Report all clean/profiled samples. Per shape/arm,match T1/C0andT2/C3;each native wall ratio must lie0.9..1.1 for qualified quantitative attribution. A failed observer gate retains perturbed observations and never qualifies speed or causality. Finish planned controls despite slow samples;stop on safety/identity/trace/coverage failures.",
+      "dependencies": "Order copies and dense kernels by their actual single-stream device starts. Every next copy follows both previous copy and previous dense;every next dense follows previous dense;serial dense follows same-epoch copy. Predeclared timestamp edge tolerance2000ns;report minimum margin and fail larger violations. Intersections/unions remain different from native wall and arithmetic saturation.",
+      "budgets": "120s wall/240sCPU/4GiB RSS per native;32MiB text and individual file;512MiB total campaign across controller-owned root. Each trace<=32MiB/50000events. No metrics,counters,Sysman,host API trace,pause/shared session,model or new binaries.",
+      "stop": "First source/build/typed-plan/provider/env/argv,numerical/guard/validation,ownership,deadline,new-fault,clock or executed-count/dependency failure closes cohort failed;no reset,foreign process action or refreshed hashes.",
+      "provenance": "Main-authored controller/reader/tests under repository LICENSE;exact independent MIT PTI4b6d742collector/source and owned launcher,plus original owned14508math. No XeStrata implementation/design source.",
+      "retention": "Same two current E2images and925compiler25link7objectcensus;no new generation. Keep useful samples/counts/union/overlap/dependency margins and qualification decisions,not normal trace/maps/logs. Retire normal output at closure. Review E2generation at this qualification/attribution decision;preserve26phase reference images and separate legacy holds.",
+      "limits": "No revised1024speed gate,model PP/TG/TTFT,ordinary RAMsource views,production policy,quality,decode handoff,physical262144/RESTORE,bus bytes/VRAMtraffic,saturation or inference adoption."
+    },
+    "project": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "a2c9e8d771b410ae9b8eb48c9592bca752d15194",
+      "count": 360,
+      "aggregate_sha256": "8f0e5ca2f35b54d18fedf0cd888ed98667002c51424e57aeec404c9fec9c1922"
+    },
+    "native_proof_sha256": "93b19a1fbb656ba7da54e1ac1bd5a9de201f052ad24ad82fb1ce6713c42c39cd",
+    "tools_proof_sha256": "e274ff009946fd8f624e573e7c450a05c2bb574786fee2915f036b2cf81feccf"
   }
 }
