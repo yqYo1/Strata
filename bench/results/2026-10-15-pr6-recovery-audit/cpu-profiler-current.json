@@ -14423,7 +14423,7 @@
     }
   },
   "prefill_upload_overlap_profile_v1": {
-    "stage": "host-qualified",
+    "stage": "testing",
     "interpreters": {
       "controller": {
         "path": "/usr/bin/python3.12",
@@ -14874,7 +14874,55 @@
         "environment_sha256": "ec46347e72e5d8518f10a0ca1542fdaacdc3fcf5251c46d177c4d15e77bb8f98"
       }
     ],
-    "results": [],
+    "results": [
+      {
+        "label": "interop-metadata",
+        "kind": "safety",
+        "profiled": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "providers": [
+          {
+            "gate": "before-runtime",
+            "files": 34,
+            "sha256": "00f8b34d5b8009489b9546441acc0c5df9fec0caa347dab606daa17bfecba08a"
+          },
+          {
+            "gate": "runtime-ready",
+            "files": 36,
+            "sha256": "6e4ad4d28573e4b2fd06ab7a15eaf9096a10fc915eaf48247569a65f49ea491b"
+          },
+          {
+            "gate": "before-exit",
+            "files": 36,
+            "sha256": "6e4ad4d28573e4b2fd06ab7a15eaf9096a10fc915eaf48247569a65f49ea491b"
+          }
+        ],
+        "first_init": {
+          "pid": 2157908,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "raw_lifetime": {
+          "begin": 3142103958497644,
+          "end": 3142111674937502
+        },
+        "no_application_trace_emitted": true,
+        "GPU_events": 0,
+        "mode": "metadata",
+        "application_enqueues": 0,
+        "reader_kernels": 0,
+        "raw_copies": 0
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "passed": true,
@@ -14924,6 +14972,16 @@
       "limits": "No revised1024speed gate,model PP/TG/TTFT,ordinary RAMsource views,production policy,quality,decode handoff,physical262144/RESTORE,bus bytes/VRAMtraffic,saturation or inference adoption."
     },
     "host_controls_passed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "bcdb90dc211fa3507d6ca6949f59ae2f9774bfb2",
