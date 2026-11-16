@@ -1646,11 +1646,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   against raw capture caps;controller-only admission`d7e0a146d`replaced it with
   case-scoped capture before any GPUwork,retaining the exact native ELF.
   Eight current host controls pass. CU/CVreview confirms the actual source
-  entrypoint and separate IQ/workspace-reader retirement. Source/recipe/final
-  ELF recovery is complete;retire the ended component/corpus/raw and consumed
-  research bytes after publishing the compact result. Both phase references
-  retain their original hashes;legacy prototype holds remain for bounded
-  recovery/retirement before Q/O. See`prefill_weight_source_v2`for actual cleanup.
+  entrypoint and separate IQ/workspace-reader retirement. After exact original
+  source/recipe/final-ELF recovery from the pushed primary,737regular files/
+  1283624160content bytes of ended component/corpus/raw and consumed research
+  are physically retired. Both phase references retain their original hashes.
+  Six closed prototype roots and the three configured deployment source/migration
+  holds remain explicit in the existing retention ledger;this is scoped cleanup.
+  The CSVnow has562points,including all five Scomparisons with model metrics blank.
+  See`prefill_weight_source_v2`and the retained-build ledger for actual state.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
