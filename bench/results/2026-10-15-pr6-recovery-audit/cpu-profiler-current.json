@@ -18047,6 +18047,65 @@
           "math_launches": 0,
           "payload_sized_native_copy_calls": 0
         }
+      },
+      {
+        "label": "validated-usm",
+        "source": "usm",
+        "mode": "serial",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "usm",
+          "property_type": 0,
+          "allocation_ids": [
+            0,
+            0
+          ]
+        },
+        "validation": {
+          "pid": 2950703,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "e40bb3aec77550e6321f81cbf036d30999614e5aa5cc2b35082f4cdafd8c7e39",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.001845154,
+          "import_s": 0,
+          "retirement_s": 0.000229853
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "serial",
+          "source": "usm",
+          "rows": 1024,
+          "epochs": 128,
+          "requested_H2D_bytes": 252313600,
+          "wall_s": 0.217341684,
+          "timer_pair_max_s": 4.1e-08,
+          "actual_weight_reader": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.219416691,
+        "validated_counts": {
+          "math_launches": 1548,
+          "payload_sized_native_copy_calls": 259,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 258,
+            "parallel_iq_launchILi20ELb0": 258
+          }
+        }
       }
     ],
     "model_trial_allowed": false,
