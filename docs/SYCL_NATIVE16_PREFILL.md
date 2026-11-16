@@ -1361,22 +1361,33 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a production route,model quality or physical262144context.
   Original Git source/recipe recovery verifies357/358project files and641
   compiler/25link inputs for V1/V2. The ended metadata image and normal E1/audit
-  output are physically retired:85files/2431219bytes. Only V2's current ELF,
-  object,dependency file and private source/build record remain for the named
-  imminent E2qualification;review them at E2native build/closure. All26retained
-  phase-reference ELFs remain unchanged;legacy/.cache holds stay separate.
-  `bench/sycl/prefill_upload_overlap.cpp`is an **unbuilt E2proposal**,not a
+  output are physically retired:85files/2431219bytes. The final four E1files
+  are now retired after exact original source/recipe/ELF recovery and fresh
+  production Runtime qualification. Together with the ended CD/CEaudit output,
+  source views and owned native transcript,39more files/1589907bytes are
+  physically removed. All26retained phase-reference ELFs remain unchanged;
+  legacy/.cache holds stay separate.
+  `bench/sycl/prefill_upload_overlap.cpp`is an **E2component proposal**,not a
   selected route:it fixes the copy primitive,payload,allocations and existing
   Xe2dense kernel while moving only the readiness wait across independent
   compute. A per-epoch reader fence limits lookahead to one expert. Its build,
-  Runtime-context safety,profiling and prospective timing plan are not yet
-  admitted. The next E1bunit changes only the fixture's queue factory to the
-  original production Runtime and repeats all seven safety cases. E2then fixes
+  source/recipe and prospective timing plan are pinned at`d4e45762a`/
+  `7b0afbd77`. Five fresh coherent TUs use the original14508Runtime/class
+  definitions and dense math,925actual compiler inputs and25link inputs;
+  no original archive/object is reused. E1bchanges only the fixture's queue
+  factory to that production Runtime and passes all seven safety cases at
+  `3782c0f31`,normal0/closed/quiet/no fresh fault. The separate E2then fixes
   that context,original dense math,copy primitive,bytes,placement and lookahead,
   changing only the readiness-wait position. Its committed comparison plan
   must retain three alternating independent-process pairs per shape. U1eager
   upload,U2aggregation and copy-only replacement keep their separate outcomes;
-  no combined result qualifies those units. No model trial or new performance follows.
+  no combined result qualifies those units. CD/CEsource review retracts the
+  false missing-exit-provider allegation:the controller requires provider
+  paths at every gate except before-runtime,including before-exit. Generic
+  enqueue presence is a sanity check,not device-overlap attribution. The first
+  validated1024row pair passes the exact oracle,payload/guards and timer gates;
+  the remaining validation,clean paired speed and profiler evidence are pending.
+  No model trial or new performance follows from that validated pair.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
