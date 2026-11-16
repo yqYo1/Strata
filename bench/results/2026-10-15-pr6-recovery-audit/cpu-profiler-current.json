@@ -15600,7 +15600,7 @@
         "component_executables_retired": true
       },
       "private_record_retirement": {
-        "stage": "planned",
+        "stage": "complete",
         "evidence_key": "prefill_weight_lookahead_v1.retention"
       }
     }
@@ -16356,7 +16356,7 @@
       "source_only_receipt": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2/record.json",
         "sha256": "f11df8d86d6845e2e7100c46560b09338827398890ab6e57e5e4e661f54c247f",
-        "stage": "planned_retirement",
+        "stage": "retired",
         "consumer": "None after Git-only recipe migration b3b96e0ec;current closed-state guard does not read a private receipt.",
         "retirement_evidence_key": "prefill_weight_lookahead_v1.retention"
       }
@@ -16522,7 +16522,7 @@
     "model_trial_allowed": false,
     "decision": "One independently compared scratch upload schedule wins all3clean pairs;do not promote source mapping or claim whole-model throughput. Next pin actual production dispatcher/job geometry,source preparation and scratch publication/lifetimes before integration;keep decode path independent,old source gates and physical-context requirements.",
     "retention": {
-      "stage": "planned_source_recovery_complete",
+      "stage": "complete",
       "selection_roots": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-lookahead-v1",
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-pipeline-v2",
@@ -16566,7 +16566,10 @@
         "no_new_native_or_model_qualification": true,
         "closed_source_runner_lines_retired": 342,
         "seed_recipe_from_git": true,
-        "closed_public_guard_precedes_private_read": true
+        "closed_public_guard_precedes_private_read": true,
+        "post_deletion_git_seed_passed": true,
+        "post_deletion_closed_CLI_refused_exit": 1,
+        "public_record_unchanged_by_refusal": true
       },
       "closed_seed_receipts_original_source_verified": [
         {
@@ -16583,7 +16586,61 @@
           "native_source_commit": "2187bfa5ddff6d8331187b8cfc22157852c2d461",
           "source_recovered": true
         }
-      ]
+      ],
+      "all_selected_paths_absent": true,
+      "removed_files": 538,
+      "removed_regular_bytes": 92114178,
+      "temporary_inventory_retired": true,
+      "all_closed_private_receipts_retired": true,
+      "actual_post_retirement_census": {
+        "executable_shared_image_groups": {
+          "qsa-cached-subgroup-component-v1": 2,
+          "gu-compact-component-v4": 1,
+          "phase-kv-naming-native-v1": 18,
+          "compat-profile-fixture-v1": 1,
+          "cpu-mixed-cache-v1": 5,
+          "qsa16-bulk-mirror-components-v1": 5,
+          "checked-adaptive-worker-device-v2": 1,
+          "coherent-prefill-native-v1": 16,
+          "niko-service-test-deps-v1": 1,
+          "gu-compact-component-v5": 1,
+          "ur-validation-preload-v2": 2,
+          "research": 160,
+          "unitrace-indexed-collector-v1": 2,
+          "upstream-refresh-20261007": 2
+        },
+        "project_phase_executables": 26,
+        "cmake_probe_ELFs": 8,
+        "component_generation_absent": true,
+        "phase_engine_hashes_unchanged": true,
+        "scope": "All Bregular executable/shared-image files;nonregular files are skipped. Two qualified phase-reference generations are counted separately. Other groups below are legacy consumer/provenance holds,not assumed validated dependencies or globally retired artifacts.",
+        "legacy_cache_hold": {
+          "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache",
+          "files": 895,
+          "bytes": 9250408,
+          "unchanged": true,
+          "next_action": "Classify original owner and recoverability at its maintained legacy retention review;outside this scheduling cohort. No global cleanup claim."
+        },
+        "qualified_phase_reference_generations": 2,
+        "legacy_native_artifact_holds": {
+          "groups": {
+            "qsa-cached-subgroup-component-v1": 2,
+            "gu-compact-component-v4": 1,
+            "compat-profile-fixture-v1": 1,
+            "cpu-mixed-cache-v1": 5,
+            "qsa16-bulk-mirror-components-v1": 5,
+            "checked-adaptive-worker-device-v2": 1,
+            "niko-service-test-deps-v1": 1,
+            "gu-compact-component-v5": 1,
+            "research": 160,
+            "unitrace-indexed-collector-v1": 2,
+            "upstream-refresh-20261007": 2
+          },
+          "missing_evidence": "Current per-image consumer and exact recoverable original final-source/recipe census have not been reconciled in this scheduling boundary.",
+          "next_bounded_action": "Read existing receipts and live source readers for these named roots,including research subtrees;recover original Git inputs and retire ended images. Preserve required fixtures and classify unresolved recovery explicitly.",
+          "review_point": "Before the next native candidate build;update existing retained_builds_review_20261103 rather than creating a new archive/checkpoint."
+        }
+      }
     }
   }
 }

@@ -1584,8 +1584,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Eight current and11remaining source-capability host controls pass. These are
   controller-only changes;the native scheduling build still has its original
   six host controls and source`e2ef5ebe8`. Original source/recipe/final-ELF and
-  both older source receipts are recovered before the planned538-file,
-  92114178-byte retirement of ended native/raw/research and private receipts.
+  both older source receipts were recovered before retiring538files/92114178
+  regular-content bytes of ended native/raw/research and all three closed
+  private receipts. All selected paths are absent;the Git-only seed reader and
+  real closed CLIrefusal pass after deletion without changing the result.
+  Both phase-reference engines remain unchanged;no new GPUqualification follows.
   The reviewed CL/CM
   audit's consumed report/view/control/closed transcript are also retired:
   40files/2033262bytes,with its correction and source hashes in the index.
