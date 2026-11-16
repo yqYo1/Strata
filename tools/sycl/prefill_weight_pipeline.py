@@ -254,48 +254,6 @@ def prepare():
     metadata_gate(row);save(row);print('Prepared actual-weight scheduling plan;commit before build.',flush=True)
 
 
-def capture_plan():
-    """Replace an unrun capture layout; preserve exact original native inputs."""
-    public=base.ur_validation.committed(RESULT,(KEY,))
-    require(public.get('stage')=='built' and public.get('results')==[],
-        'closed or started capture plan cannot be replaced')
-    row=json.loads((ROOT/'record.json').read_text())
-    require(fingerprint(public)==fingerprint(compact(row)) and row['stage']=='built'
-        and not row['results'] and row['active'] is False and row['ownership_closed'] is True
-        and 'capture_plan_update' not in row,'only a positively closed,unrun native build may change capture admission')
-    recovered=base.original.coherent.recover(row['project'])
-    require(len(recovered)==len(row['project']['source_sha256']),'recover original controller/native source')
-    current=base.original.coherent.build.common.source.pin(P,PREFIXES)
-    old=row['project']['source_sha256'];new=current['source_sha256']
-    require(set(old)==set(new) and {p for p in old if old[p]!=new[p]}=={
-        'tools/sycl/prefill_weight_pipeline.py','tests/core/test_weight_pipeline_plan.py'},
-        'capture admission may change only this controller/host test;native source/recipe must stay identical')
-    base.original.verify_original(expected=row['foundation'])
-    require(sha(row['binary']['path'])==row['binary']['sha256'] and
-        all(sha(p)==h for group in row['actual_inputs'].values() for p,h in group.items())
-        and all(sha(p)==h for p,h in row['allowed'].items()),'exact original native inputs/ELF required')
-    row['native_project']=row['project'];row['project']=current
-    row['capture_plan_update']=dict(original_build_evidence=git(P,'rev-parse','HEAD').decode().strip(),
-        original_unrun_plan_sha256=fingerprint(public['plan']),old_native_source=row['native_source_commit'],
-        native_executable_unchanged=True,native_recompiled=False,prior_GPU_processes=0,
-        reason='Original Owner(ROOT/owned)would charge the immutable1GBcorpus against128/160MiBraw capture caps. Close that unrun capture layout;new native Owner(case.root/owned)charges only current-case raw output. Build keeps its explicit2GiBasset-inclusive budget. Same cases/order/math/argv/environment/timing/adoption criteria;no prior run is relabeled.')
-    row['plan']['captures']='Native Owner lives at case.root/owned;supervised parent is case.root,including traces/validation/output. Immutable1GBcorpus and other cases are outside each128/160MiBraw cap. Build Owner stays ROOT/owned with explicit2GiBasset-inclusive budget. No native work was run under the replaced layout.'
-    owner=base.owner_api.Owner(ROOT/'capture-admission-owned',lambda:write(ROOT/'capture-admission-ownership.json',owner.commands))
-    try:
-        entry,out,err=owner.run('capture-host-controls',['/usr/bin/python3','-B','-m','unittest','discover',
-            '-s',str(P/'tests/core'),'-p','test_weight_pipeline_plan.py','-v'],row['build_environment'],ROOT,**BUILD)
-        require(base.owner_api.closed(entry) and entry['exit_code']==0 and 'Ran 8 tests' in err.read_text()
-            and '\nOK\n' in err.read_text(),'capture-admission host controls failed')
-        row['capture_admission_host_controls']=dict(methods=8,passed=True,device_executed=False)
-    except BaseException as error:row.update(stage='failed',passed=False,complete=False,error=repr(error));raise
-    finally:
-        row['commands'].extend(owner.commands)
-        row['active']=owner.active is not None
-        row['ownership_closed']=owner.active is None and all(base.owner_api.closed(v) for v in row['commands'])
-        save(row)
-    print('Unrun capture layout replaced;original native ELF/source retained. Commit new plan before GPUwork.',flush=True)
-
-
 def execute(action):
     public=base.ur_validation.committed(RESULT,(KEY,))
     require(public['stage'] in (['prepared'] if action=='build' else ['built','testing']),
@@ -333,7 +291,6 @@ def execute(action):
             case=row['cases'][len(row['results'])];root=Path(case['root']);require(not root.exists(),'existing case:no retry')
             root.mkdir(mode=0o700)
             for name in ['tmp','cache']:(root/name).mkdir(mode=0o700)
-            require('capture_plan_update' in row,'commit case-scoped capture admission before native launch')
             supervisor=base.owner_api.Owner(root/'owned',lambda:write(ROOT/'ownership.json',supervisor.commands))
             cursor=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).split('-- cursor: ',1)[1].strip()
             row.update(stage='testing',active=True,ownership_closed=False);save(row)
@@ -422,9 +379,8 @@ def execute(action):
 
 
 if __name__=='__main__':
-    require(sys.argv[1:] in [['prepare'],['build'],['capture-plan'],['next']],'prepare|build|capture-plan|next')
+    require(sys.argv[1:] in [['prepare'],['build'],['next']],'prepare|build|next')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);base.guards.no_model_owners([])
         if sys.argv[1]=='prepare':prepare()
-        elif sys.argv[1]=='capture-plan':capture_plan()
         else:raise SystemExit(execute(sys.argv[1]))
