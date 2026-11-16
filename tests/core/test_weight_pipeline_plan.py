@@ -50,11 +50,29 @@ class WeightPipelineAdmission(unittest.TestCase):
         for stage in ['closed','failed']:
             for action in ['build','next']:
                 with self.subTest(stage=stage,action=action), \
-                     patch.object(t.Path,'read_text',return_value=json.dumps(dict(stage=stage))), \
+                     patch.object(t.base.ur_validation,'committed',return_value=dict(stage=stage)), \
+                     patch.object(t.Path,'read_text',side_effect=AssertionError('retired checkpoint read')) as read, \
                      patch.object(t,'check',side_effect=RuntimeError('must not requalify')) as check, \
                      patch.object(t,'save') as save:
                     with self.assertRaises(RuntimeError):t.execute(action)
-                    check.assert_not_called();save.assert_not_called()
+                    read.assert_not_called();check.assert_not_called();save.assert_not_called()
+
+    def test_seed_recipe_recovers_from_git_without_private_checkpoint(self):
+        with patch.object(t.Path,'read_text',side_effect=AssertionError('external receipt read')):
+            seed=t.seed_recipe()
+        self.assertEqual(seed['native_source_commit'],t.SEED_SOURCE)
+        self.assertTrue(seed['recipe'])
+
+    def test_seed_recipe_rejects_wrong_source_open_or_missing_provider(self):
+        original=t.seed_recipe()
+        for field in ['native_source_commit','ownership_closed','active','provider']:
+            value=copy.deepcopy(original)
+            if field=='native_source_commit':value[field]='f'*40
+            elif field=='ownership_closed':value[field]=1
+            elif field=='active':value[field]=True
+            else:del value['native_validation_probe']
+            with self.subTest(field=field),patch.object(t,'git',return_value=json.dumps({'prefill_weight_pipeline_v2':value})):
+                with self.assertRaises(RuntimeError):t.seed_recipe()
 
     def test_matching_serial_and_lookahead_work_are_admitted(self):
         for arm in ['serial','lookahead']:

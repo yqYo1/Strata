@@ -22,8 +22,7 @@ VIEW=ROOT/'source'
 KEY='prefill_weight_lookahead_v1'
 SOURCE='bench/sycl/prefill_weight_pipeline.cpp'
 TEST='tests/core/test_weight_pipeline_plan.py'
-PREFIXES=[*(p for p in base.PREFIXES if p!=base.SOURCE),SOURCE,TEST]
-SEED_ROOT=B/'prefill-weight-pipeline-v2'
+PREFIXES=[*base.PREFIXES,SOURCE,TEST]
 SEED_EVIDENCE='07735df239679929be29c859561ae0501a9a3ab7'
 SEED_SOURCE='2187bfa5ddff6d8331187b8cfc22157852c2d461'
 TRACED_RUN=dict(base.RUN,text_cap=64<<20,file_cap=96<<20,total_cap=160<<20)
@@ -49,6 +48,19 @@ def save(row):
 def metadata_gate(row):
     for name in ['native_validation_probe','runtime_manifest','validation_provider','driver','boot','weights']:
         require(name in row and bool(row[name]),'missing transitive native input:'+name)
+
+
+def seed_recipe():
+    # Closed preparation needs the committed recipe,not a disposable checkpoint
+    # or the retired native executable. Fresh source/dependency checks follow.
+    seed=json.loads(git(P,'show',SEED_EVIDENCE+':'+str(RESULT.relative_to(P))))['prefill_weight_pipeline_v2']
+    require(seed['stage']=='closed' and seed['passed'] is True and seed['complete'] is True
+        and seed['active'] is False and seed['ownership_closed'] is True
+        and seed['native_source_commit']==seed['project']['revision']==SEED_SOURCE
+        and seed['original_math_runtime_source']==base.original.SOURCE,
+        'exact committed closed seed recipe required')
+    metadata_gate(seed)
+    return seed
 
 
 def check(row,committed=True):
@@ -132,13 +144,7 @@ def prepare():
     require(production['environment']['STRATA_SYCL_PARALLEL_IQ_DEQUANT']=='1',
             'qualified model parallel-IQpolicy required')
     native,proof=base.original.verify_original()
-    seed=json.loads((SEED_ROOT/'record.json').read_text())
-    historical=json.loads(git(P,'show',SEED_EVIDENCE+':'+str(RESULT.relative_to(P))))['prefill_weight_pipeline_v2']
-    require(fingerprint(compact(seed))==fingerprint(historical)
-        and seed['native_source_commit']==SEED_SOURCE and seed['stage']=='closed'
-        and seed['active'] is False and seed['ownership_closed'] is True,
-        'exact original actual-reader source/recipe receipt required')
-    base.original.coherent.recover(seed['project'])
+    seed=seed_recipe();seed_root=str(Path(seed['binary']['path']).parent)
     project=base.original.coherent.build.common.source.pin(P,PREFIXES)
     ROOT.mkdir(mode=0o700)
     for name in ['tmp','cache','owned']:(ROOT/name).mkdir(mode=0o700)
@@ -174,7 +180,7 @@ def prepare():
     compile_one('fixture',P/SOURCE,'src/sycl/runtime.cpp',['-fno-fast-math','-ffp-contract=off'])
     for label in ['dense-image','dense-host']:
         old=next(v for v in seed['recipe'] if v['label']==label)
-        recipes.append({k:([x.replace(str(SEED_ROOT),str(ROOT)) for x in v] if isinstance(v,list) else v)
+        recipes.append({k:([x.replace(seed_root,str(ROOT)) for x in v] if isinstance(v,list) else v)
                         for k,v in old.items()})
     recipes.append(dict(label='link',argv=[cc,'--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
         '-fsycl',*[str(ROOT/(x+'.o')) for x in ['runtime','commands','iq','ops','dense-image','dense-host','fixture']],
@@ -195,14 +201,14 @@ def prepare():
             case(f'clean-pair{pair}-{arm}',arm,False,pair)
     row=dict(stage='prepared',passed=True,complete=False,active=False,ownership_closed=True,
         project=project,native_source_commit=project['revision'],original_math_runtime_source=base.original.SOURCE,
-        foundation=proof,seed_receipt=dict(path=str(SEED_ROOT/'record.json'),sha256=sha(SEED_ROOT/'record.json'),
-            source=SEED_SOURCE,evidence=SEED_EVIDENCE,old_ELFs_not_inputs=True),allowed=allowed,
+        foundation=proof,seed_recipe=dict(source=SEED_SOURCE,evidence=SEED_EVIDENCE,
+            sha256=fingerprint(seed),external_receipt_needed=False,old_ELFs_not_inputs=True),allowed=allowed,
         source_view=dict(original_commit=base.original.SOURCE,files=len(generated),sha256=fingerprint(generated)),
         source_capability=base.source_capability(),property_evidence=base.property_evidence(),weights=weights,
         production_iq_policy=dict(native_source=base.original.SOURCE,evidence_key='coherent_prefill_model_v3.environment.STRATA_SYCL_PARALLEL_IQ_DEQUANT',value='1'),
         recipe=recipes,recipe_tools={p:sha(p) for p in seed['recipe_tools']},runtime_manifest=seed['runtime_manifest'],
         validation_provider=seed['validation_provider'],native_validation_probe=seed['native_validation_probe'],
-        build_environment={k:v.replace(str(SEED_ROOT),str(ROOT)) for k,v in seed['build_environment'].items()},
+        build_environment={k:v.replace(seed_root,str(ROOT)) for k,v in seed['build_environment'].items()},
         driver=base.guards.driver_guard(),boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         cases=cases,results=[],commands=[],model_trial_allowed=False,performance_qualified=False,
         plan=dict(unit='Only the quantized scratch-bank reader fence moves:serial copies follow full expert math;lookahead copies follow both IQdequant kernels while current GU/SwiGLU/Down/accumulate use separate workspaces. The next IQpair always follows current math on the same in-order compute queue. Fixed hostUSMsource,one scratch blob,actual layer2experts0/1,original14508math,FP16operands,BF16GU/Down,FP16hidden,FP32accumulation,1024rows,512jobs,queues,placement and event counts. Splitting the fixture helper at its actual blob/workspace reader seam and matching controller/tests are inseparable scheduling plumbing,not new kernels. Both arms use the same binary;512jobs replaces128only for timing headroom,not as a historical speed comparison. No mapped-source trial.',
@@ -219,6 +225,9 @@ def prepare():
 
 
 def execute(action):
+    public=base.ur_validation.committed(RESULT,(KEY,))
+    require(public['stage'] in (['prepared'] if action=='build' else ['built','testing']),
+            'terminal or wrong-stage actual-reader cohort;preserve its original receipt')
     row=json.loads((ROOT/'record.json').read_text())
     require(row['stage'] in (['prepared'] if action=='build' else ['built','testing']),
             'terminal or wrong-stage actual-reader cohort;preserve its original receipt')
@@ -233,8 +242,8 @@ def execute(action):
                 entry,out,err=supervisor.run(recipe['label'],recipe['argv'],row['build_environment'],ROOT,**base.BUILD)
                 require(base.owner_api.closed(entry) and entry['exit_code']==0,'fresh actual-reader build failed:'+str(err))
                 if recipe['label']=='host-controls':
-                    require('Ran 6 tests' in err.read_text() and '\nOK\n' in err.read_text(),'source/metadata/scheduling controls required')
-                    row['host_admission_controls']=dict(methods=6,passed=True,device_executed=False)
+                    require('Ran 8 tests' in err.read_text() and '\nOK\n' in err.read_text(),'source/metadata/scheduling controls required')
+                    row['host_admission_controls']=dict(methods=8,passed=True,device_executed=False)
                 if 'dep' in recipe:
                     for name in shlex.split(Path(recipe['dep']).read_text().replace('\\\n',' ').split(':',1)[1]):
                         path=str(Path(name).resolve());h=sha(path);require(allowed.get(path)==h,'unfrozen compiler input:'+path);actual['compiled'][path]=h
