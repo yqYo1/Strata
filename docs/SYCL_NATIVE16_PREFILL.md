@@ -1367,7 +1367,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source views and owned native transcript,39more files/1589907bytes are
   physically removed. All26retained phase-reference ELFs remain unchanged;
   legacy/.cache holds stay separate.
-  `bench/sycl/prefill_upload_overlap.cpp`is an **E2component proposal**,not a
+  The copied-bank E2component source is archived at`0a3295b89`
+  (`bench/sycl/prefill_upload_overlap.cpp`);it is not a
   selected route:it fixes the copy primitive,payload,allocations and existing
   Xe2dense kernel while moving only the readiness wait across independent
   compute. A per-epoch reader fence limits lookahead to one expert. Its build,

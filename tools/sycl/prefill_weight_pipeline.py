@@ -22,7 +22,7 @@ VIEW=ROOT/'source'
 KEY='prefill_weight_pipeline_v2'
 SOURCE='bench/sycl/prefill_weight_pipeline.cpp'
 TEST='tests/core/test_weight_pipeline_plan.py'
-PREFIXES=[*base.PREFIXES,SOURCE,TEST]
+PREFIXES=[*(p for p in base.PREFIXES if p!=base.SOURCE),SOURCE,TEST]
 SEED_EVIDENCE='9cc26a79bca65a4e2ca4327c7b79d4ae492843fe'
 SEED_SOURCE='0a3295b89619cdc9cb4c6c4b2333043325fc8695'
 require,sha,fingerprint=base.require,base.sha,base.fingerprint
