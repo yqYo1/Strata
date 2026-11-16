@@ -18106,6 +18106,65 @@
             "parallel_iq_launchILi20ELb0": 258
           }
         }
+      },
+      {
+        "label": "validated-mapped-neo",
+        "source": "mapped-neo",
+        "mode": "serial",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "mapping_proof": {
+          "kind": "mapping-proof",
+          "source": "mapped-neo",
+          "property_type": 1,
+          "allocation_ids": [
+            28,
+            29
+          ]
+        },
+        "validation": {
+          "pid": 2954910,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "e40bb3aec77550e6321f81cbf036d30999614e5aa5cc2b35082f4cdafd8c7e39",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.002814328,
+          "import_s": 0.000655884,
+          "retirement_s": 0.001164743
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "serial",
+          "source": "mapped-neo",
+          "rows": 1024,
+          "epochs": 128,
+          "requested_H2D_bytes": 252313600,
+          "wall_s": 0.217293604,
+          "timer_pair_max_s": 4e-08,
+          "actual_weight_reader": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.221272675,
+        "validated_counts": {
+          "math_launches": 1548,
+          "payload_sized_native_copy_calls": 259,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 258,
+            "parallel_iq_launchILi20ELb0": 258
+          }
+        }
       }
     ],
     "model_trial_allowed": false,

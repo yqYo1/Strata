@@ -1532,6 +1532,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   to measured source`d1f3868e2`;keep the actual source-adapter headers and recipe/
   fixture sources for the next actual-bank producer/reader plan. The earlier
   normal source-cohort traces/build output retirement was159files/24022908bytes.
+  The actual-weight proposal is now `prefill_weight_pipeline_v2`,native source
+  `2187bfa5d`,plan`5c6c68938`,with six fresh TUs/943compiler inputs/25link inputs/
+  eight objects. No archive/object reuse;the isolated dense AOTrecipe is unchanged.
+  It extracts actual layer2experts0/1(IQ2_Sgate/up,IQ4_NLDown),then holds serial
+  copying and the M1024production fallback math fixed while comparing hostUSM
+  with the pinned imported heap. Both metadata processes close normal0with zero
+  app work;imported HOST1IDs28/29are observed. The first USMmath batch closes
+  normal0/quiet/no fresh fault,with full bitwise FP32accumulator agreement,
+  all guards,1548math launches and258actual parallel-IQlaunches per role.
+  The mapped math batch and all three clean source-cost pairs remain pending;
+  build/metadata/USMsuccess does not permit scheduling or model advancement.
+  V1closed before any native build/execution because its inherited copy-only
+  environment omitted the model's parallel-IQflag;V2matches flag1before exec
+  and checks actual named launches. Main owns the live controller handle;
+  inspect its receipt/process before resuming,no duplicate run. CQsource audit
+  has returned and its owned worker is positively closed;native CRreview is
+  pending. Preserve both phase references and review ended preparation output
+  at the next serialized safe boundary.
   The reviewed CL/CM
   audit's consumed report/view/control/closed transcript are also retired:
   40files/2033262bytes,with its correction and source hashes in the index.
