@@ -24,6 +24,17 @@ def events(arm):
 
 
 class UploadOverlapProfile(unittest.TestCase):
+    def test_observed_device_only_markers_are_admitted(self):
+        # Minimal normalized schema from the real2163876device-only trace.
+        # PTI chromelogger.h emits GPUside t/s markers;no host API endpoints.
+        document={'traceEvents':[
+            dict(ph='M',name='process_name',pid=42,args=dict(name='HOST<test>')),
+            dict(ph='M',name='process_name',pid=7,args=dict(name='DEVICE<test> 0:5:0:0 #0')),
+            dict(ph='t',pid=7,tid=7,cat='Flow_H2D_3_42',id=3,ts=10),
+            dict(ph='s',pid=7,tid=7,cat='Flow_D2H_3_42',id=3,ts=10),
+            dict(ph='X',pid=7,tid=7,cat='gpu_op',name='DenseKernel',ts=10,dur=2,args=dict(id='3'))]}
+        self.assertEqual(len(target.trace_events(document,42,0,20000)),1)
+
     def test_fixed_counts_and_overlap_match_known_schedule(self):
         for arm,overlap in [('serial',0),('overlap',512*8000)]:
             with self.subTest(arm=arm):
