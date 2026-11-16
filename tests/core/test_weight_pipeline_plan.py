@@ -1,5 +1,6 @@
 """Fail-closed actual-weight controller admission; repository LICENSE."""
 import copy
+import json
 from pathlib import Path
 import sys
 import unittest
@@ -44,6 +45,16 @@ class WeightPipelineAdmission(unittest.TestCase):
              patch.object(t.base.original.coherent.build.common.source,'pin') as source:
             with self.assertRaises(RuntimeError):t.check(row)
             source.assert_not_called()
+
+    def test_terminal_cohort_refuses_before_check_or_receipt_write(self):
+        for stage in ['closed','failed']:
+            for action in ['build','next']:
+                with self.subTest(stage=stage,action=action), \
+                     patch.object(t.Path,'read_text',return_value=json.dumps(dict(stage=stage))), \
+                     patch.object(t,'check',side_effect=RuntimeError('must not requalify')) as check, \
+                     patch.object(t,'save') as save:
+                    with self.assertRaises(RuntimeError):t.execute(action)
+                    check.assert_not_called();save.assert_not_called()
 
 
 if __name__=='__main__':unittest.main()

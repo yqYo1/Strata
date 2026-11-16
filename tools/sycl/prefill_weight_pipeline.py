@@ -205,10 +205,11 @@ def prepare():
 
 def execute(action):
     row=json.loads((ROOT/'record.json').read_text())
+    require(row['stage'] in (['prepared'] if action=='build' else ['built','testing']),
+            'terminal or wrong-stage actual-reader cohort;preserve its original receipt')
     try:check(row)
     except BaseException as error:
         row.update(stage='failed',passed=False,complete=False,prelaunch_error=repr(error));save(row);raise
-    require(row['stage'] in (['prepared'] if action=='build' else ['built','testing']),'fresh ordered actual-reader stage required')
     supervisor=base.owner_api.Owner(ROOT/'owned',lambda:write(ROOT/'ownership.json',supervisor.commands));cursor=None
     try:
         if action=='build':
@@ -217,8 +218,8 @@ def execute(action):
                 entry,out,err=supervisor.run(recipe['label'],recipe['argv'],row['build_environment'],ROOT,**base.BUILD)
                 require(base.owner_api.closed(entry) and entry['exit_code']==0,'fresh actual-reader build failed:'+str(err))
                 if recipe['label']=='host-controls':
-                    require('Ran 3 tests' in err.read_text() and '\nOK\n' in err.read_text(),'source/metadata host controls required')
-                    row['host_admission_controls']=dict(methods=3,passed=True,device_executed=False)
+                    require('Ran 4 tests' in err.read_text() and '\nOK\n' in err.read_text(),'source/metadata host controls required')
+                    row['host_admission_controls']=dict(methods=4,passed=True,device_executed=False)
                 if 'dep' in recipe:
                     for name in shlex.split(Path(recipe['dep']).read_text().replace('\\\n',' ').split(':',1)[1]):
                         path=str(Path(name).resolve());h=sha(path);require(allowed.get(path)==h,'unfrozen compiler input:'+path);actual['compiled'][path]=h
