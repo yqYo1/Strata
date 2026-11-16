@@ -29867,6 +29867,65 @@
           "full_bitwise_reference_and_guards": true
         },
         "lifecycle_plus_batch_s": 0.73439787
+      },
+      {
+        "label": "clean-1024-block2-bridge",
+        "family": "math",
+        "arm": "bridge",
+        "rows": 1024,
+        "mode": "batch",
+        "pair": 2,
+        "clean": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 244819,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "7f4205c8c0bbd905a4c3bcff089d6831ebc08e7707c13c88d1f60449921c961c",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "bridge",
+          "dependency_bridge": true,
+          "separate_queue": false,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 9.368e-06,
+          "retirement_s": 0.000349899
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "bridge",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 1.433480645,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.4338399119999998
       }
     ],
     "model_trial_allowed": false,
