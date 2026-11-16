@@ -4,7 +4,6 @@
 Main-authored; repository LICENSE. No rebuild, model trial or revised E2 gate.
 Source -> prepare -> commit plan -> host -> commit -> next (one native child).
 """
-from collections import Counter
 import fcntl
 import json
 from pathlib import Path
@@ -21,8 +20,8 @@ import ur_validation
 
 component=native.component
 P,B,RESULT=native.P,native.B,native.RESULT
-ROOT=B/'prefill-upload-overlap-profile-v1'
-KEY='prefill_upload_overlap_profile_v1'
+ROOT=B/'prefill-upload-overlap-profile-v2'
+KEY='prefill_upload_overlap_profile_v2'
 PREFIXES=['tools/sycl','tests/core/test_upload_overlap_reuse.py',
           'tests/core/test_upload_overlap_profile.py','AGENTS.md','docs/ARTIFACT_RETENTION.md','docs/BENCHMARKS.md']
 require,sha,signature=native.require,native.sha,native.signature
@@ -50,16 +49,36 @@ def collector_proof():
 def trace_events(document,pid,begin,end):
     events=document['traceEvents'];require(len(events)<=50000,'bounded component trace events required')
     labels={e['pid']:e.get('args',{}).get('name','') for e in events if e.get('ph')=='M' and e.get('name')=='process_name'}
-    flows=Counter(str(e.get('id')) for e in events if e.get('ph')=='s' and e.get('pid')==pid
-                  and e.get('cat','').startswith('Flow_H2D_'))
+    require(labels.get(pid,'').startswith('HOST<'),'owned non-MPI host metadata required')
+    # Pinned PTI chromelogger.h:1036-1055 emits BOTH markers on the GPU
+    # track: H2D sink(t),D2H source(s). With no PMI_RANK/PMIX_RANK,the
+    # category suffix is getpid(). Host API endpoints are absent in this mode.
+    # This associates device records with the owned process;it does NOT
+    # reconstruct a host API/enqueue timeline or physical transfer direction.
+    markers={}
+    for event in events:
+        match=re.fullmatch(r'Flow_(H2D|D2H)_(\d+)_(\d+)',event.get('cat',''))
+        if not match or int(match[3])!=pid:continue
+        direction=match[1]
+        if event.get('ph')!=('t' if direction=='H2D' else 's'):continue
+        require(type(event.get('id')) in (int,str) and str(event['id'])==match[2],
+            'device marker/category work identity differs')
+        when=trace_reader.nanoseconds(event.get('ts'));require(begin<=when<=end,'device marker outside RAW lifetime')
+        key=(direction,event.get('pid'),event.get('tid'),match[2])
+        markers.setdefault(key,[]).append(when)
     found=[];ids=set()
     for event in events:
         if event.get('cat')!='gpu_op':continue
         require(event.get('ph')=='X','complete GPU event required')
         low=trace_reader.nanoseconds(event.get('ts'));duration=trace_reader.nanoseconds(event.get('dur'))
         require(begin<=low<=low+duration<=end,'GPU event outside actual owned RAW lifetime')
-        identifier=str(event.get('args',{}).get('id'))
-        require(identifier not in ids and flows[identifier]==1,'unique native-origin GPU event required')
+        raw_id=event.get('args',{}).get('id');identifier=str(raw_id)
+        require(type(raw_id) in (int,str) and re.fullmatch(r'\d+',identifier)
+            and identifier not in ids,'unique GPU work identity required')
+        for direction in ['H2D','D2H']:
+            hits=markers.get((direction,event.get('pid'),event.get('tid'),identifier),[])
+            require(len(hits)==1 and abs(hits[0]-low)<=1,
+                'unique owned-process GPUside device-only marker required')
         ids.add(identifier);label=labels.get(event.get('pid'),'')
         require(label.startswith('DEVICE<') and '0:5:0:0' in label,'actual B570 device lane required')
         name=event.get('name');require(type(name) is str and name,'named GPU work required')
@@ -124,12 +143,18 @@ def check(row,committed=True):
         require(case['argv']==expected,'profile launch differs from exact guarded images/flags')
         env=case['environment'];require(env['ZES_ENABLE_SYSMAN']=='0' and env['EnableDirectSubmission']=='0'
             and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD']=='1' and env['NEOReadDebugKeys']=='1'
-            and env['ZE_ENABLE_HANDLE_LIFETIME']=='0','qualified immutable safety environment required')
+            and env['ZE_ENABLE_HANDLE_LIFETIME']=='0' and 'PMI_RANK' not in env and 'PMIX_RANK' not in env,
+            'qualified immutable non-MPI safety environment required')
     return basis
 
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'existing profile plan;inspect,no retry')
+    previous=ur_validation.committed(RESULT,('prefill_upload_overlap_profile_v1',))
+    require(previous['stage']=='failed' and previous['ownership_closed'] and not previous['active']
+        and previous['failure_observation']['native_exit_code']==0
+        and previous['failure_observation']['host_red_result']['passed_expected_red'] is True,
+        'preserve original failed host-flow assumption and observed-schema red control')
     basis,proof=native.verify();tools=collector_proof()
     project=component.original.coherent.build.common.source.pin(P,PREFIXES)
     cases=[]
@@ -159,6 +184,8 @@ def prepare():
             for key,path in [('controller',sys.executable),('host','/usr/bin/python3')]},
         boot=basis['boot'],driver=basis['driver'],cases=cases,results=[],commands=[],
         active=False,ownership_closed=True,passed=False,complete=False,
+        prior_failure=dict(key='prefill_upload_overlap_profile_v1',outcome='Native forward normal0/no fault;reader incorrectly required host API flow source in device-only capture. Original failed cohort and red test remain failed/expected-red,respectively.',
+            new_contract='GPUside H2Dt/D2Hs markers plus native-PID suffix and HOSTmetadata,under absent PMI/PMIXrank;no host API endpoints inferred. Same original native images/collector/bytes/math and E2speed gates.'),
         interoperability_qualified=False,observer_overhead_qualified=False,model_trial_allowed=False,
         host_command=['/usr/bin/python3','-B','-m','unittest','discover','-s','tests/core','-p','test_upload_overlap*.py','-v'],
         environment_recipe=dict(native_evidence=native.EVIDENCE,source=native.NATIVE,
@@ -168,8 +195,8 @@ def prepare():
             opportunity='E2M4096ratios0.575224/0.585516/0.991001pass its component screen;M1024ratios0.668329/0.565964/1.003774fail. These outcomes remain immutable. Native/provider/recipe reuse is historical admission,not a new model/overlap claim.',
             units='No native,math,placement,copy primitive or readiness-order code changes. P1collector/event interoperation is a separate safety prerequisite. P2changes only device collector on/off for fixed serial or overlap arms and fixed shape. Compare each shape/arm independently;no combination or model claim.',
             order='Commit source and plan,host historical/trace controls,seven fresh profiled E1bprocesses metadata/forward/reverse/permanent/cancel/cancel-throw/refuse,then C/T/T/Cper serial and overlap arm at1024and4096rows. One child per next,commit each closure;no reordering,retries or exclusions.',
-            safety='Original six host admission methods and E2seven-case safety already qualified exact6231/824eimages. New host controls check historical eligibility and trace count/dependency interpretation. P1full UR/L0validation traces;required before/after provider+actual process environment/argv+private first-init proof;50msheld/manual release and original100mssubmit assertions. Every owner normal0/closed,no warning/error,new fault or changed boot/driver.',
-            counts='P1URenqueue counts0/10/12/16/7/7/6;reader kernels0/2/4/6/1/1/1;raw256Bcopies0/1/2/2/1/1/1. P2each trace exactly513payload1971200Bcopies and514DenseKernelcalls;exclude first copy and first two dense warmups. Join unique native Flow_H2D_ids to B570GPUlanes inside actual owned CLOCK_MONOTONIC_RAWlifetime.',
+            safety='Original six host admission methods and E2seven-case safety already qualified exact6231/824eimages. Ten new host controls include the observed device-only schema,missing/foreign/duplicate marker refusal,historical eligibility and trace count/dependency interpretation. P1full UR/L0validation traces;required before/after provider+actual non-MPIprocess environment/argv+private first-init proof;50msheld/manual release and original100mssubmit assertions. Every owner normal0/closed,no warning/error,new fault or changed boot/driver.',
+            counts='P1URenqueue counts0/10/12/16/7/7/6;reader kernels0/2/4/6/1/1/1;raw256Bcopies0/1/2/2/1/1/1. P2each trace exactly513payload1971200Bcopies and514DenseKernelcalls;exclude first copy and first two dense warmups. Pinned PTIdevice-only format associates each unique GPUwork ID with one GPUside H2Dt and one D2Hs marker,matching lane,id,timestamp and native-PID category suffix with HOSTmetadata. This is not a host API/enqueue endpoint join. All device intervals/markers must fit actual owned CLOCK_MONOTONIC_RAWlifetime.',
             timing='Native512epoch wall/100msfloor/clock-pair<=0.001batch unchanged. Report all clean/profiled samples. Per shape/arm,match T1/C0andT2/C3;each native wall ratio must lie0.9..1.1 for qualified quantitative attribution. A failed observer gate retains perturbed observations and never qualifies speed or causality. Finish planned controls despite slow samples;stop on safety/identity/trace/coverage failures.',
             dependencies='Order copies and dense kernels by their actual single-stream device starts. Every next copy follows both previous copy and previous dense;every next dense follows previous dense;serial dense follows same-epoch copy. Predeclared timestamp edge tolerance2000ns;report minimum margin and fail larger violations. Intersections/unions remain different from native wall and arithmetic saturation.',
             budgets='120s wall/240sCPU/4GiB RSS per native;32MiB text and individual file;512MiB total campaign across controller-owned root. Each trace<=32MiB/50000events. No metrics,counters,Sysman,host API trace,pause/shared session,model or new binaries.',
@@ -216,8 +243,8 @@ def execute(action):
         if action=='host':
             env=dict(PATH='/usr/bin:/bin',LANG='C.UTF-8',LC_ALL='C.UTF-8',PYTHONDONTWRITEBYTECODE='1')
             entry,out,err=supervisor.run('host',row['host_command'],env,P,**HOST)
-            require(component.owner_api.closed(entry) and entry['exit_code']==0 and 'Ran 9 tests' in err.read_text()
-                and '\nOK\n' in err.read_text(),'all nine historical/trace host controls required:'+str(err))
+            require(component.owner_api.closed(entry) and entry['exit_code']==0 and 'Ran 10 tests' in err.read_text()
+                and '\nOK\n' in err.read_text(),'all ten historical/trace host controls required:'+str(err))
             row.update(stage='host-qualified',passed=True,host_controls_passed=True)
         else:
             index=len(row['results']);require(index<len(row['cases']),'profile campaign already closed')

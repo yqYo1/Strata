@@ -1402,9 +1402,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `profile_prefill_upload_overlap.py`proposal reuses these exact two images
   through a historical source/recipe/census reader. It separates seven
   collector/event safety cases from C/T/T/Cper arm/shape attribution,with
-  native-origin RAW-clock joins,exact513copy/514dense calls and one-lookahead
-  dependency checks. Commit its exact plan and pass the nine host controls
-  before native work;no new build or model route is implied. Preserve this failed1024gate and qualify
+  owned-process RAW-clock associations,exact513copy/514dense calls and
+  one-lookahead dependency checks. V1passes nine host controls and zero-work
+  metadata. Its forward native process is normal0with the expected10URcalls,
+  two reader kernels and one256Bcopy,but the reader wrongly requires a host
+  API flow endpoint in device-only capture;the cohort remains failed. A new
+  observed-schema host control at`f9e82a578`reproduces that refusal(six tests,
+  one expected error). Prospective V2matches the two GPUside t/s markers,
+  owned native-PID category suffix and HOSTmetadata with no PMI/PMIXrank,
+  as emitted by pinned PTIchromelogger.h. It claims no host API timeline.
+  Commit V2's exact plan and pass all ten host controls before native work;
+  no rebuild or model route is implied. Preserve this failed1024gate and qualify
   observer cost;do not change its criteria retroactively. The current E2images,
   fresh objects,source view and private build/census record have that imminent
   consumer;retire them at profile qualification/closure if superseded. Normal
