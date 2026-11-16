@@ -1663,9 +1663,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Runtime/queue lookup,context checks and status/error translation differ;math,
   copy ordering and source preparation remain fixed. This isolates wrapper
   cost before Q1queue placement and Oreadiness-order changes. The shortcut is
-  an unbuilt diagnostic,not a selected production path. A new committed recipe,
-  prospective plan and all legacy build-retention prerequisites are still needed
-  before execution. Sresults keep their original1896d6a18native identity.
+  an unbuilt diagnostic,not a selected production path. Its new nine-TUrecipe
+  and42-process prospective plan now isolate direct/shortcut at five shapes;
+  nine host admission controls pass. The six legacy prototype roots are retired
+  after exact recovery. Commit the prepared plan before the fresh build. Sresults keep their original1896d6a18native identity.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
