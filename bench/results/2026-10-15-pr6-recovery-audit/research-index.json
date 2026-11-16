@@ -34791,5 +34791,29 @@
       "removed_files": 40,
       "removed_bytes": 2033262
     }
+  },
+  "prefill_host_map_shape_cost_attribution_scope_20261116": {
+    "classification": "decision support",
+    "status": "ready",
+    "schedulable_now": true,
+    "title": "Actual Runtime/dense call-path hypotheses for shape-dependent registered-host source cost",
+    "source_commit": "0a3295b89619cdc9cb4c6c4b2333043325fc8695",
+    "original_runtime_dense_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "evidence_commit": "9cc26a79bca65a4e2ca4327c7b79d4ae492843fe",
+    "evidence_key": "prefill_mapped_source_v2",
+    "prerequisite_evidence": "31native normal0/closed/quiet;exact FP16K2560N1280compute and serial order held. Three clean1024pairs satisfy source cost;4096Neo/USM ratios1.47134,1.45394,1.29403fail. Only source ownership/admission differs;resident Ais math input,copied2MB Bnot a math operand. Exact provider52e29a60/API1.17 environment known;hardware saturation not measured.",
+    "scope": "Trace the pinned actual Runtime/dense beta0 submit path and the two source allocators to identify any kernel argument/indirect-access,USM allocation tracking/residency,cache/page/alignment,queue or host-submission behavior that could depend on registering this read-only heap despite unchanged resident math. Rank falsifiable alternatives and counterevidence using official Intel/SYCL/UR/LevelZero sources. Installed driver-source correspondence is unproven;do not infer its implementation from a different checkout. Propose a small disjoint Main-owned counter/measurement matrix separating CPUwrapper cost,copy service,GPUkernel service and idle/critical wall without the failed PTI/event combination. No local execution,implementation or performance/root-cause claim.",
+    "why_nonduplicate": "New concrete three-pair shape-dependent cost failure and actual pinned Runtime/dense path,not another generic host cache/coherence/calibration or import-feasibility survey.",
+    "prior_index_keys": [
+      "prefill_pinned_host_contract_cl_20261116",
+      "usm_host_cache_calibration_collection_20261105",
+      "xe2_usm_cache_policy_collection_scope",
+      "usm_host_publication_20261110"
+    ],
+    "report_budget": {
+      "words": 1800,
+      "bytes": 24576
+    },
+    "constraints": "Orca gpt-6-luna medium,report-only;no Git/build/test/GPU/profiler/process inspection or product edits. Main continues separately gated1024readiness-order work. Keep failed4096outcome and no model trial;native Luna-max review required."
   }
 }

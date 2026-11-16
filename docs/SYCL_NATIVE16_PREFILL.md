@@ -1514,7 +1514,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   consistency check;the header does not establish global uniqueness/nonreuse.
   Owned lifetime,range and distinct tombstone state remain essential. Keep the
   two fixture ELFs/private original receipt/source/objects only for the immediate
-  1024comparison beside both phase references;retire normal raw output now.
+  1024comparison beside both phase references. Normal traces/build output are
+  now retired:159files/24022908bytes;the private original record,compiled
+  inputs,source view,objects and two ELFs remain unchanged. The reviewed CL/CM
+  audit's consumed report/view/control/closed transcript are also retired:
+  40files/2033262bytes,with its correction and source hashes in the index.
   Four-Ksource-cost attribution needs its own bounded diagnostic. Compare the
   source adapter with readiness order fixed,and
   only then compare readiness order with source and compute fixed.
