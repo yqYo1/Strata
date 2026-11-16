@@ -1683,109 +1683,94 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   inputs,nine fresh TUs/11objects,recipe/final-ELF and all1GBrole bytes are
   recovered and verified. The ended Q0generation/corpus/view/raw output now
   retires691files/1279279287regular content bytes;both phase hashes remain
-  unchanged. The next fresh R0/Q1/Obuild needs its own committed recipe/plan. Sresults retain
+  unchanged. The subsequent R0/Q1/Ocohort closes below. Sresults retain
   their original1896d6a18source;the two phase references remain selected.
-  An additional owned standard-SYCLcopy-lane header and bounded lifetime fixture
-  keep one quantized bank,borrowed immutable
-  ordinary host sources and both IQreaders distinct from dequantized-weight
-  consumers. Q1will compare compute with a separate same-context queue whose
-  in-order/profiling properties match;Owill then move only the reader marker.
-  Before Q1,compare the new dependency/ownership bridge on the compute queue
-  against Q0resolved-queue with no bridge,holding full-math retirement fixed.
-  The bridge keeps the same queue::memcpy shortcut,using its event overload
-  only when a predecessor exists. Required token checks and barriers form that
-  coherent safety adapter;their overhead must be recorded separately.
-  This avoids silently combining queue placement with a profiling-property
-  or copy-primitive change. Then compare the combined path against the original
-  full compatibility wrapper. No raw LevelZero import,engine selection or
-  validation follows.
-  DA/DBsource review identifies a drain/lifetime APIgap:the old public drain
-  did not prevent another submission after borrowed owners could be released.
-  The prototype seals on drain,including failed drains,and rejects
-  every later copy/readiness/reader operation. Its fixture separates that check
-  from capacity rejection,checks constructor/property admission and reads back
-  the accepted exceptional reader output. Fourteen source/report hashes passed
-  review;these are source corrections,not executed safety/precision evidence.
-  Controlled submission/marker/async-fault and active observer coverage remain
-  pending before qualification. No production path is enabled.
-  The bounded syntax-only check now passes at source
-  `c20e7d7a20d171ba6ae0cbdc55cd38fd9effc6fc`,using compiler2026.2and
-  original14508headers from the still-owned Q0view,plus the two new files.
-  All671actual compiler inputs match the pinned source/SDKmanifest;their
-  census hash is`2ecc58f6092e85d56902b2806d16194e6e7f2565774c369c8c0eb890085aeb6f`.
-  The finite child closes normally0with empty diagnostics and closed ownership.
-  No object,image,link or device execution occurs. This is syntax evidence,
-  with the same command below;native/device/model gates remain pending.
-  After original input/owner verification,the consumed CW/CX/DAresearch,
-  source views,review/native-session transactions and syntax output retire
-  115files/links,3336211regular content bytes. CXretrieval knowledge remains
-  in`docs/research/sycl-event-progress.md`;the current Q0inputs are untouched.
+  The subsequent owned SYCLcopy-lane cohort is **closed and rejected as a
+  combined performance candidate** at all five shapes. Original full evidence
+  is`9888d6ad88f3cb9565cd64a327de74885109094f`,key
+  `prefill_sycl_copy_lane_v2`;native source is
+  `e5cd35836c1e0e608970eec19ad63bcf69823e4a`,admission source
+  `148e6dac73b8cc964503be9decef0e6912abc8d4`. The coherent ten-TU/twelve-object
+  build has962compiler and29link inputs. Both original ELFs and all inputs
+  were reverified after closure. V1's wrong fixture-provider admission remains
+  failed at`44e1fb7eea0b9ff4ea8eb1c1496ae1d28a613fb8`;its native child was
+  terminated/reaped(-15)before Runtime/application commands. V2corrects only
+  admission and reuses exact verified native bytes,not a relabelled rebuild.
 
-  ```text
-  /opt/intel/oneapi/compiler/2026.2/bin/icpx --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -std=c++20 -DSTRATA_ENABLE_SYCL=1 -fsycl -fsyntax-only -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/source/include -I/home/yayoi/orca/workspaces/Strata/sycl/include -MD -MF /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-lane-syntax-v1/fixture.d /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_sycl_copy_lane.cpp
-  ```
+  All115V2native processes pass normal0,quiet validation,positive ownership
+  closure and no fresh fault:ten small lifetime cases,five zero-command math
+  metadata,25traced full-math cases and75clean independent processes. Every
+  clean shape uses three complete five-arm blocks,without retry/exclusion.
+  The maintained result retains all75wall/lifecycle samples and20unit decisions;
+  full per-process diagnostics/plans remain recoverable from the evidence above.
+  Each batch has512ordinary-RAM copies/1009254400requested H2Dbytes and actual
+  layer2IQ2_S/IQ4_NL weights,unchanged Gemm/split math and terminal drain inside
+  timing. Bitwise output,split/tail/status/source/device guards,actual IQ/fused
+  dispatch and timer eligibility pass. Matrix rows are not model input tokens.
 
-  The full-math fixture`bench/sycl/prefill_sycl_copy_math.cpp`is authored
-  from the owned Q0fixture. The ended Q0fixture is removed
-  from the active tree;its exact original source remains at`d3ca4956b1bfda8ef64ef19d50827cff2abbafa4`.
-  The maintained`tools/sycl/prefill_weight_pipeline.py`now prepares a fresh
-  copy-lane cohort rather than rerunning that closed Q0cohort.
-  Its five explicit policies
-  support shortcut/bridge(R0),bridge/queue(Q1),queue/lookahead(O),and
-  direct/lookahead(net original)comparisons with unchanged real weights and
-  production Gemm dispatch. Both IQreaders precede the early marker;the
-  separate GU/Down weight buffers retain compute order. Final lane drain is
-  inside timing. A fresh coherent ten-TU/twelve-object build produces both
-  the lifetime and actual-math executables,without old objects or archives.
-  The finite plan first runs ten traced small lifetime processes,then five
-  math metadata and25traced actual-math processes,before75clean samples.
-  Each shape uses three complete five-arm blocks:forward,reverse,and
-  bridge/lookahead/direct/queue/shortcut. All four contrasts keep their own
-  three ratios,lifecycle costs and decisions,including enabling-plumbing
-  losses. A combined win never relabels a losing unit. Commit the exact
-  controller/source and generated recipe/order/gates before building;the
-  owned processes have120swall/240sCPU/4GiBRSS bounds and no retry/exclusion.
-  This cohort does not permit model trials. Controlled submission/marker/
-  asynchronous faults,active observers and broader phase/context gates remain
-  pending. Both retained phase references remain unchanged.
-  Native source`e5cd35836c1e0e608970eec19ad63bcf69823e4a`now builds both
-  executables coherently:962compiler inputs,29link inputs and12fresh objects;
-  all15build children close normally0and12host controls pass. V1first lifetime
-  metadata admission fails before Runtime initialization because the provider
-  reader was given the math ELF instead of the separately pinned lifetime ELF.
-  Its owned process is positively terminated/reaped(-15),session empty,no
-  application commands or fresh fault;this remains a failed cohort at`44e1fb7ee`.
-  The corrected controller selects only the matching fixture ELF. A new
-  `prefill_sycl_copy_lane_v2`plan may reuse the exact original native inputs,
-  recipe,census,objects and both ELFhashes after verifying them;it must keep
-  native source identity separate from the later admission commit. New case
-  directories preserve the original115case order. No runtime allowlist is
-  broadened,no native hashes refreshed,and no device qualification follows
-  from build reuse.
-  Corrected V2now passes all ten traced small lifetime cases:two zero-command
-  metadata,four ordered compute/separate x full-math/IQ-marker cases,and four
-  accepted-copy/accepted-reader exceptional exits. Every native child exits
-  normally0with quiet validation,positive ownership closure,exact planned
-  0/6/0/1kernel and0/4/2/3payload-copy counts,and no fresh fault. Constructor,
-  token,capacity,terminal drain,source/bank guards and actual reader outputs
-  pass. This qualifies those small assertions only. All five actual-math
-  metadata cases now pass normal0with no application commands. All
-  traced actual-math cases now pass at all five shapes and all five policies,
-  including bitwise split/tail/status/source/device guards. Actual counts are
-  6156kernel launches at16/128/1024rows and4104at4096/8192;each process has
-  1027payload copies and1026launches of each parallel-IQrole. All25children
-  exit normally0with quiet validation,closed ownership and no fresh fault.
-  All75clean processes remain pending;there is no new speed,model,phase or
-  physical-context result.
-  DC/DDsource review accepts the separate unit boundaries and admission reuse
-  limits. Its initial job-weight type/OOB claim was a review misread:line93is
-  `Buffer<float>`,matching its allocation/copy/API;all three current,immutable
-  and actual compiler source hashes agree. The corrected review withdraws
-  the blocker without a native edit or rebuild. Keep that correction and
-  continue the existing gates;do not turn source review into runtime evidence.
-  V1's unexecuted115case plan
-  is now retained only in its original Git evidence;the active result keeps
-  its compact unchanged failure and V2's current plan.
+  Candidate/reference geometric-mean batch-time ratios are below;the final
+  column names only units whose **all three** predeclared ratios are below1.
+
+  | Rows | R0dependency adapter | Q1queue separation | Oearly reader marker | Net original | Repeated unit gain |
+  | ---: | ---: | ---: | ---: | ---: | --- |
+  | 16 | 3.683795 | 0.961957 | 0.932996 | 2.772853 | none |
+  | 128 | 2.939209 | 0.993769 | 1.005408 | 2.608187 | none |
+  | 1024 | 2.133059 | 1.026150 | 0.887848 | 1.605262 | O |
+  | 4096 | 1.243751 | 0.946126 | 0.997302 | 1.060399 | Q1 |
+  | 8192 | 1.223881 | 0.842372 | 1.083604 | 1.087740 | Q1 |
+
+  R0compares shortcut with the dependency/ownership adapter on compute;Q1changes
+  only to a separate same-context/device,in-order/profiling-matched queue;
+  Ochanges only the marker position from full math to after both IQreaders.
+  Net compares the complete original compatibility path with their combination.
+  Preserve every enabling loss. The isolated Q1/Ogains are follow-up evidence,
+  not permission for a model trial. No new PP/TG/TTFT,decode,task/agent,
+  physical262144/RESTORE,ordinary teardown or inference adoption follows.
+  The selected prefill/decode engines and both phase references are unchanged.
+
+  Closed1024-row traces show1028additional readiness/reader barriers for R0,
+  with unchanged1049whole-process URmemcpy and46URevent-wait calls. The three
+  Q1native immediate lists all request ordinal0/index0;this is not proof of
+  physical-engine assignment. R0does not add explicit host-synchronize calls
+  in that trace scope. API duration,physical bus traffic and the limiting
+  CPU/GPU/bus resource remain unknown;do not infer them from counts or timing
+  buckets. Successful raw output/ended build retirement follows exact source
+  recovery;the existing compact result carries any remaining hold.
+
+  Main's next **unbuilt/unselected** proposal is`prefill/sycl_copy_groups.hpp`
+  and`tests/sycl/prefill_sycl_copy_groups.cpp`,source
+  `695565fbda8802363b2c91b49a6021ba39326b55`. The earlier audited prototype is
+  recoverable at`dbb3506bc1f295f16d500a87ef1f924c2003dea3`. Both are independently
+  Main-authored from the owned lane/Runtime;no external implementation is used.
+  The ordering rationale is the[SYCL in-order contract](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:queue-properties)
+  and Intel's[enqueue-barrier contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc),
+  not evidence of installed-provider behavior. Separate readiness/retirement
+  sequence counters and consecutive-ticket overloads let either marker vary
+  on128one-expert slots. Sources/banks stay borrowed through terminal drain;
+  bank reuse requires its submitted reader marker. Physical slots are layout
+  width times bank count;capacity bounds submitted groups,not payloads.
+
+  The next consumer is a separately committed bounded lifetime/full-math plan
+  after the ended component generation retires. Isolate L(slot capacity1->128
+  at one-expert window),R(required adapter),Q(queue),then W(window1->128).
+  At fixed128one-expert slots/window,compare readiness1->64with reader width1,
+  and independently reader width1->64with readiness1,then both64and their
+  interaction. Compare any later64-wide/two-bank Gpartition separately as a
+  bundled reuse/bookkeeping policy. Keep512individual copies,source order/bytes,
+  full-math retirement,math and precision fixed;no IQ-early retirement or copy
+  coalescing is included. Compare the useful combination with the original
+  complete compatibility path;never infer constituent gains from that net result.
+  Source-reviewed fixtures include widths1/2/64,partial groups,other-bank
+  prequeue,reuse/refusals and accepted-copy/reader host exceptions. The ordered
+  mode now consumes/readbacks its ticket after capacity refusal;four additional
+  modes exercise256experts/full128-slot window/reuse and independent marker
+  policies. Their occupied-bank refusals are not capacity checks. Readiness
+  explicitly depends on copy completion in both placements. DG/DH and DI/DJ
+  source reviews find no blocker under caller contracts;**none of these new
+  fixtures has compiled or executed**. Submission/async/drain-fault and active
+  observer coverage remain explicit holds;source review is not safety,
+  precision,performance or model qualification. New recipe/order/gates and
+  rebuilding affected translation units are required before any execution.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
