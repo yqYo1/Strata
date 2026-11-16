@@ -60,11 +60,13 @@ def save(row):
 
 def parent_evidence():
     evidence = '3ee710401f9cb8323757161dd53a17dce6689094'
-    prior = json.loads(git(P, 'show', evidence+':'+str(RESULT.relative_to(P))))[event.KEY]
     overlap = json.loads(git(P, 'show', evidence+':'+str(RESULT.relative_to(P))))['prefill_upload_overlap_v1']
-    require(prior['stage']=='closed' and len(prior['results'])==7 and prior['ownership_closed']
-            and overlap['stage']=='closed' and overlap['ownership_closed'] and not overlap['active']
+    safety=['runtime-'+name for name in ['metadata','forward','reverse','permanent','cancel','cancel-throw','refuse']]
+    require(overlap['stage']=='closed' and overlap['ownership_closed'] and not overlap['active']
             and len(overlap['results'])==23
+            and [v['label'] for v in overlap['results'][:7]]==safety
+            and all(v['passed'] is True and v['native_exit_code']==0 and v['ownership_closed'] is True
+                    for v in overlap['results'])
             and overlap['analysis']['1024']['repeated_component_wall_gain'] is False
             and overlap['analysis']['4096']['repeated_component_wall_gain'] is True,
             'preserve original Runtime/E2qualification and both shape outcomes')
@@ -253,8 +255,8 @@ def execute(action):
                 entry,out,err = supervisor.run(recipe['label'],recipe['argv'],row['build_environment'],ROOT,**BUILD)
                 require(owner_api.closed(entry) and entry['exit_code']==0,'fresh E2 build failed:'+str(err))
                 if recipe['label']=='host-controls':
-                    require('Ran 9 tests' in err.read_text() and '\nOK\n' in err.read_text(), 'all historical/source-capability controls required')
-                    row['host_admission_controls']=dict(methods=9,passed=True,device_executed=False)
+                    require('Ran 10 tests' in err.read_text() and '\nOK\n' in err.read_text(), 'all historical/source-capability controls required')
+                    row['host_admission_controls']=dict(methods=10,passed=True,device_executed=False)
                 if 'dep' in recipe:
                     for name in shlex.split(Path(recipe['dep']).read_text().replace('\\\n',' ').split(':',1)[1]):
                         p = str(Path(name).resolve()); h = sha(p)

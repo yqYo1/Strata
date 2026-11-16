@@ -77,6 +77,13 @@ class MappedSourceCapabilityAdmission(unittest.TestCase):
     def test_exact_closed_discovery_reaches_source_unit(self):
         self.assertEqual(overlap.capability_gate(self.row,copy.deepcopy(self.row)),self.row['capabilities'])
 
+    def test_original_runtime_cases_survive_e1_receipt_retirement(self):
+        proof=overlap.parent_evidence()
+        self.assertEqual(proof['evidence_commit'],'3ee710401f9cb8323757161dd53a17dce6689094')
+        self.assertEqual(proof['native_source_commit'],'d4e45762a56b169036a67eb9535cd3ce9b238a46')
+        self.assertIs(proof['execution_input'],False)
+        self.assertIs(proof['new_source_or_performance_qualification'],False)
+
     def test_changed_discovery_or_open_owner_is_rejected(self):
         original=copy.deepcopy(self.row)
         for which in ['history','open','partial','type']:
