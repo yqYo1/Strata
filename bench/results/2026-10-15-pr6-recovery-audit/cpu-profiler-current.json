@@ -18446,16 +18446,7 @@
     "native_source_commit": "e5cd35836c1e0e608970eec19ad63bcf69823e4a",
     "controller_admission_commit": "148e6dac73b8cc964503be9decef0e6912abc8d4",
     "original_math_runtime_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-sycl-copy-lane-v1/benchmark",
-      "sha256": "988176d605ac97942db618b9563ecd0af22fdad9d53596538d351f6c4188f476"
-    },
-    "lifetime_binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-sycl-copy-lane-v1/lifetime",
-      "sha256": "39feb1410d4e53ff9c062ebd2ef318b7d095b5cf3eda407c3db13c69ff84fd56"
-    },
     "weights": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-sycl-copy-lane-v1/weights.bin",
       "bytes": 1009254400,
       "sha256": "5b682a735dde5826fce507ab62edaf4471ddbf133417285c389447f4448da4c5",
       "layer": 2,
@@ -18501,7 +18492,9 @@
           "ordered_concatenated_role_sha256": "e903b0e0e346bee0d0232b113456e5db0b22b8b7434c8745726dbceb6b9ac997"
         }
       ],
-      "order": "expert0..511,each gate/up/down;source offset=role base+expert*role stride"
+      "order": "expert0..511,each gate/up/down;source offset=role base+expert*role stride",
+      "retired_fixture_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-sycl-copy-lane-v1/weights.bin",
+      "fixture_retired": true
     },
     "runtime_manifest": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
@@ -19805,7 +19798,7 @@
     },
     "limits": "Component synthetic row mappings/two job patterns over all512actual layer2weights;matrix rows are not model input tokens. No new modelPP/TG/TTFT,physical262144/RESTORE,task/agent,ordinary teardown,actual bus traffic/bandwidth or hardware-saturation qualification. Controlled submission/marker/async/drain-fault and active-observer checks remain held.",
     "retention": {
-      "stage": "prepared",
+      "stage": "complete",
       "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-sycl-copy-lane-v1",
       "inventory_sha256": "5bb9984b3e185136f994cbd717f73a80f3a283ba236985cf5707fe916230d0f8",
       "regular_files": 1120,
@@ -19850,7 +19843,60 @@
       },
       "reason": "Closed failed net-performance candidate;useful75samples/20unit decisions and exactsource/recipe evidence retained in Git. No live/native consumer;select existing two phase references. No new generation before retirement.",
       "next_action": "Commit/push useful results and CSV;verify original measured/proposal refs on permanent feature/sycl,then delete exact audited root and retire unused prototype code.",
-      "remaining_holds": "Two qualified phase references retained;three configured legacy deployments and9.25MBcache provenance holds remain separate. Historical verify/pr6 branch has43original unmerged commits;needs bounded consumer/report/reachability audit before retirement."
+      "remaining_holds": "Two qualified phase references retained;three configured legacy deployments and9.25MBcache provenance holds remain separate. Historical verify/pr6 branch has43original unmerged commits;needs bounded consumer/report/reachability audit before retirement.",
+      "all_selected_paths_absent": true,
+      "remote_feature_preserving_originals": "6cbf0eee8dc44aa751c4a2ed5cf31617537c9635",
+      "source_recipe_inputs_recovered_before_deletion": true,
+      "retained_generations": "Two known-good phase references only;ended component/corpus/view/raw retired. Legacy deployment/cache holds remain separate.",
+      "auxiliary_retirement": {
+        "files": [
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/copy-lane-v2-retirement-audit.json",
+            "bytes": 320879,
+            "sha256": "7c61f50afc3c6c4788e7ef67598602c0d1f5ed141d7ae1a9614ec697fcd2a832",
+            "reason": "Temporary exact deletion inventory;all selected paths already verified absent and compact decision/source recovery preserved."
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/copy-groups-research-retirement-audit.json",
+            "bytes": 21772,
+            "sha256": "5d399a3f187280ae09eb2fcf242f7c0da8f01667a7d9b484cbc76a0f91479056",
+            "reason": "Temporary exact deletion inventory;all selected paths already verified absent and compact decision/source recovery preserved."
+          }
+        ],
+        "regular_files": 2,
+        "bytes": 342651,
+        "stage": "complete",
+        "all_selected_paths_absent": true
+      },
+      "unused_prototype_retirement": {
+        "source_revision": "e5cd35836c1e0e608970eec19ad63bcf69823e4a",
+        "controller_admission_revision": "148e6dac73b8cc964503be9decef0e6912abc8d4",
+        "paths": [
+          "tools/sycl/prefill_weight_pipeline.py",
+          "tests/core/test_weight_pipeline_plan.py",
+          "include/strata/prefill/sycl_copy_lane.hpp",
+          "tests/sycl/prefill_sycl_copy_lane.cpp",
+          "bench/sycl/prefill_sycl_copy_math.cpp"
+        ],
+        "files": 5,
+        "reason": "Closed rejected prototype,no selected engine or external target/import consumer. Exact original source/tests/recipe reachable from pushed permanent feature;independent checked cleanup/upload safety and new terminal-sealed proposal retained.",
+        "no_external_source_consumer_found": true,
+        "all_selected_paths_absent": true,
+        "bytes": 87657
+      },
+      "historical_child_hold": {
+        "branch": "verify/pr6-prefill-restore",
+        "head": "fcfbb0d57fec4e244e28d51d0c621d0c66731f4a",
+        "original_unmerged_commits": 43,
+        "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore",
+        "task": "Faithful historical PR6 reconstruction still has Main safety/native-oracle qualification holds;no adoption from preservation.",
+        "next_action": "Bounded current-consumer/report/reachability audit before archiving or retiring this child;do not delete its only original43commit history.",
+        "next_review": "next source/build cleanup boundary"
+      }
+    },
+    "measured_ELF_sha256": {
+      "math": "988176d605ac97942db618b9563ecd0af22fdad9d53596538d351f6c4188f476",
+      "lifetime": "39feb1410d4e53ff9c062ebd2ef318b7d095b5cf3eda407c3db13c69ff84fd56"
     }
   },
   "prefill_scaling_analysis_v1": {

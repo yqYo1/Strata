@@ -1734,8 +1734,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   physical-engine assignment. R0does not add explicit host-synchronize calls
   in that trace scope. API duration,physical bus traffic and the limiting
   CPU/GPU/bus resource remain unknown;do not infer them from counts or timing
-  buckets. Successful raw output/ended build retirement follows exact source
-  recovery;the existing compact result carries any remaining hold.
+  buckets. After exact original Git/recipe/SDK/final-ELF recovery and remote
+  ancestry verification,the ended component/corpus/view/raw retires1120files,
+  1696470830bytes. Both phase hashes remain unchanged. Its unused five-file
+  prototype/controller is retired to the original source/admission revisions;
+  neither the code nor the timings imply adoption. Two source-audit transactions
+  retire70files,1699499bytes after source commits and curation. Only compact
+  corrections remain;new fixtures still need their own committed build/run plan.
 
   Main's next **unbuilt/unselected** proposal is`prefill/sycl_copy_groups.hpp`
   and`tests/sycl/prefill_sycl_copy_groups.cpp`,source
