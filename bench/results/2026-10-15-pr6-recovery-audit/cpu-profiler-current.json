@@ -15555,6 +15555,58 @@
         "application_enqueues": 0,
         "reader_kernels": 0,
         "raw_copies": 0
+      },
+      {
+        "label": "interop-forward",
+        "kind": "safety",
+        "profiled": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "providers": [
+          {
+            "gate": "before-runtime",
+            "files": 34,
+            "sha256": "00f8b34d5b8009489b9546441acc0c5df9fec0caa347dab606daa17bfecba08a"
+          },
+          {
+            "gate": "runtime-ready",
+            "files": 36,
+            "sha256": "6e4ad4d28573e4b2fd06ab7a15eaf9096a10fc915eaf48247569a65f49ea491b"
+          },
+          {
+            "gate": "buffers-ready",
+            "files": 36,
+            "sha256": "6e4ad4d28573e4b2fd06ab7a15eaf9096a10fc915eaf48247569a65f49ea491b"
+          },
+          {
+            "gate": "before-exit",
+            "files": 36,
+            "sha256": "6e4ad4d28573e4b2fd06ab7a15eaf9096a10fc915eaf48247569a65f49ea491b"
+          }
+        ],
+        "first_init": {
+          "pid": 2240843,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "raw_lifetime": {
+          "begin": 3144545747877801,
+          "end": 3144552664752095
+        },
+        "trace_sha256": "db0c8ac18820e837bd1126400b65b93edb039063e72e9cee51552a4975cbae51",
+        "GPU_events": 11,
+        "mode": "forward",
+        "application_enqueues": 10,
+        "reader_kernels": 2,
+        "raw_copies": 1
       }
     ],
     "active": false,
