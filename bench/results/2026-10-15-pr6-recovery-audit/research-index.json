@@ -34985,8 +34985,8 @@
   },
   "prefill_sycl_direct_dependency_cw_20261116": {
     "classification": "decision support",
-    "status": "eligible_pinned_source",
-    "schedulable_now": true,
+    "status": "dispatched_report_only",
+    "schedulable_now": false,
     "rule_revision": "727737201e50a0a6ead6f8d5f4a4aa74504aa33e",
     "fast_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "scope": "Audit the legal minimal dependency chain for ordinary borrowed read-only model RAM -> single device quantized scratch -> two IQ readers -> separate GU/Down workspaces -> native16 math. Compare same compute-queue copy with Runtime::copy transfer queue plus explicit SYCL events,then moving next overwrite from full-math retirement to both-IQ retirement. Establish source/destination/context/event/error/cancellation ownership and what additional barriers or event exposure are necessary. Check the current Runtime::copy and production wrappers against installed-header/official SYCL/Intel contracts. Assess whether ordinary host RAM may make submit block and which observations could distinguish CPU preparation/wait/submission from device-copy service. Do not repeat generic raw Level Zero import feasibility;this candidate intentionally keeps standard SYCL copies and ordinary RAM. Identify the smallest independently testable units and a concrete safe bounded comparison;do not implement code.",
@@ -35017,13 +35017,17 @@
     "effort": "medium",
     "review_model": "native gpt-6-luna max",
     "source_proposals_allowed": false,
-    "active": false,
-    "ownership_closed": true
+    "active": true,
+    "ownership_closed": false,
+    "task_id": "task_b8b6bcc9bea6",
+    "terminal": "term_aade3e3a-82d4-4957-a045-5067b2d5884a",
+    "dispatch_id": "ctx_82dd0b1be4f3",
+    "native_owner_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sycl-direct-dependency-cw-20261116-control/native-owner.json"
   },
   "prefill_source_event_progress_cx_20261116": {
     "classification": "knowledge collection",
-    "status": "eligible_pinned_source",
-    "schedulable_now": true,
+    "status": "dispatched_report_only",
+    "schedulable_now": false,
     "rule_revision": "727737201e50a0a6ead6f8d5f4a4aa74504aa33e",
     "fast_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "scope": "Investigate Intel SYCL/Unified Runtime Level Zero v2 event completion and queue progress mechanisms affecting a bounded four-slot host-USM source ring. Compare wait/retire behavior,command batching and flush/pacing,larger rings and whole-layer immutable host preparation using official source/docs and substantive first-party non-LLM HPC reports. Explain evidence/counterexamples for logging/profiling changing performance through host submission pacing. Use the actual ring/wrapper and measured full-layer Scomparison to ground applicability,without diagnosing a particular slow sample or claiming saturation. Separate source-copy completion from IQ scratch readers and GEMM workspace readers. Distinguish current documented/runtime-version facts from hypotheses. Provide retrieval guidance and alternatives worth testing only when a concrete implementation needs them;do not implement code.",
@@ -35054,7 +35058,11 @@
     "effort": "medium",
     "review_model": "native gpt-6-luna max",
     "source_proposals_allowed": false,
-    "active": false,
-    "ownership_closed": true
+    "active": true,
+    "ownership_closed": false,
+    "task_id": "task_e51d4f7c5a92",
+    "terminal": "term_5e7393c0-b233-4a8e-9b87-6211629edea1",
+    "dispatch_id": "ctx_02a7b8390bfe",
+    "native_owner_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-source-event-progress-cx-20261116-control/native-owner.json"
   }
 }
