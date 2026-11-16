@@ -19,7 +19,7 @@ class WeightPipelineAdmission(unittest.TestCase):
             native_validation_probe={'library':'pin'},runtime_manifest={'sha256':'b'*64},
             validation_provider={'sha256':'c'*64},driver={'driver':'xe'},boot='original',
             weights=dict(path='/exact/weights',sha256='d'*64),
-            cases=[dict(source='usm',argv=['/exact/exe','serial','/exact/weights'],environment={'EnableDirectSubmission':'0'})])
+            cases=[dict(arm='direct',mode='batch',rows=16,argv=['/exact/exe','batch','direct','16','/exact/weights'],environment={'EnableDirectSubmission':'0',**t.BACKEND})])
         self.public=t.compact(self.row)
 
     def test_exact_metadata_and_plan_reaches_source_check(self):
@@ -74,27 +74,35 @@ class WeightPipelineAdmission(unittest.TestCase):
             with self.subTest(field=field),patch.object(t,'git',return_value=json.dumps({'prefill_weight_pipeline_v2':value})):
                 with self.assertRaises(RuntimeError):t.seed_recipe()
 
-    def test_matching_serial_and_lookahead_work_are_admitted(self):
-        for arm in ['serial','lookahead']:
-            with self.subTest(arm=arm):t.batch_gate(self.batch(arm),arm)
+    def test_matching_production_shapes_and_fused_dispatch_are_admitted(self):
+        for rows in t.ROWS:
+            for arm in ['direct','staged']:
+                with self.subTest(arm=arm,rows=rows):t.batch_gate(self.batch(arm,rows),arm,rows)
 
-    def test_changed_dependency_counts_work_or_timer_are_rejected(self):
-        for arm in ['serial','lookahead']:
-            for field,value in [('copies_after_iq',2),('copies_after_math',2),
-                                ('epochs',128),('source','mapped-neo'),('wall_s',.099),
-                                ('timer_pair_max_s',.002)]:
-                batch=self.batch(arm);batch[field]=value
-                with self.subTest(arm=arm,field=field):
-                    with self.assertRaises(RuntimeError):t.batch_gate(batch,arm)
-            with self.assertRaises(RuntimeError):
-                t.batch_gate(self.batch(arm),'serial' if arm=='lookahead' else 'lookahead')
+    def test_changed_source_dispatch_work_or_timer_are_rejected(self):
+        for rows in [16,4096]:
+            for arm in ['direct','staged']:
+                changes=[('copies',1),('epochs',128),('actual_source_experts',2),
+                    ('source_footprint_bytes',3942400),('split_primary_rows',rows),
+                    ('gu_fused',512 if rows==16 else 0),('down_fused',512 if rows==16 else 0),
+                    ('production_gemm_dispatch',False),('split_tail_checked',False),
+                    ('full_bitwise_reference_and_guards',False),('rows',True),
+                    ('wall_s',.099),('wall_s',float('nan')),('timer_pair_max_s',.002)]
+                for field,value in changes:
+                    batch=self.batch(arm,rows);batch[field]=value
+                    with self.subTest(arm=arm,rows=rows,field=field):
+                        with self.assertRaises(RuntimeError):t.batch_gate(batch,arm,rows)
+                with self.assertRaises(RuntimeError):
+                    t.batch_gate(self.batch(arm,rows),'direct' if arm=='staged' else 'staged',rows)
 
     @staticmethod
-    def batch(arm):
-        return dict(kind='batch',arm=arm,source='usm',rows=1024,epochs=512,
-            requested_H2D_bytes=512*1971200,copies_after_iq=511 if arm=='lookahead' else 0,
-            copies_after_math=1 if arm=='lookahead' else 512,actual_weight_reader=True,
-            full_bitwise_reference_and_guards=True,wall_s=.5,timer_pair_max_s=.000001)
+    def batch(arm,rows):
+        return dict(kind='batch',arm=arm,rows=rows,epochs=512,
+            requested_H2D_bytes=512*1971200,copies=512,gu_fused=512 if rows>=2334 else 0,
+            down_fused=512 if rows>=2334 else 0,production_gemm_dispatch=True,
+            split_primary_rows=rows//2,actual_source_experts=512,source_footprint_bytes=512*1971200,
+            split_tail_checked=True,full_bitwise_reference_and_guards=True,
+            wall_s=.5,timer_pair_max_s=.000001)
 
 
 if __name__=='__main__':unittest.main()

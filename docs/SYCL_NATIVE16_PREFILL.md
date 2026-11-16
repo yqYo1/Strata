@@ -1611,6 +1611,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Ordinary RAMsource views,actual production consumers,32K+model/decode/agent/quality
   and physical262144/RESTORE remain separate required gates. No model trial
   or engine adoption is authorized by this component result.
+  The next source unit compares ordinary readonly RAMthrough the production
+  copy wrapper with the existing four-slot Host-USMstaging,using real
+  `prefill::Gemm`dispatch at16/128/1024/4096/8192rows and all512layer2experts
+  (1009254400source bytes). Source adaptation,copy primitive and scheduling
+  remain separate comparisons before their combination. The fixture at
+  `221523eda`is not yet built or measured. Its new nine-TUrecipe preserves
+  both phase references and uses no old partial archive. CU/CVreview confirms
+  the production RAMcopy entrypoint and separate IQ/workspace reader lifetimes;
+  it establishes no speedup. See the current `prefill_weight_source_v1`plan
+  when prepared for actual status and the precommitted comparison order.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
