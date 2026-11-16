@@ -1656,17 +1656,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   this is scoped cleanup.
   The CSVnow has562points,including all five Scomparisons with model metrics blank.
   See`prefill_weight_source_v2`and the retained-build ledger for actual state.
-  The next owned Q0fixture keeps ordinary immutable RAMand the same compute
-  queue. It compares the complete compatibility wrapper with a resolved queue
-  shortcut,retaining Runtime::check and command_profile::observe in both arms.
-  Common destination/context admission precedes application work. Only repeated
-  Runtime/queue lookup,context checks and status/error translation differ;math,
-  copy ordering and source preparation remain fixed. This isolates wrapper
-  cost before Q1queue placement and Oreadiness-order changes. The shortcut is
-  an unbuilt diagnostic,not a selected production path. Its new nine-TUrecipe
-  and42-process prospective plan now isolate direct/shortcut at five shapes;
-  nine host admission controls pass. The six legacy prototype roots are retired
-  after exact recovery. Commit the prepared plan before the fresh build. Sresults keep their original1896d6a18native identity.
+  The owned Q0copy-wrapper control now closes42native processes at source
+  `d3ca4956b1bfda8ef64ef19d50827cff2abbafa4`and evidence`39d2c8ead3549d684c327d67991cbf415ce4f59a`:
+  two metadata,ten traced dispatch/number/guard checks and30clean samples.
+  Every child closes normally0with quiet validation,closed ownership and no
+  fresh fault. Both arms keep ordinary immutable RAM,the compute queue,math,
+  Runtime::check and command_profile::observe;only repeated handle/context
+  lookup and status translation differ. All original samples remain in the
+  compact result,including losses. Shortcut/direct geometric-mean time ratios:
+
+  | Expert rows | Ratio | All3pairs faster |
+  | --- | --- | --- |
+  | 16 | 1.192071 | no |
+  | 128 | 1.190276 | no |
+  | 1024 | 0.883954 | yes |
+  | 4096 | 1.019456 | no |
+  | 8192 | 1.005329 | no |
+
+  OnlyM1024passes its prospective repeated component-gain condition. The other
+  shapes remain non-gains;the complete compatibility wrapper stays the engine
+  reference. No model trial/adoption or PP/TG/TTFT/physical-context result
+  follows. Limiting hardware remains unknown. A recorded outer scheduling pause
+  after M1024pair0direct did not stop a native child or change order/inputs;
+  preserve all independent samples. Five CSVrows bring the index to567points.
+  Exact source/recipe/final-ELF recovery and retirement of this ended temporary
+  component must precede the next fresh R0/Q1/Onative build. Sresults retain
+  their original1896d6a18source;the two phase references remain selected.
   An additional owned standard-SYCLcopy-lane header and bounded lifetime fixture
   are authored but unbuilt. They keep one quantized bank,borrowed immutable
   ordinary host sources and both IQreaders distinct from dequantized-weight
@@ -1707,6 +1722,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   /opt/intel/oneapi/compiler/2026.2/bin/icpx --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -std=c++20 -DSTRATA_ENABLE_SYCL=1 -fsycl -fsyntax-only -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/source/include -I/home/yayoi/orca/workspaces/Strata/sycl/include -MD -MF /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-lane-syntax-v1/fixture.d /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_sycl_copy_lane.cpp
   ```
 
+  The next full-math fixture`bench/sycl/prefill_sycl_copy_math.cpp`is authored
+  from the owned Q0fixture and remains unbuilt. Its five explicit policies
+  support shortcut/bridge(R0),bridge/queue(Q1),queue/lookahead(O),and
+  direct/lookahead(net original)comparisons with unchanged real weights and
+  production Gemm dispatch. Both IQreaders precede the early marker;the
+  separate GU/Down weight buffers retain compute order. Final lane drain is
+  inside timing. After Q0closure/recovery/retirement,replace the old fixture
+  and commit the new controller/recipe/order/gates before compiling it;do not
+  run it with the current Q0controller or retain duplicate closed fixtures.
   These files are outside Q0actual compiler/source inputs;Q0remains frozen.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
