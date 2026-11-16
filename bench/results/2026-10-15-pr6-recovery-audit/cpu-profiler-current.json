@@ -25875,6 +25875,1638 @@
             "parallel_iq_launchILi20ELb0": 1026
           }
         }
+      },
+      {
+        "label": "validated-16-shortcut",
+        "family": "math",
+        "arm": "shortcut",
+        "rows": 16,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4128969,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "shortcut",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.3e-07,
+          "retirement_s": 5e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 1.166097574,
+          "timer_pair_max_s": 3e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.166097754,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-16-bridge",
+        "family": "math",
+        "arm": "bridge",
+        "rows": 16,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4132704,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "bridge",
+          "dependency_bridge": true,
+          "separate_queue": false,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.0019e-05,
+          "retirement_s": 0.020290799
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "bridge",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 2.057196613,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 2.077497431,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-16-queue",
+        "family": "math",
+        "arm": "queue",
+        "rows": 16,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4136248,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "queue",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000333366,
+          "retirement_s": 0.018744049
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "queue",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 1.978985698,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.998063113,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-16-lookahead",
+        "family": "math",
+        "arm": "lookahead",
+        "rows": 16,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4140110,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "lookahead",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-both-IQ",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000321855,
+          "retirement_s": 0.019290429
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "lookahead",
+          "rows": 16,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 2.165318664,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 8,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 2.1849309480000003,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-128-direct",
+        "family": "math",
+        "arm": "direct",
+        "rows": 128,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4144693,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "direct",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.3e-07,
+          "retirement_s": 4e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 1.14968641,
+          "timer_pair_max_s": 6e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.14968658,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-128-shortcut",
+        "family": "math",
+        "arm": "shortcut",
+        "rows": 128,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4148256,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "shortcut",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 3.81e-07,
+          "retirement_s": 4e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.928089427,
+          "timer_pair_max_s": 3e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.9280898479999999,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-128-bridge",
+        "family": "math",
+        "arm": "bridge",
+        "rows": 128,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4152204,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "bridge",
+          "dependency_bridge": true,
+          "separate_queue": false,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 9.939e-06,
+          "retirement_s": 0.01921703
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "bridge",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 1.977827391,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.99705436,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-128-queue",
+        "family": "math",
+        "arm": "queue",
+        "rows": 128,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4157064,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "queue",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.00039945,
+          "retirement_s": 0.020579993
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "queue",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 2.081601196,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 2.102580639,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-128-lookahead",
+        "family": "math",
+        "arm": "lookahead",
+        "rows": 128,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4160895,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "lookahead",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-both-IQ",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000329148,
+          "retirement_s": 0.018923271
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "lookahead",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 2.017463031,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 2.03671545,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-1024-direct",
+        "family": "math",
+        "arm": "direct",
+        "rows": 1024,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4165690,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "direct",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.3e-07,
+          "retirement_s": 5e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 0.960831659,
+          "timer_pair_max_s": 9e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.960831839,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-1024-shortcut",
+        "family": "math",
+        "arm": "shortcut",
+        "rows": 1024,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4169180,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "shortcut",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.4e-07,
+          "retirement_s": 5.1e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 1.005473385,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.005473576,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-1024-bridge",
+        "family": "math",
+        "arm": "bridge",
+        "rows": 1024,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4173174,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "bridge",
+          "dependency_bridge": true,
+          "separate_queue": false,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 9.568e-06,
+          "retirement_s": 0.018981233
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "bridge",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 2.140726349,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 2.1597171499999996,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-1024-queue",
+        "family": "math",
+        "arm": "queue",
+        "rows": 1024,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4177695,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "queue",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000327108,
+          "retirement_s": 0.019723141
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "queue",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 2.047968583,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 2.068018832,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-1024-lookahead",
+        "family": "math",
+        "arm": "lookahead",
+        "rows": 1024,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4181846,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "lookahead",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-both-IQ",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000783109,
+          "retirement_s": 0.020345122
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "lookahead",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "wall_s": 2.17119468,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 2.192322911,
+        "validated_counts": {
+          "math_launches": 6156,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-4096-direct",
+        "family": "math",
+        "arm": "direct",
+        "rows": 4096,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4186247,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "direct",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.31e-07,
+          "retirement_s": 4e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.250560261,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.2505604319999999,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-4096-shortcut",
+        "family": "math",
+        "arm": "shortcut",
+        "rows": 4096,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4190135,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "shortcut",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.3e-07,
+          "retirement_s": 4e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 0.965510629,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.9655107989999999,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-4096-bridge",
+        "family": "math",
+        "arm": "bridge",
+        "rows": 4096,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4193658,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "bridge",
+          "dependency_bridge": true,
+          "separate_queue": false,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.3556e-05,
+          "retirement_s": 0.019155973
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "bridge",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.622105134,
+          "timer_pair_max_s": 6e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.641274663,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-4096-queue",
+        "family": "math",
+        "arm": "queue",
+        "rows": 4096,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 4130,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "queue",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000505963,
+          "retirement_s": 0.024245464
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "queue",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.935862691,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.960614118,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-4096-lookahead",
+        "family": "math",
+        "arm": "lookahead",
+        "rows": 4096,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 9197,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "lookahead",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-both-IQ",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000403691,
+          "retirement_s": 0.021202899
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "lookahead",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.674820647,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.696427237,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-8192-direct",
+        "family": "math",
+        "arm": "direct",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 14217,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "direct",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.4e-07,
+          "retirement_s": 7e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.420582987,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.420583197,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-8192-shortcut",
+        "family": "math",
+        "arm": "shortcut",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 18646,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "shortcut",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 1.4e-07,
+          "retirement_s": 4e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "shortcut",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.613472787,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.613472967,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-8192-bridge",
+        "family": "math",
+        "arm": "bridge",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 22836,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "bridge",
+          "dependency_bridge": true,
+          "separate_queue": false,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 9.749e-06,
+          "retirement_s": 0.019126235
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "bridge",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.819612221,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.8387482050000001,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-8192-queue",
+        "family": "math",
+        "arm": "queue",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 26586,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "queue",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000335522,
+          "retirement_s": 0.019710299
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "queue",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.794556319,
+          "timer_pair_max_s": 6e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.81460214,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
+      },
+      {
+        "label": "validated-8192-lookahead",
+        "family": "math",
+        "arm": "lookahead",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 30570,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "c51776ccee17be687e8a183a23bd48e7e3b2a0ae332897bbd0c9d3e4674f692e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "lookahead",
+          "dependency_bridge": true,
+          "separate_queue": true,
+          "reader_marker": "after-both-IQ",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000360348,
+          "retirement_s": 0.023231074
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "lookahead",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 1.657711657,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.6813030789999999,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
       }
     ],
     "model_trial_allowed": false,
@@ -25973,6 +27605,105 @@
         "files": 12,
         "sha256": "a5c9e75cab50d333f64d445f35d3544e1e9a2edc9a9679dbf14b03c281fa997b"
       }
+    }
+  },
+  "prefill_scaling_analysis_v1": {
+    "stage": "closed",
+    "passed": true,
+    "device_executed": false,
+    "source_commit": "afa2e02f9163d03a2c48e8730520695be178d248",
+    "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "input_evidence": {
+      "commit": "f9662f7abfebb1c5f20e7e9e4677fad8f1f5e695",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "coherent_prefill_speed_v1",
+      "scope_sha256": "dff41850b09b8374fd349a4a0a7318689af3df184db90689e62bf28d46ccbfe7"
+    },
+    "analysis_code": "tools/prefill_scaling.py",
+    "shared_fitter": "tools/prefill_scaling_bench.py",
+    "host_controls": {
+      "methods": 7,
+      "passed": true,
+      "exit_code": 0
+    },
+    "normalized_requests": 18,
+    "independent_processes": 6,
+    "actual_routes": 1,
+    "scopes": [
+      "first-use",
+      "subsequent-request"
+    ],
+    "points": [
+      {
+        "scope": "first-use",
+        "input_tokens": 32769,
+        "processes": 3,
+        "requests": 3,
+        "prefill_s": 48.4107,
+        "client_TTFT_s": 48.555
+      },
+      {
+        "scope": "first-use",
+        "input_tokens": 65537,
+        "processes": 3,
+        "requests": 3,
+        "prefill_s": 75.68360000000001,
+        "client_TTFT_s": 75.84
+      },
+      {
+        "scope": "subsequent-request",
+        "input_tokens": 32769,
+        "processes": 3,
+        "requests": 6,
+        "prefill_s": 37.5975,
+        "client_TTFT_s": 37.741
+      },
+      {
+        "scope": "subsequent-request",
+        "input_tokens": 65537,
+        "processes": 3,
+        "requests": 6,
+        "prefill_s": 65.0923,
+        "client_TTFT_s": 65.2565
+      }
+    ],
+    "adjacent_slopes_ms_per_token": [
+      {
+        "scope": "first-use",
+        "prefill_s": 0.8323028564453129,
+        "ttft_s": 0.8326721191406251
+      },
+      {
+        "scope": "subsequent-request",
+        "prefill_s": 0.83907470703125,
+        "ttft_s": 0.8397064208984376
+      }
+    ],
+    "models_eligible": false,
+    "distinct_lengths": 2,
+    "minimum_fit_lengths": 5,
+    "physical_fixed_cost_established": false,
+    "physical_law_established": false,
+    "inference_adopted": false,
+    "limits": "Offline recomputation of the original committed coherent baseline only;no new timing,PP gain,hardware saturation,model/decode/context qualification. First/warmed and route/config/source groups are separate;one process median per length. Whole-length holdouts reuse the existing benchmark fitter.",
+    "next": "After copy-lane component closure and selection,use a new committed current-build matched-length/repetition/route plan with at least five compatible lengths;do not combine timing periods.",
+    "temporary_artifacts": {
+      "stage": "complete",
+      "files": [
+        {
+          "path": "/tmp/strata-prefill-scaling-input-20261117.json",
+          "sha256": "2171cc9ef1619830a7a24af77a41da76cf74867a6a68fbb52e5a826a8dfab553",
+          "bytes": 86608,
+          "reason": "Consumed offline input/output;original data is exactly recoverable from pinned Git evidence and maintained analysis source."
+        },
+        {
+          "path": "/tmp/strata-prefill-scaling-output-20261117.json",
+          "sha256": "5516282e04dfa3b28136fe115dd37017b3a039f8504d3f4f43fa5e993c9915d7",
+          "bytes": 5828,
+          "reason": "Consumed offline input/output;original data is exactly recoverable from pinned Git evidence and maintained analysis source."
+        }
+      ],
+      "all_selected_paths_absent": true
     }
   }
 }

@@ -1769,11 +1769,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0/6/0/1kernel and0/4/2/3payload-copy counts,and no fresh fault. Constructor,
   token,capacity,terminal drain,source/bank guards and actual reader outputs
   pass. This qualifies those small assertions only. All five actual-math
-  metadata cases now pass normal0with no application commands. The first
-  traced M16direct actual-math case also passes bitwise split/tail/status/
-  source/device guards,6156kernel launches,1027payload copies,and1026launches
-  of each parallel-IQrole. The other24traced math and75clean processes remain
-  pending;there is no new speed,model,phase or physical-context result.
+  metadata cases now pass normal0with no application commands. All
+  traced actual-math cases now pass at all five shapes and all five policies,
+  including bitwise split/tail/status/source/device guards. Actual counts are
+  6156kernel launches at16/128/1024rows and4104at4096/8192;each process has
+  1027payload copies and1026launches of each parallel-IQrole. All25children
+  exit normally0with quiet validation,closed ownership and no fresh fault.
+  All75clean processes remain pending;there is no new speed,model,phase or
+  physical-context result.
   DC/DDsource review accepts the separate unit boundaries and admission reuse
   limits. Its initial job-weight type/OOB claim was a review misread:line93is
   `Buffer<float>`,matching its allocation/copy/API;all three current,immutable
@@ -3478,9 +3481,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Prefill envelope and scaling
 
-The 117489 result above is the current repeated warmed PP reference. A separate
-same-engine curve has one process per length and describes actual routes, not
-an adoption law. On the same **layer-major, bank-384, non-split** route,
+The current coherent14508reference has repeated32K/64Kprocesses at evidence
+`f9662f7abfebb1c5f20e7e9e4677fad8f1f5e695`. Its two distinct lengths support
+an adjacent slope only,not a fitted law. The offline
+[prefill_scaling.py](../tools/prefill_scaling.py)adapter prepares the next
+characterization using the existing`prefill_scaling_bench.py`hypotheses and
+whole-length holdouts. It separates native source,configuration,actual route
+and first/subsequent scope,using one median per process/length before the
+cross-process median. Repeated requests cannot masquerade as extra independent
+lengths or overweight one process. All seven host controls pass,including
+curvature/whole-length holdouts,route/source/scope separation,process weighting
+and coherent-record admission. Offline replay of all18original requests gives
+first-use prompt/TTFT adjacent slopes0.832302856/0.832672119ms/token and
+subsequent slopes0.839074707/0.839706421ms/token. Both groups contain three
+independent processes at each of two lengths;all fitted hypotheses remain
+ineligible. Follow`prefill_scaling_analysis_v1`for source/data identities and
+the compact analysis. This is no new timing or speed improvement.
+The next current-build curve needs a separately committed matched-length/order/
+repetition plan,at least five lengths on a compatible route,and first-use,
+prefill time and client TTFT kept separate. Revisit the curve after placement,
+chunk or scheduling changes;do not combine old and new timing periods merely
+because the ELFmatches.
+
+The historical117489result and separate same-engine curve below retain their
+original source/configuration limits. That curve has one process per length
+and describes actual routes,not an adoption law. On the same
+**layer-major, bank-384, non-split** route,
 19665..78445 actual input tokens are descriptively affine. With `n` actual read
 tokens, `T_prompt[s] ≈ 13.0863 + 0.00082309*n` and
 `TTFT[s] ≈ 13.1867 + 0.00082431*n`.
