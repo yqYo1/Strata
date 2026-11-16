@@ -1578,10 +1578,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Hardware resource saturation remains unknown.
   The ended component generation,unrun V1preparation and consumed research/raw
   output are retired:941files/57321828bytes,after exact original source/recipe/
-  final-ELF recovery. Both phase-reference engines remain unchanged. Retain only
-  the original actual-reader record for the next source/recipe/census comparison;
-  the older mapped-source record is still read by the maintained builder's
-  seed-recipe reader and must be retired when that dependency is migrated.
+  final-ELF recovery. Both phase-reference engines remain unchanged. The former
+  source-only receipt holds are resolved by the Git-only seed recipe reader at
+  `b3b96e0ec`;closed-state admission now precedes any private receipt read.
+  Eight current and11remaining source-capability host controls pass. These are
+  controller-only changes;the native scheduling build still has its original
+  six host controls and source`e2ef5ebe8`. Original source/recipe/final-ELF and
+  both older source receipts are recovered before the planned538-file,
+  92114178-byte retirement of ended native/raw/research and private receipts.
   The reviewed CL/CM
   audit's consumed report/view/control/closed transcript are also retired:
   40files/2033262bytes,with its correction and source hashes in the index.
