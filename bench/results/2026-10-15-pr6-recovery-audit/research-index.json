@@ -34794,37 +34794,41 @@
   },
   "prefill_host_map_shape_cost_attribution_scope_20261116": {
     "classification": "decision support",
-    "status": "running",
-    "schedulable_now": false,
     "title": "Actual Runtime/dense call-path hypotheses for shape-dependent registered-host source cost",
     "source_commit": "0a3295b89619cdc9cb4c6c4b2333043325fc8695",
     "original_runtime_dense_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "evidence_commit": "9cc26a79bca65a4e2ca4327c7b79d4ae492843fe",
     "evidence_key": "prefill_mapped_source_v2",
-    "prerequisite_evidence": "31native normal0/closed/quiet;exact FP16K2560N1280compute and serial order held. Three clean1024pairs satisfy source cost;4096Neo/USM ratios1.47134,1.45394,1.29403fail. Only source ownership/admission differs;resident Ais math input,copied2MB Bnot a math operand. Exact provider52e29a60/API1.17 environment known;hardware saturation not measured.",
-    "scope": "Trace the pinned actual Runtime/dense beta0 submit path and the two source allocators to identify any kernel argument/indirect-access,USM allocation tracking/residency,cache/page/alignment,queue or host-submission behavior that could depend on registering this read-only heap despite unchanged resident math. Rank falsifiable alternatives and counterevidence using official Intel/SYCL/UR/LevelZero sources. Installed driver-source correspondence is unproven;do not infer its implementation from a different checkout. Propose a small disjoint Main-owned counter/measurement matrix separating CPUwrapper cost,copy service,GPUkernel service and idle/critical wall without the failed PTI/event combination. No local execution,implementation or performance/root-cause claim.",
-    "why_nonduplicate": "New concrete three-pair shape-dependent cost failure and actual pinned Runtime/dense path,not another generic host cache/coherence/calibration or import-feasibility survey.",
     "prior_index_keys": [
       "prefill_pinned_host_contract_cl_20261116",
       "usm_host_cache_calibration_collection_20261105",
       "xe2_usm_cache_policy_collection_scope",
       "usm_host_publication_20261110"
     ],
-    "report_budget": {
-      "words": 1800,
-      "bytes": 24576
+    "status": "native_reviewed_consumer_closed_pending_retirement",
+    "schedulable_now": false,
+    "report_sha256": "f93d09c0d7d6ecb8ee55ef610ebedafadb07d258b606c2b1166437cd76052e11",
+    "report_bytes": 7116,
+    "report_words": 860,
+    "native_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "review_sha256": "47a841cea175aead9a4b68e822c7da0f35fe1a50171843a3bfaa0d70a1b8ddaa",
+      "digest_sha256": "13d31a2f64777ea126bc3245417569e284dca261ef4340e61bf1030face953ec"
     },
-    "constraints": "Orca gpt-6-luna medium,report-only;no Git/build/test/GPU/profiler/process inspection or product edits. Main continues separately gated1024readiness-order work. Keep failed4096outcome and no model trial;native Luna-max review required.",
-    "task": "task_8ef20e658193",
-    "dispatch": "ctx_c8ee9a8446ac",
-    "terminal": "term_d840cd5e-aa2e-4e03-97a5-c5ed0e537956",
-    "report_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-host-map-shape-cost-cn-20261116/report.md",
-    "control_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-host-map-shape-cost-cn-20261116-control",
-    "source_view": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-host-map-shape-cost-cn-20261116",
-    "native_model": "gpt-6-luna",
-    "native_effort": "medium",
+    "review_digest": "# Prefill host shape report review\n\nReport: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-host-map-shape-cost-cn-20261116/report.md (SHA-256 f93d09c0d7d6ecb8ee55ef610ebedafadb07d258b606c2b1166437cd76052e11). Manifest: 12/12 hashes match; Runtime/native16 14508acbf1b70eb994fdf37f97fb6d0f5cff7d43; adapter/fixture 0a3295b89619cdc9cb4c6c4b2333043325fc8695.\n\nVerdict: bounded decision support. New: timed copy/dense path and row effects; lease/ID/cache overlap prior reports. Retrieval tags: prefill_pinned_host_contract_cl_20261116; usm_host_cache_calibration_collection_20261105; xe2_usm_cache_policy_collection_scope; usm_host_publication_20261110. No causal root, hardware limit, or model speed/adoption is established. Bank B is copied only; resident x/w/y feed dense.\n\nCorrections: rows directly change dense service and whole-wall ratios despite fixed copy bytes. Current copy pool is HOST_VISIBLE only; copy timestamps need a separately validated timestamp path. Keep CPU bins disjoint; cite the fixture helper for page/read-only details. Installed NEO source correspondence is unproven; allocation IDs are not proven globally unique or nonreused.\n\nEvidence: 31 native cases at 9cc26a79b exited 0; quiet; closed; no fresh fault. Source-cost gate passes only at 1024; 4096 failed. Preserve the old E2USM1024 speed failure.\n\nNext consumer: Main's active same-source/same-ELF 1024-row wait_ready comparison. Do not instrument frozen inputs. No fresh research is schedulable. After closure, retain report/input only for a committed named follow-up; otherwise curate this digest and retire both. Review JSON: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-host-shape-co-20261116/review.json\n",
     "worker_side_status_ok_reachable": true,
-    "report_only_sandbox_verified": true,
-    "manual_launch_reason": "Strict-config/no-daemon,explicit report-only cwd/network and both temporary-root exclusions are not expressible by worker-start;actual native identity and finite systemd scope attached. Startup readiness timeout was observation only;same positive PID/terminal reobserved and dispatched once."
+    "worker_report_sandbox_verified": true,
+    "worker_and_terminal_closed": true,
+    "resource_envelope_passed": true,
+    "resource_summary": {
+      "wall_seconds": 401.1099999998696,
+      "CPU_seconds_conservative_bound": 26.332064,
+      "native_process_peak_RSS_bytes": 432939008,
+      "cgroup_memory_peak_bytes": 325197824,
+      "captured_text_bytes_upper_bound": 829486
+    },
+    "decision": "Hypotheses only;rows also change dense service/whole-wall ratio. Copy event pool is HOST_VISIBLE only;timestamps need independent qualification. No hardware-root-cause or saturation claim. Active1024wait-order comparison now closed;no fresh research scope eligible. Curate digest and retire consumed report/view/review/control/native transcript under wait-order result retirement.",
+    "next_scope": "No fresh research before Main actual source/consumer plan or a concrete independent attribution question."
   }
 }

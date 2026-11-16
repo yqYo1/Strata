@@ -1513,8 +1513,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gate nor model/physical-PCIe evidence. Allocation ID is an additional
   consistency check;the header does not establish global uniqueness/nonreuse.
   Owned lifetime,range and distinct tombstone state remain essential. Keep the
-  two fixture ELFs/private original receipt/source/objects only for the immediate
-  1024comparison beside both phase references. Normal traces/build output are
+  original source-build receipt for the next actual-weight-bank input comparison.
+  The separately committed same-source/same-ELF1024wait-order comparison now
+  closes at`98e6972a2`:eight normal0/quiet/closed processes,including two traced
+  513-copy/514-dense batches and three clean independent-process pairs.
+  Only`wait_ready`moves across the same dense submission. Serial times are
+  .510194/.256638/.246519s;overlap .164447/.204115/.164570s. Paired ratios
+  .322322/.795341/.667575 and geometric mean .555198 pass the prospective
+  component gain gate;all lifecycle ratios also pass. Keep the slow first
+  serial sample. V1's omitted provider metadata fails before Runtime and remains
+  failed;V2adds transitive metadata admission and four passing host controls.
+  This permits an independently planned actual model-weight source/selected-expert
+  reader fixture,then a separate wait-order comparison;no model trial or
+  production adoption follows. Both ended component ELFs/objects/source view
+  and consumed research/raw output are selected for retirement at this boundary;
+  preserve the two independent phase-reference generations. Normal source-cohort
+  traces/build output are
   now retired:159files/24022908bytes;the private original record,compiled
   inputs,source view,objects and two ELFs remain unchanged. The reviewed CL/CM
   audit's consumed report/view/control/closed transcript are also retired:
