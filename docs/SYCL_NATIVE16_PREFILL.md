@@ -1726,15 +1726,28 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ```
 
   The next full-math fixture`bench/sycl/prefill_sycl_copy_math.cpp`is authored
-  from the owned Q0fixture and remains unbuilt. Its five explicit policies
+  from the owned Q0fixture and remains unbuilt. The ended Q0fixture is removed
+  from the active tree;its exact original source remains at`d3ca4956b1bfda8ef64ef19d50827cff2abbafa4`.
+  The maintained`tools/sycl/prefill_weight_pipeline.py`now prepares a fresh
+  `prefill_sycl_copy_lane_v1`cohort rather than rerunning that closed Q0cohort.
+  Its five explicit policies
   support shortcut/bridge(R0),bridge/queue(Q1),queue/lookahead(O),and
   direct/lookahead(net original)comparisons with unchanged real weights and
   production Gemm dispatch. Both IQreaders precede the early marker;the
   separate GU/Down weight buffers retain compute order. Final lane drain is
-  inside timing. After Q0closure/recovery/retirement,replace the old fixture
-  and commit the new controller/recipe/order/gates before compiling it;do not
-  run it with the current Q0controller or retain duplicate closed fixtures.
-  These files are outside Q0actual compiler/source inputs;Q0remains frozen.
+  inside timing. A fresh coherent ten-TU/twelve-object build produces both
+  the lifetime and actual-math executables,without old objects or archives.
+  The finite plan first runs ten traced small lifetime processes,then five
+  math metadata and25traced actual-math processes,before75clean samples.
+  Each shape uses three complete five-arm blocks:forward,reverse,and
+  bridge/lookahead/direct/queue/shortcut. All four contrasts keep their own
+  three ratios,lifecycle costs and decisions,including enabling-plumbing
+  losses. A combined win never relabels a losing unit. Commit the exact
+  controller/source and generated recipe/order/gates before building;the
+  owned processes have120swall/240sCPU/4GiBRSS bounds and no retry/exclusion.
+  This cohort does not permit model trials. Controlled submission/marker/
+  asynchronous faults,active observers and broader phase/context gates remain
+  pending. Both retained phase references remain unchanged.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
