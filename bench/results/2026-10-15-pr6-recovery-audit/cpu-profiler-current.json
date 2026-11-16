@@ -15597,11 +15597,11 @@
     }
   },
   "prefill_mapped_wait_order_v1": {
-    "stage": "prepared",
-    "passed": true,
+    "stage": "failed",
+    "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "reuse": {
       "native_source_commit": "0a3295b89619cdc9cb4c6c4b2333043325fc8695",
       "original_Runtime_math_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
@@ -16054,6 +16054,30 @@
       "retention": "Reuse the same two component ELFs as the named temporary third generation;no fourth build. Keep compact useful samples,census/reuse proof and decision. Retire routine raw traces after closure and the component generation if no named next consumer remains. Existing independent phase references remain unchanged.",
       "limits": "Explicit component entrypoint only. Resident dense A is math input;copied next-bank B is not an operand. Same2MBsource is reused,not production50GBRAM or physicalPCIe evidence. Hardware saturation,modelPP/TTFT/TG,decode/handoff,agent/task,physical262144/RESTORE remain unqualified. Production prefill and decode selectors are unchanged.",
       "provenance": "Main-authored controller/reuse of own historical code under repository LICENSE;native original14508owned dense with previously checked Intel TLA provenance. No XeStrata code/design."
+    },
+    "error": "RuntimeError('native failed:/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-wait-order-v1/owned/validated-serial.stderr')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "failure_closure": {
+      "original_ownership_closed": false,
+      "physical_process_closed": true,
+      "application_runtime_started": false,
+      "application_GPU_commands": 0,
+      "observed_gates": [
+        "before-runtime"
+      ],
+      "underlying_controller_error": "KeyError('validation_provider')",
+      "exit_code": -15,
+      "reason": "Controller omitted validation_provider required by event.mappings;native waited at initial gate and was positively reaped/session-empty by supervisor. Preserve failed observation/ownership fields;no implicit retry.",
+      "next_action": "Commit controller metadata admission fix and a new V2plan;reuse original exact native images only after historical checks."
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
