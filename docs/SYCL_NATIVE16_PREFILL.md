@@ -1470,6 +1470,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a new admission contract. Do not relax unknown-pointer admission or infer a
   copy/model result. Compare the source adapter with readiness order fixed,and
   only then compare readiness order with source and compute fixed.
+  After original source/recipe and both final-ELF recovery from pushed history,
+  its failed temporary generation and consumed CHreport are retired:446files,
+  16557507bytes. All26phase-reference executables and eight CMake probe ELFs
+  remain unchanged;this is scoped cleanup,not resolution of legacy holds.
   Keep bounded host-USM staging as an independent control if import fails.
   Intel's vendor malloc/new-copy behavior does not itself establish the standard
   external-map contract;unknown pointers remain refused. No debug import flag,
