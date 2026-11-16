@@ -15714,5 +15714,82 @@
     },
     "native_proof_sha256": "93b19a1fbb656ba7da54e1ac1bd5a9de201f052ad24ad82fb1ce6713c42c39cd",
     "tools_proof_sha256": "e274ff009946fd8f624e573e7c450a05c2bb574786fee2915f036b2cf81feccf"
+  },
+  "prefill_host_source_capabilities_v1": {
+    "stage": "prepared",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "interpreter": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "header": {
+      "path": "/usr/include/level_zero/ze_api.h",
+      "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712"
+    },
+    "argv": [
+      "/usr/bin/python3.12",
+      "-B",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/prefill_host_source_capabilities.py",
+      "native"
+    ],
+    "environment": {
+      "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "ZES_ENABLE_SYSMAN": "0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "ZE_ENABLE_VALIDATION_LAYER": "1",
+      "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+      "ZE_ENABLE_THREADING_VALIDATION": "1",
+      "ZE_ENABLE_HANDLE_LIFETIME": "0",
+      "ZEL_ENABLE_LOADER_LOGGING": "1",
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+      "ZEL_LOADER_LOG_CONSOLE": "1",
+      "ZEL_LOADER_LOGGING_LEVEL": "trace",
+      "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-host-source-capabilities-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-host-source-capabilities-v1/cache"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "plan": {
+      "question": "Does the qualified installed B570 driver advertise the standard read-only external-system-memory mapping prerequisite?",
+      "units": "Read-only capability discovery only. No allocation/import/unimport,copy,queue,kernel,PTI,new native generation or change to E2math/wait ordering. Source adaptation and scheduling remain independently compared units.",
+      "acceptance": "One owned normal0 process;exact native argv/environment,committed source/interpreter/header/runtime identities;one Intel B570 driver/device;bounded API/extensions enumeration;before/after provider checks,quiet validation,unchanged boot/driver,no fresh fault. An absent extension is a discovery result,not a transfer test.",
+      "budget": "30s wall,30sCPU,1GiB RSS,4MiB text/file,16MiB total;stop first mismatch/failure,no retry or GPUreset.",
+      "next": "If reported API>=1.16 and external-map extension>=1.0,plan a bounded same-context read-only import and event-lifetime fixture. Otherwise use the documented bounded host-USM staging baseline;do not relax pointer admission or assume vendor raw-RAM accessibility.",
+      "retention": "Keep the compact feature result and exact source/header/runtime IDs. Retire routine provider/log output after closure;no performance CSVrow or model/adoption claim. Existing E2component generation receives no extended lifetime from this read-only query."
+    },
+    "reference_sha256": "93b19a1fbb656ba7da54e1ac1bd5a9de201f052ad24ad82fb1ce6713c42c39cd",
+    "allowed": {
+      "files": 101,
+      "sha256": "472ca323a0efef89f3544c105e32a44a79bfda6713e1e06a541380021c024d83"
+    },
+    "project": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "4848a3a515ac823067ef07ceafc597da24842510",
+      "count": 359,
+      "aggregate_sha256": "150b4cb7bdd48d7bbcdef38118f54d89311141f64a5a0591dd096f2e7eefb485"
+    }
   }
 }
