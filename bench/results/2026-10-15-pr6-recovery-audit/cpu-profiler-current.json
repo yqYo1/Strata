@@ -16087,7 +16087,7 @@
     }
   },
   "prefill_mapped_wait_order_v2": {
-    "stage": "prepared",
+    "stage": "testing",
     "passed": true,
     "complete": false,
     "active": false,
@@ -16535,7 +16535,57 @@
         ]
       }
     ],
-    "results": [],
+    "results": [
+      {
+        "label": "validated-serial",
+        "arm": "serial",
+        "pair": null,
+        "clean": false,
+        "batch": {
+          "kind": "batch",
+          "wall_s": 0.455691384,
+          "iterations": 512,
+          "arm": "serial",
+          "timer_pair_max_s": 4e-08,
+          "requested_H2D_bytes": 1009254400,
+          "gemm_rows": 1024,
+          "gemm_n": 1280,
+          "gemm_k": 2560,
+          "lookahead": 1,
+          "oracle_and_guards": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "source": "mapped-neo",
+          "preparation_s": 0.003866606,
+          "import_s": 0.000406946,
+          "retirement_s": 0.000558952,
+          "import_property_type": 1,
+          "import_allocation_id": 21
+        },
+        "lifecycle_plus_batch_s": 0.460116942,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 2798606,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "40a1f794cd95d4599d1947608becf1189ea51ce0290893d34056fb0075353e64",
+        "validated_counts": {
+          "payload_copies": 513,
+          "dense_launches": 514
+        }
+      }
+    ],
     "model_trial_allowed": false,
     "performance_qualified": false,
     "plan": {
@@ -16548,6 +16598,16 @@
       "retention": "Reuse the same two component ELFs as the named temporary third generation;no fourth build. Keep compact useful samples,census/reuse proof and decision. Retire routine raw traces after closure and the component generation if no named next consumer remains. Existing independent phase references remain unchanged.",
       "limits": "Explicit component entrypoint only. Resident dense A is math input;copied next-bank B is not an operand. Same2MBsource is reused,not production50GBRAM or physicalPCIe evidence. Hardware saturation,modelPP/TTFT/TG,decode/handoff,agent/task,physical262144/RESTORE remain unqualified. Production prefill and decode selectors are unchanged.",
       "provenance": "Main-authored controller/reuse of own historical code under repository LICENSE;native original14508owned dense with previously checked Intel TLA provenance. No XeStrata code/design."
+    },
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
