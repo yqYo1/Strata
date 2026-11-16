@@ -1681,6 +1681,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   or copy-primitive change. Then compare the combined path against the original
   full compatibility wrapper. No raw LevelZero import,engine selection or
   validation follows.
+  DA/DBsource review identifies a drain/lifetime APIgap:the old public drain
+  did not prevent another submission after borrowed owners could be released.
+  The unbuilt prototype now seals on drain,including failed drains,and rejects
+  every later copy/readiness/reader operation. Its fixture separates that check
+  from capacity rejection,checks constructor/property admission and reads back
+  the accepted exceptional reader output. Fourteen source/report hashes passed
+  review;these are source corrections,not executed safety/precision evidence.
+  Controlled submission/marker/async-fault and active observer coverage remain
+  pending before qualification. No production path is enabled.
+  A bounded syntax-only check is planned before the next native build. It uses
+  compiler2026.2,original14508headers from the still-owned Q0view,plus the two
+  new candidate files,with no object/image/link/device generation. Main pins
+  this command and checks its actual dependency output under the same source/
+  compiler manifest;source/census success would not be native execution.
+
+  ```text
+  /opt/intel/oneapi/compiler/2026.2/bin/icpx --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -std=c++20 -DSTRATA_ENABLE_SYCL=1 -fsycl -fsyntax-only -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-weight-wrapper-v1/source/include -I/home/yayoi/orca/workspaces/Strata/sycl/include -MD -MF /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-lane-syntax-v1/fixture.d /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_sycl_copy_lane.cpp
+  ```
+
   These files are outside Q0actual compiler/source inputs;Q0remains frozen.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures

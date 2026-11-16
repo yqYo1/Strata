@@ -24,6 +24,8 @@ namespace strata::prefill::detail {
 // borrowed ordinary readable host memory (or same-context host USM), never
 // passed to a kernel. The caller keeps them immutable and keeps the bank and
 // all consumer allocations alive through drain(), including exceptional paths.
+// drain() permanently seals the lane; repeated drains are harmless and no
+// submission or consumer token can be used afterward.
 // Declare the lane after those owners so its destructor drains first.
 //
 // Q1 changes only compute versus a distinct SYCL queue with matching properties.
@@ -55,9 +57,16 @@ public:
         states_.reserve(capacity_); // Allocate bookkeeping before any submission.
         require(placement == Placement::Compute || placement == Placement::Separate,
                 "prefill SYCL copy lane placement");
-        if (placement == Placement::Separate)
+        if (placement == Placement::Separate) {
             separate_.emplace(runtime_->make_queue(
                 compute.has_property<sycl::property::queue::enable_profiling>()));
+            require(separate_->get_context() == compute.get_context() &&
+                    separate_->get_device() == compute.get_device() &&
+                    separate_->has_property<sycl::property::queue::in_order>() &&
+                    separate_->has_property<sycl::property::queue::enable_profiling>() ==
+                        compute.has_property<sycl::property::queue::enable_profiling>(),
+                    "prefill SYCL copy queue property/context mismatch");
+        }
     }
     PrefillSyclCopyLane(const PrefillSyclCopyLane&) = delete;
     PrefillSyclCopyLane& operator=(const PrefillSyclCopyLane&) = delete;
@@ -67,7 +76,7 @@ public:
     }
 
     Ready prefill_copy(std::span<const std::byte> source) {
-        require(!poisoned_ && source.data() && source.size() == bytes_ &&
+        require(!sealed_ && !poisoned_ && source.data() && source.size() == bytes_ &&
                 bytes_ <= std::numeric_limits<std::uintptr_t>::max() -
                     reinterpret_cast<std::uintptr_t>(source.data()) &&
                 states_.size() < capacity_ &&
@@ -108,6 +117,8 @@ public:
     }
 
     void drain() {
+        sealed_ = true;
+        if (drained_) return;
         // Always attempt both drains. An uncertain completion fails before
         // any borrowed allocation/event/queue owner may be destroyed.
         std::exception_ptr error;
@@ -116,6 +127,7 @@ public:
         catch (...) { if (!error) error = std::current_exception(); }
         runtime_->check();
         if (error) std::rethrow_exception(error);
+        drained_ = true;
     }
 
 private:
@@ -130,14 +142,14 @@ private:
     const std::size_t capacity_;
     std::optional<sycl::queue> separate_;
     std::vector<State> states_;
-    bool poisoned_ = false;
+    bool poisoned_ = false, sealed_ = false, drained_ = false;
     inline static std::atomic<std::uint64_t> next_identity_{1};
 
     static void require(bool value, const char* message) {
         if (!value) throw std::invalid_argument(message);
     }
     State& current(Ready ticket) {
-        require(!poisoned_ && ticket.owner_ == identity_ &&
+        require(!sealed_ && !poisoned_ && ticket.owner_ == identity_ &&
                 ticket.index_ < states_.size() && ticket.index_ + 1 == states_.size(),
                 "prefill SYCL copy stale/foreign readiness");
         return states_[ticket.index_];

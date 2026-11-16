@@ -61,6 +61,10 @@ int run(const std::string& mode, Lane::Placement placement, bool early) {
     gate("runtime-ready");
     need(sycl::get_pointer_type(source.mapping, runtime->context()) == sycl::usm::alloc::unknown,
          "ordinary source must not become a USM/imported allocation");
+    if (mode == "metadata") {
+        Lane lane(runtime, destination, bytes, placement);
+        lane.drain();
+    }
     if (mode != "metadata") {
         runtime->wait(q.memset(bank.data(), 0xa5, bank.size()));
         runtime->wait(q.memset(output.data(), 0, output.size()));
@@ -84,9 +88,41 @@ int run(const std::string& mode, Lane::Placement placement, bool early) {
             runtime->wait(q.memcpy(observed.data(), destination, bytes));
             need(std::memcmp(observed.data(), source.slice(0).data(), bytes) == 0,
                  "exceptional checked drain lost accepted copy");
+            if (mode == "throw-reader") {
+                runtime->wait(q.memcpy(observed.data(), a.data(), bytes));
+                need(std::memcmp(observed.data(), source.slice(0).data(), bytes) == 0,
+                     "exceptional checked drain lost accepted reader");
+            }
         } else {
             need(mode == "ordered", "explicit finite mode required");
-            Lane lane(runtime, destination, bytes, placement, 2);
+            refused([&] { Lane invalid(runtime, nullptr, bytes, placement); });
+            refused([&] { Lane invalid(runtime, destination, 0, placement); });
+            refused([&] { Lane invalid(runtime, destination, bytes, placement, 0); });
+            refused([&] { Lane invalid(runtime, destination, bytes, placement, 4097); });
+            refused([&] { Lane invalid(runtime, destination, bytes, static_cast<Lane::Placement>(2)); });
+            refused([&] { Lane invalid(runtime, destination, bytes + 65, placement); });
+            refused([&] { Lane invalid(runtime, source.mapping, bytes, placement); });
+            {
+                Lane sealed(runtime, destination, bytes, placement, 3);
+                sealed.drain(); sealed.drain();
+                // Spare capacity/no predecessor: this rejects terminal drain,
+                // rather than incidentally rejecting capacity or token state.
+                refused([&] { sealed.prefill_copy(source.slice(0)); });
+            }
+            {
+                Lane capacity(runtime, destination, bytes, placement, 1);
+                auto ready = capacity.prefill_copy(source.slice(0));
+                capacity.prefill_wait_ready(ready); capacity.prefill_record_readers(ready);
+                refused([&] { capacity.prefill_copy(source.slice(1)); });
+                capacity.drain();
+            }
+            {
+                Lane sealed(runtime, destination, bytes, placement, 3);
+                auto ready = sealed.prefill_copy(source.slice(0)); sealed.drain();
+                refused([&] { sealed.prefill_wait_ready(ready); });
+                refused([&] { sealed.prefill_record_readers(ready); });
+            }
+            Lane lane(runtime, destination, bytes, placement, 3);
             std::optional<Lane::Ready> previous;
             refused([&] { lane.prefill_copy(source.slice(0).first(bytes - 1)); });
             refused([&] { lane.prefill_copy({}); });
@@ -120,8 +156,8 @@ int run(const std::string& mode, Lane::Placement placement, bool early) {
                 if (!early) lane.prefill_record_readers(ready);
                 refused([&] { lane.prefill_record_readers(ready); });
             }
-            refused([&] { lane.prefill_copy(source.slice(0)); }); // Capacity.
             lane.drain();
+            refused([&] { lane.prefill_copy(source.slice(0)); }); // One spare slot.
             std::array<std::uint32_t, 2> result{};
             runtime->wait(q.memcpy(result.data(), output.data(), output.size()));
             need(result[0] == 2 * bytes * 0x31 && result[1] == 2 * bytes * 0x73,
