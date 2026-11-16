@@ -22769,6 +22769,68 @@
             "parallel_iq_launchILi20ELb0": 1026
           }
         }
+      },
+      {
+        "label": "validated-4096-direct",
+        "arm": "direct",
+        "rows": 4096,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "staged": false,
+          "host_slots": 0
+        },
+        "validation": {
+          "pid": 3453104,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "7b85fca41e6b4966eb536dfb37b9529231e47343eda412b48f5c84df85d4a403",
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 7.1e-08,
+          "retirement_s": 4e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "direct",
+          "rows": 4096,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "wall_s": 0.968530144,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 2048,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.968530255,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1027,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
       }
     ],
     "model_trial_allowed": false,
