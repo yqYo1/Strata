@@ -1541,15 +1541,28 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   app work;imported HOST1IDs28/29are observed. The first USMmath batch closes
   normal0/quiet/no fresh fault,with full bitwise FP32accumulator agreement,
   all guards,1548math launches and258actual parallel-IQlaunches per role.
-  The mapped math batch and all three clean source-cost pairs remain pending;
-  build/metadata/USMsuccess does not permit scheduling or model advancement.
+  The cohort now closes at`07735df23`:all10native processes pass with quiet
+  validation,closed owners and no fresh fault. Both traced readers verify the
+  same counts/bitwise output/guards. Clean USMtimes are
+  .124446/.120681/.113829s;imported times .211941/.123120/.184089s.
+  Paired imported/USMratios1.703074/1.020203/1.617239,geometric mean1.411123,
+  **fail** the prospective all-three<=1.10source-cost gate,including lifecycle.
+  Preserve every sample;no noise exclusion or mapped scheduling/model promotion.
   V1closed before any native build/execution because its inherited copy-only
   environment omitted the model's parallel-IQflag;V2matches flag1before exec
-  and checks actual named launches. Main owns the live controller handle;
-  inspect its receipt/process before resuming,no duplicate run. CQsource audit
-  has returned and its owned worker is positively closed;native CRreview is
-  pending. Preserve both phase references and review ended preparation output
-  at the next serialized safe boundary.
+  and checks actual named launches. No job remains live. CQ/CRreview confirms
+  the ownership seam with corrections:IQ4_NLblocks contain32values/18bytes;
+  Main verifies the model's vllm/auto backend and M1024fallback call path,while
+  dispatcher/gather costs remain omitted. The next independent unit starts
+  from the faster,numerically verified **host-USMreference**,not the failed
+  mapped candidate:one private scratch blob may be overwritten only after both
+  IQreaders retire;GU/Down retain their separate dequantized workspace until
+  their readers finish. Commit a new serial/lookahead plan with512jobs for
+  timing headroom,holding source,math and placement fixed. This is not a relaxed
+  old gate or model trial. Hardware resource saturation remains unknown.
+  The ended component generation,unrun V1preparation and consumed research/raw
+  output are selected for retirement;preserve both phase-reference engines and
+  the source-only recipe/census needed for the next owned proposal.
   The reviewed CL/CM
   audit's consumed report/view/control/closed transcript are also retired:
   40files/2033262bytes,with its correction and source hashes in the index.
