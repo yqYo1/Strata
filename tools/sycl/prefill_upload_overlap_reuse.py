@@ -55,7 +55,8 @@ def verify(*, expected=None):
     recovered = component.original.coherent.recover(row['project'])
     require(sha(component.__file__)==recovered[str(P/'tools/sycl/prefill_upload_overlap.py')],
         'original E2 receipt encoder changed')
-    base = json.loads(git(P,'show',BUILD_EVIDENCE+':'+str(RESULT.relative_to(P))))['coherent_prefill_native_v1']
+    build_path=component.original.RESULT.relative_to(P)
+    base = json.loads(git(P,'show',BUILD_EVIDENCE+':'+str(build_path)))['coherent_prefill_native_v1']
     sdk = base['external_inputs']; require(sha(sdk['path'])==sdk['sha256'],'original SDK manifest changed')
     allowed = json.loads(Path(sdk['path']).read_text())
     # Actual dependency files are tied to their immutable repository revisions.
