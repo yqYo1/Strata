@@ -1795,11 +1795,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   owners and no fresh fault. This includes both placements and the full128-slot
   independent-marker matrix. DK/DL and DM/DN source audits find no blocker after
   correcting the reports' slot-count,citation,readback and performance-failure
-  statements. All9math metadata cases and all9traced128-row policies now pass;
-  the1024-row reference/shortcut also pass. Actual kernel/copy/marker counts,
-  bitwise reference,split/tails and guards agree,with normal0/quiet/closed/no
-  fresh fault. Remaining traced shapes and all81clean comparisons are pending.
-  **These checks establish no speed gain or model qualification.**
+  statements. All9math metadata and all27traced math cases now pass at
+  `31258714d`:all three row shapes and nine policies. Actual kernel/copy/marker
+  counts,bitwise reference,split/tails and guards agree,with normal0/quiet/closed
+  owners and no fresh fault. The27clean128-row samples are complete at
+  `dc842728f`;none of its13unit/variant contrasts meets the predeclared condition
+  of all three ratios below1. The adapter-only Rcontrast takes2.405/2.323/2.907
+  times the layout batch time. This identifies a reproducible component loss,
+  not its limiting hardware resource. The direct batch varies0.369/0.609/0.563s;
+  preserve those individual samples rather than dismissing the variation.
+  All27clean1024-row samples are complete at`fc234a435`. At fixed128slots
+  and window,Aready batching ratios are0.967989/0.743473/0.985289and Bindependent
+  reader batching ratios0.939587/0.636921/0.767772:both satisfy their own gates.
+  Combining both is1.100071/1.052476/1.112726times B's batch,so preserve the
+  distinct decisions. None of the four net variants beats the original in all
+  three pairs. The8192-row cohort continues under the unchanged plan.
+  API counts alone do not attribute duration or prove that retained events cause
+  the adapter loss. DQ/DRreview supports only a bounded lifetime hypothesis;
+  its600sworker deadline failure remains failed. Choose one reference-retirement
+  edge only after current closure and time/resource attribution;never manually
+  destroy native events or release borrowed tensor storage before terminal drain.
+  **No net gain over the original or model qualification is established.**
   For subsequent shape selection,the original14508model evidence at
   `9c678595231882266623373cb84e4b65071c53dd` retains a conserved16-bin planned
   router census for32769input tokens and48completed windows:22479jobs and
@@ -1815,8 +1831,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   measured stage/resource evidence makes it the next tuning candidate.
   Submission/async/drain-fault and active
   observer coverage remain explicit holds;source review is not safety,
-  precision,performance or model qualification. The committed recipe/order/gates
-  and coherent rebuild now permit the small traced checks before full math.
+  precision or model qualification. Preserve the independent component outcomes
+  and finish all81clean cases before selecting any new mechanism or model plan.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
