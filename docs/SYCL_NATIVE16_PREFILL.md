@@ -1384,10 +1384,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no combined result qualifies those units. CD/CEsource review retracts the
   false missing-exit-provider allegation:the controller requires provider
   paths at every gate except before-runtime,including before-exit. Generic
-  enqueue presence is a sanity check,not device-overlap attribution. The first
-  validated1024row pair passes the exact oracle,payload/guards and timer gates;
-  the remaining validation,clean paired speed and profiler evidence are pending.
-  No model trial or new performance follows from that validated pair.
+  enqueue presence is a sanity check,not device-overlap attribution. Full cohort
+  `3ee710401`closes23normal0processes:seven Runtime safety cases,four validated
+  arm/shape batches and twelve clean processes. Every payload,oracle,guard,
+  provider,timer,ownership and fresh-fault gate passes;all33owned build/native
+  commands close. The actual timed boundary is512epochs plus dual drain,
+  not a model request. At1024rows serial seconds are0.247889/0.292666/0.248008,
+  overlap0.165671/0.165638/0.248944;paired ratios0.668329/0.565964/1.003774,
+  geometric mean0.724111. Its all-three gain gate **fails**. At4096rows serial
+  seconds are0.357760/0.357830/0.367523,overlap0.205792/0.209515/0.364216;
+  ratios0.575224/0.585516/0.991001,geometric mean0.693665. Its component
+  wall-time gate **passes**,including the small third-pair gain. Preserve both
+  slow third overlap samples;do not relabel them as noise. The CSVrecords both
+  shapes with model PP/TTFT/TGblank. Kernel/transfer critical-path attribution
+  and resource saturation remain unresolved:wall-time gain alone does not prove
+  actual device overlap or explain the variation. Next commit a bounded plan
+  using the already qualified non-counter unitrace stack,first checking its
+  interaction with this event protocol,then separate clean/profiled samples
+  and executed-copy/kernel counts. Preserve this failed1024gate and qualify
+  observer cost;do not change its criteria retroactively. The current E2images,
+  fresh objects,source view and private build/census record have that imminent
+  consumer;retire them at profile qualification/closure if superseded. Ordinary
+  RAMsource views,actual production consumers,32K+model/decode/agent/quality
+  and physical262144/RESTORE remain separate required gates. No model trial
+  or engine adoption is authorized by this component result.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
