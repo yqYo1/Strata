@@ -6,6 +6,7 @@
 #include "strata/prefill/moe_window_routes.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#include <cuda_runtime.h>
 #include <algorithm>
 #include <chrono>
 #include <cmath>

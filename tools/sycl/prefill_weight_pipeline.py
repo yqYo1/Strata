@@ -17,9 +17,9 @@ import prefill_upload_overlap as base
 import kernel_trace
 
 P,B,RESULT=base.P,base.B,base.RESULT
-ROOT=B/'prefill-weight-source-v1'
+ROOT=B/'prefill-weight-source-v2'
 VIEW=ROOT/'source'
-KEY='prefill_weight_source_v1'
+KEY='prefill_weight_source_v2'
 SOURCE='bench/sycl/prefill_weight_pipeline.cpp'
 TEST='tests/core/test_weight_pipeline_plan.py'
 PREFIXES=[*base.PREFIXES,SOURCE,TEST]
@@ -149,6 +149,10 @@ def extract_weights():
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'existing actual-reader attempt;inspect owner,no retry')
+    failed=base.ur_validation.committed(RESULT,('prefill_weight_source_v1',))
+    require(failed['stage']=='failed' and failed['passed'] is False and failed['ownership_closed'] is True
+        and failed['active'] is False and failed['partial_build_inputs_recovery']['final_executable_created'] is False
+        and failed['retention']['stage']=='complete','preserve failed no-GPUfixture build and retire its ended inputs first')
     prior=base.ur_validation.committed(RESULT,('prefill_weight_pipeline_v2',))
     require(prior['stage']=='closed' and prior['source_cost_eligible'] is False
         and prior['model_trial_allowed'] is False
@@ -221,6 +225,8 @@ def prepare():
             for arm in (['direct','staged'] if pair%2==0 else ['staged','direct']):
                 case(f'clean-{rows}-pair{pair}-{arm}','batch',arm,rows,False,pair)
     row=dict(stage='prepared',passed=True,complete=False,active=False,ownership_closed=True,
+        previous_failure=dict(key='prefill_weight_source_v1',sha256=fingerprint(failed),
+            summary='Explicit compatibility runtime header was missing;no executable/GPUwork. New cohort rebuilds all nine TUs;old failed outcome unchanged.'),
         project=project,native_source_commit=project['revision'],original_math_runtime_source=base.original.SOURCE,
         foundation=proof,seed_recipe=dict(source=SEED_SOURCE,evidence=SEED_EVIDENCE,
             sha256=fingerprint(seed),external_receipt_needed=False,old_ELFs_not_inputs=True),allowed=allowed,

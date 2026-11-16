@@ -1615,11 +1615,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   copy wrapper with the existing four-slot Host-USMstaging,using real
   `prefill::Gemm`dispatch at16/128/1024/4096/8192rows and all512layer2experts
   (1009254400source bytes). Source adaptation,copy primitive and scheduling
-  remain separate comparisons before their combination. The fixture at
-  `221523eda`is not yet built or measured. Its new nine-TUrecipe preserves
+  remain separate comparisons before their combination. V1plan`2a813610f`
+  stops at fixture compilation because an explicit compatibility runtime
+  header was missing. No executable/GPUwork;the original failure is preserved.
+  The corrected V2nine-TUrecipe preserves
   both phase references and uses no old partial archive. CU/CVreview confirms
   the production RAMcopy entrypoint and separate IQ/workspace reader lifetimes;
-  it establishes no speedup. See the current `prefill_weight_source_v1`plan
+  it establishes no speedup. See the current `prefill_weight_source_v2`plan
   when prepared for actual status and the precommitted comparison order.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
