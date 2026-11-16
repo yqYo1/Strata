@@ -31072,6 +31072,83 @@
             "parallel_iq_launchILi20ELb0": 1026
           }
         }
+      },
+      {
+        "label": "validated-8192-bridge",
+        "family": "math",
+        "arm": "bridge",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": null,
+        "clean": false,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 876512,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "4de0e8e2bb7229ae155f42e6fe5677f58a4ffa63852c57a66177ef219f8ab48e",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "bridge",
+          "dependency_bridge": true,
+          "separate_queue": false,
+          "physical_slots": 128,
+          "prefetch_window": 1,
+          "ready_width": 1,
+          "readers_width": 1,
+          "reader_marker": "after-math",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 7.925e-06,
+          "retirement_s": 0.019255493
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "bridge",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_compat_calls": 0,
+          "copy_shortcut_calls": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 512,
+          "reader_barrier_calls": 512,
+          "wall_s": 1.740889018,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.760152436,
+        "validated_counts": {
+          "math_launches": 4104,
+          "payload_sized_native_copy_calls": 1026,
+          "payload_bytes": 1971200,
+          "parallel_IQ_launches": {
+            "parallel_iq_launchILi22ELb1": 1026,
+            "parallel_iq_launchILi20ELb0": 1026
+          }
+        }
       }
     ],
     "model_trial_allowed": false,
