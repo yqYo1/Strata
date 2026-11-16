@@ -1561,8 +1561,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   timing headroom,holding source,math and placement fixed. This is not a relaxed
   old gate or model trial. Hardware resource saturation remains unknown.
   The ended component generation,unrun V1preparation and consumed research/raw
-  output are selected for retirement;preserve both phase-reference engines and
-  the source-only recipe/census needed for the next owned proposal.
+  output are retired:941files/57321828bytes,after exact original source/recipe/
+  final-ELF recovery. Both phase-reference engines remain unchanged. Retain only
+  the original actual-reader record for the next source/recipe/census comparison;
+  the older mapped-source record is still read by the maintained builder's
+  seed-recipe reader and must be retired when that dependency is migrated.
   The reviewed CL/CM
   audit's consumed report/view/control/closed transcript are also retired:
   40files/2033262bytes,with its correction and source hashes in the index.
