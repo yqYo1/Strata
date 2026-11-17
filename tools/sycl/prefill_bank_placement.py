@@ -24,7 +24,7 @@ import qsa16_stream_bench as core
 import ur_validation as validation
 
 P, B, RESULT = capacity.P, capacity.B, capacity.RESULT
-ROOT, KEY = B/'prefill-bank-placement-v1', 'prefill_bank_placement_v1'
+ROOT, KEY = B/'prefill-bank-placement-v2', 'prefill_bank_placement_v2'
 CAPACITY_KEY = 'coherent_context_model_v2'
 READ, RUNS, STRIDE, ROW = 131072, 3, 2662400, 20480
 READS = (32769,) + (READ,)*8
@@ -283,6 +283,11 @@ def decision(processes):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'fresh placement campaign only')
+    refusal=validation.committed(RESULT,('prefill_bank_placement_v1',))
+    require(refusal['stage']=='failed' and refusal['ownership_closed']
+        and not refusal['active'] and not refusal['processes']
+        and refusal['host_control_refusal']['native_executed'] is False,
+        'preserve original pre-GPU negative-control failure')
     previous=validation.committed(RESULT,('prefill_bank_reuse_v4',))
     require(previous['stage']=='closed' and previous['passed'] and previous['ownership_closed']
         and not previous['decision']['eligible_for_further_model_gates'], 'preserve failed96K warmed-gain gate')

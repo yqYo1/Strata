@@ -5,6 +5,7 @@ it establishes no GPU allocation, timing or model qualification.
 """
 import copy
 from pathlib import Path
+import re
 import sys
 import unittest
 
@@ -67,7 +68,7 @@ class PlacementControls(unittest.TestCase):
 
     def test_budget_and_single_allocation_refusals(self):
         text,plan=fixture()
-        for changed in (text.replace('free_gpu_bytes=','free_gpu_bytes=9'),
+        for changed in (re.sub(r'free_gpu_bytes=\d+','free_gpu_bytes=0',text),
             text.replace('fixed_including_headroom_bytes=','fixed_including_headroom_bytes=9'),
             text.replace('allocation_limit_bytes=10132807680','allocation_limit_bytes=2000000000')):
             with self.assertRaises(RuntimeError):campaign.placement_route(changed,plan)
