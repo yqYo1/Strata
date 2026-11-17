@@ -1857,6 +1857,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and39decisions remain unchanged. Both selected phase references are retained;
   legacy provenance/fixture/cache holds remain separate. No new build starts
   until its own committed source,recipe and comparison plan are ready.
+  The next independently authored,unbuilt proposal is
+  `sycl_unique_slot_copies.hpp`at`84f3d3c29`:strict sequential one-write-per-slot
+  ownership permits omitting per-expert reader markers until terminal drain.
+  It is not connected to a model route and establishes no gain or qualification.
+  The prepared decision-support scope
+  `prefill_unique_slot_fullfit_source_ds_20261117`pins22read-only sources,
+  actual14508versus working model callers,and the completed component evidence.
+  Audit cache publication,fullfit versus recycled slots,all borrowed lifetimes
+  and independent comparison units before Main builds/tests or integrates it.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
