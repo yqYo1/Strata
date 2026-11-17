@@ -9,6 +9,7 @@ import re
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
 import prefill_resource_profile as campaign
 from tools.test_prefill_bank_route import ordered_fixture
@@ -52,6 +53,19 @@ def bracket(ratio=1.1):
     return result
 
 class ResourceProfileControls(unittest.TestCase):
+    def test_scoped_asset_reader_allows_own_receipt_but_refuses_evidence_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result=Path(directory)/'result.json'
+            original=dict(collector_reuse=dict(passed=True,source='owned'),own_receipt='prepared')
+            raw=json.dumps(original).encode()
+            with patch.object(campaign,'RESULT',result),patch.object(campaign.validation,'P',Path(directory)),patch.object(campaign.validation,'git',return_value=raw):
+                updated=copy.deepcopy(original);updated['own_receipt']='closed'
+                result.write_text(json.dumps(updated))
+                self.assertEqual(campaign.collector_reuse_record(),{'collector_reuse':original['collector_reuse']})
+                for changed in (dict(source='other',passed=True),dict(source='owned',passed=1),None):
+                    updated['collector_reuse']=changed;result.write_text(json.dumps(updated))
+                    with self.assertRaises(RuntimeError):campaign.collector_reuse_record()
+
     def test_provider_manifest_binds_original_and_refuses_changed_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             provider=Path(directory)/'provider';provider.write_bytes(b'owned-control')

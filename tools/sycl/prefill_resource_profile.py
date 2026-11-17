@@ -39,7 +39,7 @@ PYTHON = capacity.reference.model.PYTHON
 require, sha, signature = capacity.require, capacity.sha, capacity.signature
 compact, POLICIES = core.compact, capacity.POLICIES
 THIS = 'tools/sycl/prefill_resource_profile.py'
-CONTROL_ROOT, CONTROL_KEY = B/'coherent-prefill-collector-control-v2','coherent_prefill_collector_control_v2'
+CONTROL_ROOT, CONTROL_KEY = B/'coherent-prefill-collector-control-v3','coherent_prefill_collector_control_v3'
 source, build, shared = core.source, comparison.build, comparison.shared
 digest, write = sha, core.write
 profile_window = profile_helpers.profile_window
@@ -339,10 +339,16 @@ def reviewed_collector_host_changes(changes,audited):
         'collector host-source delta exceeds the prospective AST contract')
 
 
+def collector_reuse_record():
+    # Only this committed subtree is an asset-verifier input. A prepare/check
+    # may write its own independent receipt without changing this evidence.
+    return {'collector_reuse':validation.committed(RESULT,('collector_reuse',))}
+
+
 def collector_assets():
     module=source.device.load_module('coherent128k_collector_asset_admission',profiler.__file__)
     module.collector_host_changes=reviewed_collector_host_changes
-    return module.collector_assets(validation.committed(RESULT))
+    return module.collector_assets(collector_reuse_record())
 
 
 def collector_context():
@@ -383,6 +389,10 @@ def collector_prepare():
     refused=validation.committed(RESULT,('coherent_prefill_collector_control_v1',))
     require(refused['stage']=='failed' and not refused['GPU_executed'] and refused['cases']==[],
         'preserve original collector source-admission refusal')
+    refused=validation.committed(RESULT,('coherent_prefill_collector_control_v2',))
+    require(refused['stage']=='failed' and refused['no_host_fixture_or_native_executed']
+        and not refused['GPU_executed'] and refused['cases']==[],
+        'preserve second preparation self-write refusal')
     ctx=collector_context();ctx.prepare();row=json.loads((CONTROL_ROOT/'record.json').read_text())
     row['host_metadata_contract']=generation_metadata_contract()
     _,prior,_,_=ctx.basis();row['observer_admission']=prior['observer_admission']
@@ -635,7 +645,7 @@ def fused_reconciliation(services,route):
         scope='These two source-counted fused classes only;unobserved operator coverage and physical saturation remain unqualified.')
 
 
-HOST_ROOT,HOST_KEY=B/'prefill-resource-host-v4','prefill_resource_host_v4'
+HOST_ROOT,HOST_KEY=B/'prefill-resource-host-v5','prefill_resource_host_v5'
 
 
 def host_compact(row):
@@ -662,6 +672,9 @@ def host_prepare():
     require(previous_plan['stage']=='superseded_before_execution'
         and previous_plan['no_host_test_or_native_executed'] and previous_plan['ownership_closed'],
         'preserve unusedHOSTv3 source before fresh provider-manifest controls')
+    previous_unit=validation.committed(RESULT,('prefill_resource_host_v4',))
+    require(previous_unit['stage']=='closed' and previous_unit['passed'] and previous_unit['tests']==9,
+        'preserve earlier nine controls;fresh source requires new controls')
     native,proof,prior=capacity.basis();revision=validation.git('rev-parse','HEAD').decode().strip()
     HOST_ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache'):(HOST_ROOT/name).mkdir()
@@ -670,7 +683,7 @@ def host_prepare():
     row=dict(stage='prepared',source_commit=revision,sources=core.pins(revision),environment_template=env,
         command=[PYTHON,'-B','-m','unittest','tools.test_prefill_resource_profile'],
         native_source_commit=capacity.original.SOURCE,original_native_proof=proof,
-        plan='Nine host route/budget/source/drain/math/observer/provider-manifest refusal controls plus existing exact62class,RAWclock-window and physical-owner-cleanup controls. No GPU/device initialization or model. Commit exact source/recipe/environment before run;stop first failure,no retry/hash refresh.',
+        plan='Ten host route/budget/source/drain/math/observer/provider-manifest/scoped-reader refusal controls plus existing exact62class,RAWclock-window and physical-owner-cleanup controls. No GPU/device initialization or model. Commit exact source/recipe/environment before run;stop first failure,no retry/hash refresh.',
         passed=False,complete=False,active=False,ownership_closed=True)
     host_save(row);print('Prepared host controls;commit before run.',flush=True)
 
@@ -682,8 +695,8 @@ def host_gate():
         'exact source of closed host controls changed')
     require(row['stage']=='closed' and all(row[k] for k in ('passed','complete','ownership_closed'))
         and not row['active'],'closed committed host controls required')
-    require(row['tests']==9,'all nine current host controls required')
-    return dict(key=HOST_KEY,source_commit=row['source_commit'],evidence_sha256=signature(row),tests=9)
+    require(row['tests']==10,'all ten current host controls required')
+    return dict(key=HOST_KEY,source_commit=row['source_commit'],evidence_sha256=signature(row),tests=10)
 
 
 def host_check():
@@ -696,15 +709,15 @@ def host_check():
     try:
         run,out,err=owner.run('host',row['command'],row['environment_template'],P,
             wall=90,cpu=60,rss_cap=1<<30,text_cap=256<<10,file_cap=2<<20,total_cap=8<<20)
-        require(build.supervision.closed(run) and run['exit_code']==0 and 'Ran 9 tests in ' in err.read_text()
+        require(build.supervision.closed(run) and run['exit_code']==0 and 'Ran 10 tests in ' in err.read_text()
             and err.read_text().rstrip().endswith('OK'),'resource host controls failed')
-        row.update(stage='closed',passed=True,complete=True,tests=9)
+        row.update(stage='closed',passed=True,complete=True,tests=10)
     except BaseException as error:row.update(stage='failed',error=repr(error))
     finally:
         row.update(active=bool(owner.active),ownership_closed=owner.active is None
             and all(build.supervision.closed(c) for c in owner.commands));host_save(row)
     require(row['passed'] and row['ownership_closed'],row.get('error','host controls failed'))
-    print('Nine resource host controls passed;commit before collector/native.',flush=True)
+    print('Ten resource host controls passed;commit before collector/native.',flush=True)
 
 
 if __name__=='__main__':
