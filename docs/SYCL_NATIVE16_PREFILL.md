@@ -2044,9 +2044,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   matched384/512pairs. EA/EBreview confirms the full imported dispatch object
   compares jobs/rows/dequants/maps;the report's claimed missing gate is withdrawn.
   No other concrete reader mismatch was found. Ended V2/V3raw/JITand reviewed
-  research transactions are prepared for retirement:221files/23938423B,after
+  research transactions are now retired:221files/23938423B,after
   recovery of767/766controller sources,all28generated inputs and the original
-  native source/recipe/12ELFs. Preserve their failed outcomes and narrow limits.
+  native source/recipe/12ELFs. The63523Btemporary inventory is retired too;
+  current admission passes without those paths. Preserve their failed outcomes
+  and narrow limits. No phase engine or model asset was removed.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
