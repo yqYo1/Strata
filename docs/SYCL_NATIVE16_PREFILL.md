@@ -1809,13 +1809,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reader batching ratios0.939587/0.636921/0.767772:both satisfy their own gates.
   Combining both is1.100071/1.052476/1.112726times B's batch,so preserve the
   distinct decisions. None of the four net variants beats the original in all
-  three pairs. The8192-row cohort continues under the unchanged plan.
+  three pairs. The full141case cohort now closes at`1496a4902`:81clean
+  processes,all39unit/variant decisions and three interactions. At8192rows,
+  L,AB_after_A,netWindow,netReaders andnetBoth satisfy their own three-pair
+  conditions. NetWindow/Readers/Both geometric mean time ratios are
+  0.918370/0.796766/0.748444. Both64uses1.255137/1.357802/1.352193s versus
+  original1.809218/1.649663/1.841626s;its ratios0.693746/0.823078/0.734239
+  pass at every pair. Its gain over readers64alone does not repeat in all pairs,
+  and A/Bisolated gains do not repeat at8192. Preserve every individual decision;
+  a winning net policy does not qualify each constituent independently.
+  This leaves both64as the fastest credible large-shape component proposal,
+  with window/readers64also eligible for a future independently planned test.
+  Do not apply it to small/intermediate jobs or assume that synthetic512expert
+  loops predict model routing,cache reuse or total throughput. All native owners
+  close normally0,validation is quiet and no fresh faults occur. The CSV retains
+  six useful component milestones;model PP/TTFT/TG remain blank.
   API counts alone do not attribute duration or prove that retained events cause
   the adapter loss. DQ/DRreview supports only a bounded lifetime hypothesis;
   its600sworker deadline failure remains failed. Choose one reference-retirement
   edge only after current closure and time/resource attribution;never manually
   destroy native events or release borrowed tensor storage before terminal drain.
-  **No net gain over the original or model qualification is established.**
+  **Only the8192-row component net gates pass;no model qualification follows.**
   For subsequent shape selection,the original14508model evidence at
   `9c678595231882266623373cb84e4b65071c53dd` retains a conserved16-bin planned
   router census for32769input tokens and48completed windows:22479jobs and
@@ -1831,8 +1845,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   measured stage/resource evidence makes it the next tuning candidate.
   Submission/async/drain-fault and active
   observer coverage remain explicit holds;source review is not safety,
-  precision or model qualification. Preserve the independent component outcomes
-  and finish all81clean cases before selecting any new mechanism or model plan.
+  precision or model qualification. Next pin the actual expert-slot/cache and
+  last-reader integration seam before a new one-unit plan;fullfit and recycled
+  scratch slots have different ownership contracts. Do not copy the fixture's
+  fixed128-slot schedule wholesale into the model. Commit source/recipe recovery
+  and retire this ended third build before creating another candidate.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
