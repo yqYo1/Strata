@@ -2037,7 +2037,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no GPU work and does not relabel the model source or its failed warm gate.
   Both phase reference engines and model assets remain current consumers.
 
-  Next proposal, **not implemented or run**: at fixed 131,072 input tokens,
+  Next bank-capacity unit: the prospective `prefill_bank_placement.py` controller
+  and its eight bounded host controls are implemented; **not measured or adopted**.
+  At fixed 131,072 input tokens,
   change only requested bank capacity 384 -> 256 and measure the planner's
   intended residency/staging change. The previous 131,071 batched rows need
   2,684,334,080 B, but only 98,304 rows / 2,013,265,920 B fit with the actual
