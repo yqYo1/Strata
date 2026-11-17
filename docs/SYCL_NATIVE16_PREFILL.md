@@ -2003,6 +2003,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   old private root remains. Closed capacity CLI/test code remains frozen only
   as part of the current comparison's source contract;at its closure keep the
   shared native/model basis and retire unused capacity command modes/fixtures.
+  The first128Kstage-progress request now reaches its end gate but fails actual
+  placement admission:512requested/effective slots,98304GPU residual rows and
+  32767host rows(2013265920/671068160B),staged bank0. The declared all-GPU route
+  is absent;the controller refuses it before the remaining requests/clean arms.
+  Preserve that failed screen and its non-normal supervised termination. Main
+  separately verifies the four original process identities are gone,the direct
+  child reaped,session empty,lock available and no fresh fault;this does not
+  turn incomplete observation into normal-exit qualification or a speed result.
+  A fresh98305-input setup can test reuse across two81920-row windows within
+  the observed98304GPU rows. Fix split0in both arms to avoid the distinct
+  90113..117488split route,and compare only384/512bank slots under a new plan.
+  This is a new fixed setup,not a retry,lowered128Kgate or adoption of split0.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
