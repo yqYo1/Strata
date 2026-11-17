@@ -34555,9 +34555,27 @@
       "bitwise_full_outputs_split_tails_status_source_guards_passed": true,
       "all_final_slot_payloads_checked": true,
       "fresh_faults": [],
-      "hardware_saturation_unknown": true
+      "hardware_saturation_unknown": true,
+      "ordered39case_receipts_match_frozen_argv": true
     },
     "metric_scope": "batch.wall_s includes512payload copies and unchanged full compute with terminal drain. owner_lifecycle/preparation_s,reset_s,retirement_s time only copy-owner management;exclude allocation,HostUSM reference generation and GPU buffer reset/validation. lifecycle_plus_batch_s adds only those three owner intervals,not whole setup/request time.",
-    "decision": "S slot-capacity unit and netUnique pass all3pairs at all3shapes;U omitted-reader-marker unit fails its own gate at every shape. Prefer base512 as next candidate when actual model memory/admission and routing permit;do not adopt unique512 merely from its net gain. No model trial/adoption from this component plan. Next inspect actual14508model slot/recycle counts and finite memory budget before scoped model integration;physical bottleneck remains unknown."
+    "decision": "S slot-capacity unit and netUnique pass all3pairs at all3shapes;U omitted-reader-marker unit fails its own gate at every shape. Prefer base512 as next candidate when actual model memory/admission and routing permit;do not adopt unique512 merely from its net gain. No model trial/adoption from this component plan. Next inspect actual14508model slot/recycle counts and finite memory budget before scoped model integration;physical bottleneck remains unknown.",
+    "model_slot_candidate": {
+      "source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "layout_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+      "model_layers": 48,
+      "max_blob_rounded_stride_bytes": 2662400,
+      "reference_requested_slots": 384,
+      "reference_bank_bytes": 1022361600,
+      "reference_packed_full_fit_layers": 24,
+      "candidate_requested_slots": 512,
+      "candidate_bank_bytes": 1363148800,
+      "candidate_packed_full_fit_layers": 48,
+      "additional_bank_bytes": 340787200,
+      "actual_model_queue": "same compute/copy queue,unlike component separate queue",
+      "gpu_admission_attempted": false,
+      "physical_max_single_allocation_ceiling": "unknown in this comparison",
+      "decision": "Exact existing model setting is384;packed geometry currently384/438/469/512slots with24fullfit layers.512would make48fullfit at+340787200bytes if admitted. Compare setting separately from queue/prefetch changes;require actual bank/residual/shape admission and preserve decode. No model gain inferred."
+    }
   }
 }

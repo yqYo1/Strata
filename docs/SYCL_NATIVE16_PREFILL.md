@@ -1873,19 +1873,36 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   build/test/native commands close normally0;no validation errors or fresh
   device faults. Four fresh TUs/four objects match719compiler/25link inputs.
   No model integration or performance gate passes from this safety fixture.
-  Single-write ownership and omitted overwrite-reader markers form one
-  inseparable safety unit. The next unbuilt three-arm fixture holds math/order/bytes,
-  separate queue,window128,ready64 and refill64 fixed:compare128versus512slots
-  with reader markers,then omit markers at the same512slot layout. Every arm
-  drains/destroys its two-job warm owner and creates a fresh timed owner at slot0;
-  retain preparation/reset/retirement separately. Its39case plan includes3metadata,
-  9traced full-math and27clean independent processes at128/1024/8192rows with
-  three matched orderings. No model trial is authorized. Queue placement,ready
-  batching and window remain later independent units. Commit the exact source
-  and prepared recipe/plan before building. Old9arm controller/13host controls
-  and24case fixture restore from`05eceacd`;the unused24case fixture is removed
-  from the active tree. The15case single-write fixture remains the near-term
-  regression starting point for the actual cache/checked-loan handoff seam.
+  The three-arm comparison now closes at`52bd1156b`,native source`01823c734`:
+  3metadata/9traced/27clean processes,all52owned build/test/native commands
+  normal0,quiet validation and no fresh fault. Source proofs admit252314112B
+  versus1009254912Bbanks;full bitwise/split/tail/status/source/guards and all
+  final128or512payloads pass. Every arm retires its two-job warm owner and
+  creates a fresh timed owner at slot0. Capacity-only S wins all3pairs at each
+  M128/1024/8192,with geometric mean time ratios0.467536/0.612318/0.916215.
+  At8192,base512uses1.191739/1.242359/1.190181s versus base128's
+  1.303205/1.296314/1.356206s. Single-write/omitted-reader U fails its own
+  repeated-gain gate at every shape:ratios at8192are0.998692/0.962194/1.024334.
+  Its winning netUnique ratios inherit the capacity change;do not adopt U from
+  them. Retain all27samples/9contrasts and3CSVcapacity milestones. These Mrows
+  are not model tokens;physical hardware saturation and model gain are unknown.
+  Owner-management-plus-batch sums exclude GPU buffer resets,allocation and
+  numerical reference. DU/DVsource review supports fairness/lifetime/count
+  gates with that label correction;Main verifies39ordered case receipts.
+  Its collection envelope/normal-exit failure remains failed,independent of
+  the successful GPU cohort. Before automatic outcome qualification,add a
+  bounded ordered-prefix-to-receipt guard under a new controller plan.
+  The actual14508model uses requested384slots and packed384/438/469/512slots,
+  with24of48layers fullfit. Source-derived max stride2662400B gives1022361600B
+  bank;requested512would use1363148800B(+340787200B)and make all48fullfit if
+  admitted. Its current same-queue schedule differs from the component's
+  separate queue. Next compare this placement setting separately from any
+  transfer-order implementation,checking actual bank/residual admission first;
+  no new model execution or speedup is established. Preserve existing decode.
+  Queue placement,ready batching and window remain later independent units.
+  The old9arm controller/13host controls/24case fixture restore from`05eceacd`;
+  that unused24case fixture is removed from the active tree. The15case fixture
+  is the near-term regression starting point for the cache/checked-loan seam.
   The22.95MBsmall generation and private audit captures are now retired after
   exact final ELF,recipe,370project/398original source recovery;both phase
   references remain. Full input/15case evidence restores from`4eb8276e0`.
