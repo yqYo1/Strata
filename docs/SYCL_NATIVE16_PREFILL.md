@@ -2073,9 +2073,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1000PPtarget is not met,and inference/defaults are not adopted. Four CSVpoints
   retain first/warm results;prior32/64/96Kcohorts and the historical64K1006PP
   point stay separate. Do not fit a physical timing law across different routes.
-  Next pin a bounded profile of this actual128K/all-GPU path to attribute its
-  remaining compute,VRAM/PCIe and host-wait critical path before selecting the
-  next independent change. Keep clean speed separate from observers. Numerical/
+  Current attribution proposal: `prefill_resource_profile.py` and eight host
+  controls are implemented but not executed. Reuse coherent14508 and the owned
+  Sysman0 indexed collector;first exact62-class compatibility control,then a
+  separate32Kmodel smoke,then128Kclean/profile/clean with two requests each.
+  CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
+  markers;the old marker-associated stall remains causally unresolved. Require
+  exact route/count/clock/owner/conservation and<=1.2observer ratios against both
+  controls before normal-route attribution. Finite3GiB/file,4GiB/job,5GiBwhole
+  capture is reduced/retired after closure. This identifies service/requested
+  payloads and host waits;physical bandwidth/saturation remain separate checks.
+  Select the next independent change from this evidence;keep speed samples
+  separate from observers. Numerical/
   task,agent,long-thinking generation with observed MTPstrong/weak acceptance,
   repeated decode preservation and serve RESTORE/full-context/ordinary teardown
   gates remain before adoption. The earlier standalone physical262144pass is
