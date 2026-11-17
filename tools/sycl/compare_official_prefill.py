@@ -224,8 +224,11 @@ def host(experiment=None):
     print('Current-source frontend probes passed;commit before native execution.', flush=True)
 
 
-def route(text, read, heads, *, expected_rows=None):
+def route(text, read, heads, *, expected_rows=None, requested_slots=384,
+          draft_bytes=None):
     """Validate one actual request window,including a capacity-limited control."""
+    if draft_bytes is None:
+        draft_bytes = DRAFT_BYTES
     require(heads in (0, 1) and (read in READS if expected_rows is None else
             expected_rows == read - 1 and (8192 < expected_rows <= 81920 or
                                           90112 < expected_rows <= 117488)), 'unplanned route case')
@@ -255,7 +258,7 @@ def route(text, read, heads, *, expected_rows=None):
             and int(main['residual_gpu']) == gpu * 10240 * 2
             and int(main['residual_host']) == (n - gpu) * 10240 * 2
             and main['residual_staging'] == '0', 'HC4 residual byte/row conservation differs')
-    require(bank['requested_slots'] == '384' and int(bank['residual_gpu_rows']) == gpu
+    require(bank['requested_slots'] == str(requested_slots) and int(bank['residual_gpu_rows']) == gpu
             and int(bank['device_bytes']) == int(main['layer_cache']) > 0
             and int(bank['allocation_limit_bytes']) >= int(bank['device_bytes'])
             and bank['general_map'] == 'private_scratch_never_published'
@@ -263,7 +266,7 @@ def route(text, read, heads, *, expected_rows=None):
             and admission['decode_changed'] == '0', 'bank/cache publication differs')
     full = gpu == n
     if read == 65537 or expected_rows is not None and n <= 81920:
-        require(full and staged == 1 and slots == 384 and split == 0, '64K placement differs')
+        require(full and staged == 1 and slots == requested_slots and split == 0, '64K placement differs')
     elif full:
         require(staged == split == 1 and slots == 128, '117K all-GPU split placement differs')
     else:
@@ -305,7 +308,7 @@ def route(text, read, heads, *, expected_rows=None):
     if heads:
         target, draft = targets[0], drafts[0]
         require(target['source'] == 'owned-RAM' and int(target['bytes']) == int(target['D2H']) ==
-                int(target['H2D-on-restore']) == TARGET_BYTES and int(draft['bytes']) == DRAFT_BYTES
+                int(target['H2D-on-restore']) == TARGET_BYTES and int(draft['bytes']) == draft_bytes
                 and int(draft['retained-map-bytes']) == MAP_BYTES, 'head snapshot/subset contract differs')
         require(text.index('strata prefill heads: target detached ') < text.index('strata prefill heads: draft detached ')
                 < text.index('strata MoE expert bank: ') < text.index('strata prefill: layer-major candidate, '),
@@ -316,7 +319,7 @@ def route(text, read, heads, *, expected_rows=None):
         staged_bank_checked_drain=bool(staged), split_guard_checked=bool(split),
         requested_bank_H2D_bytes=int(bank_ends[0]['requested_H2D_bytes']) if staged else 0,
         requested_dequant_H2D_bytes=int(work['source_H2D_bytes']),
-        target_snapshot_bytes=TARGET_BYTES if heads else 0, draft_rebuilt_bytes=DRAFT_BYTES if heads else 0,
+        target_snapshot_bytes=TARGET_BYTES if heads else 0, draft_rebuilt_bytes=draft_bytes if heads else 0,
         physical_saturation_qualified=False, head_payload_bytes_verified=False)
 
 

@@ -1896,9 +1896,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with24of48layers fullfit. Source-derived max stride2662400B gives1022361600B
   bank;requested512would use1363148800B(+340787200B)and make all48fullfit if
   admitted. Its current same-queue schedule differs from the component's
-  separate queue. Next compare this placement setting separately from any
-  transfer-order implementation,checking actual bank/residual admission first;
-  no new model execution or speedup is established. Preserve existing decode.
+  separate queue. The owned `prefill_bank_capacity.py` plan compares only this
+  setting on the retained14508ELF:one stage-progress64Kadmission process,
+  then three alternating adjacent384/512pairs per32K/64K,three thinking-on
+  exact24-output requests each. Verify actual48fullfit layers,single-bank
+  allocation,all-GPU residual,ordinary route,checked drains and MTP restore
+  before clean timing. Keep first/warmed samples and actual request/job
+  equality;no new model execution or speedup is established yet. Preserve
+  existing decode;24outputs cannot qualify sustained decode preservation.
   Queue placement,ready batching and window remain later independent units.
   Closed math/research captures are retired:766files/1262355027B plus the
   208933Btemporary inventory. Exact final ELF,recipe,367project/398original
