@@ -2036,6 +2036,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   whole production reader,including48packed-bank records and MTPstate;the
   actual failed V3outcome stays unchanged. The96Ksetup,only384/512capacity
   variable,seven-process order and independent mechanism/time gates stay fixed.
+  All nine V4controls and both frontend host probes now pass. Its first traced
+  process completes all3thinking-on98305-input/24-output requests normally0,
+  with98304GPU/0host rows,48full-fit512banks,96windows/max81920,checked
+  MTPrestore,reaped/empty owners,quiet validation and no fresh faults. These
+  are admission samples,not clean speed. Next are6clean processes/3alternating
+  matched384/512pairs. EA/EBreview confirms the full imported dispatch object
+  compares jobs/rows/dequants/maps;the report's claimed missing gate is withdrawn.
+  No other concrete reader mismatch was found. Ended V2/V3raw/JITand reviewed
+  research transactions are prepared for retirement:221files/23938423B,after
+  recovery of767/766controller sources,all28generated inputs and the original
+  native source/recipe/12ELFs. Preserve their failed outcomes and narrow limits.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
