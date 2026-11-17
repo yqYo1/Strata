@@ -2073,19 +2073,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1000PPtarget is not met,and inference/defaults are not adopted. Four CSVpoints
   retain first/warm results;prior32/64/96Kcohorts and the historical64K1006PP
   point stay separate. Do not fit a physical timing law across different routes.
-  Current attribution proposal: `prefill_resource_profile.py` binds runtime
-  providers to the verified original and scopes asset admission to committed
-  collector-reuse evidence. Ten host controls and the exact62-class collector
-  fixture passed. The first32Ktwo-request model process exited0 with no fresh
-  fault and closed owners, but attribution failed: the old family reader
-  recognizes SplitDownScatterKernel only;native14508's ordinary fused path is
-  DownScatterKernel. Whole captureGU/Down totals both4167 equal source2084+2083;
-  this does not repair the lost original per-request clock/count qualification.
-  V1 remains failed;its525.9/610.0observedPPis not clean speed or saturation.
-  A prefill-only classifier correction and eleven host controls are implemented
-  but pending fresh execution. V2 must pass its own collector fixture and32K
-  model smoke before128Kclean/profile/clean,two requests each. Reuse the same
-  coherent14508native and Sysman0collector;no inference math/default change.
+  Current attribution: `prefill_resource_profile_v2` reuses coherent14508 and
+  the Sysman0collector. Eleven host controls,its fresh62-class fixture and
+  its separate32Ktwo-request model smoke passed,including six clock pairs,
+  per-requestGU/Down equality,CPUv4/status conservation,normal0/closed owners
+  and no fresh fault. The original V1 remains failed:the old reader classified
+  ordinary DownScatterKernel as other rather than fused Down;its whole-capture
+  GU/Down4167totals alone do not repair the original missing window proof.
+  V2 now counts the owned ordinary prefill class without changing inference.
+  Next is the committed128Kclean/profile/clean bracket,two requests each;
+  no normal-route resource attribution or speedup is qualified yet.
+  Reviewed future bank/window research identifies source limits117488split,
+  81920ordinary accumulation and8192per job,not runtime admission. Before
+  implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;
+  assess bank-only/window-only/combined arms separately and retain infeasible
+  cells. Hypothetical mode16 is not an accepted native14setting. No larger-window
+  implementation or model trial is currently eligible.
   CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
   markers;the old marker-associated stall remains causally unresolved. Require
   exact route/count/clock/owner/conservation and<=1.2observer ratios against both
