@@ -2182,7 +2182,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the coalesce=false argument and its unreachable branch. Original U1samples
   keep their original source identity;no build/device qualification is reused.
   The bank-only cohort is closed. The corrected native source/recipe snapshot
-  is prepared at`064ffb767`;configure,compile and device/model checks remain
+  is prepared at`064ffb767`;configuration closes normally0 with the planned
+  engine/CPU/Down targets present. Compilation and device/model checks remain
   unrun. The live tree also
   contains independent KV/verify proposals,which must not enter a prefill
   performance comparison implicitly. Preserve the9849decode
