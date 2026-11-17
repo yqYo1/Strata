@@ -404437,7 +404437,7 @@
     "environment_template_sha256": "d88df9d6fa473c027d18beec81e6f44f2b1d18dafcb78fb21995e24f8a626757"
   },
   "prefill_resource_profile_v1": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "8c6671e05180447d1967e2f3a647c0d11de99d08",
     "policies": {
       "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
@@ -404910,7 +404910,58 @@
         "environment_sha256": "c6c8e1c0603d3301498a4bf6d7122883d03d71b29e270bc3c47a80ed8d1e6d99"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 32769,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+          "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+          "bytes": 26448640,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "native_identity": {
+          "pid": 2963770,
+          "start_ticks": 327641740,
+          "sid": 2963679
+        },
+        "request_routes_checked_before_continue": 2,
+        "error": "RuntimeError('source GU/Down fused dispatch and UnitTrace kernel counts differ')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false,
+        "collector_cleanup": {
+          "session": "StrataPrefillc9ffdabe6cf4b95291b64f95",
+          "physical_closure": {
+            "captured_identities": 4,
+            "physical_executors_gone": true,
+            "original_ownership_closed": true,
+            "original_observation_complete": true,
+            "limits": "Physical absence permits named-session cleanup only;original validation/outcome stays unchanged."
+          },
+          "source_commit": "ebdb076f9d56999584bcc3c09c977069f62fa80c",
+          "session_removed": true,
+          "control_closed": true,
+          "active": false
+        },
+        "resource_observation": {}
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
