@@ -409465,6 +409465,88 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "bank-validate",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3954987,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "cases": [
+          {
+            "experts": 4,
+            "source_stride": 256,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          },
+          {
+            "experts": 4,
+            "source_stride": 512,
+            "layers": 2,
+            "cancellations": 2,
+            "refusals": 4
+          },
+          {
+            "experts": 0,
+            "source_stride": 256,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          },
+          {
+            "experts": 1,
+            "source_stride": 256,
+            "layers": 3,
+            "cancellations": 3,
+            "refusals": 4
+          },
+          {
+            "experts": 127,
+            "source_stride": 512,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          },
+          {
+            "experts": 512,
+            "source_stride": 256,
+            "layers": 2,
+            "cancellations": 0,
+            "refusals": 4
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "passed": false,
