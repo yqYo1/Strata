@@ -2225,11 +2225,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   permit a separate window question;only repeated fixed-bank window gain admits
   the combination. Coherence is prepared at`e81f93750`,with all15model assets
   freshly hashed and18generated configurations/launcher plans pinned. Host
-  probes,the32Kcandidate and the first128Kreference processes pass,each with
+  probes,the32Kcandidate and both traced128Kprocesses pass,each with
   three exact-read/24-output requests,allBF16residual rows onGPU,planned
   bank256/window10,normal0,reapedempty,quiet validation and no fresh fault.
-  These traced diagnostics are not clean speed or a completed coherence
-  comparison;the seven128Kprocesses remain. The other three cohorts remain unprepared.
+  All three paired traced requests match maps,jobs,dequants,GU/Down selections,
+  uploads and requested bytes. These are not clean speed or a completed
+  coherence comparison;the six clean128Kprocesses remain. The other three
+  cohorts remain unprepared.
   U1jit is fixed to isolate native14coherence;its separately positive eager
   component remains eligible.
   `prefill_bank_minimum_v2`closes at`4d027b3e1`:nine normal0processes/27thinking-on
