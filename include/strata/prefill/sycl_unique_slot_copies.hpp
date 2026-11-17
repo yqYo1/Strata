@@ -15,8 +15,11 @@ namespace strata::prefill::detail {
 // One host submitter. Each destination slot is written exactly once by this
 // owner, in increasing slot order. All sources, the exclusive destination bank
 // and consumer buffers remain alive through terminal drain(), including errors.
-// Declare this owner after those borrowed owners. Do not publish model cache
-// metadata until copy submission succeeds, or consume a slot before readiness.
+// Declare this owner after those borrowed owners. For a cache/arena loan, drain
+// and destroy it while the checked lease is still live: member destruction alone
+// does not establish that ordering. Accepted enqueue is not completion. Cache
+// publication must carry readiness to every consumer and invalidate partial
+// state on failure; never consume a slot without its readiness dependency.
 //
 // Unlike a recycled bank, these slots need no per-expert reader marker: none
 // can be overwritten before the terminal drain. Enforcing that restriction is
