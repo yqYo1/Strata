@@ -24,7 +24,7 @@ import qsa16_stream_bench as core
 import ur_validation as validation
 
 P,B,RESULT=capacity.P,capacity.B,capacity.RESULT
-ROOT,KEY=B/'prefill-bank-reuse-v1','prefill_bank_reuse_v1'
+ROOT,KEY=B/'prefill-bank-reuse-v2','prefill_bank_reuse_v2'
 CAPACITY_KEY='coherent_context_model_v2'
 READ,RUNS,STRIDE=131072,3,2662400
 SLOTS=(512,384,512,512,384,384,512)
@@ -208,11 +208,18 @@ def decision(processes):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh reuse campaign only')
+    previous=validation.committed(RESULT,('prefill_bank_reuse_v1',))
+    require(previous['stage']=='failed' and not previous['active'] and previous['ownership_closed']
+        and not previous['processes'] and previous['unit_failure']['errors']==2,
+        'preserve original refused controls before fresh fixture correction')
     native,proof,prior=capacity.basis();recovery=bridge(native,proof)
     revision=validation.git('rev-parse','HEAD').decode().strip();ROOT.mkdir(mode=0o700)
     row=dict(stage='prepared',source_commit=revision,sources=core.pins(revision),
         policies={p:sha(P/p) for p in POLICIES},original_native_proof=proof,
         capacity_gate=capacity_gate(),capacity_bridge=recovery,reference_evidence_sha256=signature(compact(prior)),
+        previous_attempt=dict(key='prefill_bank_reuse_v1',source_commit=previous['source_commit'],
+            outcome='failed7host controls with2synthetic header-order errors;no model/GPUattempt',
+            corrected_input='Host fixture order only;production route/adoption criteria unchanged'),
         **{k:copy.deepcopy(prior[k]) for k in ('configuration','environment_template','model_assets','template',
             'boot','driver','native_validation_probe','python_contract','python_selected')},
         binary=native['binaries']['strata'],native_source_commit=capacity.original.SOURCE,

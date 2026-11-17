@@ -1991,7 +1991,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   requested slots. Its seven-process plan separates three traced admission
   requests from18clean requests in three alternating pairs. Copy reuse and
   repeated time gain are independent gates;the native14ELF/math/queue/decode
-  stay fixed. The controller and seven host controls are not yet executed.
+  stay fixed. The first seven host controls refuse two synthetic fixtures whose
+  bank/allocation header order disagrees with the existing production reader;
+  no model/GPUcase ran. V1stays failed;V2corrects that fixture under a fresh
+  source/plan without weakening the route or performance criteria.
   The capacity reader/original record/two generated
   fixtures remain only through that upcoming historical-evidence bridge's host
   admission,then retire the ended private inputs. All134resolved V1/V2raw/JIT

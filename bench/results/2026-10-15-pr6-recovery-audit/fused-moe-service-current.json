@@ -398302,7 +398302,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_bank_reuse_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "bbc493cc5b82e829e8fd4c669b1a39ff887dc5fd",
     "policies": {
       "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
@@ -398857,6 +398857,16 @@
         "comparison_inputs_or_criteria_changed": false
       }
     ],
+    "error": "RuntimeError('reuse isolation/route/refusal controls failed')",
+    "unit_failure": {
+      "exit_code": 1,
+      "tests": 7,
+      "errors": 2,
+      "mechanism": "Synthetic ordered_fixture placed layer-major allocation before bank header. Production reader correctly requires target detach < draft detach < bank < allocation.",
+      "native_or_GPU_executed": false,
+      "criteria_weakened": false,
+      "next": "Preserve failed campaign. Fix only synthetic header order and commit a fresh V2plan before controls/model execution."
+    },
     "source_inputs": {
       "files": 767,
       "sha256": "bef26c0e667660a31fdd757e3a28903a0820bd7d31487a2d1d6719902c2c4c34"

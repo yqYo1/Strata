@@ -40,7 +40,7 @@ def fixture(slots=384,n=131071,gpu=None):
 def ordered_fixture(*args,**kwargs):
     # Production emits head retirement before allocating/admitting the bank.
     lines=fixture(*args,**kwargs).splitlines()
-    return '\n'.join(lines[-2:]+lines[:-2])+'\n'
+    return '\n'.join(lines[-2:]+[lines[1],lines[0]]+lines[2:-2])+'\n'
 
 
 def processes():
