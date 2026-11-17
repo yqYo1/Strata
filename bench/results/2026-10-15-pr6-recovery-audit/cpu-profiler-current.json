@@ -29907,7 +29907,7 @@
     }
   },
   "prefill_unique_slot_lifetime_v1": {
-    "stage": "built",
+    "stage": "testing",
     "passed": true,
     "complete": false,
     "active": false,
@@ -30968,7 +30968,35 @@
         "expected_ready_barriers": 0
       }
     ],
-    "results": [],
+    "results": [
+      {
+        "label": "host-compute-w1",
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "kernels": 0,
+        "payload_copies": 0,
+        "readiness_barriers": 0,
+        "validation": {
+          "pid": 1367067,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "489aaf95264d742eccc59f1617f9bb5c0b94cd4ae1269e24fdb108f24c94b523",
+        "outcome": {
+          "kind": "host",
+          "passed": true,
+          "capacity_refusals": 2
+        }
+      }
+    ],
     "model_trial_allowed": false,
     "performance_qualified": false,
     "plan": "Host controller negative-admission controls first,then four fresh translation units/four objects plus link;no archive/object reuse. Then15independent traced processes in declared order:host first,compute placement,then separate. Exact source/recipe/actual dependency census/provider/ELF/environment,normal0,quiet validation,positive owner closure and no fresh fault. Verify every accepted GPU consumer byte,unique512source patterns,partial readiness tails,capacity/order/alias/foreign/stale/refusal/terminal and accepted-copy host-exception retirement. Stop first failure;no retry or changed criteria. No timing/model gate is passed by this fixture.",
@@ -30992,6 +31020,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
+    "fresh_faults": [],
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "535911a2bdecadedcdca4ddd435c7e160c9e8520",
