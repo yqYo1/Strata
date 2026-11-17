@@ -1874,10 +1874,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   device faults. Four fresh TUs/four objects match719compiler/25link inputs.
   No model integration or performance gate passes from this safety fixture.
   Single-write ownership and omitted overwrite-reader markers form one
-  inseparable safety unit. Next hold math/order/bytes fixed:compare128versus512
-  slots with reader markers,then omit markers at the same512slot layout;vary
-  queue placement,ready batching and prefetch window independently before
-  testing their combination. Commit exact source and that new plan first.
+  inseparable safety unit. The next unbuilt three-arm fixture holds math/order/bytes,
+  separate queue,window128,ready64 and refill64 fixed:compare128versus512slots
+  with reader markers,then omit markers at the same512slot layout. Every arm
+  drains/destroys its two-job warm owner and creates a fresh timed owner at slot0;
+  retain preparation/reset/retirement separately. Its39case plan includes3metadata,
+  9traced full-math and27clean independent processes at128/1024/8192rows with
+  three matched orderings. No model trial is authorized. Queue placement,ready
+  batching and window remain later independent units. Commit the exact source
+  and prepared recipe/plan before building. Old9arm controller/13host controls
+  and24case fixture restore from`05eceacd`;the unused24case fixture is removed
+  from the active tree. The15case single-write fixture remains the near-term
+  regression starting point for the actual cache/checked-loan handoff seam.
   The22.95MBsmall generation and private audit captures are now retired after
   exact final ELF,recipe,370project/398original source recovery;both phase
   references remain. Full input/15case evidence restores from`4eb8276e0`.

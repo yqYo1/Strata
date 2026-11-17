@@ -1,138 +1,146 @@
-"""Host-only admission tests for the independently controlled prefill fixture.
+"""Negative host admission and independent-unit controls; no native execution.
 
-Main-authored; repository LICENSE. No GPU/runtime/process inspection.
+Main-authored; repository LICENSE. Old13controls restore from05eceacd.
 """
+import copy
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
-
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
 import prefill_weight_pipeline as t
 
 
-def case(family='math',arm='both64',mode='batch',width=1):
-    value=dict(family=family,arm=arm,mode=mode,rows=128,trace=False,pair=0,
-        environment=dict(t.BACKEND|t.SAFETY))
-    if family=='lifetime':
-        value.update(arm='lifetime',rows=0,trace=True,pair=None,width=width,placement='separate',
-            argv=[str(t.ROOT/'lifetime'),mode,'separate',str(width)])
-    else:value['argv']=[str(t.ROOT/'benchmark'),mode,arm,'128','weights']
+def cases():
+    return [dict(label=label,root=str(t.ROOT/label),family='math',mode=mode,arm=arm,
+        rows=rows,trace=trace,pair=pair,environment=dict(t.SAFETY|t.BACKEND),
+        argv=[str(t.ROOT/'benchmark'),mode,arm,str(rows),'weights'])
+        for label,mode,arm,rows,trace,pair in t.expected_cases()]
+
+
+def row():
+    value={k:{} for k in ['foundation','source_view','recipe_tools','runtime_manifest',
+        'native_validation_probe','validation_provider','build_environment','driver',
+        'phase_references','historical_safety','plan']}
+    value.update(project={'source_sha256':{'source':'pinned'},'revision':'original'},
+        native_source_commit='original',allowed={'source':'pinned'},recipe=[],
+        cases=cases(),weights={'path':'weights'},stage='prepared',passed=False,complete=False,
+        active=False,ownership_closed=True,commands=[],results=[],model_trial_allowed=False,
+        performance_qualified=False,boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip())
     return value
 
 
-def batch(arm='both64',rows=128):
-    adapter,_,_,_,ready,readers=t.POLICIES[arm]
+def batch(arm='unique512',rows=128):
     return dict(kind='batch',arm=arm,rows=rows,epochs=512,requested_H2D_bytes=1009254400,
         copies=512,gu_fused=512 if rows>=2334 else 0,down_fused=512 if rows>=2334 else 0,
         split_primary_rows=rows//2,actual_source_experts=512,source_footprint_bytes=1009254400,
+        copy_adapter_calls=512,ready_barrier_calls=8,reader_barrier_calls=0 if arm=='unique512' else 8,
+        single_write_copy_calls=512 if arm=='unique512' else 0,timed_initial_slot=0,
         production_gemm_dispatch=True,split_tail_checked=True,full_bitwise_reference_and_guards=True,
-        copy_compat_calls=512 if arm=='direct' else 0,
-        copy_shortcut_calls=512 if arm in ['shortcut','layout'] else 0,
-        copy_adapter_calls=512 if adapter else 0,ready_barrier_calls=512//ready if adapter else 0,
-        reader_barrier_calls=512//readers if adapter else 0,wall_s=1.,timer_pair_max_s=1e-7)
+        warm_owner_retired=True,wall_s=1.,timer_pair_max_s=1e-7)
 
 
 class Admission(unittest.TestCase):
-    def test_policy_and_independent_order(self):
-        self.assertEqual(len(t.ARMS),9)
-        for block in t.BLOCKS:self.assertEqual(set(block),set(t.ARMS));self.assertEqual(len(block),9)
-        self.assertEqual(t.ROWS,(128,1024,8192))
+    def test_minimum_unit_deltas_and_combined_contrast(self):
+        self.assertEqual(t.POLICIES['base128'],(False,128))
+        self.assertEqual(t.POLICIES['base512'],(False,512))
+        self.assertEqual(t.POLICIES['unique512'],(True,512))
+        self.assertEqual(t.UNITS,{'S':('base128','base512'),'U':('base512','unique512'),
+                                 'netUnique':('base128','unique512')})
 
-    def test_minimum_unit_deltas(self):
-        for before,after,indices in [('shortcut','layout',{2}),('layout','bridge',{0}),
-            ('bridge','queue',{1}),('queue','window',{3}),('window','ready64',{4}),
-            ('window','readers64',{5}),('ready64','both64',{5}),('readers64','both64',{4})]:
-            with self.subTest(before=before,after=after):
-                self.assertEqual({i for i,(a,b) in enumerate(zip(t.POLICIES[before],t.POLICIES[after])) if a!=b},indices)
-
-    def test_fixed_layout_factorial(self):
-        policies=[t.POLICIES[k] for k in ['window','ready64','readers64','both64']]
-        self.assertEqual({v[:4] for v in policies},{(True,True,128,128)})
-        self.assertEqual({v[4:] for v in policies},{(1,1),(64,1),(1,64),(64,64)})
-
-    def test_native_arguments_are_admitted_exactly(self):
-        for arm in t.ARMS:t.case_gate(case(arm=arm),'weights')
-        wrong=case();wrong['argv'][-1]='other-weights'
+    def test_complete_three_block_plan_and_frozen_cases(self):
+        r=row();t.plan_gate(r);self.assertEqual(len(r['cases']),39)
+        for block in t.BLOCKS:self.assertEqual(set(block),set(t.ARMS))
+        for changed in [r['cases'][:-1],list(reversed(r['cases'])),r['cases']+r['cases'][:1]]:
+            with self.assertRaises(RuntimeError):t.plan_gate(dict(r,cases=changed))
+        wrong=copy.deepcopy(cases()[0]);wrong['argv'][-1]='different'
         with self.assertRaises(RuntimeError):t.case_gate(wrong,'weights')
-        wrong=case();wrong['rows']=4096
-        with self.assertRaises(RuntimeError):t.case_gate(wrong,'weights')
+        for key in t.SAFETY|t.BACKEND:
+            wrong=copy.deepcopy(cases()[0]);wrong['environment'][key]='changed'
+            with self.subTest(key=key),self.assertRaises(RuntimeError):t.case_gate(wrong,'weights')
 
-    def test_safety_and_backend_cannot_drift(self):
-        for name in (t.SAFETY|t.BACKEND):
-            wrong=case();wrong['environment'][name]='unqualified'
-            with self.subTest(name=name),self.assertRaises(RuntimeError):t.case_gate(wrong,'weights')
-
-    def test_finite_lifetime_arguments(self):
-        for mode in ['metadata','ordered','throw-copy','throw-reader','grain1','ready64','readers64','both64']:
-            t.case_gate(case('lifetime',mode=mode),'weights')
-        wrong=case('lifetime',mode='both64',width=64)
-        with self.assertRaises(RuntimeError):t.case_gate(wrong,'weights')
-
-    def test_actual_source_proof_not_just_the_policy_label(self):
+    def test_real_source_allocation_and_readiness_contract(self):
         for arm in t.ARMS:
-            adapter,separate,slots,window,ready,readers=t.POLICIES[arm]
-            proof=dict(kind='source-proof',ordinary_readonly_mapping=True,host_slots=0,policy=arm,
-                dependency_bridge=adapter,separate_queue=separate,physical_slots=slots,prefetch_window=window,
-                ready_width=ready,readers_width=readers,reader_marker='after-math' if adapter else 'none',
-                runtime_check_and_observer_retained=True)
-            t.source_proof_gate(proof,arm);proof['physical_slots']=2
-            with self.assertRaises(RuntimeError):t.source_proof_gate(proof,arm)
+            unique,slots=t.POLICIES[arm]
+            p=dict(kind='source-proof',ordinary_readonly_mapping=True,host_slots=0,policy=arm,
+                dependency_bridge=True,separate_queue=True,single_write_destinations=unique,
+                physical_slots=slots,prefetch_window=128,ready_width=64,refill_width=64,
+                reader_marker='none-single-write' if unique else 'after-math',
+                admitted_bank_allocation_bytes=slots*t.PAYLOAD+512,runtime_check_and_observer_retained=True)
+            t.source_proof_gate(p,arm)
+            for key,value in [('admitted_bank_allocation_bytes',0),('physical_slots',1),
+                ('separate_queue',False),('ready_width',1),('single_write_destinations',not unique)]:
+                with self.subTest(arm=arm,key=key),self.assertRaises(RuntimeError):t.source_proof_gate(dict(p,**{key:value}),arm)
 
-    def test_measured_dispatch_counts_are_required(self):
-        for arm in t.ARMS:
-            t.batch_gate(batch(arm),arm,128)
-        for field in ['copy_compat_calls','copy_shortcut_calls','copy_adapter_calls',
-                      'ready_barrier_calls','reader_barrier_calls']:
-            value=batch();value[field]+=1
-            with self.subTest(field=field),self.assertRaises(RuntimeError):t.batch_gate(value,'both64',128)
+    def test_actual_counts_math_and_warm_owner_reset(self):
+        for m in t.ROWS:
+            for arm in t.ARMS:t.batch_gate(batch(arm,m),arm,m)
+        for key,value in [('copies',511),('requested_H2D_bytes',1),('single_write_copy_calls',0),
+            ('reader_barrier_calls',8),('timed_initial_slot',2),('warm_owner_retired',False),
+            ('gu_fused',512),('split_tail_checked',False),('copies',True)]:
+            with self.subTest(key=key),self.assertRaises(RuntimeError):t.batch_gate(dict(batch(),**{key:value}),'unique512',128)
 
-    def test_timer_and_full_math_eligibility(self):
-        for field,value in [('wall_s',.099),('timer_pair_max_s',.002),('full_bitwise_reference_and_guards',False),
-            ('split_tail_checked',False),('gu_fused',512),('copies',511),('actual_source_experts',2)]:
-            wrong=batch();wrong[field]=value
-            with self.subTest(field=field),self.assertRaises(RuntimeError):t.batch_gate(wrong,'both64',128)
+    def test_timing_eligibility_and_no_model_promotion(self):
+        for key,value in [('wall_s',.099),('timer_pair_max_s',.002),('wall_s',float('nan'))]:
+            with self.subTest(key=key),self.assertRaises(RuntimeError):t.batch_gate(dict(batch(),**{key:value}),'unique512',128)
+        for key in ['model_trial_allowed','performance_qualified']:
+            with self.assertRaises(RuntimeError):t.plan_gate(dict(row(),**{key:True}))
 
-    def test_lifetime_census_includes_matching_sized_readbacks(self):
-        self.assertEqual(t.lifetime_counts('ordered',1),(15,5))
-        self.assertEqual(t.lifetime_counts('ordered',64),(582,194))
-        self.assertEqual(t.lifetime_counts('throw-copy',1),(0,2))
-        self.assertEqual(t.lifetime_counts('throw-reader',64),(192,65))
-        self.assertEqual(t.lifetime_counts('both64',1),(768,256))
-        self.assertEqual(t.lifetime_done('both64',1)['readers_width'],64)
-
-    def test_separately_pinned_fixture_provider(self):
-        row=dict(binary={'path':'math','sha256':'math-hash'},lifetime_binary={'path':'life','sha256':'life-hash'})
-        with patch.object(t.base.event,'mappings',return_value={'ok':True}) as mappings:
-            t.case_mappings(123,row,dict(family='lifetime',argv=['life']))
-            self.assertEqual(mappings.call_args.args[1]['binary'],row['lifetime_binary'])
-            with self.assertRaises(RuntimeError):t.case_mappings(123,row,dict(family='lifetime',argv=['math']))
-
-    def test_faster_variant_survives_failed_combination(self):
+    def test_individual_unit_not_rejected_by_losing_combination(self):
         samples=[]
-        for rows in t.ROWS:
+        for m in t.ROWS:
             for pair in range(3):
-                for arm in t.ARMS:
-                    time=.8 if arm=='ready64' else 1.2 if arm=='both64' else 1.
-                    samples.append(dict(family='math',clean=True,rows=rows,pair=pair,arm=arm,
+                for arm,time in [('base128',1.),('base512',2.),('unique512',1.5)]:
+                    samples.append(dict(clean=True,rows=m,pair=pair,arm=arm,
                         batch={'wall_s':time},lifecycle_plus_batch_s=time+.01))
-        a=t.analyze(samples)
-        for rows in t.ROWS:
-            self.assertTrue(a[str(rows)]['netReady']['repeated_component_gain'])
-            self.assertFalse(a[str(rows)]['netBoth']['repeated_component_gain'])
-            self.assertEqual(len(a[str(rows)]['interaction']['paired_multiplicative_time_ratios']),3)
+        for value in t.analyze(samples).values():
+            self.assertTrue(value['U']['repeated_component_gain'])
+            self.assertFalse(value['S']['repeated_component_gain'])
+            self.assertFalse(value['netUnique']['repeated_component_gain'])
+        samples[-1]['batch']['wall_s']=3.
+        self.assertFalse(t.analyze(samples)['8192']['U']['repeated_component_gain'])
 
-    def test_exact_historical_seed_and_metadata(self):
-        seed=dict(stage='closed',passed=True,complete=True,active=False,ownership_closed=True,
-            native_source_commit=t.SEED_SOURCE,project={'revision':t.SEED_SOURCE},
-            original_math_runtime_source=t.base.original.SOURCE)
-        for key in ['native_validation_probe','runtime_manifest','validation_provider','driver','boot','weights']:seed[key]={'present':True}
-        with patch.object(t,'git',return_value=json.dumps({'prefill_weight_pipeline_v2':seed})):
-            self.assertEqual(t.seed_recipe(),seed)
-        seed['native_source_commit']='wrong'
-        with patch.object(t,'git',return_value=json.dumps({'prefill_weight_pipeline_v2':seed})),self.assertRaises(RuntimeError):t.seed_recipe()
+    def test_only_outputs_can_change_without_admission_commit(self):
+        r=row();original=t.admission(r)
+        with patch.object(t.base.ur_validation,'committed',return_value=original):
+            t.admission_gate(r)
+            output=copy.deepcopy(r);output.update(stage='testing',results=[{'case':'outcome'}])
+            t.admission_gate(output)
+            for key,value in [('cases',[]),('recipe',[{'new':'recipe'}]),('boot','other'),
+                ('allowed',{'source':'different'}),('runtime_manifest',{'provider':'different'}),
+                ('weights',{'path':'changed-corpus'})]:
+                with self.subTest(key=key),self.assertRaises(RuntimeError):t.admission_gate(dict(r,**{key:value}))
+            built=copy.deepcopy(r);built.update(binary={'path':'fixture','sha256':'new'},actual_inputs={'compiled':{'header':'sha'}})
+            with self.assertRaises(RuntimeError):t.admission_gate(built)
+        with patch.object(t.base.ur_validation,'committed',return_value=t.admission(built)):
+            t.admission_gate(built);built['actual_inputs']['compiled']['header']='changed'
+            with self.assertRaises(RuntimeError):t.admission_gate(built)
+
+    def test_half_written_output_cannot_advance(self):
+        with tempfile.TemporaryDirectory() as root:
+            p=Path(root)/'public.json';r=row();p.write_text(json.dumps({t.KEY:t.compact(r)}))
+            with patch.object(t,'RESULT',p):
+                t.output_gate(r);r['results'].append({'unrecorded':'sample'})
+                with self.assertRaises(RuntimeError):t.output_gate(r)
+
+    def test_prelaunch_or_owner_setup_failure_is_terminal(self):
+        for failed_check in [True,False]:
+            with self.subTest(prelaunch=failed_check),tempfile.TemporaryDirectory() as root:
+                root=Path(root);record=root/'record.json';public=root/'public.json';r=row()
+                record.write_text(json.dumps(r));public.write_text(json.dumps({t.KEY:t.compact(r)}))
+                with patch.object(t,'ROOT',root),patch.object(t,'RECORD',record),patch.object(t,'RESULT',public),\
+                     patch.object(t,'check',side_effect=RuntimeError('input mismatch') if failed_check else None),\
+                     patch.object(t.base.guards,'driver_guard',return_value={}),\
+                     patch.object(t.base.owner_api,'Owner',side_effect=RuntimeError('setup failed')) as owner:
+                    with self.assertRaises(RuntimeError):t.execute('build')
+                    result=json.loads(record.read_text());self.assertEqual(result['stage'],'failed')
+                    self.assertFalse(result['active']);self.assertTrue(result['ownership_closed'])
+                    self.assertEqual((root/'build.started').exists(),not failed_check)
+                    if failed_check:owner.assert_not_called()
+                    with self.assertRaisesRegex(RuntimeError,'terminal/wrong-stage'):t.execute('build')
 
 
 if __name__=='__main__':unittest.main()
