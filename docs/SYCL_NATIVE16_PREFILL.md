@@ -2207,6 +2207,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   synthetic-metadata refusal and this standalone loss. The prospective
   capacity/mechanism rule permits only the separately planned window question;
   no larger-window model is admitted before its fresh component/host gates.
+  All637closed private files(96,700,824B),the240,780Btemporary inventory and
+  three ended Pythoncontrols(41,865B)are retired after exact original768source,
+  18generated-input and native-source/recipe recovery from pushed Git. The
+  compact result retains all27samples and the original failed decision;both
+  phase references and every required current C++fixture remain.
   CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
   markers;the old marker-associated stall remains causally unresolved. Require
   exact route/count/clock/owner/conservation and<=1.2observer ratios against both
