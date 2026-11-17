@@ -2110,8 +2110,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controls before normal-route attribution. Finite3GiB/file,4GiB/job,5GiBwhole
   capture is reduced/retired after closure. This identifies service/requested
   payloads and host waits;physical bandwidth/saturation remain separate checks.
-  Select the next independent change from this evidence;keep speed samples
-  separate from observers. Numerical/
+  The one-shot profile controller/test are retired;restore from90756f079.
+  The equivalent ordinary-Down classifier is preserved in profile_split.py,
+  with19host tests passing and exact old-wrapper-plus-base AST equivalence.
+  All518ended files(2,360,701,676B)and287,550Btemporary inventory are removed;
+  original source/recipe/inputs are recoverable from1dfadd0d6 on pushed feature.
+  Both phase builds and the owned collector/model assets remain. Select the
+  next independent change from this evidence;keep speed samples separate from observers. Numerical/
   task,agent,long-thinking generation with observed MTPstrong/weak acceptance,
   repeated decode preservation and serve RESTORE/full-context/ordinary teardown
   gates remain before adoption. The earlier standalone physical262144pass is
