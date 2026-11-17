@@ -19999,9 +19999,9 @@
     }
   },
   "prefill_sycl_copy_groups_v1": {
-    "stage": "testing",
+    "stage": "closed",
     "passed": true,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "prior_copy_lane": {
@@ -36974,6 +36974,74 @@
           "full_bitwise_reference_and_guards": true
         },
         "lifecycle_plus_batch_s": 1.9281118709999998
+      },
+      {
+        "label": "clean-8192-block2-layout",
+        "family": "math",
+        "arm": "layout",
+        "rows": 8192,
+        "mode": "batch",
+        "pair": 2,
+        "clean": true,
+        "passed": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 1144050,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers_sha256": "540a7a4bef5a7b00cb378ef0dc7964a2c1cb8d90d6dd82ca44f98bd635df2e0f",
+        "source_proof": {
+          "kind": "source-proof",
+          "ordinary_readonly_mapping": true,
+          "host_slots": 0,
+          "policy": "layout",
+          "dependency_bridge": false,
+          "separate_queue": false,
+          "physical_slots": 128,
+          "prefetch_window": 1,
+          "ready_width": 1,
+          "readers_width": 1,
+          "reader_marker": "none",
+          "runtime_check_and_observer_retained": true
+        },
+        "source_lifecycle": {
+          "kind": "source",
+          "preparation_s": 2.01e-07,
+          "retirement_s": 4e-08
+        },
+        "batch": {
+          "kind": "batch",
+          "arm": "layout",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_compat_calls": 0,
+          "copy_shortcut_calls": 512,
+          "copy_adapter_calls": 0,
+          "ready_barrier_calls": 0,
+          "reader_barrier_calls": 0,
+          "wall_s": 1.822122959,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.8221232
       }
     ],
     "model_trial_allowed": false,
@@ -37182,6 +37250,704 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
+    },
+    "analysis": {
+      "128": {
+        "S": {
+          "reference": "direct",
+          "candidate": "shortcut",
+          "paired_time_ratios": [
+            1.00972173671802,
+            0.6263381798200637,
+            1.0747940902478363
+          ],
+          "geometric_mean_ratio": 0.8792491431595097,
+          "paired_lifecycle_ratios": [
+            1.00972177925471,
+            0.6263383229978132,
+            1.0747940570420815
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "L": {
+          "reference": "shortcut",
+          "candidate": "layout",
+          "paired_time_ratios": [
+            1.0289662708339666,
+            1.0039564311914355,
+            0.6161005022368412
+          ],
+          "geometric_mean_ratio": 0.8601797003655984,
+          "paired_lifecycle_ratios": [
+            1.0289659769279678,
+            1.0039566672848592,
+            0.6161007434266303
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "R": {
+          "reference": "layout",
+          "candidate": "bridge",
+          "paired_time_ratios": [
+            2.4048270887030463,
+            2.323274157894084,
+            2.9074463073871266
+          ],
+          "geometric_mean_ratio": 2.5325926380009642,
+          "paired_lifecycle_ratios": [
+            2.405998980510237,
+            2.3241658970496593,
+            2.9083507923169694
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "Q": {
+          "reference": "bridge",
+          "candidate": "queue",
+          "paired_time_ratios": [
+            1.0423758981208697,
+            1.3174719274667466,
+            1.0373379138419887
+          ],
+          "geometric_mean_ratio": 1.1251972467179472,
+          "paired_lifecycle_ratios": [
+            1.042484281816481,
+            1.317531116530984,
+            1.0376447886300917
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "W": {
+          "reference": "queue",
+          "candidate": "window",
+          "paired_time_ratios": [
+            1.0057762615880783,
+            0.7727084899001845,
+            0.9515238305040066
+          ],
+          "geometric_mean_ratio": 0.9042994045223118,
+          "paired_lifecycle_ratios": [
+            1.00570199593455,
+            0.7728418367008014,
+            0.9514068695120855
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "A": {
+          "reference": "window",
+          "candidate": "ready64",
+          "paired_time_ratios": [
+            0.9352360945309012,
+            1.1085148820643616,
+            0.9932001062919041
+          ],
+          "geometric_mean_ratio": 1.0097949202767489,
+          "paired_lifecycle_ratios": [
+            0.9351789408927653,
+            1.108392931921884,
+            0.9932814669708115
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "B": {
+          "reference": "window",
+          "candidate": "readers64",
+          "paired_time_ratios": [
+            1.0376378447557262,
+            0.9080408797039624,
+            0.9818576172926038
+          ],
+          "geometric_mean_ratio": 0.9743909444180784,
+          "paired_lifecycle_ratios": [
+            1.0375132286600743,
+            0.908107097109078,
+            0.9818886914515169
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "AB_after_A": {
+          "reference": "ready64",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            1.0853676312495932,
+            0.8292679112197141,
+            0.7555151886201626
+          ],
+          "geometric_mean_ratio": 0.8793699928799241,
+          "paired_lifecycle_ratios": [
+            1.0852359022658908,
+            0.8292102893410596,
+            0.7555038132779165
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "AB_after_B": {
+          "reference": "readers64",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            0.9782555539106103,
+            1.0123507006701886,
+            0.7642429537918155
+          ],
+          "geometric_mean_ratio": 0.9113214330868661,
+          "paired_lifecycle_ratios": [
+            0.9781945267440382,
+            1.0120951886714893,
+            0.7642698632625866
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netWindow": {
+          "reference": "direct",
+          "candidate": "window",
+          "paired_time_ratios": [
+            2.6194640474209847,
+            1.487240720086066,
+            1.9003275152033043
+          ],
+          "geometric_mean_ratio": 1.9489800282953715,
+          "paired_lifecycle_ratios": [
+            2.6208188602237663,
+            1.4881358617176554,
+            1.901247996258386
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netReady": {
+          "reference": "direct",
+          "candidate": "ready64",
+          "paired_time_ratios": [
+            2.4498173254741094,
+            1.648628471427522,
+            1.887405490089352
+          ],
+          "geometric_mean_ratio": 1.9680701322935008,
+          "paired_lifecycle_ratios": [
+            2.450934605975846,
+            1.6494392708673313,
+            1.8884743987988457
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netReaders": {
+          "reference": "direct",
+          "candidate": "readers64",
+          "paired_time_ratios": [
+            2.718055028581022,
+            1.3504753717985059,
+            1.8658510461530908
+          ],
+          "geometric_mean_ratio": 1.8990684904227004,
+          "paired_lifecycle_ratios": [
+            2.719134237403976,
+            1.3513867374883362,
+            1.8668139071709653
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netBoth": {
+          "reference": "direct",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            2.6589524275440475,
+            1.367154688878051,
+            1.4259635148475873
+          ],
+          "geometric_mean_ratio": 1.730661818222127,
+          "paired_lifecycle_ratios": [
+            2.659842228510893,
+            1.367732015046406,
+            1.4267496095702488
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "interaction": {
+          "paired_multiplicative_time_ratios": [
+            1.045998502015993,
+            0.9132495350760753,
+            0.7694753040704998
+          ],
+          "geometric_mean_ratio": 0.902481696815335,
+          "scope": "2x2marker interaction at fixed128one-expert slots/window;not additive hardware attribution."
+        }
+      },
+      "1024": {
+        "S": {
+          "reference": "direct",
+          "candidate": "shortcut",
+          "paired_time_ratios": [
+            0.8596028960601454,
+            1.3490907714315066,
+            1.2814956002970403
+          ],
+          "geometric_mean_ratio": 1.1411744869566447,
+          "paired_lifecycle_ratios": [
+            0.8596029575004588,
+            1.3490905849615122,
+            1.28149531647573
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "L": {
+          "reference": "shortcut",
+          "candidate": "layout",
+          "paired_time_ratios": [
+            1.0629381408349734,
+            0.8259743082966431,
+            0.7493293550670777
+          ],
+          "geometric_mean_ratio": 0.8697259442317528,
+          "paired_lifecycle_ratios": [
+            1.0629381663067754,
+            0.8259743955123123,
+            0.7493294464308065
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "R": {
+          "reference": "layout",
+          "candidate": "bridge",
+          "paired_time_ratios": [
+            1.8152057565427377,
+            1.5863641454030135,
+            1.6253812713506306
+          ],
+          "geometric_mean_ratio": 1.6727382926054402,
+          "paired_lifecycle_ratios": [
+            1.8157813561335197,
+            1.58722594389952,
+            1.6261187906424113
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "Q": {
+          "reference": "bridge",
+          "candidate": "queue",
+          "paired_time_ratios": [
+            0.9635405263910943,
+            1.0527491208667503,
+            1.2773358965662187
+          ],
+          "geometric_mean_ratio": 1.0901844843136235,
+          "paired_lifecycle_ratios": [
+            0.9637033488900499,
+            1.052715730247056,
+            1.2773509843718631
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "W": {
+          "reference": "queue",
+          "candidate": "window",
+          "paired_time_ratios": [
+            0.8560877848288994,
+            1.2521950317220272,
+            0.9280867817034449
+          ],
+          "geometric_mean_ratio": 0.9982966673711205,
+          "paired_lifecycle_ratios": [
+            0.8563271775645125,
+            1.2520927565478752,
+            0.9282495141559443
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "A": {
+          "reference": "window",
+          "candidate": "ready64",
+          "paired_time_ratios": [
+            0.9679893614411872,
+            0.7434729588045471,
+            0.9852888404509877
+          ],
+          "geometric_mean_ratio": 0.8917294473548446,
+          "paired_lifecycle_ratios": [
+            0.9676927440977827,
+            0.7435003742669352,
+            0.985254195162801
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "B": {
+          "reference": "window",
+          "candidate": "readers64",
+          "paired_time_ratios": [
+            0.9395869007906245,
+            0.6369211204221469,
+            0.7677717062708608
+          ],
+          "geometric_mean_ratio": 0.7716462248391003,
+          "paired_lifecycle_ratios": [
+            0.9394291031897104,
+            0.6369566298126019,
+            0.7676425295735236
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "AB_after_A": {
+          "reference": "ready64",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            1.0677932714825475,
+            0.9016391708076774,
+            0.8670748872934544
+          ],
+          "geometric_mean_ratio": 0.9415835293087204,
+          "paired_lifecycle_ratios": [
+            1.067910010285057,
+            0.9016080820116987,
+            0.8668651299476128
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "AB_after_B": {
+          "reference": "readers64",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            1.100071239971358,
+            1.0524762338704718,
+            1.1127255710360142
+          ],
+          "geometric_mean_ratio": 1.0881123152050234,
+          "paired_lifecycle_ratios": [
+            1.1000391246060313,
+            1.0524200786088262,
+            1.112604464991969
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netWindow": {
+          "reference": "direct",
+          "candidate": "window",
+          "paired_time_ratios": [
+            1.3681068176075728,
+            2.3302765222043123,
+            1.8502858246627003
+          ],
+          "geometric_mean_ratio": 1.8068499836277785,
+          "paired_lifecycle_ratios": [
+            1.3691547917176314,
+            2.3312780004396343,
+            1.85147165938651
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netReady": {
+          "reference": "direct",
+          "candidate": "ready64",
+          "paired_time_ratios": [
+            1.3243128447592891,
+            1.7324975807960101,
+            1.8230659746848117
+          ],
+          "geometric_mean_ratio": 1.611221337353509,
+          "paired_lifecycle_ratios": [
+            1.324921157491863,
+            1.7333060658471402,
+            1.8241702196355913
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netReaders": {
+          "reference": "direct",
+          "candidate": "readers64",
+          "paired_time_ratios": [
+            1.2854552447064234,
+            1.4842023334157946,
+            1.4205971046900683
+          ],
+          "geometric_mean_ratio": 1.3942489687169652,
+          "paired_lifecycle_ratios": [
+            1.2862238581111893,
+            1.4849229783162912,
+            1.4212683880451498
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netBoth": {
+          "reference": "direct",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            1.4140923449718805,
+            1.5620876821752216,
+            1.5807347245283647
+          ],
+          "geometric_mean_ratio": 1.5170994733228333,
+          "paired_lifecycle_ratios": [
+            1.4148965669240248,
+            1.5627627575676832,
+            1.581309554490972
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "interaction": {
+          "paired_multiplicative_time_ratios": [
+            1.1364497212381768,
+            1.415621404123131,
+            1.1293394640770476
+          ],
+          "geometric_mean_ratio": 1.2202269628223148,
+          "scope": "2x2marker interaction at fixed128one-expert slots/window;not additive hardware attribution."
+        }
+      },
+      "8192": {
+        "S": {
+          "reference": "direct",
+          "candidate": "shortcut",
+          "paired_time_ratios": [
+            1.0040040736324247,
+            1.0854964762495007,
+            1.0469615580371745
+          ],
+          "geometric_mean_ratio": 1.0449564945815066,
+          "paired_lifecycle_ratios": [
+            1.0040040731012683,
+            1.0854965305792983,
+            1.0469615402666945
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "L": {
+          "reference": "shortcut",
+          "candidate": "layout",
+          "paired_time_ratios": [
+            0.8159004351827418,
+            0.7953941224676714,
+            0.9450298105666726
+          ],
+          "geometric_mean_ratio": 0.849614045777028,
+          "paired_lifecycle_ratios": [
+            0.8159004264756494,
+            0.7953941469623524,
+            0.9450298125362251
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "R": {
+          "reference": "layout",
+          "candidate": "bridge",
+          "paired_time_ratios": [
+            1.1498034005364337,
+            1.0814070057903373,
+            0.9127369965815791
+          ],
+          "geometric_mean_ratio": 1.043084456892881,
+          "paired_lifecycle_ratios": [
+            1.1500336933793114,
+            1.0816882890258868,
+            0.9129309604312156
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "Q": {
+          "reference": "bridge",
+          "candidate": "queue",
+          "paired_time_ratios": [
+            0.9094522075616233,
+            1.2571413279619195,
+            1.1996493748270407
+          ],
+          "geometric_mean_ratio": 1.1110649287653986,
+          "paired_lifecycle_ratios": [
+            0.9095786514568058,
+            1.257138793258505,
+            1.2000075765596447
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "W": {
+          "reference": "queue",
+          "candidate": "window",
+          "paired_time_ratios": [
+            1.0510494380410242,
+            0.8242226325240811,
+            0.82082317086161
+          ],
+          "geometric_mean_ratio": 0.8925634441305199,
+          "paired_lifecycle_ratios": [
+            1.0510431939317604,
+            0.8243835521664097,
+            0.8206673131972638
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "A": {
+          "reference": "window",
+          "candidate": "ready64",
+          "paired_time_ratios": [
+            1.1550724716146916,
+            0.9667334825441074,
+            1.0692768298023236
+          ],
+          "geometric_mean_ratio": 1.0608859963295867,
+          "paired_lifecycle_ratios": [
+            1.1549419167543424,
+            0.9666536601627657,
+            1.0694338185172918
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "B": {
+          "reference": "window",
+          "candidate": "readers64",
+          "paired_time_ratios": [
+            0.810253789855646,
+            0.8017883638303471,
+            1.0052141583338317
+          ],
+          "geometric_mean_ratio": 0.8675872061029261,
+          "paired_lifecycle_ratios": [
+            0.8102544245151225,
+            0.8016900238912175,
+            1.0052223736076615
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "AB_after_A": {
+          "reference": "ready64",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            0.667101232469872,
+            0.8800466866167204,
+            0.7721850823061611
+          ],
+          "geometric_mean_ratio": 0.7681976144178866,
+          "paired_lifecycle_ratios": [
+            0.6671879134665282,
+            0.8799279194742168,
+            0.7721138737553347
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "AB_after_B": {
+          "reference": "readers64",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            0.9509986612262096,
+            1.0610912262308687,
+            0.8213967242538283
+          ],
+          "geometric_mean_ratio": 0.939352362295033,
+          "paired_lifecycle_ratios": [
+            0.9510139831392931,
+            1.060990555814346,
+            0.8214348486662577
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netWindow": {
+          "reference": "direct",
+          "candidate": "window",
+          "paired_time_ratios": [
+            0.9003248850544097,
+            0.9674501890883855,
+            0.8892540218999537
+          ],
+          "geometric_mean_ratio": 0.9183704518535305,
+          "paired_lifecycle_ratios": [
+            0.9006250495075783,
+            0.9678888901704298,
+            0.8895396221990785
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "netReady": {
+          "reference": "direct",
+          "candidate": "ready64",
+          "paired_time_ratios": [
+            1.0399404902360099,
+            0.9352664904853702,
+            0.9508587214261487
+          ],
+          "geometric_mean_ratio": 0.9742863518142855,
+          "paired_lifecycle_ratios": [
+            1.040169620955257,
+            0.9356133383141231,
+            0.9513037548907894
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netReaders": {
+          "reference": "direct",
+          "candidate": "readers64",
+          "paired_time_ratios": [
+            0.7294916502166842,
+            0.7756903041965366,
+            0.8938907331691366
+          ],
+          "geometric_mean_ratio": 0.7967664544910863,
+          "paired_lifecycle_ratios": [
+            0.7297354311926666,
+            0.7759468674847758,
+            0.89418513044502
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "netBoth": {
+          "reference": "direct",
+          "candidate": "both64",
+          "paired_time_ratios": [
+            0.6937455827317651,
+            0.8230781760552985,
+            0.7342389200659817
+          ],
+          "geometric_mean_ratio": 0.7484444512236399,
+          "paired_lifecycle_ratios": [
+            0.6939885990564074,
+            0.8232722982150729,
+            0.7345148273067229
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "interaction": {
+          "paired_multiplicative_time_ratios": [
+            0.8233238040006231,
+            1.0976047125609474,
+            0.7681796718682095
+          ],
+          "geometric_mean_ratio": 0.8854413815857396,
+          "scope": "2x2marker interaction at fixed128one-expert slots/window;not additive hardware attribution."
+        }
+      }
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
