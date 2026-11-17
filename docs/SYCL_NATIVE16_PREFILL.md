@@ -1994,12 +1994,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stay fixed. The first seven host controls refuse two synthetic fixtures whose
   bank/allocation header order disagrees with the existing production reader;
   no model/GPUcase ran. V1stays failed;V2corrects that fixture under a fresh
-  source/plan without weakening the route or performance criteria.
-  The capacity reader/original record/two generated
-  fixtures remain only through that upcoming historical-evidence bridge's host
-  admission,then retire the ended private inputs. All134resolved V1/V2raw/JIT
+  source/plan without weakening the route or performance criteria. V2's seven
+  controls and current benchmark/server frontend probes now pass. Its bridge
+  recovers765capacity-controller sources and both original fixtures;the fresh
+  current reader consumes committed physical facts independently of old inputs.
+  All20ended capacity/refused-control input files(1575123B)and the9763B
+  temporary inventory are retired,with post-deletion admission passing. Neither
+  old private root remains. Closed capacity CLI/test code remains frozen only
+  as part of the current comparison's source contract;at its closure keep the
+  shared native/model basis and retire unused capacity command modes/fixtures.
+  All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
-  passes with only that original record/two fixtures. No V1private root remains
+  passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
   and no extra native generation was created.
   Queue placement,ready batching and window remain later independent units.
   Closed math/research captures are retired:766files/1262355027B plus the
