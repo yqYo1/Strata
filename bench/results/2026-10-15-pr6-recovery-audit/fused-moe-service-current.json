@@ -408769,7 +408769,7 @@
     }
   },
   "prefill_window_native_v2": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
     "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "native_source_identity": "Committed base plus explicit overlays;not the whole overlay revision native tree",
@@ -409075,8 +409075,8 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -409088,6 +409088,48 @@
       "limits": "Successful build proves no GPU allocation,safety,numerical result,PP,target,task/agent,thinking sustainedTG,decode preservation,physical262144/tails/RESTORE or ordinary teardown. Both prefill strategies remain available. Broader model routes require current decode implementation and repeated preservation gates.",
       "retention": "Bounded third generation:14508prefill reference and9849decode reference stay unchanged. This candidate serves the immediate long-window safety/layout/window/resource comparisons;select and retire it after that decision before another generation. CPUworkspace output is already retired;legacy provenance/configuration/cache holds remain concrete and separate."
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata",
+        "sha256": "b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c",
+        "bytes": 26466696
+      },
+      "prefill_moe_routes_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/prefill_moe_routes_test",
+        "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+        "bytes": 111336
+      },
+      "prefill_moe_workspace_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/prefill_moe_workspace_test",
+        "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+        "bytes": 67448
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_expert_bank_test",
+        "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+        "bytes": 513048
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_moe_down_scatter_bench",
+        "sha256": "a0d2d91436822ad83692aa4d8b74874d189d9602e461394950b94347d130a5da",
+        "bytes": 14282080
+      },
+      "sycl_native16_paired_gemm_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_native16_paired_gemm_bench",
+        "sha256": "4fd3bb3410348f0b03b91579deec35cb33a47bb628a9da0259464567b01c6dbb",
+        "bytes": 14222744
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata_full_context_diagnostic",
+        "sha256": "1e3bc251a1e02e3580b64c9f2dfed410c294176497f12e01f34f9befcd3bcef9",
+        "bytes": 26466800
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448
+      }
+    },
     "controller_sources": {
       "files": 375,
       "sha256": "3213db364f3a8216afb92a0b0087eb94b85cc626a3338dfbe849455aca12d6a1"
@@ -409096,6 +409138,44 @@
       "files": 1166,
       "sha256": "1777e3f600da30582f2af5f9be10af97e91883bf28ebad048031c3286eb2f48f"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1468,
+        "sha256": "66ac967f91d660fe6d2e35b9d3bb0a9a0934f735199d7c95819370e9699b5258"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "924033a4522b53c9cbfd331fd6120307887ead463c56ac381b72e5994b7d138f"
+      },
+      "links": {
+        "files": 29,
+        "sha256": "e5892521b3f3a86a1f8ce83f6db53c28593a581d1e667eafd9c7d3ffc9ee6de3"
+      },
+      "objects": {
+        "files": 133,
+        "sha256": "3abd7c62a03108200fbcb7ea0c2c88f63e4de1ff30c3d156b8e14095cf7d830c"
+      },
+      "produced": {
+        "files": 144,
+        "sha256": "246379bc91838faba743e474f6a3511e5036804cfd0571fa6e0ecce7c2fca3af"
+      },
+      "Gemm_includers": {
+        "files": 6,
+        "sha256": "f7d59c538ce998a58e8cdd6ceb4c3c195069908dd828d915e86851619d3b05c4"
+      },
+      "class_definition_includers": {
+        "files": 3,
+        "sha256": "3c36353772e79c40ab0d8876f8948416d7cac9bccb3c41dddd441ca9300786b9"
+      },
+      "AOT_finalization_recipe_sha256": "785a5a00b771c6692dcf2ffe2695a072adac16aa17c11fcdb88f5bbd927878b3",
+      "temporary_generated_link_objects": 37,
+      "temporary_generated_link_paths_sha256": "5af9e1057fafb49f0e1bdd03d10b5406594eefb95f7fa2792c2b051b2facb5c9",
+      "temporary_link_scope": "Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.",
+      "translation_units": 130,
+      "fresh_objects": 133,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }

@@ -2139,7 +2139,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   With bank1,the earlier observed free-budget scenario leaves22,492,160B
   beyond the unchanged512MiBheadroom. This is arithmetic,not actual admission.
   The ordinary/split public methods and their row limits remain unchanged.
-  An opt-in long-prefill caller is now authored but UNBUILT/UNRUN:mode16uses
+  The opt-in long-prefill caller is built coherently in V2;device/model checks
+  remain unrun. Mode16uses
   the explicitly requested bank and one admitted90113..131072row window;
   unsupported lengths/budgets retain ordinary mode10 and its host-tail/full
   context fallback. Mode10plus`STRATA_SYCL_PREFILL_MOE_RELOCATE_JOB_BUFFERS=1`
@@ -2161,14 +2162,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;
   assess bank-only/window-only/combined arms separately and retain infeasible
   cells. Retained native14still rejects mode16. The new source proposal has
-  no native/device/math/model qualification. Extended route checks cover48
+  no device/math/model qualification. Extended route checks cover48
   cases through131072rows,stable inverse/order/no-atomic uniqueness and old
-  factory refusals;they are authored,not yet run. Pure CPU CMake targets cover
+  factory refusals;they are built,not yet run. Pure CPU CMake targets cover
   routes and workspace. The existing Down fixture gains explicit long-prefill
   tiny,full-span/dataflow and production-dispatch cases,including2333/2334/2335/
   8192job rows,65536bank boundary and131072final row;startup arms are separate
-  processes with immutable environment. These fixtures are also unbuilt/unrun.
-  Rebuild every affected TU.
+  processes with immutable environment. These fixtures are built but unrun.
+  Every affected TU is rebuilt.
   `prefill_window_build.py`pins an explicit14508-plus15owned-overlay composition,
   preserving U1and the byte-identical9849native-job capacity safety check.
   It rebuilds all objects and checks actual compiler/link inputs and the
@@ -2186,8 +2187,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   pinned AOTfinalization/host-unbundle products. The prospective V2controller
   accounts for those products,their actual Ninja recipe,relative link paths
   and private temporary objects;missing external inputs still fail. Original
-  configure success and the observer hold remain. Compilation and device/model
-  checks are unrun. The live tree also
+  configure success and the observer hold remain. V2at`3a195f247`now builds
+  all eight targets normally0,in271.552s,with133fresh objects/130translation
+  units,1468actual compiler inputs,29external link inputs and no uncovered
+  dependency. All six Gemm includers and the accumulator/route producer and
+  consumer definitions are coherent;both AOTfinalization products are bound.
+  Engine SHA256is`b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c`.
+  The source is the explicit14508-plus15overlay composition,not the entire
+  later tree. Owners are reaped/empty;device/model checks remain unrun. The live tree also
   contains independent KV/verify proposals,which must not enter a prefill
   performance comparison implicitly. Preserve the9849decode
   reference;its implementation/performance/handoff remain adoption gates.
