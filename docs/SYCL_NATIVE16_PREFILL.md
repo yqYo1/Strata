@@ -1987,7 +1987,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reuse-byte/repetition gates;the existing comparator's48-window assumptions
   cannot be reused unchanged. The capacity reader/original record/two generated
   fixtures remain only through that upcoming historical-evidence bridge's host
-  admission,then retire the ended private inputs. No extra native generation.
+  admission,then retire the ended private inputs. All134resolved V1/V2raw/JIT
+  files(27388603B)and the60846Binventory are retired;post-cleanup admission
+  passes with only that original record/two fixtures. No V1private root remains
+  and no extra native generation was created.
   A separate131073-input reuse experiment remains a later
   hypothesis,not a way to relabel this failed64Kgate.
   Queue placement,ready batching and window remain later independent units.
