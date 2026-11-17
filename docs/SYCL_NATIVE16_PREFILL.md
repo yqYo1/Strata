@@ -1945,8 +1945,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   consume-prompt evidence must remain distinct from serve allocation/state
   qualification. The fresh`coherent_context_model.py`controller targets the
   retained diagnostic ELF with original BF16-prefix telemetry and resident20480.
-  Its ordered host/16385-input/262144-input gates are not yet executed;the
-  final case requires262143batched rows plus the checked finalT1commit.
+  The seven host reader controls and same-build physical bounds/hash-order
+  fixture pass with normal0,closed owners and no GPU work or fresh faults.
+  Its16385-input/262144-input GPUgates remain unrun;the final case requires
+  262143batched rows plus the checked finalT1commit.
   Standalone entry plus required scratch lease0is an inseparable diagnostic
   adaptation,not a production speed candidate or decode-selection change.
   A separate131073-input reuse experiment remains a later
