@@ -2037,39 +2037,49 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no GPU work and does not relabel the model source or its failed warm gate.
   Both phase reference engines and model assets remain current consumers.
 
-  Current bank-capacity unit, `prefill_bank_placement_v2`: source `f12afed85`,
-  same coherent native14508 ELF. Change only requested capacity 384 -> 256
-  at fixed 131,072 actual input tokens. Automatic bank/residual/source-view
-  placement is the intended planner consequence; kernels, math, chunk8192,
-  window10, same queue, split-request1, decoder1256, KVresident20480 and MTPspec4
-  remain fixed. The original V1 host-only failure remains at `57df0c83c`:
-  its negative test increased free memory while expecting capacity refusal.
-  V2 corrects that test; eight host controls and both frontend probes pass.
+  **128K bank-capacity unit completed:** `prefill_bank_placement_v2`, controller
+  `f12afed85`, same native14508 ELF; original full result `da393c9b5`.
+  Only requested capacity384 ->256 changes. Automatic residual/bank/source-view
+  placement is its intended consequence; math,kernels,chunk8192,window10,same
+  queue,split-request1(inactive),decode1256,resident20480 and MTPspec4 stay fixed.
+  All nine processes/27thinking-on requests close normally: three traced
+  diagnostics and six clean processes in three alternating adjacent pairs.
+  Validation is quiet,no fresh fault occurs,all15final model hashes match,and
+  original native identities are absent. Eight host controls and two frontend
+  probes pass. V1's incorrect increased-budget negative control stays failed
+  in `57df0c83c`; no GPU ran in V1. EC/ED source review and Main's additional
+  provider/guard inspection find no source blocker under the actual runtime gates.
 
-  All three traced diagnostic processes close normally, nine requests total.
-  The 32,769-token candidate is a separate small-path check. At 128K, requested
-  384 actually falls back to 512 slots with 98,304 GPU / 32,767 host rows;
-  requested256 admits all 131,071 BF16 rows / 2,684,334,080 B on GPU.
-  Its bank uses 681,574,400 B, freeing650MiB, with the512MiB headroom and
-  73,379,584 B additional observed budget margin. Maximum single allocation
-  is10,132,807,680 B; actual allocation succeeds. Both use96 windows,max81,920.
-  All checked drains/MTP restores pass, validation is quiet and no fresh fault
-  occurs. EC/ED source review finds no source blocker under the runtime gates;
-  correct its tail to49,151rows and retain provider/lease evidence limits.
+  | Scope | Requested384;actual512 | Requested256 | Client TTFT384 ->256 |
+  | --- | --- | --- | --- |
+  | First;median of3independent processes | 697.072 PP | 852.618 PP | 188.337 ->154.012 s |
+  | Subsequent;median of3process medians,each2requests | 755.530 PP | 920.432 PP | 173.722 ->142.6845 s |
 
-  Traced subsequent PP is754.5/756.5 for the reference and897.5/904.2 for256.
-  These diagnostics do not establish clean speed or adoption. Candidate first
-  requested bankH2D is43,611,008,000B versus the reference's50,292,326,400B
-  source-derived sum of48*512*per-layer blob_bytes; padded maximum stride is
-  not its transfer size, and neither value is physical bus traffic.
-  Next execute all six frozen clean processes384,256,256,384,384,256, three
-  thinking-on24-output requests each. Keep first use separate from later two;
-  all three paired warm-time gains and all nine declared placement/requested-
-  transfer mechanisms are required before further model qualification.
-  Do not change the plan after observing results or pool this cohort into the
-  earlier timing curve. Decode preservation, task/agent, sustained TG,
-  serve RESTORE and ordinary provider teardown remain unqualified; the earlier
-  standalone physical262144 subgate is reused only at its original scope.
+  Candidate/reference warm-time ratios are0.820842616/0.819991384/0.807385529;
+  geometric mean0.816049899(18.395%less time). Every pair improves.
+  Process PP ranges are751.911..761.388 and916.974..943.029 respectively.
+  All nine paired mechanism checks pass. Actual reference placement is98,304GPU
+  and32,767host rows;candidate all131,071BF16rows/2,684,334,080B stay on GPU.
+  Its681,574,400Bbank frees650MiB,retains512MiBheadroom and73,379,584Bmore
+  observed budget;actual allocation succeeds below10,132,807,680Bsingle limit.
+  Both use96windows,max81,920;per-arm GU/Down/job/map conservation passes.
+  Source-derived reference weightH2D is50,292,326,400B,the sum48*512*per-layer
+  blob_bytes,not padded maximum stride. Candidate logged requests are
+  43,611,008,000/43,839,692,800/43,663,718,400B per nonce;physical bus traffic,
+  overlap and hardware saturation remain unknown. Layer-source repacking is
+  removed;this does not prove absence of internal runtime staging or CPU polling.
+
+  Performance and mechanism gates permit further model qualification;the128K
+  1000PPtarget is not met,and inference/defaults are not adopted. Four CSVpoints
+  retain first/warm results;prior32/64/96Kcohorts and the historical64K1006PP
+  point stay separate. Do not fit a physical timing law across different routes.
+  Next pin a bounded profile of this actual128K/all-GPU path to attribute its
+  remaining compute,VRAM/PCIe and host-wait critical path before selecting the
+  next independent change. Keep clean speed separate from observers. Numerical/
+  task,agent,long-thinking generation with observed MTPstrong/weak acceptance,
+  repeated decode preservation and serve RESTORE/full-context/ordinary teardown
+  gates remain before adoption. The earlier standalone physical262144pass is
+  reused only at its original scope;two prefill strategies remain available.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
