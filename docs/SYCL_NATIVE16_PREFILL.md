@@ -2180,6 +2180,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   contains independent KV/verify proposals,which must not enter a prefill
   performance comparison implicitly. Preserve the9849decode
   reference;its implementation/performance/handoff remain adoption gates.
+  The source-only `prefill_window_device.py`prospectively orders seven same-build
+  checks:CPUroutes/workspace/admission spans,traced U1and tiny long-prefill,
+  quiet full bank/long-prefill,and separate Down dispatch0/large processes.
+  Its native16BF16/vllm/auto/original-split settings are explicit before exec;
+  exact actual provider,oracle,guard,case and closure evidence is required.
+  It is unexecuted and cannot admit a model automatically. Actual131Kallocation,
+  old-path coherence and each independent model comparison remain pending.
   `prefill_bank_minimum_v2`first measures256vs1at fixed native14/window10;
   preserve V1's invalid synthetic-metadata refusal before any native run.
   Component/source progress does not admit a larger-window model trial.
