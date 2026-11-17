@@ -404959,7 +404959,60 @@
           "control_closed": true,
           "active": false
         },
-        "resource_observation": {}
+        "resource_observation": {},
+        "post_failure_inspection": {
+          "native_exit_code": 0,
+          "exit_receipt_sha256": "d75d8ecd842168ac6881e00da55c58923476d5eb5b4f0e69905955c7b900d4a8",
+          "benchmark_sha256": "9d4dd8181d32d9149e73dafabc230310b54378c2ffc6d85b6083f2241c464c6a",
+          "samples": [
+            {
+              "actual_read_tokens": 32769,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 62315.3,
+              "prompt_tps": 525.9,
+              "ttft_s": 62.737,
+              "generated_tokens": 24,
+              "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+              "drafts_offered": 21,
+              "drafts_accepted": 16,
+              "thinking_requested": true,
+              "reasoning_observed": true
+            },
+            {
+              "actual_read_tokens": 32769,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 53718.3,
+              "prompt_tps": 610.0,
+              "ttft_s": 54.212,
+              "generated_tokens": 24,
+              "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+              "drafts_offered": 21,
+              "drafts_accepted": 16,
+              "thinking_requested": true,
+              "reasoning_observed": true
+            }
+          ],
+          "classifier": {
+            "native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+            "path": "src/prefill/sycl/vllm_xe2/native16.cpp",
+            "source_counts": [
+              2084,
+              2083
+            ],
+            "whole_capture_GU": 4167,
+            "whole_capture_DownScatterKernel": 4167,
+            "original_Down_family_count": 0,
+            "cause": "Shared old classifier recognizes SplitDownScatterKernel only;original native14large scatter uses DownScatterKernel and was categorized other_kernel. Both actual types exist in original native source. Whole totals only;original per-request clock proof was not retained on failure.",
+            "inference_changed": false,
+            "original_run_remains_failed": true,
+            "normal_route_attribution_qualified": false
+          },
+          "timeline": {
+            "sha256": "448cfe27b2f153a01ff67837fc38d82ac62a078fd6dbf9401b236f44f1df6373",
+            "bytes": 581461397
+          },
+          "next": "Correct only current-prefill class normalization with host refusal controls;fresh V2smoke and overhead bracket. Preserve original failed V1;no128Kcase was launched."
+        }
       }
     ],
     "request_hashes": {},

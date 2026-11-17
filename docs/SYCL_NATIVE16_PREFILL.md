@@ -2073,18 +2073,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1000PPtarget is not met,and inference/defaults are not adopted. Four CSVpoints
   retain first/warm results;prior32/64/96Kcohorts and the historical64K1006PP
   point stay separate. Do not fit a physical timing law across different routes.
-  Current attribution proposal: `prefill_resource_profile.py` now binds its
-  runtime manifest to the verified original provider list. The Luna review
-  refuted clock-count and missing-map-gate claims; it identified this narrower
-  manifest-binding gap. All ten current host controls passed, including the
-  scoped committed-evidence reader: collector V2 preparation refused
-  its own result write before any GPU execution. That refusal remains failed;
-  V3 uses only the unchanged, verified collector-reuse subtree. The unused
-  HOSTv3 preparation stays closed before execution, with its original source pins. Reuse coherent14508 and the owned
-  Sysman0 indexed collector. The exact62-class compatibility control passed
-  (1direct/37producer/24consumer,unique joins,normal exit,quiet validation and
-  no fresh fault);model observation remains pending. Next is a separate32K
-  model smoke,then128Kclean/profile/clean with two requests each.
+  Current attribution proposal: `prefill_resource_profile.py` binds runtime
+  providers to the verified original and scopes asset admission to committed
+  collector-reuse evidence. Ten host controls and the exact62-class collector
+  fixture passed. The first32Ktwo-request model process exited0 with no fresh
+  fault and closed owners, but attribution failed: the old family reader
+  recognizes SplitDownScatterKernel only;native14508's ordinary fused path is
+  DownScatterKernel. Whole captureGU/Down totals both4167 equal source2084+2083;
+  this does not repair the lost original per-request clock/count qualification.
+  V1 remains failed;its525.9/610.0observedPPis not clean speed or saturation.
+  A prefill-only classifier correction and eleven host controls are implemented
+  but pending fresh execution. V2 must pass its own collector fixture and32K
+  model smoke before128Kclean/profile/clean,two requests each. Reuse the same
+  coherent14508native and Sysman0collector;no inference math/default change.
   CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
   markers;the old marker-associated stall remains causally unresolved. Require
   exact route/count/clock/owner/conservation and<=1.2observer ratios against both

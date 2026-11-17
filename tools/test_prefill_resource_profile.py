@@ -53,6 +53,19 @@ def bracket(ratio=1.1):
     return result
 
 class ResourceProfileControls(unittest.TestCase):
+    def test_original_prefill_down_scatter_class_is_counted_without_foreign_names(self):
+        prefix='strata::experimental::vllm_xe2_native16::(anonymous namespace)::'
+        ordinary=prefix+'DownScatterKernel<(Tile)1, false, (ScatterLayout)2>'
+        split=prefix+'SplitDownScatterKernel<false>'
+        foreign='foreign::DownScatterKernel<false>'
+        events=[dict(ph='X',cat='gpu_op',name=name,ts=i+1,dur=1)
+            for i,name in enumerate((ordinary,split,foreign))]
+        reduced=campaign.prefill_family_summary(events,0,10000)
+        counts={r['name']:r['count'] for r in reduced['families']}
+        self.assertEqual(counts,dict(native16_down_fused=2,other_kernel=1))
+        self.assertEqual(campaign.profiler.kernel_family(ordinary),'other_kernel')
+        self.assertEqual(campaign.prefill_kernel_family(ordinary),'native16_down_fused')
+
     def test_scoped_asset_reader_allows_own_receipt_but_refuses_evidence_changes(self):
         with tempfile.TemporaryDirectory() as directory:
             result=Path(directory)/'result.json'

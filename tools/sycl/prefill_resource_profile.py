@@ -28,7 +28,7 @@ import profile_split as profiler
 import qsa16_stream_bench as profile_helpers
 
 P, B, RESULT = capacity.P, capacity.B, capacity.RESULT
-ROOT, KEY = B/'prefill-resource-profile-v1', 'prefill_resource_profile_v1'
+ROOT, KEY = B/'prefill-resource-profile-v2', 'prefill_resource_profile_v2'
 CAPACITY_KEY = 'coherent_context_model_v2'
 READ, RUNS, STRIDE, ROW = 131072, 2, 2662400, 20480
 READS = (32769,READ,READ,READ)
@@ -39,7 +39,7 @@ PYTHON = capacity.reference.model.PYTHON
 require, sha, signature = capacity.require, capacity.sha, capacity.signature
 compact, POLICIES = core.compact, capacity.POLICIES
 THIS = 'tools/sycl/prefill_resource_profile.py'
-CONTROL_ROOT, CONTROL_KEY = B/'coherent-prefill-collector-control-v3','coherent_prefill_collector_control_v3'
+CONTROL_ROOT, CONTROL_KEY = B/'coherent-prefill-collector-control-v4','coherent_prefill_collector_control_v4'
 source, build, shared = core.source, comparison.build, comparison.shared
 digest, write = sha, core.write
 profile_window = profile_helpers.profile_window
@@ -386,13 +386,10 @@ def collector_context():
 
 
 def collector_prepare():
-    refused=validation.committed(RESULT,('coherent_prefill_collector_control_v1',))
-    require(refused['stage']=='failed' and not refused['GPU_executed'] and refused['cases']==[],
-        'preserve original collector source-admission refusal')
-    refused=validation.committed(RESULT,('coherent_prefill_collector_control_v2',))
-    require(refused['stage']=='failed' and refused['no_host_fixture_or_native_executed']
-        and not refused['GPU_executed'] and refused['cases']==[],
-        'preserve second preparation self-write refusal')
+    previous=validation.committed(RESULT,('coherent_prefill_collector_control_v3',))
+    require(previous['stage']=='closed' and previous['passed'] and previous['ownership_closed']
+        and not previous['active'] and len(previous['cases'])==1,
+        'preserve closed preceding collector control;new source needs a fresh control')
     ctx=collector_context();ctx.prepare();row=json.loads((CONTROL_ROOT/'record.json').read_text())
     row['host_metadata_contract']=generation_metadata_contract()
     _,prior,_,_=ctx.basis();row['observer_admission']=prior['observer_admission']
@@ -449,6 +446,11 @@ def decision(processes):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'fresh attribution campaign only')
+    previous=validation.committed(RESULT,('prefill_resource_profile_v1',))
+    require(previous['stage']=='failed' and not previous['active'] and previous['ownership_closed']
+        and len(previous['processes'])==1 and not previous['processes'][0]['passed']
+        and previous['processes'][0]['post_failure_inspection']['classifier']['original_run_remains_failed'],
+        'preserve original class-reconciliation failure before fresh V2')
     winner=validation.committed(RESULT,('prefill_bank_placement_v2',))
     require(winner['stage']=='closed' and winner['passed'] and winner['ownership_closed'] and not winner['active']
         and winner['decision']['eligible_for_further_model_gates'] and winner['native_source_commit']==capacity.original.SOURCE,
@@ -534,7 +536,8 @@ def profile_run(index):
     module.engine_once = source.device.load_module('qsa16_model_profile_native_environment', comparison.engine_once.__file__)
     original_environment = module.engine_once.native_environment
     profile = source.compatibility.profile
-    clocks, capture = [profile.clock_pair()], {}
+    clocks = [profile.clock_pair()]
+    capture = dict(complete=False,clocks=clocks)
     captured_routes = []
 
     def native_context_for_profile(value, selected):
@@ -578,6 +581,7 @@ def profile_run(index):
             'one bounded fully flushed timeline required')
         events = json.loads(paths[0].read_text())['traceEvents']
         full = profile.trace_summary(events, native['pid'], clocks[0]['raw_before_ns'], clocks[-1]['raw_after_ns'])
+        capture.update(full_capture=full,windows=[])
         files = list((root / 'bench').glob('*/results.json')); require(len(files) == 1, 'one client result required')
         samples = json.loads(files[0].read_text())['results']['prefill_only']['requests']
         require(len(samples) == RUNS and len(clocks) == 2 + 2 * RUNS, 'complete request/clock samples required')
@@ -593,7 +597,7 @@ def profile_run(index):
                 start, finish = max(begin, e['ts']), min(end, e['ts'] + e['dur'])
                 boundary += int(e.get('cat') == 'gpu_op' and (start != e['ts'] or finish != e['ts'] + e['dur']))
                 clipped.append(dict(e, ts=start, dur=finish - start))
-            reduced = profile.family_summary(clipped, window['begin_raw_ns'], window['end_raw_ns'])
+            reduced = prefill_family_summary(clipped, window['begin_raw_ns'], window['end_raw_ns'])
             reconciliation=fused_reconciliation(reduced,captured_routes[position])
             windows.append(dict(clock=window, GPU_boundary_commands=boundary, services=reduced,source_dispatch=reconciliation))
         capture.update(complete=True, native_PID=native['pid'], clocks=clocks, full_capture=full,
@@ -634,18 +638,34 @@ def profile_run(index):
 
 
 
+def prefill_kernel_family(name):
+    # Native14508's ordinary fused scatter is DownScatterKernel; the older
+    # shared reader recognizes only the separate split-Down candidate. This
+    # is classification, not a native kernel or numeric-contract change.
+    if name.startswith('strata::experimental::vllm_xe2_native16::') and '::DownScatterKernel<' in name:
+        return 'native16_down_fused'
+    return profiler.kernel_family(name)
+
+
+def prefill_family_summary(events,begin_ns,end_ns):
+    reader=source.device.load_module('coherent_prefill_resource_families',profiler.__file__)
+    reader.kernel_family=prefill_kernel_family
+    return reader.family_summary(events,begin_ns,end_ns)
+
+
 def fused_reconciliation(services,route):
     families={v['name']:v for v in services['families']}
     actual=route['actual_GU_dispatch']
     expected={name:actual[part]['fused_jobs'] for name,part in
         (('native16_gu_fused','gu'),('native16_down_fused','down'))}
     observed={name:families.get(name,{}).get('count',0) for name in expected}
-    require(expected==observed,'source GU/Down fused dispatch and UnitTrace kernel counts differ')
+    require(expected==observed,'source GU/Down fused dispatch and UnitTrace kernel counts differ: '
+        +repr(dict(expected=expected,observed=observed)))
     return dict(expected=expected,observed=observed,matched=True,
         scope='These two source-counted fused classes only;unobserved operator coverage and physical saturation remain unqualified.')
 
 
-HOST_ROOT,HOST_KEY=B/'prefill-resource-host-v5','prefill_resource_host_v5'
+HOST_ROOT,HOST_KEY=B/'prefill-resource-host-v6','prefill_resource_host_v6'
 
 
 def host_compact(row):
@@ -662,19 +682,10 @@ def host_save(row):
 
 def host_prepare():
     require(not HOST_ROOT.exists() and HOST_KEY not in json.loads(RESULT.read_text()),'fresh host controls only')
-    previous=validation.committed(RESULT,('prefill_resource_host_v1',))
-    require(previous['stage']=='failed' and previous['no_host_test_or_native_executed']
-        and previous['ownership_closed'],'preserve original host-only serialization refusal')
-    previous_unit=validation.committed(RESULT,('prefill_resource_host_v2',))
-    require(previous_unit['stage']=='closed' and previous_unit['passed'] and previous_unit['tests']==8,
-        'preserve exact earlier host controls')
-    previous_plan=validation.committed(RESULT,('prefill_resource_host_v3',))
-    require(previous_plan['stage']=='superseded_before_execution'
-        and previous_plan['no_host_test_or_native_executed'] and previous_plan['ownership_closed'],
-        'preserve unusedHOSTv3 source before fresh provider-manifest controls')
-    previous_unit=validation.committed(RESULT,('prefill_resource_host_v4',))
-    require(previous_unit['stage']=='closed' and previous_unit['passed'] and previous_unit['tests']==9,
-        'preserve earlier nine controls;fresh source requires new controls')
+    previous=validation.committed(RESULT,('prefill_resource_host_v5',))
+    require(previous['stage']=='closed' and previous['passed'] and previous['tests']==10
+        and previous['ownership_closed'] and not previous['active'],
+        'preserve preceding ten controls;fresh source requires new controls')
     native,proof,prior=capacity.basis();revision=validation.git('rev-parse','HEAD').decode().strip()
     HOST_ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache'):(HOST_ROOT/name).mkdir()
@@ -683,7 +694,7 @@ def host_prepare():
     row=dict(stage='prepared',source_commit=revision,sources=core.pins(revision),environment_template=env,
         command=[PYTHON,'-B','-m','unittest','tools.test_prefill_resource_profile'],
         native_source_commit=capacity.original.SOURCE,original_native_proof=proof,
-        plan='Ten host route/budget/source/drain/math/observer/provider-manifest/scoped-reader refusal controls plus existing exact62class,RAWclock-window and physical-owner-cleanup controls. No GPU/device initialization or model. Commit exact source/recipe/environment before run;stop first failure,no retry/hash refresh.',
+        plan='Eleven host route/budget/source/drain/math/observer/provider-manifest/scoped-reader/native14Down-family controls plus existing exact62class,RAWclock-window and physical-owner-cleanup controls. No GPU/device initialization or model. Original failed32Ksource/window outcome remains failed;test exact ordinary/split/foreign Down names before fresh V2. Commit exact source/recipe/environment before run;stop first failure,no retry/hash refresh.',
         passed=False,complete=False,active=False,ownership_closed=True)
     host_save(row);print('Prepared host controls;commit before run.',flush=True)
 
@@ -695,8 +706,8 @@ def host_gate():
         'exact source of closed host controls changed')
     require(row['stage']=='closed' and all(row[k] for k in ('passed','complete','ownership_closed'))
         and not row['active'],'closed committed host controls required')
-    require(row['tests']==10,'all ten current host controls required')
-    return dict(key=HOST_KEY,source_commit=row['source_commit'],evidence_sha256=signature(row),tests=10)
+    require(row['tests']==11,'all eleven current host controls required')
+    return dict(key=HOST_KEY,source_commit=row['source_commit'],evidence_sha256=signature(row),tests=11)
 
 
 def host_check():
@@ -709,15 +720,15 @@ def host_check():
     try:
         run,out,err=owner.run('host',row['command'],row['environment_template'],P,
             wall=90,cpu=60,rss_cap=1<<30,text_cap=256<<10,file_cap=2<<20,total_cap=8<<20)
-        require(build.supervision.closed(run) and run['exit_code']==0 and 'Ran 10 tests in ' in err.read_text()
+        require(build.supervision.closed(run) and run['exit_code']==0 and 'Ran 11 tests in ' in err.read_text()
             and err.read_text().rstrip().endswith('OK'),'resource host controls failed')
-        row.update(stage='closed',passed=True,complete=True,tests=10)
+        row.update(stage='closed',passed=True,complete=True,tests=11)
     except BaseException as error:row.update(stage='failed',error=repr(error))
     finally:
         row.update(active=bool(owner.active),ownership_closed=owner.active is None
             and all(build.supervision.closed(c) for c in owner.commands));host_save(row)
     require(row['passed'] and row['ownership_closed'],row.get('error','host controls failed'))
-    print('Ten resource host controls passed;commit before collector/native.',flush=True)
+    print('Eleven resource host controls passed;commit before collector/native.',flush=True)
 
 
 if __name__=='__main__':
