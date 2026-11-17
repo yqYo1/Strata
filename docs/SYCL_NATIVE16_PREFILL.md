@@ -1968,7 +1968,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with normal0and closed owners. Its16385-input/4-output standalone case now
   closes normally0,with quiet validation and no fresh faults;actual16384BF16
   batched rows,ordered-exp prefix,512bank,window/storage and release checks pass.
-  This permits the prospective full-fill diagnostic,not speed or route adoption.
+  V2then completes the physical262144-input/0-output diagnostic:262143batched
+  rows plus the exact finalT1commit/wait/refill-drain marker. Native exit0,
+  reaped/empty owners,quiet validation,unchanged boot/driver,no fresh faults
+  and all15post-case model hashes match. TotalBF16residual5368688640Buses
+  114688GPUrows/2348810240Band147455hostrows/3019878400B;the original512bank
+  uses1363148800B,prefix538968064B,and actual max single allocation10132807680B.
+  Contiguous mixed storage cannot fit its remaining budget,so the declared
+  mode2/16384rows/0mixed-bytes fallback runs. Post-release free memory is1038MiB.
+  This proves the standalone capacity subgate,not full serve allocation,
+  RESTORE,numerical/task,current-decode-preservation or ordinary provider
+  teardown qualification. Its synthetic traced540737.9ms is speed-ineligible;
+  do not compare it with bench.sh PP or add it as a performance CSVmilestone.
+  The0-draft summary displays-nan ms/round from division by0;guard that display
+  at the next native-source change,without treating it as a model-state result.
+  Next is a fresh one-variable384/512bank comparison at131072actual input
+  tokens(131071batched rows),which crosses81920-row MoEwindows. Pin new route/
+  reuse-byte/repetition gates;the existing comparator's48-window assumptions
+  cannot be reused unchanged. The capacity reader/original record/two generated
+  fixtures remain only through that upcoming historical-evidence bridge's host
+  admission,then retire the ended private inputs. No extra native generation.
   A separate131073-input reuse experiment remains a later
   hypothesis,not a way to relabel this failed64Kgate.
   Queue placement,ready batching and window remain later independent units.
