@@ -1921,6 +1921,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Eight first/warmed reference/candidate milestones are in the604-row CSV.
   Adjacent warmed time slopes are0.861033630(384)and0.873597717(512)ms/token.
   Two lengths do not validate a time law or physical fixed/per-token costs.
+  Closed capacity logs,journals,receipts and job-private JIT caches are retired:
+  890files/137067798B,after exact767controller and2361native/dependency
+  source recovery,recipe/12ELF matching and13normal/reaped/empty owner checks.
+  Only27original plan/config/proof files remain(292356B);post-cleanup admission
+  passes. The temporary349568Binventory is also retired. Neither phase engine
+  generation nor a model asset was removed.
 
   Source window_rows=81920and observed48windows/zero permanent hits explain
   why32K/64Kdo not exercise reuse across MoEwindows. Requested transfer bytes
@@ -1948,8 +1954,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   individual samples/9decisions remain active. Legacy provenance/fixture/cache
   holds stay separate and do not renew this ended third generation.
   The old9arm controller/13host controls/24case fixture restore from`05eceacd`;
-  that unused24case fixture is removed from the active tree. The15case fixture
-  is the near-term regression starting point for the cache/checked-loan seam.
+  that unused24case fixture is removed from the active tree. The seven closed
+  Unique-slot-only source/helper/test files have no production callers. Retire
+  them at the next source boundary after replacing the closed capacity reader's
+  current767-file check with the fresh coherent full-context admission;its
+  frozen source set still includes them. Recover their experiments from Git,
+  rather than renewing an unspecified cache/loan regression consumer.
   The22.95MBsmall generation and private audit captures are now retired after
   exact final ELF,recipe,370project/398original source recovery;both phase
   references remain. Full input/15case evidence restores from`4eb8276e0`.
