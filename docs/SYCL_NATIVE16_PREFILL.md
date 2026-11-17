@@ -2021,9 +2021,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   failure and the faster historical871/1006PPcohort remain separate. A single
   new96Kpoint across cohorts does not fit a physical timing law.
   Four first/warmed arm milestones are recorded in the608-row CSV,evidence
-  `516d8dbc2`. Current V4raw/JIT/receipts are prepared for retirement at this
+  `516d8dbc2`. Current V4raw/JIT/receipts are retired at this
   closure:497files/74462349B,with766original controller sources and all14
   generated inputs recovered and original native source/recipe/12ELFsmatched.
+  Its137181Btemporary inventory is retired too;shared native/model basis
+  admission passes without the private root. The closed V4CLIand its9case
+  experiment-specific test restore from`1ab5f0465`. Six maintained general
+  route controls retain only the1402Bactual telemetry they consume,alongside
+  the shared reader and basis for the named next128Kplacement proposal.
+  Cleanup validation uses the pinned model Python:
+  `python3 -B -m unittest tools.test_prefill_bank_route`,with the committed
+  measurement environment,60swall/40sCPU/1GiBRSS/128KiBtext/4MiBtotal caps.
+  This host-only check is separate from the frozen1ab5model comparison.
   Both phase reference engines and model assets remain current consumers.
 
   EA/EBreview withdraws the report's missing job/map/dequant gate claim after
