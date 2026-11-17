@@ -2080,6 +2080,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   repeated decode preservation and serve RESTORE/full-context/ordinary teardown
   gates remain before adoption. The earlier standalone physical262144pass is
   reused only at its original scope;two prefill strategies remain available.
+  Closed tooling restores from`f12afed85`;full inputs/receipts from`2ade7c494`.
+  After original767-source/environment/generated-input recovery,710ended
+  raw/JIT/research files(99,334,743B)and307,392Btemporary inventory are retired.
+  The shared native/model basis admits after cleanup;both phase references
+  remain. Three configured-output provenance holds,the895-file legacy cache
+  and the unfinished PR6child remain separate concrete holds,no newgeneration.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
