@@ -243,7 +243,8 @@ def census(row,native,stdout):
     commands=subprocess.check_output(['/usr/bin/ninja','-t','commands','strata_vllm_xe2_image'],
         cwd=build,text=True,timeout=30).splitlines()
     finalizers=[line for line in commands if '-fsycl-link' in line and '-unbundle' in line]
-    require(len(finalizers)==1 and all(str(p) in finalizers[0] for p in (aot_input,image,host)),
+    # TARGET_OBJECTS may spell /dir/./src;preserve the raw recipe hash below.
+    require(len(finalizers)==1 and all(str(p) in finalizers[0].replace('/./','/') for p in (aot_input,image,host)),
         'actual AOT finalization/unbundle recipe differs')
     produced.update({str(p.resolve()):sha(p) for p in (image,host)})
     links={};temporary=set()
