@@ -1983,78 +1983,72 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   do not compare it with bench.sh PP or add it as a performance CSVmilestone.
   The0-draft summary displays-nan ms/round from division by0;guard that display
   at the next native-source change,without treating it as a model-state result.
-  The closed reuse screens preserve their original failures. At128Kactual
-  input,thecbd1000V2controller observes98304GPU/32767host residual rows,
-  effective512slots and staged0;its all-GPUgate fails. The469132V3screen admits
-  all98304GPUrows at98305input but wrongly requires an enabled-only split
-  marker. Both stop after the first request gate with supervised termination;
-  actual process absence is separate from normal-exit qualification. V1's two
-  synthetic header-order errors remain failed too. The1ab5f0465V4correction
-  changes only the reader/fixture contract:verified immutable startup split0,
-  no split telemetry and actual96windows/max81920;legacy enabled-split markers
-  stay mandatory. Nine controls include actual complete-request telemetry.
-
-  V4now closes7normal0processes/21thinking-on98305-input/24-output requests:
-  3stage-progress admission samples and18clean samples in3alternating pairs.
-  Every owner is reaped/empty,validation is quiet,no fresh fault occurs,and
-  all15final full model hashes match. Same14508ELF/math/queue/chunk8192,
-  decoder placement,MTP,request hashes and actual GU/Down/jobs/dequants/maps
-  are verified. All98304BF16residual rows stay onGPU;the admission verifies
-  all48full-fit512banks. Only requested bank capacity384/512varies.
+  The one-variable bank comparison is closed (`prefill_bank_reuse_v4`,
+  controller `1ab5f0465`, result `516d8dbc2`). It uses the original coherent
+  14508 ELF, BF16 math, same queue, chunk 8192, decoder placement and MTP.
+  Only requested prefill bank capacity changes between 384 and 512 slots.
+  Seven processes and all 21 thinking-on requests finish normally with exit 0:
+  three diagnostic requests and 18 clean samples in three alternating pairs.
+  Owners are reaped and empty, validation is quiet, no fresh fault occurs,
+  and all 15 final model hashes match. All 98,304 residual rows stay on GPU.
+  Diagnostic admission confirms 48 full-fit 512-slot banks and 96 windows
+  with at most 81,920 rows. Paired requests, arithmetic, jobs and maps match.
 
   | Scope | 384 PP | 512 PP | 384 client TTFT | 512 client TTFT |
   | --- | --- | --- | --- | --- |
-  | First request,median of3processes | 818.551 | 823.326 | 120.337s | 119.611s |
-  | Subsequent,median of3process medians(each2requests) | 906.501 | 893.041 | 108.6555s | 110.307s |
+  | First request; median of 3 processes | 818.551 | 823.326 | 120.337 s | 119.611 s |
+  | Subsequent; median of 3 process medians, each from 2 requests | 906.501 | 893.041 | 108.6555 s | 110.307 s |
 
-  Warmed512/384time ratios are0.996206354/1.009424935/1.018651994;
-  geometric mean1.008052285. Two pairs worsen0.942%and1.865%,so the declared
-  repeated-gain gate fails. Each of9paired requests does reuse5/10/9more
-  experts and request11.648/23.296/20.9664MBless bankH2D,but the extra325MiB
-  bank has no reproducible warmed gain. Requested bytes are not physical bus
-  traffic or saturation. Preserve the positive first-use ratios
-  0.990952812/0.972870418/0.995163048(geomean0.986281162)separately;
-  they do not retroactively change V4's warmed acceptance. A first-use/TTFT
-  adoption needs its own prospective plan and remaining model/phase gates.
-  No default selection,inference adoption,sustained TG/task/agent,serveRESTORE
-  or ordinary provider-teardown qualification follows. Earlier32Kgain/64K
-  failure and the faster historical871/1006PPcohort remain separate. A single
-  new96Kpoint across cohorts does not fit a physical timing law.
-  Four first/warmed arm milestones are recorded in the608-row CSV,evidence
-  `516d8dbc2`. Current V4raw/JIT/receipts are retired at this
-  closure:497files/74462349B,with766original controller sources and all14
-  generated inputs recovered and original native source/recipe/12ELFsmatched.
-  Its137181Btemporary inventory is retired too;shared native/model basis
-  admission passes without the private root. The closed V4CLIand its9case
-  experiment-specific test restore from`1ab5f0465`. Six maintained general
-  route controls retain only the1402Bactual telemetry they consume,alongside
-  the shared reader and basis for the named next128Kplacement proposal.
-  Cleanup validation uses the pinned model Python:
-  `python3 -B -m unittest tools.test_prefill_bank_route`,with the committed
-  measurement environment,60swall/40sCPU/1GiBRSS/128KiBtext/4MiBtotal caps.
-  This host-only check is separate from the frozen1ab5model comparison.
+  Warmed 512/384 time ratios are 0.996206354, 1.009424935 and 1.018651994;
+  their geometric mean is 1.008052285. Two pairs worsen by 0.942% and 1.865%,
+  so the declared repeated-gain gate fails. All nine paired requests reuse
+  5/10/9 more experts and request 11.648/23.296/20.9664 MB less bank H2D.
+  This small reduction does not establish a speed benefit from the extra
+  325 MiB bank. Requested bytes are not physical bus or saturation evidence.
+  First-use time ratios, 0.990952812/0.972870418/0.995163048, improve in all
+  pairs (geometric mean 0.986281162). Preserve that observation separately;
+  first-use adoption needs a new prospective plan and remaining phase/model
+  gates. It does not change the failed warmed-throughput decision.
+  Default selection is unchanged. Sustained TG, task/agent quality, decode
+  preservation, serve RESTORE and ordinary provider teardown remain unqualified.
+  The earlier 32K gain, 64K failure and faster historical 871/1006 PP cohort
+  stay separate; one new 96K point does not fit a physical timing law.
+  Four first/warmed milestones bring the CSV to 608 rows.
+
+  Original failures remain in their committed results: V1's two synthetic
+  ordering errors; V2's 128K admission of only 98,304 GPU and 32,767 host rows;
+  and V3's reader requiring a marker that native split0 does not emit.
+  Their supervised termination is distinct from normal-exit qualification.
+  V4 corrects only that reader/fixture contract and passes nine controls,
+  including actual whole-request telemetry. EA/EB review withdraws its claimed
+  missing job/map/dequant gate after inspecting the complete imported helpers.
+  No other concrete reader mismatch was found.
+
+  Ended V2/V3/research captures (221 files, 23,938,423 B), earlier bridge
+  inputs (20 files, 1,575,123 B), and closed V4 output (497 files, 74,462,349 B)
+  are retired after original source/input/recipe recovery. Their temporary
+  inventories are retired too. The shared native/model basis admits without
+  those private roots. The closed V4 CLI and experiment-specific test restore
+  from `1ab5f0465`. Six maintained route controls keep only the 1,402 B actual
+  excerpt they consume, alongside the shared reader and model basis for the
+  named next proposal. All six pass at cleanup source `b8caac7f7`, using
+  `python3 -B -m unittest tools.test_prefill_bank_route` with the pinned model
+  Python and committed measurement environment. This bounded host check runs
+  no GPU work and does not relabel the model source or its failed warm gate.
   Both phase reference engines and model assets remain current consumers.
 
-  EA/EBreview withdraws the report's missing job/map/dequant gate claim after
-  reading the complete imported helpers. No other concrete reader mismatch is
-  found. Its reviewed transactions and the ended V2/V3raw/JITare retired:
-  221files/23938423B plus63523Btemporary inventory,after767/766controller-source,
-  28generated-input and original native source/recipe/12ELFrecovery. Current
-  admission passes without them. Earlier20bridge inputs(1575123B)are retired
-  too. The shared native/model admission remains in`coherent_model_basis.py`.
-
-  Next is a **proposal,not implemented or run**:fixed131072input,only requested
-  capacity384->256,with automatic residency/staging change as the intended
-  mechanism. Previous131071batched rows need2684334080B,but only98304rows/
-  2013265920Bfit with the actual512fallback bank. Native14508's whole-chunk
-  planner bounds that residual budget below2181038080B. Reducing actual512to
-  256saves681574400B(650MiB),which under the same other allocations/budget
-  could admit all131071rows with at least10506240Babove the retained512MiB
-  headroom. A384reference still falling back512is a source prediction,not a
-  measured new arm. Fresh source/lifetime review,committed plan and actual
-  admission are required;single-allocation bounds,decode and full-context
-  preservation still apply. Keep the first-use512observation eligible for a
-  separately scoped future assessment;do not relabel V4's failed warm gate.
+  Next proposal, **not implemented or run**: at fixed 131,072 input tokens,
+  change only requested bank capacity 384 -> 256 and measure the planner's
+  intended residency/staging change. The previous 131,071 batched rows need
+  2,684,334,080 B, but only 98,304 rows / 2,013,265,920 B fit with the actual
+  512-slot fallback bank. Native14508's chunk planner bounds that residual
+  budget below 2,181,038,080 B. Reducing actual capacity 512 -> 256 frees
+  681,574,400 B (650 MiB). Under the same other allocations and budget this
+  could admit all rows, with at least 10,506,240 B above the retained 512 MiB
+  headroom. A requested-384 reference still falling back to 512 is a source
+  prediction, not a measured new arm. Require a fresh committed plan, source/
+  lifetime review and actual admission; preserve single-allocation, decode and
+  full-context gates. The first-use 512 observation remains a separate candidate.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
