@@ -409547,6 +409547,125 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "long-validate",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3957450,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "initialized_ELFs": 37,
+          "sha256": "6a7434323eb08cd14d77b43fc469d69e56f19655b51b9e450d41e0d4adc42424",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "cases": [
+          {
+            "kind": "long_prefill_case",
+            "tokens": 117489,
+            "primary_rows": 65536,
+            "target_rows": 17,
+            "irregular": 0,
+            "edges": 0,
+            "jobs": 5,
+            "physical_final_row": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "long_prefill_case",
+            "tokens": 131071,
+            "primary_rows": 65536,
+            "target_rows": 17,
+            "irregular": 0,
+            "edges": 0,
+            "jobs": 5,
+            "physical_final_row": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "long_prefill_case",
+            "tokens": 131072,
+            "primary_rows": 65536,
+            "target_rows": 17,
+            "irregular": 0,
+            "edges": 0,
+            "jobs": 5,
+            "physical_final_row": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "long_prefill_case",
+            "tokens": 117489,
+            "primary_rows": 65536,
+            "target_rows": 17,
+            "irregular": 1,
+            "edges": 0,
+            "jobs": 5,
+            "physical_final_row": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "long_prefill_case",
+            "tokens": 131071,
+            "primary_rows": 65536,
+            "target_rows": 17,
+            "irregular": 1,
+            "edges": 0,
+            "jobs": 5,
+            "physical_final_row": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "long_prefill_case",
+            "tokens": 131072,
+            "primary_rows": 65536,
+            "target_rows": 17,
+            "irregular": 1,
+            "edges": 0,
+            "jobs": 5,
+            "physical_final_row": true,
+            "status": "PASS"
+          }
+        ],
+        "dataflow": [
+          {
+            "kind": "split_dataflow",
+            "tokens": 131072,
+            "primary_rows": 65536,
+            "full_weight_map": true,
+            "full_gather": true,
+            "inputs_immutable": true,
+            "guards": true,
+            "status": "PASS"
+          }
+        ],
+        "bitwise_original_FP32_FMA_and_address_oracle": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "passed": false,
