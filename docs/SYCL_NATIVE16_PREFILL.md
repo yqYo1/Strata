@@ -1924,8 +1924,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Closed capacity logs,journals,receipts and job-private JIT caches are retired:
   890files/137067798B,after exact767controller and2361native/dependency
   source recovery,recipe/12ELF matching and13normal/reaped/empty owner checks.
-  Only27original plan/config/proof files remain(292356B);post-cleanup admission
-  passes. The temporary349568Binventory is also retired. Neither phase engine
+  Initial post-cleanup admission passed with27plan/config/proof files;those
+  files are now retired too,after original767source recovery and reconstruction
+  of all26config/plan files and the environment/model maps from the retained
+  f966reference. No capacity private root remains. The temporary349568B
+  first inventory and27764Bfinal joint inventory are retired. Neither phase engine
   generation nor a model asset was removed.
 
   Source window_rows=81920and observed48windows/zero permanent hits explain
@@ -1982,9 +1985,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source/helper/test files without production/CMake callers,and the completed
   capacity controller/test. Their original measured commits remain reachable.
   The new`coherent_context_model.py`reads original coherent native/speed proof
-  directly. Do not refresh the archived capacity runner's767pins. Its27private
-  inputs remain only until the new host/admission gate verifies their historical
-  recovery;then retire that ended root. Independent parent-copy safety stays.
+  directly. Do not refresh the archived capacity runner's767pins. All27private
+  inputs are retired after historical recovery and new coherent V2host/short
+  admission. Independent parent-copy safety stays. The reviewed DY/DZprivate
+  report/views/review/lifecycle/native capture are also retired;65joint files
+  total2204021B,with corrected findings/provenance retained in the research index.
   The22.95MBsmall generation and private audit captures are now retired after
   exact final ELF,recipe,370project/398original source recovery;both phase
   references remain. Full input/15case evidence restores from`4eb8276e0`.

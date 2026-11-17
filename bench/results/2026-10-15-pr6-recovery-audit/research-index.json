@@ -35887,95 +35887,18 @@
   },
   "coherent_context_controller_dy_20261117": {
     "classification": "decision support",
-    "stage": "reviewed-retirement-pending",
     "source_commit": "7bab90583bfecfe776df7cd0965963f01878f140",
     "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "rule_revision": "3b802757ba95767a484c651a2f595f6af6f0053e",
     "manifest_sha256": "892cb02d0768f26127a1e34c5cb64f34575b8796cc11126c25d2735ee402e975",
     "input_files": 20,
     "source_view_bytes": 988249,
-    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-context-dy-20261117",
-    "control_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-context-dy-20261117-control",
-    "input_view": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-context-dy-20261117-inputs",
     "model": "gpt-6-luna",
     "reasoning": "medium",
     "previous_report_keys": [
       "native16_full_context_gate_audit_20261113f",
       "prefill_bank_capacity_source_dw_20261117"
     ],
-    "report_budget_bytes": 18000,
-    "report_budget_words": 1800,
-    "report_consumer": "Main via native Luna-max short review; concrete coherent context admission before full GPU fill",
-    "next_review": "At settled worker_done: close native within600s, review digest, then curate/retire private captures",
-    "schedulable_now": false,
-    "launch_eligibility": {
-      "schedulable_now": true,
-      "prerequisite_evidence": "Committed7babcontroller,c85dbf33cplan and3b802757bclosed7reader+native134bounds/9459hash host evidence; actual12ELF coherent diagnostic remains. No new native change."
-    },
-    "product_edits_allowed": false,
-    "GPU_jobs_allowed": false,
-    "task": "task_cd0b598d03ab",
-    "dispatch": "ctx_f205c7824beb",
-    "run": "run_0c8359dac49d",
-    "terminal": "term_9de9cea9-8028-49fa-8832-68e869f17ec7",
-    "native_pid": 1955724,
-    "resource_scope": "strata-research-context-dy-20261117.scope",
-    "filesystem_preflight": {
-      "passed": true,
-      "checked_inputs": 21,
-      "passed_inputs": 21,
-      "no_dev_dri": true,
-      "report_write_check": true
-    },
-    "native_argv_preexec_pinned": true,
-    "owned_started": true,
-    "actual_report_or_closure_qualified": false,
-    "report": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-context-dy-20261117/report.md",
-      "sha256": "edc915e5013fe2ab090fa78227d58915756b26e4021e9ff2b23d11efd6172343",
-      "bytes": 10232
-    },
-    "worker_done_message": "msg_90d0d41928ce",
-    "worker_done_outcome": "succeeded",
-    "accepted_worker_done": true,
-    "normal_native_exit": true,
-    "native_exit_code": 0,
-    "native_PID_absent": true,
-    "scope_final": "inactive/success",
-    "terminal_closed": true,
-    "release_receipt": "retained/no_owned_resource;operator-owned native and PTY closed separately after accepted settlement",
-    "delivery_acknowledged": "delivery_d2b9b7c0dc03",
-    "first_native_calls": [
-      {
-        "name": "exec",
-        "sha256": "ce28b41c3413f376064185018a8445947b120cfa400a88ce32226698d744811c",
-        "orca_status": true,
-        "filesystem_check": false
-      },
-      {
-        "name": "exec",
-        "sha256": "c4a72c78338c948ee23265eeed0d4d424be5b72992696723a7b3a1f6f7877dd5",
-        "orca_status": false,
-        "filesystem_check": true
-      }
-    ],
-    "native_session": "/home/yayoi/.codex/sessions/2026/11/17/rollout-2026-11-17T15-54-47-01a1e849-67ea-7263-ac94-952633d586ac.jsonl",
-    "native_resource_sample": {
-      "wall_seconds": 403.07999999960884,
-      "CPU_seconds_conservative_bound": 37.644842,
-      "native_process_peak_RSS_bytes": 419643392,
-      "cgroup_memory_peak_bytes": 322797568,
-      "captured_text_bytes_upper_bound": 975654,
-      "native_session_counted": true
-    },
-    "review": {
-      "agent": "/root/coherent_context_dy_review_dz_20261117",
-      "model": "gpt-6-luna",
-      "reasoning": "max",
-      "review_sha256": "bf7b01316303a2d240c0ed223ffc7823cf396590e7db8c84dcf803cd6f76fc05",
-      "digest_sha256": "1b331aa637bf9af48c9d98cc58cbcc4a3a9b40ac8985ed21aa4d7838a585f600",
-      "verdict": "Retain with applicability/contract corrections;not fresh-run safety. Main reads short digest only."
-    },
     "findings": {
       "window": "V1parsed mode/maximum_rows/mixed bytes without semantic validation;prospective plan must bind expected tuple before accepting a combination. The old test intentionally accepted2/8192/0;do not rewrite its outcome.",
       "headroom": "Numeric release headroom was optional under V1,not a blocker against that original contract. V2explicitly requires numeric release telemetry.",
@@ -35993,24 +35916,50 @@
       "environment_helper": "compare_official_prefill.environment full body inspected;pre-exec3dependency overrides declared in be2f53f7d,all765current inputs and original2361native/dependency identities remain admission inputs.",
       "prospective_change": "V2lease0/mixed0/split0is one inseparable standalone allocation adaptation. Window2must16384/0;window10must min(81920,GPUrows),with5120bytes/row newly allocated mixed storage. Separate512bank;not server allocation/speed adoption."
     },
-    "next": "No new generic audit/reopening before fresh V2host/short gates. Retire reviewed private report/views/lifecycle/native capture after compact curation at next serialized boundary;fullfill only after fresh short normal/quiet/fault-free closure.",
+    "review": {
+      "agent": "/root/coherent_context_dy_review_dz_20261117",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "review_sha256": "bf7b01316303a2d240c0ed223ffc7823cf396590e7db8c84dcf803cd6f76fc05",
+      "digest_sha256": "1b331aa637bf9af48c9d98cc58cbcc4a3a9b40ac8985ed21aa4d7838a585f600",
+      "verdict": "Retain with applicability/contract corrections;not fresh-run safety. Main reads short digest only."
+    },
+    "native_resource_sample": {
+      "wall_seconds": 403.07999999960884,
+      "CPU_seconds_conservative_bound": 37.644842,
+      "native_process_peak_RSS_bytes": 419643392,
+      "cgroup_memory_peak_bytes": 322797568,
+      "captured_text_bytes_upper_bound": 975654,
+      "native_session_counted": true
+    },
+    "stage": "curated-private-retired",
+    "schedulable_now": false,
+    "report": {
+      "sha256": "edc915e5013fe2ab090fa78227d58915756b26e4021e9ff2b23d11efd6172343",
+      "bytes": 10232,
+      "retired": true
+    },
+    "execution": {
+      "accepted_worker_done": true,
+      "native_exit_code": 0,
+      "normal_native_exit": true,
+      "scope_final": "inactive/success",
+      "own_native_and_PTY_closed": true,
+      "IPC_and21read_only_inputs_passed": true,
+      "no_GPU_job": true,
+      "actual_model_effort_verified": true,
+      "release_lane": "Low-level unsupervised;release returned no_owned_resource,Main positively closed owned native and shell."
+    },
     "retirement": {
-      "status": "prepared",
-      "inventory": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-context-closed-inputs-retirement.json",
-        "sha256": "0101c8f4a359c815520df56a3b19294ab6ffe418475c7f6c68c029ac5ae010e9",
-        "bytes": 27764
-      },
+      "status": "retired",
       "files": 38,
       "bytes": 1910610,
-      "roots": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-context-dy-20261117",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-context-dy-20261117-control",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/coherent-context-dy-20261117-inputs"
-      ],
-      "native_capture": "/home/yayoi/.codex/sessions/2026/11/17/rollout-2026-11-17T15-54-47-01a1e849-67ea-7263-ac94-952633d586ac.jsonl",
-      "actual_model_effort_verified": true,
-      "reason": "Source-specific findings/review/normal0resource and ownership evidence are curated;no report-body or raw transcript consumer remains. Restore pinned source from Git;retire temporary views/spec/lifecycle/review output too."
-    }
+      "inventory_sha256": "0101c8f4a359c815520df56a3b19294ab6ffe418475c7f6c68c029ac5ae010e9",
+      "temporary_inventory_bytes": 27764,
+      "inventory_retired": true,
+      "prepared_proof_commit": "18c77fc45",
+      "reason": "No remaining report/view/review/lifecycle/native capture consumer;compact corrected findings and source provenance retained."
+    },
+    "next": "No generic repeat. Fresh V2host and short cases pass;full fill remains pending. Future audit needs changed concrete source/contract or a new failure,not another feasibility survey."
   }
 }
