@@ -1924,8 +1924,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Closed capacity logs,journals,receipts and job-private JIT caches are retired:
   890files/137067798B,after exact767controller and2361native/dependency
   source recovery,recipe/12ELF matching and13normal/reaped/empty owner checks.
-  Only27original plan/config/proof files remain(292356B);post-cleanup admission
-  passes. The temporary349568Binventory is also retired. Neither phase engine
+  Initial post-cleanup admission passed with27plan/config/proof files;those
+  files are now retired too,after original767source recovery and reconstruction
+  of all26config/plan files and the environment/model maps from the retained
+  f966reference. No capacity private root remains. The temporary349568B
+  first inventory and27764Bfinal joint inventory are retired. Neither phase engine
   generation nor a model asset was removed.
 
   Source window_rows=81920and observed48windows/zero permanent hits explain
@@ -1938,13 +1941,57 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   DWsource audit/DXnative Luna-max review finds no fresh-run blocker;its
   independent replay-validator caveat remains. Main reconciled omitted helper
   bodies with all767committed input pins. The existing full-context diagnostic
-  is among the12coherent ELFs,but actual physical262144fill/RESTORE and ordinary
-  provider teardown remain unqualified. Before another capacity run,prepare a
-  fresh coherent-source plan;the old full_context_model.py pins retired6e40
+  is among the12coherent ELFs,and its standalone physical262144fill now passes
+  below. Serve allocation/RESTORE and ordinary provider teardown remain
+  unqualified. Future capacity work needs a fresh coherent-source plan;the old
+  full_context_model.py pins retired6e40
   inputs and131072resident KV and must not be rerun unchanged. Standalone
   consume-prompt evidence must remain distinct from serve allocation/state
-  qualification. A separate131073-input reuse experiment remains a later
-  hypothesis,not a way to relabel this failed64Kgate.
+  qualification. The fresh`coherent_context_model.py`controller targets the
+  retained diagnostic ELF with original BF16-prefix telemetry and resident20480.
+  The seven host reader controls and same-build physical bounds/hash-order
+  fixture pass with normal0,closed owners and no GPU work or fresh faults.
+  V1's16385-input GPUcase exits1normally at the checked mixed-scratch guard,
+  before layer-major math:the borrowed standalone buffers lack the server
+  lease's checked ownership while reference MIXED_SCRATCH=1was retained.
+  The owner is reaped/empty,validation activates and no fresh fault appears.
+  Preserve this configuration failure;V1cannot advance to full fill.
+  A fresh standalone allocation adaptation must disable borrowed mixed scratch
+  or establish its owners;neither is a production speed/decode selection.
+  Full fill remains unrun and requires262143batched rows plus final checkedT1.
+  The prospective V2uses lease0/mixed-scratch0/split-accumulator0together:
+  the native split guard requires mixed1,and borrowed standalone storage has
+  no server lease. This inseparable diagnostic unit selects the original512
+  bank and independently allocated mixed storage or fallback2,while preserving
+  BF16math/same queue/chunk/decode flags. Its reader checks the actual window
+  tuple against native allocation formulas and requires numeric release telemetry.
+  V2's nine host reader controls and same-build134bounds/9459hash cases pass
+  with normal0and closed owners. Its16385-input/4-output standalone case now
+  closes normally0,with quiet validation and no fresh faults;actual16384BF16
+  batched rows,ordered-exp prefix,512bank,window/storage and release checks pass.
+  V2then completes the physical262144-input/0-output diagnostic:262143batched
+  rows plus the exact finalT1commit/wait/refill-drain marker. Native exit0,
+  reaped/empty owners,quiet validation,unchanged boot/driver,no fresh faults
+  and all15post-case model hashes match. TotalBF16residual5368688640Buses
+  114688GPUrows/2348810240Band147455hostrows/3019878400B;the original512bank
+  uses1363148800B,prefix538968064B,and actual max single allocation10132807680B.
+  Contiguous mixed storage cannot fit its remaining budget,so the declared
+  mode2/16384rows/0mixed-bytes fallback runs. Post-release free memory is1038MiB.
+  This proves the standalone capacity subgate,not full serve allocation,
+  RESTORE,numerical/task,current-decode-preservation or ordinary provider
+  teardown qualification. Its synthetic traced540737.9ms is speed-ineligible;
+  do not compare it with bench.sh PP or add it as a performance CSVmilestone.
+  The0-draft summary displays-nan ms/round from division by0;guard that display
+  at the next native-source change,without treating it as a model-state result.
+  Next is a fresh one-variable384/512bank comparison at131072actual input
+  tokens(131071batched rows),which crosses81920-row MoEwindows. Pin new route/
+  reuse-byte/repetition gates;the existing comparator's48-window assumptions
+  cannot be reused unchanged. The capacity reader/original record/two generated
+  fixtures remain only through that upcoming historical-evidence bridge's host
+  admission,then retire the ended private inputs. All134resolved V1/V2raw/JIT
+  files(27388603B)and the60846Binventory are retired;post-cleanup admission
+  passes with only that original record/two fixtures. No V1private root remains
+  and no extra native generation was created.
   Queue placement,ready batching and window remain later independent units.
   Closed math/research captures are retired:766files/1262355027B plus the
   208933Btemporary inventory. Exact final ELF,recipe,367project/398original
@@ -1954,12 +2001,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   individual samples/9decisions remain active. Legacy provenance/fixture/cache
   holds stay separate and do not renew this ended third generation.
   The old9arm controller/13host controls/24case fixture restore from`05eceacd`;
-  that unused24case fixture is removed from the active tree. The seven closed
-  Unique-slot-only source/helper/test files have no production callers. Retire
-  them at the next source boundary after replacing the closed capacity reader's
-  current767-file check with the fresh coherent full-context admission;its
-  frozen source set still includes them. Recover their experiments from Git,
-  rather than renewing an unspecified cache/loan regression consumer.
+  that unused24case fixture is removed from the active tree. Nine closed
+  prototype files(125824B)restore from`da18ad915`:seven Unique-slot-only
+  source/helper/test files without production/CMake callers,and the completed
+  capacity controller/test. Their original measured commits remain reachable.
+  The new`coherent_context_model.py`reads original coherent native/speed proof
+  directly. Do not refresh the archived capacity runner's767pins. All27private
+  inputs are retired after historical recovery and new coherent V2host/short
+  admission. Independent parent-copy safety stays. The reviewed DY/DZprivate
+  report/views/review/lifecycle/native capture are also retired;65joint files
+  total2204021B,with corrected findings/provenance retained in the research index.
   The22.95MBsmall generation and private audit captures are now retired after
   exact final ELF,recipe,370project/398original source recovery;both phase
   references remain. Full input/15case evidence restores from`4eb8276e0`.
