@@ -1848,8 +1848,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   precision or model qualification. Next pin the actual expert-slot/cache and
   last-reader integration seam before a new one-unit plan;fullfit and recycled
   scratch slots have different ownership contracts. Do not copy the fixture's
-  fixed128-slot schedule wholesale into the model. Commit source/recipe recovery
-  and retire this ended third build before creating another candidate.
+  fixed128-slot schedule wholesale into the model. Exact final ELFs,recipe,
+  366project sources,398original native sources and962/29/12compiler/link/object
+  inputs now match their original Git/build records;the1GBcorpus is also rebuilt
+  bit-for-bit by streaming the original model slices. The ended third component
+  root is retired:1264files,1786561342bytes,plus its592705-byte temporary inventory.
+  Duplicate case/environment/recipe inputs recover from`1496a4902`;all141outcomes
+  and39decisions remain unchanged. Both selected phase references are retained;
+  legacy provenance/fixture/cache holds remain separate. No new build starts
+  until its own committed source,recipe and comparison plan are ready.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
