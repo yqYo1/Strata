@@ -1857,20 +1857,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and39decisions remain unchanged. Both selected phase references are retained;
   legacy provenance/fixture/cache holds remain separate. No new build starts
   until its own committed source,recipe and comparison plan are ready.
-  The next independently authored,unbuilt proposal is
+  The independently authored,unselected candidate is
   `sycl_unique_slot_copies.hpp`at`84f3d3c29`:strict sequential one-write-per-slot
   ownership permits omitting per-expert reader markers until terminal drain.
-  It is not connected to a model route and establishes no gain or qualification.
+  It is not connected to a model route;no model qualification or gain is established.
   Decision-support scope`prefill_unique_slot_fullfit_source_ds_20261117`
   completed normally0 within its resource envelope;native Luna-max review
   accepts the source with corrections. Its curated index records four concrete
   fullfit/staging/publication/checked-loan invariants. The wrapper must drain and
   die inside a live cache loan;the staging buffer,not merely its original slab,
   must survive H2D. Main source`8b2d9ac46`adds a15case small GPU lifetime plan
-  and8passing host admission controls. No native fixture build or model
-  integration/qualification has occurred. Single-write ownership and omitted
-  overwrite-reader markers are one inseparable safety unit;placement and ready
-  batching need independent full-math comparisons under a later committed plan.
+  and8passing host admission controls. Native source`535911a2b`now passes
+  all15small checks at`4eb8276e0`:both placements,128/129/512slots,ready1/64,
+  refusals,terminal drain and accepted-copy host-exception retirement. All21
+  build/test/native commands close normally0;no validation errors or fresh
+  device faults. Four fresh TUs/four objects match719compiler/25link inputs.
+  No model integration or performance gate passes from this safety fixture.
+  Single-write ownership and omitted overwrite-reader markers form one
+  inseparable safety unit. Next hold math/order/bytes fixed:compare128versus512
+  slots with reader markers,then omit markers at the same512slot layout;vary
+  queue placement,ready batching and prefetch window independently before
+  testing their combination. Commit exact source and that new plan first.
+  The22.95MBsmall generation and private audit captures are now retired after
+  exact final ELF,recipe,370project/398original source recovery;both phase
+  references remain. Full input/15case evidence restores from`4eb8276e0`.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
