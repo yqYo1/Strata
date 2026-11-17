@@ -25,7 +25,7 @@ import qsa16_stream_bench as core
 import ur_validation as validation
 
 P, B, RESULT = capacity.P, capacity.B, capacity.RESULT
-ROOT, KEY = B/'prefill-bank-capacity-v1', 'prefill_bank_capacity_v1'
+ROOT, KEY = B/'prefill-bank-minimum-v1', 'prefill_bank_minimum_v1'
 CAPACITY_KEY = 'coherent_context_model_v2'
 READ, RUNS, STRIDE, ROW = 131072, 3, 2662400, 20480
 READS = (32769,) + (READ,)*8
@@ -300,6 +300,8 @@ def prepare():
             'boot','driver','native_validation_probe','python_contract','python_selected')},
         binary=native['binaries']['strata'],native_source_commit=capacity.original.SOURCE,
         runtime_manifest=prior['runtime_manifest'],plans=[],processes=[],request_hashes={},
+        prior_preparation_refusal=dict(controller='a1766f9d9',native_executed=False,
+            reason='Historical prefill_bank_capacity_v1 result key already exists;fresh-campaign guard refused before creating files. Preserve it;new campaign uses prefill_bank_minimum_v1.'),
         host_passed=False,passed=False,complete=False,active=False,ownership_closed=True,
         budgets=dict(wall=2400,cpu=20000,rss_cap=104<<30,text_cap=16<<20,file_cap=32<<20,total_cap=128<<20),whole_bytes=1536<<20,
         plan=dict(question='Measure the standalone256->1prefill-bank cost at fixed128K/window10 before a separate larger-window unit.',
