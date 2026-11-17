@@ -1916,9 +1916,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   both new arms remain below the historical871..872warmed32Kreference.
   Keep every original sample;do not substitute the old best for this current
   matched baseline or attribute the difference to a native-code change.
-  Three of13processes/nine declared samples are closed;next is case3,clean
-  65537-input384. The remaining two32Kpairs and three64Kpairs stay frozen
-  under the existing plan. DWsource audit/DXnative Luna-max review finds no
+  The first two64Kpairs are now committed at`64e2f70db`and`b88bdf36d`.
+  Reference/candidate warmed times are76801.55/73081.55ms in R,Corder,
+  then73684.3/74571.45ms in C,Rorder:ratios0.9515634776and1.0120398782.
+  The initial4.84%time gain is therefore not reproduced in the reversed pair,
+  which is1.20%slower. All requests,actual arithmetic/jobs and requested
+  H2Dbytes match within each pair;both placements remain all-GPU ordinary.
+  Preserve this eligible slower pair:the existing all-three-pairs gain gate
+  cannot pass at64K. Do not reclassify it as noise or change the criterion.
+  Seven of13processes/21declared samples are closed normally0,quiet,without
+  fresh faults;next is case7,clean32769-input512. The remaining two32Kpairs
+  and one64Kpair still run under the frozen plan,with no performance-based
+  early stop. Resource snapshots find CPU affinity0..11and no exposed CPU
+  quota;GT0is observed at its2750MHzconfigured/rp0limit. Host-facing Intel
+  upstream and AMD parent PCIe ports report16GT/s,x4;leaf/internal-port
+  2.5GT/s,x1fields alone are not an external-link ceiling. These unsynchronized
+  read-only snapshots establish neither physical saturation nor the cause of
+  the historical speed difference.
+  Source window_rows=81920and observed48windows/zero permanent hits explain
+  why32K/64Kdo not test reuse across MoEwindows. After finishing this cohort,
+  a separately committed131073-input plan can test actual admission,96windows,
+  permanent hits and H2Dreduction;this is a prospective hypothesis,not a rescue
+  of the failed64Kgate or a qualified new route.
+  DWsource audit/DXnative Luna-max review finds no
   fresh-run blocker;its replay-validator caveat remains separate. Main checked
   the omitted called helper bodies against the767committed controller pins.
   Preserve existing decode;24outputs cannot qualify sustained decode preservation.
