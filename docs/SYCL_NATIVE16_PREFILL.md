@@ -2073,9 +2073,50 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1000PPtarget is not met,and inference/defaults are not adopted. Four CSVpoints
   retain first/warm results;prior32/64/96Kcohorts and the historical64K1006PP
   point stay separate. Do not fit a physical timing law across different routes.
-  Next pin a bounded profile of this actual128K/all-GPU path to attribute its
-  remaining compute,VRAM/PCIe and host-wait critical path before selecting the
-  next independent change. Keep clean speed separate from observers. Numerical/
+  Current attribution `prefill_resource_profile_v2` is closed at
+  `1dfadd0d6`:four processes/eight thinking-on24-output requests,all normal0,
+  closed owners,quiet validation,no fresh fault and15final model hashes.
+  Eleven host controls,the exact62-class fixture and the separate32Ksmoke
+  passed. The128Kclean/profile/clean bracket bounds prompt/TTFT observer
+  ratios to1.07975..1.095214,below the predeclared1.2limit. Both six-clock
+  model traces match per-requestGU/Down and CPU/status conservation. The
+  originalV1 remains failed;ordinary DownScatterKernel was classified as
+  other. Reuse coherent14508 and the unchanged Sysman0collector;no inference
+  build,math/default change or speedup/adoption is implied.
+  Fresh clean first-usePPis820.8/810.3;subsequentPP887.8/884.8. Two CSVrows
+  retain their process aggregates;prior128K920.432and64K1006+cohorts remain
+  separate best evidence. Do not fit across these timing periods.
+  In the observed128Ksubsequent client window,kernel union is114.755s;
+  QSAprefix service30.450s,other kernels30.389s,andM2Dcopy service22.575s
+  for55,305,417,464requested bytes. These are overlapping service/payload
+  quantities,not additive wall time,wire traffic or hardware saturation.
+  MainCPU153.999s comprises87.461s in known waits and66.538s outside;
+  host row grouping is0.308s. Submission and polling are material;this does
+  not establish a CPU critical-path limit. The actual limiting arithmetic/
+  VRAM/PCIe resource and compatible ceilings remain unresolved. Next pin/read
+  the dominant QSAprefix and copy paths and measure matching kernel/memory
+  ceilings before selecting one independent change. Keep the current-build
+  five-length/held-out timing curve pending as described below;two lengths
+  and mixed routes/timing periods do not qualify a physical law.
+  Reviewed future bank/window research identifies source limits117488split,
+  81920ordinary accumulation and8192per job,not runtime admission. Before
+  implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;
+  assess bank-only/window-only/combined arms separately and retain infeasible
+  cells. Hypothetical mode16 is not an accepted native14setting. No larger-window
+  implementation or model trial is currently eligible.
+  CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
+  markers;the old marker-associated stall remains causally unresolved. Require
+  exact route/count/clock/owner/conservation and<=1.2observer ratios against both
+  controls before normal-route attribution. Finite3GiB/file,4GiB/job,5GiBwhole
+  capture is reduced/retired after closure. This identifies service/requested
+  payloads and host waits;physical bandwidth/saturation remain separate checks.
+  The one-shot profile controller/test are retired;restore from90756f079.
+  The equivalent ordinary-Down classifier is preserved in profile_split.py,
+  with19host tests passing and exact old-wrapper-plus-base AST equivalence.
+  All518ended files(2,360,701,676B)and287,550Btemporary inventory are removed;
+  original source/recipe/inputs are recoverable from1dfadd0d6 on pushed feature.
+  Both phase builds and the owned collector/model assets remain. Select the
+  next independent change from this evidence;keep speed samples separate from observers. Numerical/
   task,agent,long-thinking generation with observed MTPstrong/weak acceptance,
   repeated decode preservation and serve RESTORE/full-context/ordinary teardown
   gates remain before adoption. The earlier standalone physical262144pass is
