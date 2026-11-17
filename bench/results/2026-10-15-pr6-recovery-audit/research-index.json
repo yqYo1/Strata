@@ -35501,5 +35501,159 @@
       "Actual closed execution receipt plus individual samples/counts/identities/fault/closure evidence.",
       "No source-only repetition or unavailable raw-map claim."
     ]
+  },
+  "sycl_copy_event_retention_dq_20261117": {
+    "classification": "decision support",
+    "source_revision": "05eceacdd807628e4b27834f7167c5672f72fccb",
+    "rule_revision": "23af2a3a4bc0f918345d18f580279344d965bfdf",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "source_manifest_sha256": "3282f8bf5ced726e37658d9577b046615dce9e3dc1165518a1eafd78aabf30ba",
+    "source_files": 15,
+    "report_sha256": "bf6c925dfcca82e91b607dc23895e79225ae027840160f2d320cebc5881836d2",
+    "report_bytes": 11970,
+    "status": "reviewed_partial_deadline_failure",
+    "active": false,
+    "ownership_closed": true,
+    "schedulable_now": false,
+    "worker_outcome": "failed_deadline_before_worker_done",
+    "resource_envelope_passed": false,
+    "normal_exit_code_qualified": false,
+    "worker_side_Orca_first_tool_verified": true,
+    "readonly_inputs_checked": 15,
+    "positive_kernel_scope_exit": true,
+    "review_model": "gpt-6-luna",
+    "review_effort": "max",
+    "review_sha256": "9b4567010e5f068b2bdd4b4dc92a722f53b692ec43a6e275269ab810d58c366f",
+    "review_digest_sha256": "955dc5ee03da698f45beeacf3b2986f47b11c7aa1644b6f431b7e096acc7a88b",
+    "review_verdict": "Useful partial decision support,not successful collection. No change/model adoption. Keep complete matrix and missing attribution gates.",
+    "native_runtime_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "M128_evidence_commit": "dc842728f1542a72842b9696fd56dad384f5b377",
+    "M128_R_paired_ratios": [
+      2.404827,
+      2.323274,
+      2.907446
+    ],
+    "trace_counts": {
+      "scope": "Whole processes including gold,warmup and validation;not API duration,peak-live events,timed-only calls,physical traffic or causal proof.",
+      "policy_order": [
+        "layout",
+        "bridge",
+        "both64"
+      ],
+      "UR": {
+        "urEnqueueUSMMemcpy": [
+          1049,
+          1049,
+          1049
+        ],
+        "urEnqueueEventsWaitWithBarrierExt": [
+          0,
+          1028,
+          18
+        ],
+        "urUSMGetMemAllocInfo": [
+          1,
+          1,
+          1
+        ],
+        "urDeviceGetGlobalTimestamps": [
+          7228,
+          8256,
+          7246
+        ],
+        "urEventWait": [
+          46,
+          46,
+          46
+        ]
+      },
+      "LevelZero": {
+        "zexCounterBasedEventCreate2": [
+          64,
+          1600,
+          640
+        ],
+        "zeEventDestroy": [
+          64,
+          1600,
+          640
+        ],
+        "zeEventHostSynchronize": [
+          46,
+          46,
+          46
+        ],
+        "zeCommandListHostSynchronize": [
+          42,
+          42,
+          44
+        ],
+        "zeCommandListAppendMemoryCopy": [
+          1049,
+          1049,
+          1049
+        ],
+        "zeCommandListAppendBarrier": [
+          0,
+          1028,
+          18
+        ]
+      },
+      "trace_hashes": {
+        "layout": {
+          "ur": "b2f32cd0470b56e70c674f19a66ac2ac8db8a23da5f3e1f4251ba4e269f8b260",
+          "stderr": "f17c293555126e2505c7c1e39f94a06b6802db1cefe8a45708275ed8a4f829eb"
+        },
+        "bridge": {
+          "ur": "cd57da1b2fa6b6eae8ca5162b307a97a571f4e2559726e98060a73dc8330b88e",
+          "stderr": "bfb2bd136007b9d3179a1d13357e95448296641e3c8dd63c28947f8d654cca44"
+        },
+        "both64": {
+          "ur": "28b310901f4e3b0aa5590710c758643c0db16e50d066458d6a958762a508581b",
+          "stderr": "f5c0efd9d37c5acd424ca833c53e7aaee4f44f8797781d5bdfe1b9ea6a8e1c3a"
+        }
+      }
+    },
+    "references": [
+      "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+      "https://github.com/intel/llvm/blob/59bccf316708d4026291cf9cbfd9c2a4e185fe18/sycl/source/detail/queue_impl.cpp",
+      "https://github.com/oneapi-src/unified-runtime/blob/31563b4c6974774095969aaf0700ef40adf3dbc6/source/adapters/level_zero/v2/event_pool.cpp"
+    ],
+    "source_limits": "Standard reference lifetime and pinned upstream implementations support a hypothesis;their commits are not established as the installed2026.2 binary implementation. No external implementation copied.",
+    "next_scope": {
+      "schedulable_now": false,
+      "question": "One host event-reference retirement edge after accepted dependent enqueue;start with copy OR recycled-reader reference,not both. Never manually destroy native events.",
+      "prerequisites": [
+        "Close full141case matrix and pending-shape decisions.",
+        "Attribute whole-path time/CPU versus waits;pin exact installed runtime before selecting a mechanism.",
+        "Commit one-variable plan with preserved failure,async/submission/drain/lifetime and exact-output/benefit gates."
+      ],
+      "do_not_repeat": "R already compared;no duplicate generic same-queue/dependency survey."
+    },
+    "retention": {
+      "stage": "complete",
+      "retired_roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sycl-copy-event-retention-dq-20261117",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sycl-copy-event-retention-dq-20261117-control",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/sycl-copy-event-retention-dq-20261117",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/sycl-copy-event-retention-dr-20261117",
+        "/home/yayoi/.codex/sessions/2026/11/17/rollout-2026-11-17T08-05-08-01a1e69b-6f2f-7620-8209-83736d0254ae.jsonl"
+      ],
+      "files": 42,
+      "bytes": 2173686,
+      "deletion_inventory_sha256": "212e3bafd69d0a1099d34255371c5e4f657a4a58325f60c1352786ed63bd9814",
+      "source_inputs_recovered": 15,
+      "source_recovery": "Five project inputs and four actual Runtime files match original reachable Git blobs;three installedSDK files match originals. Remaining three inputs are redundant derived transaction/source-check data. Source/evidence/curation refs verified against remote primarye9e34ad55.",
+      "all_selected_paths_absent": true,
+      "deadline_failure_remains": true,
+      "temporary_inventory_retired": {
+        "path": "/tmp/strata-retire-dq-dr-20261117.json",
+        "bytes": 24162,
+        "sha256": "212e3bafd69d0a1099d34255371c5e4f657a4a58325f60c1352786ed63bd9814",
+        "reason": "Completed exact-path/hash reconciliation;no continuing consumer."
+      },
+      "remaining_holds": "Current141case matrix/native source/weights/ELFs and independent phase references retained. Legacy.cache/build/provenance holds unchanged."
+    }
   }
 }
