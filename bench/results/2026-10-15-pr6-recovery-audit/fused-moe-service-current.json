@@ -407022,7 +407022,7 @@
     }
   },
   "prefill_window_workspace_v1": {
-    "stage": "prepared",
+    "stage": "built",
     "native_engine_built": false,
     "GPU_executed": false,
     "runtime_admission_qualified": false,
@@ -407102,7 +407102,15 @@
       "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-plan-v1/tmp"
     },
     "whole_bytes": 33554432,
-    "results": [],
+    "results": [
+      {
+        "mode": "build",
+        "passed": true,
+        "GPU_executed": false,
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ],
     "active": false,
     "complete": false,
     "passed": false,
@@ -407116,6 +407124,38 @@
       "total_cap": 16777216
     },
     "host_plan": "Build separately;pin exact executable and actual linker inputs;commit before running. Require49152row cases,old-layout invariants,two relocated planes,disjoint guards/chunk maps,negative refusals,normal0/reaped/empty owner. No GPU/math/speed/model admission follows.",
+    "actual_link_inputs": [
+      "/usr/lib/x86_64-linux-gnu/Scrt1.o",
+      "/usr/lib/x86_64-linux-gnu/crti.o",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-plan-v1/tmp/cc4ORR9f.o",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "/usr/lib/x86_64-linux-gnu/libm.so",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "/usr/lib/x86_64-linux-gnu/libmvec.so.1",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/x86_64-linux-gnu/libc.so",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "/usr/lib/x86_64-linux-gnu/libc_nonshared.a",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/usr/lib/x86_64-linux-gnu/libc_nonshared.a",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+      "/usr/lib/x86_64-linux-gnu/crtn.o"
+    ],
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-plan-v1/prefill_moe_workspace",
+      "sha256": "70b76d6a920bfb42d39a93c224e08d1683d14747bee6180765ea8779f140d007",
+      "bytes": 22504
+    },
     "sources_summary": {
       "files": 7,
       "sha256": "660cce96816e07e5c7aead57da253655239dbbfeeb121e8539dfd2945a0601a2"
