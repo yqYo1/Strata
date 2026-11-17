@@ -2037,20 +2037,39 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no GPU work and does not relabel the model source or its failed warm gate.
   Both phase reference engines and model assets remain current consumers.
 
-  Next bank-capacity unit: the prospective `prefill_bank_placement.py` controller
-  and its eight bounded host controls are implemented; **not measured or adopted**.
-  At fixed 131,072 input tokens,
-  change only requested bank capacity 384 -> 256 and measure the planner's
-  intended residency/staging change. The previous 131,071 batched rows need
-  2,684,334,080 B, but only 98,304 rows / 2,013,265,920 B fit with the actual
-  512-slot fallback bank. Native14508's chunk planner bounds that residual
-  budget below 2,181,038,080 B. Reducing actual capacity 512 -> 256 frees
-  681,574,400 B (650 MiB). Under the same other allocations and budget this
-  could admit all rows, with at least 10,506,240 B above the retained 512 MiB
-  headroom. A requested-384 reference still falling back to 512 is a source
-  prediction, not a measured new arm. Require a fresh committed plan, source/
-  lifetime review and actual admission; preserve single-allocation, decode and
-  full-context gates. The first-use 512 observation remains a separate candidate.
+  Current bank-capacity unit, `prefill_bank_placement_v2`: source `f12afed85`,
+  same coherent native14508 ELF. Change only requested capacity 384 -> 256
+  at fixed 131,072 actual input tokens. Automatic bank/residual/source-view
+  placement is the intended planner consequence; kernels, math, chunk8192,
+  window10, same queue, split-request1, decoder1256, KVresident20480 and MTPspec4
+  remain fixed. The original V1 host-only failure remains at `57df0c83c`:
+  its negative test increased free memory while expecting capacity refusal.
+  V2 corrects that test; eight host controls and both frontend probes pass.
+
+  All three traced diagnostic processes close normally, nine requests total.
+  The 32,769-token candidate is a separate small-path check. At 128K, requested
+  384 actually falls back to 512 slots with 98,304 GPU / 32,767 host rows;
+  requested256 admits all 131,071 BF16 rows / 2,684,334,080 B on GPU.
+  Its bank uses 681,574,400 B, freeing650MiB, with the512MiB headroom and
+  73,379,584 B additional observed budget margin. Maximum single allocation
+  is10,132,807,680 B; actual allocation succeeds. Both use96 windows,max81,920.
+  All checked drains/MTP restores pass, validation is quiet and no fresh fault
+  occurs. EC/ED source review finds no source blocker under the runtime gates;
+  correct its tail to49,151rows and retain provider/lease evidence limits.
+
+  Traced subsequent PP is754.5/756.5 for the reference and897.5/904.2 for256.
+  These diagnostics do not establish clean speed or adoption. Candidate first
+  requested bankH2D is43,611,008,000B versus the reference's50,292,326,400B
+  source-derived sum of48*512*per-layer blob_bytes; padded maximum stride is
+  not its transfer size, and neither value is physical bus traffic.
+  Next execute all six frozen clean processes384,256,256,384,384,256, three
+  thinking-on24-output requests each. Keep first use separate from later two;
+  all three paired warm-time gains and all nine declared placement/requested-
+  transfer mechanisms are required before further model qualification.
+  Do not change the plan after observing results or pool this cohort into the
+  earlier timing curve. Decode preservation, task/agent, sustained TG,
+  serve RESTORE and ordinary provider teardown remain unqualified; the earlier
+  standalone physical262144 subgate is reused only at its original scope.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
