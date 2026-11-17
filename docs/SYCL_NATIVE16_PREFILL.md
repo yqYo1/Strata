@@ -2132,6 +2132,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and each speed loss. Do not assume that bank128alone frees enough space or
   that131Kfits. Keep current decode and both prefill strategies unchanged.
   Current-build five-length/time/TTFT and full-model qualification remain pending.
+  The next source proposal `prefill_window_workspace_v1` moves only gathered
+  rows and router logits behind a distinct FP32 accumulator-tail allocation.
+  At131071rows,it needs729,799,424extra bytes;existing-arena planes plus mixed
+  tail need1,177,025,536B,below the source GDNregion lower bound1,180,698,624B.
+  With bank1,the earlier observed free-budget scenario leaves22,492,160B
+  beyond the unchanged512MiBheadroom. This is arithmetic,not actual admission.
+  The ordinary/split public methods and their row limits remain unchanged;
+  only a new long-prefill planner is proposed. No production caller uses it.
+  First run pure CPU layout/bounds/refusal checks,then independently compare
+  bank-only,relocation-only,larger-window and combination arms as declared.
+  Do not drop the positive U1eager-upload component:its32/64Kgain was measured,
+  and a separate period's lower absolute PP does not refute that matched gain.
   Reviewed future bank/window research identifies source limits117488split,
   81920ordinary accumulation and8192per job,not runtime admission. Before
   implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;

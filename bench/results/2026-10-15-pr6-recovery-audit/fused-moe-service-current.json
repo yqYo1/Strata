@@ -407020,5 +407020,59 @@
       "compact_sample_count": 108,
       "repeated_case_fields_removed": true
     }
+  },
+  "prefill_window_workspace_v1": {
+    "stage": "source_proposal",
+    "native_engine_built": false,
+    "GPU_executed": false,
+    "runtime_admission_qualified": false,
+    "inference_adopted": false,
+    "reference_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "reference_evidence": "prefill_bank_placement_v2;prefill_resource_profile_v2",
+    "mechanism": "One131071-row expert-major window can avoid repeated expert uploads/dequantization and reduce submissions. Identify physical bottleneck separately;service/requested bytes do not prove saturation.",
+    "source_arithmetic": {
+      "source": "native14508:moe_accum_plan.hpp;prefill.cpp:gdn_set_bytes;layer_major.inc admission;observed128Kbank256route",
+      "gdn_region_lower_bound_bytes": 1180698624,
+      "rows": 131071,
+      "old_ordinary_maximum_rows": 81920,
+      "old_split_maximum_rows": 117488,
+      "moved_planes": [
+        "gathered",
+        "logits"
+      ],
+      "extra_allocation_bytes": 729799424,
+      "region_including_mixed_tail_bytes": 1177025536,
+      "prior_observed_free_gpu_bytes": 4245643264,
+      "requested_bank_slots": 1,
+      "bank_bytes": 2662400,
+      "fixed_including_512MiB_headroom_bytes": 4223151104,
+      "hypothetical_remaining_bytes": 22492160,
+      "maximum_single_allocation_bytes": 10132807680,
+      "actual_new_allocation_or_fit_measured": false
+    },
+    "plan": {
+      "immediate": "Commit exact CPU fixture/header/recipe and dependency census;compare existing ordinary/split layouts against long layout over81921..131072,all plane guards/extents/chunk maps and refusals. This is capacity only;no native runtime/GPU.",
+      "units": [
+        "B:128Kbank256 vs1 at fixed ordinary window10;record the standalone transfer/time cost even if slower.",
+        "L:98305actual-input old split128/window1 vs new relocated128/window1;identical math/jobs,layout changes only.",
+        "W:128Kbank1/window10 vs bank1/window16;allocation/layout/caller/producer-consumer changes required for one coherent larger-window unit.",
+        "Combination:current256/window10 vs1/window16;retain every unit,including infeasible cells and losses;preserve decode and phase handoff."
+      ],
+      "limits": "No model run or adoption is admitted by CPU capacity. Commit numerical,safety,physical262144/fallback/handoff/RESTORE/decode-preservation and matched performance plans separately. No minimum-gain blanket;do not reinterpret previous failed gates.",
+      "retention": "One temporary CPU fixture executable for immediate capacity proof;retire it after exact source/recipe recovery,before creating the coherent GPU candidate. Both qualified phase-reference engines remain;this is no third GPU engine build. Legacy configured-output/source holds remain separate."
+    },
+    "retained_build_review": {
+      "prefill_reference_sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+      "decode_reference_sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+      "known_reference_generations": 2,
+      "legacy_three_hashes_and_six_configurations_rechecked": true,
+      "legacy_source_closure_established": false,
+      "no_legacy_output_used_as_reference": true,
+      "next_legacy_action": "Inspect retained CMake/compile/link identity before a coherent GPU candidate;current configured consumers must be migrated before their outputs are removed."
+    },
+    "research": {
+      "native_model_constraint": "Current spawn_agent override list omits requested gpt-6-luna;asynchronous user clarification pending. Do not substitute another model or weaken review. Main source/capacity work continues.",
+      "reviewed_future_scope": "No new missing-prerequisite survey. A future audit can inspect this concrete allocator/caller unit once a current immutable patch and permitted reviewer are available."
+    }
   }
 }
