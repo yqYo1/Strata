@@ -121,6 +121,13 @@ class ResourceProfileControls(unittest.TestCase):
         self.assertEqual(compact['source_inputs']['files'],1)
         self.assertNotIn('sources',compact)
         self.assertNotIn('model_assets_sha256',compact)
+        proof=campaign.generation_metadata_contract()
+        self.assertTrue(proof['unchanged_original_AST_except_unused_mode'])
+        old=campaign.validation.git('show',campaign.GENERATION_AUDITED_SOURCE+':tools/sycl/generation_engine.py')
+        now=(campaign.P/'tools/sycl/generation_engine.py').read_bytes()
+        with self.assertRaises(RuntimeError):
+            campaign.generation_ast_contract(old,now.replace(b'expected=dict(start,exit_code=0)',b'expected=dict(start,exit_code=1)'))
+
         self.assertTrue(campaign.profile_helpers.collector_controls()['passed'])
         self.assertTrue(campaign.profile_helpers.profile_window_controls()['passed'])
         self.assertTrue(campaign.profile_helpers.profile_cleanup_controls()['passed'])
