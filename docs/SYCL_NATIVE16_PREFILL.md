@@ -2076,13 +2076,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Current attribution proposal: `prefill_resource_profile.py` now binds its
   runtime manifest to the verified original provider list. The Luna review
   refuted clock-count and missing-map-gate claims; it identified this narrower
-  manifest-binding gap. Nine host controls passed. Fresh ten controls additionally
-  test the scoped committed-evidence reader: collector V2 preparation refused
+  manifest-binding gap. All ten current host controls passed, including the
+  scoped committed-evidence reader: collector V2 preparation refused
   its own result write before any GPU execution. That refusal remains failed;
   V3 uses only the unchanged, verified collector-reuse subtree. The unused
   HOSTv3 preparation stays closed before execution, with its original source pins. Reuse coherent14508 and the owned
-  Sysman0 indexed collector;first exact62-class compatibility control,then a
-  separate32Kmodel smoke,then128Kclean/profile/clean with two requests each.
+  Sysman0 indexed collector. The exact62-class compatibility control passed
+  (1direct/37producer/24consumer,unique joins,normal exit,quiet validation and
+  no fresh fault);model observation remains pending. Next is a separate32K
+  model smoke,then128Kclean/profile/clean with two requests each.
   CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
   markers;the old marker-associated stall remains causally unresolved. Require
   exact route/count/clock/owner/conservation and<=1.2observer ratios against both
