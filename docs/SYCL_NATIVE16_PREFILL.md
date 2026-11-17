@@ -1947,10 +1947,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retained diagnostic ELF with original BF16-prefix telemetry and resident20480.
   The seven host reader controls and same-build physical bounds/hash-order
   fixture pass with normal0,closed owners and no GPU work or fresh faults.
-  Its16385-input/262144-input GPUgates remain unrun;the final case requires
-  262143batched rows plus the checked finalT1commit.
-  Standalone entry plus required scratch lease0is an inseparable diagnostic
-  adaptation,not a production speed candidate or decode-selection change.
+  V1's16385-input GPUcase exits1normally at the checked mixed-scratch guard,
+  before layer-major math:the borrowed standalone buffers lack the server
+  lease's checked ownership while reference MIXED_SCRATCH=1was retained.
+  The owner is reaped/empty,validation activates and no fresh fault appears.
+  Preserve this configuration failure;V1cannot advance to full fill.
+  A fresh standalone allocation adaptation must disable borrowed mixed scratch
+  or establish its owners;neither is a production speed/decode selection.
+  Full fill remains unrun and requires262143batched rows plus final checkedT1.
   A separate131073-input reuse experiment remains a later
   hypothesis,not a way to relabel this failed64Kgate.
   Queue placement,ready batching and window remain later independent units.

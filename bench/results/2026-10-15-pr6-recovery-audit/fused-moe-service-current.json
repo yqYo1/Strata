@@ -397325,7 +397325,7 @@
       "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
       "files": 84
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "7bab90583bfecfe776df7cd0965963f01878f140",
     "policies": {
       "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
@@ -397614,6 +397614,36 @@
           "device": "0xe20c",
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
+        }
+      },
+      "short": {
+        "passed": false,
+        "complete": false,
+        "host_probe_accepted": false,
+        "native_execution_attempted": true,
+        "GPU_execution_possible": true,
+        "native_exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "6906420e287551ea01206581d8ba2f6e6f6d4be38431aeafaeef349735eaaed2",
+        "error": "RuntimeError('native capacity exit/ownership failed')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "failure_mechanism": {
+          "native_message": "prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue",
+          "native_guard": "14508:src/prefill/layer_major.inc:76",
+          "configuration": "The server reference requires MIXED_SCRATCH=1 checked parent/lease owners. Standalone lease0 does not establish those owners; retained process refused before layer-major model work.",
+          "long_prefill_executed": false,
+          "new_GPU_fault": false,
+          "next": "Preserve failed V1;fresh prospective standalone adaptation must disable borrowed mixed scratch or establish its checked owners. No retry/full launch from this plan."
         }
       }
     },
