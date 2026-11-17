@@ -1983,72 +1983,64 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   do not compare it with bench.sh PP or add it as a performance CSVmilestone.
   The0-draft summary displays-nan ms/round from division by0;guard that display
   at the next native-source change,without treating it as a model-state result.
-  Next is a fresh one-variable384/512bank comparison at131072actual input
-  tokens(131071batched rows),which crosses81920-row MoEwindows. Pin new route/
-  reuse-byte/repetition gates;the existing comparator's48-window assumptions
-  cannot be reused unchanged. The fresh`prefill_bank_reuse.py`proposal pins
-  96windows/max81920,all-GPU residual,checked borrowed mixed storage and actual
-  requested slots. Its seven-process plan separates three traced admission
-  requests from18clean requests in three alternating pairs. Copy reuse and
-  repeated time gain are independent gates;the native14ELF/math/queue/decode
-  stay fixed. The first seven host controls refuse two synthetic fixtures whose
-  bank/allocation header order disagrees with the existing production reader;
-  no model/GPUcase ran. V1stays failed;V2corrects that fixture under a fresh
-  source/plan without weakening the route or performance criteria. V2's seven
-  controls and current benchmark/server frontend probes now pass. Its bridge
-  recovers765capacity-controller sources and both original fixtures;the fresh
-  current reader consumes committed physical facts independently of old inputs.
-  All20ended capacity/refused-control input files(1575123B)and the9763B
-  temporary inventory are retired,with post-deletion admission passing. Neither
-  old private root remains. With the failed128Kscreen closed,the unused capacity
-  CLI/test code is retired to its original commits. The unchanged shared
-  native/model admission body remains in`coherent_model_basis.py`.
-  The first128Kstage-progress request now reaches its end gate but fails actual
-  placement admission:512requested/effective slots,98304GPU residual rows and
-  32767host rows(2013265920/671068160B),staged bank0. The declared all-GPU route
-  is absent;the controller refuses it before the remaining requests/clean arms.
-  Preserve that failed screen and its non-normal supervised termination. Main
-  separately verifies the four original process identities are gone,the direct
-  child reaped,session empty,lock available and no fresh fault;this does not
-  turn incomplete observation into normal-exit qualification or a speed result.
-  A fresh98305-input setup can test reuse across two81920-row windows within
-  the observed98304GPU rows. Fix split0in both arms to avoid the distinct
-  90113..117488split route,and compare only384/512bank slots under a new plan.
-  This is a new fixed setup,not a retry,lowered128Kgate or adoption of split0.
-  V3keeps the same seven-process alternating order,three requests per process,
-  route/lifetime/fault gates and independent copy-reuse/repeated-time criteria.
-  The only384-versus512variable remains requested bank capacity;all math,
-  queue,chunk,MTPand decode placement stay fixed. The closed controller/test
-  restores from`be2f53f7d`;no new native build or capacity claim follows from
-  extracting its admission body.
-  V3's first98305-token request reaches its end gate with all98304residual
-  rows onGPU and a staged512bank. It fails the reader's required split-admission
-  marker:the actual14508caller emits that marker only when split is requested,
-  while this setup requests0. The synthetic fixture incorrectly included it.
-  Preserve V3failed and its supervised termination;no clean arm or performance
-  qualification follows. A fresh split0-aware reader must require the verified
-  immutable native startup setting,absence of split telemetry and actual
-  two-window work,without inventing a runtime admission record or relaxing the
-  legacy marker requirement. Main verifies all original owners are gone and
-  no fresh fault;that is separate from normal-exit qualification.
-  V4corrects only this reader/fixture contract under a fresh source/plan. Nine
-  host controls include the minimal8194Bactual V3telemetry consumed by the
-  whole production reader,including48packed-bank records and MTPstate;the
-  actual failed V3outcome stays unchanged. The96Ksetup,only384/512capacity
-  variable,seven-process order and independent mechanism/time gates stay fixed.
-  All nine V4controls and both frontend host probes now pass. Its first traced
-  process completes all3thinking-on98305-input/24-output requests normally0,
-  with98304GPU/0host rows,48full-fit512banks,96windows/max81920,checked
-  MTPrestore,reaped/empty owners,quiet validation and no fresh faults. These
-  are admission samples,not clean speed. Next are6clean processes/3alternating
-  matched384/512pairs. EA/EBreview confirms the full imported dispatch object
-  compares jobs/rows/dequants/maps;the report's claimed missing gate is withdrawn.
-  No other concrete reader mismatch was found. Ended V2/V3raw/JITand reviewed
-  research transactions are now retired:221files/23938423B,after
-  recovery of767/766controller sources,all28generated inputs and the original
-  native source/recipe/12ELFs. The63523Btemporary inventory is retired too;
-  current admission passes without those paths. Preserve their failed outcomes
-  and narrow limits. No phase engine or model asset was removed.
+  The closed reuse screens preserve their original failures. At128Kactual
+  input,thecbd1000V2controller observes98304GPU/32767host residual rows,
+  effective512slots and staged0;its all-GPUgate fails. The469132V3screen admits
+  all98304GPUrows at98305input but wrongly requires an enabled-only split
+  marker. Both stop after the first request gate with supervised termination;
+  actual process absence is separate from normal-exit qualification. V1's two
+  synthetic header-order errors remain failed too. The1ab5f0465V4correction
+  changes only the reader/fixture contract:verified immutable startup split0,
+  no split telemetry and actual96windows/max81920;legacy enabled-split markers
+  stay mandatory. Nine controls include actual complete-request telemetry.
+
+  V4now closes7normal0processes/21thinking-on98305-input/24-output requests:
+  3stage-progress admission samples and18clean samples in3alternating pairs.
+  Every owner is reaped/empty,validation is quiet,no fresh fault occurs,and
+  all15final full model hashes match. Same14508ELF/math/queue/chunk8192,
+  decoder placement,MTP,request hashes and actual GU/Down/jobs/dequants/maps
+  are verified. All98304BF16residual rows stay onGPU;the admission verifies
+  all48full-fit512banks. Only requested bank capacity384/512varies.
+
+  | Scope | 384 PP | 512 PP | 384 client TTFT | 512 client TTFT |
+  | --- | --- | --- | --- | --- |
+  | First request,median of3processes | 818.551 | 823.326 | 120.337s | 119.611s |
+  | Subsequent,median of3process medians(each2requests) | 906.501 | 893.041 | 108.6555s | 110.307s |
+
+  Warmed512/384time ratios are0.996206354/1.009424935/1.018651994;
+  geometric mean1.008052285. Two pairs worsen0.942%and1.865%,so the declared
+  repeated-gain gate fails. Each of9paired requests does reuse5/10/9more
+  experts and request11.648/23.296/20.9664MBless bankH2D,but the extra325MiB
+  bank has no reproducible warmed gain. Requested bytes are not physical bus
+  traffic or saturation. Preserve the positive first-use ratios
+  0.990952812/0.972870418/0.995163048(geomean0.986281162)separately;
+  they do not retroactively change V4's warmed acceptance. A first-use/TTFT
+  adoption needs its own prospective plan and remaining model/phase gates.
+  No default selection,inference adoption,sustained TG/task/agent,serveRESTORE
+  or ordinary provider-teardown qualification follows. Earlier32Kgain/64K
+  failure and the faster historical871/1006PPcohort remain separate. A single
+  new96Kpoint across cohorts does not fit a physical timing law.
+
+  EA/EBreview withdraws the report's missing job/map/dequant gate claim after
+  reading the complete imported helpers. No other concrete reader mismatch is
+  found. Its reviewed transactions and the ended V2/V3raw/JITare retired:
+  221files/23938423B plus63523Btemporary inventory,after767/766controller-source,
+  28generated-input and original native source/recipe/12ELFrecovery. Current
+  admission passes without them. Earlier20bridge inputs(1575123B)are retired
+  too. The shared native/model admission remains in`coherent_model_basis.py`.
+
+  Next is a **proposal,not implemented or run**:fixed131072input,only requested
+  capacity384->256,with automatic residency/staging change as the intended
+  mechanism. Previous131071batched rows need2684334080B,but only98304rows/
+  2013265920Bfit with the actual512fallback bank. Native14508's whole-chunk
+  planner bounds that residual budget below2181038080B. Reducing actual512to
+  256saves681574400B(650MiB),which under the same other allocations/budget
+  could admit all131071rows with at least10506240Babove the retained512MiB
+  headroom. A384reference still falling back512is a source prediction,not a
+  measured new arm. Fresh source/lifetime review,committed plan and actual
+  admission are required;single-allocation bounds,decode and full-context
+  preservation still apply. Keep the first-use512observation eligible for a
+  separately scoped future assessment;do not relabel V4's failed warm gate.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains
@@ -2082,8 +2074,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   A separate transfer queue's existence and
   about4msobserved overlap do not prove a usable independent engine or causal
   speedup. A broader required redesign remains work to scope,not a reason to
-  end tuning. Main's next owned proposal instead preserves the same queue and
-  bytes:U1compares JITper-expert with eager per-expert upload;U2compares eager
+  end tuning. The earlier U1proposal preserved the same queue and
+  bytes:U1compared JITper-expert with eager per-expert upload;U2compares eager
   per-expert with contiguous-run copies,then validates their useful combination.
   `fullfit_upload_plan.hpp`and its independent byte/publication oracle remain
   experimental. CPUV2evidence`35041702b`passes6byte
@@ -2147,7 +2139,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The four ended one-shot controllers are retired to Git;restore their original
   committed source and recipe for a newly planned reproduction. The U1C++
   helper and independent byte/lifetime oracles remain the concrete inputs for
-  U2's next fresh image,which will include the U1individual-copy control itself.
+  U2's fresh image below,including the U1individual-copy control itself.
   U2contiguous-run copying is now independently measured and **not adopted**.
   Its native snapshot is14508base plus four owned overlays at`be82383e8`,not
   the whole primary native tree. Fresh full compilation closes125unique TUs/
