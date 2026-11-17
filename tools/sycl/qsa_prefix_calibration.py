@@ -23,7 +23,7 @@ import qsa_cached_subgroup as diagnostics
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT, KEY = B/'qsa-prefix-calibration-v1', 'qsa_prefix_calibration_v1'
+ROOT, KEY = B/'qsa-prefix-calibration-v2', 'qsa_prefix_calibration_v2'
 THIS = 'tools/sycl/qsa_prefix_calibration.py'
 TARGET = 'sycl_qsa_bf16_prefix_cached_subgroup_bench'
 NUMERIC = 'sycl_qsa_bf16_prefix_cached_subgroup_test'
@@ -33,9 +33,16 @@ CASES = ((78453,8192,33,'gather'), (78453,8192,2051,'gather'),
          (78453,8192,2051,'clustered'))
 
 
+def compact(row):
+    value={k:v for k,v in row.items() if k not in ('sources','environment_template')}
+    value['source_inputs']=dict(files=len(row['sources']),sha256=signature(row['sources']))
+    value['environment_template_sha256']=signature(row['environment_template'])
+    return value
+
+
 def save(row):
     basis.reference.core.write(ROOT/'record.json', row)
-    values = json.loads(RESULT.read_text()); values[KEY] = basis.compact(row)
+    values = json.loads(RESULT.read_text()); values[KEY] = compact(row)
     basis.reference.core.write(RESULT, values)
 
 
@@ -100,7 +107,7 @@ def decide(processes):
 
 
 def current(row):
-    require(validation.committed(RESULT,(KEY,)) == basis.compact(row)
+    require(validation.committed(RESULT,(KEY,)) == compact(row)
         and all(sha(P/p)==h for p,h in row['sources'].items()), 'commit/freeze complete probe inputs')
     native, proof, prior = basis.basis(row['original_native_proof'])
     require(row['binary']==native['binaries'][TARGET] and row['numeric']==native['binaries'][NUMERIC]
@@ -130,6 +137,10 @@ def environment(row, root, trace=False):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh plan only; inspect existing owner')
+    failed=validation.committed(RESULT,('qsa_prefix_calibration_v1',))
+    require(failed['stage']=='preparation_failed' and not failed['active']
+        and failed['ownership_closed'] and not failed['stages']
+        and not failed['native_execution_attempted'],'preserve original preparation failure')
     native, proof, prior = basis.basis()
     revision=validation.git('rev-parse','HEAD').decode().strip()
     sources=basis.reference.core.pins(revision)
@@ -200,7 +211,7 @@ def execute(mode):
                 text_cap=64<<20,file_cap=64<<20,total_cap=96<<20)
             require(owner.closed(entry) and entry['exit_code']==0,'normal checked process closure required')
             text,errors=out.read_text(),err.read_text()
-            if mode=='host':require('Ran 7 tests' in errors and errors.rstrip().endswith('OK'),'all host controls required')
+            if mode=='host':require('Ran 8 tests' in errors and errors.rstrip().endswith('OK'),'all host controls required')
             else:
                 evidence=validation.preload_evidence(errors,entry['pid']);diagnostics.diagnostics(errors,entry['pid'])
                 require(evidence['loader']==env['STRATA_UR_PROBE_EXPECTED_LOADER']

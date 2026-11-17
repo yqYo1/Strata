@@ -21,6 +21,11 @@ def fixture(process=0):
 
 
 class Evidence(unittest.TestCase):
+    def test_component_compaction_needs_no_model_payload(self):
+        value=probe.compact(dict(sources={'controller':'hash'},environment_template={'A':'B'},stage='prepared'))
+        self.assertEqual(value['source_inputs']['files'],1)
+        self.assertNotIn('sources',value)
+        self.assertEqual(value['stage'],'prepared')
     def test_complete(self):
         for i in range(3):
             points=probe.parse(fixture(i),i)
