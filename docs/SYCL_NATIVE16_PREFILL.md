@@ -2021,6 +2021,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   queue,chunk,MTPand decode placement stay fixed. The closed controller/test
   restores from`be2f53f7d`;no new native build or capacity claim follows from
   extracting its admission body.
+  V3's first98305-token request reaches its end gate with all98304residual
+  rows onGPU and a staged512bank. It fails the reader's required split-admission
+  marker:the actual14508caller emits that marker only when split is requested,
+  while this setup requests0. The synthetic fixture incorrectly included it.
+  Preserve V3failed and its supervised termination;no clean arm or performance
+  qualification follows. A fresh split0-aware reader must require the verified
+  immutable native startup setting,absence of split telemetry and actual
+  two-window work,without inventing a runtime admission record or relaxing the
+  legacy marker requirement. Main verifies all original owners are gone and
+  no fresh fault;that is separate from normal-exit qualification.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains

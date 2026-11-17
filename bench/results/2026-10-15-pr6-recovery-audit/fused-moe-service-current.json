@@ -399542,7 +399542,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_bank_reuse_v3": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "469132998a9d9d4bcf6215fe329319ce41d9b1cc",
     "policies": {
       "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
@@ -400046,13 +400046,41 @@
         "environment_sha256": "b337beba07422bebec33844e85ceb98d5cea01abb54649acf864e5f4731f4cb1"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 98305,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "native_identity": {
+          "pid": 2250065,
+          "start_ticks": 325584536,
+          "sid": 2249932
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "wall": 2100,
       "cpu": 18000,
@@ -400089,6 +400117,38 @@
         "passed": true
       }
     ],
+    "reader_refusal": {
+      "process": 0,
+      "error": "RuntimeError('missing/duplicate route record: strata MoE split admission: ')",
+      "requested_read": 98305,
+      "actual_batched_rows": 98304,
+      "actual_all_GPU_rows": 98304,
+      "actual_host_rows": 0,
+      "actual_staged": true,
+      "actual_bank_slots": 512,
+      "actual_requested_split": 0,
+      "actual_admission_marker_count": 0,
+      "bank_uploads": 18665,
+      "requested_bank_H2D_bytes": 38107750400,
+      "permanent_hits": 13563,
+      "first_request_end_gate_reached": true,
+      "remaining_requests_and_clean_arms_unrun": true,
+      "qualified_performance": false,
+      "reason": "Native logs split admission only when split is requested;the new fixed split0 setup used a synthetic marker absent from the actual production path. Preserve failed reader result;correct explicit startup-disabled semantics under a fresh plan."
+    },
+    "post_stop": {
+      "all_recorded_owner_identities_absent": true,
+      "direct_child_reaped": true,
+      "owned_session_empty": true,
+      "remaining_survivors": [],
+      "lock_reacquired": true,
+      "no_other_model_owner": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "original_ownership_closed_false_preserved": true,
+      "normal_native_exit_qualified": false
+    },
+    "next": "Fresh committed split0-aware reader/fixture plan,same98305input and384/512capacity-only setup. Native math/ELF/settings unchanged. Original missing-marker screen stays failed. Retire this closed raw root after fresh host admission and native report review.",
     "source_inputs": {
       "files": 766,
       "sha256": "c011f1cf053ef378ae853b0a324c3db8e9144fb18f02123446606d7678063d04"
