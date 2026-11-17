@@ -38,7 +38,8 @@ OVERLAYS=[
     'tests/prefill_moe_workspace.cpp', 'bench/sycl/moe_down_scatter.cpp']
 PREFIXES=['tools/sycl',*OVERLAYS,'AGENTS.md','docs/ARTIFACT_RETENTION.md','docs/BENCHMARKS.md']
 TARGETS=['strata','prefill_moe_routes_test','prefill_moe_workspace_test',
-    'sycl_expert_bank_test','sycl_moe_down_scatter_bench','sycl_native16_paired_gemm_bench']
+    'sycl_expert_bank_test','sycl_moe_down_scatter_bench','sycl_native16_paired_gemm_bench',
+    'strata_full_context_diagnostic','full_context_diagnostic_host_test']
 LIMITS=dict(wall=2400,cpu=7200,rss_cap=12<<30,text_cap=32<<20,file_cap=512<<20,total_cap=4<<30)
 require,sha=guards.require,ownership.sha
 source=original.coherent.build.common.source

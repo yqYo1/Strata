@@ -2173,8 +2173,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   preserving U1and the byte-identical9849native-job capacity safety check.
   It rebuilds all objects and checks actual compiler/link inputs and the
   Gemm/MoeAccumPlan/MoeWindowRoutes definitions across producers/consumers.
-  Its six targets include CPUproofs,bank/Down safety fixtures and a matching
-  resident-GEMM resource reference. The bank-only cohort must close first;
+  Its eight targets include CPUproofs,bank/Down safety fixtures,a matching
+  resident-GEMM resource reference and the physical-context diagnostic pair.
+  The bank-only cohort must close first;
   the new build/controller is authored,not yet executed. The live tree also
   contains independent KV/verify proposals,which must not enter a prefill
   performance comparison implicitly. Preserve the9849decode
