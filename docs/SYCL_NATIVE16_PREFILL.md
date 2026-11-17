@@ -2109,6 +2109,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   not model launch/adoption or a physical bandwidth/saturation claim. No new
   native generation is needed. Independent placement/window candidates and
   their combinations require their own smallest coherent comparisons.
+  V2now closes:8host controls,traced small checks,11numerical/boundary cases
+  and3fresh timing processes,all normal0/quiet validation/no fresh fault.
+  All108timings pass their declared floors. At cap2051,gather process ratios
+  are0.994402/0.994095/0.993048(geomean0.993848),clustered0.988254/0.990184/
+  0.989057(0.989165). Both large shapes pass repeated gain;cap33fails because
+  its third ratio is1.001629. Preserve that loss and the old failed model gates.
+  Model128Kcomparison is eligible only under a new committed plan;none ran.
+  The limiting arithmetic/SLM/VRAM/cache resource remains unresolved. Same-work
+  gather/clustered intervals differ materially;requested-read upper bounds
+  and Intel's published380GB/s are not measured physical traffic or saturation.
+  Two reviewed source references are indexed;the stride34/258proposal is
+  blocked by8-byte matrix-stride requirements. Private transaction retirement,
+  the new CSVpoints and final default publication remain the next closure work.
   Reviewed future bank/window research identifies source limits117488split,
   81920ordinary accumulation and8192per job,not runtime admission. Before
   implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;
