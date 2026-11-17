@@ -1,7 +1,8 @@
-// Main-authored fixed-layout marker comparison; repository LICENSE.
-// Based only on owned e5cd358 fixture and695565fbd grouped-copy proposal.
-// No selected engine path. Independent controls precede the2x2marker matrix.
+// Main-authored nonrecycling copy comparison; repository LICENSE.
+// Own05eceacd math plus84f3d3c29 single-write ownership. No external source.
+// Unselected component: hold math/queue/window/ready batching fixed.
 #include "strata/prefill/sycl_copy_groups.hpp"
+#include "strata/prefill/sycl_unique_slot_copies.hpp"
 #include <array>
 #include "strata/prefill/gemm.hpp"
 #include "strata/prefill/native16.hpp"
@@ -30,22 +31,18 @@ namespace sb=strata::sycl_backend;
 namespace ops=strata::prefill::native16;
 using Routes=strata::prefill::detail::MoeWindowRoutes;
 using Groups=strata::prefill::detail::PrefillSyclCopyGroups;
+using Unique=strata::prefill::detail::PrefillSyclUniqueSlotCopies;
 struct PrefillPolicy {
-    bool adapter,separate,shortcut;
-    std::size_t slots,window,ready,readers;
+    bool unique;
+    std::size_t slots;
 };
 PrefillPolicy prefill_policy(const std::string& name) {
-    if(name=="direct") return {false,false,false,1,1,1,1};
-    if(name=="shortcut") return {false,false,true,1,1,1,1};
-    if(name=="layout") return {false,false,true,128,1,1,1};
-    if(name=="bridge") return {true,false,false,128,1,1,1};
-    if(name=="queue") return {true,true,false,128,1,1,1};
-    if(name=="window") return {true,true,false,128,128,1,1};
-    if(name=="ready64") return {true,true,false,128,128,64,1};
-    if(name=="readers64") return {true,true,false,128,128,1,64};
-    if(name=="both64") return {true,true,false,128,128,64,64};
+    if(name=="base128") return {false,128};
+    if(name=="base512") return {false,512};
+    if(name=="unique512") return {true,512};
     throw std::invalid_argument("explicit finite prefill copy policy required");
 }
+constexpr std::size_t window=128,ready_width=64,refill_width=64;
 constexpr std::size_t k=2560,ff=640,epochs=512;
 constexpr std::size_t gate_bytes=524800,down_bytes=921600;
 constexpr std::size_t payload=2*gate_bytes+down_bytes,edge=256;
@@ -112,6 +109,7 @@ int run(const std::string& policy,bool metadata,std::size_t rows,const std::stri
             golden(runtime,rows*k*4,sb::MemoryKind::Host);
         strata::prefill::Gemm dense;
         std::unique_ptr<Groups> copy_groups;
+        std::unique_ptr<Unique> unique_slots;
         // Last owner: drains before copy lane,math/weight buffers and mapping retire,
         // including any exception after an accepted asynchronous operation.
         PrefillSourceDrain drain{runtime};
@@ -119,23 +117,32 @@ int run(const std::string& policy,bool metadata,std::size_t rows,const std::stri
         if(!dense.init_external(&q,gu_weights.data(),2*ff*k,nullptr,0,error))
             throw std::runtime_error(error);
         std::memcpy(baseline.data(),weights.data(),source_bytes);
+        auto prefill_make_owner=[&] {
+            if(config.unique) unique_slots=std::make_unique<Unique>(
+                runtime,bank.data(),payload,config.slots,Unique::Placement::Separate);
+            else copy_groups=std::make_unique<Groups>(runtime,bank.data(),
+                Groups::Layout{payload,1,config.slots},Groups::Placement::Separate,epochs);
+        };
+        auto prefill_drain_owner=[&] {
+            if(unique_slots) unique_slots->drain();else copy_groups->drain();
+        };
         const auto prep=Clock::now();
-        if(config.adapter) copy_groups=std::make_unique<Groups>(runtime,bank.data(),
-            Groups::Layout{payload,1,config.slots},
-            config.separate?Groups::Placement::Separate:Groups::Placement::Compute,epochs+2);
+        prefill_make_owner();
         const double preparation_s=elapsed(prep);
+        double reset_s=0;
         gate("runtime-ready");
         need(sycl::get_pointer_type(weights.data(),q.get_context())==sycl::usm::alloc::unknown,
              "source must remain an ordinary host file mapping");
         sb::validate_device_span(bank.data(),payload*config.slots,q);
         need(q.get_context()==runtime->context(),"copy queue must retain its Runtime context");
         std::cout<<"{\"kind\":\"source-proof\",\"ordinary_readonly_mapping\":true,\"host_slots\":0"
-                 <<",\"policy\":\""<<policy<<"\",\"dependency_bridge\":"<<(config.adapter?"true":"false")
-                 <<",\"separate_queue\":"<<(config.separate?"true":"false")
-                 <<",\"physical_slots\":"<<config.slots<<",\"prefetch_window\":"<<config.window
-                 <<",\"ready_width\":"<<config.ready<<",\"readers_width\":"<<config.readers
-                 <<",\"reader_marker\":\""<<(config.adapter?"after-math":"none")
-                 <<"\",\"runtime_check_and_observer_retained\":true}"<<std::endl;
+                 <<",\"policy\":\""<<policy<<"\",\"dependency_bridge\":true"
+                 <<",\"separate_queue\":true,\"single_write_destinations\":"<<(config.unique?"true":"false")
+                 <<",\"physical_slots\":"<<config.slots<<",\"prefetch_window\":"<<window
+                 <<",\"ready_width\":"<<ready_width<<",\"refill_width\":"<<refill_width
+                 <<",\"reader_marker\":\""<<(config.unique?"none-single-write":"after-math")
+                 <<"\",\"admitted_bank_allocation_bytes\":"<<bank.owner.size()
+                 <<",\"runtime_check_and_observer_retained\":true}"<<std::endl;
         if(!metadata) {
             auto initialise=[&](auto& b) {runtime->wait(q.memset(b.owner.data(),0xa5,b.bytes()));};
             initialise(bank);initialise(x);initialise(gu_weights);initialise(down_weights);
@@ -190,66 +197,66 @@ int run(const std::string& policy,bool metadata,std::size_t rows,const std::stri
             runtime->wait(q.memcpy(golden.as<float>()+primary_rows*k,tail.data(),tail_rows*k*4));
             std::vector<Groups::Ready> tickets; tickets.reserve(epochs);
             std::size_t upload_ordinal=0;
-            std::size_t compat_calls=0,shortcut_calls=0,adapter_calls=0,ready_calls=0,reader_calls=0;
+            std::size_t adapter_calls=0,unique_calls=0,ready_calls=0,reader_calls=0;
             auto prefill_upload=[&](std::size_t e) {
                 const auto* input=weights.data()+e*payload;
-                auto* destination=bank.data()+(upload_ordinal%config.slots)*payload;
-                if(copy_groups) {
+                if(unique_slots) {
+                    tickets.push_back(unique_slots->prefill_copy_next_slot(upload_ordinal,
+                        {reinterpret_cast<const std::byte*>(input),payload}));
+                    ++unique_calls;
+                } else {
                     const std::array<std::span<const std::byte>,1> source{{{
                         reinterpret_cast<const std::byte*>(input),payload}}};
                     tickets.push_back(copy_groups->prefill_copy_group(source));
-                    ++adapter_calls;
-                } else if(config.shortcut) {
-                    runtime->check();
-                    auto event=q.memcpy(destination,input,payload);
-                    sb::command_profile::observe(&q,event);
-                    ++shortcut_calls;
-                } else {
-                    need(cudaMemcpyAsync(destination,input,payload,cudaMemcpyHostToDevice,&q)==cudaSuccess,
-                         "ordinary mapped upload rejected");
-                    ++compat_calls;
                 }
+                ++adapter_calls;
                 ++upload_ordinal; ++uploads;
             };
             auto prefill_schedule=[&](std::size_t count) {
                 tickets.clear();
-                const auto first_ordinal=upload_ordinal;
-                const auto window=std::min(config.window,count);
-                for(std::size_t i=0;i<window;++i) prefill_upload(i);
+                const auto ahead=std::min(window,count);
+                for(std::size_t i=0;i<ahead;++i) prefill_upload(i);
                 for(std::size_t i=0;i<count;++i) {
-                    if(copy_groups && i%config.ready==0) {
-                        copy_groups->prefill_wait_ready(std::span<const Groups::Ready>(tickets)
-                            .subspan(i,std::min(config.ready,count-i)));
+                    if(i%ready_width==0) {
+                        const auto ready=std::span<const Groups::Ready>(tickets)
+                            .subspan(i,std::min(ready_width,count-i));
+                        if(unique_slots) unique_slots->prefill_wait_ready(ready);
+                        else copy_groups->prefill_wait_ready(ready);
                         ++ready_calls;
                     }
-                    const auto* quantized=copy_groups
-                        ?reinterpret_cast<const std::uint8_t*>(copy_groups->prefill_expert(tickets[i],0).data())
-                        :bank.data()+((first_ordinal+i)%config.slots)*payload;
-                    prefill_consume(i%2,quantized);
-                    if((i+1)%config.readers==0 || i+1==count) {
-                        const auto first=i-(i%config.readers);
+                    const auto span=unique_slots?unique_slots->prefill_expert_bytes(tickets[i])
+                        :copy_groups->prefill_expert(tickets[i],0);
+                    prefill_consume(i%2,reinterpret_cast<const std::uint8_t*>(span.data()));
+                    if((i+1)%refill_width==0 || i+1==count) {
+                        const auto first=i-(i%refill_width);
                         if(copy_groups) {
                             copy_groups->prefill_record_readers(
                                 std::span<const Groups::Ready>(tickets).subspan(first,i+1-first));
                             ++reader_calls;
                         }
                         for(std::size_t j=first;j<=i;++j)
-                            if(j+window<count) prefill_upload(j+window);
+                            if(j+ahead<count) prefill_upload(j+ahead);
                     }
                 }
             };
             reset();prefill_schedule(2);
-            runtime->wait();gate("prewarm-ready");
+            prefill_drain_owner();gate("prewarm-ready");
+            // Warm and timed batches have independent owners in every arm.
+            // Unique slots never wrap around or silently retain warm tickets.
+            const auto restart=Clock::now();copy_groups.reset();unique_slots.reset();
+            prefill_make_owner();upload_ordinal=0;reset_s=elapsed(restart);
             reset();runtime->wait(q.memset(bank.data(),0xe7,payload*config.slots));gate("before-timing");
             gu_fused=down_fused=uploads=0;
-            compat_calls=shortcut_calls=adapter_calls=ready_calls=reader_calls=0;
+            adapter_calls=unique_calls=ready_calls=reader_calls=0;
             double clock_max=0;
             for(int i=0;i<128;++i) {const auto at=Clock::now();clock_max=std::max(clock_max,elapsed(at));}
+            const auto timed_initial_slot=upload_ordinal;
             const auto at=Clock::now();
             prefill_schedule(epochs);
-            if(copy_groups) copy_groups->drain(); else runtime->wait();
+            prefill_drain_owner();
             const double wall_s=elapsed(at);
             need(uploads==epochs,"actual source-copy accounting");
+            need(!unique_slots || unique_slots->prefill_submitted_slots()==epochs,"single-write publication count");
             runtime->wait(q.memcpy(host.data(),accumulator.data(),primary_rows*k*4));
             runtime->wait(q.memcpy(host.as<float>()+primary_rows*k,tail.data(),tail_rows*k*4));
             need(std::memcmp(host.data(),golden.data(),rows*k*4)==0,"source adapter output differs");
@@ -265,7 +272,7 @@ int run(const std::string& policy,bool metadata,std::size_t rows,const std::stri
             guards(source_rows);guards(original);guards(status);guards(tail);
             runtime->wait(q.memcpy(host.data(),bank.data(),payload*config.slots));
             std::vector<std::size_t> final_expert(config.slots);
-            for(std::size_t e=0;e<epochs;++e) final_expert[(e+2)%config.slots]=e;
+            for(std::size_t e=0;e<epochs;++e) final_expert[e%config.slots]=e;
             for(std::size_t slot=0;slot<config.slots;++slot)
                 need(std::memcmp(host.as<std::uint8_t>()+slot*payload,
                     weights.data()+final_expert[slot]*payload,payload)==0,"final slot expert differs");
@@ -274,19 +281,20 @@ int run(const std::string& policy,bool metadata,std::size_t rows,const std::stri
             std::cout<<"{\"kind\":\"batch\",\"arm\":\""<<policy
                      <<"\",\"rows\":"<<rows<<",\"epochs\":512,\"requested_H2D_bytes\":"<<epochs*payload
                      <<",\"copies\":"<<uploads<<",\"gu_fused\":"<<gu_fused<<",\"down_fused\":"<<down_fused
-                     <<",\"copy_compat_calls\":"<<compat_calls<<",\"copy_shortcut_calls\":"<<shortcut_calls
                      <<",\"copy_adapter_calls\":"<<adapter_calls<<",\"ready_barrier_calls\":"<<ready_calls
                      <<",\"reader_barrier_calls\":"<<reader_calls
+                     <<",\"single_write_copy_calls\":"<<unique_calls
+                     <<",\"timed_initial_slot\":"<<timed_initial_slot<<",\"warm_owner_retired\":true"
                      <<",\"wall_s\":"<<wall_s<<",\"timer_pair_max_s\":"<<clock_max
                      <<",\"production_gemm_dispatch\":true,\"split_primary_rows\":"<<primary_rows
                      <<",\"actual_source_experts\":"<<source_experts<<",\"source_footprint_bytes\":"<<source_bytes
                      <<",\"split_tail_checked\":true"
                      <<",\"full_bitwise_reference_and_guards\":true}"<<std::endl;
         }
-        const auto retire=Clock::now();copy_groups.reset();const double retirement_s=elapsed(retire);
+        const auto retire=Clock::now();copy_groups.reset();unique_slots.reset();const double retirement_s=elapsed(retire);
         std::cout.precision(17);
         std::cout<<"{\"kind\":\"source\",\"preparation_s\":"<<preparation_s
-                 <<",\"retirement_s\":"<<retirement_s<<"}"<<std::endl;
+                 <<",\"reset_s\":"<<reset_s<<",\"retirement_s\":"<<retirement_s<<"}"<<std::endl;
     }
     runtime->wait();runtime->check();gate("before-exit");
     std::cout<<"{\"kind\":\"done\",\"passed\":true}"<<std::endl;return 0;
@@ -294,14 +302,13 @@ int run(const std::string& policy,bool metadata,std::size_t rows,const std::stri
 } // namespace
 int main(int argc,char** argv) {
     try {
-        need(argc==5,"use metadata|batch direct|shortcut|layout|bridge|queue|window|ready64|readers64|both64 ROWS ACTUAL_WEIGHTS");
+        need(argc==5,"use metadata|batch base128|base512|unique512 ROWS ACTUAL_WEIGHTS");
         const std::string mode=argv[1],source=argv[2];
         need(mode=="metadata" || mode=="batch","explicit source comparison mode required");
         (void)prefill_policy(source);
         const std::string value=argv[3];std::size_t consumed=0;
         const auto rows=std::stoull(value,&consumed);
-        need(consumed==value.size() && (rows==16 || rows==128 || rows==640 || rows==1024 ||
-             rows==1280 || rows==4096 || rows==8192),"finite source comparison shape required");
+        need(consumed==value.size() && (rows==128 || rows==1024 || rows==8192),"finite source comparison shape required");
         return run(source,mode=="metadata",rows,argv[4]);
     } catch(const std::exception& e) {std::cerr<<"prefill fixed-slot math fixture failure: "<<e.what()<<std::endl;return 1;}
 }

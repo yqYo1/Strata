@@ -30235,5 +30235,1574 @@
       "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
       "key": "prefill_unique_slot_lifetime_v1"
     }
+  },
+  "prefill_unique_slot_math_v1": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "results": [
+      {
+        "label": "clean-128-block0-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 128,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.916117855,
+          "timer_pair_max_s": 6.1e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.916620781,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000282982,
+          "reset_s": 4.3342e-05,
+          "retirement_s": 0.000176602
+        }
+      },
+      {
+        "label": "clean-128-block0-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 128,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.367964322,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.368434156,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000286439,
+          "reset_s": 3.7751e-05,
+          "retirement_s": 0.000145644
+        }
+      },
+      {
+        "label": "clean-128-block0-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 128,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.362473721,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.362881277,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000243768,
+          "reset_s": 4.1698e-05,
+          "retirement_s": 0.00012209
+        }
+      },
+      {
+        "label": "clean-128-block1-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 128,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.43320896,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.433564187,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.0001863,
+          "reset_s": 3.6448e-05,
+          "retirement_s": 0.000132479
+        }
+      },
+      {
+        "label": "clean-128-block1-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 128,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.334811059,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.335155376,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000189396,
+          "reset_s": 4.2219e-05,
+          "retirement_s": 0.000112702
+        }
+      },
+      {
+        "label": "clean-128-block1-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 128,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.846807545,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.847292678,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000279025,
+          "reset_s": 4.1909e-05,
+          "retirement_s": 0.000164199
+        }
+      },
+      {
+        "label": "clean-128-block2-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 128,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.515356506,
+          "timer_pair_max_s": 1.01e-07,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.5159195550000001,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000349448,
+          "reset_s": 4.2299e-05,
+          "retirement_s": 0.000171302
+        }
+      },
+      {
+        "label": "clean-128-block2-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 128,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.800816454,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.801330242,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.00028135,
+          "reset_s": 3.5958e-05,
+          "retirement_s": 0.00019648
+        }
+      },
+      {
+        "label": "clean-128-block2-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 128,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 128,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.366373727,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 64,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.36669601399999996,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.00015412,
+          "reset_s": 3.8904e-05,
+          "retirement_s": 0.000129263
+        }
+      },
+      {
+        "label": "clean-1024-block0-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 1024,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.999606255,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.999999476,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.00017507,
+          "reset_s": 3.8102e-05,
+          "retirement_s": 0.000180049
+        }
+      },
+      {
+        "label": "clean-1024-block0-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 1024,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.640524271,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.641066852,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000336553,
+          "reset_s": 3.9996e-05,
+          "retirement_s": 0.000166032
+        }
+      },
+      {
+        "label": "clean-1024-block0-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 1024,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.494520181,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.494906858,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000170831,
+          "reset_s": 3.8102e-05,
+          "retirement_s": 0.000177744
+        }
+      },
+      {
+        "label": "clean-1024-block1-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 1024,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.493144028,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.493474119,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000164369,
+          "reset_s": 3.4826e-05,
+          "retirement_s": 0.000130896
+        }
+      },
+      {
+        "label": "clean-1024-block1-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 1024,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.494333801,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.494804166,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000309211,
+          "reset_s": 3.7882e-05,
+          "retirement_s": 0.000123272
+        }
+      },
+      {
+        "label": "clean-1024-block1-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 1024,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.840645866,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.841294517,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.00038771,
+          "reset_s": 3.8633e-05,
+          "retirement_s": 0.000222308
+        }
+      },
+      {
+        "label": "clean-1024-block2-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 1024,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.505177143,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.5056370680000001,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000280628,
+          "reset_s": 4.0436e-05,
+          "retirement_s": 0.000138861
+        }
+      },
+      {
+        "label": "clean-1024-block2-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 1024,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.829135685,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.8295321,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000197241,
+          "reset_s": 3.8712e-05,
+          "retirement_s": 0.000160462
+        }
+      },
+      {
+        "label": "clean-1024-block2-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 1024,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 1024,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 0,
+          "down_fused": 0,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 0.668495195,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 512,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 0.669019662,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000353756,
+          "reset_s": 4.5706e-05,
+          "retirement_s": 0.000125005
+        }
+      },
+      {
+        "label": "clean-8192-block0-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 8192,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.303205281,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.3036518110000002,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000163027,
+          "reset_s": 3.9945e-05,
+          "retirement_s": 0.000243558
+        }
+      },
+      {
+        "label": "clean-8192-block0-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 8192,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.191739363,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.1921216209999999,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000206428,
+          "reset_s": 3.9664e-05,
+          "retirement_s": 0.000136166
+        }
+      },
+      {
+        "label": "clean-8192-block0-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 8192,
+        "pair": 0,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.190180868,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.1905218389999999,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000163698,
+          "reset_s": 3.8132e-05,
+          "retirement_s": 0.000139141
+        }
+      },
+      {
+        "label": "clean-8192-block1-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 8192,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.195390454,
+          "timer_pair_max_s": 3.1e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.195810876,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000247606,
+          "reset_s": 3.6068e-05,
+          "retirement_s": 0.000136748
+        }
+      },
+      {
+        "label": "clean-8192-block1-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 8192,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.242358638,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.243174904,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000635516,
+          "reset_s": 3.74e-05,
+          "retirement_s": 0.00014335
+        }
+      },
+      {
+        "label": "clean-8192-block1-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 8192,
+        "pair": 1,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.296313987,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.29666591,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000159791,
+          "reset_s": 4.2079e-05,
+          "retirement_s": 0.000150053
+        }
+      },
+      {
+        "label": "clean-8192-block2-base512",
+        "clean": true,
+        "arm": "base512",
+        "rows": 8192,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "base512",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.190181389,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.190572434,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000208572,
+          "reset_s": 3.8222e-05,
+          "retirement_s": 0.000144251
+        }
+      },
+      {
+        "label": "clean-8192-block2-base128",
+        "clean": true,
+        "arm": "base128",
+        "rows": 8192,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "base128",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 8,
+          "single_write_copy_calls": 0,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.356206054,
+          "timer_pair_max_s": 4e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.3566115170000002,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000174118,
+          "reset_s": 3.7721e-05,
+          "retirement_s": 0.000193624
+        }
+      },
+      {
+        "label": "clean-8192-block2-unique512",
+        "clean": true,
+        "arm": "unique512",
+        "rows": 8192,
+        "pair": 2,
+        "batch": {
+          "kind": "batch",
+          "arm": "unique512",
+          "rows": 8192,
+          "epochs": 512,
+          "requested_H2D_bytes": 1009254400,
+          "copies": 512,
+          "gu_fused": 512,
+          "down_fused": 512,
+          "copy_adapter_calls": 512,
+          "ready_barrier_calls": 8,
+          "reader_barrier_calls": 0,
+          "single_write_copy_calls": 512,
+          "timed_initial_slot": 0,
+          "warm_owner_retired": true,
+          "wall_s": 1.219143139,
+          "timer_pair_max_s": 5e-08,
+          "production_gemm_dispatch": true,
+          "split_primary_rows": 4096,
+          "actual_source_experts": 512,
+          "source_footprint_bytes": 1009254400,
+          "split_tail_checked": true,
+          "full_bitwise_reference_and_guards": true
+        },
+        "lifecycle_plus_batch_s": 1.219606108,
+        "owner_lifecycle": {
+          "kind": "source",
+          "preparation_s": 0.000291879,
+          "reset_s": 4.1177e-05,
+          "retirement_s": 0.000129913
+        }
+      }
+    ],
+    "model_trial_allowed": false,
+    "performance_qualified": false,
+    "analysis": {
+      "128": {
+        "S": {
+          "reference": "base128",
+          "candidate": "base512",
+          "paired_time_ratios": [
+            0.4016560969658211,
+            0.39538034465670713,
+            0.6435388576568883
+          ],
+          "geometric_mean_ratio": 0.46753565690934834,
+          "paired_lifecycle_ratios": [
+            0.4019482905439387,
+            0.3955603355278848,
+            0.6438288834729889
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "U": {
+          "reference": "base512",
+          "candidate": "unique512",
+          "paired_time_ratios": [
+            0.9850784419256822,
+            1.2938908329189924,
+            0.7109131693003211
+          ],
+          "geometric_mean_ratio": 0.9676723609012243,
+          "paired_lifecycle_ratios": [
+            0.9849284358966979,
+            1.2936214605132874,
+            0.7107619985445209
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netUnique": {
+          "reference": "base128",
+          "candidate": "unique512",
+          "paired_time_ratios": [
+            0.39566276218904173,
+            0.5115790034676652,
+            0.4575002488647667
+          ],
+          "geometric_mean_ratio": 0.45242133292697395,
+          "paired_lifecycle_ratios": [
+            0.395890301116793,
+            0.5117053389667082,
+            0.4576091039379492
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        }
+      },
+      "1024": {
+        "S": {
+          "reference": "base128",
+          "candidate": "base512",
+          "paired_time_ratios": [
+            0.640776573571961,
+            0.5880404829112668,
+            0.6092816316306541
+          ],
+          "geometric_mean_ratio": 0.6123184030917972,
+          "paired_lifecycle_ratios": [
+            0.6410671879192065,
+            0.5881461913771155,
+            0.6095449085092669
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "U": {
+          "reference": "base512",
+          "candidate": "unique512",
+          "paired_time_ratios": [
+            0.7720553355893052,
+            0.9975931789459002,
+            1.3232886805411146
+          ],
+          "geometric_mean_ratio": 1.0063572176712692,
+          "paired_lifecycle_ratios": [
+            0.77200506695361,
+            0.9973119729149572,
+            1.3231222636549262
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netUnique": {
+          "reference": "base128",
+          "candidate": "unique512",
+          "paired_time_ratios": [
+            0.4947149725468655,
+            0.5866251746963328,
+            0.8062554863984657
+          ],
+          "geometric_mean_ratio": 0.6162110444643757,
+          "paired_lifecycle_ratios": [
+            0.49490711733132947,
+            0.5865652384847291,
+            0.8065024391461162
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        }
+      },
+      "8192": {
+        "S": {
+          "reference": "base128",
+          "candidate": "base512",
+          "paired_time_ratios": [
+            0.914467874228941,
+            0.9583778702219619,
+            0.8775815337866054
+          ],
+          "geometric_mean_ratio": 0.9162153609258981,
+          "paired_lifecycle_ratios": [
+            0.9144478693935552,
+            0.9587472720710303,
+            0.8776074941725559
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        },
+        "U": {
+          "reference": "base512",
+          "candidate": "unique512",
+          "paired_time_ratios": [
+            0.9986922518057331,
+            0.9621943434340253,
+            1.0243338958814792
+          ],
+          "geometric_mean_ratio": 0.9947455568359603,
+          "paired_lifecycle_ratios": [
+            0.9986580379284976,
+            0.9619007527841794,
+            1.0243863146591214
+          ],
+          "repeated_component_gain": false,
+          "model_adoption_qualified": false
+        },
+        "netUnique": {
+          "reference": "base128",
+          "candidate": "unique512",
+          "paired_time_ratios": [
+            0.9132719805177031,
+            0.9221457655999202,
+            0.8989365114572774
+          ],
+          "geometric_mean_ratio": 0.9114011593858927,
+          "paired_lifecycle_ratios": [
+            0.9132207150364628,
+            0.9222197227349024,
+            0.899009106672651
+          ],
+          "repeated_component_gain": true,
+          "model_adoption_qualified": false
+        }
+      }
+    },
+    "host_admission_controls": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "source_proofs": {
+      "base128": {
+        "kind": "source-proof",
+        "ordinary_readonly_mapping": true,
+        "host_slots": 0,
+        "policy": "base128",
+        "dependency_bridge": true,
+        "separate_queue": true,
+        "single_write_destinations": false,
+        "physical_slots": 128,
+        "prefetch_window": 128,
+        "ready_width": 64,
+        "refill_width": 64,
+        "reader_marker": "after-math",
+        "admitted_bank_allocation_bytes": 252314112,
+        "runtime_check_and_observer_retained": true
+      },
+      "base512": {
+        "kind": "source-proof",
+        "ordinary_readonly_mapping": true,
+        "host_slots": 0,
+        "policy": "base512",
+        "dependency_bridge": true,
+        "separate_queue": true,
+        "single_write_destinations": false,
+        "physical_slots": 512,
+        "prefetch_window": 128,
+        "ready_width": 64,
+        "refill_width": 64,
+        "reader_marker": "after-math",
+        "admitted_bank_allocation_bytes": 1009254912,
+        "runtime_check_and_observer_retained": true
+      },
+      "unique512": {
+        "kind": "source-proof",
+        "ordinary_readonly_mapping": true,
+        "host_slots": 0,
+        "policy": "unique512",
+        "dependency_bridge": true,
+        "separate_queue": true,
+        "single_write_destinations": true,
+        "physical_slots": 512,
+        "prefetch_window": 128,
+        "ready_width": 64,
+        "refill_width": 64,
+        "reader_marker": "none-single-write",
+        "admitted_bank_allocation_bytes": 1009254912,
+        "runtime_check_and_observer_retained": true
+      }
+    },
+    "validation_cases": [
+      {
+        "label": "metadata-base128",
+        "rows": 128,
+        "arm": "base128",
+        "math_launches": 0,
+        "payload_sized_native_copies": 0,
+        "marker_barriers": 0,
+        "payload_bytes": 1971200
+      },
+      {
+        "label": "metadata-base512",
+        "rows": 128,
+        "arm": "base512",
+        "math_launches": 0,
+        "payload_sized_native_copies": 0,
+        "marker_barriers": 0,
+        "payload_bytes": 1971200
+      },
+      {
+        "label": "metadata-unique512",
+        "rows": 128,
+        "arm": "unique512",
+        "math_launches": 0,
+        "payload_sized_native_copies": 0,
+        "marker_barriers": 0,
+        "payload_bytes": 1971200
+      },
+      {
+        "label": "validated-128-base128",
+        "rows": 128,
+        "arm": "base128",
+        "math_launches": 6156,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 18,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      },
+      {
+        "label": "validated-128-base512",
+        "rows": 128,
+        "arm": "base512",
+        "math_launches": 6156,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 18,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      },
+      {
+        "label": "validated-128-unique512",
+        "rows": 128,
+        "arm": "unique512",
+        "math_launches": 6156,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 9,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      },
+      {
+        "label": "validated-1024-base128",
+        "rows": 1024,
+        "arm": "base128",
+        "math_launches": 6156,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 18,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      },
+      {
+        "label": "validated-1024-base512",
+        "rows": 1024,
+        "arm": "base512",
+        "math_launches": 6156,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 18,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      },
+      {
+        "label": "validated-1024-unique512",
+        "rows": 1024,
+        "arm": "unique512",
+        "math_launches": 6156,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 9,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      },
+      {
+        "label": "validated-8192-base128",
+        "rows": 8192,
+        "arm": "base128",
+        "math_launches": 4104,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 18,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      },
+      {
+        "label": "validated-8192-base512",
+        "rows": 8192,
+        "arm": "base512",
+        "math_launches": 4104,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 18,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      },
+      {
+        "label": "validated-8192-unique512",
+        "rows": 8192,
+        "arm": "unique512",
+        "math_launches": 4104,
+        "payload_sized_native_copies": 1026,
+        "marker_barriers": 9,
+        "payload_bytes": 1971200,
+        "parallel_IQ_launches": {
+          "parallel_iq_launchILi22ELb1": 1026,
+          "parallel_iq_launchILi20ELb0": 1026
+        }
+      }
+    ],
+    "execution_summary": {
+      "completed_cases": 39,
+      "metadata": 3,
+      "traced_batches": 9,
+      "clean_processes": 27,
+      "owned_commands": 52,
+      "all_commands_normal0_closed": true,
+      "all_provider_environment_and_dispatch_checks_passed": true,
+      "UR_LevelZero_validation_quiet": true,
+      "bitwise_full_outputs_split_tails_status_source_guards_passed": true,
+      "all_final_slot_payloads_checked": true,
+      "fresh_faults": [],
+      "hardware_saturation_unknown": true,
+      "ordered39case_receipts_match_frozen_argv": true
+    },
+    "metric_scope": "batch.wall_s includes512payload copies and unchanged full compute with terminal drain. owner_lifecycle/preparation_s,reset_s,retirement_s time only copy-owner management;exclude allocation,HostUSM reference generation and GPU buffer reset/validation. lifecycle_plus_batch_s adds only those three owner intervals,not whole setup/request time.",
+    "decision": "S slot-capacity unit and netUnique pass all3pairs at all3shapes;U omitted-reader-marker unit fails its own gate at every shape. Prefer base512 as next candidate when actual model memory/admission and routing permit;do not adopt unique512 merely from its net gain. No model trial/adoption from this component plan. Next inspect actual14508model slot/recycle counts and finite memory budget before scoped model integration;physical bottleneck remains unknown.",
+    "model_slot_candidate": {
+      "source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "layout_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+      "model_layers": 48,
+      "max_blob_rounded_stride_bytes": 2662400,
+      "reference_requested_slots": 384,
+      "reference_bank_bytes": 1022361600,
+      "reference_packed_full_fit_layers": 24,
+      "candidate_requested_slots": 512,
+      "candidate_bank_bytes": 1363148800,
+      "candidate_packed_full_fit_layers": 48,
+      "additional_bank_bytes": 340787200,
+      "actual_model_queue": "same compute/copy queue,unlike component separate queue",
+      "gpu_admission_attempted": false,
+      "physical_max_single_allocation_ceiling": "unknown in this comparison",
+      "decision": "Exact existing model setting is384;packed geometry currently384/438/469/512slots with24fullfit layers.512would make48fullfit at+340787200bytes if admitted. Compare setting separately from queue/prefetch changes;require actual bank/residual/shape admission and preserve decode. No model gain inferred."
+    },
+    "retirement": {
+      "stage": "complete",
+      "inventory": {
+        "sha256": "8ce37cba0c86fcae526391228f12db706e895524fa3f1b6af1306132ed383b2b",
+        "bytes": 208933,
+        "retired_path": "/tmp/strata-unique-math-retire-20261117.json",
+        "retired": true
+      },
+      "paths": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-unique-slot-math-v1",
+          "files": 713,
+          "bytes": 1260941171,
+          "sha256": "02168d39c3ae752d0320197d3e6060c5fe6e7584c3234a77aed8741f24c56d8d"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-unique-math-du-20261117",
+          "files": 2,
+          "bytes": 18803,
+          "sha256": "d7cff52646355ebc88c6372b0a87c9037961fd91d3d177af1e6391a39ec92b48"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-unique-math-du-20261117-control",
+          "files": 30,
+          "bytes": 44217,
+          "sha256": "c1c0ed0f09f45c4ffd28449426334ff9f19e8bfee8e13fe6923a4fc1ee9d3798"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-unique-math-du-20261117",
+          "files": 18,
+          "bytes": 282920,
+          "sha256": "30c6de04d4cee1fedc9b1b7e74056e4ab65a83e5e2f9308039650912ede99248"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-unique-math-dv-20261117",
+          "files": 2,
+          "bytes": 10648,
+          "sha256": "260a397630e7b4fba28fb7daf458dc9a8520ddcd00a38886457466df498724fe"
+        },
+        {
+          "path": "/home/yayoi/.codex/sessions/2026/11/17/rollout-2026-11-17T12-02-21-01a1e774-9cdc-7f51-b9a2-7da458b24fa0.jsonl",
+          "files": 1,
+          "bytes": 1057268,
+          "sha256": "b97006a297e074b93cd081691515e77445a96c0331acc86e666a721368389c33"
+        }
+      ],
+      "original_native_source": "01823c73466ffccc920f72fce1346bb04f48bd05",
+      "original_recipe_evidence": "a24162eae",
+      "exact_build_evidence": "dbee24492",
+      "closed_evidence": "52bd1156b",
+      "project_sources_recovered": 367,
+      "original_sources_recovered": 398,
+      "TLA_dependency_sources_recovered": 906,
+      "compiler_input_files": {
+        "compiled": 962,
+        "links": 29,
+        "objects": 11
+      },
+      "compiler_input_sha256": "3410c2a41202c052323ab0deca2840f3428d2d0220ef7ecab30686370614b370",
+      "recipe_sha256": "86d40f34557eaec07f1dfcc187b2306d2e8a962cbfec9d2ef45196ecbb994531",
+      "exact_final_ELF_matched": true,
+      "corpus_rebuilt_bitwise_from_model_roles": true,
+      "corpus_sha256": "5b682a735dde5826fce507ab62edaf4471ddbf133417285c389447f4448da4c5",
+      "all52commands_normal0_closed": true,
+      "both_phase_references_checked": true,
+      "research_source_inputs_recovered": 15,
+      "research_derived_inputs": [
+        {
+          "name": "prior-curated-decisions.json",
+          "sha256": "502b6d6e3d3997fea142811110d244b5dc70b7c062b039cf282bad99126015c7",
+          "reason": "Main-derived committed build/plan and prior curated source findings;not product/build source."
+        },
+        {
+          "name": "facts.json",
+          "sha256": "545cdd5236ee0a9fb6423c56ca7d706cf3920ca4987a53eff93f024a4dc60865",
+          "reason": "Main-derived committed build/plan and prior curated source findings;not product/build source."
+        }
+      ],
+      "research_native_closure": "scope Result=timeout,signal15,PIDabsent,normal-exit/resource qualification remain false",
+      "reason": "39case component consumer and DU/DVsource review ended. Model setting trial uses original14508phase reference,not this fixture/corpus. Keep27samples/9decisions and curated source findings. Next qualified model pipeline can recover original source/recipe from Git.",
+      "holds": "Retained two phase references and existing unrelated legacy same-build fixture/source/cache holds;not global cleanup.",
+      "retired_files": 766,
+      "retired_bytes": 1262355027
+    },
+    "native_source_commit": "01823c73466ffccc920f72fce1346bb04f48bd05",
+    "tested_image": {
+      "retired_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-unique-slot-math-v1/benchmark",
+      "sha256": "764e300bafbce7420b8d4f031997b413e3666a38ba08da02d3dd000a75fb0fac"
+    },
+    "retired_admission": {
+      "sha256": "7b9eb83daf0a5ba402fbdc822f01a7a0a69e1a2b3bc6445afe601a0ff9b706e5",
+      "plan_archive": "a24162eae",
+      "build_archive": "dbee24492",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "prefill_unique_slot_math_v1",
+      "project": {
+        "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "revision": "01823c73466ffccc920f72fce1346bb04f48bd05",
+        "count": 367,
+        "aggregate_sha256": "61cb24752359da94ba93194821869397007a14834c4bf0a44612165e92c1084c"
+      },
+      "corpus_sha256": "5b682a735dde5826fce507ab62edaf4471ddbf133417285c389447f4448da4c5",
+      "runtime_manifest_sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "actual_inputs": {
+        "compiled": {
+          "files": 962,
+          "sha256": "abfff5899832b9f5b7ca67f7031ad52b300df1cab1c6a8aa19a91cfd48557aa1"
+        },
+        "links": {
+          "files": 29,
+          "sha256": "4cf6290c3fe9b6a3d571dc21a73983a40928f55f7d9c8c735eddcd833e86d9e7"
+        },
+        "objects": {
+          "files": 11,
+          "sha256": "9e38a6083752967b580360b291a42ddb1849ead4cb8b9259568d5bf6c8a5bd1f"
+        }
+      }
+    },
+    "phase_references": {
+      "prefill": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+        "source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1"
+      },
+      "decode": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+        "source": "9849e35803f011aaafb2753c1e0f31411e40308e",
+        "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de"
+      }
+    }
   }
 }
