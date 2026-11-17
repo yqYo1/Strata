@@ -1955,6 +1955,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   A fresh standalone allocation adaptation must disable borrowed mixed scratch
   or establish its owners;neither is a production speed/decode selection.
   Full fill remains unrun and requires262143batched rows plus final checkedT1.
+  The prospective V2uses lease0/mixed-scratch0/split-accumulator0together:
+  the native split guard requires mixed1,and borrowed standalone storage has
+  no server lease. This inseparable diagnostic unit selects the original512
+  bank and independently allocated mixed storage or fallback2,while preserving
+  BF16math/same queue/chunk/decode flags. Its reader checks the actual window
+  tuple against native allocation formulas and requires numeric release telemetry.
+  V2has not executed;its fresh host and short gates must pass before full fill.
   A separate131073-input reuse experiment remains a later
   hypothesis,not a way to relabel this failed64Kgate.
   Queue placement,ready batching and window remain later independent units.

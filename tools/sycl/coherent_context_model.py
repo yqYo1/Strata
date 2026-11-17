@@ -22,7 +22,7 @@ import qsa16_stream_bench as core
 import ur_validation as validation
 
 P, B, RESULT = reference.P, reference.B, reference.RESULT
-ROOT, KEY = B/'coherent-context-model-v1', 'coherent_context_model_v1'
+ROOT, KEY = B/'coherent-context-model-v2', 'coherent_context_model_v2'
 THIS = 'tools/sycl/coherent_context_model.py'
 POLICIES = ('AGENTS.md', 'docs/ARTIFACT_RETENTION.md', 'docs/BENCHMARKS.md')
 CASES = (('short', 16385, 4, 900), ('full', 262144, 0, 2400))
@@ -65,6 +65,7 @@ def environment(row, case):
     env = comparison.environment(row, dict(root=case['root'], heads=1))
     probe = row['native_validation_probe']
     env.update(STRATA_SYCL_CACHE_SCRATCH_LEASE='0', STRATA_TRACE='1',
+        STRATA_SYCL_PREFILL_MIXED_SCRATCH='0', STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR='0',
         STRATA_SYCL_PREFILL_MOE_CENSUS='0', STRATA_PREFILL_LAYER_MAJOR_PROFILE='0',
         TMPDIR=case['root']+'/tmp', XDG_CACHE_HOME=case['root']+'/cache',
         LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
@@ -75,6 +76,18 @@ def environment(row, case):
     require(env['STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS']=='384'
         and env['STRATA_SYCL_PREFILL_QSA_MATH']=='bf16-prefix-ordered-exp', 'preserve reference math/capacity')
     return env
+
+
+def previous_failure():
+    old = validation.committed(RESULT, ('coherent_context_model_v1',))
+    require(old['source_commit']=='7bab90583bfecfe776df7cd0965963f01878f140'
+        and old['stage']=='failed' and not old['active'] and old['ownership_closed']
+        and old['outcomes']['short']['native_exit_code']==1
+        and not old['outcomes']['short']['fresh_faults'] and 'full' not in old['outcomes'],
+        'preserve original standalone refusal; no retry or retrospective qualification')
+    return dict(key='coherent_context_model_v1',evidence_sha256=signature(old),
+        original_source=old['source_commit'],native_source=old['native_source_commit'],
+        reason='Borrowed standalone buffers lack the server mixed-scratch lease owners; original guard refused before layer-major math. V2 is a fresh allocation adaptation, not a speed result.')
 
 
 def command(row, case):
@@ -124,14 +137,20 @@ def evidence(stdout, stderr, row, case, pid):
         'actual bank or per-allocation bound differs')
     window = one(body, r'^strata MoE window configuration: requested_mode=10 effective_mode=(2|10) '
         r'maximum_rows=(\d+) mixed_fp16_bytes=(\d+)$', 'window policy')
+    mode,maximum,mixed = map(int,window.groups())
+    require(not staged and slots==512, 'standalone nonborrowed mixed storage requires original512bank')
+    require((mode==2 and maximum==16384 and mixed==0) or
+        (mode==10 and gpu>8192 and maximum==min(81920,gpu) and mixed==maximum*2560*2
+         and mixed<=limit), 'actual standalone window rows/storage differ')
     qsa = one(body, r'^strata prefill: QSA BF16 operands, FP32 online state/accumulation; '
         r'KV=active-logical-prefix transient_bytes=(\d+); source=resident-Mode0 score_pitch=33 '
         r'operand_layout=row-major softmax=parallel-exp-ascending-sum$', 'actual QSA math')
     prefix_bytes = ((n+15)//16)*16*2056
     require(int(qsa[1])==prefix_bytes<=limit
-        and 'strata prefill: native16 BF16 HC residual/projection IO and MoE outputs;' in body
-        and 'MiB free after releasing the standalone prompt buffers' in body,
+        and 'strata prefill: native16 BF16 HC residual/projection IO and MoE outputs;' in body,
         'actual typed prefix allocation or standalone release missing')
+    release = one(body,r'^strata trace: (\d+) MiB free after releasing the standalone prompt buffers$',
+        'numeric standalone prompt release')
     p = one(stdout, r'^prefill\s+(\d+) tokens in ([0-9.]+) ms', 'batched extent')
     require(int(p[1])==n and float(p[2])>0, 'batched token extent differs')
     output = one(stdout, r'^output\s*:(.*)$', 'output IDs')
@@ -143,8 +162,9 @@ def evidence(stdout, stderr, row, case, pid):
     return dict(validation=proof,actual_batched_rows=n,generated_ids=len(ids),
         final_slot_consumed=case['name']=='full',allocation=ledger,
         bank=dict(slots=slots,staged=bool(staged),device_bytes=size,max_single_allocation_bytes=limit),
-        window=dict(effective_mode=int(window[1]),maximum_rows=int(window[2]),mixed_fp16_bytes=int(window[3])),
+        window=dict(effective_mode=mode,maximum_rows=maximum,mixed_fp16_bytes=mixed),
         qsa_prefix_bytes=prefix_bytes,minimum_logged_free_mib=min(free) if free else None,
+        post_release_free_mib=int(release[1]),
         prefill_ms_observed=float(p[2]),speed_eligible=False,
         scope='Standalone checked capacity/completion only; host-tail residency allowed. No serve allocation, RESTORE, task/numerical quality, ordinary provider teardown or sustained decode qualification.')
 
@@ -161,6 +181,7 @@ def prepare():
     row.update(stage='prepared',source_commit=revision,sources=sources,
         policies={p:sha(P/p) for p in POLICIES},original_native_proof=proof,
         reference_evidence_sha256=signature(compact(prior)),
+        previous_attempt=previous_failure(),
         binary=native['binaries']['strata_full_context_diagnostic'],
         host_binary=native['binaries']['full_context_diagnostic_host_test'],native_source_commit=original.SOURCE,
         vocab_size=max(vocab.values())+1,cases=[],outcomes={},host_passed=False,
@@ -168,7 +189,7 @@ def prepare():
         model_route_qualified=False,physical262144_RESTORE_qualified=False,
         ordinary_provider_teardown_qualified=False,
         plan=dict(question='Does the exact coherent fastest-owned implementation safely consume all262144 physical input slots?',
-            unit='No native change. Standalone entrypoint plus required CACHE_SCRATCH_LEASE=0 is one inseparable diagnostic adaptation: lease1 requires serve. Other reference math/queue/chunk/384requested bank/decode flags/assets stay fixed. Length is the only variable between short/full cases;full has0output room.',
+            unit='No native change. Standalone entry plus CACHE_SCRATCH_LEASE=0, MIXED_SCRATCH=0 and its required MOE_SPLIT_ACCUMULATOR=0 form one inseparable allocation adaptation. Lease1 requires serve; borrowed standalone buffers lack its checked mixed owners; split1requires mixed1. Original V1 already records refusal of lease0/mixed1. The original512bank and separately allocated mixed storage/fallback2may differ from serve; this is not speed adoption. Other reference BF16 math/queue/chunk/decode flags/assets stay fixed. Length is the only variable between short/full cases;full has0output room.',
             order='Host parser refusal controls and same-build native bounds fixture, then one16385-input/4-output standalone case. Commit normal/quiet/fault-free closure before one262144-input/0-output consume-prompt case. No retries.',
             acceptance='Original2361source/dependency recovery,137objects/1470compiler/29link inputs and12ELF verification; current committed helpers, recipe, model/provider identities and boot/driver. Exact BF16 row/byte and max-allocation ledger; actual ordered-exp BF16 prefix, native16 producer/consumer, standalone release, n-1batched rows and exact checked final-slot marker. Normal0/reaped/empty owner, quiet validation and no fresh faults. Host tails/legacy512bank allowed and recorded, never called full GPU residency.',
             stopping='Stop first input/owner/budget/runtime/allocation/extent/validation/fault failure. Never reset/unbind or restart a failed arm. Full model hashes again after full case; existing checked hashes reused only with unchanged identities. No speed-based decision or inference adoption.',
@@ -195,6 +216,7 @@ def current(row):
         and row['binary']==native['binaries']['strata_full_context_diagnostic']
         and row['host_binary']==native['binaries']['full_context_diagnostic_host_test']
         and row['native_source_commit']==original.SOURCE
+        and row['previous_attempt']==previous_failure()
         and all(row[k]==prior[k] for k in ('configuration','environment_template','model_assets',
             'native_validation_probe','boot','driver','runtime_manifest'))
         and len(row['cases'])==2, 'original native/config/model proof changed')
