@@ -37,8 +37,13 @@ The November18JST check fetches45additional commits/121changed paths from
 `baf16363` to`c7757280`;the cumulative pending interval from`146df3c4` now
 contains1166commits/2849changed paths. The new interval changes serving,App,
 Control,CLI and packaging functions;its native C++changes are tests only.
-Boolean tool coercion,stop-drain admission,MTP/About display and persisted
-drafting settings need functional ports after the frozen bank comparison.
+The boolean tool coercion,stop-drain admission and MTP/About display fixes are
+now source-ported with their original Niko tests after the bank comparison
+closed;host validation is pending. The stop test lives under`serve/`for the
+maintained host harness,with unchanged contents. Their exact commits and
+per-function states are in`current_sync.functional_import.incremental_function_ports`.
+Persisted drafting settings and the other App/Control/CLI/packaging changes
+remain required ports;the full function ledger is incomplete.
 No production inference change or performance adoption follows from this check.
 The legacy ghq checkout remains divergent and untouched;fetch/ref observation
 is complete,its default-mirror reconciliation remains a separate hold.
