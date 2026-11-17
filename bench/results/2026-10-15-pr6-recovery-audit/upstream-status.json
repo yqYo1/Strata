@@ -76,7 +76,7 @@
       "release_source": "e39a52e33f35902a03d980dbc902ac84569f5bad",
       "release_note": "App/Terminal0.2.15 and Control0.1.61;engine packages remain0.1.60 as declared by the release commit.",
       "exclusions": "DeepSeek/35B execution remains excluded;CUDA/HIP inference not imported;XeStrata never an implementation source.",
-      "incremental_port_status": "Bank-only comparison closed at4d027b3e1. Three required boolean/stop-drain/MTP-label fixes now implemented with original Niko tests;host validation pending. See current_sync.functional_import.incremental_function_ports. Persisted drafting/App/Control/CLI/packaging and broader required-function ledger remain incomplete."
+      "incremental_port_status": "Three required boolean/stop-drain/MTP-label fixes are ported and33CPU/mock/JavaScript tests pass without skips;see current_sync.functional_import.incremental_function_ports. Persisted drafting/App/Control/CLI/packaging and the broader required-function ledger remain incomplete. No inference adoption or new upstream observation."
     },
     "prior_pending_component_review": {
       "commit": "8216eeb84933c48c0dc808061516f1ddad307686",
@@ -1589,7 +1589,7 @@
         "declared_boolean_tool_args": {
           "upstream_commit": "f5b255007c53be06a68ccda4f68569509e76b5ab",
           "required": true,
-          "state": "implemented_host_validation_pending",
+          "state": "ported_and_host_validated",
           "target": "serve/frontend.py",
           "behavior": "Convert True/False only for declared boolean types that do not also admit string;preserve plain strings and unknown words.",
           "test": {
@@ -1601,12 +1601,26 @@
           "license": "Niko root MIT;same root LICENSE bytes as this fork",
           "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
           "validation_key": "upstream_c775_small_functions_host_v1",
-          "inference_engine_changed": false
+          "inference_engine_changed": false,
+          "validation": {
+            "record_commit": "2d2ebd9bdbee5de955ad678e92bfe39d44881158",
+            "evidence_key": "upstream_c775_small_functions_host_v1",
+            "source_commit": "4f1724c88e5fc1fb05ef6d1ff54089a9e08b3dc5",
+            "role": "booleans-and-frontend",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "tests": 29,
+            "skipped": 0,
+            "skip_reasons": [],
+            "stdout_bytes": 0,
+            "stderr_bytes": 4153
+          },
+          "inference_performance_qualified": false
         },
         "stop_admission_without_timeout": {
           "upstream_commit": "5c0c80d8b7414404555222a705de72a26e2a6cdf",
           "required": true,
-          "state": "implemented_host_validation_pending",
+          "state": "ported_and_host_validated",
           "target": "serve/server.py",
           "behavior": "Close inference admission before stopping without a drain timeout;preserve local owned-console cleanup and existing timed-drain path.",
           "test": {
@@ -1618,12 +1632,26 @@
           "license": "Niko root MIT;same root LICENSE bytes as this fork",
           "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
           "validation_key": "upstream_c775_small_functions_host_v1",
-          "inference_engine_changed": false
+          "inference_engine_changed": false,
+          "validation": {
+            "record_commit": "2d2ebd9bdbee5de955ad678e92bfe39d44881158",
+            "evidence_key": "upstream_c775_small_functions_host_v1",
+            "source_commit": "4f1724c88e5fc1fb05ef6d1ff54089a9e08b3dc5",
+            "role": "stop-admission",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "tests": 2,
+            "skipped": 0,
+            "skip_reasons": [],
+            "stdout_bytes": 0,
+            "stderr_bytes": 432
+          },
+          "inference_performance_qualified": false
         },
         "web_actual_drafter_label": {
           "upstream_commit": "d8124515af7a0f3151d406462677e605a6e8f2a6",
           "required": true,
-          "state": "implemented_host_validation_pending",
+          "state": "ported_and_host_validated",
           "target": "serve/web/app.js",
           "behavior": "Show MTP speculation text only for an MTP drafter or an older engine without a drafter field;DFlash2/off no longer claim MTP.",
           "test": {
@@ -1635,7 +1663,21 @@
           "license": "Niko root MIT;same root LICENSE bytes as this fork",
           "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
           "validation_key": "upstream_c775_small_functions_host_v1",
-          "inference_engine_changed": false
+          "inference_engine_changed": false,
+          "validation": {
+            "record_commit": "2d2ebd9bdbee5de955ad678e92bfe39d44881158",
+            "evidence_key": "upstream_c775_small_functions_host_v1",
+            "source_commit": "4f1724c88e5fc1fb05ef6d1ff54089a9e08b3dc5",
+            "role": "actual-drafter-display",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "tests": 2,
+            "skipped": 0,
+            "skip_reasons": [],
+            "stdout_bytes": 0,
+            "stderr_bytes": 358
+          },
+          "inference_performance_qualified": false
         }
       }
     },

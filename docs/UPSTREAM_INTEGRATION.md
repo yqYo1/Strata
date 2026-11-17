@@ -19,7 +19,7 @@ records actual fetch and remote-ref observations, separately from integration.
 | Last actual check and fetch | 2026-11-17 20:52:28 UTC / November 18 05:52:28 JST |
 | Observed upstream | `c77572806996349b49995e4f98d41b5294d36a21` (latest fetched main;no engine import) |
 | Next check at the approximate 48-hour cadence | 2026-11-19 20:52:28 UTC / November 20 05:52:28 JST |
-| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `c7757280` are fetched, with the plain GPU-list ordering fix imported and tested |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `c7757280` are fetched; the GPU-list ordering and three scoped server/Web fixes are imported and tested |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
 | New inference adoption from this check | None |
@@ -38,8 +38,9 @@ The November18JST check fetches45additional commits/121changed paths from
 contains1166commits/2849changed paths. The new interval changes serving,App,
 Control,CLI and packaging functions;its native C++changes are tests only.
 The boolean tool coercion,stop-drain admission and MTP/About display fixes are
-now source-ported with their original Niko tests after the bank comparison
-closed;host validation is pending. The stop test lives under`serve/`for the
+now ported with their original Niko tests after the bank comparison closed.
+All33CPU/mock/JavaScript checks pass without skips,including26existing frontend
+cases. The stop test lives under`serve/`for the
 maintained host harness,with unchanged contents. Their exact commits and
 per-function states are in`current_sync.functional_import.incremental_function_ports`.
 Persisted drafting settings and the other App/Control/CLI/packaging changes
