@@ -399436,6 +399436,38 @@
         "passed": true
       }
     ],
+    "input_retirement": {
+      "status": "prepared",
+      "roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-context-model-v2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-bank-reuse-v1"
+      ],
+      "files": 20,
+      "bytes": 1575123,
+      "inventory": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-bank-reuse-v2-closed-inputs-retirement.json",
+        "sha256": "13fa58ed864eed751ea69b6e618298fb392824f4fb20d7ed87be7a5518b9634f",
+        "bytes": 9763
+      },
+      "original_sources": [
+        {
+          "key": "coherent_context_model_v2",
+          "source_commit": "be2f53f7d8ffb6f9580f334e0c264baf1343a679",
+          "source_files": 765,
+          "source_sha256": "5aac165a319cb5a5015b289facb0cf64559d8ef455ded0b566a745e94e8ce520",
+          "all_original_Git_blobs_match": true
+        },
+        {
+          "key": "prefill_bank_reuse_v1",
+          "source_commit": "bbc493cc5b82e829e8fd4c669b1a39ff887dc5fd",
+          "source_files": 767,
+          "source_sha256": "bef26c0e667660a31fdd757e3a28903a0820bd7d31487a2d1d6719902c2c4c34",
+          "all_original_Git_blobs_match": true
+        }
+      ],
+      "consumer_closed": "V2historical bridge and sevenreader/currentfrontend probes passed;current() consumes scoped committed capacity facts,not these private roots. The original failed V1outcome remains unchanged.",
+      "next": "Commit proof,delete exact inventoried inputs,verify current V2admission without them,then retire inventory and launch traced128K512."
+    },
     "source_inputs": {
       "files": 767,
       "sha256": "977ab9a8f3430bffeeacb58768eab1f195c2c9383b519f7baab18c3265bb56ba"
