@@ -401480,7 +401480,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_bank_placement_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "2617c6f1fb59cc5f8991954b2aa3402f09612f0e",
     "policies": {
       "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
@@ -402075,11 +402075,18 @@
       "retention": "Keep27individualsamples,source/config,native/budget/route/requested-byteandpaireddecisions;retire raw/JIT and closed controller atclosure. No new native generation."
     },
     "invariant_sha256": "181d88343edc41dad16328cf7942fa922276d9b1036f134670a8225995dee08c",
+    "error": "RuntimeError('placement host controls failed')",
     "source_inputs": {
       "files": 767,
       "sha256": "93973497e4bc036a46a27f2fe28ddfc62cdab018c8583ee33e8b8e8db944481d"
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "host_control_refusal": {
+      "tests": 8,
+      "failed": 1,
+      "mechanism": "Synthetic free_gpu_bytes was increased by prefixing9;all-R GPU admission remained valid,so the negative control incorrectly expected rejection. Seven other controls pass. No native/frontend model process launched. Correct test to reduce free budget,retain failure and use new frozen V2plan.",
+      "native_executed": false
+    }
   }
 }
