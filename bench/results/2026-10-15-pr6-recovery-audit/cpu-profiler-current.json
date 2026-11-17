@@ -34576,6 +34576,87 @@
       "gpu_admission_attempted": false,
       "physical_max_single_allocation_ceiling": "unknown in this comparison",
       "decision": "Exact existing model setting is384;packed geometry currently384/438/469/512slots with24fullfit layers.512would make48fullfit at+340787200bytes if admitted. Compare setting separately from queue/prefetch changes;require actual bank/residual/shape admission and preserve decode. No model gain inferred."
+    },
+    "retirement": {
+      "stage": "planned",
+      "inventory": {
+        "path": "/tmp/strata-unique-math-retire-20261117.json",
+        "sha256": "8ce37cba0c86fcae526391228f12db706e895524fa3f1b6af1306132ed383b2b",
+        "bytes": 208933
+      },
+      "paths": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-unique-slot-math-v1",
+          "files": 713,
+          "bytes": 1260941171,
+          "sha256": "02168d39c3ae752d0320197d3e6060c5fe6e7584c3234a77aed8741f24c56d8d"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-unique-math-du-20261117",
+          "files": 2,
+          "bytes": 18803,
+          "sha256": "d7cff52646355ebc88c6372b0a87c9037961fd91d3d177af1e6391a39ec92b48"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-unique-math-du-20261117-control",
+          "files": 30,
+          "bytes": 44217,
+          "sha256": "c1c0ed0f09f45c4ffd28449426334ff9f19e8bfee8e13fe6923a4fc1ee9d3798"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-unique-math-du-20261117",
+          "files": 18,
+          "bytes": 282920,
+          "sha256": "30c6de04d4cee1fedc9b1b7e74056e4ab65a83e5e2f9308039650912ede99248"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-unique-math-dv-20261117",
+          "files": 2,
+          "bytes": 10648,
+          "sha256": "260a397630e7b4fba28fb7daf458dc9a8520ddcd00a38886457466df498724fe"
+        },
+        {
+          "path": "/home/yayoi/.codex/sessions/2026/11/17/rollout-2026-11-17T12-02-21-01a1e774-9cdc-7f51-b9a2-7da458b24fa0.jsonl",
+          "files": 1,
+          "bytes": 1057268,
+          "sha256": "b97006a297e074b93cd081691515e77445a96c0331acc86e666a721368389c33"
+        }
+      ],
+      "original_native_source": "01823c73466ffccc920f72fce1346bb04f48bd05",
+      "original_recipe_evidence": "a24162eae",
+      "exact_build_evidence": "dbee24492",
+      "closed_evidence": "52bd1156b",
+      "project_sources_recovered": 367,
+      "original_sources_recovered": 398,
+      "TLA_dependency_sources_recovered": 906,
+      "compiler_input_files": {
+        "compiled": 962,
+        "links": 29,
+        "objects": 11
+      },
+      "compiler_input_sha256": "3410c2a41202c052323ab0deca2840f3428d2d0220ef7ecab30686370614b370",
+      "recipe_sha256": "86d40f34557eaec07f1dfcc187b2306d2e8a962cbfec9d2ef45196ecbb994531",
+      "exact_final_ELF_matched": true,
+      "corpus_rebuilt_bitwise_from_model_roles": true,
+      "corpus_sha256": "5b682a735dde5826fce507ab62edaf4471ddbf133417285c389447f4448da4c5",
+      "all52commands_normal0_closed": true,
+      "both_phase_references_checked": true,
+      "research_source_inputs_recovered": 15,
+      "research_derived_inputs": [
+        {
+          "name": "prior-curated-decisions.json",
+          "sha256": "502b6d6e3d3997fea142811110d244b5dc70b7c062b039cf282bad99126015c7",
+          "reason": "Main-derived committed build/plan and prior curated source findings;not product/build source."
+        },
+        {
+          "name": "facts.json",
+          "sha256": "545cdd5236ee0a9fb6423c56ca7d706cf3920ca4987a53eff93f024a4dc60865",
+          "reason": "Main-derived committed build/plan and prior curated source findings;not product/build source."
+        }
+      ],
+      "research_native_closure": "scope Result=timeout,signal15,PIDabsent,normal-exit/resource qualification remain false",
+      "reason": "39case component consumer and DU/DVsource review ended. Model setting trial uses original14508phase reference,not this fixture/corpus. Keep27samples/9decisions and curated source findings. Next qualified model pipeline can recover original source/recipe from Git.",
+      "holds": "Retained two phase references and existing unrelated legacy same-build fixture/source/cache holds;not global cleanup."
     }
   }
 }
