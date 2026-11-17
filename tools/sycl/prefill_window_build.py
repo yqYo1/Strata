@@ -23,7 +23,8 @@ P,B=original.P,original.B
 ROOT=B/'prefill-window-native-v1'
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY='prefill_window_native_v1'
-U1_SOURCE='51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054'
+U1_MEASURED_SOURCE='51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054'
+U1_SOURCE='f13b3baf46af5f104d11178a094f561ec1cfc8f6'
 SAFETY_SOURCE='9849e35803f011aaafb2753c1e0f31411e40308e'
 OVERLAYS=[
     'include/strata/prefill/fullfit_upload_plan.hpp',
@@ -79,6 +80,33 @@ def decode_reference(recover=False):
         scope='Artifact continuity and original Git/recipe preservation only;new prefill build inherits no decode/model qualification.')
 
 
+def u1_continuity(payload):
+    header='include/strata/prefill/fullfit_upload_plan.hpp'
+    wrapper='include/strata/prefill/expert_bank_upload.hpp'
+    fixture='tests/sycl/expert_bank.cpp'
+    for name in (header,wrapper,fixture):
+        require(payload[name]==source.git(P,'show',U1_SOURCE+':'+name),
+            'review a changed retained individual-upload input:'+name)
+    # The rejected U2cleanup removed only a branch that the measured U1caller
+    # always disabled. Verify that reviewed transformation,not a hash refresh.
+    prior=source.git(P,'show',U1_MEASURED_SOURCE+':'+header)
+    argument=b', bool coalesce'
+    branch=(b'            if (coalesce && source_stride==bank.stride)\n'
+            b'                while (end<ids.size() && ids[end]==ids[end-1]+1) ++end;\n')
+    require(prior.count(argument)==prior.count(branch)==1 and
+        prior.replace(argument,b'').replace(branch,b'')==payload[header],
+        'retained planner differs beyond the reviewed unreachable U2branch removal')
+    prior=source.git(P,'show',U1_MEASURED_SOURCE+':'+wrapper)
+    old=b'PrefillFullfitUploadPlan::make(experts,layout,source_stride,false)'
+    new=b'PrefillFullfitUploadPlan::make(experts,layout,source_stride)'
+    require(prior.count(old)==1 and prior.replace(old,new)==payload[wrapper]
+        and payload[fixture]==source.git(P,'show',U1_MEASURED_SOURCE+':'+fixture),
+        'U1selected caller or original fixture changed')
+    return dict(measured_source=U1_MEASURED_SOURCE,retained_source=U1_SOURCE,
+        reviewed_change='Remove the unused coalesce argument/branch after failed U2;U1always passed false. Caller and complete retained planner match that explicit transformation;original device fixture bytes unchanged.',
+        compiled_or_model_qualification_inherited=False)
+
+
 def compact(row):
     value={k:v for k,v in row.items() if k not in ['controller_sources','source_files','commands','actual_inputs','foundation']}
     for field in ['controller_sources','source_files']:
@@ -122,10 +150,7 @@ def prepare():
     guard='src/core/expert_source.cpp'
     require(payload[guard]==source.git(P,'show',SAFETY_SOURCE+':'+guard),
         'review a changed independent native-job safety fix')
-    for name in ('include/strata/prefill/fullfit_upload_plan.hpp',
-                 'include/strata/prefill/expert_bank_upload.hpp','tests/sycl/expert_bank.cpp'):
-        require(payload[name]==source.git(P,'show',U1_SOURCE+':'+name),
-            'review a changed independent U1 input:'+name)
+    continuity=u1_continuity(payload)
     for name in ['include/strata/prefill/gemm.hpp','src/core/verify.cpp',
                  'src/kernels/sycl/kv_stream.cpp','cmake/sycl_backend.cmake']:
         require(files[name]==native['project']['source_sha256'][name],'unrelated inference change bundled')
@@ -140,6 +165,7 @@ def prepare():
         native_source_identity='Committed base plus explicit overlays;not the whole overlay revision native tree',
         overlays={p:files[p] for p in OVERLAYS},controller_sources=source.pin(P,PREFIXES)['source_sha256'],
         independent_baselines=dict(native_job_guard=SAFETY_SOURCE,U1=U1_SOURCE),bank_gate=gate,
+        U1_selected_source_continuity=continuity,
         retained_decode_reference=decode,
         source_files=files,foundation=proof,external_inputs=native['external_inputs'],
         recipe=dict(configure=configure,environment=env,targets=TARGETS),

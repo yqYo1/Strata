@@ -2175,6 +2175,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Gemm/MoeAccumPlan/MoeWindowRoutes definitions across producers/consumers.
   Its eight targets include CPUproofs,bank/Down safety fixtures,a matching
   resident-GEMM resource reference and the physical-context diagnostic pair.
+  The initial preparation at`aeb671619`refused before creating a build root:
+  two U1headers contain the later`f13b3baf`cleanup of rejected U2,while the
+  device fixture still matches measured`51ea99cae`. The corrected prospective
+  controller pins the retained source and verifies exactly the removal of
+  the coalesce=false argument and its unreachable branch. Original U1samples
+  keep their original source identity;no build/device qualification is reused.
   The bank-only cohort must close first;
   the new build/controller is authored,not yet executed. The live tree also
   contains independent KV/verify proposals,which must not enter a prefill
