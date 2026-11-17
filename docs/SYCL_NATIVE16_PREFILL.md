@@ -2224,8 +2224,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stay separate. Safe fixed-work coherence/layout losses remain recorded and
   permit a separate window question;only repeated fixed-bank window gain admits
   the combination. Coherence is prepared at`e81f93750`,with all15model assets
-  freshly hashed and18generated configurations/launcher plans pinned;host and
-  native processes are unrun. The other three cohorts remain unprepared.
+  freshly hashed and18generated configurations/launcher plans pinned. Host
+  probes and the first32Kcandidate process pass:three32769-read/24-output
+  requests,all32768BF16residual rows onGPU,planned bank256/window10,normal0,
+  reapedempty,quiet validation and no fresh fault. This traced diagnostic is
+  not clean speed or a completed coherence comparison;the eight128Kprocesses
+  remain. The other three cohorts remain unprepared.
   U1jit is fixed to isolate native14coherence;its separately positive eager
   component remains eligible.
   `prefill_bank_minimum_v2`closes at`4d027b3e1`:nine normal0processes/27thinking-on
