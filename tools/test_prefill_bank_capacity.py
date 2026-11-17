@@ -28,7 +28,7 @@ def fixture(read=131072,slots=1,trace=True):
         f'strata MoE accumulator window: windows={48*((n+81919)//81920)} dequants=2000 jobs=10000 source_H2D_bytes=100000 GPU_resident_windows_only=1 operator_max=8192 maximum_rows={maximum}\n'
         f'strata MoE mixed banks: storage=scratch primary_bytes={min(maximum,65536)*5120} tail_bytes={max(0,maximum-65536)*5120} tail_offset=900000000 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain\n'
         'strata prefill expert source: requested_view=1 effective_view=1 layers=48 owned_slab_bytes=0 borrowed_layer_span_bytes=50000000000 host_copy=eliminated source_pin=unspecified source_owner=caller_through_checked_retirement\n'
-        f'strata MoE expert bank complete: total_slots={slots*48} permanent_slots=0 requested_H2D_bytes={100000000000 if slots==1 else 44000000000} permanent_hits=0 uploads=2000 final_drain=checked\n'
+        f'strata MoE expert bank complete: total_slots={slots} permanent_slots=0 requested_H2D_bytes={100000000000 if slots==1 else 44000000000} permanent_hits=0 uploads=2000 final_drain=checked\n'
         'strata prefill: softmax=parallel-exp-ascending-sum\n')
     for phase in ('before-detach','after-detach','after-prompt-before-restore','after-restore'):
         text+=f'strata mtp: prompt expert phase={phase} bytes=707788800\n'

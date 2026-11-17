@@ -25,7 +25,7 @@ import qsa16_stream_bench as core
 import ur_validation as validation
 
 P, B, RESULT = capacity.P, capacity.B, capacity.RESULT
-ROOT, KEY = B/'prefill-bank-minimum-v1', 'prefill_bank_minimum_v1'
+ROOT, KEY = B/'prefill-bank-minimum-v2', 'prefill_bank_minimum_v2'
 CAPACITY_KEY = 'coherent_context_model_v2'
 READ, RUNS, STRIDE, ROW = 131072, 3, 2662400, 20480
 READS = (32769,) + (READ,)*8
@@ -291,6 +291,10 @@ def prepare():
     require(prior_bank['stage']=='closed' and prior_bank['passed'] and prior_bank['ownership_closed']
         and not prior_bank['active'] and prior_bank['decision']['eligible_for_further_model_gates'],
         'preserve closed original256placement evidence')
+    refused=validation.committed(RESULT,('prefill_bank_minimum_v1',))
+    require(refused['stage']=='failed' and refused['ownership_closed'] and not refused['active']
+        and not refused['processes'] and refused['host_refusal']['native_executed'] is False,
+        'preserve original invalid synthetic-fixture refusal')
     native,proof,prior=capacity.basis()
     revision=validation.git('rev-parse','HEAD').decode().strip();ROOT.mkdir(mode=0o700)
     row=dict(stage='prepared',source_commit=revision,sources=core.pins(revision),
@@ -302,6 +306,8 @@ def prepare():
         runtime_manifest=prior['runtime_manifest'],plans=[],processes=[],request_hashes={},
         prior_preparation_refusal=dict(controller='a1766f9d9',native_executed=False,
             reason='Historical prefill_bank_capacity_v1 result key already exists;fresh-campaign guard refused before creating files. Preserve it;new campaign uses prefill_bank_minimum_v1.'),
+        prior_host_refusal=dict(evidence='5405dbfb0',key='prefill_bank_minimum_v1',native_executed=False,
+            correction='Fix only synthetic total_slots from the48-layer sum to the current layer capacity. Same plan/order/gates;do not weaken the<=512capacity check.'),
         host_passed=False,passed=False,complete=False,active=False,ownership_closed=True,
         budgets=dict(wall=2400,cpu=20000,rss_cap=104<<30,text_cap=16<<20,file_cap=32<<20,total_cap=128<<20),whole_bytes=1536<<20,
         plan=dict(question='Measure the standalone256->1prefill-bank cost at fixed128K/window10 before a separate larger-window unit.',
