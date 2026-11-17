@@ -405199,7 +405199,7 @@
     "environment_template_sha256": "d064a49521df9c42e253937f3283eee4a1e9158e635be5e624011384513854ec"
   },
   "coherent_prefill_collector_control_v4": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "6cfa49b553b978255dc84029d97d8d9ef3da9a8f",
     "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "engine": {
@@ -405265,7 +405265,72 @@
         "LD_DEBUG": "libs"
       }
     },
-    "cases": [],
+    "cases": [
+      {
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3000690,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "trace": {
+          "expected_kernels": 62,
+          "observed_kernels": 62,
+          "native_PID": 3000690,
+          "GPU_events": 249,
+          "host_events": 770,
+          "collection_active_from_exec": true,
+          "native_host_flow_joins_unique": true,
+          "all_kernel_names_present": true,
+          "timeline_sha256": "e5799e50e0e098748253da4180a7df53d8e713d02592b3d90aa5b5378426be4a",
+          "timeline_bytes": 274406,
+          "class_inventory": {
+            "expected": {
+              "direct": 1,
+              "producer": 37,
+              "consumer": 24
+            },
+            "observed": {
+              "direct": 1,
+              "producer": 37,
+              "consumer": 24
+            },
+            "kernel_instances": 62,
+            "observed_aliases": {
+              "main::{lambda(sycl::_V1::id<1>)#1}": 1,
+              "main::{lambda(sycl::_V1::id<1>)#4}": 37,
+              "main::{lambda(sycl::_V1::id<1>)#5}": 24
+            },
+            "exact_class_identity": true
+          }
+        },
+        "clocks": {
+          "begin": 3277398635818074,
+          "end": 3277398910348641
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "plan": {
       "question": "Does the existing owned Sysman0 indexed collector cover the exact coherent14508compatibility fixture,classes,joins,clock and owner retirement?",
       "native": "All12coherent originalELFs/recipe/dependencies/providers verified fromGit;reuse unchanged fad954compatibility fixture,not its old model qualification. MIT Intel/PTI indexed collector/launcher unchanged;no newnativegeneration.",
@@ -405285,8 +405350,8 @@
       "total_cap": 67108864
     },
     "whole_bytes": 134217728,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "host_metadata_contract": {
