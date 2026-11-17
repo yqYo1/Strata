@@ -2095,7 +2095,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   not establish a CPU critical-path limit. The actual limiting arithmetic/
   VRAM/PCIe resource and compatible ceilings remain unresolved. Next pin/read
   the dominant QSAprefix and copy paths and measure matching kernel/memory
-  ceilings before selecting one independent change. Keep the current-build
+  ceilings before selecting one independent change. The separate `transfer_refresh`
+  result already retains2MiB and335544320Bordinary/Host-USM copy samples on this
+  boot;match the actual called wrapper,shape and environment before reusing it
+  as a ceiling or commissioning another transfer run. Keep the current-build
   five-length/held-out timing curve pending as described below;two lengths
   and mixed routes/timing periods do not qualify a physical law.
   The native14508 symbol resolves to cached-Q/vec4K/vec4V/ordered-exp,
@@ -2211,14 +2214,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   initialized providers and pre-main validation are verified. This is component
   evidence,not speed/adoption or physical262144qualification. Actual model
   GPUadmission,old-path coherence and each independent model comparison remain pending.
+  All42closed successful build/component capture files(4,279,332B)and the
+  16,868Btemporary inventory are retired. Exact build/device records,all eight
+  ELFs and source/recipe evidence remain;fresh model admission passes afterward.
   `prefill_window_model.py`prospectively separates four27request cohorts:
   old-path coherence at128K,relocation at98K/split128,window length at128K/bank1,
   then the combination against128K/bank256/window10. Each has three traced
   admissions and three opposite-order clean process pairs;first/warm samples
   stay separate. Safe fixed-work coherence/layout losses remain recorded and
   permit a separate window question;only repeated fixed-bank window gain admits
-  the combination. These plans are unprepared/unrun. U1jit is fixed to isolate
-  native14coherence;its separately positive eager component remains eligible.
+  the combination. Coherence is prepared at`e81f93750`,with all15model assets
+  freshly hashed and18generated configurations/launcher plans pinned;host and
+  native processes are unrun. The other three cohorts remain unprepared.
+  U1jit is fixed to isolate native14coherence;its separately positive eager
+  component remains eligible.
   `prefill_bank_minimum_v2`closes at`4d027b3e1`:nine normal0processes/27thinking-on
   requests,quiet validation,no fresh fault and15final model hashes. At fixed
   native14/window10/128K,the three bank1/256warmed-time ratios are1.069543,
