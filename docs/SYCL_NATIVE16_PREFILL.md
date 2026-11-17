@@ -2020,6 +2020,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   or ordinary provider-teardown qualification follows. Earlier32Kgain/64K
   failure and the faster historical871/1006PPcohort remain separate. A single
   new96Kpoint across cohorts does not fit a physical timing law.
+  Four first/warmed arm milestones are recorded in the608-row CSV,evidence
+  `516d8dbc2`. Current V4raw/JIT/receipts are prepared for retirement at this
+  closure:497files/74462349B,with766original controller sources and all14
+  generated inputs recovered and original native source/recipe/12ELFsmatched.
+  Both phase reference engines and model assets remain current consumers.
 
   EA/EBreview withdraws the report's missing job/map/dequant gate claim after
   reading the complete imported helpers. No other concrete reader mismatch is
