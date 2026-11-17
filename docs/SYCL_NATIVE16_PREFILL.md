@@ -1900,6 +1900,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   transfer-order implementation,checking actual bank/residual admission first;
   no new model execution or speedup is established. Preserve existing decode.
   Queue placement,ready batching and window remain later independent units.
+  Closed math/research captures are retired:766files/1262355027B plus the
+  208933Btemporary inventory. Exact final ELF,recipe,367project/398original
+  sources,906TLA sources,962/29/11compiler/link/object inputs and the1GBcorpus
+  reconstructed from model roles match original records;both phase references
+  remain. Full comparison inputs restore from`a24162eae`/`dbee24492`;useful
+  individual samples/9decisions remain active. Legacy provenance/fixture/cache
+  holds stay separate and do not renew this ended third generation.
   The old9arm controller/13host controls/24case fixture restore from`05eceacd`;
   that unused24case fixture is removed from the active tree. The15case fixture
   is the near-term regression starting point for the cache/checked-loan seam.
