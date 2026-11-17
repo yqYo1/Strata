@@ -408703,300 +408703,25 @@
       "native_job_guard": "9849e35803f011aaafb2753c1e0f31411e40308e",
       "U1": "f13b3baf46af5f104d11178a094f561ec1cfc8f6"
     },
-    "bank_gate": {
-      "key": "prefill_bank_minimum_v2",
-      "source_commit": "ce488370d812715b3ee15715054a9f5a07a53df6",
-      "source_inputs": {
-        "files": 768,
-        "sha256": "072ed16d4448e65ce419c5e0a8df6a7780794c6b2b2f66204e42c445ea0cdea0"
-      },
-      "binary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
-        "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
-        "bytes": 26448640,
-        "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
-      },
-      "decision": {
-        "read": 131072,
-        "arms": {
-          "256": {
-            "warmed_process_ms": [
-              147669.3,
-              150039.8,
-              141995.45
-            ],
-            "warmed_process_PP": [
-              887.6049388735506,
-              873.5815430305826,
-              923.0718308227481
-            ],
-            "warmed_PP": 887.6049388735506,
-            "warmed_client_TTFT_s": [
-              147.9115,
-              150.373,
-              142.26999999999998
-            ],
-            "first_ms": [
-              162124.9,
-              160444.8,
-              153902.2
-            ],
-            "first_PP": [
-              808.5,
-              816.9,
-              851.7
-            ],
-            "first_client_TTFT_s": [
-              162.378,
-              160.701,
-              154.126
-            ]
-          },
-          "1": {
-            "warmed_process_ms": [
-              157938.6,
-              156909.95,
-              150718.35
-            ],
-            "warmed_process_PP": [
-              829.8921226349986,
-              835.3326223098024,
-              869.648586253764
-            ],
-            "warmed_PP": 835.3326223098024,
-            "warmed_client_TTFT_s": [
-              158.197,
-              157.177,
-              150.96949999999998
-            ],
-            "first_ms": [
-              170188.5,
-              169017.6,
-              160796.5
-            ],
-            "first_PP": [
-              770.2,
-              775.5,
-              815.1
-            ],
-            "first_client_TTFT_s": [
-              170.484,
-              169.365,
-              161.052
-            ]
-          }
-        },
-        "pairs": [
-          {
-            "indices": [
-              3,
-              4
-            ],
-            "time_ratio_1_over_256": 1.0695425521757063,
-            "reference_logged_requested_bank_H2D": [
-              43611008000,
-              43839692800,
-              43663718400
-            ],
-            "candidate_logged_requested_bank_H2D": [
-              68588774400,
-              68951321600,
-              68540262400
-            ]
-          },
-          {
-            "indices": [
-              5,
-              6
-            ],
-            "time_ratio_1_over_256": 1.0457888506916166,
-            "reference_logged_requested_bank_H2D": [
-              43611008000,
-              43839692800,
-              43663718400
-            ],
-            "candidate_logged_requested_bank_H2D": [
-              68588774400,
-              68951321600,
-              68540262400
-            ]
-          },
-          {
-            "indices": [
-              7,
-              8
-            ],
-            "time_ratio_1_over_256": 1.061430841622038,
-            "reference_logged_requested_bank_H2D": [
-              43611008000,
-              43839692800,
-              43663718400
-            ],
-            "candidate_logged_requested_bank_H2D": [
-              68588774400,
-              68951321600,
-              68540262400
-            ]
-          }
-        ],
-        "time_ratios_1_over_256": [
-          1.0695425521757063,
-          1.0457888506916166,
-          1.061430841622038
-        ],
-        "geometric_mean_time_ratio": 1.058874751017639,
-        "actual_fixed_residency_and_window": true,
-        "repeated_bank_only_gain": false,
-        "bank_only_performance_eligible": false,
-        "eligible_for_separately_planned_window_question": true,
-        "prefill1000_at128K_warmed_median": false,
-        "inference_adopted": false,
-        "sustained_decode_or_task_qualified": false,
-        "physical262144_RESTORE_qualified": false,
-        "ordinary_teardown_qualified": false,
-        "hardware_saturation_qualified": false,
-        "next": "Keep the standalone bank cost even if slower. Safety/capacity may permit a separately planned larger-window question without adopting bank1. Compare relocation at equal bank/window,window at fixed bank1,and combination against256/window10. All task/decode/RESTORE gates remain;no saturation claim."
-      },
-      "scope": "Closed bank safety/capacity/cost only;no window/math/model/decode adoption inherited."
-    },
     "U1_selected_source_continuity": {
       "measured_source": "51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054",
       "retained_source": "f13b3baf46af5f104d11178a094f561ec1cfc8f6",
       "reviewed_change": "Remove the unused coalesce argument/branch after failed U2;U1always passed false. Caller and complete retained planner match that explicit transformation;original device fixture bytes unchanged.",
       "compiled_or_model_qualification_inherited": false
     },
-    "retained_decode_reference": {
-      "source": "9849e35803f011aaafb2753c1e0f31411e40308e",
-      "binary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
-        "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
-        "bytes": 26476232,
-        "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
-      },
-      "record_sha256": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c",
-      "project_inputs": "776f972a3694682ace45aa4f262ec0cfd6e975004c78a55a0291d373919023bb",
-      "recipe_sha256": "1c14fb531398338c49a4aa3ee0612e1fdad81f46ee9ce2a50ac01805b00b5fdd",
-      "scope": "Artifact continuity and original Git/recipe preservation only;new prefill build inherits no decode/model qualification."
+    "source_files": {
+      "files": 1166,
+      "sha256": "1777e3f600da30582f2af5f9be10af97e91883bf28ebad048031c3286eb2f48f"
     },
-    "external_inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
-      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
-    },
-    "recipe": {
-      "configure": [
-        "/usr/bin/cmake",
-        "-S",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v1/source",
-        "-B",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v1/build",
-        "-G",
-        "Ninja",
-        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-DCMAKE_BUILD_TYPE=Release",
-        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
-        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
-        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
-        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
-        "-DSTRATA_CPU_ARCH:STRING=znver3",
-        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
-        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
-        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
-        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
-        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
-        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
-        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
-        "-DSTRATA_PORTABLE:BOOL=OFF",
-        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
-        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
-        "-DSTRATA_SYCL_TESTS:BOOL=ON",
-        "-DSTRATA_WERROR:BOOL=ON",
-        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
-        "-DSTRATA_SYCL_DEVICE_ARCH=",
-        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
-        "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
-        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
-        "-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON"
-      ],
-      "environment": {
-        "PATH": "/usr/bin:/bin",
-        "HOME": "/home/yayoi",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
-        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-        "NEOReadDebugKeys": "1",
-        "EnableDirectSubmission": "0",
-        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-        "SYCL_CACHE_PERSISTENT": "0",
-        "ZES_ENABLE_SYSMAN": "0",
-        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v1/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v1/cache",
-        "STRATA_IQ_SINGLE_EXACT": "0",
-        "STRATA_IQ3_PAIR": "1",
-        "STRATA_IQ3_PAIR_AUDIT": "1",
-        "STRATA_CPU_SERVICE": "0",
-        "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
-        "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
-        "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
-        "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
-        "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
-        "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
-        "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
-        "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
-        "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
-      },
-      "targets": [
-        "strata",
-        "prefill_moe_routes_test",
-        "prefill_moe_workspace_test",
-        "sycl_expert_bank_test",
-        "sycl_moe_down_scatter_bench",
-        "sycl_native16_paired_gemm_bench",
-        "strata_full_context_diagnostic",
-        "full_context_diagnostic_host_test"
-      ]
-    },
-    "native_validation_probe": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "loader": {
-        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
-      }
-    },
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
+    "controller_sources": {
+      "files": 375,
+      "sha256": "594094eff41cd82ffca8f4edc46a0c67039fb41ba1a0c2680b79c1c7286d0e38"
     },
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
-    "plan": {
-      "unit": "One inseparable long-prefill window caller/owner/layout/row-bound unit. Same math,chunk8192,same queue and immutable pre-exec flags. Retain independent U1 and native-job safety baseline. No new KV/verify/decode policy or U2coalescing.",
-      "source": "Recover14508native sources plus the15explicit owned overlays at source_commit. Gemm class and original KV/verify/CMake backend remain14508;native-job guard is byte-identical to9849. Full map and actual compiler/link census bind the composition,not the whole live native tree.",
-      "qualification": "Fresh engine,CPUroute/workspace,expert-bank and actual Down fixture. Matching residentGEMM fixture is retained for the named next arithmetic/resource calibration. Commit actual objects/ELFs;new committed numerical/device plan before any GPU test or model run. CPU49Klayout proof is reused only at its original scope.",
-      "comparison": "Independent bank-only outcome remains intact. Then relocate at98K/bank128/equal window;extend at128K/bank1/fixed bank;compare combination against bank256/window10. Preserve old-path coherence control and all losses/infeasible cells. No source-bundle aggregate acceptance.",
-      "limits": "Successful build proves no GPU allocation,safety,numerical result,PP,target,task/agent,thinking sustainedTG,decode preservation,physical262144/tails/RESTORE or ordinary teardown. Both prefill strategies remain available. Broader model routes require current decode implementation and repeated preservation gates.",
-      "retention": "Bounded third generation:14508prefill reference and9849decode reference stay unchanged. This candidate serves the immediate long-window safety/layout/window/resource comparisons;select and retire it after that decision before another generation. CPUworkspace output is already retired;legacy provenance/configuration/cache holds remain concrete and separate."
-    },
     "configuration_passed": true,
     "compile_executed": false,
     "observer_review": {
@@ -409022,16 +408747,23 @@
         "selection": "Original14508native map plus15overlays at064ffb767;controller Git ls-tree with its committed PREFIXES(all tools/sycl,15overlays and three policies). Exact original private maps compared before closure."
       },
       "native_engine_created": false,
-      "consumer": "No current build/test consumes configured V1;retain both phase references. Commit/push closure and recovery,then retire configured source/probes/raw before preparing V2."
+      "consumer": "No current build/test consumes configured V1;retain both phase references. Commit/push closure and recovery,then retire configured source/probes/raw before preparing V2.",
+      "closure_receipt_reconciliation": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v1/record.json",
+        "inventory_sha256": "79cebdab6104408772cae4b6aa11f4daa6fe065940e027e25bfc9b6a3f622f9a",
+        "inventory_bytes": 197815,
+        "closed_receipt_sha256": "a568f758438e7ef92685fd72cb2389151e4313b9ea067d13e34dee7c2927aadf",
+        "closed_receipt_bytes": 199247,
+        "reason": "The final closed-before-compile receipt was written after the inventory. Only that expected closure metadata changed;all other1197entries still match. Reconcile its final bytes explicitly before deletion;do not refresh any measurement input.",
+        "actual_total_bytes": 18065985,
+        "source_inputs_changed": false
+      }
     },
-    "controller_sources": {
-      "files": 375,
-      "sha256": "594094eff41cd82ffca8f4edc46a0c67039fb41ba1a0c2680b79c1c7286d0e38"
-    },
-    "source_files": {
-      "files": 1166,
-      "sha256": "1777e3f600da30582f2af5f9be10af97e91883bf28ebad048031c3286eb2f48f"
-    },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "archive": {
+      "commit": "a8135371099f9d07a381f76f72681dec19d795dd",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "prefill_window_native_v1",
+      "scope": "Original configured-only recipe/environment and full close-before-compile decision;no native engine was built."
+    }
   }
 }
