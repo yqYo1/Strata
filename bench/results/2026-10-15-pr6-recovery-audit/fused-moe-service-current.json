@@ -405853,7 +405853,7 @@
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6"
   },
   "qsa_prefix_calibration_v2": {
-    "stage": "prepared",
+    "stage": "in_progress",
     "source_commit": "9b3efe10b2513337756be4f2bbbb3ed360704224",
     "original_native_proof": {
       "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
@@ -406008,7 +406008,35 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stages": [],
+    "stages": [
+      {
+        "mode": "host",
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "host_probe_accepted": true,
+        "checks": [
+          {
+            "name": "controls",
+            "pid": 3295842,
+            "exit_code": 0,
+            "ownership_closed": true,
+            "validation": null
+          }
+        ],
+        "GPU_executed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "processes": [],
     "active": false,
     "passed": false,
