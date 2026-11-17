@@ -2139,8 +2139,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   With bank1,the earlier observed free-budget scenario leaves22,492,160B
   beyond the unchanged512MiBheadroom. This is arithmetic,not actual admission.
   The ordinary/split public methods and their row limits remain unchanged.
-  The opt-in long-prefill caller is built coherently in V2;device/model checks
-  remain unrun. Mode16uses
+  The opt-in long-prefill caller is built coherently in V2;component checks
+  pass and model checks remain unrun. Mode16uses
   the explicitly requested bank and one admitted90113..131072row window;
   unsupported lengths/budgets retain ordinary mode10 and its host-tail/full
   context fallback. Mode10plus`STRATA_SYCL_PREFILL_MOE_RELOCATE_JOB_BUFFERS=1`
@@ -2148,27 +2148,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All settings are fixed before exec. The extra owner covers FP32tail,gathered
   and logits;checked outer retirement precedes its free,and all three guards
   are checked after model work. Producer/consumer spans bind the same owner.
-  No arithmetic,chunk8192,QSA,decode placement or U1eager selection changes.
+  No arithmetic,chunk8192,QSA,decode placement or U1implementation changes.
   CPU capacity now passes all49,152row cases81921..131072,old-layout
   invariants,two-plane separation,guards/chunk maps and negative refusals.
-  The committed CPU source/recipe and actual22,504Bfixture ELF are pinned;
-  both owned build/check close normally0. No GPU allocation,math or model
-  qualification follows. Next build/validate the checked caller and independently
-  compare bank-only,relocation-only,larger-window and combination arms as declared.
+  The preliminary CPUproof establishes capacity arithmetic;its closed output
+  is retired. Fresh same-build component results are below. Next independently
+  compare relocation,larger-window and combination arms;the bank-only loss remains.
   Do not drop the positive U1eager-upload component:its32/64Kgain was measured,
   and a separate period's lower absolute PP does not refute that matched gain.
-  Reviewed future bank/window research identifies source limits117488split,
-  81920ordinary accumulation and8192per job,not runtime admission. Before
-  implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;
+  The original owned layout has source limits117488split,
+  81920ordinary accumulation and8192per job,not runtime admission. The proposal
+  pins original moe_window.inc and expert_bank_plan.hpp;
   assess bank-only/window-only/combined arms separately and retain infeasible
   cells. Retained native14still rejects mode16. The new source proposal has
-  no device/math/model qualification. Extended route checks cover48
+  no model qualification. Extended route checks pass48
   cases through131072rows,stable inverse/order/no-atomic uniqueness and old
-  factory refusals;they are built,not yet run. Pure CPU CMake targets cover
+  factory refusals. Pure CPU CMake targets cover
   routes and workspace. The existing Down fixture gains explicit long-prefill
   tiny,full-span/dataflow and production-dispatch cases,including2333/2334/2335/
   8192job rows,65536bank boundary and131072final row;startup arms are separate
-  processes with immutable environment. These fixtures are built but unrun.
+  processes with immutable environment. Their component safety checks pass below.
   Every affected TU is rebuilt.
   `prefill_window_build.py`pins an explicit14508-plus15owned-overlay composition,
   preserving U1and the byte-identical9849native-job capacity safety check.
@@ -2194,17 +2193,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   consumer definitions are coherent;both AOTfinalization products are bound.
   Engine SHA256is`b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c`.
   The source is the explicit14508-plus15overlay composition,not the entire
-  later tree. Owners are reaped/empty;device/model checks remain unrun. The live tree also
+  later tree. Owners are reaped/empty;model checks remain unrun. The live tree also
   contains independent KV/verify proposals,which must not enter a prefill
   performance comparison implicitly. Preserve the9849decode
   reference;its implementation/performance/handoff remain adoption gates.
-  The source-only `prefill_window_device.py`prospectively orders seven same-build
-  checks:CPUroutes/workspace/admission spans,traced U1and tiny long-prefill,
-  quiet full bank/long-prefill,and separate Down dispatch0/large processes.
-  Its native16BF16/vllm/auto/original-split settings are explicit before exec;
-  exact actual provider,oracle,guard,case and closure evidence is required.
-  It is unexecuted and cannot admit a model automatically. Actual131Kallocation,
-  old-path coherence and each independent model comparison remain pending.
+  `prefill_window_device.py`closes all seven same-build checks at source
+  `e247fbff4`:three CPUchildren and six GPUchildren,all normal0/reapedempty,
+  quiet parameter validation,unchanged boot/driver and no fresh fault.
+  Host coverage is48routes,49152layouts,134admission bounds and9459KVhash cases.
+  Traced U1and tiny long-prefill pass;full bank checks cover0/1/127/512experts
+  and cancellation. All six117489/131071/131072contiguous/irregular cases pass
+  30bitwise original FP32FMA/BF16capture job checks,guards and terminal rows.
+  Full weight-map and selected-job gather dataflow pass at131072irregular.
+  Separate Down0/large processes each pass eight actual dispatch/fallback
+  cases at2333/2334/2335/8192rows;the large path selects only at>=2334.
+  Native16BF16/vllm/auto/original-split settings are fixed before exec;actual
+  initialized providers and pre-main validation are verified. This is component
+  evidence,not speed/adoption or physical262144qualification. Actual model
+  GPUadmission,old-path coherence and each independent model comparison remain pending.
   `prefill_window_model.py`prospectively separates four27request cohorts:
   old-path coherence at128K,relocation at98K/split128,window length at128K/bank1,
   then the combination against128K/bank256/window10. Each has three traced
