@@ -2181,10 +2181,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controller pins the retained source and verifies exactly the removal of
   the coalesce=false argument and its unreachable branch. Original U1samples
   keep their original source identity;no build/device qualification is reused.
-  The bank-only cohort is closed. The corrected native source/recipe snapshot
-  is prepared at`064ffb767`;configuration closes normally0 with the planned
-  engine/CPU/Down targets present. Compilation and device/model checks remain
-  unrun. The live tree also
+  The bank-only cohort is closed. V1at`064ffb767`configures normally0,but is
+  closed before compilation after review finds its census omitted the two
+  pinned AOTfinalization/host-unbundle products. The prospective V2controller
+  accounts for those products,their actual Ninja recipe,relative link paths
+  and private temporary objects;missing external inputs still fail. Original
+  configure success and the observer hold remain. Compilation and device/model
+  checks are unrun. The live tree also
   contains independent KV/verify proposals,which must not enter a prefill
   performance comparison implicitly. Preserve the9849decode
   reference;its implementation/performance/handoff remain adoption gates.

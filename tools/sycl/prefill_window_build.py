@@ -20,9 +20,9 @@ import measurement_owner as ownership
 import ur_validation
 
 P,B=original.P,original.B
-ROOT=B/'prefill-window-native-v1'
+ROOT=B/'prefill-window-native-v2'
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY='prefill_window_native_v1'
+KEY='prefill_window_native_v2'
 U1_MEASURED_SOURCE='51ea99cae7ef4b1e41e419bd5f5a8a1dc17d0054'
 U1_SOURCE='f13b3baf46af5f104d11178a094f561ec1cfc8f6'
 SAFETY_SOURCE='9849e35803f011aaafb2753c1e0f31411e40308e'
@@ -234,19 +234,42 @@ def census(row,native,stdout):
         require(names.issubset(actual),'missing rebuilt class producer/consumer:'+header)
     produced={str(p.resolve()):sha(p) for p in build.rglob('*') if p.is_file()
         and (p.suffix=='.a' or '.so' in p.name or str(p.resolve()) in objects)}
-    links={}
+    # The pinned CMake rule finalizes the AOT device registration separately
+    # and unbundles its host slice. Neither is a compile_commands entry.
+    aot_input=build/'CMakeFiles/strata_vllm_xe2_native16.dir/src/prefill/sycl/vllm_xe2/native16.cpp.o'
+    image,host=build/'strata_vllm_xe2_image.o',build/'strata_vllm_xe2_host.o'
+    require(str(aot_input.resolve()) in objects and image.is_file() and host.is_file(),
+        'fresh AOT producer and both CMake finalization products required')
+    commands=subprocess.check_output(['/usr/bin/ninja','-t','commands','strata_vllm_xe2_image'],
+        cwd=build,text=True,timeout=30).splitlines()
+    finalizers=[line for line in commands if '-fsycl-link' in line and '-unbundle' in line]
+    require(len(finalizers)==1 and all(str(p) in finalizers[0] for p in (aot_input,image,host)),
+        'actual AOT finalization/unbundle recipe differs')
+    produced.update({str(p.resolve()):sha(p) for p in (image,host)})
+    links={};temporary=set()
     for line in stdout.read_text().splitlines():
         value=line.strip()
-        if not value.startswith('/') or len(value)>4096 or any(c.isspace() for c in value):continue
+        if len(value)>4096 or any(c.isspace() for c in value):continue
         p=Path(value)
-        if not p.is_file():continue
+        if not p.is_absolute():
+            if p.suffix not in ('.o','.a') and '.so' not in p.name:continue
+            p=build/p
+        p=p.resolve()
+        if not p.is_file():
+            require(p.is_relative_to(ROOT/'tmp') and p.suffix=='.o',
+                'missing external or unexpected generated link input:'+str(p))
+            temporary.add(str(p));continue
         p=p.resolve();h=sha(p)
         if str(p) in produced:require(produced[str(p)]==h,'produced link input changed')
         elif str(p) in allowed:require(allowed[str(p)]==h,'external link input changed');links[str(p)]=h
-        elif line.strip().startswith('/'):raise RuntimeError('unfrozen link input: '+str(p))
+        else:raise RuntimeError('unfrozen link input: '+str(p))
     require(len(links)>8,'actual external link closure missing')
     return dict(compiled=compiled,generated=generated,links=links,objects=objects,produced=produced,
         Gemm_includers=classes,class_definition_includers=class_headers,
+        AOT_finalization_recipe_sha256=original.fingerprint(finalizers[0]),
+        temporary_generated_link_objects=len(temporary),
+        temporary_generated_link_paths_sha256=original.fingerprint(sorted(temporary)),
+        temporary_link_scope='Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.',
         translation_units=len({x['file'] for x in selected}),fresh_objects=len(selected),
         partial_archive_reuse=False,uncovered=0)
 
