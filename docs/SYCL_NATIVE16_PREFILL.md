@@ -2098,6 +2098,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ceilings before selecting one independent change. Keep the current-build
   five-length/held-out timing curve pending as described below;two lengths
   and mixed routes/timing periods do not qualify a physical law.
+  The native14508 symbol resolves to cached-Q/vec4K/vec4V/ordered-exp,
+  score stride33,32-key tiles and128-thread groups;those optimizations already
+  run. V1preparation failed before tests/GPU because its model compact reader
+  required an irrelevant model-assets field;V2uses a component-specific reader. A new bounded `qsa_prefix_calibration_v2` plan reuses its same-build
+  fixtures to compare only ascending denominator sum versus subgroup sum,
+  keeping operand staging,placement and scheduling fixed. Retain all three
+  shape outcomes and108timings;the earlier32/64Kmodel gain gate remains failed.
+  Component success can only permit a separately committed128Kquestion,
+  not model launch/adoption or a physical bandwidth/saturation claim. No new
+  native generation is needed. Independent placement/window candidates and
+  their combinations require their own smallest coherent comparisons.
   Reviewed future bank/window research identifies source limits117488split,
   81920ordinary accumulation and8192per job,not runtime admission. Before
   implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;
