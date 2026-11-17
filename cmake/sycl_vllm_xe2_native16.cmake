@@ -74,6 +74,13 @@ target_link_libraries(strata_prefill INTERFACE "${_strata_native_image}" "${_str
 message(STATUS "Strata: opt-in vLLM Xe2 native16; isolated BMG G21 AOT object; existing engine JIT; external TLA pinned; UNQUALIFIED")
 
 function(strata_add_vllm_native16_tests)
+  # Pure CPU proofs for the opt-in long window; manual targets, no GPU loader.
+  add_executable(prefill_moe_routes_test EXCLUDE_FROM_ALL tests/moe_accum_routes.cpp)
+  add_executable(prefill_moe_workspace_test EXCLUDE_FROM_ALL tests/prefill_moe_workspace.cpp)
+  foreach(target IN ITEMS prefill_moe_routes_test prefill_moe_workspace_test)
+    target_include_directories(${target} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_compile_features(${target} PRIVATE cxx_std_17)
+  endforeach()
   # Qualify the GU wrapper against the same freshly built engine archives.
   add_executable(sycl_gu_policy_test EXCLUDE_FROM_ALL bench/sycl/gu_compact.cpp)
   target_link_libraries(sycl_gu_policy_test PRIVATE strata_prefill)

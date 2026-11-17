@@ -87,8 +87,11 @@ template <class T> bool same_bytes(const std::vector<T> &a, const std::vector<T>
   return a.size() == b.size() && std::memcmp(a.data(), b.data(), a.size() * sizeof(T)) == 0;
 }
 uint16_t half(float value) { return sycl::bit_cast<uint16_t>(sycl::half(value)); }
-std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows = 0, int primary_rows = 0) {
-  need(tokens > 0 && tokens <= (primary_rows ? Routes::max_split_accum_rows : Routes::max_accum_rows) &&
+std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows = 0, int primary_rows = 0,
+                                   bool long_prefill = false) {
+  need((!long_prefill || primary_rows > 0) && tokens > 0 &&
+       tokens <= (long_prefill ? Routes::max_long_prefill_rows :
+           primary_rows ? Routes::max_split_accum_rows : Routes::max_accum_rows) &&
        primary_rows >= 0 && primary_rows < tokens, "fixture split row bounds");
   std::vector<int32_t> ids(size_t(tokens) * 10);
   need(target_rows >= 0 && target_rows <= std::min(tokens, 8192), "target row span");
@@ -101,7 +104,8 @@ std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows =
     for (int slot = 0; slot < 10; ++slot)
       ids[size_t(t) * 10 + slot] = slot ? slot : (selected ? 0 : 10);
   }
-  return primary_rows ? Routes::build_split_accum(tokens, ids.data(), ids.size()) :
+  return long_prefill ? Routes::build_long_prefill_accum(tokens, ids.data(), ids.size()) :
+         primary_rows ? Routes::build_split_accum(tokens, ids.data(), ids.size()) :
                  Routes::build_accum(tokens, ids.data(), ids.size());
 }
 struct Case {
@@ -126,8 +130,9 @@ struct Case {
   int split_rows;
   bool row_address = false;
   bool row64 = false;
-  Case(int tokens, bool irregular, bool edges, sycl::queue &queue, int target_rows = 0, int primary_rows = 0)
-      : routes(plan(tokens, irregular, target_rows, primary_rows)), q(queue), gemm(*runtime, q),
+  Case(int tokens, bool irregular, bool edges, sycl::queue &queue, int target_rows = 0, int primary_rows = 0,
+       bool long_prefill = false)
+      : routes(plan(tokens, irregular, target_rows, primary_rows, long_prefill)), q(queue), gemm(*runtime, q),
         x(size_t(std::min(tokens, 8192)) * K, q), w(size_t(N) * K, q),
         down(size_t(std::min(tokens, 8192)) * N, q), capture(down.n, q),
         source(size_t(tokens) * 10, q), original(source.n, q), weights(source.n, q),
@@ -533,9 +538,10 @@ void split_dataflow(Case& c) {
             << ",\"full_weight_map\":true,\"full_gather\":true,\"inputs_immutable\":true,\"guards\":true,\"status\":\"PASS\"}\n";
 }
 void split_correctness(int tokens, int primary_rows, int target_rows, bool irregular,
-                       bool edges, sycl::queue &q) {
-  Case c(tokens, irregular, edges, q, target_rows, primary_rows);
-  if ((tokens == 17 || tokens == 117488) && irregular) split_dataflow(c);
+                       bool edges, sycl::queue &q, bool long_prefill = false) {
+  Case c(tokens, irregular, edges, q, target_rows, primary_rows, long_prefill);
+  if ((tokens == 17 || tokens == 117488 || (long_prefill && tokens == 131072)) && irregular)
+    split_dataflow(c);
   std::vector<size_t> jobs{0, c.routes->jobs().size() - 1};
   // Expert1 covers every token. Exercise both sides of the split and the
   // physical final row even when expert0 uses a sparse/irregular target job.
@@ -551,7 +557,8 @@ void split_correctness(int tokens, int primary_rows, int target_rows, bool irreg
   std::sort(jobs.begin(), jobs.end());
   jobs.erase(std::unique(jobs.begin(), jobs.end()), jobs.end());
   for (auto index : jobs) c.check_split(index);
-  std::cout << "{\"kind\":\"split_case\",\"tokens\":" << tokens << ",\"primary_rows\":" << primary_rows
+  std::cout << "{\"kind\":\"" << (long_prefill ? "long_prefill_case" : "split_case")
+            << "\",\"tokens\":" << tokens << ",\"primary_rows\":" << primary_rows
             << ",\"target_rows\":" << target_rows << ",\"irregular\":" << irregular
             << ",\"edges\":" << edges << ",\"jobs\":" << jobs.size()
             << ",\"physical_final_row\":true,\"status\":\"PASS\"}\n";
@@ -905,6 +912,27 @@ int main(int argc, char **argv) {
         for (bool irregular : {false, true})
           for (int tokens : {65537, 81921, 117488})
             split_correctness(tokens, 65536, 17, irregular, false, q);
+      } else if (mode == "--long-prefill-smoke") {
+        need(argc == 2, "long prefill smoke takes no other arguments");
+        split_correctness(3, 1, 0, false, false, q, true);
+        split_correctness(17, 8, 3, true, true, q, true);
+      } else if (mode == "--long-prefill-validate") {
+        need(argc == 2, "long prefill validation takes no other arguments");
+        for (bool irregular : {false, true})
+          for (int tokens : {117489, 131071, 131072})
+            split_correctness(tokens, 65536, 17, irregular, false, q, true);
+      } else if (mode == "--long-prefill-route") {
+        need(argc == 3 && (std::string(argv[2]) == "0" || std::string(argv[2]) == "1"),
+             "long prefill route startup arm");
+        const bool enabled = std::string(argv[2]) == "1";
+        const char* flag = std::getenv("STRATA_SYCL_PREFILL_DOWN_SCATTER");
+        need(flag && std::string(flag) == (enabled ? "large" : "0"),
+             "long prefill route must match pre-exec environment");
+        for (bool irregular : {false, true})
+          for (int rows : {2333, 2334, 2335, 8192}) {
+            Case c(131072, irregular, false, q, rows, 65536, true);
+            c.check_selected(enabled);
+          }
       } else if (mode == "--split-route-smoke") {
         need(argc == 3 && (std::string(argv[2]) == "0" || std::string(argv[2]) == "1"), "split route startup arm");
         const bool enabled = std::string(argv[2]) == "1";

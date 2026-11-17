@@ -2163,7 +2163,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cells. Retained native14still rejects mode16. The new source proposal has
   no native/device/math/model qualification. Extended route checks cover48
   cases through131072rows,stable inverse/order/no-atomic uniqueness and old
-  factory refusals;they are authored,not yet run. Rebuild every affected TU.
+  factory refusals;they are authored,not yet run. Pure CPU CMake targets cover
+  routes and workspace. The existing Down fixture gains explicit long-prefill
+  tiny,full-span/dataflow and production-dispatch cases,including2333/2334/2335/
+  8192job rows,65536bank boundary and131072final row;startup arms are separate
+  processes with immutable environment. These fixtures are also unbuilt/unrun.
+  Rebuild every affected TU.
   The next build must pin an explicit14508-plus-owned-U1/window composition;
   the live tree also contains independent KV/verify proposals,which must not
   enter a prefill performance comparison implicitly. Preserve the9849decode
