@@ -35769,7 +35769,7 @@
   },
   "prefill_bank_capacity_source_dw_20261117": {
     "classification": "decision_support",
-    "stage": "running",
+    "stage": "report_complete_review_pending",
     "source_commit": "09c72d710a0f6e104b2fc740a3bab1224b784cca",
     "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "rule_revision": "09c72d710a0f6e104b2fc740a3bab1224b784cca",
@@ -35801,6 +35801,52 @@
     "resource_scope": "strata-research-bank-capacity-dw-20261117.scope",
     "native_argv_preexec_pinned": true,
     "owned_started": true,
-    "actual_report_or_closure_qualified": false
+    "actual_report_or_closure_qualified": false,
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-bank-capacity-dw-20261117/report.md",
+      "sha256": "69a9de498bb1ab170a4e5129d59fb96327a7e57d35d04f78c8ca0c16c31a14b3",
+      "bytes": 6826
+    },
+    "worker_done_message": "msg_a5c47d1b6e34",
+    "worker_done_at": "2026-11-17T04:15:41Z",
+    "worker_done_outcome": "succeeded",
+    "filesystem_preflight": {
+      "passed": true,
+      "checked_inputs": 12,
+      "passed_inputs": 12,
+      "report_write_check": true,
+      "no_dev_dri": true
+    },
+    "native_session": "/home/yayoi/.codex/sessions/2026/11/17/rollout-2026-11-17T13-12-19-01a1e7b4-abee-7301-a35c-1bacd747954b.jsonl",
+    "first_native_calls": [
+      {
+        "name": "exec",
+        "input_sha256": "5ef819cf1f4eb0a5a9e5161af9ca9010bb4bd779c648241653d1d86253c175ca",
+        "orca_status": true,
+        "filesystem_check": false
+      },
+      {
+        "name": "exec",
+        "input_sha256": "89ddc0a5fe0e0a099babf88ae5bfd845546d1aff1e76f7b0f8599d03c7d0c5fd",
+        "orca_status": false,
+        "filesystem_check": true
+      }
+    ],
+    "native_exit_code_observed_at_returned_shell": 0,
+    "native_PID_absent": true,
+    "scope_final": {
+      "Result": "success",
+      "MemoryPeak": "[not set]",
+      "CPUUsageNSec": "[not set]",
+      "ActiveState": "inactive"
+    },
+    "terminal_closed": true,
+    "delivery_acknowledged": "delivery_8a4872b37d45",
+    "normal_native_exit": true,
+    "terminal_exit_wait": {
+      "passed": false,
+      "reason": "PTY shell remained after native CLI normal0;positive native PID absence and returned-shell status checked before owned shell closure"
+    },
+    "review_task": "/root/prefill_bank_capacity_dw_review_dx_20261117"
   }
 }
