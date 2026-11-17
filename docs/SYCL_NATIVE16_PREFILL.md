@@ -2140,8 +2140,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   beyond the unchanged512MiBheadroom. This is arithmetic,not actual admission.
   The ordinary/split public methods and their row limits remain unchanged;
   only a new long-prefill planner is proposed. No production caller uses it.
-  First run pure CPU layout/bounds/refusal checks,then independently compare
-  bank-only,relocation-only,larger-window and combination arms as declared.
+  CPU capacity now passes all49,152row cases81921..131072,old-layout
+  invariants,two-plane separation,guards/chunk maps and negative refusals.
+  The committed CPU source/recipe and actual22,504Bfixture ELF are pinned;
+  both owned build/check close normally0. No GPU allocation,math or model
+  qualification follows. Next implement the checked caller and independently
+  compare bank-only,relocation-only,larger-window and combination arms as declared.
   Do not drop the positive U1eager-upload component:its32/64Kgain was measured,
   and a separate period's lower absolute PP does not refute that matched gain.
   Reviewed future bank/window research identifies source limits117488split,
