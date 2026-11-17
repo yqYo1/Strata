@@ -1941,9 +1941,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   DWsource audit/DXnative Luna-max review finds no fresh-run blocker;its
   independent replay-validator caveat remains. Main reconciled omitted helper
   bodies with all767committed input pins. The existing full-context diagnostic
-  is among the12coherent ELFs,but actual physical262144fill/RESTORE and ordinary
-  provider teardown remain unqualified. Before another capacity run,prepare a
-  fresh coherent-source plan;the old full_context_model.py pins retired6e40
+  is among the12coherent ELFs,and its standalone physical262144fill now passes
+  below. Serve allocation/RESTORE and ordinary provider teardown remain
+  unqualified. Future capacity work needs a fresh coherent-source plan;the old
+  full_context_model.py pins retired6e40
   inputs and131072resident KV and must not be rerun unchanged. Standalone
   consume-prompt evidence must remain distinct from serve allocation/state
   qualification. The fresh`coherent_context_model.py`controller targets the
@@ -1991,8 +1992,6 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passes with only that original record/two fixtures. No V1private root remains
   and no extra native generation was created.
-  A separate131073-input reuse experiment remains a later
-  hypothesis,not a way to relabel this failed64Kgate.
   Queue placement,ready batching and window remain later independent units.
   Closed math/research captures are retired:766files/1262355027B plus the
   208933Btemporary inventory. Exact final ELF,recipe,367project/398original
