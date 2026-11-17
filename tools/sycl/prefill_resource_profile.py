@@ -548,16 +548,26 @@ def fused_reconciliation(services,route):
         scope='These two source-counted fused classes only;unobserved operator coverage and physical saturation remain unqualified.')
 
 
-HOST_ROOT,HOST_KEY=B/'prefill-resource-host-v1','prefill_resource_host_v1'
+HOST_ROOT,HOST_KEY=B/'prefill-resource-host-v2','prefill_resource_host_v2'
+
+
+def host_compact(row):
+    value={k:v for k,v in row.items() if k not in ('sources','environment_template')}
+    value['source_inputs']=dict(files=len(row['sources']),sha256=signature(row['sources']))
+    value['environment_template_sha256']=signature(row['environment_template'])
+    return value
 
 
 def host_save(row):
     write(HOST_ROOT/'record.json',row)
-    x=json.loads(RESULT.read_text());x[HOST_KEY]=compact(row);write(RESULT,x)
+    x=json.loads(RESULT.read_text());x[HOST_KEY]=host_compact(row);write(RESULT,x)
 
 
 def host_prepare():
     require(not HOST_ROOT.exists() and HOST_KEY not in json.loads(RESULT.read_text()),'fresh host controls only')
+    previous=validation.committed(RESULT,('prefill_resource_host_v1',))
+    require(previous['stage']=='failed' and previous['no_host_test_or_native_executed']
+        and previous['ownership_closed'],'preserve original host-only serialization refusal')
     native,proof,prior=capacity.basis();revision=validation.git('rev-parse','HEAD').decode().strip()
     HOST_ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache'):(HOST_ROOT/name).mkdir()
@@ -574,7 +584,7 @@ def host_prepare():
 def host_gate():
     row=validation.committed(RESULT,(HOST_KEY,))
     private=json.loads((HOST_ROOT/'record.json').read_text())
-    require(compact(private)==row and core.pins(private['source_commit'])==private['sources'],
+    require(host_compact(private)==row and core.pins(private['source_commit'])==private['sources'],
         'exact source of closed host controls changed')
     require(row['stage']=='closed' and all(row[k] for k in ('passed','complete','ownership_closed'))
         and not row['active'],'closed committed host controls required')
@@ -583,7 +593,7 @@ def host_gate():
 
 def host_check():
     row=json.loads((HOST_ROOT/'record.json').read_text())
-    require(validation.committed(RESULT,(HOST_KEY,))==compact(row)
+    require(validation.committed(RESULT,(HOST_KEY,))==host_compact(row)
         and core.pins(row['source_commit'])==row['sources'] and row['stage']=='prepared'
         and row['command']==[PYTHON,'-B','-m','unittest','tools.test_prefill_resource_profile'],
         'commit exact fresh host-control inputs')

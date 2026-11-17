@@ -116,6 +116,11 @@ class ResourceProfileControls(unittest.TestCase):
         with self.assertRaises(RuntimeError):campaign.decision(bracket()[:-1])
 
     def test_existing_inventory_clock_and_cleanup_controls(self):
+        host=dict(stage='prepared',sources={'owned':'hash'},environment_template={'HOST_ONLY':'1'})
+        compact=campaign.host_compact(host)
+        self.assertEqual(compact['source_inputs']['files'],1)
+        self.assertNotIn('sources',compact)
+        self.assertNotIn('model_assets_sha256',compact)
         self.assertTrue(campaign.profile_helpers.collector_controls()['passed'])
         self.assertTrue(campaign.profile_helpers.profile_window_controls()['passed'])
         self.assertTrue(campaign.profile_helpers.profile_cleanup_controls()['passed'])
