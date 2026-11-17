@@ -225,13 +225,16 @@ def host(experiment=None):
 
 
 def route(text, read, heads, *, expected_rows=None, requested_slots=384,
-          draft_bytes=None):
+          draft_bytes=None, multi_window=False):
     """Validate one actual request window,including a capacity-limited control."""
     if draft_bytes is None:
         draft_bytes = DRAFT_BYTES
+    require(type(multi_window) is bool and (not multi_window or
+        read == 131072 and expected_rows == 131071 and heads == 1 and requested_slots in (384,512)),
+        'unplanned multi-window capacity case')
     require(heads in (0, 1) and (read in READS if expected_rows is None else
             expected_rows == read - 1 and (8192 < expected_rows <= 81920 or
-                                          90112 < expected_rows <= 117488)), 'unplanned route case')
+                                          90112 < expected_rows <= 117488 or multi_window)), 'unplanned route case')
     def records(prefix):
         result = []
         for line in text.splitlines():
@@ -265,20 +268,31 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
             and admission['rows'] == str(n) and admission['prefill_slots'] == str(slots)
             and admission['decode_changed'] == '0', 'bank/cache publication differs')
     full = gpu == n
-    if read == 65537 or expected_rows is not None and n <= 81920:
-        require(full and staged == 1 and slots == requested_slots and split == 0, '64K placement differs')
+    if multi_window or read == 65537 or expected_rows is not None and n <= 81920:
+        require(full and staged == 1 and slots == requested_slots and split == 0,
+            'multi-window placement differs' if multi_window else '64K placement differs')
     elif full:
         require(staged == split == 1 and slots == 128, '117K all-GPU split placement differs')
     else:
         require(heads == 0 and staged == split == 0 and slots == 512
                 and gpu % 8192 == 0 and gpu <= 81920, 'unqualified partial-residency route')
     require(not heads or full, 'candidate capacity screen failed')
+    maximum_rows = min(81920,gpu) if multi_window else gpu
+    windows = 48*((n+81919)//81920) if multi_window else 48
     require(window['requested_mode'] == window['effective_mode'] == '10'
-            and int(window['maximum_rows']) == int(work['maximum_rows']) == gpu
-            and work['windows'] == '48' and work['operator_max'] == '8192'
+            and int(window['maximum_rows']) == int(work['maximum_rows']) == maximum_rows
+            and work['windows'] == str(windows) and work['operator_max'] == '8192'
             and work['GPU_resident_windows_only'] == '1' and int(work['jobs']) >= 48
             and int(work['dequants']) > 0 and int(work['source_H2D_bytes']) >= 0,
             'actual accumulator/window work differs')
+    if multi_window:
+        mixed = one('strata MoE mixed banks: ')
+        require(window['mixed_fp16_bytes']=='0' and mixed['storage']=='scratch'
+            and int(mixed['primary_bytes'])>0 and int(mixed['tail_bytes'])>=0
+            and int(mixed['primary_bytes'])+int(mixed['tail_bytes'])==maximum_rows*2560*2
+            and mixed['extra_allocation_bytes']=='0'
+            and mixed['phase']=='FFN_only_after_attention_drain',
+            'actual checked server mixed-scratch storage differs')
     bank_ends = records('strata MoE expert bank complete: ')
     require(len(bank_ends) == staged, 'staged bank completion differs')
     if staged:
@@ -313,14 +327,20 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
         require(text.index('strata prefill heads: target detached ') < text.index('strata prefill heads: draft detached ')
                 < text.index('strata MoE expert bank: ') < text.index('strata prefill: layer-major candidate, '),
                 'head retirement/admission order differs')
-    return dict(rows=n, residual_gpu_rows=gpu, residual_gpu_bytes=int(main['residual_gpu']),
+    result = dict(rows=n, residual_gpu_rows=gpu, residual_gpu_bytes=int(main['residual_gpu']),
         residual_host_bytes=int(main['residual_host']), prefill_slots=slots, staged=bool(staged), split=bool(split),
-        windows=48, jobs=int(work['jobs']), fused_down_jobs=int(down['fused_jobs']), maximum_window_rows=gpu,
+        windows=windows, jobs=int(work['jobs']), fused_down_jobs=int(down['fused_jobs']), maximum_window_rows=maximum_rows,
         staged_bank_checked_drain=bool(staged), split_guard_checked=bool(split),
         requested_bank_H2D_bytes=int(bank_ends[0]['requested_H2D_bytes']) if staged else 0,
         requested_dequant_H2D_bytes=int(work['source_H2D_bytes']),
         target_snapshot_bytes=TARGET_BYTES if heads else 0, draft_rebuilt_bytes=draft_bytes if heads else 0,
         physical_saturation_qualified=False, head_payload_bytes_verified=False)
+    if multi_window:
+        end=bank_ends[0]
+        require(int(end['permanent_hits'])>=0, 'negative permanent reuse count')
+        result.update(permanent_hits=int(end['permanent_hits']),uploads=int(end['uploads']),
+            requested_source_map_H2D_bytes=result.pop('requested_dequant_H2D_bytes'))
+    return result
 
 
 def decision(processes):

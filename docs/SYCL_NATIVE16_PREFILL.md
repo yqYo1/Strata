@@ -1958,7 +1958,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Preserve this configuration failure;V1cannot advance to full fill.
   A fresh standalone allocation adaptation must disable borrowed mixed scratch
   or establish its owners;neither is a production speed/decode selection.
-  Full fill remains unrun and requires262143batched rows plus final checkedT1.
+  V1's full case remains unrun;the later V2requires262143batched rows plus final checkedT1.
   The prospective V2uses lease0/mixed-scratch0/split-accumulator0together:
   the native split guard requires mixed1,and borrowed standalone storage has
   no server lease. This inseparable diagnostic unit selects the original512
@@ -1986,7 +1986,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Next is a fresh one-variable384/512bank comparison at131072actual input
   tokens(131071batched rows),which crosses81920-row MoEwindows. Pin new route/
   reuse-byte/repetition gates;the existing comparator's48-window assumptions
-  cannot be reused unchanged. The capacity reader/original record/two generated
+  cannot be reused unchanged. The fresh`prefill_bank_reuse.py`proposal pins
+  96windows/max81920,all-GPU residual,checked borrowed mixed storage and actual
+  requested slots. Its seven-process plan separates three traced admission
+  requests from18clean requests in three alternating pairs. Copy reuse and
+  repeated time gain are independent gates;the native14ELF/math/queue/decode
+  stay fixed. The controller and seven host controls are not yet executed.
+  The capacity reader/original record/two generated
   fixtures remain only through that upcoming historical-evidence bridge's host
   admission,then retire the ended private inputs. All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
