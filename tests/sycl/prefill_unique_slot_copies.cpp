@@ -164,7 +164,9 @@ int run(const std::string& mode, Copies::Placement placement, std::size_t width)
 
 int main(int argc, char** argv) try {
     if (argc == 2 && std::string(argv[1]) == "host") {
+        gate("host-ready");
         prefill_host_refusals();
+        gate("host-exit");
         std::cout << "{\"kind\":\"host\",\"passed\":true,\"capacity_refusals\":2}" << std::endl;
         return 0;
     }
