@@ -1943,7 +1943,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fresh coherent-source plan;the old full_context_model.py pins retired6e40
   inputs and131072resident KV and must not be rerun unchanged. Standalone
   consume-prompt evidence must remain distinct from serve allocation/state
-  qualification. A separate131073-input reuse experiment remains a later
+  qualification. The fresh`coherent_context_model.py`controller targets the
+  retained diagnostic ELF with original BF16-prefix telemetry and resident20480.
+  Its ordered host/16385-input/262144-input gates are not yet executed;the
+  final case requires262143batched rows plus the checked finalT1commit.
+  Standalone entry plus required scratch lease0is an inseparable diagnostic
+  adaptation,not a production speed candidate or decode-selection change.
+  A separate131073-input reuse experiment remains a later
   hypothesis,not a way to relabel this failed64Kgate.
   Queue placement,ready batching and window remain later independent units.
   Closed math/research captures are retired:766files/1262355027B plus the
@@ -1954,12 +1960,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   individual samples/9decisions remain active. Legacy provenance/fixture/cache
   holds stay separate and do not renew this ended third generation.
   The old9arm controller/13host controls/24case fixture restore from`05eceacd`;
-  that unused24case fixture is removed from the active tree. The seven closed
-  Unique-slot-only source/helper/test files have no production callers. Retire
-  them at the next source boundary after replacing the closed capacity reader's
-  current767-file check with the fresh coherent full-context admission;its
-  frozen source set still includes them. Recover their experiments from Git,
-  rather than renewing an unspecified cache/loan regression consumer.
+  that unused24case fixture is removed from the active tree. Nine closed
+  prototype files(125824B)restore from`da18ad915`:seven Unique-slot-only
+  source/helper/test files without production/CMake callers,and the completed
+  capacity controller/test. Their original measured commits remain reachable.
+  The new`coherent_context_model.py`reads original coherent native/speed proof
+  directly. Do not refresh the archived capacity runner's767pins. Its27private
+  inputs remain only until the new host/admission gate verifies their historical
+  recovery;then retire that ended root. Independent parent-copy safety stays.
   The22.95MBsmall generation and private audit captures are now retired after
   exact final ELF,recipe,370project/398original source recovery;both phase
   references remain. Full input/15case evidence restores from`4eb8276e0`.
