@@ -1962,7 +1962,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   BF16math/same queue/chunk/decode flags. Its reader checks the actual window
   tuple against native allocation formulas and requires numeric release telemetry.
   V2's nine host reader controls and same-build134bounds/9459hash cases pass
-  with normal0and closed owners;its fresh short GPUgate must pass before full fill.
+  with normal0and closed owners. Its16385-input/4-output standalone case now
+  closes normally0,with quiet validation and no fresh faults;actual16384BF16
+  batched rows,ordered-exp prefix,512bank,window/storage and release checks pass.
+  This permits the prospective full-fill diagnostic,not speed or route adoption.
   A separate131073-input reuse experiment remains a later
   hypothesis,not a way to relabel this failed64Kgate.
   Queue placement,ready batching and window remain later independent units.

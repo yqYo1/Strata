@@ -397768,7 +397768,7 @@
       "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
       "files": 84
     },
-    "stage": "ready",
+    "stage": "short_closed",
     "source_commit": "be2f53f7d8ffb6f9580f334e0c264baf1343a679",
     "policies": {
       "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
@@ -398054,6 +398054,72 @@
         "reader_controls": true,
         "same_build_host_bounds": true,
         "GPU_executed": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      "short": {
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "GPU_execution_possible": true,
+        "native_exit_code": 0,
+        "stdout_sha256": "1bcfda7444d75b5526a8ac72f747fe912b16d30691c10575ff5e15a284516eaa",
+        "stderr_sha256": "5fe0b43f079ecce063a07a463b045b75862fa36924042c99cb495ae5f172f273",
+        "validation": {
+          "pid": 2008849,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "actual_batched_rows": 16384,
+        "generated_ids": 4,
+        "final_slot_consumed": false,
+        "allocation": {
+          "rows": 16384,
+          "chunk": 8192,
+          "dtype": "bf16",
+          "element_bytes": 2,
+          "total": 335544320,
+          "gpu_rows": 16384,
+          "gpu_bytes": 335544320,
+          "host_bytes": 0,
+          "staging_bytes": 0,
+          "bank_bytes": 1363148800
+        },
+        "bank": {
+          "slots": 512,
+          "staged": false,
+          "device_bytes": 1363148800,
+          "max_single_allocation_bytes": 10132807680
+        },
+        "window": {
+          "effective_mode": 10,
+          "maximum_rows": 16384,
+          "mixed_fp16_bytes": 83886080
+        },
+        "qsa_prefix_bytes": 33685504,
+        "minimum_logged_free_mib": 729,
+        "post_release_free_mib": 994,
+        "prefill_ms_observed": 61628.1,
+        "speed_eligible": false,
+        "scope": "Standalone checked capacity/completion only; host-tail residency allowed. No serve allocation, RESTORE, task/numerical quality, ordinary provider teardown or sustained decode qualification.",
+        "GPU_executed": true,
         "ownership_closed": true,
         "fresh_faults": [],
         "boot_unchanged": true,
