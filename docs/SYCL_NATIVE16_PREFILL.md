@@ -2187,6 +2187,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   exact actual provider,oracle,guard,case and closure evidence is required.
   It is unexecuted and cannot admit a model automatically. Actual131Kallocation,
   old-path coherence and each independent model comparison remain pending.
+  `prefill_window_model.py`prospectively separates four27request cohorts:
+  old-path coherence at128K,relocation at98K/split128,window length at128K/bank1,
+  then the combination against128K/bank256/window10. Each has three traced
+  admissions and three opposite-order clean process pairs;first/warm samples
+  stay separate. Safe fixed-work coherence/layout losses remain recorded and
+  permit a separate window question;only repeated fixed-bank window gain admits
+  the combination. These plans are unprepared/unrun. U1jit is fixed to isolate
+  native14coherence;its separately positive eager component remains eligible.
   `prefill_bank_minimum_v2`first measures256vs1at fixed native14/window10;
   preserve V1's invalid synthetic-metadata refusal before any native run.
   Component/source progress does not admit a larger-window model trial.
