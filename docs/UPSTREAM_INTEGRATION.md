@@ -16,10 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check and fetch | 2026-11-15 20:52:36 UTC / November 16 05:52:36 JST |
-| Observed upstream | `baf16363b4403ef0ed4f538f5d5ed11c43fb9535` (latest fetched main;no engine import) |
-| Next check at the approximate 48-hour cadence | 2026-11-17 20:52:36 UTC / November 18 05:52:36 JST |
-| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `baf16363` are fetched, with the plain GPU-list ordering fix imported and tested |
+| Last actual check and fetch | 2026-11-17 20:52:28 UTC / November 18 05:52:28 JST |
+| Observed upstream | `c77572806996349b49995e4f98d41b5294d36a21` (latest fetched main;no engine import) |
+| Next check at the approximate 48-hour cadence | 2026-11-19 20:52:28 UTC / November 20 05:52:28 JST |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. Later changes through `c7757280` are fetched, with the plain GPU-list ordering fix imported and tested |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
 | New inference adoption from this check | None |
@@ -32,6 +32,16 @@ adaptations. Focused configuration, streaming, API and CLI changes have their
 own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
+
+The November18JST check fetches45additional commits/121changed paths from
+`baf16363` to`c7757280`;the cumulative pending interval from`146df3c4` now
+contains1166commits/2849changed paths. The new interval changes serving,App,
+Control,CLI and packaging functions;its native C++changes are tests only.
+Boolean tool coercion,stop-drain admission,MTP/About display and persisted
+drafting settings need functional ports after the frozen bank comparison.
+No production inference change or performance adoption follows from this check.
+The legacy ghq checkout remains divergent and untouched;fetch/ref observation
+is complete,its default-mirror reconciliation remains a separate hold.
 
 The November16JST check fetches742additional commits/2086changed paths from
 `13eedf55` to`baf16363`. The cumulative unintegrated interval beyond the partial
