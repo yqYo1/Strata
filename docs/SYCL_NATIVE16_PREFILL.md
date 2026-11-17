@@ -1848,8 +1848,39 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   precision or model qualification. Next pin the actual expert-slot/cache and
   last-reader integration seam before a new one-unit plan;fullfit and recycled
   scratch slots have different ownership contracts. Do not copy the fixture's
-  fixed128-slot schedule wholesale into the model. Commit source/recipe recovery
-  and retire this ended third build before creating another candidate.
+  fixed128-slot schedule wholesale into the model. Exact final ELFs,recipe,
+  366project sources,398original native sources and962/29/12compiler/link/object
+  inputs now match their original Git/build records;the1GBcorpus is also rebuilt
+  bit-for-bit by streaming the original model slices. The ended third component
+  root is retired:1264files,1786561342bytes,plus its592705-byte temporary inventory.
+  Duplicate case/environment/recipe inputs recover from`1496a4902`;all141outcomes
+  and39decisions remain unchanged. Both selected phase references are retained;
+  legacy provenance/fixture/cache holds remain separate. No new build starts
+  until its own committed source,recipe and comparison plan are ready.
+  The independently authored,unselected candidate is
+  `sycl_unique_slot_copies.hpp`at`84f3d3c29`:strict sequential one-write-per-slot
+  ownership permits omitting per-expert reader markers until terminal drain.
+  It is not connected to a model route;no model qualification or gain is established.
+  Decision-support scope`prefill_unique_slot_fullfit_source_ds_20261117`
+  completed normally0 within its resource envelope;native Luna-max review
+  accepts the source with corrections. Its curated index records four concrete
+  fullfit/staging/publication/checked-loan invariants. The wrapper must drain and
+  die inside a live cache loan;the staging buffer,not merely its original slab,
+  must survive H2D. Main source`8b2d9ac46`adds a15case small GPU lifetime plan
+  and8passing host admission controls. Native source`535911a2b`now passes
+  all15small checks at`4eb8276e0`:both placements,128/129/512slots,ready1/64,
+  refusals,terminal drain and accepted-copy host-exception retirement. All21
+  build/test/native commands close normally0;no validation errors or fresh
+  device faults. Four fresh TUs/four objects match719compiler/25link inputs.
+  No model integration or performance gate passes from this safety fixture.
+  Single-write ownership and omitted overwrite-reader markers form one
+  inseparable safety unit. Next hold math/order/bytes fixed:compare128versus512
+  slots with reader markers,then omit markers at the same512slot layout;vary
+  queue placement,ready batching and prefetch window independently before
+  testing their combination. Commit exact source and that new plan first.
+  The22.95MBsmall generation and private audit captures are now retired after
+  exact final ELF,recipe,370project/398original source recovery;both phase
+  references remain. Full input/15case evidence restores from`4eb8276e0`.
   Generic feasibility scopes remain closed;any new audit needs its concrete
   code and bounded plan rather than repeating the same survey. Initial source/header admission failures
   and a system-first IGCselection refusal remain failed;using the original
