@@ -414184,8 +414184,55 @@
         "file_cap": 2097152,
         "total_cap": 8388608
       },
-      "environment": "Original qualified host environment from the closed model record;private root replaced before exec. No GPU/device initialization.",
-      "GPU_executed": false
+      "environment": "Original qualified host environment;replace the ACTUAL STRATA_MEASUREMENT_ROOT value with this exact root before exec;require TMP/cache containment and exact environment SHA. No GPU initialization.",
+      "GPU_executed": false,
+      "passed": false,
+      "Main_preflight_path_refusal": {
+        "error": "relative path rejected by committed.relative_to(P);normalized same evidence path before any fixture execution",
+        "fixture_executed": false,
+        "source_or_input_hash_refreshed": false
+      },
+      "prior_host_attempt": {
+        "stage": "failed_environment_plan",
+        "source_commit": "9d8ec3e9c982dee9e6449833fae32399329f8051",
+        "source_files": {
+          "tools/sycl/profile_split.py": "c403f9b4ddf63bbb39c1f03f65860f563db3615e513c35ff982edb563b1a03cf",
+          "tools/sycl/test_profile_split.py": "24ba4d46cd82b054abbbda6aeeed3cb46e62a0ae9c47ec2c732398cbf975f7dc"
+        },
+        "original_validated_controller": "90756f079121149e6bd79c6d9e11ea7a50f1a7df",
+        "original_wrapper_plus_base_AST_equals_promoted_reader": true,
+        "AST_sha256": "67f48b2e955559c428c6efb3761962894df6cf7ab53f0018f484fd45ad7293e6",
+        "command": [
+          "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "-B",
+          "tools/sycl/test_profile_split.py"
+        ],
+        "tests": 19,
+        "budgets": {
+          "wall": 90,
+          "cpu": 60,
+          "rss_cap": 4294967296,
+          "text_cap": 262144,
+          "file_cap": 2097152,
+          "total_cap": 8388608
+        },
+        "environment": "Original qualified host environment from the closed model record;private root replaced before exec. No GPU/device initialization.",
+        "GPU_executed": false,
+        "passed": false,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stderr_sha256": "2821cc459122b19afd7333aaa2c12a3209cf25991a3dccaa1b74e99773098f29",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "Main_preflight_path_refusal": {
+          "error": "relative path rejected by committed.relative_to(P);normalized same evidence path before any fixture execution",
+          "fixture_executed": false,
+          "source_or_input_hash_refreshed": false
+        },
+        "execution_passed": true,
+        "error": "Host tests used the original reference TMP/cache root instead of the declared private relocation. No GPU executed;all19test assertions passed. Preserve this environment-plan failure."
+      },
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resource-profile-v2/reader-promotion-v2",
+      "environment_sha256": "ec2d7a47a1c81bf2e927f1505e17efd855dbe8393d179ff6364e14ee9f29225b"
     }
   }
 }
