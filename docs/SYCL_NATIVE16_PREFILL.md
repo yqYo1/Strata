@@ -2152,7 +2152,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   invariants,two-plane separation,guards/chunk maps and negative refusals.
   The committed CPU source/recipe and actual22,504Bfixture ELF are pinned;
   both owned build/check close normally0. No GPU allocation,math or model
-  qualification follows. Next implement the checked caller and independently
+  qualification follows. Next build/validate the checked caller and independently
   compare bank-only,relocation-only,larger-window and combination arms as declared.
   Do not drop the positive U1eager-upload component:its32/64Kgain was measured,
   and a separate period's lower absolute PP does not refute that matched gain.
@@ -2169,9 +2169,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   8192job rows,65536bank boundary and131072final row;startup arms are separate
   processes with immutable environment. These fixtures are also unbuilt/unrun.
   Rebuild every affected TU.
-  The next build must pin an explicit14508-plus-owned-U1/window composition;
-  the live tree also contains independent KV/verify proposals,which must not
-  enter a prefill performance comparison implicitly. Preserve the9849decode
+  `prefill_window_build.py`pins an explicit14508-plus15owned-overlay composition,
+  preserving U1and the byte-identical9849native-job capacity safety check.
+  It rebuilds all objects and checks actual compiler/link inputs and the
+  Gemm/MoeAccumPlan/MoeWindowRoutes definitions across producers/consumers.
+  Its six targets include CPUproofs,bank/Down safety fixtures and a matching
+  resident-GEMM resource reference. The bank-only cohort must close first;
+  the new build/controller is authored,not yet executed. The live tree also
+  contains independent KV/verify proposals,which must not enter a prefill
+  performance comparison implicitly. Preserve the9849decode
   reference;its implementation/performance/handoff remain adoption gates.
   `prefill_bank_minimum_v2`first measures256vs1at fixed native14/window10;
   preserve V1's invalid synthetic-metadata refusal before any native run.
