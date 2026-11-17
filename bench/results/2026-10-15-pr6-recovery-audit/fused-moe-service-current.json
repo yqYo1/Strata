@@ -409179,7 +409179,7 @@
     }
   },
   "prefill_window_device_v1": {
-    "stage": "prepared",
+    "stage": "in_progress",
     "source_commit": "e247fbff4ce1c272e8814acea8f074eb13aa9c0a",
     "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "native_overlay_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
@@ -409295,7 +409295,49 @@
       "devcoredump": false
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "results": [],
+    "results": [
+      {
+        "mode": "host",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": false,
+        "host_probe_accepted": true,
+        "cases": {
+          "prefill_moe_routes_test": {
+            "cases": 48,
+            "maximum_rows": 131072,
+            "stable_inverse_unique_bounded_jobs": true
+          },
+          "prefill_moe_workspace_test": {
+            "rows_checked": 49152,
+            "relocated_planes": 2,
+            "extra_bytes_at131071": 729799424,
+            "actual_GPU_admission": false
+          },
+          "full_context_diagnostic_host_test": {
+            "bounds_cases": 134,
+            "kv_hash_cases": 9459,
+            "physical_model_GPU_qualified": false
+          }
+        },
+        "normal_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
