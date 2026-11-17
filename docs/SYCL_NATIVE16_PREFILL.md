@@ -1892,56 +1892,53 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its collection envelope/normal-exit failure remains failed,independent of
   the successful GPU cohort. Before automatic outcome qualification,add a
   bounded ordered-prefix-to-receipt guard under a new controller plan.
-  The actual14508model uses requested384slots and packed384/438/469/512slots,
-  with24of48layers fullfit. Source-derived max stride2662400B gives1022361600B
-  bank;requested512would use1363148800B(+340787200B)and make all48fullfit if
-  admitted. Its current same-queue schedule differs from the component's
-  separate queue. The owned `prefill_bank_capacity.py` plan compares only this
-  setting on the retained14508ELF:one stage-progress64Kadmission process,
-  then three alternating adjacent384/512pairs per32K/64K,three thinking-on
-  exact24-output requests each. Verify actual48fullfit layers,single-bank
-  allocation,all-GPU residual,ordinary route,checked drains and MTP restore
-  before clean timing. Keep first/warmed samples and actual request/job
-  equality. At`d00b519f9`,all3stage-progress65537-input512requests pass actual
-  48fullfit banks,all65536residual rows on GPU,ordinary route,checked drains
-  and MTP restore;normal0,quiet validation,closed ownership,no fresh fault.
-  The first clean32Kpair at`911a4eb26`also closes normally0:reference384
-  first/warmed PP579.3/(713.8,727.6),candidate512586.1/(723.1,737.9).
-  Warmed process medians45469.95->44865.3ms give ratio0.9867022066
-  (720.674->730.386PP). First client TTFT56.743->56.158s;warmed TTFT
-  (46.091,45.206)->(45.488,44.598)s. Request hashes,actual arithmetic/job
-  counts and requested expert H2Dbytes match exactly across this pair:
-  35386649600/35492889600/35397017600B. No transfer reduction or physical
-  saturation is established. This one pair does not pass the three-pair gate;
-  both new arms remain below the historical871..872warmed32Kreference.
-  Keep every original sample;do not substitute the old best for this current
-  matched baseline or attribute the difference to a native-code change.
-  The first two64Kpairs are now committed at`64e2f70db`and`b88bdf36d`.
-  Reference/candidate warmed times are76801.55/73081.55ms in R,Corder,
-  then73684.3/74571.45ms in C,Rorder:ratios0.9515634776and1.0120398782.
-  The initial4.84%time gain is therefore not reproduced in the reversed pair,
-  which is1.20%slower. All requests,actual arithmetic/jobs and requested
-  H2Dbytes match within each pair;both placements remain all-GPU ordinary.
-  Preserve this eligible slower pair:the existing all-three-pairs gain gate
-  cannot pass at64K. Do not reclassify it as noise or change the criterion.
-  Seven of13processes/21declared samples are closed normally0,quiet,without
-  fresh faults;next is case7,clean32769-input512. The remaining two32Kpairs
-  and one64Kpair still run under the frozen plan,with no performance-based
-  early stop. Resource snapshots find CPU affinity0..11and no exposed CPU
-  quota;GT0is observed at its2750MHzconfigured/rp0limit. Host-facing Intel
-  upstream and AMD parent PCIe ports report16GT/s,x4;leaf/internal-port
-  2.5GT/s,x1fields alone are not an external-link ceiling. These unsynchronized
-  read-only snapshots establish neither physical saturation nor the cause of
-  the historical speed difference.
+  The closed `prefill_bank_capacity_v1` model comparison at`fb8e32cd3`
+  changes only requested expert-bank capacity384->512 on the coherent14508ELF.
+  Bank bytes rise1022361600->1363148800(+325MiB). Three stage-progress64K
+  requests admit all48fullfit packed banks and the full65536-row GPU residual.
+  Then12clean processes/36requests supply three alternating matched pairs per
+  32769/65537actual input length,each with three thinking-on24-output requests.
+  All13processes/39declared requests close normally0,quiet,without fresh faults;
+  all15final full model hashes match. Sources,math,same queue,chunk8192,decode
+  placement,MTP,requests,actual arithmetic/jobs and requested H2Dbytes match.
+
+  | Input | Warmed384 PP | Warmed512 PP | Paired512/384time ratios | Repeated-gain gate |
+  | --- | --- | --- | --- | --- |
+  | 32769 | 720.674 | 730.386 | 0.986702 /0.985230 /0.983671 | passes for this length |
+  | 65537 | 889.430 | 891.765 | 0.951563 /1.012040 /1.005266 | fails |
+
+  PPcolumns use the median of three process medians,each from two subsequent
+  requests. Paired time geometric means are0.9852002622at32Kand0.9892487378
+  at64K;these differ from ratios of aggregate PP. Keep all individual first/
+  subsequent samples and client TTFT in the linked result. Warmed aggregate
+  TTFT384->512is45.6485->45.043s at32Kand73.8675->73.7085s at64K.
+  Thus32Kpasses its prospective1.48%paired-time improvement screen;retain512
+  as a per-length development candidate for further gates. At64Ktwo eligible
+  pairs worsen1.20%and0.53%;the slight aggregate gain does not pass the
+  all-three-pairs rule. Preserve this failure and the original criteria. No
+  global inference selection changes or sustained decode/task qualification
+  follow. The earlier871..872/1006..1008warmed32K/64Kcohort remains separate.
+  Eight first/warmed reference/candidate milestones are in the604-row CSV.
+  Adjacent warmed time slopes are0.861033630(384)and0.873597717(512)ms/token.
+  Two lengths do not validate a time law or physical fixed/per-token costs.
+
   Source window_rows=81920and observed48windows/zero permanent hits explain
-  why32K/64Kdo not test reuse across MoEwindows. After finishing this cohort,
-  a separately committed131073-input plan can test actual admission,96windows,
-  permanent hits and H2Dreduction;this is a prospective hypothesis,not a rescue
-  of the failed64Kgate or a qualified new route.
-  DWsource audit/DXnative Luna-max review finds no
-  fresh-run blocker;its replay-validator caveat remains separate. Main checked
-  the omitted called helper bodies against the767committed controller pins.
-  Preserve existing decode;24outputs cannot qualify sustained decode preservation.
+  why32K/64Kdo not exercise reuse across MoEwindows. Requested transfer bytes
+  do not decrease;physical saturation and the gain mechanism remain unknown.
+  Read-only snapshots find CPU affinity0..11,no exposed CPU quota and GT0at
+  its2750MHzconfigured/rp0limit. Host-facing upstream ports report16GT/s,x4;
+  leaf/internal-port2.5GT/s,x1fields alone are not an external-link ceiling.
+  These snapshots do not explain the difference from historical best speeds.
+  DWsource audit/DXnative Luna-max review finds no fresh-run blocker;its
+  independent replay-validator caveat remains. Main reconciled omitted helper
+  bodies with all767committed input pins. The existing full-context diagnostic
+  is among the12coherent ELFs,but actual physical262144fill/RESTORE and ordinary
+  provider teardown remain unqualified. Before another capacity run,prepare a
+  fresh coherent-source plan;the old full_context_model.py pins retired6e40
+  inputs and131072resident KV and must not be rerun unchanged. Standalone
+  consume-prompt evidence must remain distinct from serve allocation/state
+  qualification. A separate131073-input reuse experiment remains a later
+  hypothesis,not a way to relabel this failed64Kgate.
   Queue placement,ready batching and window remain later independent units.
   Closed math/research captures are retired:766files/1262355027B plus the
   208933Btemporary inventory. Exact final ELF,recipe,367project/398original
