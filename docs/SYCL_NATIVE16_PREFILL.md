@@ -2031,6 +2031,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   two-window work,without inventing a runtime admission record or relaxing the
   legacy marker requirement. Main verifies all original owners are gone and
   no fresh fault;that is separate from normal-exit qualification.
+  V4corrects only this reader/fixture contract under a fresh source/plan. Nine
+  host controls include the minimal8194Bactual V3telemetry consumed by the
+  whole production reader,including48packed-bank records and MTPstate;the
+  actual failed V3outcome stays unchanged. The96Ksetup,only384/512capacity
+  variable,seven-process order and independent mechanism/time gates stay fixed.
   All134resolved V1/V2raw/JIT
   files(27388603B)and the60846Binventory are retired;post-cleanup admission
   passed with three temporarily retained inputs,now retired by the bridge. No V1private root remains

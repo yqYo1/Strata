@@ -23,7 +23,7 @@ import qsa16_stream_bench as core
 import ur_validation as validation
 
 P,B,RESULT=capacity.P,capacity.B,capacity.RESULT
-ROOT,KEY=B/'prefill-bank-reuse-v3','prefill_bank_reuse_v3'
+ROOT,KEY=B/'prefill-bank-reuse-v4','prefill_bank_reuse_v4'
 CAPACITY_KEY='coherent_context_model_v2'
 READ,RUNS,STRIDE=98305,3,2662400
 SLOTS=(512,384,512,512,384,384,512)
@@ -122,10 +122,10 @@ def current(row):
 def request_route(text,plan):
     result=core.request_route(text,plan)
     bank=comparison.route(text,READ,1,expected_rows=READ-1,requested_slots=plan['slots'],
-        draft_bytes=0,multi_window=True)
+        draft_bytes=0,multi_window=True,split_requested=False)
     require(result['residual_gpu_rows']==READ-1 and bank['windows']==96
         and bank['maximum_window_rows']==81920 and not bank['split']
-        and bank['staged'] and bank['prefill_slots']==plan['slots']
+        and bank['staged'] and bank['prefill_slots']==plan['slots'] and bank['split_startup_disabled']
         and result['layer_cache_bytes']==plan['slots']*STRIDE,
         'actual98304-row all-GPU two-window capacity route differs')
     require('softmax=parallel-exp-ascending-sum' in text and 'softmax=subgroup' not in text,
@@ -189,15 +189,17 @@ def decision(processes):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh reuse campaign only')
-    previous=validation.committed(RESULT,('prefill_bank_reuse_v2',))
+    previous=validation.committed(RESULT,('prefill_bank_reuse_v3',))
     require(previous['stage']=='failed' and not previous['active'] and not previous['ownership_closed']
-        and previous['source_commit']=='cbd1000faa2ebf6c72479d51877cb65884349177'
+        and previous['source_commit']==validation.git('rev-parse','469132998').decode().strip()
         and len(previous['processes'])==1 and not previous['processes'][0]['passed']
-        and previous['placement_refusal']['residual_gpu_rows']==98304
-        and previous['placement_refusal']['residual_host_rows']==32767
-        and previous['post_stop']['all_four_recorded_owner_identities_absent']
+        and previous['reader_refusal']['actual_all_GPU_rows']==98304
+        and previous['reader_refusal']['actual_host_rows']==0
+        and previous['reader_refusal']['actual_requested_split']==0
+        and previous['reader_refusal']['actual_admission_marker_count']==0
+        and previous['post_stop']['all_recorded_owner_identities_absent']
         and previous['post_stop']['owned_session_empty'] and previous['post_stop']['lock_reacquired']
-        and previous['post_stop']['fresh_faults']==[], 'preserve original128Kplacement failure')
+        and previous['post_stop']['fresh_faults']==[], 'preserve original96Kdisabled-marker refusal')
     native,proof,prior=capacity.basis()
     require(previous['capacity_gate']==capacity_gate() and previous['original_native_proof']==proof,
         'original native and physical-capacity evidence changed')
@@ -205,9 +207,9 @@ def prepare():
     row=dict(stage='prepared',source_commit=revision,sources=core.pins(revision),
         policies={p:sha(P/p) for p in POLICIES},original_native_proof=proof,
         capacity_gate=capacity_gate(),reference_evidence_sha256=signature(compact(prior)),
-        previous_attempt=dict(key='prefill_bank_reuse_v2',source_commit=previous['source_commit'],
-            outcome='First128Krequest fails all-GPU placement;remaining requests and clean arms unrun. Supervised termination is not normal-exit qualification;actual process absence independently verified.',
-            fixed_new_setup='98305actual tokens/98304batched rows and explicit split0 in both arms. No lowering of the original128Kgate. This experiment compares only384/512capacity;it does not adopt split0 or qualify a length-selection rule.'),
+        previous_attempt=dict(key='prefill_bank_reuse_v3',source_commit=previous['source_commit'],
+            outcome='First96Krequest admits all98304GPUrows/staged512bank but the reader wrongly requires enabled-only split telemetry. Preserve failed reader outcome/supervised termination;no clean arms or normal-exit qualification.',
+            corrected_input='Reader/fixture only:explicit split_requested=False requires verified immutable native startup0,no split telemetry and actual ordinary two-window work. Same98305input/ELF/math/settings/384vs512unit;legacy split-enabled marker remains mandatory. Original128Kplacement failure remains unchanged.'),
         **{k:copy.deepcopy(prior[k]) for k in ('configuration','environment_template','model_assets','template',
             'boot','driver','native_validation_probe','python_contract','python_selected')},
         binary=native['binaries']['strata'],native_source_commit=capacity.original.SOURCE,
@@ -217,7 +219,7 @@ def prepare():
         plan=dict(question='Does512vs384bank capacity reuse weights across two MoEwindows at98305actual input tokens?',
             unit='Only requested bank slots384/512change. Fixed new setup98305actual input tokens and split0 avoids the independent90113..117488split route. Same14508ELF,queue,window10/chunk8192,all98304residualGPUrows,BF16/ordered-exp/GUlarge/Downlarge,serverlease1/mixedscratch1,decode1256/resident20480,MTPspec4 and assets. Extra325MiBcapacity must actually admit;no fallback to a different placement. This is no adoption or performance claim for the setup change;any later combination needs its own phase-preservation evidence.',
             order='One traced512process then6clean processes384,512,512,384,384,512:three adjacent alternating pairs. Three exact98305-input/24-output thinking-on bench.sh requests per process,plus official short warmup. Commit every closed process;first use separate from subsequent2.',
-            acceptance='Current source/helper/workload/native/runtime/owner guards. Traced512must admit48fullfit banks;every request must use96accumulator windows,max81920,allresidualGPU,requested slots,actualsplit0,checkeddrains/MTPrestore,normal0,reaped/emptyowner,quietvalidation,no fresh fault. Refuse/stop on any placement drift;never silently lower input/changeconfiguration.',
+            acceptance='Current source/helper/workload/native/runtime/owner guards. Native environment must actually have immutable split0 before each request gate;no split admission/complete telemetry may appear. Legacy enabled-split reader still requires admission. Traced512must admit48fullfit banks;every request must use96accumulator windows,max81920,allresidualGPU,requested slots,actualsplit0,checkeddrains/MTPrestore,normal0,reaped/emptyowner,quietvalidation,no fresh fault. Refuse/stop on any placement drift;never silently lower input/changeconfiguration.',
             performance='Same request hashes and actual arithmetic/job/map counts in every pair. Mechanism gate:each of9clean paired requests has fewer requested bankH2Dbytes and more permanent hits with512. Time gate:all3paired warmed process-time ratios512/384<1,no minimumgain. Recordfirst/warmed PP/clientTTFT/spread separately. Onlyboth gates permit further model qualification;1000PPpoint is separate,not adoption.',
             stopping='Stop first source/build/provider/owner/token/clock/route/validation/fault/budget failure;no retry,hashrefresh,exclusion,criteriachange or performanceearlystop.15model identity checks before/after each child;all15full hashes after finalprocess.',
             limits='No sustained TG/task/agent/serveRESTORE/ordinaryteardown or saturation claim. Requested copy bytes are not measured bus traffic. Existing32K/64K/128Koutcomes and historical best remain distinct;new96Kcohort does not alone fit a scaling law.',
@@ -247,9 +249,9 @@ def unit():
         run,out,err=owner.run('unit',[PYTHON,'-B','-m','unittest','tools.test_prefill_bank_reuse'],
             environment(row,row['plans'][0]),P,wall=90,cpu=60,rss_cap=1<<30,text_cap=128<<10,file_cap=1<<20,total_cap=4<<20)
         require(comparison.build.supervision.closed(run) and run['exit_code']==0
-            and 'Ran 7 tests in ' in err.read_text() and err.read_text().rstrip().endswith('OK'),
+            and 'Ran 9 tests in ' in err.read_text() and err.read_text().rstrip().endswith('OK'),
             'reuse isolation/route/refusal controls failed')
-        row['unit_controls']=dict(passed=True,exit_code=0,ownership_closed=True,tests=7)
+        row['unit_controls']=dict(passed=True,exit_code=0,ownership_closed=True,tests=9)
     except BaseException as error:row.update(stage='failed',error=repr(error))
     finally:
         row.update(active=bool(owner.active),ownership_closed=owner.active is None

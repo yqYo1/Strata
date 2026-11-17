@@ -225,13 +225,15 @@ def host(experiment=None):
 
 
 def route(text, read, heads, *, expected_rows=None, requested_slots=384,
-          draft_bytes=None, multi_window=False):
+          draft_bytes=None, multi_window=False, split_requested=True):
     """Validate one actual request window,including a capacity-limited control."""
     if draft_bytes is None:
         draft_bytes = DRAFT_BYTES
     require(type(multi_window) is bool and (not multi_window or
         read in (98305,131072) and expected_rows == read-1 and heads == 1 and requested_slots in (384,512)),
         'unplanned multi-window capacity case')
+    require(type(split_requested) is bool and (split_requested or multi_window and read==98305),
+        'startup-disabled split contract requires the fixed96K multi-window setup')
     require(heads in (0, 1) and (read in READS if expected_rows is None else
             expected_rows == read - 1 and (8192 < expected_rows <= 81920 or
                                           90112 < expected_rows <= 117488 or multi_window)), 'unplanned route case')
@@ -252,9 +254,17 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
     bank = one('strata MoE expert bank: ')
     window = one('strata MoE window configuration: ')
     work = one('strata MoE accumulator window: ')
-    admission = one('strata MoE split admission: ')
+    if split_requested:
+        admission = one('strata MoE split admission: ')
+    else:
+        # Native14508 logs admission only when the immutable startup request
+        # is enabled. The controller verifies that environment before this
+        # reader; absence is not a fabricated inactive admission receipt.
+        require(not records('strata MoE split admission: '), 'disabled split emitted admission telemetry')
+        admission = None
     n, gpu = read - 1, int(main['residual_gpu_rows'])
-    split, staged, slots = int(admission['active']), int(bank['staged']), int(bank['effective_slots'])
+    split = int(admission['active']) if admission is not None else 0
+    staged, slots = int(bank['staged']), int(bank['effective_slots'])
     require(split in (0, 1) and staged in (0, 1) and 0 < gpu <= n, 'invalid route shape')
     require(main['tokens'] == str(n) and main['chunk'] == '8192' and main['residual_dtype'] == 'bf16'
             and main['residual_element_bytes'] == '2' and int(main['residual_total']) == n * 10240 * 2
@@ -264,9 +274,10 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
     require(bank['requested_slots'] == str(requested_slots) and int(bank['residual_gpu_rows']) == gpu
             and int(bank['device_bytes']) == int(main['layer_cache']) > 0
             and int(bank['allocation_limit_bytes']) >= int(bank['device_bytes'])
-            and bank['general_map'] == 'private_scratch_never_published'
-            and admission['rows'] == str(n) and admission['prefill_slots'] == str(slots)
-            and admission['decode_changed'] == '0', 'bank/cache publication differs')
+            and bank['general_map'] == 'private_scratch_never_published', 'bank/cache publication differs')
+    if admission is not None:
+        require(admission['rows'] == str(n) and admission['prefill_slots'] == str(slots)
+            and admission['decode_changed'] == '0', 'split admission/cache publication differs')
     full = gpu == n
     if multi_window or read == 65537 or expected_rows is not None and n <= 81920:
         require(full and staged == 1 and slots == requested_slots and split == 0,
@@ -310,7 +321,7 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
                 and int(admission['max_single_allocation_bytes']) >= int(admission['extra_allocation_bytes'])
                 and finish['rows'] == str(n) and finish['decode_changed'] == '0'
                 and finish['guard'] == finish['final_drain'] == 'checked', 'split bounds/guard/drain differs')
-    else:
+    elif admission is not None:
         require(admission['primary_rows'] == admission['tail_payload_bytes'] ==
                 admission['extra_allocation_bytes'] == '0', 'inactive split carries storage')
     down = one('strata MoE Down fusion: ')
@@ -340,6 +351,9 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
         require(int(end['permanent_hits'])>=0, 'negative permanent reuse count')
         result.update(permanent_hits=int(end['permanent_hits']),uploads=int(end['uploads']),
             requested_source_map_H2D_bytes=result.pop('requested_dequant_H2D_bytes'))
+    if not split_requested:
+        result.update(split_startup_disabled=True,
+            split_evidence='controller verifies immutable native startup0;no split telemetry;actual two-window work')
     return result
 
 
