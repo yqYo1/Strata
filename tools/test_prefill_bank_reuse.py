@@ -13,7 +13,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
 import prefill_bank_reuse as b
 
 
-def fixture(slots=384,n=131071,gpu=None):
+def fixture(slots=384,n=b.READ-1,gpu=None):
     gpu=n if gpu is None else gpu
     maximum=min(81920,gpu);windows=48*((n+81919)//81920);size=slots*b.STRIDE
     return (f'strata prefill: layer-major candidate, tokens={n} chunk=8192 residual_dtype=bf16 '
@@ -80,15 +80,15 @@ class ReuseControls(unittest.TestCase):
         for old,new in [('windows=96','windows=48'),('maximum_rows=81920','maximum_rows=131071'),
             ('active=0 rows=','active=1 rows='),('permanent_hits=18432','permanent_hits=-1'),
             ('tail_bytes=83886080','tail_bytes=83886081'),('mixed_fp16_bytes=0','mixed_fp16_bytes=1'),
-            ('residual_total=2684334080','residual_total=2684334081'),
+            (f'residual_total={(b.READ-1)*20480}',f'residual_total={(b.READ-1)*20480+1}'),
             ('requested_slots=384','requested_slots=512')]:
             with self.subTest(old=old):
                 text=ordered_fixture();self.assertIn(old,text)
                 with self.assertRaises(RuntimeError):self.route(text.replace(old,new))
-        with self.assertRaises(RuntimeError):self.route(ordered_fixture(gpu=122880))
+        with self.assertRaises(RuntimeError):self.route(ordered_fixture(gpu=b.READ-8193))
 
     def test_refuse_unplanned_multi_window_scope(self):
-        for read,rows,heads in ((131071,131070,1),(131072,131071,0),(65537,65536,1)):
+        for read,rows,heads in ((b.READ-1,b.READ-2,1),(b.READ,b.READ-1,0),(65537,65536,1)):
             with self.assertRaises(RuntimeError):b.comparison.route(ordered_fixture(),read,heads,
                 expected_rows=rows,draft_bytes=0,multi_window=True)
 
@@ -102,6 +102,7 @@ class ReuseControls(unittest.TestCase):
         plans=[dict(root='/new',slots=s,heads=1,trace_progress=False) for s in (384,512)]
         a,c=[b.environment(row,p) for p in plans]
         self.assertEqual([k for k in a if a[k]!=c[k]],['STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS'])
+        self.assertEqual(a['STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR'],'0')
         self.assertEqual(b.invariant(row,plans[0]),b.invariant(row,plans[1]));self.assertEqual(row['environment_template'],template)
 
     def test_time_and_copy_mechanism_are_independent(self):

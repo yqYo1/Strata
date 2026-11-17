@@ -230,7 +230,7 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
     if draft_bytes is None:
         draft_bytes = DRAFT_BYTES
     require(type(multi_window) is bool and (not multi_window or
-        read == 131072 and expected_rows == 131071 and heads == 1 and requested_slots in (384,512)),
+        read in (98305,131072) and expected_rows == read-1 and heads == 1 and requested_slots in (384,512)),
         'unplanned multi-window capacity case')
     require(heads in (0, 1) and (read in READS if expected_rows is None else
             expected_rows == read - 1 and (8192 < expected_rows <= 81920 or
