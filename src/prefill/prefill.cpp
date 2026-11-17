@@ -530,6 +530,9 @@ struct MoeWindowContext {
     uint64_t mixed_tail_bytes = 0, mixed_tail_offset = 0;
     float* accumulator_tail = nullptr;
     uint64_t accumulator_tail_bytes = 0;
+    uint8_t* extra_workspace = nullptr; // separately owned FP32 tail + optional job planes
+    uint64_t extra_workspace_bytes = 0;
+    bool relocated_job_buffers = false;
     int64_t accumulator_primary_rows = 0; // zero retains the ordinary route
     bool scratch_mixed = false;
     int64_t maximum_rows = 16384;
@@ -550,7 +553,8 @@ int moe_window_requested() {
         if (std::strcmp(v, "2") == 0) return 2;
         if (std::strcmp(v, "8") == 0) return 8;
         if (std::strcmp(v, "10") == 0) return 10;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8 or 10");
+        if (std::strcmp(v, "16") == 0) return 16;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8, 10 or 16");
     }();
     return enabled;
 }
@@ -560,6 +564,15 @@ bool moe_split_accumulator_requested() {
         if (!value || std::strcmp(value, "0") == 0) return false;
         if (std::strcmp(value, "1") == 0) return true;
         throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR must be0 or1");
+    }();
+    return enabled;
+}
+bool moe_relocated_job_buffers_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_MOE_RELOCATE_JOB_BUFFERS");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_RELOCATE_JOB_BUFFERS must be0 or1");
     }();
     return enabled;
 }

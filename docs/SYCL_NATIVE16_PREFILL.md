@@ -2138,8 +2138,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   tail need1,177,025,536B,below the source GDNregion lower bound1,180,698,624B.
   With bank1,the earlier observed free-budget scenario leaves22,492,160B
   beyond the unchanged512MiBheadroom. This is arithmetic,not actual admission.
-  The ordinary/split public methods and their row limits remain unchanged;
-  only a new long-prefill planner is proposed. No production caller uses it.
+  The ordinary/split public methods and their row limits remain unchanged.
+  An opt-in long-prefill caller is now authored but UNBUILT/UNRUN:mode16uses
+  the explicitly requested bank and one admitted90113..131072row window;
+  unsupported lengths/budgets retain ordinary mode10 and its host-tail/full
+  context fallback. Mode10plus`STRATA_SYCL_PREFILL_MOE_RELOCATE_JOB_BUFFERS=1`
+  isolates relocation at the unchanged split128bank/window for the98Karm.
+  All settings are fixed before exec. The extra owner covers FP32tail,gathered
+  and logits;checked outer retirement precedes its free,and all three guards
+  are checked after model work. Producer/consumer spans bind the same owner.
+  No arithmetic,chunk8192,QSA,decode placement or U1eager selection changes.
   CPU capacity now passes all49,152row cases81921..131072,old-layout
   invariants,two-plane separation,guards/chunk maps and negative refusals.
   The committed CPU source/recipe and actual22,504Bfixture ELF are pinned;
@@ -2152,8 +2160,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   81920ordinary accumulation and8192per job,not runtime admission. Before
   implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;
   assess bank-only/window-only/combined arms separately and retain infeasible
-  cells. Hypothetical mode16 is not an accepted native14setting. No larger-window
-  implementation or model trial is currently eligible.
+  cells. Retained native14still rejects mode16. The new source proposal has
+  no native/device/math/model qualification. Extended route checks cover48
+  cases through131072rows,stable inverse/order/no-atomic uniqueness and old
+  factory refusals;they are authored,not yet run. Rebuild every affected TU.
+  The next build must pin an explicit14508-plus-owned-U1/window composition;
+  the live tree also contains independent KV/verify proposals,which must not
+  enter a prefill performance comparison implicitly. Preserve the9849decode
+  reference;its implementation/performance/handoff remain adoption gates.
+  `prefill_bank_minimum_v2`first measures256vs1at fixed native14/window10;
+  preserve V1's invalid synthetic-metadata refusal before any native run.
+  Component/source progress does not admit a larger-window model trial.
   CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
   markers;the old marker-associated stall remains causally unresolved. Require
   exact route/count/clock/owner/conservation and<=1.2observer ratios against both

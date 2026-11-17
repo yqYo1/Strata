@@ -169,8 +169,7 @@ void accumulator_spans(void* stream, std::initializer_list<Span> outputs,
 }
 size_t accumulator_routes(const detail::MoeWindowRoutes& plan, void* stream) {
     const size_t routes = size_t(plan.rows()) * detail::MoeWindowRoutes::top_k;
-    const auto limit = plan.split_accumulator() ? detail::MoeWindowRoutes::max_split_accum_rows
-                                               : detail::MoeWindowRoutes::max_accum_rows;
+    const auto limit = plan.accumulator_row_limit();
     if (plan.rows() < 1 || plan.rows() > limit ||
         plan.original_slots().size() != routes || plan.source_rows().size() != routes ||
         !queue_for(stream).has_property<sycl::property::queue::in_order>())

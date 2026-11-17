@@ -4,22 +4,30 @@
 bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t rows, std::string& err) try {
     Impl& m = *impl_;
     const bool split_accumulator = m.moe_window && m.moe_window->accumulator_primary_rows != 0;
+    const bool relocated_job_buffers = m.moe_window && m.moe_window->relocated_job_buffers;
     if (!m.moe_window || !m.moe_window->accumulation || !m.native16_active ||
         !m.layer_major_active || m.T != 8192 || m.copy != m.cs || !m.scratch_alias ||
         !m.cache || !m.host_res || layer < 0 || layer >= m.g->n_layers ||
         rows <= m.T || rows > m.moe_window->maximum_rows ||
-        rows > (split_accumulator ? detail::MoeAccumPlan::split_maximum_rows :
+        rows > (relocated_job_buffers ? detail::MoeAccumPlan::long_prefill_maximum_rows :
+                split_accumulator ? detail::MoeAccumPlan::split_maximum_rows :
                                   detail::MoeAccumPlan::maximum_rows) || first_row < 0) {
         err = "prefill MoE accumulator: unsupported entry"; return false;
     }
     auto& owner = *m.moe_window;
+    if (relocated_job_buffers && (first_row != 0 || rows != owner.maximum_rows))
+        throw std::invalid_argument("prefill relocated workspace requires one complete admitted window");
     auto& queue = sycl_backend::queue_for(m.cs);
     const uint64_t offset = detail::layer_major_mul(uint64_t(first_row), D * 2);
     const uint64_t bytes = detail::layer_major_mul(uint64_t(rows), D * 2);
     if (!owner.bank || offset > owner.bank_bytes || bytes > owner.bank_bytes - offset ||
         !owner.mixed || !m.region || !m.emb || reinterpret_cast<uintptr_t>(m.region) % 256)
         throw std::invalid_argument("prefill MoE accumulator: backing bank/arena bounds");
-    const auto plan = split_accumulator ? detail::MoeAccumPlan::make_split_scratch(rows,
+    if (relocated_job_buffers && !split_accumulator)
+        throw std::invalid_argument("prefill relocated workspace requires split accumulator ownership");
+    const auto plan = relocated_job_buffers ? detail::MoeAccumPlan::make_long_prefill_scratch(rows,
+        owner.mixed_bytes, m.region_bytes) :
+        split_accumulator ? detail::MoeAccumPlan::make_split_scratch(rows,
         owner.mixed_bytes, m.region_bytes) :
         owner.scratch_mixed ? detail::MoeAccumPlan::make(rows, owner.mixed_bytes,
             owner.mixed_tail_bytes, owner.mixed_tail_offset) :
@@ -38,14 +46,21 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     if (split_accumulator) {
         if (!owner.scratch_mixed || !owner.accumulator_tail ||
             owner.accumulator_primary_rows != plan.accumulator_primary_rows ||
-            owner.accumulator_tail_bytes != plan.accumulator_tail_bytes())
+            owner.accumulator_tail_bytes != plan.accumulator_tail_bytes() ||
+            owner.extra_workspace != reinterpret_cast<uint8_t*>(owner.accumulator_tail) ||
+            owner.extra_workspace_bytes != (relocated_job_buffers ? plan.extra_bytes :
+                plan.accumulator_tail_allocation_bytes()))
             throw std::invalid_argument("prefill split accumulator: owner/plan mismatch");
-        sycl_backend::validate_device_span(owner.accumulator_tail,
-            size_t(owner.accumulator_tail_bytes), queue);
-        sycl_backend::validate_spans({{owner.accumulator_tail, size_t(owner.accumulator_tail_bytes)}},
+        sycl_backend::validate_device_span(owner.extra_workspace,
+            size_t(owner.extra_workspace_bytes), queue);
+        sycl_backend::validate_spans({{owner.extra_workspace, size_t(owner.extra_workspace_bytes)}},
             {{m.region, size_t(m.region_bytes)}, {mixed, mixed_bytes},
              {bo, size_t(m.T * N * 2)}, {residual, size_t(bytes)}});
-    } else if (owner.accumulator_tail || owner.accumulator_tail_bytes)
+        sycl_backend::validate_spans({{owner.extra_workspace, size_t(owner.extra_workspace_bytes)}},
+            {{m.cache->device_slot(0), size_t(m.cache->bytes())},
+             {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}});
+    } else if (owner.accumulator_tail || owner.accumulator_tail_bytes ||
+               owner.extra_workspace || owner.extra_workspace_bytes || relocated_job_buffers)
         throw std::invalid_argument("prefill ordinary accumulator: unexpected split owner");
     if (owner.scratch_mixed) {
         if (!m.mixed_scratch_owners_ready() ||
@@ -85,9 +100,13 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     using Plane = detail::MoeAccumPlan::Plane;
     auto view = [&](Plane plane) -> void* {
         const auto span = plan.span(plane);
-        if (span.offset > m.region_bytes || span.bytes > m.region_bytes - span.offset)
+        const bool extra = span.storage == detail::MoeAccumPlan::Storage::extra;
+        auto* base = extra ? owner.extra_workspace : m.region;
+        const auto capacity = extra ? owner.extra_workspace_bytes : m.region_bytes;
+        if (!base || (extra && !relocated_job_buffers) || span.offset > capacity ||
+            span.reserved > capacity - span.offset || span.bytes > span.reserved)
             throw std::invalid_argument("prefill MoE accumulator: logical arena extent");
-        void* result = m.region + size_t(span.offset);
+        void* result = base + size_t(span.offset);
         sycl_backend::validate_device_span(result, size_t(span.bytes), queue);
         return result;
     };
@@ -155,7 +174,9 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
     {
         sycl_backend::cpu_wait_profile::Host group(sycl_backend::cpu_wait_profile::host_group);
-        owner.routes = split_accumulator ?
+        owner.routes = relocated_job_buffers ?
+            detail::MoeWindowRoutes::build_long_prefill_accum(rows, owner.ids.data(), owner.ids.size()) :
+            split_accumulator ?
             detail::MoeWindowRoutes::build_split_accum(rows, owner.ids.data(), owner.ids.size()) :
             detail::MoeWindowRoutes::build_accum(rows, owner.ids.data(), owner.ids.size());
     }
@@ -168,7 +189,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         // This is a planned-job census; only final request/issuer totals prove
         // that all jobs completed. The old chunk census refuses window mode.
         std::array<uint32_t, 8193> job_rows{};
-        std::array<uint32_t, (detail::MoeWindowRoutes::max_split_accum_rows + 8191) / 8192 + 1> jobs_per_expert{};
+        std::array<uint32_t, (detail::MoeWindowRoutes::max_long_prefill_rows + 8191) / 8192 + 1> jobs_per_expert{};
         for (const auto& job : owner.routes->jobs()) ++job_rows[size_t(job.rows)];
         for (int32_t count : owner.routes->counts())
             ++jobs_per_expert[size_t((count + 8191) / 8192)];

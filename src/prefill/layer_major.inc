@@ -69,11 +69,19 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const bool window_on = window_requested && !requires_prefix_checkpoints;
     const bool scratch_mixed_on = moe_scratch_mixed_requested();
     const bool split_accumulator_requested = moe_split_accumulator_requested();
-    if (split_accumulator_requested && (!window_on || window_requested != 10 ||
-        !scratch_mixed_on || !native16_on)) {
-        err = "prefill split accumulator: requires mode10/native16 and mixed scratch"; return false;
+    const bool long_window_requested = window_requested == 16;
+    const bool relocated_job_buffers_requested = moe_relocated_job_buffers_requested();
+    const bool scratch_window = window_requested == 10 || long_window_requested;
+    if ((long_window_requested || relocated_job_buffers_requested) &&
+        (!window_on || !scratch_window || !scratch_mixed_on || !native16_on || !split_accumulator_requested)) {
+        err = "prefill long workspace: requires mode10/16, split accumulator and native16 mixed scratch";
+        return false;
     }
-    if (scratch_mixed_on && (!window_on || window_requested != 10 || !native16_on ||
+    if (split_accumulator_requested && (!window_on || !scratch_window ||
+        !scratch_mixed_on || !native16_on)) {
+        err = "prefill split accumulator: requires mode10/16 native16 and mixed scratch"; return false;
+    }
+    if (scratch_mixed_on && (!window_on || !scratch_window || !native16_on ||
         m.T != 8192 || !m.scratch_alias || !m.mixed_scratch_owners_ready() || m.copy != m.cs)) {
         err = "prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue";
         return false;
@@ -340,29 +348,36 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         other_reserved, gpu_headroom, max_alloc,
         detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
         residual_dtype, requested_slots,
-        window_on && window_requested == 10 && native16_on && scratch_mixed_on);
+        window_on && scratch_window && native16_on && scratch_mixed_on);
     // The initial candidate deliberately leaves the existing short-tail and
-    // full-context fallback untouched. Only90113..117488 fully GPU-resident
-    // rows may replace two windows with one. Charge the distinct FP32 tail
-    // before residual admission;128 prefill slots do not change decode1256.
+    // full-context fallback untouched. The original split admits90113..117488
+    // rows at128slots. Explicit mode16 may admit up to131072rows using its
+    // separately requested bank capacity and relocated job buffers. Charge the
+    // complete extra allocation before R admission;decode1256 stays untouched.
     bool split_accumulator_on = false;
+    bool relocated_job_buffers_on = false;
     uint64_t split_accumulator_bytes = 0;
     detail::MoeAccumPlan split_accumulator_plan;
     if (split_accumulator_requested && n > detail::ExpertBankPlan::window_rows + m.T &&
-        n <= detail::MoeAccumPlan::split_maximum_rows &&
+        n <= (long_window_requested ? detail::MoeAccumPlan::long_prefill_maximum_rows :
+                                      detail::MoeAccumPlan::split_maximum_rows) &&
         residual_dtype == detail::LayerMajorResidualDtype::bf16) {
         try {
-            auto split = detail::MoeAccumPlan::make_split_scratch(n,
-                detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
-            const auto extra = split.accumulator_tail_allocation_bytes();
+            const bool relocate = long_window_requested || relocated_job_buffers_requested;
+            auto split = relocate ? detail::MoeAccumPlan::make_long_prefill_scratch(n,
+                detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes) :
+                detail::MoeAccumPlan::make_split_scratch(n,
+                    detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
+            const auto extra = relocate ? split.extra_bytes : split.accumulator_tail_allocation_bytes();
             if (extra <= max_alloc) {
                 auto candidate = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
                     detail::layer_major_add(other_reserved, extra), gpu_headroom, max_alloc,
                     detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
-                    residual_dtype, 128, true);
+                    residual_dtype, long_window_requested ? requested_slots : 128, true);
                 if (candidate.staged() && candidate.residual.gpu_rows == n) {
                     bank_plan = std::move(candidate);
                     split_accumulator_on = true;
+                    relocated_job_buffers_on = relocate;
                     split_accumulator_bytes = extra;
                     split_accumulator_plan = split;
                 }
@@ -382,6 +397,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             (unsigned long long)split_accumulator_plan.accumulator_tail_bytes(),
             (unsigned long long)split_accumulator_bytes, (long long)bank_plan.slots,
             (unsigned long long)max_alloc);
+    // Unsupported lengths or a missed budget retain mode10 and its existing
+    // full-cache/host-tail fallback. Never pass mode16's row count to make().
+    const int effective_window_mode = long_window_requested && !split_accumulator_on ? 10 : window_requested;
+    if (long_window_requested || relocated_job_buffers_requested)
+        std::fprintf(stderr, "strata MoE long workspace: requested_window=%d relocated_requested=%d relocated_active=%d effective_window=%d extra_bytes=%llu admission=%s decode_changed=0\n",
+            window_requested, int(relocated_job_buffers_requested), int(relocated_job_buffers_on),
+            effective_window_mode, (unsigned long long)split_accumulator_bytes,
+            split_accumulator_on ? "admitted" : "ordinary_fallback");
     const auto& plan = bank_plan.residual;
     const char* packed_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED");
     if (packed_option && std::strcmp(packed_option, "0") != 0 && std::strcmp(packed_option, "1") != 0) {
@@ -402,7 +425,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     detail::MoeAccumPlan borrowed_mixed_plan;
     if (window_on && window_requested >= 8 && plan.gpu_rows > m.T) {
         const int64_t count = split_accumulator_on ? n :
-            std::min<int64_t>(int64_t(window_requested) * m.T, plan.gpu_rows);
+            std::min<int64_t>(int64_t(effective_window_mode) * m.T, plan.gpu_rows);
         const uint64_t bytes = detail::layer_major_mul(uint64_t(count), N * 2);
         const uint64_t fixed = detail::layer_major_add(gpu_reserved,
             detail::layer_major_add(plan.gpu_bytes, detail::layer_major_add(plan.staging_bytes, gpu_headroom)));
@@ -489,6 +512,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     std::unique_ptr<uint8_t, decltype(free_device)> mixed_storage(nullptr, free_device);
     std::unique_ptr<uint8_t, decltype(free_device)> split_accumulator_storage(nullptr, free_device);
     std::array<uint8_t, 256> split_accumulator_guard{}; // before the DMA/queue lease
+    // Extra guarded planes are present only in the relocated layout. Their
+    // readback destinations also outlive the checked DMA/queue lease.
+    std::array<std::array<uint8_t, 256>, 2> relocated_job_guards{};
     std::unique_ptr<uint8_t, decltype(free_device)> score_status_storage(nullptr, free_device);
     // DMA destination precedes the checked lease: even a failed copy/drain
     // cannot end its lifetime before the lease's fail-stop retirement.
@@ -772,11 +798,25 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         split_accumulator_storage.reset(p);
         const auto payload = split_accumulator_plan.accumulator_tail_bytes();
-        if (split_accumulator_bytes - payload != split_accumulator_guard.size())
+        if (split_accumulator_plan.accumulator_tail_allocation_bytes() - payload != split_accumulator_guard.size() ||
+            split_accumulator_bytes < split_accumulator_plan.accumulator_tail_allocation_bytes())
             throw std::invalid_argument("prefill split accumulator: unexpected guard extent");
         sycl_backend::validate_device_span(p, size_t(split_accumulator_bytes), sycl_backend::queue_for(m.cs));
         if (cudaMemsetAsync(p + size_t(payload), 0xa7, split_accumulator_guard.size(), m.cs) != cudaSuccess) {
             err = "prefill split accumulator: guard initialization failed"; return false;
+        }
+        if (relocated_job_buffers_on) {
+            for (auto plane : {detail::MoeAccumPlan::Plane::gathered, detail::MoeAccumPlan::Plane::logits}) {
+                const auto span = split_accumulator_plan.span(plane);
+                if (span.storage != detail::MoeAccumPlan::Storage::extra ||
+                    span.offset > split_accumulator_bytes || span.reserved > split_accumulator_bytes - span.offset ||
+                    span.bytes > span.reserved ||
+                    span.reserved - span.bytes != 256)
+                    throw std::invalid_argument("prefill relocated workspace: guarded plane extent");
+                if (cudaMemsetAsync(p + size_t(span.offset + span.bytes), 0xa7, 256, m.cs) != cudaSuccess) {
+                    err = "prefill relocated workspace: job guard initialization failed"; return false;
+                }
+            }
         }
     }
     m.layer_major_fp16_stage = reinterpret_cast<uint16_t*>(fp16_stage.get());
@@ -820,11 +860,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             window_context->accumulator_tail = reinterpret_cast<float*>(split_accumulator_storage.get());
             window_context->accumulator_tail_bytes = split_accumulator_plan.accumulator_tail_bytes();
             window_context->accumulator_primary_rows = split_accumulator_plan.accumulator_primary_rows;
+            window_context->extra_workspace = split_accumulator_storage.get();
+            window_context->extra_workspace_bytes = split_accumulator_bytes;
+            window_context->relocated_job_buffers = relocated_job_buffers_on;
         }
         if (accumulation_rows) window_context->maximum_rows = accumulation_rows;
         m.moe_window = window_context.get();
         std::fprintf(stderr, "strata MoE window configuration: requested_mode=%d effective_mode=%d maximum_rows=%lld mixed_fp16_bytes=%llu\n",
-            window_requested, accumulation_rows ? window_requested : 2, (long long)window_context->maximum_rows,
+            window_requested, accumulation_rows ? effective_window_mode : 2, (long long)window_context->maximum_rows,
             (unsigned long long)accumulation_bytes);
     }
     m.cache = &layer_cache;
@@ -1122,6 +1165,24 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         for (auto byte : split_accumulator_guard)
             if (byte != 0xa7) { err = "prefill split accumulator: FP32 tail guard changed"; return false; }
+        if (relocated_job_buffers_on) {
+            size_t index = 0;
+            for (auto plane : {detail::MoeAccumPlan::Plane::gathered, detail::MoeAccumPlan::Plane::logits}) {
+                const auto span = split_accumulator_plan.span(plane);
+                const auto status = cudaMemcpyAsync(relocated_job_guards[index++].data(),
+                    split_accumulator_storage.get() + size_t(span.offset + span.bytes),
+                    256, cudaMemcpyDeviceToHost, m.cs);
+                const bool retired_jobs = drain();
+                if (status != cudaSuccess || !retired_jobs) {
+                    err = "prefill relocated workspace: job guard readback/drain failed"; return false;
+                }
+            }
+            for (const auto& guard : relocated_job_guards)
+                for (auto byte : guard)
+                    if (byte != 0xa7) { err = "prefill relocated workspace: job guard changed"; return false; }
+            std::fprintf(stderr, "strata MoE long workspace complete: rows=%lld extra_bytes=%llu guards=3_checked final_drain=checked decode_changed=0\n",
+                (long long)n, (unsigned long long)split_accumulator_bytes);
+        }
         std::fprintf(stderr, "strata MoE split complete: rows=%lld primary_rows=%lld tail_bytes=%llu guard=checked final_drain=checked decode_changed=0\n",
             (long long)n, (long long)split_accumulator_plan.accumulator_primary_rows,
             (unsigned long long)split_accumulator_plan.accumulator_tail_bytes());

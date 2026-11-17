@@ -13,14 +13,17 @@ template<class Function> void refuses(Function f) {
     try { f(); } catch (const std::invalid_argument&) { rejected = true; }
     need(rejected);
 }
-void test(int32_t rows, bool hot, bool split = false) {
+void test(int32_t rows, bool hot, bool split = false, bool long_prefill = false) {
     std::vector<int32_t> ids(size_t(rows) * 10);
     for (int32_t t = 0; t < rows; ++t)
         for (int32_t k = 0; k < 10; ++k)
             ids[size_t(t) * 10 + k] = ((hot ? 17 : t * 7) + k * 47) % 512;
-    const auto build = split ? &Routes::build_split_accum : &Routes::build_accum;
+    const auto build = long_prefill ? &Routes::build_long_prefill_accum :
+        split ? &Routes::build_split_accum : &Routes::build_accum;
     const auto plan = build(rows, ids.data(), ids.size());
     need(plan->split_accumulator() == split);
+    need(plan->accumulator_row_limit() == (long_prefill ? Routes::max_long_prefill_rows :
+        split ? Routes::max_split_accum_rows : Routes::max_accum_rows));
     need(plan->original_slots().size() == ids.size());
     std::vector<unsigned char> seen(ids.size(), 0);
     int32_t expert = -1, previous_token = -1;
@@ -52,6 +55,21 @@ void test(int32_t rows, bool hot, bool split = false) {
         need(jobs_per_expert[size_t(e)] == (plan->counts()[size_t(e)] + 8191) / 8192);
     if (split && hot && rows == 117488)
         need(*std::max_element(jobs_per_expert.begin(), jobs_per_expert.end()) == 15);
+    if (long_prefill && hot && rows >= 131071)
+        need(*std::max_element(jobs_per_expert.begin(), jobs_per_expert.end()) == 16);
+    if (long_prefill && rows <= Routes::max_split_accum_rows) {
+        const auto prior = Routes::build_split_accum(rows, ids.data(), ids.size());
+        need(prior->source_rows() == plan->source_rows() && prior->slot_map() == plan->slot_map() &&
+            prior->original_slots() == plan->original_slots() && prior->counts() == plan->counts());
+        need(prior->jobs().size() == plan->jobs().size());
+        for (size_t i = 0; i < prior->jobs().size(); ++i) {
+            const auto &a = prior->jobs()[i], &b = plan->jobs()[i];
+            need(a.expert == b.expert && a.expert_row == b.expert_row &&
+                a.rows == b.rows && a.global_row == b.global_row);
+        }
+    }
+    if (long_prefill && rows > Routes::max_split_accum_rows)
+        refuses([&] { (void)Routes::build_split_accum(rows, ids.data(), ids.size()); });
     if (rows <= Routes::max_rows) {
         const auto old = Routes::build(rows, ids.data(), ids.size());
         need(old->original_slots().empty() && old->source_rows() == plan->source_rows());
@@ -64,7 +82,8 @@ void test(int32_t rows, bool hot, bool split = false) {
     refuses([&] { (void)build(rows, ids.data(), ids.size()); });
     ids[0] = 512;
     refuses([&] { (void)build(rows, ids.data(), ids.size()); });
-    std::printf("routes rows=%d hot=%d split=%d inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\n", rows, int(hot), int(split));
+    std::printf("routes rows=%d hot=%d split=%d long_prefill=%d inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\n",
+        rows, int(hot), int(split), int(long_prefill));
 }
 int main() {
     try {
@@ -79,6 +98,11 @@ int main() {
         refuses([] { (void)Routes::build_split_accum(1, nullptr, 0); });
         refuses([] { (void)Routes::build_split_accum(117489, nullptr, 0); });
         refuses([] { (void)Routes::build_split_accum(262144, nullptr, 0); });
+        for (int32_t rows : {2, 17, 8193, 65537, 81921, 117488, 117489, 131071, 131072}) {
+            test(rows, false, true, true); test(rows, true, true, true);
+        }
+        for (int64_t rows : {int64_t(-1), int64_t(0), int64_t(1), int64_t(131073), int64_t(262144), INT64_MAX})
+            refuses([&] { (void)Routes::build_long_prefill_accum(rows, nullptr, 0); });
         std::puts("moe_accum_routes PASS GPU=UNRUN");
         return 0;
     } catch (const std::exception& error) {
