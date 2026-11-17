@@ -1896,9 +1896,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with24of48layers fullfit. Source-derived max stride2662400B gives1022361600B
   bank;requested512would use1363148800B(+340787200B)and make all48fullfit if
   admitted. Its current same-queue schedule differs from the component's
-  separate queue. Next compare this placement setting separately from any
-  transfer-order implementation,checking actual bank/residual admission first;
-  no new model execution or speedup is established. Preserve existing decode.
+  separate queue. The owned `prefill_bank_capacity.py` plan compares only this
+  setting on the retained14508ELF:one stage-progress64Kadmission process,
+  then three alternating adjacent384/512pairs per32K/64K,three thinking-on
+  exact24-output requests each. Verify actual48fullfit layers,single-bank
+  allocation,all-GPU residual,ordinary route,checked drains and MTP restore
+  before clean timing. Keep first/warmed samples and actual request/job
+  equality. At`d00b519f9`,all3stage-progress65537-input512requests pass actual
+  48fullfit banks,all65536residual rows on GPU,ordinary route,checked drains
+  and MTP restore;normal0,quiet validation,closed ownership,no fresh fault.
+  The first clean32Kpair at`911a4eb26`also closes normally0:reference384
+  first/warmed PP579.3/(713.8,727.6),candidate512586.1/(723.1,737.9).
+  Warmed process medians45469.95->44865.3ms give ratio0.9867022066
+  (720.674->730.386PP). First client TTFT56.743->56.158s;warmed TTFT
+  (46.091,45.206)->(45.488,44.598)s. Request hashes,actual arithmetic/job
+  counts and requested expert H2Dbytes match exactly across this pair:
+  35386649600/35492889600/35397017600B. No transfer reduction or physical
+  saturation is established. This one pair does not pass the three-pair gate;
+  both new arms remain below the historical871..872warmed32Kreference.
+  Keep every original sample;do not substitute the old best for this current
+  matched baseline or attribute the difference to a native-code change.
+  Three of13processes/nine declared samples are closed;next is case3,clean
+  65537-input384. The remaining two32Kpairs and three64Kpairs stay frozen
+  under the existing plan. DWsource audit/DXnative Luna-max review finds no
+  fresh-run blocker;its replay-validator caveat remains separate. Main checked
+  the omitted called helper bodies against the767committed controller pins.
+  Preserve existing decode;24outputs cannot qualify sustained decode preservation.
   Queue placement,ready batching and window remain later independent units.
   Closed math/research captures are retired:766files/1262355027B plus the
   208933Btemporary inventory. Exact final ELF,recipe,367project/398original
