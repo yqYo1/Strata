@@ -414159,6 +414159,33 @@
       "sha256": "29290784a0a7c6207e952e035876709535d3f9f69fa268e37df7fa9d0343f528"
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "classifier_promotion": {
+      "stage": "prepared",
+      "source_commit": "9d8ec3e9c982dee9e6449833fae32399329f8051",
+      "source_files": {
+        "tools/sycl/profile_split.py": "c403f9b4ddf63bbb39c1f03f65860f563db3615e513c35ff982edb563b1a03cf",
+        "tools/sycl/test_profile_split.py": "24ba4d46cd82b054abbbda6aeeed3cb46e62a0ae9c47ec2c732398cbf975f7dc"
+      },
+      "original_validated_controller": "90756f079121149e6bd79c6d9e11ea7a50f1a7df",
+      "original_wrapper_plus_base_AST_equals_promoted_reader": true,
+      "AST_sha256": "67f48b2e955559c428c6efb3761962894df6cf7ab53f0018f484fd45ad7293e6",
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "tools/sycl/test_profile_split.py"
+      ],
+      "tests": 19,
+      "budgets": {
+        "wall": 90,
+        "cpu": 60,
+        "rss_cap": 4294967296,
+        "text_cap": 262144,
+        "file_cap": 2097152,
+        "total_cap": 8388608
+      },
+      "environment": "Original qualified host environment from the closed model record;private root replaced before exec. No GPU/device initialization.",
+      "GPU_executed": false
+    }
   }
 }
