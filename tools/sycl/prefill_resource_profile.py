@@ -105,6 +105,17 @@ def invariant(row,plan):
         .replace(plan['root'],'<process>').replace(str(ROOT),'<campaign>'))
 
 
+def provider_manifest(row,prior):
+    manifest=prior['runtime_manifest']
+    require(row['runtime_manifest']==manifest,'provider manifest differs from verified original')
+    require(sha(manifest['path'])==manifest['sha256'],'provider manifest digest changed')
+    files=json.loads(Path(manifest['path']).read_text())
+    require(isinstance(files,dict) and len(files)==manifest['files']
+        and all(isinstance(p,str) and isinstance(h,str) and sha(p)==h for p,h in files.items()),
+        'provider manifest content or executable bytes changed')
+    return files
+
+
 def current(row):
     require(validation.committed(RESULT,(KEY,))==compact(row)
         and core.pins(row['source_commit'])==row['sources']
@@ -136,7 +147,7 @@ def current(row):
                 and all(plan['native_profile'][k]==v for k,v in row['collector_control']['assets'].items())
                 and plan['native_profile']['environment']['UNITRACE_TraceOutputDir']==str(root/'trace'),
                 'exact immutable collector envelope changed')
-    files=json.loads(Path(row['runtime_manifest']['path']).read_text())
+    files=provider_manifest(row,prior)
     if len(row['processes'])<len(PROFILE) and PROFILE[len(row['processes'])]:
         item=row['collector_control']['assets']['collector'];files[item['path']]=item['sha256']
     return files,python
@@ -624,7 +635,7 @@ def fused_reconciliation(services,route):
         scope='These two source-counted fused classes only;unobserved operator coverage and physical saturation remain unqualified.')
 
 
-HOST_ROOT,HOST_KEY=B/'prefill-resource-host-v3','prefill_resource_host_v3'
+HOST_ROOT,HOST_KEY=B/'prefill-resource-host-v4','prefill_resource_host_v4'
 
 
 def host_compact(row):
@@ -646,7 +657,11 @@ def host_prepare():
         and previous['ownership_closed'],'preserve original host-only serialization refusal')
     previous_unit=validation.committed(RESULT,('prefill_resource_host_v2',))
     require(previous_unit['stage']=='closed' and previous_unit['passed'] and previous_unit['tests']==8,
-        'preserve exact earlier host controls;new source needs freshHOSTv3')
+        'preserve exact earlier host controls')
+    previous_plan=validation.committed(RESULT,('prefill_resource_host_v3',))
+    require(previous_plan['stage']=='superseded_before_execution'
+        and previous_plan['no_host_test_or_native_executed'] and previous_plan['ownership_closed'],
+        'preserve unusedHOSTv3 source before fresh provider-manifest controls')
     native,proof,prior=capacity.basis();revision=validation.git('rev-parse','HEAD').decode().strip()
     HOST_ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache'):(HOST_ROOT/name).mkdir()
@@ -655,7 +670,7 @@ def host_prepare():
     row=dict(stage='prepared',source_commit=revision,sources=core.pins(revision),environment_template=env,
         command=[PYTHON,'-B','-m','unittest','tools.test_prefill_resource_profile'],
         native_source_commit=capacity.original.SOURCE,original_native_proof=proof,
-        plan='Eight host route/budget/source/drain/math/observer/refusal controls plus existing exact62class,RAWclock-window and physical-owner-cleanup controls. No GPU/device initialization or model. Commit exact source/recipe/environment before run;stop first failure,no retry/hash refresh.',
+        plan='Nine host route/budget/source/drain/math/observer/provider-manifest refusal controls plus existing exact62class,RAWclock-window and physical-owner-cleanup controls. No GPU/device initialization or model. Commit exact source/recipe/environment before run;stop first failure,no retry/hash refresh.',
         passed=False,complete=False,active=False,ownership_closed=True)
     host_save(row);print('Prepared host controls;commit before run.',flush=True)
 
@@ -667,7 +682,8 @@ def host_gate():
         'exact source of closed host controls changed')
     require(row['stage']=='closed' and all(row[k] for k in ('passed','complete','ownership_closed'))
         and not row['active'],'closed committed host controls required')
-    return dict(key=HOST_KEY,source_commit=row['source_commit'],evidence_sha256=signature(row),tests=8)
+    require(row['tests']==9,'all nine current host controls required')
+    return dict(key=HOST_KEY,source_commit=row['source_commit'],evidence_sha256=signature(row),tests=9)
 
 
 def host_check():
@@ -680,15 +696,15 @@ def host_check():
     try:
         run,out,err=owner.run('host',row['command'],row['environment_template'],P,
             wall=90,cpu=60,rss_cap=1<<30,text_cap=256<<10,file_cap=2<<20,total_cap=8<<20)
-        require(build.supervision.closed(run) and run['exit_code']==0 and 'Ran 8 tests in ' in err.read_text()
+        require(build.supervision.closed(run) and run['exit_code']==0 and 'Ran 9 tests in ' in err.read_text()
             and err.read_text().rstrip().endswith('OK'),'resource host controls failed')
-        row.update(stage='closed',passed=True,complete=True,tests=8)
+        row.update(stage='closed',passed=True,complete=True,tests=9)
     except BaseException as error:row.update(stage='failed',error=repr(error))
     finally:
         row.update(active=bool(owner.active),ownership_closed=owner.active is None
             and all(build.supervision.closed(c) for c in owner.commands));host_save(row)
     require(row['passed'] and row['ownership_closed'],row.get('error','host controls failed'))
-    print('Eight resource host controls passed;commit before collector/native.',flush=True)
+    print('Nine resource host controls passed;commit before collector/native.',flush=True)
 
 
 if __name__=='__main__':

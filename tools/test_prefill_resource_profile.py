@@ -3,9 +3,11 @@
 Owned synthetic telemetry,not GPU allocation,collection or performance evidence.
 """
 import copy
+import json
 from pathlib import Path
 import re
 import sys
+import tempfile
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
 import prefill_resource_profile as campaign
@@ -50,6 +52,22 @@ def bracket(ratio=1.1):
     return result
 
 class ResourceProfileControls(unittest.TestCase):
+    def test_provider_manifest_binds_original_and_refuses_changed_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            provider=Path(directory)/'provider';provider.write_bytes(b'owned-control')
+            manifest=Path(directory)/'manifest.json'
+            manifest.write_text(json.dumps({str(provider):campaign.sha(provider)}))
+            original=dict(runtime_manifest=dict(path=str(manifest),sha256=campaign.sha(manifest),files=1))
+            row=copy.deepcopy(original)
+            self.assertEqual(campaign.provider_manifest(row,original),{str(provider):campaign.sha(provider)})
+            changed=copy.deepcopy(row);changed['runtime_manifest']['path']=str(provider)
+            with self.assertRaises(RuntimeError):campaign.provider_manifest(changed,original)
+            manifest.write_text('{}')
+            with self.assertRaises(RuntimeError):campaign.provider_manifest(row,original)
+            manifest.write_text(json.dumps({str(provider):campaign.sha(provider)}))
+            provider.write_bytes(b'changed-control')
+            with self.assertRaises(RuntimeError):campaign.provider_manifest(row,original)
+
     def test_small_full_and_partial_placements(self):
         for read,slots in ((32769,256),(131072,384),(131072,256)):
             text,plan=fixture(read,slots)

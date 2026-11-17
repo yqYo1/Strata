@@ -2073,8 +2073,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1000PPtarget is not met,and inference/defaults are not adopted. Four CSVpoints
   retain first/warm results;prior32/64/96Kcohorts and the historical64K1006PP
   point stay separate. Do not fit a physical timing law across different routes.
-  Current attribution proposal: `prefill_resource_profile.py` and eight host
-  controls are implemented but not executed. Reuse coherent14508 and the owned
+  Current attribution proposal: `prefill_resource_profile.py` now binds its
+  runtime manifest to the verified original provider list. The Luna review
+  refuted clock-count and missing-map-gate claims; it identified this narrower
+  manifest-binding gap. Eight earlier host controls passed; fresh nine controls
+  are pending after this correction. The unused HOSTv3 preparation is closed
+  before execution, without refreshing its source pins. Reuse coherent14508 and the owned
   Sysman0 indexed collector;first exact62-class compatibility control,then a
   separate32Kmodel smoke,then128Kclean/profile/clean with two requests each.
   CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
