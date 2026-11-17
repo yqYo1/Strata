@@ -36064,7 +36064,7 @@
   },
   "prefill_bank_placement_ec_20261117": {
     "classification": "decision support",
-    "stage": "worker_closed_native_review_pending",
+    "stage": "reviewed_private_retirement_after_campaign",
     "source_commit": "f12afed857e454bcef9865465c4c956b0d79961a",
     "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "rule_revision": "f12afed857e454bcef9865465c4c956b0d79961a",
@@ -36089,7 +36089,10 @@
     },
     "retention": "Main receives native Luna-max short review;keep useful corrected placement/owner facts only at closure. No Main collection-body read or source adoption.",
     "run": "run_750a9e36d585",
-    "next": "Audit256all-R/128Kpartial-reference ownership,source/budget telemetry and prospective gates while Main runs committed bounded checks;no generic duplicate survey.",
+    "next": {
+      "schedulable_now": false,
+      "prerequisite": "Close frozen128K bank-only comparison or preserve concrete runtime failure;no generic repeat. Main checked96Knormal0closure,exact source/budget and current128Kreference. Candidate remains pending."
+    },
     "execution": {
       "run": "run_750a9e36d585",
       "task": "task_345f197988e1",
@@ -36120,8 +36123,26 @@
     "native_review": {
       "model": "gpt-6-luna",
       "reasoning": "max",
-      "task": "/root/bank_placement_ec_review_ed_20261117",
-      "state": "running"
+      "state": "complete",
+      "verdict": "retain_with_minor_corrections",
+      "review_sha256": "5e6b43e0f18d423541c384bd1e0c0cf108d22fd2e0e31c158c906e58e07f4624",
+      "digest_sha256": "b4deedad1c9c641a35a752fd85f5b66ab85a50d9ca17d410225e32ca40392134",
+      "all19_source_and_manifest_hashes_match": true
+    },
+    "report": {
+      "sha256": "2f381254c26b5e55452ef3025917d5f77deb882bcd257b908197ebee9186b178",
+      "bytes": 13078,
+      "words": 1737,
+      "Main_read_body": false
+    },
+    "corrected_digest": "**Verdict: retain with minor corrections.** The 1,737-word report is within budget and technically useful as decision support. All 19 immutable source-view hashes and the manifest hash match; the worker proof checks 20 files including the manifest.\n\nCorrect the 128K tail from 51,271 to **49,151** rows; the short-tail conclusion is unchanged. Clarify that the 32,769-token/256-slot trace is a separate 32,768-row, 48-window small-path control, not a same-process growth run. Add the already-enforced borrowed mixed-scratch ownership, generation, bounds and disjoint-span guards. Keep provider immutability/lease behavior conditional because the provider and `DraftUploadGuard` definitions are outside the packet. The per-layer `blob_bytes` accounting, packed geometry variation, requested-versus-physical H2D distinction, and 96K failure/non-adoption limits are sound.\n\nThe frozen 128K comparison is source-level schedulable after Main confirms the 96K matrix closure and exact inputs/budget; require its declared route, ownership and distinct speed/mechanism gates. It does not qualify runtime safety or adoption, decode, task quality, RESTORE, full-context serving or teardown. Main owns current process closure.\n",
+    "native_resource_sample": {
+      "wall_seconds": 374.0399999995716,
+      "CPU_seconds_conservative_bound": 29.507539,
+      "native_process_peak_RSS_bytes": 423333888,
+      "cgroup_memory_peak_bytes": 247394304,
+      "captured_text_bytes_upper_bound": 935748,
+      "native_session_counted": true
     }
   }
 }
