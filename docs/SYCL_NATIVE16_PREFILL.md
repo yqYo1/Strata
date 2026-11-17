@@ -2195,9 +2195,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   permit a separate window question;only repeated fixed-bank window gain admits
   the combination. These plans are unprepared/unrun. U1jit is fixed to isolate
   native14coherence;its separately positive eager component remains eligible.
-  `prefill_bank_minimum_v2`first measures256vs1at fixed native14/window10;
-  preserve V1's invalid synthetic-metadata refusal before any native run.
-  Component/source progress does not admit a larger-window model trial.
+  `prefill_bank_minimum_v2`closes at`4d027b3e1`:nine normal0processes/27thinking-on
+  requests,quiet validation,no fresh fault and15final model hashes. At fixed
+  native14/window10/128K,the three bank1/256warmed-time ratios are1.069543,
+  1.045789and1.061431(geomean1.058875):the bank-only performance gate fails.
+  Aggregate warmed PPis887.605versus835.333;first-use and all samples remain
+  separate. All131071BF16residual rows stay onGPU;windows/jobs/dequants/maps
+  and actualGU/Down work match. The678,912,000Bbank reduction adds roughly25GB
+  of requested H2Dpayload per request;physical bus traffic/saturation remain
+  unknown. Four CSVpoints bring the index to621. Preserve V1's invalid
+  synthetic-metadata refusal and this standalone loss. The prospective
+  capacity/mechanism rule permits only the separately planned window question;
+  no larger-window model is admitted before its fresh component/host gates.
   CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
   markers;the old marker-associated stall remains causally unresolved. Require
   exact route/count/clock/owner/conservation and<=1.2observer ratios against both
