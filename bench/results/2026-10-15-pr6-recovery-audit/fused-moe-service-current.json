@@ -407190,7 +407190,7 @@
     "original_input_proof_archive": "8b165240eb7c82d677c877f2c1242ad3950d1314"
   },
   "prefill_bank_minimum_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "cacde5941269c02627ee43fa63d6c332998cbddc",
     "policies": {
       "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
@@ -407790,11 +407790,19 @@
       "retention": "Keep27individualsamples,source/config/native/route/requested-byte and paired decisions;retire raw/JIT and closed controller after original source recovery. No new native generation;both independent phase references and concrete legacy holds remain."
     },
     "invariant_sha256": "181d88343edc41dad16328cf7942fa922276d9b1036f134670a8225995dee08c",
+    "error": "RuntimeError('placement host controls failed')",
     "source_inputs": {
       "files": 768,
       "sha256": "e6621952fd4eb3c3ae9a3c8cc01a892f7c18dae34cdb305c700414374247d05a"
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "host_refusal": {
+      "tests": 6,
+      "errors": 2,
+      "reason": "Synthetic total_slots used48-layer sum instead of the current layer capacity;native marker is at most512. Admission correctly refused synthetic invalid metadata.",
+      "native_executed": false,
+      "source_frozen": true
+    }
   }
 }
