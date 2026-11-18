@@ -444582,6 +444582,275 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "clean-4",
+        "passed": true,
+        "GPU_executed": true,
+        "GPU_work_admitted": true,
+        "pid": 2053582,
+        "native_exit_code": 0,
+        "providers": [
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "92c70bfc7b176c69099c60f2c6b89043f46d06fbc129defcd0dda446ee919b19"
+          },
+          {
+            "phase": "after-cleanup",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "92c70bfc7b176c69099c60f2c6b89043f46d06fbc129defcd0dda446ee919b19"
+          }
+        ],
+        "validation": {
+          "pid": 2053582,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "timing": {
+          "clock_pair_max_s": 5.1e-08,
+          "source": {
+            "kind": "staged",
+            "bytes": 1009254400,
+            "arena_ms": 1905.37923,
+            "prepare_ms": 212.3139,
+            "allocation_id": 0,
+            "retire_ms": 12.178271
+          },
+          "queue": {
+            "api": "native",
+            "ordinal": 1,
+            "index": 0,
+            "mode": 2,
+            "flags": 2,
+            "priority": 0
+          },
+          "samples": [
+            {
+              "round": 0,
+              "arm": "compute_only",
+              "milliseconds": 221.915237,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "copy_only",
+              "milliseconds": 185.294651,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "serial_separate",
+              "milliseconds": 449.164563,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "deferred_wait",
+              "milliseconds": 232.779143,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "copy_only",
+              "milliseconds": 184.918723,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "serial_separate",
+              "milliseconds": 528.622637,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "deferred_wait",
+              "milliseconds": 226.363808,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "compute_only",
+              "milliseconds": 221.251517,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "serial_separate",
+              "milliseconds": 406.915954,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "deferred_wait",
+              "milliseconds": 226.322079,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "compute_only",
+              "milliseconds": 221.092317,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "copy_only",
+              "milliseconds": 180.820232,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "deferred_wait",
+              "milliseconds": 341.479935,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "compute_only",
+              "milliseconds": 222.65963,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "copy_only",
+              "milliseconds": 214.752775,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "serial_separate",
+              "milliseconds": 436.329454,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "compute_only",
+              "milliseconds": 221.596537,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "copy_only",
+              "milliseconds": 361.429056,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "serial_separate",
+              "milliseconds": 458.676993,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "deferred_wait",
+              "milliseconds": 259.68054,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            }
+          ]
+        },
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "prior_host_refusal": {
