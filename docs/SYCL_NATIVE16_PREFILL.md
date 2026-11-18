@@ -2359,11 +2359,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All845closed capture files(127,754,680B)and237,945Btemporary inventory
   are retired after the pushed recovery/curation decision. Shared build,
   device and original speed-basis records remain;no native build is retired.
+  Fresh post-retirement basis/device admission passes for all eight candidate
+  and12original same-build executables,current decode artifact and shared
+  records;three reusable host regressions pass. This executes no GPUwork and
+  establishes no new model/teardown qualification.
   Historical64Krequest hashes match all three current requests;different
   timing periods do not identify a regression cause. Keep the36samples and
   each separate outcome. The next bounded question is same-image eager-path
-  input-length/time/TTFT characterization with five ordinary-route lengths and
-  an independent held-out length;commit its exact plan before new execution.
+  input-length/time/TTFT characterization at16K/32K/48K/64K/80Kordinary-route
+  lengths and independent held-out56K(actual reads add one final token).
+  Keep bank384/window10/chunk8192fixed;16Kis diagnostic,not long-input adoption
+  evidence. Commit its controller,repetition/order,approximation/held-out rule
+  and stopping criteria before preparation or new execution.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for that immediate question;retire a superseded generation
