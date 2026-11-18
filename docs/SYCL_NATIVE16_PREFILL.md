@@ -2797,6 +2797,36 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   control before testing ordinal 1 on that same native owner. Preserve
   the current QSA, copy extents, wait positions and safety settings.
   The host-USM component samples exclude production staging from RAM.
+
+  `fullfit_attention_copy_api_v1` closes at `e10c4bcb7`. Both paths use the
+  same host-USM payload, destination, QSA and wait placement. The raw fixture
+  owns its immediate copy list and matches the SYCL list's context, device,
+  ordinal 0, index 0, asynchronous mode, in-order flag and normal priority.
+  The two small cases pass with the mapped Level Zero validation provider,
+  exact buffer and output checks, and checked unwind after an accepted copy.
+  All ten native processes close normally, with unchanged boot and driver
+  and zero fresh GPU faults. There are 120 clean samples and 40 traced
+  windows. [Level Zero immediate-list synchronization](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list-2.html#zecommandlisthostsynchronize)
+
+  | Warmed native / SYCL wall time at ordinal 0 | Three clean pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Copy only | 1.322876, 1.182392, 1.017979 | 1.167723 |
+  | Copy and QSA, deferred wait | 1.168082, 1.068308, 1.136057 | 1.123372 |
+  | Copy and QSA, serial | 1.186771, 1.358053, 1.066287 | 1.197804 |
+  | QSA only | 1.002884, 1.003065, 1.001062 | 1.002337 |
+
+  Keep the SYCL route selected. The native replacement fails the repeated
+  gain gate at ordinal 0. QSA-only medians remain 221.3–222.1 ms. The two
+  traces conserve all requested copies and QSA calls and show zero overlap
+  in every window. Deferred-wait wall time is 442.9 ms through SYCL and
+  443.3 ms through Level Zero in the observer pair. The larger clean losses
+  drive the selection. The experiment establishes the component's actual
+  list settings and output, with physical bus traffic and saturation
+  unmeasured. Compare ordinal 0 and the copy-only ordinal 1 with the same
+  native owner, allocation, copy count, QSA and completion placement. Test
+  the small ordinal-1 case first, then distinguish device overlap and clean
+  wall time. Keep that queue comparison independent of the failed API
+  replacement and of later ordinary-RAM source admission.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
