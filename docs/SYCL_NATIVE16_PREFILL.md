@@ -2598,7 +2598,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   diagnostic PP is 928.548 ordered and 921.508 subgroup. The subgroup
   arm has 123, 3 and 91 more expert jobs in the three matched requests.
   These traced observations give an explicit work delta to check in
-  the six-process clean cohort. Repeated clean performance is pending.
+  the six-process clean cohort. The first clean pair closes normally:
+  warmed PP is 925.223 ordered and 922.422 subgroup, and client TTFT is
+  141.895 and 142.330 seconds. The subgroup warmed time is 1.003037 times
+  the reference. Its first request is faster (856.8 versus 851.3 PP).
+  The same three job deltas recur without tracing. Compared with ordered,
+  the subgroup arm requests 72.6–93.9 MB more weight uploads per request.
+  Two clean pairs remain. Keep the original order and every sample for
+  first-use, warmed and work-delta characterization.
 
   The next transfer experiment will examine full-fit weight prefetch while
   the layer's attention runs. The 64K profile at `c40c8c1bd` measures
