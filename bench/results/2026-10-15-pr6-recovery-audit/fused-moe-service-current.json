@@ -109191,6 +109191,69 @@
           "inventory_bytes": 87705,
           "roots_absent": true,
           "no_native_generation_retired": true
+        },
+        "window_candidate_retirement": {
+          "reason": "Combined-window source, route and resource comparisons closed; retain independent validated phase executables. This candidate has no current run consumer. Recover it from the original composition before any later model adoption trial.",
+          "roots": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-device-v1"
+          ],
+          "original_build_evidence": "e247fbff4ce1c272e8814acea8f074eb13aa9c0a",
+          "original_component_evidence": "113fdee4cd07a6c1aa3fc6cba659923400db8aa5",
+          "source_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
+          "base": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+          "overlays": {
+            "include/strata/prefill/fullfit_upload_plan.hpp": "96eb10d416a34333a3582230aa39a25856713d2015d2006f70396aa05049b2d2",
+            "include/strata/prefill/expert_bank_upload.hpp": "03538e5b5d919c18a616da19e84f09b8e413705df964a302b97016253f615f84",
+            "include/strata/prefill/moe_accum_plan.hpp": "3e5fd5fd96aa05f67a4448de2d4c582fd55c868d3bf9e3c2c087f2833bf2791b",
+            "include/strata/prefill/moe_window_routes.hpp": "ddab77fa20b4ded238c5af2c59c7fc2df5ed62bf6a8fa973595e40a3764cdd54",
+            "src/core/expert_source.cpp": "7e3c7c5cfee6cb821f3b74b65f579c8c07feadb5d0910ece8c4792866274899b",
+            "src/prefill/prefill.cpp": "871f5c874ec3a64e1dafa6e75ec85320e5cb6431a7dd5a1e1bceb214b299053c",
+            "src/prefill/layer_major.inc": "c19f5a6c6287caf82bc4bb74bb774084c31cf822d5d802dd226ea07bcec890d2",
+            "src/prefill/moe_window.inc": "7c46d874c0c236c010cfcbfd677d6000df02fdf7e03cd91c9e98558af4262316",
+            "src/prefill/sycl/native16.cpp": "917756a966674e64334138ce5183edbf02fa604cd1b43fe66afa7750c7430bc0",
+            "src/prefill/sycl/vllm_xe2/native16.cpp": "e0fef77e6420f989d35cdb44c5fd1e980c718a374eb509fcfd725cd214750699",
+            "cmake/sycl_vllm_xe2_native16.cmake": "0d33e69ba7ba44d5cd039df6a6c2c21ce12a6c4f97e536b19b28924cfa6a5b59",
+            "tests/sycl/expert_bank.cpp": "e4894bcd42b5a4869ae395846a6dfd48b491d8e208567f319f8b5aeb7e32bcf0",
+            "tests/moe_accum_routes.cpp": "4e3bf8aba6430b30cf41c5e8c6c370242f4a5abedebf7081d8f2a6d31417bb05",
+            "tests/prefill_moe_workspace.cpp": "e5877d7b89b78738b265e5fb71d319b74d98fce32a636d3db0400fa4a9746af8",
+            "bench/sycl/moe_down_scatter.cpp": "85772e2f166377e29e6d5e2e29af9038b9b27903c49476068eac92aa48042d2b"
+          },
+          "original_source_files": 1166,
+          "recovered_compiled_inputs": 1468,
+          "generated_inputs": 1,
+          "original_link_inputs": 29,
+          "original_recipe_sha256": "ce355543485a0ce5276303bdae136f2cc5fe2a94ac77fc8798900051021166a9",
+          "native_record_sha256": "1f8da86a6b87420fac96ea08f129343f050cdcec6e54a31709df49903d197e49",
+          "original_binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata",
+            "sha256": "b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c",
+            "bytes": 26466696
+          },
+          "all_eight_elf_hashes_verified": true,
+          "original_component_receipt_sha256": "dc8c212852996d7a9722bafac9855f6217e0bfcdbaed6719fb93151940c81e0e",
+          "current_comparison_consumers_closed": true,
+          "original_outcomes_unchanged": true,
+          "retained_original": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+            "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+            "bytes": 26448640,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "retained_decode": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+            "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+            "bytes": 26476232,
+            "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+          },
+          "files": 1358,
+          "bytes": 187251978,
+          "complete": false,
+          "inventory": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2.retirement.json",
+            "sha256": "3219a183fb08fd5895c663b623b0ff48b73c55ed63407dfaf64cb7593071e6c7",
+            "bytes": 368728
+          }
         }
       }
     },
