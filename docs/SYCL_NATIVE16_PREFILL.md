@@ -2498,6 +2498,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   tree. All 14 host checks pass at `fe99c5ac4`. The original 783 Git inputs and
   eight generated inputs recover exactly. All 162 closed capture files
   (571,700,347 bytes) and the 44,960-byte inventory have been retired.
+  The fresh reversed pair closes with six exact thinking-on requests,
+  both native exits zero, quiet validation, no fresh driver fault and all 15
+  final model hashes checked. Clean warmed prefill is 72.433 s (904.797 PP)
+  and client TTFT is 72.627 s. Fresh trace/clean ratios for first prefill,
+  TTFT and total duration are 1.071699, 1.074036 and 1.084660. Warmed ratios
+  are 1.070933, 1.073609 and 1.081274. All six are within the planned 10%
+  envelope. The archived clean-first pair remains a descriptive cross-check.
+  GPU event counts match the earlier trace for all three requests
+  (229519, 229312 and 229131) with zero boundary crossings in both traces.
+  Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
+  each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
+  requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  Clean 64K needs 6.896 s less prefill time to reach 1000 PP. QSA prefix
+  is the largest observed kernel family. Its service and the competing copy
+  cost both warrant independent work. The next QSA component comparison
+  should hold the WG128/SIMD16, 32-cell tile, typed K/V, BF16 rounding and
+  ordered FP32 softmax fixed. Compare the current shared K/V local tile
+  against a separate V tile with the same late gather, then compare late
+  versus early V gathering with the same separate storage. The extra V
+  tile costs 16 KiB per workgroup. Check the actual allocation and
+  occupancy impact, zero-fill and tail rules, uniform barriers, and exact
+  output and state conservation before timing. Start from the owned large
+  cap-2051 gather and clustered production-shaped fixtures and include
+  short/invalid/tail and full-context address cases. Commit source and
+  repeated component criteria before building. The QSA timing and measured
+  copy overlap do not identify a saturated hardware resource.
   Retire a superseded generation
   before another native build. The limiting arithmetic/VRAM/PCIe/submission
   resource remains unknown;this timing cohort is not a saturation measurement.
