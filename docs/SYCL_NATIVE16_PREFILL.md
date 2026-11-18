@@ -2286,8 +2286,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bank256/window10versusbank1/window16. Host probes and the32Kfallback
   process pass:three32769-read/thinking-on24-output requests,all32768BF16rows
   onGPU,bank1,ordinary32768window/extra0,normal0/reapedempty,quiet validation
-  and no fresh fault. The128Kmodel checks are next;no combined long-input
-  performance has been measured. Preserve
+  and no fresh fault. The128Kreference also passes three131072-read requests,
+  bank256/window10,all131071BF16rows onGPU,81920maximum rows/96windows,
+  normal0/reapedempty,quiet validation and no fresh fault. The combined
+  candidate check is next;its long-input performance remains unmeasured. Preserve
   the bank/coherence/relocation losses;this unit gain does not adopt the
   composed engine or reach1000PPat128K. Reduced jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
