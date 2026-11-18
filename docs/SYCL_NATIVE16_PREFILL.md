@@ -2245,7 +2245,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fresh fault. The first98Kreference also passes all three98305-read requests:
   98304rowsGPU,48windows,primary65536,335544576Bextra tail allocation and the
   original job-plane placement,normal0/reapedempty,quiet validation and no
-  fresh fault. The relocated arm is next. Window/combined remain unprepared;
+  fresh fault. The relocated98Karm also passes all three requests with the
+  same maps,jobs,dequants,GU/Down selections,uploads and requested bytes.
+  Its394265344Bextra owner is actually admitted,and all three guards and final
+  drains pass before retirement;all98304BF16residual rows remain onGPU.
+  Native exit is normal0/reapedempty,validation quiet and no fresh fault.
+  Next collect the three opposite-order clean process pairs;traced timings
+  do not establish a speed gain. Window/combined remain unprepared;
   no larger-window model has run.
   Full original evidence is`c68086021`. Four first-use/warmed CSVpoints bring
   the index to625. All27samples,nine native identities,the failed decision and
