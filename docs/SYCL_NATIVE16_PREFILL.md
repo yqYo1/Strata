@@ -2242,8 +2242,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its host checks and first32Kfallback process pass:three exact32769-read,
   thinking-on24-output requests,bank128/window10,ordinary layout/extra0,
   all32768BF16residual rows onGPU,normal0/reapedempty,quiet validation and no
-  fresh fault. Actual98Krelocation checks are next. Window/combined remain
-  unprepared;no larger-window model has run.
+  fresh fault. The first98Kreference also passes all three98305-read requests:
+  98304rowsGPU,48windows,primary65536,335544576Bextra tail allocation and the
+  original job-plane placement,normal0/reapedempty,quiet validation and no
+  fresh fault. The relocated arm is next. Window/combined remain unprepared;
+  no larger-window model has run.
   Full original evidence is`c68086021`. Four first-use/warmed CSVpoints bring
   the index to625. All27samples,nine native identities,the failed decision and
   useful request-work/admission values remain in the compact result. Original
