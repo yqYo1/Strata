@@ -2450,6 +2450,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source/fixture/collector/provider hashes remain unchanged. This qualifies
   the bounded collector probe,not model overhead,complete service/count
   coverage,physical saturation or ordinary teardown. No native rebuild.
+  The next model plan is four fresh64Kprocesses,clean/collector/collector/
+  clean,three thinking-on24-output requests each,matched to the closed
+  curve's exact bodies and bank384/window10/chunk8192/eager/throughput
+  configuration. Only device collector injection varies. Keep first use
+  and the subsequent2median separate;both paired ratios for prompt,client
+  TTFTand total duration must remain0.9..1.1for the observer-cost screen.
+  Preserve failures and perturbed observations;this is no speed-adoption
+  gate. Use the qualified device-only settings,without API trace,pause,
+  hardware metrics or a native rebuild. Prospective limits are1GiB/4million
+  events per trace,1280MiBper process and5GiBcampaign. Analyze closed native
+  runs serially with explicit CPU/RSS/time bounds. Retain kernel-family/copy
+  services,requested bytes,interval unions/overlap and boundary crossings.
+  Whole-request gates include24decode tokens;they do not establish a drained
+  prefill critical path,physical PCIe/VRAM traffic or hardware saturation.
+  The model controller,analysis helpers and generated plans are not prepared
+  yet and must be committed before execution.
   Retire a superseded generation
   before another native build. The limiting arithmetic/VRAM/PCIe/submission
   resource remains unknown;this timing cohort is not a saturation measurement.
