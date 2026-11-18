@@ -2327,6 +2327,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   requiring all live inputs unchanged and allowing only that named committed
   CLIretirement. Original strict readers and all native/fixture hashes remain
   unchanged;the controller-only reuse is not a new build or GPUqualification.
+  V2is prepared at`c429e16d1`:773current source inputs,15full model hashes
+  and24generated JSONpayloads are pinned;seven CPUgate regressions and both
+  frontend probes pass. All three traced64Kadmissions close normal0/reaped
+  empty with nine exact65537-read/thinking-on24-output requests,quiet
+  validation,no fresh fault and unchanged boot. All65536BF16residual rows
+  stay onGPU,bank384/window10/48windows/extra0. Actual GU/Down/job/map/upload/
+  requested-payload work matches across all arms. Eager logs24unique full-fit
+  layers per request,9178/9179/9160individual copies and checked final bank
+  drains. Nine clean independent processes remain in their committed order;
+  traced timings do not qualify a speed gain,current decode or route adoption.
   Keep the current-build five-length/time/TTFT curve and hardware attribution
   gaps pending;do not infer a law from these mixed timing periods. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
