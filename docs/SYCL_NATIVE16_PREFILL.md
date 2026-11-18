@@ -2268,8 +2268,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no fresh fault. The128Kreference also passes all three131072-read requests:
   all131071BF16rows onGPU,bank1,81920maximum rows/96windows,extra0,
   normal0/reapedempty,quiet validation and no fresh fault. The larger-window
-  admission is next;
-  the combination remains unprepared and no larger-window model has run.
+  arm also passes all three131072-read requests:729799424Bextra owner is
+  actually admitted,all131071BF16rows remain onGPU,maximum131071rows and
+  48windows,three guards/final drains checked,normal0/reapedempty,quiet
+  validation and no fresh fault. Jobs fall38324/38507/38286to24709/24759/24721;
+  dequants fall33606/33785/33584to19079/19107/19085. Requested expert H2Dfalls
+  68.54..68.95GBto38.95..39.01GB;this is payload,not measured wire traffic.
+  Traced warmed time149.73605sversus136.69505sis mechanism evidence,not the
+  clean repeated-gain decision. Next collect the three opposite-order clean
+  process pairs;the combination remains unprepared.
   Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
   RESTORE qualification remain unresolved. Full relocation evidence is
