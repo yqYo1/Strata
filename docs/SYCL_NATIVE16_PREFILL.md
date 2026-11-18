@@ -2489,7 +2489,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   These observations put both transfer costs and the QSA kernel on the
   shortlist. Counter data for physical PCIe, VRAM and arithmetic limits are
   still unavailable. Keep the failed cohort and run the reverse order under
-  a prospectively committed plan with isolated analysis output.
+  a prospectively committed plan with isolated analysis output. The new
+  trace/clean pair has three identical requests per process. Its 10% screen
+  applies to the fresh pair. The earlier clean/trace timings are a descriptive
+  cross-check and the original four-process qualification stays failed.
+  Run the collector unchanged and preserve the same native build, parameters
+  and trace limits. The separate analysis owner counts its own 4 MiB output
+  tree. All 14 host checks pass at `fe99c5ac4`. The original 783 Git inputs and
+  eight generated inputs recover exactly. All 162 closed capture files
+  (571,700,347 bytes) and the 44,960-byte inventory have been retired.
   Retire a superseded generation
   before another native build. The limiting arithmetic/VRAM/PCIe/submission
   resource remains unknown;this timing cohort is not a saturation measurement.
