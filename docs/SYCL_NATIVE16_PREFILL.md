@@ -2401,7 +2401,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   native build changes;both frontend probes pass. Both traced admissions
   close normal0/reapedempty with six exact16385/81921-read requests,
   all BF16residual rows onGPU,bank384/window10/extra0,quiet validation and
-  no fresh fault. Clean curve sampling remains pending.
+  no fresh fault. The full curve closes with eight normal0/reapedempty
+  processes/24thinking-on24-output requests and15final model hashes.
+  Traced/clean16Kand80Kwork and preceding64Keager work agree exactly.
+  Clean warmed prefill seconds at16/32/48/64/80Kare
+  31.52345/44.03335/57.73680/72.50165/88.35810;reserved56Kis64.37670.
+  Actual reads add one token. With`x=actual_read_tokens/65536`,the selected
+  warmed prefill approximation in seconds is
+  `T=20.065975+43.561341*x+8.862286*x*x`;warmed client TTFTis
+  `T=20.248736+43.537613*x+8.921143*x*x`.
+  Whole-length LOOmean/max errors are0.1208/0.3474%for prefill and
+  0.0376/0.0588%for TTFT. Independent56Kpredictions are64.96824/65.17530s
+  versus64.37670/64.56850s observed:errors0.9189/0.9398%,larger than the
+  training two-sample spread envelopes0.5338/0.4373%. Do not turn this
+  descriptive fit into a precise physical law or confidence interval.
+  Initial-request prefill and TTFTselect affine models:
+  `T=27.970634+56.773760*x`and`T=28.121433+56.816400*x`seconds.
+  Their LOOmean/max errors are3.9288/6.0379%and3.9184/6.0326%;reserved56K
+  errors are1.7693/1.7685%. Preserve all three candidate models per series,
+  residuals,adjacent slopes and the original selection rule. No56Kvalue
+  changes coefficients or selection. One independent process per length
+  characterizes this fixed ordinary route only;the fitted intercept does
+  not identify a physical fixed cost and the curve must not be extrapolated
+  past80Kor mixed with another placement/window route. Current64K/80KPPis
+  903.938/927.148;this is not a paired gain,1000PPor model qualification.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for that immediate question;retire a superseded generation

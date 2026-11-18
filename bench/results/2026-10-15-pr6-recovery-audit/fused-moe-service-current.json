@@ -418530,7 +418530,7 @@
     }
   },
   "eager_prefill_length_curve_v2": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "a9a90b203d4bd8f2c1581fc2abfd3fec8b40509f",
     "previous_attempt": {
       "key": "eager_prefill_length_curve_v1",
@@ -421152,6 +421152,299 @@
         },
         "passed": true,
         "diagnostic_short_input": false
+      },
+      {
+        "index": 7,
+        "read": 57345,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "eager",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata",
+          "sha256": "b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c",
+          "bytes": 26466696
+        },
+        "native_source_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
+        "native_identity": {
+          "pid": 1228010,
+          "start_ticks": 334776324,
+          "sid": 1227947
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1228010,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 57344,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 57344,
+            "residual_gpu_bytes": 1174405120,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 803049984,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 293601280,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 384,
+              "window_rows": 57344,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4245643264,
+              "fixed_including_headroom_bytes": 2851537152,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 3694,
+                "fused_rows": 24181425,
+                "separate_jobs": 16322
+              },
+              "down": {
+                "fused_jobs": 3694,
+                "fused_rows": 24181425,
+                "separate_jobs": 16322
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20016,
+              "windows": 48,
+              "dequants": 18006,
+              "maximum_physical_window_rows": 57344,
+              "requested_source_map_bytes": 110100480,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 18006,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 36775296000,
+            "requested_source_map_H2D_bytes": 110100480,
+            "fullfit_upload": {
+              "policy": "eager",
+              "fullfit_layers": 24,
+              "accepted_copy_commands": 9070,
+              "requested_fullfit_H2D_bytes": 16694016000,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            }
+          },
+          {
+            "rows": 57344,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 57344,
+            "residual_gpu_bytes": 1174405120,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 803049984,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 293601280,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 384,
+              "window_rows": 57344,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4256624640,
+              "fixed_including_headroom_bytes": 2851537152,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 3698,
+                "fused_rows": 24192520,
+                "separate_jobs": 16351
+              },
+              "down": {
+                "fused_jobs": 3698,
+                "fused_rows": 24192520,
+                "separate_jobs": 16351
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20049,
+              "windows": 48,
+              "dequants": 18035,
+              "maximum_physical_window_rows": 57344,
+              "requested_source_map_bytes": 110100480,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 18035,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 36829004800,
+            "requested_source_map_H2D_bytes": 110100480,
+            "fullfit_upload": {
+              "policy": "eager",
+              "fullfit_layers": 24,
+              "accepted_copy_commands": 9098,
+              "requested_fullfit_H2D_bytes": 16743424000,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            }
+          },
+          {
+            "rows": 57344,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 57344,
+            "residual_gpu_bytes": 1174405120,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 803049984,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 293601280,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 384,
+              "window_rows": 57344,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4256620544,
+              "fixed_including_headroom_bytes": 2851537152,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 3676,
+                "fused_rows": 24143454,
+                "separate_jobs": 16348
+              },
+              "down": {
+                "fused_jobs": 3676,
+                "fused_rows": 24143454,
+                "separate_jobs": 16348
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20024,
+              "windows": 48,
+              "dequants": 18023,
+              "maximum_physical_window_rows": 57344,
+              "requested_source_map_bytes": 110100480,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 18023,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 36813286400,
+            "requested_source_map_H2D_bytes": 110100480,
+            "fullfit_upload": {
+              "policy": "eager",
+              "fullfit_layers": 24,
+              "accepted_copy_commands": 9074,
+              "requested_fullfit_H2D_bytes": 16701440000,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 76298.6,
+            "prompt_tps": 751.6,
+            "ttft_s": 76.484,
+            "total_s": 78.672,
+            "generated_tokens": 24,
+            "request_sha256": "aaa41a947b9da160ad55a5f6c3df5653b3c7a454a251e27ad4d1712b8fad5291",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 64466.0,
+            "prompt_tps": 889.5,
+            "ttft_s": 64.652,
+            "total_s": 66.808,
+            "generated_tokens": 24,
+            "request_sha256": "6863ed21fba8ec42be4fb21f41a7cb789b8371e03bfa78d2054351a66e828c9e",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 64287.4,
+            "prompt_tps": 892.0,
+            "ttft_s": 64.485,
+            "total_s": 66.436,
+            "generated_tokens": 24,
+            "request_sha256": "013b057ffc09da901d56d5883451e7c0b2394d80b5b1a91fda708fd4e01547f1",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 64376.7,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "diagnostic_short_input": false
       }
     ],
     "request_hashes": {
@@ -421179,11 +421472,16 @@
         "fc59aa0cc471e4f23728fa7c63ee1708734781c33e4d79a7fbd71f6203cbbe81",
         "156d48268bf915737b1a2a4aa01c40b342c1047315d90a6a8db0fd2123578b39",
         "d19887d7532b616b48d1082aa90f17cc37c3d2bceb2a8ab03d3009bd6d78de89"
+      ],
+      "57345": [
+        "aaa41a947b9da160ad55a5f6c3df5653b3c7a454a251e27ad4d1712b8fad5291",
+        "6863ed21fba8ec42be4fb21f41a7cb789b8371e03bfa78d2054351a66e828c9e",
+        "013b057ffc09da901d56d5883451e7c0b2394d80b5b1a91fda708fd4e01547f1"
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
@@ -421226,6 +421524,662 @@
         "passed": true
       }
     ],
+    "decision": {
+      "points": [
+        {
+          "read": 16385,
+          "held_out": false,
+          "diagnostic_short_input": true,
+          "first_use": {
+            "actual_read_tokens": 16385,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43208.5,
+            "prompt_tps": 379.2,
+            "ttft_s": 43.373,
+            "total_s": 45.385,
+            "generated_tokens": 24,
+            "request_sha256": "f7ee07dbe76129222c0a655766e9dfac250b065cdab74d0fe7919816b00f27fc",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            31624.7,
+            31422.2
+          ],
+          "subsequent_TTFT_s": [
+            31.792,
+            31.587
+          ],
+          "median_prompt_ms": 31523.45,
+          "median_PP": 519.7717889380763,
+          "median_TTFT_s": 31.689500000000002
+        },
+        {
+          "read": 32769,
+          "held_out": false,
+          "diagnostic_short_input": false,
+          "first_use": {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 55336.0,
+            "prompt_tps": 592.2,
+            "ttft_s": 55.508,
+            "total_s": 57.493,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            43798.3,
+            44268.4
+          ],
+          "subsequent_TTFT_s": [
+            44.055,
+            44.442
+          ],
+          "median_prompt_ms": 44033.350000000006,
+          "median_PP": 744.1859408834439,
+          "median_TTFT_s": 44.2485
+        },
+        {
+          "read": 49153,
+          "held_out": false,
+          "diagnostic_short_input": false,
+          "first_use": {
+            "actual_read_tokens": 49153,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 68515.9,
+            "prompt_tps": 717.4,
+            "ttft_s": 68.695,
+            "total_s": 70.781,
+            "generated_tokens": 24,
+            "request_sha256": "fc59aa0cc471e4f23728fa7c63ee1708734781c33e4d79a7fbd71f6203cbbe81",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            57770.3,
+            57703.3
+          ],
+          "subsequent_TTFT_s": [
+            57.958,
+            57.908
+          ],
+          "median_prompt_ms": 57736.8,
+          "median_PP": 851.3287885715869,
+          "median_TTFT_s": 57.933
+        },
+        {
+          "read": 57345,
+          "held_out": true,
+          "diagnostic_short_input": false,
+          "first_use": {
+            "actual_read_tokens": 57345,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 76298.6,
+            "prompt_tps": 751.6,
+            "ttft_s": 76.484,
+            "total_s": 78.672,
+            "generated_tokens": 24,
+            "request_sha256": "aaa41a947b9da160ad55a5f6c3df5653b3c7a454a251e27ad4d1712b8fad5291",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            64466.0,
+            64287.4
+          ],
+          "subsequent_TTFT_s": [
+            64.652,
+            64.485
+          ],
+          "median_prompt_ms": 64376.7,
+          "median_PP": 890.7725931897721,
+          "median_TTFT_s": 64.5685
+        },
+        {
+          "read": 65537,
+          "held_out": false,
+          "diagnostic_short_input": false,
+          "first_use": {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 87710.0,
+            "prompt_tps": 747.2,
+            "ttft_s": 87.899,
+            "total_s": 90.014,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            72357.5,
+            72645.8
+          ],
+          "subsequent_TTFT_s": [
+            72.547,
+            72.838
+          ],
+          "median_prompt_ms": 72501.65,
+          "median_PP": 903.9380483064868,
+          "median_TTFT_s": 72.6925
+        },
+        {
+          "read": 81921,
+          "held_out": false,
+          "diagnostic_short_input": false,
+          "first_use": {
+            "actual_read_tokens": 81921,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 97988.7,
+            "prompt_tps": 836.0,
+            "ttft_s": 98.198,
+            "total_s": 100.487,
+            "generated_tokens": 24,
+            "request_sha256": "0056ad8d097014c52dc762d101698106c06c29cae9188fd96215e9d88656a9d9",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            88634.5,
+            88081.7
+          ],
+          "subsequent_TTFT_s": [
+            88.95,
+            88.284
+          ],
+          "median_prompt_ms": 88358.1,
+          "median_PP": 927.1475959759207,
+          "median_TTFT_s": 88.617
+        }
+      ],
+      "approximation": {
+        "training_read_tokens": [
+          16385,
+          32769,
+          49153,
+          65537,
+          81921
+        ],
+        "independent_validation_read_tokens": 57345,
+        "selection_rule": "Minimum whole-length LOO mean relative error;ties within1e-12 prefer affine,quadratic,n_log_n. For warmed channels prefer affine when both its mean and maximum LOO errors are within the maximum training half-range/median of the best model. The56Kpoint is reserved for validation only.",
+        "channels": {
+          "first_prompt_ms": {
+            "candidates": {
+              "affine": {
+                "formula_ms": "a+b*x",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 27970.633701171828,
+                  "b": 56773.76000000005
+                },
+                "residual_ms": [
+                  1043.560000000034,
+                  -1022.3799999999756,
+                  -2035.9199999999983,
+                  2964.7399999999907,
+                  -950.0000000000291
+                ],
+                "leave_one_length_out_error_ms": [
+                  -2608.9000000000597,
+                  1460.5428571428347,
+                  2544.9000000000087,
+                  -4235.342857142852,
+                  2375.0000000000437
+                ],
+                "mean_held_out_relative_error": 0.03928842466318477,
+                "max_held_out_relative_error": 0.060379323512736144,
+                "independent56K": {
+                  "predicted_ms": 77648.54000000001,
+                  "observed_ms": 76298.6,
+                  "error_ms": 1349.9400000000023,
+                  "relative_error": 0.017692854128385085,
+                  "positive_prediction": true
+                }
+              },
+              "quadratic": {
+                "formula_ms": "a+b*x+c*x^2",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 29128.994299234935,
+                  "b": 52802.36491769083,
+                  "c": 2647.5428571421626
+                },
+                "residual_ms": [
+                  712.6171428572707,
+                  -856.9085714285902,
+                  -1704.9771428572276,
+                  3130.211428571376,
+                  -1280.9428571427998
+                ],
+                "leave_one_length_out_error_ms": [
+                  -6235.400000000605,
+                  1363.2636363636702,
+                  3315.233333333541,
+                  -4979.881818181777,
+                  11208.249999999869
+                ],
+                "mean_held_out_relative_error": 0.0776983539565815,
+                "max_held_out_relative_error": 0.14430956871913178,
+                "independent56K": {
+                  "predicted_ms": 77358.96500000007,
+                  "observed_ms": 76298.6,
+                  "error_ms": 1060.3650000000634,
+                  "relative_error": 0.013897568238474406,
+                  "positive_prediction": true
+                }
+              },
+              "n_log_n": {
+                "formula_ms": "a+b*x+c*x*log2(x)",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 31341.332240634172,
+                  "b": 53215.02141870841,
+                  "c": 3859.960052735613
+                },
+                "residual_ms": [
+                  492.613256000368,
+                  -683.7009956964321,
+                  -1536.049703912795,
+                  3152.7493709136033,
+                  -1425.611927304708
+                ],
+                "leave_one_length_out_error_ms": [
+                  -6702.707094961435,
+                  1185.7062601434009,
+                  2891.513043627492,
+                  -4762.616452391638,
+                  9098.833877245837
+                ],
+                "mean_held_out_relative_error": 0.07318194712018801,
+                "max_held_out_relative_error": 0.15512473459993834,
+                "independent56K": {
+                  "predicted_ms": 77254.70958830767,
+                  "observed_ms": 76298.6,
+                  "error_ms": 956.1095883076632,
+                  "relative_error": 0.012531155071097807,
+                  "positive_prediction": true
+                }
+              }
+            },
+            "selected_model": "affine",
+            "minimum_LOO_model": "affine",
+            "training_relative_half_range_envelope": null,
+            "candidates_within_training_envelope": [
+              "affine"
+            ],
+            "empirical_spread_available": false,
+            "training_adjacent_ms_per_token": [
+              0.740203857421875,
+              0.8044372558593746,
+              1.1715148925781254,
+              0.6273620605468748
+            ],
+            "held_out_used_for_fit_or_selection": false
+          },
+          "warmed_prompt_ms": {
+            "candidates": {
+              "affine": {
+                "formula_ms": "a+b*x",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 16188.522460937507,
+                  "b": 56855.03999999999
+                },
+                "residual_ms": [
+                  1120.2999999999956,
+                  -583.5599999999977,
+                  -1093.8700000000026,
+                  -542.7799999999988,
+                  1099.9100000000035
+                ],
+                "leave_one_length_out_error_ms": [
+                  -2800.74999999996,
+                  833.6571428571478,
+                  1367.3375000000015,
+                  775.4000000000233,
+                  -2749.7750000000524
+                ],
+                "mean_held_out_relative_error": 0.03465538901821013,
+                "max_held_out_relative_error": 0.08884655708686581,
+                "independent56K": {
+                  "predicted_ms": 65937.55,
+                  "observed_ms": 64376.7,
+                  "error_ms": 1560.8500000000058,
+                  "relative_error": 0.0242455733207823,
+                  "positive_prediction": true
+                }
+              },
+              "quadratic": {
+                "formula_ms": "a+b*x+c*x^2",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 20065.975304623455,
+                  "b": 43561.34097307462,
+                  "c": 8862.285714285808
+                },
+                "residual_ms": [
+                  12.514285714267317,
+                  -29.66714285713533,
+                  13.915714285729337,
+                  11.112857142856228,
+                  -7.8757142857211875
+                ],
+                "leave_one_length_out_error_ms": [
+                  -109.49999999988358,
+                  47.19772727271629,
+                  -27.058333333479823,
+                  -17.67954545444809,
+                  68.91250000045693
+                ],
+                "mean_held_out_relative_error": 0.0012075781083398778,
+                "max_held_out_relative_error": 0.0034736045705620285,
+                "independent56K": {
+                  "predicted_ms": 64968.23749999999,
+                  "observed_ms": 64376.7,
+                  "error_ms": 591.5374999999913,
+                  "relative_error": 0.009188689386066562,
+                  "positive_prediction": true
+                }
+              },
+              "n_log_n": {
+                "formula_ms": "a+b*x+c*x*log2(x)",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 23392.179609424922,
+                  "b": 49249.514818620635,
+                  "c": 8249.277857758245
+                },
+                "residual_ms": [
+                  -57.150728501550475,
+                  140.24469562341983,
+                  -25.576828846387798,
+                  -140.9775151713111,
+                  83.46037689581863
+                ],
+                "leave_one_length_out_error_ms": [
+                  777.6173067692762,
+                  -243.2189138224494,
+                  48.14670647400635,
+                  212.96390996592527,
+                  -532.6779961381253
+                ],
+                "mean_held_out_relative_error": 0.007998261736993644,
+                "max_held_out_relative_error": 0.024667899825979587,
+                "independent56K": {
+                  "predicted_ms": 65095.87898514512,
+                  "observed_ms": 64376.7,
+                  "error_ms": 719.1789851451249,
+                  "relative_error": 0.011171417378416803,
+                  "positive_prediction": true
+                }
+              }
+            },
+            "selected_model": "quadratic",
+            "minimum_LOO_model": "quadratic",
+            "training_relative_half_range_envelope": 0.005337999493565655,
+            "candidates_within_training_envelope": [
+              "quadratic"
+            ],
+            "empirical_spread_available": true,
+            "training_adjacent_ms_per_token": [
+              0.7635437011718753,
+              0.8363922119140623,
+              0.901174926757812,
+              0.9678009033203132
+            ],
+            "held_out_used_for_fit_or_selection": false
+          },
+          "first_TTFT_ms": {
+            "candidates": {
+              "affine": {
+                "formula_ms": "a+b*x",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 28121.43305053711,
+                  "b": 56816.4
+                },
+                "residual_ms": [
+                  1046.5999999999985,
+                  -1022.5,
+                  -2039.6000000000058,
+                  2960.2999999999884,
+                  -944.8000000000175
+                ],
+                "leave_one_length_out_error_ms": [
+                  -2616.5,
+                  1460.7142857142899,
+                  2549.5,
+                  -4229.0,
+                  2362.0
+                ],
+                "mean_held_out_relative_error": 0.039183947802277776,
+                "max_held_out_relative_error": 0.06032554815207618,
+                "independent56K": {
+                  "predicted_ms": 77836.65,
+                  "observed_ms": 76484.0,
+                  "error_ms": 1352.6499999999942,
+                  "relative_error": 0.01768539825322936,
+                  "positive_prediction": true
+                }
+              },
+              "quadratic": {
+                "formula_ms": "a+b*x+c*x^2",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 29293.994391492884,
+                  "b": 52796.31821289148,
+                  "c": 2679.999999999433
+                },
+                "residual_ms": [
+                  711.600000000064,
+                  -855.0000000000437,
+                  -1704.6000000000786,
+                  3127.7999999999593,
+                  -1279.7999999999447
+                ],
+                "leave_one_length_out_error_ms": [
+                  -6226.500000000044,
+                  1360.227272727272,
+                  3314.5000000000146,
+                  -4976.045454545456,
+                  11198.24999999997
+                ],
+                "mean_held_out_relative_error": 0.0773920055008746,
+                "max_held_out_relative_error": 0.14355705162197782,
+                "independent56K": {
+                  "predicted_ms": 77543.52500000007,
+                  "observed_ms": 76484.0,
+                  "error_ms": 1059.525000000067,
+                  "relative_error": 0.01385289733800621,
+                  "positive_prediction": true
+                }
+              },
+              "n_log_n": {
+                "formula_ms": "a+b*x+c*x*log2(x)",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 31517.014665152037,
+                  "b": 53231.3901996925,
+                  "c": 3888.4549403542233
+                },
+                "residual_ms": [
+                  491.58607257366384,
+                  -681.3208091570705,
+                  -1536.0395755911886,
+                  3149.6972883589187,
+                  -1423.9229761843453
+                ],
+                "leave_one_length_out_error_ms": [
+                  -6688.730797008015,
+                  1181.5784292673634,
+                  2891.4939777250693,
+                  -4758.005905570753,
+                  9088.054305766753
+                ],
+                "mean_held_out_relative_error": 0.07285424002457004,
+                "max_held_out_relative_error": 0.15421416081451628,
+                "independent56K": {
+                  "predicted_ms": 77439.91226461297,
+                  "observed_ms": 76484.0,
+                  "error_ms": 955.912264612969,
+                  "relative_error": 0.01249819916077832,
+                  "positive_prediction": true
+                }
+              }
+            },
+            "selected_model": "affine",
+            "minimum_LOO_model": "affine",
+            "training_relative_half_range_envelope": null,
+            "candidates_within_training_envelope": [
+              "affine"
+            ],
+            "empirical_spread_available": false,
+            "training_adjacent_ms_per_token": [
+              0.74066162109375,
+              0.80487060546875,
+              1.172119140625,
+              0.62860107421875
+            ],
+            "held_out_used_for_fit_or_selection": false
+          },
+          "warmed_TTFT_ms": {
+            "candidates": {
+              "affine": {
+                "formula_ms": "a+b*x",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 16345.531475830081,
+                  "b": 56919.6
+                },
+                "residual_ms": [
+                  1113.2000000000007,
+                  -557.6999999999971,
+                  -1103.0999999999985,
+                  -573.5,
+                  1121.1000000000058
+                ],
+                "leave_one_length_out_error_ms": [
+                  -2783.0000000000036,
+                  796.7142857142826,
+                  1378.875,
+                  819.2857142857101,
+                  -2802.75
+                ],
+                "mean_held_out_relative_error": 0.03450515747505937,
+                "max_held_out_relative_error": 0.08782088704460478,
+                "independent56K": {
+                  "predicted_ms": 66151.05,
+                  "observed_ms": 64568.5,
+                  "error_ms": 1582.550000000003,
+                  "relative_error": 0.024509629308408946,
+                  "positive_prediction": true
+                }
+              },
+              "quadratic": {
+                "formula_ms": "a+b*x+c*x^2",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 20248.735666662833,
+                  "b": 43537.613462611414,
+                  "c": 8921.142857142982
+                },
+                "residual_ms": [
+                  -1.9428571428725263,
+                  -0.1285714285695576,
+                  12.042857142871071,
+                  -15.928571428565192,
+                  5.957142857136205
+                ],
+                "leave_one_length_out_error_ms": [
+                  16.999999999938154,
+                  0.20454545454413164,
+                  -23.416666666656965,
+                  25.340909090897185,
+                  -52.125000000029104
+                ],
+                "mean_held_out_relative_error": 0.00037641802022901334,
+                "max_held_out_relative_error": 0.0005882054233389655,
+                "independent56K": {
+                  "predicted_ms": 65175.29999999999,
+                  "observed_ms": 64568.5,
+                  "error_ms": 606.7999999999884,
+                  "relative_error": 0.009397771359099071,
+                  "positive_prediction": true
+                }
+              },
+              "n_log_n": {
+                "formula_ms": "a+b*x+c*x*log2(x)",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 23577.4607087992,
+                  "b": 49284.22552873587,
+                  "c": 8281.653674055464
+                },
+                "residual_ms": [
+                  -68.87185160375157,
+                  168.9454009875335,
+                  -30.61411476192734,
+                  -170.12056702373957,
+                  100.66113240188861
+                ],
+                "leave_one_length_out_error_ms": [
+                  937.0999313653083,
+                  -292.9930200983508,
+                  57.62906755408039,
+                  256.9880812196352,
+                  -642.4601983737375
+                ],
+                "mean_held_out_relative_error": 0.009594545090984832,
+                "max_held_out_relative_error": 0.02957130694284568,
+                "independent56K": {
+                  "predicted_ms": 65306.07569161695,
+                  "observed_ms": 64568.5,
+                  "error_ms": 737.5756916169485,
+                  "relative_error": 0.011423150477662458,
+                  "positive_prediction": true
+                }
+              }
+            },
+            "selected_model": "quadratic",
+            "minimum_LOO_model": "quadratic",
+            "training_relative_half_range_envelope": 0.004373029594223533,
+            "candidates_within_training_envelope": [
+              "quadratic"
+            ],
+            "empirical_spread_available": true,
+            "training_adjacent_ms_per_token": [
+              0.7665405273437498,
+              0.835235595703125,
+              0.900848388671875,
+              0.971954345703125
+            ],
+            "held_out_used_for_fit_or_selection": false
+          }
+        },
+        "physical_fixed_cost_identified": false,
+        "hardware_saturation_qualified": false,
+        "limits": "One independent process per length,two warmed samples;the half-range is empirical,not a confidence bound. A selected descriptive fit is not a physical law. Keep all residuals and held-out failures;do not extrapolate outside16K..80K,pool other routes,claim a paired speedup,or qualify a throughput target from this curve."
+      },
+      "single_independent_process_per_length": true,
+      "source_unit_adopted": false,
+      "matched_speedup": false,
+      "current9849decode_preserved": false,
+      "physical262144_RESTORE_task_agent_longthinking_qualified": false,
+      "ordinary_teardown_qualified": false,
+      "throughput_target_qualified": false,
+      "inference_adopted": false,
+      "hardware_limiting_resource": "unknown",
+      "next": "Use held-out residuals and actual job/copy/placement work to select the next bounded performance question;repeat uncertain curve evidence prospectively. No mixed-route physical intercept or extrapolation."
+    },
     "source_inputs": {
       "files": 775,
       "sha256": "5ecd0583391f74ffc3f845bca4848d2d439fac0752357fc7e877701f70544f13"
