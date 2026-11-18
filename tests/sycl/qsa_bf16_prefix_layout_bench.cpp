@@ -191,18 +191,25 @@ void run(int cells,int queries,int cap,bool clustered) {
 int main(int argc,char **argv) {
   try {
     std::cout.setf(std::ios::unitbuf);
-    require((argc==2 || argc==3) && (std::string(argv[1])=="--smoke" ||
-        std::string(argv[1])=="--component"),"--smoke|--component [PROCESS] required");
+#if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+    const bool source_admission = argc == 2 && std::string(argv[1]) == "--source-admission";
+#else
+    constexpr bool source_admission = false;
+#endif
+    require(source_admission || ((argc==2 || argc==3) && (std::string(argv[1])=="--smoke" ||
+        std::string(argv[1])=="--component")),"explicit fixture mode required");
     if (argc==3) { process_id=std::stoi(argv[2]);require(process_id>=0 && process_id<3,"process ordinal"); }
     const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gated=g && std::string(g)=="1";
     gate(gated,"before-runtime");rt=sycl_backend::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
         <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gated,"runtime-ready");
-    if (std::string(argv[1])=="--smoke") run(97,3,33,false);
 #if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+    if (source_admission) bench::fullfit_overlap::source_admission(rt);
+    else if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else run(65536,8192,2051,false);
 #else
+    if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else { run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true); }
 #endif
     rt->wait();rt.reset();gate(gated,"after-cleanup");

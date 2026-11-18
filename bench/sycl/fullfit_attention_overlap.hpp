@@ -1,16 +1,20 @@
 #pragma once
 
 // Authored for Strata under the repository LICENSE. Hold the prefix fixture
-// and host USM payload fixed when comparing two native queue groups.
+// and native copy queue fixed when comparing two sources of actual weights.
 #include <level_zero/ze_api.h>
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/launch.hpp"
+#include "strata/core/expert_source.hpp"
+#include "strata/core/pinned.hpp"
+#include "strata/kernels/cpu/expert_layout.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <exception>
 #include <iomanip>
 #include <iostream>
@@ -18,7 +22,9 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <sys/mman.h>
 #include <time.h>
+#include <unistd.h>
 #include <variant>
 #include <vector>
 
@@ -36,6 +42,151 @@ inline void check_ze(ze_result_t result, const char *operation) {
 }
 
 inline constexpr auto backend = sycl::backend::ext_oneapi_level_zero;
+using Clock = std::chrono::steady_clock;
+using Milliseconds = std::chrono::duration<double, std::milli>;
+inline constexpr size_t expert_stride = 1971200;
+
+class LayerSource {
+public:
+    LayerSource(const std::shared_ptr<sycl_backend::Runtime> &runtime, size_t experts)
+        : arena_(experts * expert_stride), context_(sycl::get_native<backend>(runtime->context())) {
+        const auto started = Clock::now();
+        const char *shard = std::getenv("STRATA_FULLFIT_WEIGHT_SHARD");
+        const char *setting = std::getenv("STRATA_FULLFIT_OVERLAP_SOURCE");
+        const std::string_view kind = setting ? setting : "";
+        require(shard && (kind == "staged" || kind == "borrowed"), "missing actual layer source");
+        require(arena_.valid() && arena_.backing == core::PageBacking::NormalPages &&
+                arena_.registered_bytes == 0 && arena_.locked_bytes == 0, "ordinary RAM arena required");
+        kernels::cpu::ExpertLayout layout;
+        layout.native = true;
+        layout.n_layers = 1;
+        layout.n_expert = experts;
+        layout.total = experts * expert_stride;
+        layout.offset = {0};
+        layout.bytes = {expert_stride};
+        layout.gguf_off = {3491172096ull, 3763417856ull, 2691008512ull};
+        layout.fmt.resize(1);
+        layout.fmt[0].up_off = 524800;
+        layout.fmt[0].down_off = 1049600;
+        const auto loaded = core::load_experts_gguf(shard, arena_.data(), layout, 1);
+        require(loaded.ok && loaded.bytes == layout.total, "load actual layer-2 experts");
+        layer_ = core::ResidentExpertLayer::make(arena_.data(), arena_.capacity, 0, experts, expert_stride);
+        const long page = sysconf(_SC_PAGESIZE);
+        require(page == 4096 && layer_.data && layer_.bytes == layout.total &&
+                reinterpret_cast<uintptr_t>(layer_.data) % page == 0 && layer_.bytes % page == 0 &&
+                mprotect(arena_.data(), layer_.bytes, PROT_READ) == 0, "whole read-only arena pages required");
+        fingerprint_ = core::fnv1a64(layer_.data, layer_.bytes);
+        const auto preparing = Clock::now();
+        if (kind == "borrowed") {
+            admit_borrowed(runtime);
+        } else {
+            staging_ = sycl_backend::Allocation(runtime, layer_.bytes, sycl_backend::MemoryKind::Host);
+            std::memcpy(staging_.data(), layer_.data, layer_.bytes);
+            sycl_backend::validate_host_span(staging_.data(), layer_.bytes, runtime->compute());
+        }
+        const auto prepared = Clock::now();
+        std::cout << "fullfit_attention_overlap source=" << kind << " bytes=" << layer_.bytes
+                  << " arena_ms=" << std::setprecision(12) << Milliseconds(preparing - started).count()
+                  << " prepare_ms=" << Milliseconds(prepared - preparing).count()
+                  << " allocation_id=" << allocation_id_ << " type=PASS\n";
+    }
+    LayerSource(const LayerSource &) = delete;
+    LayerSource &operator=(const LayerSource &) = delete;
+    ~LayerSource() noexcept { release(); }
+
+    const uint8_t *data() const { return imported_ ? layer_.data : staging_.as<uint8_t>(); }
+    const core::ResidentExpertLayer &layer() const { return layer_; }
+
+    // Called only after the fixture's native copy list and GPU readers drain.
+    // Scope unwinding destroys those owners before this source.
+    void finish() {
+        require(std::memcmp(layer_.data, data(), layer_.bytes) == 0, "staged payload changed");
+        const bool borrowed = imported_ != nullptr;
+        const auto retiring = Clock::now();
+        release();
+        const double retire_ms = Milliseconds(Clock::now() - retiring).count();
+        if (borrowed) {
+            ze_memory_allocation_properties_t memory{};
+            memory.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
+            check_ze(zeMemGetAllocProperties(context_, layer_.data, &memory, nullptr), "check retired layer");
+            require(memory.type == ZE_MEMORY_TYPE_UNKNOWN, "borrowed layer remains imported");
+        }
+        require(fingerprint_ == core::fnv1a64(layer_.data, layer_.bytes), "ordinary arena payload changed");
+        std::cout << "fullfit_attention_overlap retire_ms=" << std::setprecision(12)
+                  << retire_ms << " source_unchanged=PASS\n";
+    }
+
+private:
+    void admit_borrowed(const std::shared_ptr<sycl_backend::Runtime> &runtime) {
+        const auto driver = sycl::get_native<backend>(runtime->device().get_platform());
+        const auto device = sycl::get_native<backend>(runtime->device());
+        ze_api_version_t version{};
+        ze_device_properties_t props{};
+        props.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
+        check_ze(zeDriverGetApiVersion(driver, &version), "read driver API version");
+        check_ze(zeDeviceGetProperties(device, &props), "read device properties");
+        require(version == ZE_MAKE_VERSION(1, 17) && props.vendorId == 0x8086 && props.deviceId == 0xe20c &&
+                layer_.bytes <= props.maxMemAllocSize &&
+                sycl::get_pointer_type(layer_.data, runtime->context()) == sycl::usm::alloc::unknown,
+                "bounded B570 API 1.17 ordinary memory required");
+        uint32_t count = 0;
+        check_ze(zeDriverGetExtensionProperties(driver, &count, nullptr), "count memory extensions");
+        require(count > 0 && count <= 1024, "unexpected driver extension count");
+        std::vector<ze_driver_extension_properties_t> extensions(count);
+        check_ze(zeDriverGetExtensionProperties(driver, &count, extensions.data()), "read memory extensions");
+        require(count <= extensions.size() &&
+                std::any_of(extensions.begin(), extensions.begin() + count, [](const auto &ext) {
+                    return std::strncmp(ext.name, ZE_EXTERNAL_MEMORY_MAPPING_EXT_NAME, ZE_MAX_EXTENSION_NAME) == 0 &&
+                           ext.version >= ZE_EXTERNAL_MEMMAP_SYSMEM_EXT_VERSION_1_0;
+                }), "external memory mapping extension unavailable");
+        ze_external_memmap_sysmem_ext_desc_t external{};
+        external.stype = ZE_STRUCTURE_TYPE_EXTERNAL_MEMMAP_SYSMEM_EXT_DESC;
+        external.pSystemMemory = arena_.data();
+        external.size = layer_.bytes;
+        ze_host_mem_alloc_desc_t host{};
+        host.stype = ZE_STRUCTURE_TYPE_HOST_MEM_ALLOC_DESC;
+        host.pNext = &external;
+        host.flags = ZE_HOST_MEM_ALLOC_FLAG_MEM_READ_ONLY;
+        check_ze(zeMemAllocHost(context_, &host, layer_.bytes, 0, &imported_), "import read-only arena range");
+        try {
+            require(imported_ == layer_.data, "import returned a different address");
+            ze_memory_allocation_properties_t memory{};
+            memory.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
+            check_ze(zeMemGetAllocProperties(context_, imported_, &memory, nullptr), "read imported source type");
+            void *base = nullptr;
+            size_t bytes = 0;
+            check_ze(zeMemGetAddressRange(context_, imported_, &base, &bytes), "read imported source extent");
+            require(memory.type == ZE_MEMORY_TYPE_HOST && memory.id && base == imported_ && bytes >= layer_.bytes,
+                    "pinned NEO source type, lease or extent differs");
+            allocation_id_ = memory.id;
+        } catch (...) {
+            release();
+            throw;
+        }
+    }
+
+    void release() noexcept {
+        if (imported_) {
+            if (zeMemFree(context_, imported_) != ZE_RESULT_SUCCESS)
+                sycl_backend::cleanup_fail_stop("read-only layer unimport failed");
+            imported_ = nullptr;
+        }
+        staging_ = sycl_backend::Allocation();
+    }
+
+    core::PinnedArena arena_;
+    ze_context_handle_t context_;
+    core::ResidentExpertLayer layer_;
+    sycl_backend::Allocation staging_;
+    void *imported_ = nullptr;
+    uint64_t allocation_id_ = 0;
+    uint64_t fingerprint_ = 0;
+};
+
+inline void source_admission(const std::shared_ptr<sycl_backend::Runtime> &runtime) {
+    LayerSource source(runtime, 4);
+    source.finish();
+}
 
 inline ze_command_list_handle_t immediate_list(sycl::queue &queue) {
     require(queue.get_backend() == backend &&
@@ -130,10 +281,6 @@ struct CopyDrain {
     }
 };
 
-inline uint8_t payload_byte(size_t index) {
-    return uint8_t(1 + (index ^ (index >> 16)) % 251);
-}
-
 inline uint64_t raw_clock_ns() {
     timespec ts{};
     require(clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0, "read observer clock");
@@ -149,35 +296,17 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
             ResetAttention reset_attention, SubmitAttention submit_attention,
             CheckAttention check_attention) {
     const size_t experts = smoke ? 4 : 512;
-    const size_t stride = smoke ? 256 : 1971200;
+    const size_t stride = expert_stride;
     const size_t payload_bytes = experts * stride;
     constexpr size_t guard_bytes = 256;
     constexpr uint8_t guard = 0xa7;
     const size_t bank_bytes = payload_bytes + 2 * guard_bytes;
     const char *clock_setting = std::getenv("STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK");
     const bool observe_clock = clock_setting && std::string_view(clock_setting) == "1";
-    const char *copy_setting = std::getenv("STRATA_FULLFIT_OVERLAP_COPY_ORDINAL");
-    const std::string_view copy_ordinal = copy_setting ? copy_setting : "";
-    require(copy_ordinal == "0" || copy_ordinal == "1", "invalid copy ordinal");
     require(bank_bytes <= runtime->device().get_info<sycl::info::device::max_mem_alloc_size>(),
             "full-fit fixture exceeds maximum single device allocation");
 
-    using Clock = std::chrono::steady_clock;
-    using Milliseconds = std::chrono::duration<double, std::milli>;
-    const auto source_begin = Clock::now();
-    sycl_backend::Allocation host_source(runtime, payload_bytes, sycl_backend::MemoryKind::Host);
-    auto *source = host_source.as<uint8_t>();
-    const auto source_allocated = Clock::now();
-    for (size_t i = 0; i < payload_bytes; ++i) source[i] = payload_byte(i);
-    const auto source_initialized = Clock::now();
-    require(sycl::get_pointer_type(source, runtime->context()) == sycl::usm::alloc::host &&
-            sycl::get_pointer_type(source + payload_bytes - 1, runtime->context()) == sycl::usm::alloc::host,
-            "copy source type or extent differs");
-    std::cout << "fullfit_attention_overlap source=host_usm"
-              << " bytes=" << payload_bytes
-              << " alloc_ms=" << std::setprecision(12) << Milliseconds(source_allocated - source_begin).count()
-              << " fill_ms=" << Milliseconds(source_initialized - source_allocated).count()
-              << " type=PASS\n";
+    LayerSource source(runtime, experts);
     std::vector<uint8_t> observed(bank_bytes);
     sycl_backend::Allocation bank(runtime, bank_bytes, sycl_backend::MemoryKind::Device);
     auto &compute = runtime->compute();
@@ -186,8 +315,7 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     auto *destination = base + guard_bytes;
     sycl_backend::validate_device_span(base, bank_bytes, compute);
     sycl_backend::validate_device_span(base, bank_bytes, copy);
-    sycl_backend::validate_spans({{base, bank_bytes}}, {{source, payload_bytes}}, 1);
-    sycl_backend::validate_host_span(source, payload_bytes, copy);
+    sycl_backend::validate_spans({{base, bank_bytes}}, {{source.data(), payload_bytes}}, 1);
     require(copy.get_context() == compute.get_context() && copy.get_device() == compute.get_device(),
             "unexpected copy queue device or context");
 
@@ -209,11 +337,11 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     require(groups_count >= 2 && (groups[0].flags & compute_copy) == compute_copy &&
             groups[0].numQueues == 1 && groups[1].flags == ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COPY &&
             groups[1].numQueues == 1, "fixture requires single compute/copy and copy-only queue groups");
-    copy_config.ordinal = copy_ordinal == "1" ? 1 : 0;
+    copy_config.ordinal = 1;
     ze_memory_allocation_properties_t memory{};
     memory.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
-    check_ze(zeMemGetAllocProperties(context, source, &memory, nullptr), "check native copy source");
-    require(memory.type == ZE_MEMORY_TYPE_HOST, "native source must be host USM");
+    check_ze(zeMemGetAllocProperties(context, source.data(), &memory, nullptr), "check native copy source");
+    require(memory.type == ZE_MEMORY_TYPE_HOST, "native source must be admitted host memory");
     ze_device_handle_t bank_device{};
     check_ze(zeMemGetAllocProperties(context, base, &memory, &bank_device), "check native destination");
     require(memory.type == ZE_MEMORY_TYPE_DEVICE && bank_device == device,
@@ -223,7 +351,7 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
               << " ordinal=" << copy_config.ordinal << " index=" << copy_config.index
               << " mode=" << copy_config.mode << " flags=" << copy_config.flags
               << " priority=" << copy_config.priority << " domain=PASS\n";
-    // This guard dies before either allocation and before either transfer list.
+    // This guard dies before the native copy list and either buffer owner.
     auto wait_copy = [&] { native.wait(); };
     CopyDrain pending{*runtime, wait_copy};
 
@@ -236,7 +364,7 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     auto submit_copies = [&](size_t count) {
         for (size_t expert = 0; expert < count; ++expert) {
             const size_t offset = expert * stride;
-            native.append(destination + offset, source + offset, stride);
+            native.append(destination + offset, source.data() + offset, stride);
         }
     };
     auto verify_bank = [&](size_t copied_experts) {
@@ -247,7 +375,7 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
         const auto last = first + payload_bytes;
         require(std::all_of(observed.begin(), first, [](uint8_t value) { return value == guard; }) &&
                 std::all_of(last, observed.end(), [](uint8_t value) { return value == guard; }) &&
-                std::equal(first, copied, source) &&
+                std::equal(first, copied, source.layer().data) &&
                 std::all_of(copied, last, [](uint8_t value) { return value == 0; }),
                 "expert payload or guard mismatch");
     };
@@ -311,8 +439,9 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
                       << " payload=PASS guards=PASS output=PASS\n";
         }
     }
-    for (size_t i = 0; i < payload_bytes; ++i)
-        require(source[i] == payload_byte(i), "host copy source changed");
+    wait_copy();
+    runtime->wait();
+    source.finish();
     return repeats * int(arms.size());
 }
 

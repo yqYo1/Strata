@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Owned QSA overlap comparison of two native copy queue groups. Repository LICENSE.
+"""Owned source comparison for actual layer weights on the copy queue. Repository LICENSE.
 
 Build/provenance checks follow this fork's daca8f47e fixture control.
 The engine sources and kernel entry are identical across all arms.
@@ -27,8 +27,8 @@ import request_profile_reader as reader
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'fullfit-attention-copy-ordinal-v1'
-KEY = 'fullfit_attention_copy_ordinal_v1'
+ROOT = B / 'fullfit-attention-layer-source-v1'
+KEY = 'fullfit_attention_layer_source_v1'
 COMPILE_LOGS = ROOT / 'compile'
 ELF = ROOT / 'build/sycl_fullfit_attention_overlap'
 PYTHON = basis.reference.model.PYTHON
@@ -37,19 +37,21 @@ ZE_LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
 ADAPTER = 'bench/sycl/fullfit_attention_overlap.hpp'
 TEST = 'tools/test_fullfit_attention_overlap.py'
-QUEUE_GROUPS = {'ordinal0': 0, 'ordinal1': 1}
-CLEAN_ORDER = ('ordinal0', 'ordinal1', 'ordinal1', 'ordinal0', 'ordinal0', 'ordinal1')
+ARENA_TUS = ('src/core/expert_source.cpp','src/core/pinned.cu','src/platform/memory.cpp')
+SOURCES = ('staged','borrowed')
+CLEAN_ORDER = ('staged','borrowed','borrowed','staged','staged','borrowed')
 CASES = {
-    **{f'{phase}-{group}': (phase, group, 0)
-       for phase in ('smoke', 'trace') for group in QUEUE_GROUPS},
-    **{f'clean-{i}': ('clean', group, i//2) for i, group in enumerate(CLEAN_ORDER)},
+    **{f'{phase}-{kind}': (phase, kind, 0)
+       for phase in ('metadata','smoke','trace') for kind in SOURCES},
+    **{f'clean-{i}': ('clean', kind, i//2) for i, kind in enumerate(CLEAN_ORDER)},
 }
 STAGES = ('host', 'build', *CASES)
 ARMS = ('compute_only', 'copy_only', 'serial_separate', 'deferred_wait')
 FULL_ROUNDS = 5
 COPY = re.compile(r'^zeCommandListAppendMemoryCopy\(([HDMS]2[HDMS])\)\[(\d+)\]$')
-SOURCE_SETUP = re.compile(r'^fullfit_attention_overlap source=host_usm '
-                          r'bytes=(\d+) alloc_ms=(\S+) fill_ms=(\S+) type=PASS$')
+SOURCE_SETUP = re.compile(r'^fullfit_attention_overlap source=(staged|borrowed) '
+                          r'bytes=(\d+) arena_ms=(\S+) prepare_ms=(\S+) allocation_id=(\d+) type=PASS$')
+SOURCE_RETIRE = re.compile(r'^fullfit_attention_overlap retire_ms=(\S+) source_unchanged=PASS$')
 QUEUE_SETUP = re.compile(r'^fullfit_attention_overlap copy_api=native '
                          r'ordinal=(\d+) index=(\d+) mode=(\d+) flags=(\d+) priority=(\d+) domain=PASS$')
 OVERLAP_FLOOR_NS = 1_000_000
@@ -64,13 +66,51 @@ write = basis.reference.core.write
 
 def pins(revision):
     sources = basis.comparison.build.controls(revision, controller=Path(__file__).resolve())
-    names = {ADAPTER, BENCH, TEST, *qsa.NATIVE, *basis.POLICIES}
+    names = {ADAPTER, BENCH, TEST, *qsa.NATIVE, *ARENA_TUS, *basis.POLICIES}
     names.update(SOURCE.git(P, 'ls-tree', '-r', '--name-only', revision, 'include').decode().splitlines())
     for name, raw in SOURCE.blobs(P, revision, sorted(names)):
         require((P/name).read_bytes() == raw, 'commit exact component input: '+name)
         sources[name] = hashlib.sha256(raw).hexdigest()
     require(names <= sources.keys(), 'incomplete native and fixture source pins')
     return sources
+
+
+def weight_asset(assets, layout_proof):
+    layout = Path(layout_proof['path'])
+    require(sha(layout) == assets[str(layout)]['sha256'] == layout_proof['sha256'],
+        'actual model layout changed')
+    line, = [line for line in layout.read_text().splitlines() if line.split()[:1] == ['2']]
+    values = [int(v) for v in line.split()]
+    require(values == [2,22,20,1887436800,1971200,3491172096,3763417856,2691008512]
+        and layout_proof['experts_per_layer']==512 and layout_proof['page_bytes']==4096,
+        'actual layer-2 format, source or extent differs')
+    shard, = [Path(p) for p in assets if p.endswith('-00001-of-00002.gguf')]
+    st = shard.stat()
+    identity = assets[str(shard)]['identity']
+    require(all(getattr(st, 'st_'+a) == identity[b] for a,b in
+        (('dev','dev'),('ino','ino'),('size','bytes'),('mtime_ns','mtime_ns'),('ctime_ns','ctime_ns'))),
+        'actual GGUF shard identity changed')
+    roles = [dict(name=name,offset=offset,bytes=size*512) for name,offset,size in
+             zip(('gate','up','down'),values[5:],(524800,524800,921600))]
+    require(all(r['offset']+r['bytes'] <= st.st_size for r in roles), 'real weights exceed shard extent')
+    return dict(path=str(shard),identity=identity,sha256=assets[str(shard)]['sha256'],roles=roles,
+                layout=dict(path=str(layout),sha256=layout_proof['sha256']),layer=2,expert_count=512)
+
+
+def hash_roles(asset):
+    hashes = []
+    with Path(asset['path']).open('rb') as shard:
+        for role in asset['roles']:
+            shard.seek(role['offset'])
+            remaining = role['bytes']
+            digest = hashlib.sha256()
+            while remaining:
+                data = shard.read(min(remaining,8 << 20))
+                require(data, 'short actual GGUF role read')
+                digest.update(data)
+                remaining -= len(data)
+            hashes.append(digest.hexdigest())
+    return hashes
 
 
 def platform():
@@ -89,12 +129,13 @@ def platform():
     resource = validation.committed(RESULT, ('eager_request_profile_v2',))
     require(resource['stage'] == 'closed' and resource['decision']['fresh_pair_within_observer_budget'],
         'closed 64K resource evidence required')
-    copy_api = validation.committed(RESULT, ('fullfit_attention_copy_api_v1',))
-    require(copy_api['stage'] == 'closed' and copy_api['ownership_closed']
-        and not copy_api['active'] and not copy_api['decision']['eligible_same_ordinal_native_gain']
-        and copy_api['artifact_retirement']['complete']
-        and not (B/'fullfit-attention-copy-api-v1').exists(),
-        'preserve closed copy API outcome and retire the old generation')
+    ordinal = validation.committed(RESULT, ('fullfit_attention_copy_ordinal_v1',))
+    require(ordinal['stage'] == 'closed' and ordinal['ownership_closed']
+        and not ordinal['active'] and ordinal['decision']['eligible_native_ordinal_overlap']
+        and ordinal['artifact_retirement']['complete']
+        and not (B/'fullfit-attention-copy-ordinal-v1').exists(),
+        'require successful fixed-API ordinal test and retire the old generation')
+    model_weights = weight_asset(speed['model_assets'],ordinal['next_source_layout_check'])
     copy_engine = validation.committed(pti.RESULT, ('prefill_copy_engine_v6',))
     ze_check = copy_engine['validation_provider']
     require(copy_engine['stage'] == 'closed' and copy_engine['ownership_closed']
@@ -116,7 +157,8 @@ def platform():
         compiler_sha256=native['toolchain'][COMPILER], boot=speed['boot'], driver=speed['driver'],
         runtime_manifest=speed['runtime_manifest'], preload=speed['native_validation_probe'],
         environment_template=speed['environment_template'], tools=tools,
-        resource_sha256=signature(resource), prior_evidence_sha256=signature(copy_api),
+        resource_sha256=signature(resource), prior_evidence_sha256=signature(ordinal),
+        model_weights=model_weights,
         ze_loader=dict(path=ZE_LOADER,sha256=runtime[ZE_LOADER]), ze_validation=ze_check)
 
 
@@ -126,13 +168,15 @@ def compile_commands():
         '-DSTRATA_CPU_SERVICE_PROFILE=1', '-fno-fast-math', '-ffp-contract=off',
         '-I'+str(P/'include'), '-I'+str(P/'include/strata/sycl/compat'), '-I'+str(P/'bench/sycl')]
     commands, objects = [], []
-    for i, name in enumerate([*qsa.NATIVE, BENCH]):
+    for i, name in enumerate([*qsa.NATIVE, BENCH, *ARENA_TUS]):
         obj = ROOT/'build'/f'{i}.o'
         extra = ['-DSTRATA_QSA_BENCH_FULLFIT_OVERLAP=1'] if name == BENCH else []
+        if name in ARENA_TUS:
+            extra = ['-x','c++','-fsycl-host-only','-ffunction-sections','-fdata-sections']
         commands.append([COMPILER, *flags, *extra, '-MD', '-MF', str(obj.with_suffix('.d')),
                          '-c', str(P/name), '-o', str(obj)])
         objects.append(str(obj))
-    commands.append([COMPILER, *flags, *objects, ZE_LOADER, '-Wl,-t', '-pthread', '-ldl', '-o', str(ELF)])
+    commands.append([COMPILER, *flags, *objects, ZE_LOADER, '-Wl,-t,--gc-sections', '-pthread', '-ldl', '-o', str(ELF)])
     return commands
 
 
@@ -144,7 +188,7 @@ def compile_environment(native):
 
 
 def case_environment(pin, mode):
-    phase, group, _ = CASES[mode]
+    phase, kind, _ = CASES[mode]
     path = ROOT/mode
     template = pin['environment_template']
     old = template['STRATA_MEASUREMENT_ROOT']
@@ -155,14 +199,15 @@ def case_environment(pin, mode):
         UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(path/'validation.log'),
         STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK='1' if phase == 'trace' else '0',
-        STRATA_FULLFIT_OVERLAP_COPY_ORDINAL=str(QUEUE_GROUPS[group]))
+        STRATA_FULLFIT_OVERLAP_SOURCE=kind, STRATA_FULLFIT_WEIGHT_SHARD=pin['model_weights']['path'],
+        STRATA_ARENA_LOCK='0', STRATA_NO_LARGEPAGES='1')
     shim = pin['preload']['library']['path']
     if phase == 'trace':
         env.update(STRATA_UNITRACE_TARGET_PRELOAD=shim, UNITRACE_SystemTime='1',
             UNITRACE_FollowChildProcess='1', UNITRACE_TraceOutputDir=str(path/'trace'))
     else:
         env['LD_PRELOAD'] = shim
-    if phase == 'smoke':
+    if phase in ('metadata','smoke'):
         env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
             UR_LOG_TRACING='level:info;flush:info;output:stderr',
             ZE_ENABLE_VALIDATION_LAYER='1', ZE_ENABLE_PARAMETER_VALIDATION='1',
@@ -178,7 +223,8 @@ def case_environment(pin, mode):
 
 def case_command(pin, mode):
     phase, _, process = CASES[mode]
-    target = [str(ELF), '--smoke'] if phase == 'smoke' else [str(ELF), '--component', str(process)]
+    short_modes = {'metadata':'--source-admission','smoke':'--smoke'}
+    target = [str(ELF), short_modes[phase]] if phase in short_modes else [str(ELF), '--component', str(process)]
     if phase == 'trace':
         return [pin['tools']['artifacts']['unitrace']['path'], '--device-timing',
             '--chrome-device-logging', '--chrome-event-buffer-size', '128', *target]
@@ -195,7 +241,7 @@ def audit_build(row, link_log, native):
     ext[ZE_LOADER] = loader['sha256']
     compiled = {}
     deps = sorted((ROOT/'build').glob('*.d'))
-    require(len(deps) == len(qsa.NATIVE)+1, 'one dependency file per fresh translation unit')
+    require(len(deps) == len(qsa.NATIVE)+1+len(ARENA_TUS), 'one dependency file per fresh translation unit')
     for dep in deps:
         for name in shlex.split(dep.read_text().replace('\\\n', ' ').split(':',1)[1]):
             path = Path(name).resolve()
@@ -227,11 +273,11 @@ def audit_build(row, link_log, native):
 
 
 def samples(text, mode):
-    phase, group, process = CASES[mode]
+    phase, kind, process = CASES[mode]
     smoke = phase == 'smoke'
     traced = phase == 'trace'
     rounds = 1 if smoke else FULL_ROUNDS
-    rows, clocks, cases, setup, queues = [], [], [], [], []
+    rows, clocks, cases, setup, retired, queues = [], [], [], [], [], []
     for line in text.splitlines():
         if line.startswith('fullfit_attention_overlap process='):
             pairs = [v.split('=', 1) for v in line.split()[1:]]
@@ -243,8 +289,13 @@ def samples(text, mode):
         elif line.startswith('fullfit_attention_overlap source='):
             match = SOURCE_SETUP.fullmatch(line)
             require(match is not None, 'invalid source setup and allocation type proof')
-            size, alloc, fill = match.groups()
-            setup.append(dict(kind='host_usm', bytes=int(size), alloc_ms=float(alloc), fill_ms=float(fill)))
+            source_kind, size, load, prepare, alloc_id = match.groups()
+            setup.append(dict(kind=source_kind,bytes=int(size),arena_ms=float(load),
+                              prepare_ms=float(prepare),allocation_id=int(alloc_id)))
+        elif line.startswith('fullfit_attention_overlap retire_ms='):
+            match = SOURCE_RETIRE.fullmatch(line)
+            require(match is not None, 'missing retired-source integrity proof')
+            retired.append(float(match[1]))
         elif line.startswith('fullfit_attention_overlap copy_api='):
             match = QUEUE_SETUP.fullmatch(line)
             require(match is not None, 'invalid queue setup proof')
@@ -253,6 +304,15 @@ def samples(text, mode):
                                flags=int(flags),priority=int(priority)))
         elif line.startswith('case cells='):
             cases.append(line)
+    require(len(setup)==len(retired)==1 and setup[0]['kind']==kind
+        and setup[0]['bytes']==(7884800 if phase in ('metadata','smoke') else 1009254400)
+        and bool(setup[0]['allocation_id'])==(kind=='borrowed')
+        and all(math.isfinite(v) and v>0 for v in (setup[0]['arena_ms'],setup[0]['prepare_ms'],retired[0])),
+        'wrong source kind, layer extent, timing or allocation proof')
+    source = dict(setup[0],retire_ms=retired[0])
+    if phase == 'metadata':
+        require(not (rows or clocks or cases or queues), 'unexpected application work during source admission')
+        return dict(source=source,samples=[])
     shape = 'cells=97 queries=3 cap=33' if smoke else 'cells=65536 queries=8192 cap=2051'
     require(cases == [f'case {shape} pattern=gather samples={len(ARMS)*rounds} full_bits=PASS guards=PASS inputs=PASS status=PASS']
         and len(rows) == rounds * len(ARMS) and len(clocks) == 1
@@ -260,11 +320,8 @@ def samples(text, mode):
         'fixture shape, sample count or clock-overhead screen changed')
     require(not smoke or 'fullfit_attention_overlap cancel_after_copy=PASS' in text.splitlines(),
         'missing accepted-copy cancellation check')
-    require(len(setup) == 1 and setup[0]['bytes'] == (1024 if smoke else 1009254400)
-        and all(math.isfinite(setup[0][k]) and setup[0][k] > 0 for k in ('alloc_ms','fill_ms')),
-        'wrong source kind, extent or setup time')
     require(len(queues) == 1
-        and (queues[0]['ordinal'],queues[0]['index'],queues[0]['mode']) == (QUEUE_GROUPS[group],0,2)
+        and (queues[0]['ordinal'],queues[0]['index'],queues[0]['mode']) == (1,0,2)
         and queues[0]['flags'] & 2 and not queues[0]['flags'] & 4,
         'wrong native queue configuration')
     result, previous = [], 0
@@ -272,7 +329,7 @@ def samples(text, mode):
         round_n, order = divmod(i, len(ARMS))
         arm = ARMS[(order+round_n+2*process) % len(ARMS)]
         copies = (4 if smoke else 512) if arm != 'compute_only' else 0
-        requested = copies * (256 if smoke else 1971200)
+        requested = copies * 1971200
         attention = int(arm != 'copy_only')
         elapsed = float(row['milliseconds'])
         lo, hi = int(row['raw_start']), int(row['raw_end'])
@@ -287,7 +344,7 @@ def samples(text, mode):
         previous = hi
         result.append(dict(round=round_n, arm=arm, milliseconds=elapsed, copies=copies,
             requested_bytes=requested, attention_calls=attention, raw_start=lo, raw_end=hi))
-    return dict(clock_pair_max_s=clocks[0], source=setup[0], queue=queues[0], samples=result)
+    return dict(clock_pair_max_s=clocks[0], source=source, queue=queues[0], samples=result)
 
 
 def timeline(trace, points, lifetime):
@@ -339,11 +396,11 @@ def assessment(outcomes):
     clean = [row for row in outcomes if row['mode'].startswith('clean-')]
     traces = [row for row in outcomes if row['mode'].startswith('trace-')]
     require([p['mode'] for p in clean] == [f'clean-{i}' for i in range(len(CLEAN_ORDER))]
-        and [p['mode'] for p in traces] == [f'trace-{group}' for group in QUEUE_GROUPS]
+        and [p['mode'] for p in traces] == [f'trace-{kind}' for kind in SOURCES]
         and len({p['pid'] for p in [*clean,*traces]}) == 8
-        and all(row['timing']['queue']['ordinal'] == QUEUE_GROUPS[CASES[row['mode']][1]]
-                for row in [*clean,*traces]),
-        'matched copy ordinal, order and independent processes required')
+        and all(row['timing']['source']['kind']==CASES[row['mode']][1]
+                and row['timing']['queue']['ordinal']==1 for row in [*clean,*traces]),
+        'matched source, fixed copy queue, order and independent processes required')
     def medians(row):
         return {arm: statistics.median(p['milliseconds'] for p in row['timing']['samples']
                     if p['arm'] == arm and p['round'] > 0)
@@ -351,12 +408,12 @@ def assessment(outcomes):
     warmed = [medians(row) for row in clean]
     first = [{p['arm']:p['milliseconds'] for p in row['timing']['samples'] if p['round'] == 0}
              for row in clean]
-    pairs = [{group: index for index,group in enumerate(CLEAN_ORDER[i:i+2], start=i)}
+    pairs = [{kind: index for index,kind in enumerate(CLEAN_ORDER[i:i+2], start=i)}
              for i in range(0,len(CLEAN_ORDER),2)]
     def time_ratios(rows):
         ratios = {}
         for arm in ARMS:
-            values = [rows[pair['ordinal1']][arm]/rows[pair['ordinal0']][arm] for pair in pairs]
+            values = [rows[pair['borrowed']][arm]/rows[pair['staged']][arm] for pair in pairs]
             ratios[arm] = dict(paired=values, geometric=statistics.geometric_mean(values),
                                all_three_faster=all(v < 1 for v in values))
         return ratios
@@ -366,25 +423,31 @@ def assessment(outcomes):
                     for key in ('copy_union_ns','qsa_union_ns','overlap_ns')} for arm in ARMS}
     trace_cost, overlap, device = {}, {}, {}
     for trace in traces:
-        group = CASES[trace['mode']][1]
-        control = warmed[CLEAN_ORDER.index(group)]
+        kind = CASES[trace['mode']][1]
+        control = warmed[CLEAN_ORDER.index(kind)]
         observed = medians(trace)
-        trace_cost[group] = {arm: observed[arm]/control[arm] for arm in ARMS}
-        device[group] = device_medians(trace)
+        trace_cost[kind] = {arm: observed[arm]/control[arm] for arm in ARMS}
+        device[kind] = device_medians(trace)
         windows = [p for p in trace['timeline'] if p['arm']=='deferred_wait' and p['round']>0]
         require([p['round'] for p in windows] == list(range(1,FULL_ROUNDS)),
-            'actual warmed ordinal trace order differs')
-        overlap[group] = [p['overlap_ns'] for p in windows]
-    repeated_overlap = all(candidate - base >= OVERLAP_FLOOR_NS
-                           for base,candidate in zip(overlap['ordinal0'],overlap['ordinal1']))
+            'actual warmed source trace order differs')
+        overlap[kind] = [p['overlap_ns'] for p in windows]
+    sustained_overlap = {kind:all(v>=OVERLAP_FLOOR_NS for v in spans) for kind,spans in overlap.items()}
+    lifecycle = []
+    for median, row in zip(warmed,clean):
+        source = row['timing']['source']
+        lifecycle.append(source['prepare_ms']+median['deferred_wait']+source['retire_ms'])
+    layer_ratios = [lifecycle[pair['borrowed']]/lifecycle[pair['staged']] for pair in pairs]
     ratios = time_ratios(warmed)
     return dict(clean_progression=list(CLEAN_ORDER), paired_clean_indices=pairs, warmed_ratios=ratios,
         first_cycle_ratios=time_ratios(first), clean_process_warmed_medians_ms=warmed, clean_first_cycle_ms=first,
         traced_vs_first_matching_clean=trace_cost,
         observed_device_interval_medians_ns=device, warmed_deferred_overlap_ns=overlap,
-        overlap_floor_ns=OVERLAP_FLOOR_NS, repeated_extra_overlap=repeated_overlap,
-        eligible_native_ordinal_overlap=ratios['deferred_wait']['all_three_faster'] and repeated_overlap,
-        next_comparison_prerequisite='Keep any eligible queue selection fixed while validating ordinary RAM source admission and the actual prefill buffer owners.',
+        overlap_floor_ns=OVERLAP_FLOOR_NS,sustained_overlap=sustained_overlap,
+        clean_layer_lifecycle_ms=lifecycle,layer_lifecycle_paired_ratios=layer_ratios,
+        layer_lifecycle_geometric=statistics.geometric_mean(layer_ratios),
+        eligible_borrowed_layer_source=all(v<1 for v in layer_ratios) and sustained_overlap['borrowed'],
+        next_comparison_prerequisite='Validate the full production ArenaExpertSource owner and actual expert demand before evaluating a model route.',
         model_qualified=False, physical_bandwidth_or_saturation_qualified=False)
 
 
@@ -416,19 +479,21 @@ def prepare():
     native, pin = platform()
     require(all(inputs[p] == native['project']['source_sha256'][p] for p in qsa.NATIVE),
         'maintain the native14508 sources for all nonfixture translation units')
+    role_hashes = hash_roles(pin['model_weights'])
     ROOT.mkdir(mode=0o700)
     for name in ('build','tmp'): (ROOT/name).mkdir(mode=0o700)
     save(dict(stage='prepared', source_commit=revision, sources=inputs, platform=pin,
         compile_environment=compile_environment(native), commands=compile_commands(),
-        cases=frozen_cases(pin), results=[],
+        cases=frozen_cases(pin), role_sha256_before=role_hashes, results=[],
         active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=768<<20,
-        plan=dict(order=STAGES, compiled_translation_units=6,
-            unit='Change only the explicit native immediate copy-list queue group from compute/copy ordinal 0 to copy-only ordinal 1. Verify one queue per group and the same index 0, flags, mode, priority, context and device. Hold append/drain, host USM, QSA 65536-cell/8192-query/cap2051 on ordinal 0, waits and 512 x 1971200-byte uploads fixed.',
-            safety='Build the disposable third image beside both reference engines. Check same-context USM, guards, output and accepted-copy exception unwind in both short processes with UR and Level Zero validation. Run two device-only traces, then remove observers for speed. Keep copy offload and direct submission disabled throughout. Stop on any API, owner, validation, timeout or device-fault error.',
-            decision='Six independent clean processes in AB/BA/AB order. Both processes of each pair use the same rotating schedule. Require 20 exact payload/guard/output samples per process, at least 10ms and clock-pair overhead at most 0.1%. Separate first cycle and four subsequent cycles. Advance only with all three deferred-wait warmed median ratios below 1 and at least 1ms additional observed overlap in every matched warmed deferred-wait trace round. Other schedules are controls.',
-            limits='Repeated synthetic payloads with no production staging cost. Device intervals establish neither physical bus traffic nor hardware saturation. An eligible result still needs independent ordinary-RAM admission, exact-demand prefill and model validation. No model/decode/quality/full-context qualification.',
+        plan=dict(order=STAGES, compiled_translation_units=len(qsa.NATIVE)+1+len(ARENA_TUS),
+            unit='Load actual layer-2 IQ2_S/IQ4_NL via the production GGUF packer into a one-layer PinnedArena. In both arms create a whole-page immutable ResidentExpertLayer. Compare staged Host USM with a same-address read-only import on the pinned B570 NEO provider. Fix native copy ordinal 1, index 0, append/drain, QSA on ordinal 0, 512 x 1971200-byte extents and wait schedule.',
+            safety='Two metadata-only four-expert admissions and unimports with zero app enqueues, then two four-expert validated smoke cases including cancellation after an accepted copy. Then trace full-layer copy/QSA schedules and remove observers for speed. Same context, range, distinct buffers, exact content and source unchanged after unimport. Hold owners through checked drain. Stop on first API, validation, timeout, owner or device-fault failure.',
+            inputs='Pin identity and prior hash of the existing GGUF shard, exact layout hash and three actual layer role slice hashes before and after. Load only layer 2 into anonymous normal pages without arena locking. Reuse the real allocation and packer without loading the full model or persisting weight copies.',
+            decision='Six independent clean processes in AB/BA/AB order and identical schedule rotations within pairs. Require all 20 validated samples per process, >=10ms and <=0.1% timer overhead. Record first cycle, four warmed cycles and common loading separately. Compute prepare plus warmed deferred median plus retire for each layer. Advance the borrowed source only if its lifecycle time is lower in all three pairs and its warmed trace overlap remains at least 1ms in all four deferred windows.',
+            limits='The QSA workload is the same synthetic input to real kernels and independent of the copied weights. Only a one-layer production allocator, packer and borrowed view are tested. The full engine ArenaExpertSource owner, actual demand, end-to-end timing, decode, quality and physical context require independent tests.',
             retention='Keep individual timings, allocation and fill costs, device-window aggregates and source/build/fault proof. Retire the fixture generation and normal output after closure and exact provenance recovery.')))
-    print('Prepared fixed-API copy ordinal comparison; commit exact plan before running.')
+    print('Prepared actual layer source comparison; commit exact plan before running.')
 
 
 def run_device(row, mode, scope, path, result):
@@ -440,7 +505,8 @@ def run_device(row, mode, scope, path, result):
     art = row['platform']['tools']['artifacts']
     mapping_row = dict(admission=dict(runtime_manifest=row['platform']['runtime_manifest'], tools=dict(artifacts=art)),
         preload=dict(row['platform']['preload'],level_zero_loader=row['platform']['ze_loader']), fixture=row['binary'])
-    if phase == 'smoke':
+    checked = phase in ('metadata','smoke')
+    if checked:
         mapping_row['preload']['level_zero_validation'] = row['platform']['ze_validation']
     maps = []
     def observe(io, entry):
@@ -453,11 +519,12 @@ def run_device(row, mode, scope, path, result):
             if gate == 'before-runtime':
                 environ = Path('/proc',str(entry['pid']),'environ').read_bytes().split(b'\0')
                 keys = ('STRATA_TEST_MAIN_GATES', 'STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK',
-                    'STRATA_FULLFIT_OVERLAP_COPY_ORDINAL',
+                    'STRATA_FULLFIT_OVERLAP_SOURCE','STRATA_FULLFIT_WEIGHT_SHARD',
+                    'STRATA_ARENA_LOCK','STRATA_NO_LARGEPAGES',
                     'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission',
                     'STRATA_SYCL_PREFILL_SAME_QUEUE', 'UR_ENABLE_LAYERS', 'UR_LOG_VALIDATION',
                     'ZES_ENABLE_SYSMAN', 'ONEAPI_DEVICE_SELECTOR')
-                if phase == 'smoke':
+                if checked:
                     keys += ('ZE_ENABLE_VALIDATION_LAYER', 'ZE_ENABLE_PARAMETER_VALIDATION',
                              'ZE_ENABLE_THREADING_VALIDATION', 'ZE_ENABLE_HANDLE_LIFETIME')
                 require(all(f'{key}={env[key]}'.encode() in environ for key in keys),
@@ -465,9 +532,9 @@ def run_device(row, mode, scope, path, result):
             else:
                 maps.append(dict(phase=gate,**pti_probe.mapped(entry['pid'],mapping_row,provider_check)))
             if gate == 'runtime-ready':
-                result['GPU_work_admitted'] = True
+                result['GPU_work_admitted'] = phase != 'metadata'
             if gate == 'after-cleanup':
-                result['GPU_executed'] = True
+                result['GPU_executed'] = phase != 'metadata'
             io.send(b'X')
         require(io.line(45) == 'fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED',
             'fixture did not report normal completion after the cleanup gate')
@@ -484,15 +551,15 @@ def run_device(row, mode, scope, path, result):
     require(probe['loader'] == env['STRATA_UR_PROBE_EXPECTED_LOADER']
         and len(maps) == 2 and 'fixture_status=PASS' in text
         and (not (path/'validation.log').exists() or not (path/'validation.log').stat().st_size)
-        and (phase != 'smoke' or ('urEnqueue' in logs and not re.search(
+        and (not checked or (('urEnqueue' in logs)==(phase=='smoke') and not re.search(
             r'\b(?:VALIDATION ERROR|ERROR_INVALID|THREADING VIOLATION)\b',logs,re.I))),
         'native validation, loader or fixture gate differs')
     timing = samples(text,mode)
-    if mode != 'smoke-ordinal0':
-        smoke = next(stage for stage in row['results'] if stage['mode'] == 'smoke-ordinal0')
-        fields = ('api','index','mode','flags','priority')
+    if phase != 'metadata' and mode != 'smoke-staged':
+        smoke = next(stage for stage in row['results'] if stage['mode'] == 'smoke-staged')
+        fields = ('api','ordinal','index','mode','flags','priority')
         require(all(timing['queue'][name] == smoke['timing']['queue'][name] for name in fields),
-            'queue configuration differs from the bounded ordinal-0 control')
+            'queue configuration differs from the bounded staged control')
     result.update(validation=probe, timing=timing)
     if phase == 'trace':
         traces = sorted((path/'trace').glob('*.json'))
@@ -560,8 +627,11 @@ def run_stage(mode):
             ownership_closed=result['ownership_closed'])
         if mode == STAGES[-1] and result['passed']:
             try:
+                require(hash_roles(row['platform']['model_weights']) == row['role_sha256_before'],
+                    'actual GGUF role slices changed during comparison')
+                row['role_sha256_after_matches'] = True
                 decision = assessment(row['results'])
-            except (RuntimeError, ValueError, KeyError) as error:
+            except (RuntimeError, ValueError, KeyError, OSError) as error:
                 result.update(passed=False,error=repr(error))
                 row['stage'] = 'failed'
             else:
