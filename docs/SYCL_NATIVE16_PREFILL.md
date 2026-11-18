@@ -2442,7 +2442,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retained eager-bank fixture,4experts/256and512strides/2layers,normal and
   cancellation cases. Pin original collector/source/provider identities,
   checked drains,quiet validation,normal closure and enclosing RAW clocks;
-  no model launch until that gate passes. No native rebuild is required.
+  no model launch until that gate passes. It is prepared at`98e1ac6b3`,
+  with776committed inputs and three host regressions passing. Control and
+  collector both close normal0/reapedempty with both original numerical/
+  cancellation cases,quiet validation and no fresh fault. The single trace
+  has positive GPUintervals inside the actual enclosing RAW lifetime;
+  source/fixture/collector/provider hashes remain unchanged. This qualifies
+  the bounded collector probe,not model overhead,complete service/count
+  coverage,physical saturation or ordinary teardown. No native rebuild.
   Retire a superseded generation
   before another native build. The limiting arithmetic/VRAM/PCIe/submission
   resource remains unknown;this timing cohort is not a saturation measurement.

@@ -421327,7 +421327,7 @@
     }
   },
   "eager_pti_probe_v1": {
-    "stage": "ready",
+    "stage": "closed",
     "source_commit": "98e1ac6b3001db19381c456ff1778b7bfe260713",
     "component_gate": {
       "key": "prefill_window_device_v1",
@@ -421571,10 +421571,82 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "label": "trace",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "GPU_executed": true,
+        "observed_native_exit_code": 0,
+        "cases": {
+          "cases": [
+            {
+              "experts": 4,
+              "source_stride": 256,
+              "layers": 2,
+              "cancellations": 0,
+              "refusals": 4
+            },
+            {
+              "experts": 4,
+              "source_stride": 512,
+              "layers": 2,
+              "cancellations": 2,
+              "refusals": 4
+            }
+          ]
+        },
+        "validation": {
+          "pid": 1309892,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "initialized_ELFs": 34,
+          "sha256": "0298660a1d07d23e89a5aa2c7632c0bb9e64d25033b08dd37ed4e16c69843a9f",
+          "source": "same-PID glibc constructors;not complete live-map or saturation coverage"
+        },
+        "native_identity": {
+          "pid": 1309892,
+          "start_ticks": 335005428,
+          "sid": 1309892,
+          "pgid": 1309892
+        },
+        "native_exit_code": 0,
+        "enclosing_raw_ns": {
+          "begin": 3350027830806729,
+          "end": 3350028093468128
+        },
+        "GPU_events": 48,
+        "GPU_service_ns": 416642,
+        "observed_GPU_union_ns": 416642,
+        "raw_clock_mapping_checked": true,
+        "complete_service_count_coverage_qualified": false,
+        "trace_sha256": "0e5b3addca7b832811c4049fbf17456a54ed1e7038cd1515cf88575d9d878b0d",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
