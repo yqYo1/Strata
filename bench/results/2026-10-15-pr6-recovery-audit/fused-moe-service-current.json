@@ -422185,6 +422185,16 @@
       "sha256": "5ecd0583391f74ffc3f845bca4848d2d439fac0752357fc7e877701f70544f13"
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "post_run_replay_audit": {
+      "first_attempt_passed": false,
+      "first_error": "AssertionError from direct Python decision equality after JSON reload",
+      "sole_difference": "approximation.training_read_tokens:Python tuple versus stored JSON array/list",
+      "original_measured_values_changed": false,
+      "original_model_outcomes_changed": false,
+      "canonical_JSON_replay_exact": true,
+      "decision_sha256": "de82487c2ce6612e670e50cc69cff6c41c1d62fc33087d883569122f4c98fc75",
+      "resolution": "Historical decisions are JSON;compare canonical serialized JSON identity,which is exact for every value and array element. Keep the original model source,gate,outcomes and numeric fits unchanged. Full source/generated-input and ownership retirement audit remains pending."
+    }
   }
 }
