@@ -427299,7 +427299,7 @@
     "full_evidence_commit": "6bdb37b3a3feacee9516f5bdfa67f9396c6e28b1"
   },
   "fullfit_attention_overlap_v1": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "2817b02d31a370f596b402e6ca67deddd6f8159b",
     "platform": {
       "original_binary": {
@@ -427719,6 +427719,15 @@
         "GPU_executed": false,
         "host_checks": true,
         "ownership_closed": true
+      },
+      {
+        "mode": "build",
+        "passed": false,
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "compiler_commands": 0,
+        "phase": "controller_before_owner",
+        "error": "FileExistsError: prepare created build output directory and run_stage attempted to create the same path for owned logs"
       }
     ],
     "active": false,
@@ -427743,9 +427752,20 @@
       "limits": "Single synthetic weight slab and one real kernel entry, not model speed or physical PCIe measurement. Chosen data do not represent all layers. No engine/decode/quality/full-context qualification.",
       "retention": "Keep the timing and device-window aggregates, source/recipe/fault proof and decisions. Retire instrumented logs and the one fixture generation after closure and exact provenance recovery."
     },
+    "failed_before_compiler": true,
     "source_inputs": {
       "files": 337,
       "sha256": "07281dd78f07163cbab4b9f311b113635c4963c5c2dbd07cffe94344fe35befc"
+    },
+    "raw_retirement": {
+      "complete": false,
+      "original_inputs": 337,
+      "host_owner_closed": true,
+      "compiler_commands": 0,
+      "files": 4,
+      "bytes": 60591,
+      "manifest_sha256": "209cce08f1e1fa84fde9c39e47a9bf03b562c061cf36a9d761776c414a1b9a4f",
+      "manifest_bytes": 746
     }
   }
 }
