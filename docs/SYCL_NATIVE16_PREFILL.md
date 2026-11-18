@@ -2275,8 +2275,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   dequants fall33606/33785/33584to19079/19107/19085. Requested expert H2Dfalls
   68.54..68.95GBto38.95..39.01GB;this is payload,not measured wire traffic.
   Traced warmed time149.73605sversus136.69505sis mechanism evidence,not the
-  clean repeated-gain decision. Next collect the three opposite-order clean
-  process pairs;the combination remains unprepared.
+  clean repeated-gain decision. The first two opposite-order clean pairs
+  also close normally with quiet validation and no fresh fault. New/reference
+  warmed-time ratios are0.914916and0.908997;new process PPis952.034and951.557.
+  All seven processes/21samples are preserved. The final clean pair and15
+  final model hashes remain pending;no completed performance/adoption gate
+  is claimed and the combination remains unprepared. Resume with process7
+  (window10reference),then8(window16candidate),committing each before next.
   Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
   RESTORE qualification remain unresolved. Full relocation evidence is
