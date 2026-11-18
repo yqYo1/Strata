@@ -2371,6 +2371,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep bank384/window10/chunk8192fixed;16Kis diagnostic,not long-input adoption
   evidence. Commit its controller,repetition/order,approximation/held-out rule
   and stopping criteria before preparation or new execution.
+  The prospective controller uses traced16K/80Kadmissions followed by clean
+  64K/16K/80K/32K/48K/56Kprocesses,three thinking-on24-output requests each.
+  First use and the median subsequent2remain separate. Fit affine/quadratic/
+  NlogNmodels to the five declared training lengths,choose by whole-length
+  LOOerror with a training-spread preference for an adequate affine model,
+  then report independent56Kprediction errors.56Knever changes coefficients
+  or selection. Preserve competing models within the empirical spread;one
+  process per length does not establish independent repetitions or a physical
+  law. Same-length traced/clean work and the preceding64Keager work must
+  match exactly. No native build or source-unit adoption is implied.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for that immediate question;retire a superseded generation
