@@ -2604,8 +2604,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the reference. Its first request is faster (856.8 versus 851.3 PP).
   The same three job deltas recur without tracing. Compared with ordered,
   the subgroup arm requests 72.6–93.9 MB more weight uploads per request.
-  Two clean pairs remain. Keep the original order and every sample for
-  first-use, warmed and work-delta characterization.
+  Reversing the order closes the second clean pair with 926.355 ordered
+  and 924.583 subgroup warmed PP, and client TTFT of 141.739 and
+  141.995 seconds. Its subgroup warmed time ratio is 1.001916. The
+  first-use ratio is 1.022974, reversing the first pair's first-use
+  ordering. The three job and upload deltas match the first pair.
+  All four clean processes finish normally with quiet validation and
+  no new driver fault. One clean pair remains in the original plan.
 
   The next transfer experiment will examine full-fit weight prefetch while
   the layer's attention runs. The 64K profile at `c40c8c1bd` measures
