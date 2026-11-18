@@ -2697,14 +2697,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ID digests, prefix FP32 gate-weight digests, job counts, expert upload
   bytes and MTP restore counts match across `off`, `late` and `early`.
 
-  Retain this build for the imminent observer-free `late` versus `early`
-  64K order comparison. Before a combined speed decision, add a storage-only
-  control that publishes prefix IDs back to the device map and keeps the
-  original full ID readback. Compare the storage, split readback and earlier
-  dispatch separately. Recheck the actual route and no-fault handoff in each
-  comparison. The 32K numerical cohort includes trace and extra gate-weight
-  readback. Speed, physical context and sustained decode still need their own
-  validation.
+  `prefill_prefix_router_timing_v1` closes at `0d3c241c4`. Three matched late
+  versus early pairs use the same native ELF, 65537 actual input tokens and
+  three thinking-on requests with 24 outputs per process. Per-request job
+  counts, JIT upload counts, requested bytes and MTP restoration match in
+  every pair. All six native processes close normally with no fresh GPU
+  fault. The final pass checks all 15 model asset hashes.
+
+  | Native early minus late | Late, early | Early, late | Late, early |
+  | --- | ---: | ---: | ---: |
+  | First request prefill time | -1.217 s | -1.384 s | -0.744 s |
+  | Warmed prefill time | -0.120 s | -0.136 s | +2.571 s |
+  | Warmed client TTFT | -0.084 s | -0.061 s | +2.581 s |
+
+  Early/late time ratios have geometric means of 0.987075 for first-use
+  prefill and 0.984473 for first-use TTFT. The warmed ratios are 1.010633
+  for prefill and 1.011161 for TTFT with mixed pair directions. Median
+  warmed process throughput is 894.82 tok/s late and 889.52 tok/s early.
+  Preserve the repeated first-use observation and the mixed warmed outcome.
+  Use the ordering change as a controlled prerequisite to test transfer
+  overlap. Verify that overlap earns a repeatable net gain on the actual
+  model path. A clean loss in one pair remains part of this comparison.
+
+  Before judging the combined route, use a storage-only control that
+  publishes prefix IDs back to the device map and keeps the original full
+  ID readback. Compare storage, split readback and earlier dispatch as
+  individual changes. For transfer overlap, separately compare copy issue
+  position, copy queue and first-reader wait against fixed payloads. Physical
+  context and sustained decode retain their own qualification gates.
 
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the
