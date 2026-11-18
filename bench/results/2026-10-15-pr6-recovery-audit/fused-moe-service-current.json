@@ -464712,6 +464712,53 @@
       "sha256": "e8fac248f09d9953e536a777a119be5aab8358ff65b13212007756babf9cdcad"
     },
     "environment_template_sha256": "fad1880db01aeb6f0c89989bc7bae9d644f970a3aaf7b20bc7ba564404f041e7",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "disposition": {
+      "evidence_commit": "760747a445a76c262f160f4abf2b85b62b4ce9c9",
+      "net_gain_reproduced": true,
+      "issue_position_gain_reproduced": false,
+      "development_issue_mode": "ffn",
+      "time_ratios": {
+        "first_prompt_ms": 0.9845779339865829,
+        "warm_prompt_ms": 0.9685868571260805,
+        "first_ttft_s": 0.9848534071924165,
+        "warm_ttft_s": 0.9686823660857996
+      },
+      "next_unit": {
+        "change": "Replace only the selected FFN-boundary copy source with reused host USM. Copy just the selected experts to their original offsets once per layer. Hold issued commands, bytes, placement, arithmetic and the compute queue fixed.",
+        "rationale": "Same-queue issue position alone missed the repeated gain criterion. Current FFN preissue did pass. Single-layer native copy-ordinal-1 overlap and reused host-USM source evidence justify a separate actual-model source placement comparison before changing the queue.",
+        "evidence": [
+          "prefill_prefix_expert_ffn_v2",
+          "prefill_prefix_expert_prefix_v2",
+          "fullfit_attention_copy_ordinal_v1",
+          "fullfit_attention_arena_source_v1"
+        ],
+        "bounds": "Budget at most one max-layer host allocation under the existing request lease; compare allocation and CPU copy costs inside timings. Validate identical selected IDs and bytes, closure, non-FFN fallback policy and decode handoff. Separate later queue and reader-wait changes."
+      },
+      "inference_adopted": false
+    },
+    "artifact_retirement": {
+      "complete": false,
+      "evidence_commit": "760747a445a76c262f160f4abf2b85b62b4ce9c9",
+      "raw": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-combined-v2",
+        "files": 426,
+        "bytes": 63364022,
+        "tree_sha256": "72c12b768d8b16be70ab31430d42c7fafb06f40b1169a431dccdccbd22103085"
+      },
+      "build": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-native-v1",
+        "files": 1368,
+        "bytes": 190313926,
+        "tree_sha256": "d0bdf6be92e3b21be09b4961cf61e4a6eb204e6142b3e741ba627d26cdcedeea",
+        "source": "dc2da09e405a865140f8de53032579286d0c1bf5",
+        "inputs": 1167,
+        "source_sha256": "d550382b0d488cfc1f3889b458b06e0a287edb8589de138ecfdb2ecf192e3b57",
+        "build_controls": 379,
+        "recipe_sha256": "da913ee03b3fe321646206e15f52b256114d529757736cda4de26e07c96df079",
+        "binary": "7a1e2a8d3b33409da581213b803ece2c5e57e19f3152e508d4b313d4dd74e1bb"
+      },
+      "reason": "Three timing comparisons closed. Next source change needs a fresh matched same-image build. The original native composition, recipes and evidence are committed."
+    }
   }
 }
