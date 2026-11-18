@@ -422779,6 +422779,58 @@
       "ownership_closed": true,
       "GPU_executed": false,
       "error": "RuntimeError('offline analysis failed: None Traceback (most recent call last):\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/request_resource_summary.py\", line 80, in <module>\\n    summary = summarize(reader.load_json(trace), contract)\\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/request_resource_summary.py\", line 23, in summarize\\n    for request, prior in zip(receipt[\\'requests\\'], original[\\'requests\\']):\\n                                                   ~~~~~~~~^^^^^^^^^^^^\\nTypeError: \\'NoneType\\' object is not subscriptable\\n')"
+    },
+    "post_run_analysis_v2": {
+      "stage": "prepared",
+      "source_commit": "5fd0b35aeb0aa0f2e5fe76b8b6c7b0a448656de0",
+      "pins": {
+        "tools/sycl/recover_eager_request_profile.py": "5de471956b6f29ed78416143c7ebe5498bcb4ca8f302a296be237f8db442afb3",
+        "tools/sycl/eager_request_profile.py": "3182b852bb90afe85ad63e058bdab492c5c5ed9e6f2cf66ec74616516ca6074f",
+        "tools/sycl/request_resource_summary.py": "7596b730d7399f0c5b41711a8eb3ceebac6847ee45b4b1e75c6bd07a174e302e",
+        "tools/sycl/request_profile_reader.py": "124dadedffbbfb116d4b81a5c15233f005e9a8166d3c3175fd51d3362c103545",
+        "tools/test_request_resource_summary.py": "0ac42252250200567c39ef4701d30c4e62ebefa1aa3949e0cfd7ffcdff654807",
+        "tools/test_request_profile_reader.py": "663de6a264ad9ac912d4739c72901ae4087e553df1b3cf06673c8e2539139d74",
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
+        "docs/ARTIFACT_RETENTION.md": "2c43dacfff866e025dfadf5582788a962ae16769aeeec55f8cd69c7aab743978",
+        "docs/BENCHMARKS.md": "9839d5e5d218d132978eca927177617a672fc2c6f7192cc4f3e2d0a0a692e091"
+      },
+      "original_evidence_commit": "8173b1aab2940ec394236fe2330b2c29a4971509",
+      "failed_analysis_commit": "7c14323071207aeda1de23930951a08f26072026",
+      "source_trace": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-profile-v1/1/trace/strata.1374000.json",
+        "bytes": 550229888,
+        "sha256": "d8398f8cde1f13a88dd0e1ae8bb9a132112a1cdff8a807db3eca11cf6087f84c"
+      },
+      "source_receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-profile-v1/1/analysis-input.json",
+        "sha256": "c1c338f2e7b4b65515b9ab203d0f7a19abb63863dfd97935cd0ccb844db625aa"
+      },
+      "original_analysis_artifact_scope": {
+        "counted_parent": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-profile-v1/1",
+        "current_parent_bytes": 560975182,
+        "trace_alone_bytes": 550229888,
+        "total_cap_bytes": 4194304,
+        "confirmed_trace_alone_exceeds_cap": true
+      },
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/request_resource_summary.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-profile-v1/1/trace/strata.1374000.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-profile-v1/1/analysis-input.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-analysis-v2/resources.json"
+      ],
+      "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-analysis-v2",
+      "budgets": {
+        "wall": 240,
+        "cpu": 210,
+        "rss_cap": 12884901888,
+        "text_cap": 131072,
+        "file_cap": 2097152,
+        "total_cap": 4194304
+      },
+      "scope": "Offline interpretation of one prior closed native trace. Original failed 4-process campaign and its observer-overhead decision remain unqualified. No native GPU work or new timing sample."
     }
   }
 }
