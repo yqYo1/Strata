@@ -66,6 +66,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     if(gdn_chunk_on)strata::gdn_chunk64::validate_device(m.cs);
     const int window_requested = moe_window_requested();
+    const auto prefix_router_requested = prefill_moe_prefix_router_requested();
     const bool window_on = window_requested && !requires_prefix_checkpoints;
     const bool scratch_mixed_on = moe_scratch_mixed_requested();
     const bool split_accumulator_requested = moe_split_accumulator_requested();
@@ -460,6 +461,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             std::min<int64_t>(detail::ExpertBankPlan::window_rows, n)))) {
         err = "prefill expert bank: every FFN piece must use the all-GPU accumulator"; return false;
     }
+    const uint64_t fixed_gpu = detail::layer_major_add(gpu_reserved,
+        detail::layer_major_add(plan.gpu_bytes, detail::layer_major_add(plan.staging_bytes, gpu_headroom)));
+    const bool prefix_router_admitted = prefix_router_requested != PrefillMoePrefixRouter::off &&
+        effective_window_mode == 10 && scratch_mixed_on && !split_accumulator_on &&
+        !command_profile_on && packed_bank_on && cache_bytes >= host_slab_bytes &&
+        n > m.T && accumulation_rows == n && plan.gpu_rows == n &&
+        PrefillMoePrefixStorage::bytes <= max_alloc && fixed_gpu <= free_gpu &&
+        PrefillMoePrefixStorage::bytes <= free_gpu - fixed_gpu;
     const char* source_view_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW");
     if (source_view_option && std::strcmp(source_view_option, "0") != 0 &&
         std::strcmp(source_view_option, "1") != 0) {
@@ -511,6 +520,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     std::unique_ptr<uint8_t, decltype(free_device)> prefix_storage(nullptr, free_device);
     std::unique_ptr<uint8_t, decltype(free_device)> mixed_storage(nullptr, free_device);
     std::unique_ptr<uint8_t, decltype(free_device)> split_accumulator_storage(nullptr, free_device);
+    std::unique_ptr<uint8_t, decltype(free_device)> prefix_router_storage(nullptr, free_device);
     std::array<uint8_t, 256> split_accumulator_guard{}; // before the DMA/queue lease
     // Extra guarded planes are present only in the relocated layout. Their
     // readback destinations also outlive the checked DMA/queue lease.
@@ -791,6 +801,25 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         mixed_storage.reset(p);
     }
+    if (prefix_router_admitted) {
+        uint8_t* p = nullptr;
+        constexpr size_t bytes = PrefillMoePrefixStorage::bytes;
+        if (cudaMalloc(reinterpret_cast<void**>(&p), bytes) != cudaSuccess) {
+            err = "prefill MoE prefix router: allocation failed before model work"; return false;
+        }
+        prefix_router_storage.reset(p);
+        auto& queue = sycl_backend::queue_for(m.cs);
+        sycl_backend::validate_device_span(p, bytes, queue);
+        sycl_backend::validate_spans({{p, bytes}},
+            {{device_rows.get(), size_t(plan.gpu_bytes)}, {m.region, size_t(m.region_bytes)},
+             {m.R, size_t(m.T * D * sizeof(float))}, {m.emb, size_t(m.T * N * sizeof(float))},
+             {layer_cache.device_slot(0), size_t(cache_bytes)}}, 256);
+    }
+    if (prefix_router_requested != PrefillMoePrefixRouter::off)
+        std::fprintf(stderr, "strata MoE prefix router: requested=%s effective=%s workspace_bytes=%zu decode_changed=0\n",
+            prefill_moe_prefix_router_name(prefix_router_requested),
+            prefill_moe_prefix_router_name(prefix_router_admitted ? prefix_router_requested : PrefillMoePrefixRouter::off),
+            prefix_router_admitted ? PrefillMoePrefixStorage::bytes : 0);
     if (split_accumulator_on) {
         uint8_t* p = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(split_accumulator_bytes)) != cudaSuccess) {
@@ -824,6 +853,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     m.native16_active = native16_on;
     m.layer_major_residual = plan;
     if (window_context) {
+        if (prefix_router_admitted) {
+            window_context->prefix_router = prefix_router_requested;
+            window_context->prefix_router_storage = prefix_router_storage.get();
+        }
         if (bank_plan.staged()) {
             window_context->expert_slots.reset(new detail::ExpertBankSlots(int32_t(bank_plan.slots)));
             window_context->expert_cache = &layer_cache;
@@ -1202,6 +1235,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     stats_.chunks = old_stats.chunks + logical_chunks;
     stats_.ms_total = old_stats.ms_total + ms_since(started);
     if (window_context && window_context->accumulation) {
+        if (prefix_router_admitted) {
+            if (window_context->prefix_router_layer != -1 || window_context->prefix_router_completed != uint64_t(g.n_layers)) {
+                err = "prefill MoE prefix router: incomplete layer coverage"; return false;
+            }
+            std::fprintf(stderr, "strata MoE prefix router complete: effective=%s layers=%llu rows=%zu final_drain=checked\n",
+                prefill_moe_prefix_router_name(prefix_router_requested),
+                (unsigned long long)window_context->prefix_router_completed, PrefillMoePrefixStorage::rows);
+        }
         if (window_context->expert_slots)
             std::fprintf(stderr, "strata MoE expert bank complete: uploads=%llu requested_H2D_bytes=%llu permanent_hits=%llu permanent_slots=%d total_slots=%d final_drain=checked\n",
                 (unsigned long long)window_context->staged_uploads,

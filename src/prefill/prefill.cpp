@@ -45,6 +45,7 @@
 #include "strata/prefill/moe_accum_plan.hpp"
 #include "strata/prefill/expert_bank_upload.hpp"
 #include "strata/prefill/moe_upload_census.hpp"
+#include "strata/core/pinned.hpp"
 #include "strata/prefill/qsa_native16.hpp"
 #include "strata/prefill/qsa_score_gemm.hpp"
 #include "strata/prefill/gdn_chunk64.hpp"
@@ -512,6 +513,58 @@ struct PeerPrefill {
 };
 
 #if defined(STRATA_ENABLE_SYCL)
+enum class PrefillMoePrefixRouter { off, late, early };
+
+PrefillMoePrefixRouter prefill_moe_prefix_router_requested() {
+    static const auto mode = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER");
+        if (!value || std::strcmp(value, "off") == 0) return PrefillMoePrefixRouter::off;
+        if (std::strcmp(value, "late") == 0) return PrefillMoePrefixRouter::late;
+        if (std::strcmp(value, "early") == 0) return PrefillMoePrefixRouter::early;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER requires off, late or early");
+    }();
+    return mode;
+}
+
+const char* prefill_moe_prefix_router_name(PrefillMoePrefixRouter mode) {
+    if (mode == PrefillMoePrefixRouter::early) return "early";
+    if (mode == PrefillMoePrefixRouter::late) return "late";
+    return "off";
+}
+
+struct PrefillMoeRouterPiece {
+    uint16_t* mixed;
+    float* injection;
+    int32_t* ids;
+    float* weights;
+    float* shared_gate;
+    float* logits;
+};
+
+// All planes are multiples of 256 bytes. Only the first piece survives across
+// attention chunks, in storage owned by the layer-major queue lease.
+struct PrefillMoePrefixStorage {
+    static constexpr size_t rows = detail::MoeAccumPlan::chunk;
+    static constexpr size_t mixed_bytes = rows * N * sizeof(uint16_t);
+    static constexpr size_t injection_bytes = rows * HC * sizeof(float);
+    static constexpr size_t id_bytes = rows * K * sizeof(int32_t);
+    static constexpr size_t weight_bytes = rows * K * sizeof(float);
+    static constexpr size_t shared_gate_bytes = rows * sizeof(float);
+    static constexpr size_t logits_bytes = rows * NE * sizeof(float);
+    static constexpr size_t bytes = mixed_bytes + injection_bytes + id_bytes +
+        weight_bytes + shared_gate_bytes + logits_bytes;
+
+    static PrefillMoeRouterPiece view(uint8_t* base) {
+        auto* injection = base + mixed_bytes;
+        auto* ids = injection + injection_bytes;
+        auto* weights = ids + id_bytes;
+        auto* shared_gate = weights + weight_bytes;
+        return {reinterpret_cast<uint16_t*>(base), reinterpret_cast<float*>(injection),
+            reinterpret_cast<int32_t*>(ids), reinterpret_cast<float*>(weights),
+            reinterpret_cast<float*>(shared_gate), reinterpret_cast<float*>(shared_gate + shared_gate_bytes)};
+    }
+};
+
 // Request owner, declared before the outer checked lease. A failed drain aborts
 // while this object and all raw upload pointers remain alive.
 struct MoeWindowContext {
@@ -539,6 +592,11 @@ struct MoeWindowContext {
     bool accumulation = false;
     uint32_t status_observed = 0;
     std::vector<int32_t> ids;
+    std::vector<float> prefix_weight_audit;
+    PrefillMoePrefixRouter prefix_router = PrefillMoePrefixRouter::off;
+    uint8_t* prefix_router_storage = nullptr;
+    int64_t prefix_router_layer = -1;
+    uint64_t prefix_router_completed = 0;
     std::shared_ptr<const detail::MoeWindowRoutes> routes;
     std::function<bool(int64_t, int64_t, std::string&)> complete_piece;
     uint64_t windows = 0, dequants = 0, jobs = 0, source_bytes = 0;
@@ -4031,6 +4089,14 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             if (m.layer_major_qsa_profile) m.layer_major_qsa_profile->chunk_retired();
             if (window_first < 0) window_first = c0;
             window_next = c0 + T;
+            const auto prefix_router = m.moe_window->prefix_router;
+            if ((prefix_router == PrefillMoePrefixRouter::early && c0 == window_first) ||
+                (prefix_router == PrefillMoePrefixRouter::late && window_next == window_end)) {
+                if (window_first != 0 || window_end != n || !run_prefill_moe_prefix_router(LB, n, err)) {
+                    if (err.empty()) err = "prefill MoE prefix router: expected one full request window";
+                    return false;
+                }
+            }
             if (window_next < window_end) continue;
             if (window_next != window_end) { err = "prefill MoE window: incomplete final piece"; return false; }
             const int64_t first = window_first, count = c0 + T - first;
