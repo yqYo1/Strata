@@ -166,8 +166,6 @@ void run(int cells,int queries,int cap,bool clustered) {
     const float b=std::bit_cast<float>(uint32_t(reference[1][i])<<16);
     max_abs=std::max(max_abs,std::fabs(double(a)-b));
   }
-  constexpr int sample_count=12;
-#endif
   std::cout<<"reference baseline=ordered_exp candidate=uncached_subgroup differing="<<differing
       <<" compared="<<q.size()<<" max_absolute="<<std::setprecision(12)<<max_abs
       <<" comparison=diagnostic_not_model_quality\n";
@@ -187,6 +185,8 @@ void run(int cells,int queries,int cap,bool clustered) {
         <<" milliseconds="<<std::setprecision(12)<<ms
         <<" compared="<<q.size()<<" exact_bits=PASS guards=PASS status=PASS\n";
   }
+  constexpr int sample_count=12;
+#endif
   require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
       dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
   std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap

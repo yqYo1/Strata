@@ -21,7 +21,7 @@ import qsa_v_tile_sources as proposal
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT, KEY = B / 'qsa-v-tile-v1', 'qsa_v_tile_v1'
+ROOT, KEY = B / 'qsa-v-tile-v2', 'qsa_v_tile_v2'
 THIS = 'tools/sycl/qsa_v_tile_trial.py'
 PYTHON = basis.reference.model.PYTHON
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
@@ -66,12 +66,17 @@ def platform():
     require(measured['stage'] == 'closed' and measured['ownership_closed']
         and measured['decision']['fresh_pair_within_observer_budget']
         and measured['closed_capture_retirement']['complete'], 'closed exact QSA resource evidence required')
+    failed = validation.committed(RESULT, ('qsa_v_tile_v1',))
+    require(failed['stage']=='failed' and failed['closed_partial_build']['complete']
+        and failed['closed_partial_build']['all_children_reaped'] and not (B/'qsa-v-tile-v1').exists(),
+        'preserve and retire the failed fixture compilation before this corrected trial')
     require(build.validation.committed(RESULT, ('qsa_prefix_calibration_v2',))['stage'] == 'closed',
         'original cap-2051 fixture baseline evidence required')
     manifest = speed['runtime_manifest']
     pin = dict(native_source=proof['original_native_source'], original_binary=proof['same_build_executables']['strata'],
         decode_binary=decode['retained_decode'], window_retirement_sha256=signature(decode),
-        previous_profile_sha256=signature(measured), external=native['external_inputs'],
+        previous_profile_sha256=signature(measured), failed_fixture_sha256=signature(failed),
+        external=native['external_inputs'],
         compiler=dict(path=COMPILER, sha256=native['toolchain'][COMPILER]),
         boot=speed['boot'], driver=speed['driver'], runtime_manifest=manifest,
         probe=speed['native_validation_probe'], environment_template=speed['environment_template'])
@@ -189,6 +194,9 @@ def prepare():
     require(all(pins[name]==native['project']['source_sha256'][name] for name in INPUTS),
         'production comparison sources must equal original build')
     projected=proposal.generated(P/proposal.PREFIX)
+    previous=validation.committed(RESULT, ('qsa_v_tile_v1',))
+    require({n:hashlib.sha256(data).hexdigest() for n,data in projected.items()}==previous['projected'],
+        'the fixture fix must leave both projected kernels byte-identical')
     compile_environment={k:v for k,v in native['recipe']['environment'].items()
         if k in ('PATH','LANG','LC_ALL','LD_LIBRARY_PATH')}
     compile_environment['TMPDIR']=str(ROOT/'tmp')
