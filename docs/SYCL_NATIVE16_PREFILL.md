@@ -2295,13 +2295,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no fresh fault. Jobs38324/38507/38286become24709/24759/24721;requested
   expert H2D43.61..43.84GBbecomes38.95..39.01GB. Traced warmed time is
   144.01965sversus137.41725s;this is not the clean repeated-gain decision.
-  The first two opposite-order clean pairs close normally with quiet
-  validation and no fresh fault;new/reference warmed-time ratios are
-  0.963803and0.950117. All seven processes/21samples are preserved. The
-  final pair(process7reference,then8candidate)and15final model hashes
-  remain pending;no completed gain/adoption gate is claimed. Preserve
-  the bank/coherence/relocation losses;this unit gain does not adopt the
-  composed engine or reach1000PPat128K. Reduced jobs/dequants/requested bytes
+  The full combined cohort closes with nine normal0processes/27requests,
+  quiet validation,no fresh fault and15final model hashes. All three
+  opposite-order clean pairs pass the declared combined-gain gate:time
+  ratios0.963803/0.950117/0.956801,geomean0.956891. Aggregate warmed PPis
+  911.365reference versus952.512new;new process PPis946.737/957.637/952.512.
+  Median warmed client TTFTis144.1225sversus137.9395s. This closes the four
+  prospective coherence/relocation/window/combined questions,not model
+  qualification. No inference route is adopted and128K1000PPis not reached.
+  A further experiment needs its own committed plan. Next retrieve the best
+  owned64Ksource/configuration and the positive U1eager evidence from the
+  performance index before choosing revalidation or another bounded change.
+  Keep the current-build five-length/time/TTFT curve and hardware attribution
+  gaps pending;do not infer a law from these mixed timing periods. Preserve
+  the bank/coherence/relocation losses as independent outcomes. Reduced
+  jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
   Full window evidence is`6ead5d99b`;four first-use/warmed CSVpoints bring
   the index to633. All27samples,nine native identities and the original gain
