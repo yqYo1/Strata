@@ -2285,6 +2285,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the bank/coherence/relocation losses;this unit gain does not adopt the
   composed engine or reach1000PPat128K. Reduced jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
+  Full window evidence is`6ead5d99b`;four first-use/warmed CSVpoints bring
+  the index to633.
   Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
   RESTORE qualification remain unresolved. Full relocation evidence is
