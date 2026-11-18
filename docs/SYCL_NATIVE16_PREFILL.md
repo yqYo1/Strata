@@ -2894,12 +2894,39 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   12.2–13.2 ms to retire. Common GGUF loading is recorded separately.
   The source-lifecycle gate passes while the copy and QSA interval alone
   has mixed results. The stage reference allocates per process for one
-  layer. A reused staging buffer still needs a matched comparison.
-  Validate a borrowed view of the actual full `ArenaExpertSource` owner
-  and measure exact expert demand before assigning the route to the model.
-  The isolated QSA input and its private bank were fixture-owned. Actual
-  model placement, first reader and subsequent reuse must carry their own
-  checks through end-to-end validation.
+  layer. Its source owner and staging lifetime are covered by the next
+  comparison.
+
+  `fullfit_attention_arena_source_v1` closes at `1b0b01c9c`. It loads the
+  actual private `ArenaExpertSource` in every arm and validates borrowed
+  registration and release for all 48 layers (50,292,326,400 bytes), with
+  no application copy or kernel enqueues in that metadata test. The three
+  four-expert tests pass cancellation after an accepted copy. All 16 native
+  processes close normally with no fresh GPU fault. The full layer-2 cases
+  copy 1,009,254,400 bytes and verify the payload, guards and QSA output.
+  Copy ordinal 1, QSA, waits and exact transfer extent are fixed across source
+  comparisons. Preserve the independent allocation and source decisions.
+
+  | Layer preparation, warmed deferred interval and release | Three matched time ratios | Geometric mean | Gate |
+  | --- | ---: | ---: | --- |
+  | Reused host USM / per-layer host USM allocation | 0.693929, 0.542989, 0.492079 | 0.570226 | Pass |
+  | Borrowed pages / reused host USM | 0.864334, 0.950116, 1.423323 | 1.053385 | Fail |
+  | Borrowed pages / per-layer host USM allocation | 0.599786, 0.515902, 0.700388 | 0.600668 | Pass |
+
+  Reused host USM takes 259.6–289.9 ms to allocate and prime once, separate
+  from layer timing. Its ongoing preparation is 55.3–65.6 ms, versus
+  39.2–44.2 ms to register the original pages. The third matched borrowed
+  interval takes 357.0 ms for the warmed deferred median, versus 230.4 ms
+  for reused USM. All three traced source modes show real device overlap
+  (187.468–221.583 ms across the 12 warmed deferred windows). Those traces
+  do not attribute the third clean-pair slowdown. Direct borrowing misses
+  the prospective performance gate against the reused baseline, so keep
+  it out of the model trial. Use reusable staging as the source reference
+  for the next comparison. Record actual selected expert IDs and byte demand
+  before changing model placement, then compare demand and scheduling units
+  at the production handoff. QSA state and the GPU bank were fixture-owned.
+  Full-model throughput, decode and physical context remain unqualified by
+  this result.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
