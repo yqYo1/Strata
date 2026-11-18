@@ -81,7 +81,7 @@ def weight_asset(assets, layout_proof):
         'actual model layout changed')
     line, = [line for line in layout.read_text().splitlines() if line.split()[:1] == ['2']]
     values = [int(v) for v in line.split()]
-    require(values == [2,22,20,1887436800,1971200,3491172096,3763417856,2691008512]
+    require(len(values)==8 and values[:5]==[2,22,20,1887436800,1971200]
         and layout_proof['experts_per_layer']==512 and layout_proof['page_bytes']==4096,
         'actual layer-2 format, source or extent differs')
     shard, = [Path(p) for p in assets if p.endswith('-00001-of-00002.gguf')]
@@ -92,7 +92,7 @@ def weight_asset(assets, layout_proof):
         'actual GGUF shard identity changed')
     roles = [dict(name=name,offset=offset,bytes=size*512) for name,offset,size in
              zip(('gate','up','down'),values[5:],(524800,524800,921600))]
-    require(all(r['offset']+r['bytes'] <= st.st_size for r in roles), 'real weights exceed shard extent')
+    require(all(0 < r['offset'] <= st.st_size-r['bytes'] for r in roles), 'real weights exceed shard extent')
     return dict(path=str(shard),identity=identity,sha256=assets[str(shard)]['sha256'],roles=roles,
                 layout=dict(path=str(layout),sha256=layout_proof['sha256']),layer=2,expert_count=512)
 
@@ -201,6 +201,8 @@ def case_environment(pin, mode):
         STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK='1' if phase == 'trace' else '0',
         STRATA_FULLFIT_OVERLAP_SOURCE=kind, STRATA_FULLFIT_WEIGHT_SHARD=pin['model_weights']['path'],
         STRATA_ARENA_LOCK='0', STRATA_NO_LARGEPAGES='1')
+    env.update({f'STRATA_FULLFIT_WEIGHT_{role["name"].upper()}_OFFSET':str(role['offset'])
+                for role in pin['model_weights']['roles']})
     shim = pin['preload']['library']['path']
     if phase == 'trace':
         env.update(STRATA_UNITRACE_TARGET_PRELOAD=shim, UNITRACE_SystemTime='1',
@@ -485,6 +487,8 @@ def prepare():
     save(dict(stage='prepared', source_commit=revision, sources=inputs, platform=pin,
         compile_environment=compile_environment(native), commands=compile_commands(),
         cases=frozen_cases(pin), role_sha256_before=role_hashes, results=[],
+        prior_host_refusal=dict(source_commit='bb4032b5d',reason='Host admission rejected a mistyped layer-2 Down offset before creating a plan or launching native work.',
+                                corrected='Read all three offsets once from the hash-pinned layout and pass them in the frozen child environment.'),
         active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=768<<20,
         plan=dict(order=STAGES, compiled_translation_units=len(qsa.NATIVE)+1+len(ARENA_TUS),
             unit='Load actual layer-2 IQ2_S/IQ4_NL via the production GGUF packer into a one-layer PinnedArena. In both arms create a whole-page immutable ResidentExpertLayer. Compare staged Host USM with a same-address read-only import on the pinned B570 NEO provider. Fix native copy ordinal 1, index 0, append/drain, QSA on ordinal 0, 512 x 1971200-byte extents and wait schedule.',
@@ -520,6 +524,8 @@ def run_device(row, mode, scope, path, result):
                 environ = Path('/proc',str(entry['pid']),'environ').read_bytes().split(b'\0')
                 keys = ('STRATA_TEST_MAIN_GATES', 'STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK',
                     'STRATA_FULLFIT_OVERLAP_SOURCE','STRATA_FULLFIT_WEIGHT_SHARD',
+                    'STRATA_FULLFIT_WEIGHT_GATE_OFFSET','STRATA_FULLFIT_WEIGHT_UP_OFFSET',
+                    'STRATA_FULLFIT_WEIGHT_DOWN_OFFSET',
                     'STRATA_ARENA_LOCK','STRATA_NO_LARGEPAGES',
                     'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission',
                     'STRATA_SYCL_PREFILL_SAME_QUEUE', 'UR_ENABLE_LAYERS', 'UR_LOG_VALIDATION',

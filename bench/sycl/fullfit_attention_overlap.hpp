@@ -11,6 +11,7 @@
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include <algorithm>
 #include <array>
+#include <charconv>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -46,6 +47,16 @@ using Clock = std::chrono::steady_clock;
 using Milliseconds = std::chrono::duration<double, std::milli>;
 inline constexpr size_t expert_stride = 1971200;
 
+inline uint64_t weight_offset(const char *key) {
+    const char *text = std::getenv(key);
+    require(text && *text, "missing pinned GGUF role offset");
+    uint64_t offset = 0;
+    const auto end = text + std::strlen(text);
+    const auto parsed = std::from_chars(text, end, offset);
+    require(parsed.ec == std::errc{} && parsed.ptr == end && offset > 0, "invalid pinned GGUF role offset");
+    return offset;
+}
+
 class LayerSource {
 public:
     LayerSource(const std::shared_ptr<sycl_backend::Runtime> &runtime, size_t experts)
@@ -64,7 +75,9 @@ public:
         layout.total = experts * expert_stride;
         layout.offset = {0};
         layout.bytes = {expert_stride};
-        layout.gguf_off = {3491172096ull, 3763417856ull, 2691008512ull};
+        layout.gguf_off = {weight_offset("STRATA_FULLFIT_WEIGHT_GATE_OFFSET"),
+                           weight_offset("STRATA_FULLFIT_WEIGHT_UP_OFFSET"),
+                           weight_offset("STRATA_FULLFIT_WEIGHT_DOWN_OFFSET")};
         layout.fmt.resize(1);
         layout.fmt[0].up_off = 524800;
         layout.fmt[0].down_off = 1049600;
