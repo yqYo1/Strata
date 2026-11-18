@@ -2765,6 +2765,38 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   copy path. This sequence keeps source memory, submit/drain and queue
   selection independently measurable. The model gate remains closed.
   [Level Zero command-list requirements](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list.html)
+
+  `fullfit_attention_source_memory_v1` evaluates the first change at
+  `1f03719b3`. The same six-TU image holds the SYCL copy entrypoint, queue,
+  waits, 512 uploads and ordered-exp QSA fixed between ordinary RAM and host
+  USM. A same-context pointer query verifies the source type and both source
+  ends. Both small cases pass accepted-copy cancellation, content and guards.
+  The ten native processes finish normally with checked ownership, quiet
+  validation and zero fresh GPU faults. Keep the 150 clean samples and 50
+  observer windows, with source allocation and fill outside timed intervals.
+  [SYCL USM allocation and pointer query requirements](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:usm)
+
+  | Warmed host-USM / ordinary-RAM wall time | Three clean pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Copy only | 1.022765, 1.553040, 1.006185 | 1.169173 |
+  | Copy and QSA, deferred wait | 0.870347, 1.122055, 1.132908 | 1.034270 |
+  | QSA only | 0.999555, 1.001513, 0.998554 | 0.999873 |
+
+  The deferred-wait source change fails the repeated-gain gate. Copy-only
+  trace time favors host USM (223.1 ms versus 259.0 ms); all three clean
+  copy-only pairs give the opposite ordering. QSA-only medians stay within
+  221.2–222.0 ms across the six clean processes. The observed copy direction
+  changes from M2D to H2D, and copy duration varies substantially more than
+  QSA service. The deferred-wait trace shows 4.854 µs of overlap in the first
+  host-USM cycle and zero in the four warmed cycles. Physical bus traffic,
+  page pinning and the resulting physical limit remain unmeasured.
+
+  Keep ordinary RAM selected for the model. The native comparison uses host
+  USM in both arms as a supported allocation, with source contents fixed.
+  Compare a checked native append/drain owner at ordinal 0 with the SYCL
+  control before testing ordinal 1 on that same native owner. Preserve
+  the current QSA, copy extents, wait positions and safety settings.
+  The host-USM component samples exclude production staging from RAM.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
