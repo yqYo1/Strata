@@ -534,7 +534,7 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
     }
 }
 
-void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel) {
+void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel, bool host_usm=false) {
     need(pd::prefill_fullfit_eager_requested(),"eager fixture needs immutable pre-exec eager policy");
     auto runtime=sb::runtime_for();auto& q=runtime->compute();
     constexpr size_t stride=256;
@@ -549,6 +549,11 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
     pd::PrivateExpertBank bank(cache,stride);
     sb::Allocation scratch(runtime,4096,sb::MemoryKind::Device);
     sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
+    sb::Allocation staging;
+    if (host_usm) {
+        staging = sb::Allocation(runtime, 512 * source_stride + 256, sb::MemoryKind::Host);
+        std::memset(staging.data(), 0xa5, staging.size());
+    }
     auto* status=status_owner.as<uint32_t>();
     pd::ExpertBankSlots slots(512,true);
     std::vector<uint32_t> copied(size_t(cache.bytes())/4);
@@ -563,9 +568,11 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
                 []{sb::cleanup_fail_stop("prefill eager fixture retirement");});lease.arm();
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);
             const auto receipt=pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,
-                source_stride,ids,&q,{{scratch.data(),scratch.size()}});
+                source_stride,ids,&q,{{scratch.data(),scratch.size()}},host_usm ? &staging : nullptr);
             need(receipt.experts==ids.size() && receipt.copy_commands==ids.size() &&
-                receipt.payload_bytes==ids.size()*stride,"eager accepted transfer conservation");
+                receipt.payload_bytes==ids.size()*stride &&
+                receipt.host_staged_bytes==(host_usm ? receipt.payload_bytes : 0),
+                "eager accepted transfer conservation");
             for (size_t rank=0;rank<ids.size();++rank) {
                 const int e=ids[rank];const auto ticket=slots.begin(e);
                 need(!ticket.upload && ticket.permanent && ticket.slot==int32_t(rank) &&
@@ -593,6 +600,18 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
             need(host[G+size_t(e)*source_stride/4+i]==value(e,i,generation),"eager immutable source");
         for (size_t i=0;i<G;++i)
             need(host[i]==Guard && host[host.size()-1-i]==Guard,"eager host edge guards");
+        if (host_usm) {
+            const auto* staged = staging.as<uint32_t>();
+            for (int expert=0;expert<512;++expert) {
+                const bool selected = std::binary_search(ids.begin(), ids.end(), expert);
+                for (size_t i=0;i<source_stride/4;++i)
+                    need(staged[size_t(expert)*source_stride/4+i]==
+                         (selected && i<stride/4 ? value(expert,i,generation) : Guard),
+                         "host USM selected bytes/padding");
+            }
+            for (size_t i=512*source_stride/4;i<staging.size()/4;++i)
+                need(staged[i]==Guard,"host USM end guard");
+        }
     }
     auto reject=[&](auto fn){bool caught=false;try{fn();}catch(const std::invalid_argument&){caught=true;}need(caught,"eager refusal absent");++rejects;};
     slots.reset();
@@ -610,6 +629,13 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
 }
 
 int main(int argc, char** argv) try {
+    if (argc==2 && std::string(argv[1])=="--fullfit-eager-host-usm-smoke") {
+        prefill_fullfit_eager_case(4,256,2,false,true);
+        prefill_fullfit_eager_case(4,512,2,true,true);
+        std::cout<<"prefill_fullfit_host_usm_fixture PASS selected_bytes_and_guards=checked\n";
+        std::cout<<"prefill_fullfit_eager_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED\n";
+        return 0;
+    }
     if (argc==2 && (std::string(argv[1])=="--fullfit-eager-smoke" ||
                    std::string(argv[1])=="--fullfit-eager-validate")) {
         prefill_fullfit_eager_case(4,256,2,false);

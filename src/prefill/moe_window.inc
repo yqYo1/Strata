@@ -46,6 +46,7 @@ void enqueue_prefill_prefix_experts(Engine& m, MoeWindowContext& owner, int64_t 
         m.layer_major_residual.gpu_rows != m.layer_major_residual.rows || m.copy != m.cs)
         throw std::invalid_argument("prefill prefix expert upload: owner, extent or queue contract");
     const auto& bank = *owner.private_expert_bank;
+    auto* host_staging = owner.prefix_upload_host_storage.data() ? &owner.prefix_upload_host_storage : nullptr;
     if (m.borrowed)
         sycl_backend::validate_spans({{bank.device_slot(0), size_t(bank.layout().backing_bytes)}},
             {{m.borrowed_base, size_t(m.borrowed_capacity)}}, 1);
@@ -55,7 +56,7 @@ void enqueue_prefill_prefix_experts(Engine& m, MoeWindowContext& owner, int64_t 
         owner.prefix_experts, m.cs, {{m.region, size_t(m.region_bytes)},
          {owner.bank, size_t(owner.bank_bytes)}, {owner.prefix_router_storage, PrefillMoePrefixStorage::bytes},
          {m.R, size_t(m.T * D * 4)}, {m.emb, size_t(m.T * N * 4)},
-         {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}});
+         {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}}, host_staging);
 }
 }  // namespace
 
@@ -563,6 +564,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         ++owner.prefix_upload_layers;
         owner.prefix_upload_experts += eager_upload.experts;
         owner.prefix_upload_bytes += eager_upload.payload_bytes;
+        owner.prefix_upload_host_bytes += eager_upload.host_staged_bytes;
         owner.prefix_experts.clear();
         owner.prefix_upload = {};
     }

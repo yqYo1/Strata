@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check and compare production prefix expert issue timing; repository LICENSE."""
+"""Check and compare production prefix expert source placement; repository LICENSE."""
 
 import fcntl
 import importlib.util
@@ -19,15 +19,12 @@ basis, builder = build.basis, build.builder
 P, B, RESULT = build.P, build.B, build.RESULT
 require, sha, signature, write = build.require, build.sha, build.signature, build.write
 THIS = 'tools/sycl/prefill_prefix_expert_measure.py'
-SMOKE = 'prefill_prefix_expert_smoke_v1'
-VERSION = 'v2'
-MODE = 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD'
+SMOKE = 'prefill_prefix_expert_host_usm_smoke_v1'
+MODE = 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_HOST_USM'
 PREFIX_BYTES = 8192 * (2560 * 2 + 4 * 4 + 10 * 4 + 10 * 4 + 4 + 512 * 4)
 COHORTS = {
-    'numerical': ('off', 'ffn', 'prefix'),
-    'ffn': ('off', 'ffn', 'ffn', 'off', 'off', 'ffn'),
-    'prefix': ('ffn', 'prefix', 'prefix', 'ffn', 'ffn', 'prefix'),
-    'combined': ('off', 'prefix', 'prefix', 'off', 'off', 'prefix'),
+    'numerical': ('arena', 'host-usm'),
+    'timing': ('arena', 'host-usm', 'host-usm', 'arena', 'arena', 'host-usm'),
 }
 
 
@@ -62,7 +59,7 @@ def bank_smoke():
         text=True, timeout=15).splitlines() if line.startswith('-- cursor: '))
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     candidate = binary['binaries']['sycl_expert_bank_test']
-    args = [candidate['path'], '--fullfit-eager-smoke']
+    args = [candidate['path'], '--fullfit-eager-host-usm-smoke']
     outcome = dict(source=sources['revision'], sources=sources['aggregate_sha256'],
                    binary=candidate, command=args, environment_sha256=signature(env),
                    native_build=signature(builder.compact(binary)))
@@ -79,7 +76,11 @@ def bank_smoke():
         providers = device.loaded_providers(errors, dict(
             environment=env, native_validation_probe=probe,
             runtime_manifest=binary['foundation']['runtime_manifest']))
-        outcome.update(**device.gpu_cases('bank-smoke', out.read_text()), providers=providers,
+        fixture_log = out.read_text()
+        require('prefill_fullfit_host_usm_fixture PASS selected_bytes_and_guards=checked' in fixture_log.splitlines(),
+                'host USM selected bytes, padding or cancellation gate did not close')
+        outcome.update(**device.gpu_cases('bank-smoke', fixture_log), providers=providers,
+                       selected_host_bytes_and_guards=True,
                        native_exit_code=entry['exit_code'], host_probe_accepted=True)
     except BaseException as error:
         outcome['error'] = repr(error)
@@ -101,34 +102,40 @@ def request_route(log, plan):
             and retirement == dict(effective='early', layers='48', rows='8192', final_drain='checked'),
             'fixed prefix router not exercised')
     require(route['permanent_hits'] == 0, 'expected one dequant and upload per demanded expert')
-    mode = plan['variant']
+    mode = 'ffn'
     admissions = workspace.records(log, 'strata MoE prefix expert upload: ')
     layers = workspace.records(log, 'strata MoE prefix expert upload layer: ')
     ends = workspace.records(log, 'strata MoE prefix expert upload complete: ')
-    if mode == 'off':
-        require(not admissions and not layers and not ends, 'JIT reference uploaded a prefix subset')
-    else:
-        require(admissions == [dict(requested=mode, effective=mode, queue='compute')]
-                and len(layers) == 48, 'prefix expert upload did not admit all layers')
-        packed = workspace.records(log, 'strata packed expert bank: ') if plan['trace_progress'] else None
-        experts = payload = 0
-        for index, layer in enumerate(layers):
-            count, size = int(layer['experts']), int(layer['requested_H2D_bytes'])
-            require(int(layer['layer']) == index and 0 < count <= 512 and size > 0
-                and size % count == 0 and size // count % 256 == 0
-                and size // count <= workspace.STRIDE
-                and re.fullmatch('[0-9a-f]{16}', layer['ids_hash']) and layer['readers'] == 'checked',
-                'actual prefix-issued copies differ from expected geometry')
-            if packed is not None:
-                require(packed[index]['full_fit'] == '1' and size == count * int(packed[index]['stride']),
-                        'prefix copy payload disagrees with the actual packed layer')
-            experts += count
-            payload += size
-        require(ends == [dict(effective=mode, layers='48', experts=str(experts),
-                             requested_H2D_bytes=str(payload), final_drain='checked')]
-                and experts <= route['uploads'] and payload <= route['requested_bank_H2D_bytes'],
-                'prefix upload receipt differs from checked bank totals')
-        route['prefix_upload'] = dict(experts=experts, bytes=payload, selected=signature(layers))
+    require(admissions == [dict(requested=mode, effective=mode, queue='compute')]
+            and len(layers) == 48, 'prefix expert upload did not admit all layers')
+    packed = workspace.records(log, 'strata packed expert bank: ') if plan['trace_progress'] else None
+    experts = payload = 0
+    for index, layer in enumerate(layers):
+        count, size = int(layer['experts']), int(layer['requested_H2D_bytes'])
+        require(int(layer['layer']) == index and 0 < count <= 512 and size > 0
+            and size % count == 0 and size // count % 256 == 0
+            and size // count <= workspace.STRIDE
+            and re.fullmatch('[0-9a-f]{16}', layer['ids_hash']) and layer['readers'] == 'checked',
+            'actual prefix-issued copies differ from expected geometry')
+        if packed is not None:
+            require(packed[index]['full_fit'] == '1' and size == count * int(packed[index]['stride']),
+                    'prefix copy payload disagrees with the actual packed layer')
+        experts += count
+        payload += size
+    require(ends == [dict(effective=mode, layers='48', experts=str(experts),
+                         requested_H2D_bytes=str(payload), final_drain='checked')]
+            and experts <= route['uploads'] and payload <= route['requested_bank_H2D_bytes'],
+            'prefix upload receipt differs from checked bank totals')
+    route['prefix_upload'] = dict(experts=experts, bytes=payload, selected=signature(layers))
+    host_usm = int(plan['variant'] == 'host-usm')
+    allocation = host_usm * 512 * workspace.STRIDE
+    staged = host_usm * payload
+    require(workspace.one(log, 'strata MoE prefix upload storage: ') ==
+            dict(host_usm_requested=str(host_usm), host_usm_effective=str(host_usm),
+                 allocated_bytes=str(allocation))
+            and workspace.one(log, 'strata MoE prefix upload storage complete: ') ==
+            dict(staged_bytes=str(staged), queue='compute'), 'actual host source placement or staged bytes differ')
+    route['source_staging'] = dict(host_usm=bool(host_usm), allocation=allocation, staged_bytes=staged)
     if plan['trace_progress']:
         frames = re.findall(r'^strata MoE router census: layer=(\d+) first=(\d+) rows=(\d+) '
             r'ids=([0-9a-f]{16}) prefix_weights=([0-9a-f]{16})$', log, re.M)
@@ -164,8 +171,8 @@ def model_context(cohort):
     spec = importlib.util.spec_from_file_location('prefix_expert_policy', basis.core.__file__)
     ctx = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctx)
-    ctx.ROOT = B / f'prefill-prefix-expert-{cohort}-{VERSION}'
-    ctx.KEY, ctx.THIS = f'prefill_prefix_expert_{cohort}_{VERSION}', THIS
+    ctx.ROOT = B / f'prefill-prefix-expert-host-usm-{cohort}-v1'
+    ctx.KEY, ctx.THIS = f'prefill_prefix_expert_host_usm_{cohort}_v1', THIS
     ctx.READS, ctx.ORDER, ctx.RUNS, ctx.CLEAN_FAST = (read,) * len(order), [(read, 1)] * len(order), runs, True
     base_environment, base_current = ctx.environment, ctx.current
 
@@ -176,18 +183,11 @@ def model_context(cohort):
                 and smoke['native_build'] == signature(builder.compact(value)), 'same-build fixture required')
         gates = {SMOKE: signature(smoke)}
         if not traced:
-            gate = basis.validation.committed(RESULT, (f'prefill_prefix_expert_numerical_{VERSION}',))
+            gate = basis.validation.committed(RESULT, ('prefill_prefix_expert_host_usm_numerical_v1',))
             require(gate['stage'] == 'closed' and gate['ownership_closed'] and
                     gate['decision']['matched_work'] and gate['binary'] == value['binaries']['strata'],
                     'matched numerical cohort required')
             gates['numerical'] = signature(gate)
-        prerequisites = {'prefix': ('ffn',), 'combined': ('ffn', 'prefix')}
-        for prior in prerequisites.get(cohort, ()):
-            gate = basis.validation.committed(RESULT, (f'prefill_prefix_expert_{prior}_{VERSION}',))
-            require(gate['stage'] == 'closed' and gate['ownership_closed'] and
-                    gate['decision']['matched_work'] and gate['binary'] == value['binaries']['strata'],
-                    'finish the separate comparison first: ' + prior)
-            gates[prior] = signature(gate)
         _, _, speed = basis.basis()
         old = json.loads((basis.reference.model.ROOT / 'record.json').read_text())
         require(old['models'] == speed['model_assets'] and old['probe'] == speed['native_validation_probe'],
@@ -199,7 +199,9 @@ def model_context(cohort):
 
     def environment(row, plan):
         env = base_environment(row, plan)
-        env.update({MODE: order[plan['index']], 'STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER': 'early',
+        env.update({MODE: str(int(order[plan['index']] == 'host-usm')),
+                    'STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD': 'ffn',
+                    'STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER': 'early',
                     'STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS': '512',
                     'STRATA_SYCL_PREFILL_QSA_MATH': 'bf16-prefix-ordered-exp',
                     'STRATA_SYCL_PREFILL_QSA_BULK_HOST_MIRROR': '1',
@@ -218,10 +220,9 @@ def model_context(cohort):
         return base_current(row)
 
     def after_execution(outcome, row, plan):
-        for index, process in enumerate(row['processes']):
+        for process in row['processes']:
             require(work(outcome) == work(process), 'logical work differs between matched requests')
-            if order[index] != 'off' and plan['variant'] != 'off':
-                require(selected(outcome) == selected(process), 'selected experts or issue bytes differ')
+            require(selected(outcome) == selected(process), 'selected experts or issue bytes differ')
 
     def decision(processes):
         result = dict(matched_work=True, independent_processes=len(processes), measured_modes=list(order),
@@ -259,8 +260,8 @@ def prepare(ctx, cohort):
         envs.append({k: v.replace(plan['root'], '<case>') for k, v in env.items() if k != MODE})
     require(all(env == envs[0] for env in envs), 'another environment variable changed between arms')
     row['plan'] = dict(cohort=cohort, modes=COHORTS[cohort], actual_input=ctx.READS[0], requests=ctx.RUNS,
-        question='Compare named issue policies with fixed early router, main compute queue, resident host '
-                 'sources, packed bank, layer math and decode handoff. Each pair starts new processes.',
+        question='Compare the original resident source with reusable host USM at fixed FFN issue, early router, '
+                 'compute queue, selected expert offsets, packed bank, layer math and decode handoff.',
         gates='Match logical work and observed expert bytes. For both issue arms match selected IDs. '
               'Retain every sample and separate first use. Stop on validation, fault or ownership failure.',
         retention='Keep compact matched work, PP/TTFT and checked closure. Review extra build at closure.')

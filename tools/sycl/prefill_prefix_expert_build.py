@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the owned prefix expert issue-position control; repository LICENSE."""
+"""Build the prefix expert source-placement control; repository LICENSE."""
 
 import fcntl
 import hashlib
@@ -12,18 +12,20 @@ import coherent_model_basis as basis
 import prefill_window_build as builder
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'prefill-prefix-expert-native-v1'
-KEY = 'prefill_prefix_expert_native_v1'
+ROOT = B / 'prefill-prefix-expert-host-usm-native-v1'
+KEY = 'prefill_prefix_expert_host_usm_native_v1'
 HOST = 'prefill_fullfit_upload_plan_test'
 TARGETS = [*builder.TARGETS, 'sycl_moe_upload_census_host_test', HOST]
 OVERLAYS = (
-    'cmake/sycl_vllm_xe2_native16.cmake',
-    'include/strata/prefill/fullfit_upload_plan.hpp',
+    'include/strata/prefill/expert_bank_upload.hpp',
     'src/prefill/prefill.cpp', 'src/prefill/layer_major.inc', 'src/prefill/moe_window.inc',
-    'tests/prefill/fullfit_upload_plan_test.cpp',
+    'tests/sycl/expert_bank.cpp',
 )
-HISTORY = ('prefill_window_native_v2', 'prefill_first_demand_native_v1',
-           'prefill_prefix_router_native_v1', 'prefill_prefix_router_timing_v1')
+ISSUE_BUILD = 'prefill_prefix_expert_native_v1'
+ISSUE_RESULT = 'prefill_prefix_expert_combined_v2'
+BUILD_HISTORY = ('prefill_window_native_v2', 'prefill_first_demand_native_v1',
+                 'prefill_prefix_router_native_v1', ISSUE_BUILD)
+HISTORY = (*BUILD_HISTORY, ISSUE_RESULT)
 source, write = builder.source, builder.write
 require, sha, signature = basis.require, basis.sha, basis.signature
 save_build = builder.save
@@ -40,7 +42,7 @@ def hashed(payload):
 def recover(native, prior, revision):
     payload = dict(source.blobs(P, basis.original.SOURCE, native['project']['source_sha256']))
     require(hashed(payload) == native['project']['source_sha256'], 'coherent base differs')
-    for key in HISTORY[:-1]:
+    for key in BUILD_HISTORY:
         build = prior[key]
         overlay = dict(source.blobs(P, build['source_commit'], build['overlays']))
         require(hashed(overlay) == build['overlays'], 'archived overlays differ: ' + key)
@@ -48,21 +50,24 @@ def recover(native, prior, revision):
         hashes = hashed(payload)
         require(dict(files=len(hashes), sha256=signature(hashes)) == build['source_files'],
                 'recovered native composition differs: ' + key)
-    image, timing = (prior[key] for key in HISTORY[-2:])
+    image, timing = prior[ISSUE_BUILD], prior[ISSUE_RESULT]
     require(timing['stage'] == 'closed' and timing['ownership_closed'] and not timing['active']
             and timing['native_source_commit'] == image['source_commit']
-            and timing['binary'] == image['binaries']['strata'],
-            'exact closed 64K prefix router reference required')
+            and timing['binary'] == image['binaries']['strata']
+            and timing['artifact_retirement']['complete']
+            and timing['artifact_retirement']['build']['source_sha256'] == signature(hashed(payload))
+            and timing['disposition']['development_issue_mode'] == 'ffn',
+            'exact closed issue comparison and recovered retired build required')
     changes = dict(source.blobs(P, revision, OVERLAYS))
     require(set(changes) == set(OVERLAYS)
             and all((P / path).read_bytes() == raw for path, raw in changes.items()),
-            'commit exact issue-position engine and test overlays')
+            'commit exact host-USM source-placement and test overlays')
     payload.update(changes)
     return payload
 
 
 def recipe(prior):
-    image = prior[HISTORY[-2]]
+    image = prior[ISSUE_BUILD]
     root = str(Path(image['binaries']['strata']['path']).parent.parent)
     original = image['recipe']
     return dict(configure=[v.replace(root, str(ROOT)) for v in original['configure']],
@@ -127,8 +132,8 @@ def prepare():
                external_inputs=native['external_inputs'], driver=builder.guards.driver_guard(),
                retained_decode_reference=decode, commands=[], active=False, ownership_closed=True,
                passed=False, complete=False,
-               plan=dict(unit='Fixed early router, same bank, same queue. Compare JIT to FFN issue, '
-                         'then FFN to prefix issue with identical subset and upload mechanism.',
+               plan=dict(unit='Fixed FFN issue, private bank, same compute queue. Compare the ordinary arena '
+                         'with one request-owned reusable host-USM allocation for exactly that subset.',
                          host=[HOST], retention='Third build only for this comparison after preserving '
                          'both independent phase references. Review at closure or first failed gate.'))
     check(row, False)

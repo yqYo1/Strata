@@ -8,6 +8,7 @@
 #include "strata/prefill/expert_upload_staging.hpp"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
+#include <cstring>
 
 namespace strata::prefill::detail {
 
@@ -52,6 +53,7 @@ inline bool prefill_fullfit_eager_requested() {
 struct PrefillFullfitUploadReceipt {
     std::array<bool,512> first_upload{};
     uint64_t experts=0,copy_commands=0,payload_bytes=0;
+    uint64_t host_staged_bytes=0;
 };
 
 // U1 changes only the position of the existing individual copies. Source and
@@ -59,7 +61,8 @@ struct PrefillFullfitUploadReceipt {
 inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& slots,
         const PrivateExpertBank& bank,const uint8_t* slab,uint64_t slab_bytes,
         uint64_t source_stride,const std::vector<int32_t>& experts,void* stream,
-        std::initializer_list<sycl_backend::Span> live_scratch) {
+        std::initializer_list<sycl_backend::Span> live_scratch,
+        sycl_backend::Allocation* host_staging = nullptr) {
     if (!stream || !slab || slab_bytes!=layer_major_mul(512,source_stride))
         throw std::invalid_argument("prefill eager upload source/queue extent");
     auto& queue=sycl_backend::queue_for(stream);
@@ -71,8 +74,28 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},live_scratch,1);
     const auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride);
     PrefillFullfitUploadReceipt result;
+    // Keep source offsets and individual DMA commands identical. The caller
+    // drains the prior layer before rewriting these CPU-writable USM pages.
+    const uint8_t* upload_source = slab;
+    if (host_staging) {
+        if (!slots.full_fit() || slots.slots() != ExpertBankPlan::experts || slots.permanent_used())
+            throw std::invalid_argument("prefill staged eager upload requires empty private bank");
+        auto* staged = host_staging->as<uint8_t>();
+        if (!staged || host_staging->size() < slab_bytes ||
+            sycl::get_pointer_type(staged, queue.get_context()) != sycl::usm::alloc::host ||
+            sycl::get_pointer_type(slab, queue.get_context()) == sycl::usm::alloc::device)
+            throw std::invalid_argument("prefill eager upload host staging source or extent");
+        sycl_backend::validate_spans({{staged, size_t(slab_bytes)}},
+            {{slab, size_t(slab_bytes)}, {base, size_t(layout.backing_bytes)}}, 1);
+        sycl_backend::validate_spans({{staged, size_t(slab_bytes)}}, live_scratch, 1);
+        for (const auto& copy : plan.copies())
+            std::memcpy(staged + size_t(copy.source_offset), slab + size_t(copy.source_offset),
+                        size_t(copy.bytes));
+        upload_source = staged;
+        result.host_staged_bytes = plan.payload_bytes();
+    }
     enqueue_prefill_fullfit_upload(plan,slots,[&](const PrefillFullfitCopy& copy) {
-        if (cudaMemcpyAsync(base+size_t(copy.destination_offset),slab+size_t(copy.source_offset),
+        if (cudaMemcpyAsync(base+size_t(copy.destination_offset),upload_source+size_t(copy.source_offset),
                 size_t(copy.bytes),cudaMemcpyHostToDevice,static_cast<cudaStream_t>(stream))!=cudaSuccess)
             return false;
         ++result.copy_commands;

@@ -2726,7 +2726,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   position, copy queue and first-reader wait against fixed payloads. Physical
   context and sustained decode retain their own qualification gates.
 
-  The next production-path control fixes `STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER=early`,
+  The same-queue production-path control fixes `STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER=early`,
   the ordinary resident host source, the private full-fit bank and the existing
   in-order compute queue. `STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD` is opt-in
   with `off`, `ffn` and `prefix` modes. The two bulk-issue modes derive the
@@ -2741,17 +2741,36 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bytes. Each selected mapping must have an actual reader. Stop on a mismatch,
   timeout or fresh GPU fault. This arm qualifies only same-queue issue timing.
 
-  For clean64K comparisons, use three requests per process and three independent
-  matched pairs per question. Compare JIT off to ffn first, with off, ffn, ffn,
-  off, off, ffn process order. Then compare ffn to prefix with ffn, prefix,
-  prefix, ffn, ffn, prefix order. Compare prefix with JIT off at the combination
-  gate. Preserve first use and warmed samples separately, record actual
-  dispatch and transferred bytes, and require a repeatable warmed benefit for
-  throughput adoption. Mixed signs require further evaluation. A separate queue,
-  staging, and first reader wait each need their own fixed-prerequisite test.
-  Neither the source placement nor the issue point in this comparison proves
-  transfer overlap. Review the temporary third build after these comparisons
-  or on the first failed safety or qualification gate.
+  Each clean64K comparison closes three counterbalanced pairs with three
+  requests per process. Expert jobs, selected payload and MTP handoff match
+  where applicable. All18 processes close normally with no fresh GPU faults.
+
+  | Candidate and reference | Warmed time ratios | Decision |
+  | --- | --- | --- |
+  | FFN issue versus JIT, `c6b99c36b` | 0.9726, 0.9676, 0.9553 | Repeated gain |
+  | Earlier issue versus FFN issue, `907dd5a71` | 0.9810, 0.9820, 1.0290 | Mixed |
+  | Earlier issue versus JIT, `760747a44` | 0.9444, 0.9643, 0.9978 | Repeated net gain |
+
+  Preserve first-use and warmed samples separately. The measured net gain
+  establishes the combination under the fixed early router and the same queue.
+  Select FFN issue as the development reference for source placement based on
+  its separate repeated gain. The phase references remain available after
+  retiring the temporary third build.
+
+  The separate source-placement control fixes FFN issue and switches only
+  the selected copy source with `STRATA_SYCL_PREFILL_PREFIX_EXPERT_HOST_USM=0|1`.
+  Use one checked request-owned host-USM allocation with the largest layer
+  extent. Copy only selected payloads to their original offsets ahead of
+  the same individual commands. Drain the previous layer before host-buffer
+  reuse and retire accepted commands before freeing its owners. The ordinary
+  source still services JIT misses. Admission includes this allocation in the
+  existing RAM budget and selects the experimental source only for the
+  single full-fit FFN route. The same-build smoke checks both strides,
+  reuse, cancellation and unselected bytes. Verify matching 32K router,
+  payload and handoff evidence before timing three counterbalanced 64K pairs.
+  Include allocation, selection, staging and teardown in the observed request
+  lifecycle. Keep separate queue selection and first-reader wait for later
+  fixed-prerequisite comparisons and observe device overlap there.
 
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the

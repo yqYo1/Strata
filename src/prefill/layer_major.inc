@@ -499,6 +499,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const bool prefix_expert_upload_admitted = prefix_expert_upload_requested != PrefillPrefixExpertUpload::off &&
         prefix_router_admitted && prefix_router_requested == PrefillMoePrefixRouter::early &&
         source_view_on && !expert_upload_staging_requested() && !detail::prefill_fullfit_eager_requested();
+    const bool prefix_host_usm_requested = prefill_prefix_expert_host_usm_requested();
+    const bool prefix_host_usm_admitted = prefix_host_usm_requested && prefix_expert_upload_admitted &&
+        prefix_expert_upload_requested == PrefillPrefixExpertUpload::ffn;
     if (prefix_expert_upload_requested != PrefillPrefixExpertUpload::off)
         std::fprintf(stderr, "strata MoE prefix expert upload: requested=%s effective=%s queue=compute\n",
             prefill_prefix_expert_upload_name(prefix_expert_upload_requested),
@@ -509,6 +512,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // Also count the cache's small blocking staging allocation and two maps.
     const uint64_t owned_host_slab_bytes = source_view_on ? 0 : host_slab_bytes;
     uint64_t host_need = detail::layer_major_add(plan.host_bytes, owned_host_slab_bytes);
+    if (prefix_host_usm_admitted) host_need = detail::layer_major_add(host_need, host_slab_bytes);
     host_need = detail::layer_major_add(host_need, stride);
     host_need = detail::layer_major_add(host_need, detail::layer_major_mul(2, map_bytes));
     // IDs, immutable source/slot/inverse vectors and bounded jobs.
@@ -868,6 +872,16 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         if (prefix_expert_upload_admitted)
             window_context->prefix_expert_upload = prefix_expert_upload_requested;
+        if (prefix_host_usm_admitted) {
+            auto& queue = sycl_backend::queue_for(m.cs);
+            window_context->prefix_upload_host_storage = sycl_backend::Allocation(
+                sycl_backend::runtime_for_device_span(layer_cache.device_slot(0), size_t(layer_cache.bytes()), queue),
+                size_t(host_slab_bytes), sycl_backend::MemoryKind::Host);
+        }
+        if (prefix_host_usm_requested || prefix_expert_upload_admitted)
+            std::fprintf(stderr, "strata MoE prefix upload storage: host_usm_requested=%d "
+                "host_usm_effective=%d allocated_bytes=%zu\n", int(prefix_host_usm_requested),
+                int(prefix_host_usm_admitted), window_context->prefix_upload_host_storage.size());
         if (bank_plan.staged()) {
             window_context->expert_slots.reset(new detail::ExpertBankSlots(int32_t(bank_plan.slots)));
             window_context->expert_cache = &layer_cache;
@@ -1265,6 +1279,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 (unsigned long long)window_context->prefix_upload_layers,
                 (unsigned long long)window_context->prefix_upload_experts,
                 (unsigned long long)window_context->prefix_upload_bytes);
+            if (window_context->prefix_upload_host_bytes !=
+                (prefix_host_usm_admitted ? window_context->prefix_upload_bytes : 0)) {
+                err = "prefill MoE prefix upload storage: staged bytes differ"; return false;
+            }
+            std::fprintf(stderr, "strata MoE prefix upload storage complete: staged_bytes=%llu queue=compute\n",
+                (unsigned long long)window_context->prefix_upload_host_bytes);
         }
         if (window_context->expert_slots)
             std::fprintf(stderr, "strata MoE expert bank complete: uploads=%llu requested_H2D_bytes=%llu permanent_hits=%llu permanent_slots=%d total_slots=%d final_drain=checked\n",
