@@ -422728,7 +422728,7 @@
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
     "post_run_analysis": {
-      "stage": "prepared",
+      "stage": "failed",
       "source_commit": "e0e086a70839c008f48712f6722d27ef53165b9d",
       "pins": {
         "tools/sycl/recover_eager_request_profile.py": "5badba98fb8a3d4f4f8f0bfae8a6eaf9ca99a618502ed5fa0e8b83aa6fc7a74b",
@@ -422774,7 +422774,11 @@
         "file_cap": 2097152,
         "total_cap": 4194304
       },
-      "scope": "Offline interpretation of one prior closed native trace. Original failed 4-process campaign and its observer-overhead decision remain unqualified. No native GPU work or new timing sample."
+      "scope": "Offline interpretation of one prior closed native trace. Original failed 4-process campaign and its observer-overhead decision remain unqualified. No native GPU work or new timing sample.",
+      "exit_code": 1,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "error": "RuntimeError('offline analysis failed: None Traceback (most recent call last):\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/request_resource_summary.py\", line 80, in <module>\\n    summary = summarize(reader.load_json(trace), contract)\\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/request_resource_summary.py\", line 23, in summarize\\n    for request, prior in zip(receipt[\\'requests\\'], original[\\'requests\\']):\\n                                                   ~~~~~~~~^^^^^^^^^^^^\\nTypeError: \\'NoneType\\' object is not subscriptable\\n')"
     }
   }
 }
