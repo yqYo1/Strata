@@ -411675,6 +411675,274 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 3,
+        "read": 131072,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+          "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+          "bytes": 26448640,
+          "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+        },
+        "native_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "native_identity": {
+          "pid": 4075956,
+          "start_ticks": 330808379,
+          "sid": 4075889
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 4075956,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 131071,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 131071,
+            "residual_gpu_bytes": 2684334080,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 681574400,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 1059131904,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 83886080,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 256,
+              "window_rows": 81920,
+              "windows": 96,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4245651456,
+              "fixed_including_headroom_bytes": 4172263680,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 8390,
+                "fused_rows": 55570573,
+                "separate_jobs": 29934
+              },
+              "down": {
+                "fused_jobs": 8390,
+                "fused_rows": 55570573,
+                "separate_jobs": 29934
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 38324,
+              "windows": 96,
+              "dequants": 33606,
+              "maximum_physical_window_rows": 81920,
+              "requested_source_map_bytes": 251656320,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 21237,
+            "permanent_hits": 12369,
+            "requested_bank_H2D_bytes": 43611008000,
+            "requested_source_map_H2D_bytes": 251656320
+          },
+          {
+            "rows": 131071,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 131071,
+            "residual_gpu_bytes": 2684334080,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 681574400,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 1059131904,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 83886080,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 256,
+              "window_rows": 81920,
+              "windows": 96,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4252708864,
+              "fixed_including_headroom_bytes": 4172263680,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 8385,
+                "fused_rows": 55565425,
+                "separate_jobs": 30122
+              },
+              "down": {
+                "fused_jobs": 8385,
+                "fused_rows": 55565425,
+                "separate_jobs": 30122
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 38507,
+              "windows": 96,
+              "dequants": 33785,
+              "maximum_physical_window_rows": 81920,
+              "requested_source_map_bytes": 251656320,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 21347,
+            "permanent_hits": 12438,
+            "requested_bank_H2D_bytes": 43839692800,
+            "requested_source_map_H2D_bytes": 251656320
+          },
+          {
+            "rows": 131071,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 131071,
+            "residual_gpu_bytes": 2684334080,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 681574400,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 1059131904,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 83886080,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 256,
+              "window_rows": 81920,
+              "windows": 96,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4252635136,
+              "fixed_including_headroom_bytes": 4172263680,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 8384,
+                "fused_rows": 55534828,
+                "separate_jobs": 29902
+              },
+              "down": {
+                "fused_jobs": 8384,
+                "fused_rows": 55534828,
+                "separate_jobs": 29902
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 38286,
+              "windows": 96,
+              "dequants": 33584,
+              "maximum_physical_window_rows": 81920,
+              "requested_source_map_bytes": 251656320,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 21262,
+            "permanent_hits": 12322,
+            "requested_bank_H2D_bytes": 43663718400,
+            "requested_source_map_H2D_bytes": 251656320
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 131072,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 153887.1,
+            "prompt_tps": 851.7,
+            "ttft_s": 154.114,
+            "total_s": 156.226,
+            "generated_tokens": 24,
+            "request_sha256": "b868ca74f6137b8d356cf7a6917abb7a73ee43b35fade8a16cdf588871d06026",
+            "drafts_offered": 21,
+            "drafts_accepted": 17,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 131072,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 141707.2,
+            "prompt_tps": 924.9,
+            "ttft_s": 142.047,
+            "total_s": 144.01,
+            "generated_tokens": 24,
+            "request_sha256": "69600ed152d0318e2c59b51d174d18d620225ea0ccc83ba51a28c4914d15d96f",
+            "drafts_offered": 21,
+            "drafts_accepted": 17,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 131072,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 142146.1,
+            "prompt_tps": 922.1,
+            "ttft_s": 142.374,
+            "total_s": 144.597,
+            "generated_tokens": 24,
+            "request_sha256": "824c54d9e8f3c198a84713a845ff70ab8f12d221a964ffc991db94ca0675dc08",
+            "drafts_offered": 21,
+            "drafts_accepted": 17,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 141926.65000000002,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "request_hashes": {

@@ -2230,8 +2230,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bank256/window10,normal0,reapedempty,quiet validation and no fresh fault.
   All three paired traced requests match maps,jobs,dequants,GU/Down selections,
   uploads and requested bytes. These are not clean speed or a completed
-  coherence comparison;the six clean128Kprocesses remain. The other three
-  cohorts remain unprepared.
+  coherence comparison. The six-clean-process128Kcomparison is underway;
+  current process outcomes and samples are in`prefill_window_coherence_model_v1`.
+  The other three cohorts remain unprepared.
   U1jit is fixed to isolate native14coherence;its separately positive eager
   component remains eligible.
   `prefill_bank_minimum_v2`closes at`4d027b3e1`:nine normal0processes/27thinking-on
