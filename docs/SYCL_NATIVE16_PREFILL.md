@@ -2262,7 +2262,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gain permits the combination. Window/combined remain unprepared;
   no larger-window model has run. Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
-  RESTORE qualification remain unresolved.
+  RESTORE qualification remain unresolved. Full relocation evidence is
+  `a82b3ef93`;four first-use/warmed CSVpoints bring the index to629.
   Full coherence evidence is`c68086021`. Four first-use/warmed CSVpoints bring
   the index to625. All27samples,nine native identities,the failed decision and
   useful request-work/admission values remain in the compact result. Original
