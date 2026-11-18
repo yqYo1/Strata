@@ -2250,10 +2250,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its394265344Bextra owner is actually admitted,and all three guards and final
   drains pass before retirement;all98304BF16residual rows remain onGPU.
   Native exit is normal0/reapedempty,validation quiet and no fresh fault.
-  Next collect the three opposite-order clean process pairs;traced timings
-  do not establish a speed gain. Window/combined remain unprepared;
-  no larger-window model has run.
-  Full original evidence is`c68086021`. Four first-use/warmed CSVpoints bring
+  The full relocation cohort closes with nine normal0processes/27requests,
+  quiet validation,no fresh fault and15final model hashes. All three clean
+  pairs conserve maps,jobs,dequants,GU/Down selections,uploads and requested
+  bytes. Relocated/original warmed-time ratios are1.012512,1.000491and1.006909
+  (geomean1.006626);the repeated-gain gate FAILS. Aggregate warmed PPis942.723
+  original versus935.818relocated. Keep first-use and individual samples;
+  neither the placement change nor the composed engine is adopted. This
+  preserves the separate bank/coherence losses. The prospective rule permits
+  the next independent128K/fixed-bank1window10/16question;only its repeated
+  gain permits the combination. Window/combined remain unprepared;
+  no larger-window model has run. Hardware saturation,current9849decode
+  preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
+  RESTORE qualification remain unresolved.
+  Full coherence evidence is`c68086021`. Four first-use/warmed CSVpoints bring
   the index to625. All27samples,nine native identities,the failed decision and
   useful request-work/admission values remain in the compact result. Original
   771Git inputs and18generated JSONpayloads are recovered and compared exactly;
