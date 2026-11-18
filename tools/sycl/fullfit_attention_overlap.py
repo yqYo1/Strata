@@ -105,6 +105,13 @@ def compile_commands():
     return commands
 
 
+def compile_environment(native):
+    env = {k:v for k,v in native['recipe']['environment'].items()
+           if k in ('PATH','LANG','LC_ALL','LD_LIBRARY_PATH')}
+    env['TMPDIR'] = str(ROOT/'tmp')
+    return env
+
+
 def case_environment(pin, mode):
     path = ROOT/mode
     template = pin['environment_template']
@@ -259,6 +266,8 @@ def timeline(trace, points, lifetime):
         require(len(copies) == point['copies'] and nbytes == point['requested_bytes']
             and len(kernels) == point['attention_calls']*2, 'copy or QSA launches do not conserve')
         copy_ns, kernel_ns = reader.union_ns(copies), reader.union_ns(kernels)
+        require(bool(copy_ns) == bool(copies) and bool(kernel_ns) == bool(kernels),
+            'device timestamp resolution did not establish submitted work')
         overlap_ns = copy_ns+kernel_ns-reader.union_ns(copies+kernels)
         out.append(dict(arm=point['arm'], round=point['round'], classifications=classifications,
             copy_union_ns=copy_ns, qsa_union_ns=kernel_ns, overlap_ns=overlap_ns, other_commands=other))
@@ -271,9 +280,12 @@ def assessment(outcomes):
     require([p['mode'] for p in eligible] == ['0','1','2'] and len({p['pid'] for p in eligible}) == 3,
         'three independent clean processes required')
     def medians(row):
-        return {arm: statistics.median(p['milliseconds'] for p in row['timing']['samples'] if p['arm'] == arm)
+        return {arm: statistics.median(p['milliseconds'] for p in row['timing']['samples']
+                    if p['arm'] == arm and p['round'] > 0)
                 for arm in ARMS}
     clean = [medians(row) for row in eligible]
+    first = [{p['arm']:p['milliseconds'] for p in row['timing']['samples'] if p['round'] == 0}
+             for row in eligible]
     trace_medians = medians(trace)
     ratios = {}
     for name, arm, reference in (
@@ -284,14 +296,20 @@ def assessment(outcomes):
         values = [p[arm]/p[reference] for p in clean]
         ratios[name] = dict(paired=values, geometric=statistics.geometric_mean(values),
                             all_three_faster=all(v < 1 for v in values))
-    overlap = {arm: statistics.median(p['overlap_ns'] for p in trace['timeline'] if p['arm'] == arm)
-               for arm in ARMS}
+    device = {arm: {key: statistics.median(p[key] for p in trace['timeline']
+                        if p['arm'] == arm and p['round'] > 0)
+                    for key in ('copy_union_ns','qsa_union_ns','overlap_ns')} for arm in ARMS}
     trace_cost = {arm: trace_medians[arm]/clean[0][arm] for arm in ARMS}
-    return dict(ratios=ratios, clean_process_medians_ms=clean, traced_vs_first_clean=trace_cost,
-        observed_device_overlap_median_ns=overlap,
+    concurrent = device['deferred_wait']
+    interference = dict(copy=concurrent['copy_union_ns']/device['copy_only']['copy_union_ns'],
+        qsa=concurrent['qsa_union_ns']/device['compute_only']['qsa_union_ns'])
+    return dict(ratios=ratios, clean_process_warmed_medians_ms=clean, clean_first_round_ms=first,
+        traced_vs_first_clean=trace_cost,
+        observed_device_interval_medians_ns=device, observed_concurrent_to_alone_union_ratios=interference,
         estimated_serial_equivalent_ms=[p['copy_only']+p['compute_only'] for p in clean],
         eligible_for_separate_reader_ownership_test=ratios['net']['all_three_faster']
-            and ratios['wait_placement']['all_three_faster'] and overlap['deferred_wait'] > overlap['serial_separate'],
+            and ratios['wait_placement']['all_three_faster']
+            and concurrent['overlap_ns'] > device['serial_separate']['overlap_ns'],
         model_qualified=False, physical_bandwidth_or_saturation_qualified=False)
 
 
@@ -323,18 +341,16 @@ def prepare():
     native, pin = platform()
     require(all(inputs[p] == native['project']['source_sha256'][p] for p in qsa.NATIVE),
         'maintain the native14508 sources for all nonfixture translation units')
-    env = {k:v for k,v in native['recipe']['environment'].items()
-           if k in ('PATH','LANG','LC_ALL','LD_LIBRARY_PATH')}
-    env['TMPDIR'] = str(ROOT/'tmp')
     ROOT.mkdir(mode=0o700)
     for name in ('build','tmp'): (ROOT/name).mkdir(mode=0o700)
     save(dict(stage='prepared', source_commit=revision, sources=inputs, platform=pin,
-        compile_environment=env, commands=compile_commands(), cases=frozen_cases(pin), results=[],
+        compile_environment=compile_environment(native), commands=compile_commands(),
+        cases=frozen_cases(pin), results=[],
         active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=768<<20,
         plan=dict(order=STAGES, compiled_translation_units=6,
             unit='Same original ordered-exp 65536-cell/8192-query/cap2051 QSA, same 512 ordinary RAM copies at layer-2 stride. Two serial arms isolate queue choice; two same-second-queue arms isolate wait position. Compare net against serial shared queue. Compute/copy alone are controls.',
             safety='Compile the disposable third generation from scratch. Check cold startup, owner/provider identities, small traced output and cancellation, then bounded PTI device-only timeline. Clean processes keep identical pre-exec safety settings and remove PTI/RAW-clock observer.',
-            decision='Five rotated arm orders in each of three independent clean processes. Require all 25 clean samples per process with identical bytes, exact output and guards, at least 10 ms and clock-pair overhead below 0.1%. Retain each contrast and every sample. Same-source overlap eligibility also needs traced positive overlap over serial on the second queue.',
+            decision='Five rotated arm orders in each of three independent clean processes. Require all 25 clean samples per process with identical bytes, exact output and guards, at least 10 ms and clock-pair overhead at most 0.1%. Record the first cycle separately. Later-cycle medians drive each three-pair decision. Same-source overlap eligibility also needs traced positive overlap over serial on the second queue.',
             limits='Single synthetic weight slab and one real kernel entry, not model speed or physical PCIe measurement. Chosen data do not represent all layers. No engine/decode/quality/full-context qualification.',
             retention='Keep the timing and device-window aggregates, source/recipe/fault proof and decisions. Retire instrumented logs and the one fixture generation after closure and exact provenance recovery.')))
     print('Prepared isolated copy/attention component; commit exact plan before running.')
@@ -391,6 +407,7 @@ def run_device(row, mode, scope, path, result):
         require(len(traces) == 1 and traces[0].stat().st_size < RUN_LIMIT['file_cap'], 'one bounded device trace required')
         result.update(timeline=timeline(reader.load_json(traces[0]),timing['samples'],(before,after)),
             trace=dict(sha256=sha(traces[0]), bytes=traces[0].stat().st_size))
+    result['host_probe_accepted'] = True
 
 
 def run_stage(mode):
@@ -402,7 +419,8 @@ def run_stage(mode):
         'commit preceding closed stage and launch only the next declared arm')
     native, pin = platform()
     require(pins(row['source_commit']) == row['sources'] and row['platform'] == pin
-        and row['commands'] == compile_commands() and row['cases'] == frozen_cases(pin)
+        and row['commands'] == compile_commands() and row['compile_environment'] == compile_environment(native)
+        and row['cases'] == frozen_cases(pin)
         and owner.artifact_bytes(ROOT) < row['whole_bytes'], 'frozen source, recipe, providers or budget differ')
     if mode in STAGES[2:]:
         require(sha(row['binary']['path']) == row['binary']['sha256']

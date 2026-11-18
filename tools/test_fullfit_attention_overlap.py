@@ -56,17 +56,22 @@ class MeasurementControls(unittest.TestCase):
 
     def test_independent_decisions(self):
         def row(mode, index, times):
-            timing = dict(samples=[dict(arm=arm,milliseconds=elapsed)
-                for arm,elapsed in zip(experiment.ARMS,times)])
+            timing = dict(samples=[dict(arm=arm,round=n,milliseconds=elapsed+1000*(n==0))
+                for n in range(5) for arm,elapsed in zip(experiment.ARMS,times)])
             return dict(mode=mode,pid=index,timing=timing,
-                timeline=[dict(arm=arm,overlap_ns=10000 if arm=='deferred_wait' else 0)
-                          for arm in experiment.ARMS])
+                timeline=[dict(arm=arm,round=n,overlap_ns=10000 if arm=='deferred_wait' else 0,
+                    copy_union_ns=20000 if arm!='compute_only' else 0,
+                    qsa_union_ns=30000 if arm!='copy_only' else 0)
+                          for n in range(5) for arm in experiment.ARMS])
         timings = (70,100,180,185,120)
         outcomes = [row('trace',10,timings)] + [row(str(i),i,timings) for i in range(3)]
         decision = experiment.assessment(outcomes)
         self.assertFalse(decision['ratios']['queue_choice']['all_three_faster'])
         self.assertTrue(decision['ratios']['wait_placement']['all_three_faster'])
         self.assertTrue(decision['eligible_for_separate_reader_ownership_test'])
+        self.assertEqual(decision['observed_concurrent_to_alone_union_ratios'],dict(copy=1.0,qsa=1.0))
+        self.assertEqual(decision['clean_first_round_ms'][0]['copy_only'],1100)
+        self.assertEqual(decision['clean_process_warmed_medians_ms'][0]['copy_only'],100)
         outcomes[2] = row('1',1,(70,100,180,185,186))
         self.assertFalse(experiment.assessment(outcomes)['eligible_for_separate_reader_ownership_test'])
 
