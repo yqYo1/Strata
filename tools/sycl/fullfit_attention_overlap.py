@@ -10,7 +10,6 @@ import json
 import math
 from pathlib import Path
 import re
-import shlex
 import statistics
 import subprocess
 import sys
@@ -18,6 +17,7 @@ import time
 
 sys.dont_write_bytecode = True
 import coherent_model_basis as basis
+import check_qsa16_stream as native_build
 import current_pti_admission as pti
 import current_pti_probe as pti_probe
 import measurement_guards as guards
@@ -27,37 +27,42 @@ import request_profile_reader as reader
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'fullfit-attention-layer-source-v1'
-KEY = 'fullfit_attention_layer_source_v1'
+ROOT = B / 'fullfit-attention-arena-source-v1'
+KEY = 'fullfit_attention_arena_source_v1'
 COMPILE_LOGS = ROOT / 'compile'
-ELF = ROOT / 'build/sycl_fullfit_attention_overlap'
+TARGET = 'sycl_fullfit_arena_source_bench'
+ELF = ROOT / 'build' / TARGET
 PYTHON = basis.reference.model.PYTHON
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
 ZE_LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
 ADAPTER = 'bench/sycl/fullfit_attention_overlap.hpp'
 TEST = 'tools/test_fullfit_attention_overlap.py'
-ARENA_TUS = ('src/core/expert_source.cpp','src/core/pinned.cu','src/platform/memory.cpp')
-SOURCES = ('staged','borrowed')
-CLEAN_ORDER = ('staged','borrowed','borrowed','staged','staged','borrowed')
+TREE_INPUTS = ('cmake','src','include','third_party','tests','bench/sycl','tools/sycl')
+SOURCES = ('allocated','staged','borrowed')
+CLEAN_BLOCKS = (SOURCES, ('staged','borrowed','allocated'), ('borrowed','allocated','staged'))
+CLEAN_ORDER = tuple(kind for block in CLEAN_BLOCKS for kind in block)
 CASES = {
+    'metadata-borrowed': ('metadata','borrowed',0),
     **{f'{phase}-{kind}': (phase, kind, 0)
-       for phase in ('metadata','smoke','trace') for kind in SOURCES},
-    **{f'clean-{i}': ('clean', kind, i//2) for i, kind in enumerate(CLEAN_ORDER)},
+       for phase in ('smoke','trace') for kind in SOURCES},
+    **{f'clean-{i}': ('clean', kind, i//len(SOURCES)) for i, kind in enumerate(CLEAN_ORDER)},
 }
-STAGES = ('host', 'build', *CASES)
+STAGES = ('host', 'configure', 'build', *CASES)
 ARMS = ('compute_only', 'copy_only', 'serial_separate', 'deferred_wait')
 FULL_ROUNDS = 5
 COPY = re.compile(r'^zeCommandListAppendMemoryCopy\(([HDMS]2[HDMS])\)\[(\d+)\]$')
-SOURCE_SETUP = re.compile(r'^fullfit_attention_overlap source=(staged|borrowed) '
-                          r'bytes=(\d+) arena_ms=(\S+) prepare_ms=(\S+) allocation_id=(\d+) type=PASS$')
+SOURCE_SETUP = re.compile(r'^fullfit_attention_overlap source=(allocated|staged|borrowed) '
+                          r'bytes=(\d+) prepare_ms=(\S+) allocation_id=(\d+) type=PASS$')
 SOURCE_RETIRE = re.compile(r'^fullfit_attention_overlap retire_ms=(\S+) source_unchanged=PASS$')
+ARENA_SETUP = re.compile(r'^fullfit_attention_overlap arena=production layers=48 bytes=50292326400 '
+                         r'load_ms=(\S+) layout=PASS$')
 QUEUE_SETUP = re.compile(r'^fullfit_attention_overlap copy_api=native '
                          r'ordinal=(\d+) index=(\d+) mode=(\d+) flags=(\d+) priority=(\d+) domain=PASS$')
 OVERLAP_FLOOR_NS = 1_000_000
-BUILD_LIMIT = dict(wall=300, cpu=360, rss_cap=10 << 30, text_cap=4 << 20,
-                   file_cap=96 << 20, total_cap=384 << 20)
-RUN_LIMIT = dict(wall=300, cpu=450, rss_cap=8 << 30, text_cap=16 << 20,
+BUILD_LIMIT = dict(wall=1800, cpu=5400, rss_cap=12 << 30, text_cap=24 << 20,
+                   file_cap=512 << 20, total_cap=4 << 30)
+RUN_LIMIT = dict(wall=420, cpu=900, rss_cap=56 << 30, text_cap=16 << 20,
                  file_cap=64 << 20, total_cap=96 << 20)
 SOURCE = qsa.source
 require, sha, signature = basis.require, basis.sha, basis.signature
@@ -66,8 +71,8 @@ write = basis.reference.core.write
 
 def pins(revision):
     sources = basis.comparison.build.controls(revision, controller=Path(__file__).resolve())
-    names = {ADAPTER, BENCH, TEST, *qsa.NATIVE, *ARENA_TUS, *basis.POLICIES}
-    names.update(SOURCE.git(P, 'ls-tree', '-r', '--name-only', revision, 'include').decode().splitlines())
+    names = {'CMakeLists.txt',ADAPTER,BENCH,TEST,*basis.POLICIES}
+    names.update(SOURCE.git(P, 'ls-tree', '-r', '--name-only', revision, *TREE_INPUTS).decode().splitlines())
     for name, raw in SOURCE.blobs(P, revision, sorted(names)):
         require((P/name).read_bytes() == raw, 'commit exact component input: '+name)
         sources[name] = hashlib.sha256(raw).hexdigest()
@@ -136,6 +141,14 @@ def platform():
         and not (B/'fullfit-attention-copy-ordinal-v1').exists(),
         'require successful fixed-API ordinal test and retire the old generation')
     model_weights = weight_asset(speed['model_assets'],ordinal['next_source_layout_check'])
+    prior_source = validation.committed(RESULT, ('fullfit_attention_layer_source_v1',))
+    require(prior_source['stage']=='closed' and prior_source['ownership_closed'] and not prior_source['active']
+        and prior_source['decision']['eligible_borrowed_layer_source'] and prior_source['role_sha256_after_matches']
+        and prior_source['artifact_retirement']['complete'] and not (B/'fullfit-attention-layer-source-v1').exists(),
+        'require a retired actual-layer comparison with a qualified borrowed lifecycle')
+    shards = {p:spec for p,spec in speed['model_assets'].items()
+              if p.endswith(('-00001-of-00002.gguf','-00002-of-00002.gguf'))}
+    require(len(shards)==2 and model_weights['path'] in shards, 'exact two production model shards required')
     copy_engine = validation.committed(pti.RESULT, ('prefill_copy_engine_v6',))
     ze_check = copy_engine['validation_provider']
     require(copy_engine['stage'] == 'closed' and copy_engine['ownership_closed']
@@ -157,34 +170,31 @@ def platform():
         compiler_sha256=native['toolchain'][COMPILER], boot=speed['boot'], driver=speed['driver'],
         runtime_manifest=speed['runtime_manifest'], preload=speed['native_validation_probe'],
         environment_template=speed['environment_template'], tools=tools,
-        resource_sha256=signature(resource), prior_evidence_sha256=signature(ordinal),
-        model_weights=model_weights,
+        resource_sha256=signature(resource), prior_evidence_sha256=signature(prior_source),
+        model_weights=model_weights, model_shards=shards,
         ze_loader=dict(path=ZE_LOADER,sha256=runtime[ZE_LOADER]), ze_validation=ze_check)
 
 
-def compile_commands():
-    flags = ['-std=c++20', '-O3', '-DNDEBUG', '-fsycl', '-fsycl-id-queries-range=size_t',
-        '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13', '-DSTRATA_ENABLE_SYCL=1',
-        '-DSTRATA_CPU_SERVICE_PROFILE=1', '-fno-fast-math', '-ffp-contract=off',
-        '-I'+str(P/'include'), '-I'+str(P/'include/strata/sycl/compat'), '-I'+str(P/'bench/sycl')]
-    commands, objects = [], []
-    for i, name in enumerate([*qsa.NATIVE, BENCH, *ARENA_TUS]):
-        obj = ROOT/'build'/f'{i}.o'
-        extra = ['-DSTRATA_QSA_BENCH_FULLFIT_OVERLAP=1'] if name == BENCH else []
-        if name in ARENA_TUS:
-            extra = ['-x','c++','-fsycl-host-only','-ffunction-sections','-fdata-sections']
-        commands.append([COMPILER, *flags, *extra, '-MD', '-MF', str(obj.with_suffix('.d')),
-                         '-c', str(P/name), '-o', str(obj)])
-        objects.append(str(obj))
-    commands.append([COMPILER, *flags, *objects, ZE_LOADER, '-Wl,-t,--gc-sections', '-pthread', '-ldl', '-o', str(ELF)])
-    return commands
+def build_context():
+    ctx = native_build.context()
+    ctx.ROOT = ROOT
+    return ctx
+
+
+def compile_commands(native):
+    old = str(Path(native['binaries']['strata']['path']).parent.parent)
+    build = str(ROOT/'build')
+    configure = [arg.replace(old,str(ROOT)) for arg in native['recipe']['configure']]
+    require(configure[configure.index('-S')+1] == str(P) and configure[configure.index('-B')+1] == build,
+        'exact original source and private build directory required')
+    return dict(configure=configure,planned=['/usr/bin/ninja','-C',build,'-t','commands',TARGET],
+        compile=['/usr/bin/cmake','--build',build,'--target',TARGET,'-j','4'],
+        dependencies=['/usr/bin/ninja','-C',build,'-t','deps'])
 
 
 def compile_environment(native):
-    env = {k:v for k,v in native['recipe']['environment'].items()
-           if k in ('PATH','LANG','LC_ALL','LD_LIBRARY_PATH')}
-    env['TMPDIR'] = str(ROOT/'tmp')
-    return env
+    old = str(Path(native['binaries']['strata']['path']).parent.parent)
+    return {k:v.replace(old,str(ROOT)) for k,v in native['recipe']['environment'].items()}
 
 
 def case_environment(pin, mode):
@@ -200,9 +210,8 @@ def case_environment(pin, mode):
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(path/'validation.log'),
         STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK='1' if phase == 'trace' else '0',
         STRATA_FULLFIT_OVERLAP_SOURCE=kind, STRATA_FULLFIT_WEIGHT_SHARD=pin['model_weights']['path'],
+        STRATA_FULLFIT_WEIGHT_PACK=str(Path(pin['model_weights']['layout']['path']).parent),
         STRATA_ARENA_LOCK='0', STRATA_NO_LARGEPAGES='1')
-    env.update({f'STRATA_FULLFIT_WEIGHT_{role["name"].upper()}_OFFSET':str(role['offset'])
-                for role in pin['model_weights']['roles']})
     shim = pin['preload']['library']['path']
     if phase == 'trace':
         env.update(STRATA_UNITRACE_TARGET_PRELOAD=shim, UNITRACE_SystemTime='1',
@@ -233,45 +242,39 @@ def case_command(pin, mode):
     return target
 
 
-def audit_build(row, link_log, native):
-    allowed = {str((P/p).resolve()): h for p,h in row['sources'].items()}
-    ext = json.loads(Path(row['platform']['external']['path']).read_text())
-    allowed.update(ext)
-    loader = row['platform']['ze_loader']
-    require(loader['path'] == ZE_LOADER and loader['sha256'] == sha(ZE_LOADER),
-        'pinned Level Zero linker input changed')
-    ext[ZE_LOADER] = loader['sha256']
-    compiled = {}
-    deps = sorted((ROOT/'build').glob('*.d'))
-    require(len(deps) == len(qsa.NATIVE)+1+len(ARENA_TUS), 'one dependency file per fresh translation unit')
-    for dep in deps:
-        for name in shlex.split(dep.read_text().replace('\\\n', ' ').split(':',1)[1]):
-            path = Path(name).resolve()
-            digest = sha(path)
-            require(allowed.get(str(path)) == digest, 'unfrozen compiler input: '+str(path))
-            if path.is_relative_to(P/'include'):
-                require(native['project']['source_sha256'].get(str(path.relative_to(P))) == digest,
-                    'actual production header differs from original: '+str(path))
-            compiled[str(path)] = digest
-    require(len(compiled) > 600, 'incomplete compiler dependency closure')
-    links = {}
-    for line in link_log.splitlines():
-        name = line.strip()
-        if not name.startswith('/') or any(c.isspace() for c in name):
-            continue
-        path = Path(name).resolve()
-        if path.is_relative_to(ROOT/'tmp') and not path.exists():
-            require(path.suffix == '.o', 'unrecognized ephemeral link input')
-            continue
-        digest = sha(path)
-        require((path.is_relative_to(ROOT/'build') and path.suffix == '.o') or ext.get(str(path)) == digest,
-            'unfrozen link input: '+str(path))
-        links[str(path)] = digest
-    require(len(links) >= 12 and links.get(ZE_LOADER) == loader['sha256'],
-        'actual link input capture incomplete')
-    row.update(actual_inputs=dict(compiled=compiled, links=links,
-        objects={str(path): sha(path) for path in (ROOT/'build').glob('*.o')}),
-        binary=dict(path=str(ELF), bytes=ELF.stat().st_size, sha256=sha(ELF)))
+def audit_build(row, dependency_output, link_output, native):
+    inputs = dict(project=dict(root=str(P),revision=row['source_commit'],source_sha256=row['sources']),
+        dependencies=native['dependencies'], external_inputs=native['external_inputs'],
+        toolchain={**native['toolchain'],ZE_LOADER:row['platform']['ze_loader']['sha256']},
+        **{k:row[k] for k in ('generated_inputs','planned_compilation','planned_translation_units')})
+    census = build_context().census(inputs,dependency_output,link_output,minimum_translation_units=6)
+    manifest = json.loads(Path(census['path']).read_text())
+    require(manifest['links'].get(ZE_LOADER)==row['platform']['ze_loader']['sha256'],
+        'native copy loader missing from actual link')
+    objects = [ROOT/'build'/tu['output'] for tu in row['planned_compilation']]
+    archives = [Path(p) for p in manifest['owned_link_products'] if p.endswith('.a')]
+    require(archives and all(path.is_relative_to(ROOT/'build') for path in archives),
+        'fresh owned static libraries required')
+    row.update(build_census=census,
+        actual_inputs=dict(compiled=manifest['compiled'],generated=manifest['generated'],links=manifest['links'],
+            products={str(path):sha(path) for path in [*objects,*archives]}),
+        binary=dict(path=str(ELF),bytes=ELF.stat().st_size,sha256=sha(ELF)))
+
+
+def audit_configuration(row, planned_output):
+    planned = build_context().planned_compilation(planned_output.read_text())
+    required = {str(P/name) for name in (BENCH, 'src/core/expert_source.cpp',
+        'src/core/pinned.cu', 'src/kernels/cpu/expert_layout.cpp', 'src/kernels/cpu/native_expert.cpp',
+        'src/sycl/runtime.cpp')}
+    units = sorted(tu['file'] for tu in planned)
+    require(required <= set(units), 'the production ArenaExpertSource and format libraries must be built')
+    build = ROOT/'build'
+    paths = [build/name for name in ('build.ninja','CMakeCache.txt','compile_commands.json')]
+    paths += sorted((build/'CMakeFiles').glob('*.ninja'))+[planned_output]
+    row.update(planned_compilation=planned,planned_translation_units=units,
+        configured_files={str(path):sha(path) for path in paths},
+        generated_inputs={str(path):sha(path) for path in build.rglob('*')
+            if path.is_file() and path.suffix in ('.h','.hpp','.c','.cpp','.cxx','.inc')})
 
 
 def samples(text, mode):
@@ -280,6 +283,7 @@ def samples(text, mode):
     traced = phase == 'trace'
     rounds = 1 if smoke else FULL_ROUNDS
     rows, clocks, cases, setup, retired, queues = [], [], [], [], [], []
+    arena, staging_setup, admission_layers = [], [], []
     for line in text.splitlines():
         if line.startswith('fullfit_attention_overlap process='):
             pairs = [v.split('=', 1) for v in line.split()[1:]]
@@ -291,13 +295,21 @@ def samples(text, mode):
         elif line.startswith('fullfit_attention_overlap source='):
             match = SOURCE_SETUP.fullmatch(line)
             require(match is not None, 'invalid source setup and allocation type proof')
-            source_kind, size, load, prepare, alloc_id = match.groups()
-            setup.append(dict(kind=source_kind,bytes=int(size),arena_ms=float(load),
+            source_kind, size, prepare, alloc_id = match.groups()
+            setup.append(dict(kind=source_kind,bytes=int(size),
                               prepare_ms=float(prepare),allocation_id=int(alloc_id)))
         elif line.startswith('fullfit_attention_overlap retire_ms='):
             match = SOURCE_RETIRE.fullmatch(line)
             require(match is not None, 'missing retired-source integrity proof')
             retired.append(float(match[1]))
+        elif line.startswith('fullfit_attention_overlap arena='):
+            match = ARENA_SETUP.fullmatch(line)
+            require(match is not None, 'missing full ArenaExpertSource load proof')
+            arena.append(float(match[1]))
+        elif line.startswith('fullfit_attention_overlap staging_startup_ms='):
+            staging_setup.append(float(line.rsplit('=',1)[1]))
+        elif line.startswith('fullfit_attention_overlap admission_layer='):
+            admission_layers.append(int(line.rsplit('=',1)[1]))
         elif line.startswith('fullfit_attention_overlap copy_api='):
             match = QUEUE_SETUP.fullmatch(line)
             require(match is not None, 'invalid queue setup proof')
@@ -306,15 +318,29 @@ def samples(text, mode):
                                flags=int(flags),priority=int(priority)))
         elif line.startswith('case cells='):
             cases.append(line)
-    require(len(setup)==len(retired)==1 and setup[0]['kind']==kind
-        and setup[0]['bytes']==(7884800 if phase in ('metadata','smoke') else 1009254400)
-        and bool(setup[0]['allocation_id'])==(kind=='borrowed')
-        and all(math.isfinite(v) and v>0 for v in (setup[0]['arena_ms'],setup[0]['prepare_ms'],retired[0])),
-        'wrong source kind, layer extent, timing or allocation proof')
-    source = dict(setup[0],retire_ms=retired[0])
+    require(len(arena)==1 and math.isfinite(arena[0]) and arena[0]>0,
+        'one verified full ArenaExpertSource load required')
+    expected = 48 if phase=='metadata' else 1
+    require(len(setup)==len(retired)==expected and all(
+        src['kind']==kind and bool(src['allocation_id'])==(kind=='borrowed') and
+        math.isfinite(src['prepare_ms']) and src['prepare_ms']>0 and
+        math.isfinite(close_ms) and (close_ms==0 if kind=='staged' else close_ms>0)
+        for src,close_ms in zip(setup,retired)), 'wrong source kind, timing or allocation proof')
     if phase == 'metadata':
-        require(not (rows or clocks or cases or queues), 'unexpected application work during source admission')
-        return dict(source=source,samples=[])
+        require(not (rows or clocks or cases or queues or staging_setup)
+            and admission_layers == list(range(48))
+            and sum(src['bytes'] for src in setup)==50292326400
+            and all(src['bytes']>0 and src['bytes']%4096==0 for src in setup),
+            'source admission must cover the entire actual arena without application work')
+        return dict(arena_load_ms=arena[0],admitted_layers=len(setup),
+            min_layer_bytes=min(src['bytes'] for src in setup),max_layer_bytes=max(src['bytes'] for src in setup),
+            import_ms_range=[min(src['prepare_ms'] for src in setup),max(src['prepare_ms'] for src in setup)],
+            retire_ms_range=[min(retired),max(retired)],edge_fingerprints_unchanged=True,samples=[])
+    require(not admission_layers and setup[0]['bytes']==(7884800 if smoke else 1009254400)
+        and len(staging_setup)==1 and math.isfinite(staging_setup[0])
+        and (staging_setup[0]>0 if kind=='staged' else staging_setup[0]==0),
+        'wrong source extent or reusable staging startup')
+    source = dict(setup[0],retire_ms=retired[0],arena_load_ms=arena[0],staging_startup_ms=staging_setup[0])
     shape = 'cells=97 queries=3 cap=33' if smoke else 'cells=65536 queries=8192 cap=2051'
     require(cases == [f'case {shape} pattern=gather samples={len(ARMS)*rounds} full_bits=PASS guards=PASS inputs=PASS status=PASS']
         and len(rows) == rounds * len(ARMS) and len(clocks) == 1
@@ -399,7 +425,7 @@ def assessment(outcomes):
     traces = [row for row in outcomes if row['mode'].startswith('trace-')]
     require([p['mode'] for p in clean] == [f'clean-{i}' for i in range(len(CLEAN_ORDER))]
         and [p['mode'] for p in traces] == [f'trace-{kind}' for kind in SOURCES]
-        and len({p['pid'] for p in [*clean,*traces]}) == 8
+        and len({p['pid'] for p in [*clean,*traces]}) == len(clean)+len(traces)
         and all(row['timing']['source']['kind']==CASES[row['mode']][1]
                 and row['timing']['queue']['ordinal']==1 for row in [*clean,*traces]),
         'matched source, fixed copy queue, order and independent processes required')
@@ -410,15 +436,8 @@ def assessment(outcomes):
     warmed = [medians(row) for row in clean]
     first = [{p['arm']:p['milliseconds'] for p in row['timing']['samples'] if p['round'] == 0}
              for row in clean]
-    pairs = [{kind: index for index,kind in enumerate(CLEAN_ORDER[i:i+2], start=i)}
-             for i in range(0,len(CLEAN_ORDER),2)]
-    def time_ratios(rows):
-        ratios = {}
-        for arm in ARMS:
-            values = [rows[pair['borrowed']][arm]/rows[pair['staged']][arm] for pair in pairs]
-            ratios[arm] = dict(paired=values, geometric=statistics.geometric_mean(values),
-                               all_three_faster=all(v < 1 for v in values))
-        return ratios
+    blocks = [{kind:index for index,kind in enumerate(block,start=i*len(SOURCES))}
+              for i,block in enumerate(CLEAN_BLOCKS)]
     def device_medians(trace):
         return {arm: {key: statistics.median(p[key] for p in trace['timeline']
                         if p['arm'] == arm and p['round'] > 0)
@@ -439,26 +458,38 @@ def assessment(outcomes):
     for median, row in zip(warmed,clean):
         source = row['timing']['source']
         lifecycle.append(source['prepare_ms']+median['deferred_wait']+source['retire_ms'])
-    layer_ratios = [lifecycle[pair['borrowed']]/lifecycle[pair['staged']] for pair in pairs]
-    ratios = time_ratios(warmed)
-    return dict(clean_progression=list(CLEAN_ORDER), paired_clean_indices=pairs, warmed_ratios=ratios,
-        first_cycle_ratios=time_ratios(first), clean_process_warmed_medians_ms=warmed, clean_first_cycle_ms=first,
+    comparisons = {}
+    for candidate, reference in (('staged','allocated'), ('borrowed','staged'), ('borrowed','allocated')):
+        def ratios(values):
+            paired = [values[block[candidate]]/values[block[reference]] for block in blocks]
+            return dict(paired=paired,geometric=statistics.geometric_mean(paired),
+                        all_three_faster=all(v<1 for v in paired))
+        layer = ratios(lifecycle)
+        comparisons[f'{candidate}_vs_{reference}'] = dict(
+            layer_lifecycle=layer, eligible=layer['all_three_faster'] and sustained_overlap[candidate],
+            warmed_by_arm={arm:ratios([sample[arm] for sample in warmed]) for arm in ARMS},
+            first_cycle_by_arm={arm:ratios([sample[arm] for sample in first]) for arm in ARMS})
+    return dict(clean_progression=list(CLEAN_ORDER), matched_clean_indices=blocks,
+        clean_process_warmed_medians_ms=warmed, clean_first_cycle_ms=first,
         traced_vs_first_matching_clean=trace_cost,
         observed_device_interval_medians_ns=device, warmed_deferred_overlap_ns=overlap,
         overlap_floor_ns=OVERLAP_FLOOR_NS,sustained_overlap=sustained_overlap,
-        clean_layer_lifecycle_ms=lifecycle,layer_lifecycle_paired_ratios=layer_ratios,
-        layer_lifecycle_geometric=statistics.geometric_mean(layer_ratios),
-        eligible_borrowed_layer_source=all(v<1 for v in layer_ratios) and sustained_overlap['borrowed'],
-        next_comparison_prerequisite='Validate the full production ArenaExpertSource owner and actual expert demand before evaluating a model route.',
+        clean_layer_lifecycle_ms=lifecycle, source_comparisons=comparisons,
+        eligible_borrowed_layer_source=all(comparisons['borrowed_vs_'+ref]['eligible'] for ref in ('staged','allocated')),
+        next_comparison_prerequisite='Measure actual expert demand before evaluating a full-layer model route.',
         model_qualified=False, physical_bandwidth_or_saturation_qualified=False)
 
 
 def compact(row):
-    public = {k: v for k,v in row.items() if k not in ('sources','actual_inputs')}
+    public = {k: v for k,v in row.items()
+              if k not in ('sources','actual_inputs','planned_compilation','planned_translation_units')}
     public['source_inputs'] = dict(files=len(row['sources']), sha256=signature(row['sources']))
     if 'actual_inputs' in row:
         public['actual_inputs_summary'] = {k:dict(files=len(v),sha256=signature(v))
             for k,v in row['actual_inputs'].items()}
+    if 'planned_compilation' in row:
+        public['planned_compilation_summary'] = dict(units=len(row['planned_compilation']),
+            sha256=signature(row['planned_compilation']))
     return public
 
 
@@ -471,7 +502,7 @@ def save(row):
 
 def frozen_cases(pin):
     return {mode: dict(command=case_command(pin,mode), environment_sha256=signature(case_environment(pin,mode)))
-        for mode in STAGES[2:]}
+        for mode in CASES}
 
 
 def prepare():
@@ -485,17 +516,15 @@ def prepare():
     ROOT.mkdir(mode=0o700)
     for name in ('build','tmp'): (ROOT/name).mkdir(mode=0o700)
     save(dict(stage='prepared', source_commit=revision, sources=inputs, platform=pin,
-        compile_environment=compile_environment(native), commands=compile_commands(),
-        cases=frozen_cases(pin), role_sha256_before=role_hashes, results=[],
-        prior_host_refusal=dict(source_commit='bb4032b5d',reason='Host admission rejected a mistyped layer-2 Down offset before creating a plan or launching native work.',
-                                corrected='Read all three offsets once from the hash-pinned layout and pass them in the frozen child environment.'),
-        active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=768<<20,
-        plan=dict(order=STAGES, compiled_translation_units=len(qsa.NATIVE)+1+len(ARENA_TUS),
-            unit='Load actual layer-2 IQ2_S/IQ4_NL via the production GGUF packer into a one-layer PinnedArena. In both arms create a whole-page immutable ResidentExpertLayer. Compare staged Host USM with a same-address read-only import on the pinned B570 NEO provider. Fix native copy ordinal 1, index 0, append/drain, QSA on ordinal 0, 512 x 1971200-byte extents and wait schedule.',
-            safety='Two metadata-only four-expert admissions and unimports with zero app enqueues, then two four-expert validated smoke cases including cancellation after an accepted copy. Then trace full-layer copy/QSA schedules and remove observers for speed. Same context, range, distinct buffers, exact content and source unchanged after unimport. Hold owners through checked drain. Stop on first API, validation, timeout, owner or device-fault failure.',
-            inputs='Pin identity and prior hash of the existing GGUF shard, exact layout hash and three actual layer role slice hashes before and after. Load only layer 2 into anonymous normal pages without arena locking. Reuse the real allocation and packer without loading the full model or persisting weight copies.',
-            decision='Six independent clean processes in AB/BA/AB order and identical schedule rotations within pairs. Require all 20 validated samples per process, >=10ms and <=0.1% timer overhead. Record first cycle, four warmed cycles and common loading separately. Compute prepare plus warmed deferred median plus retire for each layer. Advance the borrowed source only if its lifecycle time is lower in all three pairs and its warmed trace overlap remains at least 1ms in all four deferred windows.',
-            limits='The QSA workload is the same synthetic input to real kernels and independent of the copied weights. Only a one-layer production allocator, packer and borrowed view are tested. The full engine ArenaExpertSource owner, actual demand, end-to-end timing, decode, quality and physical context require independent tests.',
+        compile_environment=compile_environment(native), commands=compile_commands(native),
+        cases=frozen_cases(pin),role_sha256_before=role_hashes, results=[],
+        active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=4<<30,
+        plan=dict(order=STAGES,
+            unit='Use the same private production ArenaExpertSource and native layout in all arms. Compare staged vs allocated to isolate moving host USM allocation and release out of the layer cycle. Compare borrowed vs staged to isolate replacing the reused host USM copy with read-only registration of the original layer pages. Compare borrowed vs allocated for the net source choice. Fix native copy ordinal 1, QSA, waits, transfer extent and runtime for each comparison. The full arena load is a common production prerequisite with separate timing and admission.',
+            safety='Admit and retire every full layer sequentially with zero application enqueues; check layer endpoints against the static owner and fingerprints after unimport. Then three real four-expert bounded cases check exact bytes, output and cancellation. Advance to full traces and clean comparisons only after closed quiet checks. Hold RAM and GPU owners through checked completion. Limit native RSS to 56GiB and require 64GiB host availability before admitting a full-arena process.',
+            inputs='Freeze the production layout, both GGUF shard identities and known hashes. Rehash the three exact layer-2 role slices before and after. Native parser and packer supply the offsets without fixture-specific copies. Build the analyzer as one disposable fresh CMake target with all production libraries compiled from pinned source.',
+            decision='Nine independent clean processes in ABC/BCA/CAB order, with the same application schedule within each block. Require 20 validated samples per process at >=10ms and <=0.1% timer overhead. Record first cycle, four warmed cycles, common arena loading and one-time warm staging preparation separately. Layer cost is source preparation plus warmed deferred median plus per-layer release. A comparison is eligible if its candidate costs less in all three blocks and sustains >=1ms device overlap in each warmed deferred window. Borrowing must pass against both USM references.',
+            limits='Use the actual ArenaExpertSource and full model expert bytes with fixture-owned QSA state and GPU bank. Model dispatch, demand selection, full-engine speed, decode, quality and physical context require their own tests.',
             retention='Keep individual timings, allocation and fill costs, device-window aggregates and source/build/fault proof. Retire the fixture generation and normal output after closure and exact provenance recovery.')))
     print('Prepared actual layer source comparison; commit exact plan before running.')
 
@@ -524,8 +553,7 @@ def run_device(row, mode, scope, path, result):
                 environ = Path('/proc',str(entry['pid']),'environ').read_bytes().split(b'\0')
                 keys = ('STRATA_TEST_MAIN_GATES', 'STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK',
                     'STRATA_FULLFIT_OVERLAP_SOURCE','STRATA_FULLFIT_WEIGHT_SHARD',
-                    'STRATA_FULLFIT_WEIGHT_GATE_OFFSET','STRATA_FULLFIT_WEIGHT_UP_OFFSET',
-                    'STRATA_FULLFIT_WEIGHT_DOWN_OFFSET',
+                    'STRATA_FULLFIT_WEIGHT_PACK',
                     'STRATA_ARENA_LOCK','STRATA_NO_LARGEPAGES',
                     'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission',
                     'STRATA_SYCL_PREFILL_SAME_QUEUE', 'UR_ENABLE_LAYERS', 'UR_LOG_VALIDATION',
@@ -561,8 +589,8 @@ def run_device(row, mode, scope, path, result):
             r'\b(?:VALIDATION ERROR|ERROR_INVALID|THREADING VIOLATION)\b',logs,re.I))),
         'native validation, loader or fixture gate differs')
     timing = samples(text,mode)
-    if phase != 'metadata' and mode != 'smoke-staged':
-        smoke = next(stage for stage in row['results'] if stage['mode'] == 'smoke-staged')
+    if phase != 'metadata' and mode != 'smoke-allocated':
+        smoke = next(stage for stage in row['results'] if stage['mode'] == 'smoke-allocated')
         fields = ('api','ordinal','index','mode','flags','priority')
         require(all(timing['queue'][name] == smoke['timing']['queue'][name] for name in fields),
             'queue configuration differs from the bounded staged control')
@@ -584,10 +612,13 @@ def run_stage(mode):
         'commit preceding closed stage and launch only the next declared arm')
     native, pin = platform()
     require(pins(row['source_commit']) == row['sources'] and row['platform'] == pin
-        and row['commands'] == compile_commands() and row['compile_environment'] == compile_environment(native)
+        and row['commands'] == compile_commands(native) and row['compile_environment'] == compile_environment(native)
         and row['cases'] == frozen_cases(pin)
         and owner.artifact_bytes(ROOT) < row['whole_bytes'], 'frozen source, recipe, providers or budget differ')
-    if mode in STAGES[2:]:
+    if mode != 'configure':
+        require(all(sha(path)==h for path,h in row.get('configured_files',{}).items()),
+            'configured build recipe or plan changed')
+    if mode in CASES:
         require(sha(row['binary']['path']) == row['binary']['sha256']
             and all(sha(p) == h for group in row['actual_inputs'].values() for p,h in group.items()),
             'fixture executable or actual native inputs changed')
@@ -606,14 +637,21 @@ def run_stage(mode):
                 env,P,wall=45,cpu=30,rss_cap=512<<20,text_cap=128<<10,file_cap=1<<20,total_cap=4<<20)
             require(owner.closed(entry) and entry['exit_code'] == 0, 'host checks failed: '+err.read_text()[-2400:])
             result['host_checks'] = True
-        elif mode == 'build':
-            for i, command in enumerate(row['commands']):
-                print('Compile/link',i+1,'of',len(row['commands']),flush=True)
-                record, out, err = scope.run(str(i),command,row['compile_environment'],P,**BUILD_LIMIT)
+        elif mode in ('configure','build'):
+            outputs = {}
+            for action in (('configure','planned') if mode=='configure' else ('compile','dependencies')):
+                record,out,err = scope.run(action,row['commands'][action],row['compile_environment'],P,**BUILD_LIMIT)
                 require(owner.closed(record) and record['exit_code'] == 0,
-                    'build command '+str(i)+' failed: '+err.read_text()[-2400:])
-            audit_build(row,out.read_text(),native)
+                    action+' failed: '+err.read_text()[-2400:]+out.read_text()[-1200:])
+                outputs[action] = out
+            if mode == 'configure':
+                audit_configuration(row,outputs['planned'])
+            else:
+                audit_build(row,outputs['dependencies'],outputs['compile'],native)
         else:
+            available = next(int(line.split()[1]) for line in Path('/proc/meminfo').read_text().splitlines()
+                             if line.startswith('MemAvailable:'))
+            require(available >= 64<<20, 'actual full arena requires 64 GiB available before launch')
             log = subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],
                 text=True,timeout=15)
             journal = next(s.split(': ',1)[1] for s in log.splitlines() if s.startswith('-- cursor: '))

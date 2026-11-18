@@ -621,6 +621,13 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE -fno-fast-math -ffp-contract=off)
   target_compile_definitions(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE STRATA_QSA_BENCH_ORDERED_EXP=1)
 
+  add_executable(sycl_fullfit_arena_source_bench EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix_layout_bench.cpp)
+  target_include_directories(sycl_fullfit_arena_source_bench PRIVATE ${CMAKE_SOURCE_DIR}/bench/sycl)
+  target_compile_features(sycl_fullfit_arena_source_bench PRIVATE cxx_std_20)
+  target_compile_options(sycl_fullfit_arena_source_bench PRIVATE -fno-fast-math -ffp-contract=off)
+  target_compile_definitions(sycl_fullfit_arena_source_bench PRIVATE STRATA_QSA_BENCH_FULLFIT_OVERLAP=1)
+  target_link_libraries(sycl_fullfit_arena_source_bench PRIVATE strata_engine ze_loader)
+
   add_executable(sycl_qsa_bf16_prefix_subgroup_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
   target_link_libraries(sycl_qsa_bf16_prefix_subgroup_test PRIVATE strata_kernels)
   target_compile_features(sycl_qsa_bf16_prefix_subgroup_test PRIVATE cxx_std_20)

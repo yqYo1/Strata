@@ -8,8 +8,10 @@ import fullfit_attention_overlap as experiment
 
 
 def fixture():
-    lines = ['fullfit_attention_overlap source=staged bytes=1009254400 arena_ms=10.0 prepare_ms=20.0 allocation_id=0 type=PASS',
-             'fullfit_attention_overlap retire_ms=0.5 source_unchanged=PASS',
+    lines = ['fullfit_attention_overlap arena=production layers=48 bytes=50292326400 load_ms=5.0 layout=PASS',
+             'fullfit_attention_overlap staging_startup_ms=10',
+             'fullfit_attention_overlap source=staged bytes=1009254400 prepare_ms=20.0 allocation_id=0 type=PASS',
+             'fullfit_attention_overlap retire_ms=0 source_unchanged=PASS',
              'fullfit_attention_overlap copy_api=native ordinal=1 index=0 mode=2 flags=2 priority=0 domain=PASS',
              'fullfit_attention_overlap clock_pair_max_s=0.00000007']
     for round_n in range(experiment.FULL_ROUNDS):
@@ -28,11 +30,12 @@ def fixture():
 class MeasurementControls(unittest.TestCase):
     def test_compiler_outputs_and_logs_are_disjoint(self):
         self.assertEqual(experiment.COMPILE_LOGS.parent,experiment.ROOT)
-        for command in experiment.compile_commands():
-            output = Path(command[-1])
-            self.assertEqual(command[-2],'-o')
-            self.assertEqual(output.parent,experiment.ROOT/'build')
-            self.assertNotIn(experiment.COMPILE_LOGS,output.parents)
+        native = dict(binaries=dict(strata=dict(path='/old-reference/build/strata')),
+                      recipe=dict(configure=['/usr/bin/cmake','-S',str(experiment.P),'-B','/old-reference/build']))
+        commands = experiment.compile_commands(native)
+        for command in commands.values():
+            self.assertIn(str(experiment.ROOT/'build'),command)
+            self.assertNotIn(str(experiment.COMPILE_LOGS),command)
 
     def test_order_payload_and_invalid_clean_samples(self):
         good = fixture()
@@ -44,8 +47,10 @@ class MeasurementControls(unittest.TestCase):
             good.replace('raw_end=0','raw_end=20000',1),
             good.replace(' guards=PASS',' guards=PASS guards=PASS',1),
             good.replace('source=staged','source=borrowed',1),
+            good.replace('retire_ms=0 ','retire_ms=1 ',1),
+            good.replace('staging_startup_ms=10','staging_startup_ms=0',1),
             good.replace('type=PASS','type=FAIL',1),
-            good.replace('arena_ms=10.0','arena_ms=nan',1),
+            good.replace('load_ms=5.0','load_ms=nan',1),
             good.replace('bytes=1009254400','bytes=1009254401',1),
             good.replace('copy_api=native','copy_api=sycl',1),
             good.replace('ordinal=1','ordinal=0',1),
@@ -57,11 +62,15 @@ class MeasurementControls(unittest.TestCase):
                 experiment.samples(bad, 'clean-3')
 
     def test_metadata_requires_borrowed_id_and_no_application_samples(self):
-        good = ('fullfit_attention_overlap source=borrowed bytes=7884800 '
-                'arena_ms=10.0 prepare_ms=2 allocation_id=42 type=PASS\n'
-                'fullfit_attention_overlap retire_ms=0.5 source_unchanged=PASS')
-        self.assertEqual(experiment.samples(good,'metadata-borrowed')['source']['allocation_id'],42)
+        lines = ['fullfit_attention_overlap arena=production layers=48 bytes=50292326400 load_ms=5.0 layout=PASS']
+        for layer in range(48):
+            lines.extend([f'fullfit_attention_overlap admission_layer={layer}',
+                'fullfit_attention_overlap source=borrowed bytes=1047756800 prepare_ms=2 allocation_id=42 type=PASS',
+                'fullfit_attention_overlap retire_ms=0.5 source_unchanged=PASS'])
+        good = '\n'.join(lines)
+        self.assertEqual(experiment.samples(good,'metadata-borrowed')['admitted_layers'],48)
         for bad in (good.replace('allocation_id=42','allocation_id=0'),
+                    good.replace('admission_layer=47','admission_layer=0'),
                     good+'\nfullfit_attention_overlap clock_pair_max_s=0.0'):
             with self.assertRaises(RuntimeError):
                 experiment.samples(bad,'metadata-borrowed')
@@ -87,9 +96,10 @@ class MeasurementControls(unittest.TestCase):
     def test_layer_source_decision_counts_preparation_and_retirement(self):
         def row(mode, index, times):
             kind = experiment.CASES[mode][1]
+            prepare, retire = dict(allocated=(80,10), staged=(40,0), borrowed=(3,2))[kind]
             timing = dict(samples=[dict(arm=arm,round=n,milliseconds=elapsed+1000*(n==0))
                 for n in range(experiment.FULL_ROUNDS) for arm,elapsed in zip(experiment.ARMS,times)],
-                queue=dict(ordinal=1),source=dict(kind=kind,prepare_ms=40 if kind=='staged' else 3,retire_ms=2))
+                queue=dict(ordinal=1),source=dict(kind=kind,prepare_ms=prepare,retire_ms=retire))
             return dict(mode=mode,pid=index,timing=timing,
                 timeline=[dict(arm=arm,round=n,overlap_ns=2_000_000 if arm=='deferred_wait' else 0,
                     copy_union_ns=3_000_000 if arm!='compute_only' else 0,
@@ -97,26 +107,34 @@ class MeasurementControls(unittest.TestCase):
                           for n in range(experiment.FULL_ROUNDS) for arm in experiment.ARMS])
         timings = (70,100,185,120)
         borrowed = (70,99,185,130)
-        outcomes = [row('trace-'+kind,10+i,timings) for i,kind in enumerate(experiment.SOURCES)]
+        outcomes = [row('trace-'+kind,20+i,timings) for i,kind in enumerate(experiment.SOURCES)]
         outcomes += [row(f'clean-{i}',i,borrowed if kind=='borrowed' else timings)
                      for i,kind in enumerate(experiment.CLEAN_ORDER)]
         decision = experiment.assessment(outcomes)
-        self.assertEqual(decision['paired_clean_indices'],
-                         [dict(staged=0,borrowed=1),dict(staged=3,borrowed=2),dict(staged=4,borrowed=5)])
+        self.assertEqual(decision['matched_clean_indices'], [dict(allocated=0,staged=1,borrowed=2),
+                         dict(staged=3,borrowed=4,allocated=5),dict(borrowed=6,allocated=7,staged=8)])
         self.assertTrue(decision['eligible_borrowed_layer_source'])
-        self.assertEqual(decision['layer_lifecycle_paired_ratios'],[135/162]*3)
-        self.assertEqual(decision['warmed_ratios']['deferred_wait']['paired'],[130/120]*3)
-        self.assertEqual(decision['warmed_ratios']['compute_only']['paired'],[1.0]*3)
+        comparisons = decision['source_comparisons']
+        for summary, numerator, denominator in (('staged_vs_allocated',160,210),
+                ('borrowed_vs_staged',135,160),('borrowed_vs_allocated',135,210)):
+            self.assertEqual(comparisons[summary]['layer_lifecycle']['paired'],[numerator/denominator]*3)
+            self.assertTrue(comparisons[summary]['eligible'])
+        warmed = comparisons['borrowed_vs_staged']['warmed_by_arm']
+        self.assertEqual(warmed['deferred_wait']['paired'],[130/120]*3)
+        self.assertEqual(warmed['compute_only']['paired'],[1.0]*3)
         self.assertEqual(decision['clean_first_cycle_ms'][0]['copy_only'],1100)
         self.assertEqual(decision['clean_process_warmed_medians_ms'][0]['copy_only'],100)
-        actual = next(p for p in outcomes[1]['timeline'] if p['arm']=='deferred_wait' and p['round']==3)
+        actual = next(p for p in outcomes[2]['timeline'] if p['arm']=='deferred_wait' and p['round']==3)
         actual['overlap_ns'] = experiment.OVERLAP_FLOOR_NS - 1
         decision = experiment.assessment(outcomes)
         self.assertFalse(decision['eligible_borrowed_layer_source'])
         actual['overlap_ns'] = experiment.OVERLAP_FLOOR_NS
-        outcomes[4] = row('clean-2',2,(70,99,185,160))
-        self.assertFalse(experiment.assessment(outcomes)['eligible_borrowed_layer_source'])
-        outcomes[4]['pid'] = outcomes[3]['pid']
+        outcomes[5] = row('clean-2',2,(70,99,185,160))
+        decision = experiment.assessment(outcomes)
+        self.assertFalse(decision['eligible_borrowed_layer_source'])
+        self.assertFalse(decision['source_comparisons']['borrowed_vs_staged']['eligible'])
+        self.assertTrue(decision['source_comparisons']['borrowed_vs_allocated']['eligible'])
+        outcomes[5]['pid'] = outcomes[3]['pid']
         with self.assertRaises(RuntimeError):
             experiment.assessment(outcomes)
 

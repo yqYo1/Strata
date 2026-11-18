@@ -1,7 +1,7 @@
 #pragma once
 
 // Authored for Strata under the repository LICENSE. Hold the prefix fixture
-// and native copy queue fixed when comparing two sources of actual weights.
+// and native copy queue fixed when comparing sources of actual weights.
 #include <level_zero/ze_api.h>
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
 #include "strata/sycl/checked_cleanup.hpp"
@@ -11,7 +11,6 @@
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include <algorithm>
 #include <array>
-#include <charconv>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -23,7 +22,6 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <sys/mman.h>
 #include <time.h>
 #include <unistd.h>
 #include <variant>
@@ -47,89 +45,134 @@ using Clock = std::chrono::steady_clock;
 using Milliseconds = std::chrono::duration<double, std::milli>;
 inline constexpr size_t expert_stride = 1971200;
 
-inline uint64_t weight_offset(const char *key) {
-    const char *text = std::getenv(key);
-    require(text && *text, "missing pinned GGUF role offset");
-    uint64_t offset = 0;
-    const auto end = text + std::strlen(text);
-    const auto parsed = std::from_chars(text, end, offset);
-    require(parsed.ec == std::errc{} && parsed.ptr == end && offset > 0, "invalid pinned GGUF role offset");
-    return offset;
+enum class SourceKind { Allocated, Staged, Borrowed };
+
+inline SourceKind source_kind() {
+    const char *setting = std::getenv("STRATA_FULLFIT_OVERLAP_SOURCE");
+    const std::string_view kind = setting ? setting : "";
+    if (kind == "allocated") return SourceKind::Allocated;
+    if (kind == "staged") return SourceKind::Staged;
+    if (kind == "borrowed") return SourceKind::Borrowed;
+    throw std::runtime_error("missing actual layer source");
 }
+
+class FullArena {
+public:
+    FullArena() {
+        const auto started = Clock::now();
+        const char *shard = std::getenv("STRATA_FULLFIT_WEIGHT_SHARD");
+        const char *pack = std::getenv("STRATA_FULLFIT_WEIGHT_PACK");
+        require(shard && pack, "missing actual model paths");
+        std::string error;
+        if (!kernels::cpu::expert_layout_load(pack, 48, 512, error))
+            throw std::runtime_error(error);
+        const auto &layout = kernels::cpu::expert_layout();
+        require(layout.native && layout.n_layers == 48 && layout.n_expert == 512 &&
+                layout.total == 50292326400ull && layout.blob_bytes(2) == expert_stride,
+                "actual arena geometry differs");
+        arena_.set_gguf(shard);
+        if (!arena_.open(pack, 48, 512, 6, error))
+            throw std::runtime_error(error);
+        const auto base = reinterpret_cast<uintptr_t>(arena_.resident_layer(0).data);
+        require(arena_.mapped() && arena_.blobs() == 48 * 512 && base &&
+                base <= UINTPTR_MAX - layout.total && !arena_.resident_layer(-1).data &&
+                !arena_.resident_layer(48).data, "invalid full arena ownership");
+        for (int64_t layer = 0; layer < 48; ++layer) {
+            const auto view = arena_.resident_layer(layer);
+            require(view.data && view.experts == 512 && view.stride == layout.blob_bytes(layer) &&
+                    view.bytes == 512 * view.stride && view.bytes % 4096 == 0 &&
+                    reinterpret_cast<uintptr_t>(view.data) == base + layout.layer_offset(layer) &&
+                    reinterpret_cast<uintptr_t>(view.data) % 4096 == 0 &&
+                    arena_.blob(layer, 0) == view.data &&
+                    arena_.blob(layer, 511) == view.data + 511 * view.stride &&
+                    !arena_.pinned(layer, 0) && !arena_.device_alias(layer, 0),
+                    "ordinary expert arena view does not match its owner");
+        }
+        std::cout << "fullfit_attention_overlap arena=production layers=48 bytes=" << layout.total
+                  << " load_ms=" << std::setprecision(12) << Milliseconds(Clock::now() - started).count()
+                  << " layout=PASS\n";
+    }
+
+    core::ResidentExpertLayer layer(int64_t index, size_t experts = 512) const {
+        const auto view = arena_.resident_layer(index);
+        const auto prefix = core::ResidentExpertLayer::make(view.data, view.bytes, 0, experts, view.stride);
+        require(prefix.data, "invalid actual arena layer prefix");
+        return prefix;
+    }
+
+private:
+    core::ArenaExpertSource arena_;
+};
 
 class LayerSource {
 public:
-    LayerSource(const std::shared_ptr<sycl_backend::Runtime> &runtime, size_t experts)
-        : arena_(experts * expert_stride), context_(sycl::get_native<backend>(runtime->context())) {
-        const auto started = Clock::now();
-        const char *shard = std::getenv("STRATA_FULLFIT_WEIGHT_SHARD");
-        const char *setting = std::getenv("STRATA_FULLFIT_OVERLAP_SOURCE");
-        const std::string_view kind = setting ? setting : "";
-        require(shard && (kind == "staged" || kind == "borrowed"), "missing actual layer source");
-        require(arena_.valid() && arena_.backing == core::PageBacking::NormalPages &&
-                arena_.registered_bytes == 0 && arena_.locked_bytes == 0, "ordinary RAM arena required");
-        kernels::cpu::ExpertLayout layout;
-        layout.native = true;
-        layout.n_layers = 1;
-        layout.n_expert = experts;
-        layout.total = experts * expert_stride;
-        layout.offset = {0};
-        layout.bytes = {expert_stride};
-        layout.gguf_off = {weight_offset("STRATA_FULLFIT_WEIGHT_GATE_OFFSET"),
-                           weight_offset("STRATA_FULLFIT_WEIGHT_UP_OFFSET"),
-                           weight_offset("STRATA_FULLFIT_WEIGHT_DOWN_OFFSET")};
-        layout.fmt.resize(1);
-        layout.fmt[0].up_off = 524800;
-        layout.fmt[0].down_off = 1049600;
-        const auto loaded = core::load_experts_gguf(shard, arena_.data(), layout, 1);
-        require(loaded.ok && loaded.bytes == layout.total, "load actual layer-2 experts");
-        layer_ = core::ResidentExpertLayer::make(arena_.data(), arena_.capacity, 0, experts, expert_stride);
+    LayerSource(const std::shared_ptr<sycl_backend::Runtime> &runtime,
+                core::ResidentExpertLayer layer, SourceKind kind, sycl_backend::Allocation *staging,
+                bool full_check = true)
+        : context_(sycl::get_native<backend>(runtime->context())), layer_(layer),
+          staging_(staging), full_check_(full_check) {
         const long page = sysconf(_SC_PAGESIZE);
-        require(page == 4096 && layer_.data && layer_.bytes == layout.total &&
-                reinterpret_cast<uintptr_t>(layer_.data) % page == 0 && layer_.bytes % page == 0 &&
-                mprotect(arena_.data(), layer_.bytes, PROT_READ) == 0, "whole read-only arena pages required");
-        fingerprint_ = core::fnv1a64(layer_.data, layer_.bytes);
+        require(page == 4096 && layer_.data && layer_.bytes >= 8192 &&
+                reinterpret_cast<uintptr_t>(layer_.data) % page == 0 && layer_.bytes % page == 0,
+                "whole arena pages required");
+        fingerprint_ = fingerprint();
         const auto preparing = Clock::now();
-        if (kind == "borrowed") {
+        if (kind == SourceKind::Allocated) {
+            owned_staging_ = sycl_backend::Allocation(runtime, layer_.bytes, sycl_backend::MemoryKind::Host);
+            staging_ = &owned_staging_;
+        }
+        if (kind == SourceKind::Borrowed) {
             admit_borrowed(runtime);
         } else {
-            staging_ = sycl_backend::Allocation(runtime, layer_.bytes, sycl_backend::MemoryKind::Host);
-            std::memcpy(staging_.data(), layer_.data, layer_.bytes);
-            sycl_backend::validate_host_span(staging_.data(), layer_.bytes, runtime->compute());
+            require(staging_ && staging_->size() >= layer_.bytes, "missing host USM staging extent");
+            sycl_backend::validate_host_span(staging_->data(), layer_.bytes, runtime->compute());
+            std::memcpy(staging_->data(), layer_.data, layer_.bytes);
         }
         const auto prepared = Clock::now();
-        std::cout << "fullfit_attention_overlap source=" << kind << " bytes=" << layer_.bytes
-                  << " arena_ms=" << std::setprecision(12) << Milliseconds(preparing - started).count()
-                  << " prepare_ms=" << Milliseconds(prepared - preparing).count()
+        const char *name = kind == SourceKind::Allocated ? "allocated" :
+                           kind == SourceKind::Staged ? "staged" : "borrowed";
+        std::cout << "fullfit_attention_overlap source=" << name << " bytes=" << layer_.bytes
+                  << " prepare_ms=" << std::setprecision(12) << Milliseconds(prepared - preparing).count()
                   << " allocation_id=" << allocation_id_ << " type=PASS\n";
     }
     LayerSource(const LayerSource &) = delete;
     LayerSource &operator=(const LayerSource &) = delete;
     ~LayerSource() noexcept { release(); }
 
-    const uint8_t *data() const { return imported_ ? layer_.data : staging_.as<uint8_t>(); }
+    const uint8_t *data() const { return staging_ ? staging_->as<uint8_t>() : layer_.data; }
     const core::ResidentExpertLayer &layer() const { return layer_; }
 
     // Called only after the fixture's native copy list and GPU readers drain.
     // Scope unwinding destroys those owners before this source.
     void finish() {
-        require(std::memcmp(layer_.data, data(), layer_.bytes) == 0, "staged payload changed");
+        if (staging_) require(std::memcmp(layer_.data, data(), layer_.bytes) == 0, "staged payload changed");
         const bool borrowed = imported_ != nullptr;
+        const bool allocated = owned_staging_.data() != nullptr;
         const auto retiring = Clock::now();
         release();
-        const double retire_ms = Milliseconds(Clock::now() - retiring).count();
+        if (allocated) {
+            owned_staging_ = {};
+            staging_ = nullptr;
+        }
+        const double retire_ms = borrowed || allocated ? Milliseconds(Clock::now() - retiring).count() : 0.0;
         if (borrowed) {
             ze_memory_allocation_properties_t memory{};
             memory.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
             check_ze(zeMemGetAllocProperties(context_, layer_.data, &memory, nullptr), "check retired layer");
             require(memory.type == ZE_MEMORY_TYPE_UNKNOWN, "borrowed layer remains imported");
         }
-        require(fingerprint_ == core::fnv1a64(layer_.data, layer_.bytes), "ordinary arena payload changed");
+        require(fingerprint_ == fingerprint(), "ordinary arena payload changed");
         std::cout << "fullfit_attention_overlap retire_ms=" << std::setprecision(12)
                   << retire_ms << " source_unchanged=PASS\n";
     }
 
 private:
+    uint64_t fingerprint() const {
+        if (full_check_) return core::fnv1a64(layer_.data, layer_.bytes);
+        return core::fnv1a64(layer_.data + layer_.bytes - 4096, 4096,
+                             core::fnv1a64(layer_.data, 4096));
+    }
+
     void admit_borrowed(const std::shared_ptr<sycl_backend::Runtime> &runtime) {
         const auto driver = sycl::get_native<backend>(runtime->device().get_platform());
         const auto device = sycl::get_native<backend>(runtime->device());
@@ -154,7 +197,7 @@ private:
                 }), "external memory mapping extension unavailable");
         ze_external_memmap_sysmem_ext_desc_t external{};
         external.stype = ZE_STRUCTURE_TYPE_EXTERNAL_MEMMAP_SYSMEM_EXT_DESC;
-        external.pSystemMemory = arena_.data();
+        external.pSystemMemory = const_cast<uint8_t *>(layer_.data);
         external.size = layer_.bytes;
         ze_host_mem_alloc_desc_t host{};
         host.stype = ZE_STRUCTURE_TYPE_HOST_MEM_ALLOC_DESC;
@@ -184,21 +227,26 @@ private:
                 sycl_backend::cleanup_fail_stop("read-only layer unimport failed");
             imported_ = nullptr;
         }
-        staging_ = sycl_backend::Allocation();
     }
 
-    core::PinnedArena arena_;
     ze_context_handle_t context_;
     core::ResidentExpertLayer layer_;
-    sycl_backend::Allocation staging_;
+    sycl_backend::Allocation owned_staging_;
+    sycl_backend::Allocation *staging_;
+    bool full_check_;
     void *imported_ = nullptr;
     uint64_t allocation_id_ = 0;
     uint64_t fingerprint_ = 0;
 };
 
 inline void source_admission(const std::shared_ptr<sycl_backend::Runtime> &runtime) {
-    LayerSource source(runtime, 4);
-    source.finish();
+    require(source_kind() == SourceKind::Borrowed, "actual full-arena metadata must use read-only mappings");
+    FullArena arena;
+    for (int64_t layer = 0; layer < 48; ++layer) {
+        std::cout << "fullfit_attention_overlap admission_layer=" << layer << '\n';
+        LayerSource source(runtime, arena.layer(layer), SourceKind::Borrowed, nullptr, false);
+        source.finish();
+    }
 }
 
 inline ze_command_list_handle_t immediate_list(sycl::queue &queue) {
@@ -319,7 +367,21 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     require(bank_bytes <= runtime->device().get_info<sycl::info::device::max_mem_alloc_size>(),
             "full-fit fixture exceeds maximum single device allocation");
 
-    LayerSource source(runtime, experts);
+    const auto kind = source_kind();
+    FullArena arena;
+    sycl_backend::Allocation staging;
+    double staging_startup_ms = 0;
+    if (kind == SourceKind::Staged) {
+        const auto started = Clock::now();
+        staging = sycl_backend::Allocation(runtime, payload_bytes, sycl_backend::MemoryKind::Host);
+        std::memset(staging.data(), 0, payload_bytes);
+        const auto prior_layer = arena.layer(1);
+        std::memcpy(staging.data(), prior_layer.data, std::min<uint64_t>(payload_bytes, prior_layer.bytes));
+        staging_startup_ms = Milliseconds(Clock::now() - started).count();
+    }
+    std::cout << "fullfit_attention_overlap staging_startup_ms=" << std::setprecision(12)
+              << staging_startup_ms << '\n';
+    LayerSource source(runtime, arena.layer(2, experts), kind, kind == SourceKind::Staged ? &staging : nullptr);
     std::vector<uint8_t> observed(bank_bytes);
     sycl_backend::Allocation bank(runtime, bank_bytes, sycl_backend::MemoryKind::Device);
     auto &compute = runtime->compute();
