@@ -441579,7 +441579,7 @@
     }
   },
   "fullfit_attention_layer_source_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "dbed792b05d8b4da1c331ccf644666c823b85b08",
     "platform": {
       "original_binary": {
@@ -444851,6 +444851,275 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "clean-5",
+        "passed": true,
+        "GPU_executed": true,
+        "GPU_work_admitted": true,
+        "pid": 2055911,
+        "native_exit_code": 0,
+        "providers": [
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "92c70bfc7b176c69099c60f2c6b89043f46d06fbc129defcd0dda446ee919b19"
+          },
+          {
+            "phase": "after-cleanup",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "92c70bfc7b176c69099c60f2c6b89043f46d06fbc129defcd0dda446ee919b19"
+          }
+        ],
+        "validation": {
+          "pid": 2055911,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "timing": {
+          "clock_pair_max_s": 4e-08,
+          "source": {
+            "kind": "borrowed",
+            "bytes": 1009254400,
+            "arena_ms": 1921.893561,
+            "prepare_ms": 4.461264,
+            "allocation_id": 46,
+            "retire_ms": 3.66812
+          },
+          "queue": {
+            "api": "native",
+            "ordinal": 1,
+            "index": 0,
+            "mode": 2,
+            "flags": 2,
+            "priority": 0
+          },
+          "samples": [
+            {
+              "round": 0,
+              "arm": "compute_only",
+              "milliseconds": 225.922036,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "copy_only",
+              "milliseconds": 266.294842,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "serial_separate",
+              "milliseconds": 415.717517,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "deferred_wait",
+              "milliseconds": 227.618933,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "copy_only",
+              "milliseconds": 216.596348,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "serial_separate",
+              "milliseconds": 411.13254,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "deferred_wait",
+              "milliseconds": 225.516022,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "compute_only",
+              "milliseconds": 221.619361,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "serial_separate",
+              "milliseconds": 499.614646,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "deferred_wait",
+              "milliseconds": 226.649047,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "compute_only",
+              "milliseconds": 222.709535,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "copy_only",
+              "milliseconds": 254.287372,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "deferred_wait",
+              "milliseconds": 225.444036,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "compute_only",
+              "milliseconds": 221.931409,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "copy_only",
+              "milliseconds": 183.90211,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "serial_separate",
+              "milliseconds": 526.269279,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "compute_only",
+              "milliseconds": 222.628422,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "copy_only",
+              "milliseconds": 183.954558,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "serial_separate",
+              "milliseconds": 405.429887,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "deferred_wait",
+              "milliseconds": 268.100273,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            }
+          ]
+        },
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "prior_host_refusal": {
@@ -444859,8 +445128,8 @@
       "corrected": "Read all three offsets once from the hash-pinned layout and pass them in the frozen child environment."
     },
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "whole_bytes": 805306368,
     "plan": {
@@ -444892,6 +445161,280 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-attention-layer-source-v1/build/sycl_fullfit_attention_overlap",
       "bytes": 1685688,
       "sha256": "d07d08195fed43c9fdc15de09d607778c3db386aca35cab314978dbf993a2cc1"
+    },
+    "role_sha256_after_matches": true,
+    "decision": {
+      "clean_progression": [
+        "staged",
+        "borrowed",
+        "borrowed",
+        "staged",
+        "staged",
+        "borrowed"
+      ],
+      "paired_clean_indices": [
+        {
+          "staged": 0,
+          "borrowed": 1
+        },
+        {
+          "borrowed": 2,
+          "staged": 3
+        },
+        {
+          "staged": 4,
+          "borrowed": 5
+        }
+      ],
+      "warmed_ratios": {
+        "compute_only": {
+          "paired": [
+            0.996889819986852,
+            1.0007893643123846,
+            1.003865382233338
+          ],
+          "geometric": 1.0005107827691837,
+          "all_three_faster": false
+        },
+        "copy_only": {
+          "paired": [
+            0.9685384854065623,
+            1.225179515307795,
+            1.0022003270295745
+          ],
+          "geometric": 1.0594741945130333,
+          "all_three_faster": false
+        },
+        "serial_separate": {
+          "paired": [
+            1.1666684392190136,
+            1.095518074130531,
+            1.0175872911896466
+          ],
+          "geometric": 1.0915565088157413,
+          "all_three_faster": false
+        },
+        "deferred_wait": {
+          "paired": [
+            0.9825797779898213,
+            1.4214877225022335,
+            0.9302959099526449
+          ],
+          "geometric": 1.0912158918018424,
+          "all_three_faster": false
+        }
+      },
+      "first_cycle_ratios": {
+        "compute_only": {
+          "paired": [
+            1.005841893740951,
+            0.9961137313559719,
+            1.0180555380250884
+          ],
+          "geometric": 1.0066303940128063,
+          "all_three_faster": false
+        },
+        "copy_only": {
+          "paired": [
+            1.3119655459219852,
+            0.9501972968156883,
+            1.437142629659612
+          ],
+          "geometric": 1.2145405825084037,
+          "all_three_faster": false
+        },
+        "serial_separate": {
+          "paired": [
+            1.1743013666859428,
+            0.9678567099294191,
+            0.9255349848247044
+          ],
+          "geometric": 1.0170160896572489,
+          "all_three_faster": false
+        },
+        "deferred_wait": {
+          "paired": [
+            0.7888034374280309,
+            1.6332881621976263,
+            0.9778321634253976
+          ],
+          "geometric": 1.0800204421589308,
+          "all_three_faster": false
+        }
+      },
+      "clean_process_warmed_medians_ms": [
+        {
+          "compute_only": 221.777356,
+          "copy_only": 260.215349,
+          "serial_separate": 484.329843,
+          "deferred_wait": 259.1253715
+        },
+        {
+          "compute_only": 221.08758849999998,
+          "copy_only": 252.02858,
+          "serial_separate": 565.052342,
+          "deferred_wait": 254.61135000000002
+        },
+        {
+          "compute_only": 221.4755455,
+          "copy_only": 236.5168605,
+          "serial_separate": 455.714165,
+          "deferred_wait": 347.320428
+        },
+        {
+          "compute_only": 221.3008585,
+          "copy_only": 193.0466985,
+          "serial_separate": 415.980508,
+          "deferred_wait": 244.335862
+        },
+        {
+          "compute_only": 221.42402700000002,
+          "copy_only": 199.83574900000002,
+          "serial_separate": 447.5032235,
+          "deferred_wait": 243.022174
+        },
+        {
+          "compute_only": 222.27991550000002,
+          "copy_only": 200.275453,
+          "serial_separate": 455.373593,
+          "deferred_wait": 226.0825345
+        }
+      ],
+      "clean_first_cycle_ms": [
+        {
+          "compute_only": 221.423062,
+          "copy_only": 252.850185,
+          "serial_separate": 473.736928,
+          "deferred_wait": 330.823159
+        },
+        {
+          "compute_only": 222.716592,
+          "copy_only": 331.730731,
+          "serial_separate": 556.309922,
+          "deferred_wait": 260.954445
+        },
+        {
+          "serial_separate": 464.647183,
+          "deferred_wait": 413.038802,
+          "compute_only": 221.410574,
+          "copy_only": 254.970994
+        },
+        {
+          "serial_separate": 480.078485,
+          "deferred_wait": 252.887893,
+          "compute_only": 222.274392,
+          "copy_only": 268.334792
+        },
+        {
+          "compute_only": 221.915237,
+          "copy_only": 185.294651,
+          "serial_separate": 449.164563,
+          "deferred_wait": 232.779143
+        },
+        {
+          "compute_only": 225.922036,
+          "copy_only": 266.294842,
+          "serial_separate": 415.717517,
+          "deferred_wait": 227.618933
+        }
+      ],
+      "traced_vs_first_matching_clean": {
+        "staged": {
+          "compute_only": 0.9975131185169328,
+          "copy_only": 1.214722896688158,
+          "serial_separate": 0.9172314878395796,
+          "deferred_wait": 0.9545264211999402
+        },
+        "borrowed": {
+          "compute_only": 1.0038549721663819,
+          "copy_only": 0.997503437903749,
+          "serial_separate": 0.7883737963517724,
+          "deferred_wait": 0.9907863749986008
+        }
+      },
+      "observed_device_interval_medians_ns": {
+        "staged": {
+          "compute_only": {
+            "copy_union_ns": 0.0,
+            "qsa_union_ns": 220693384.5,
+            "overlap_ns": 0.0
+          },
+          "copy_only": {
+            "copy_union_ns": 310268823.0,
+            "qsa_union_ns": 0.0,
+            "overlap_ns": 0.0
+          },
+          "serial_separate": {
+            "copy_union_ns": 216161431.5,
+            "qsa_union_ns": 221360259.0,
+            "overlap_ns": 0.0
+          },
+          "deferred_wait": {
+            "copy_union_ns": 216269328.5,
+            "qsa_union_ns": 222534426.5,
+            "overlap_ns": 194128616.0
+          }
+        },
+        "borrowed": {
+          "compute_only": {
+            "copy_union_ns": 0.0,
+            "qsa_union_ns": 221403957.5,
+            "overlap_ns": 0.0
+          },
+          "copy_only": {
+            "copy_union_ns": 245309725.5,
+            "qsa_union_ns": 0.0,
+            "overlap_ns": 0.0
+          },
+          "serial_separate": {
+            "copy_union_ns": 214950678.0,
+            "qsa_union_ns": 222209062.0,
+            "overlap_ns": 0.0
+          },
+          "deferred_wait": {
+            "copy_union_ns": 215068891.0,
+            "qsa_union_ns": 222965311.5,
+            "overlap_ns": 190858323.0
+          }
+        }
+      },
+      "warmed_deferred_overlap_ns": {
+        "staged": [
+          187220851,
+          195901246,
+          196993789,
+          192355986
+        ],
+        "borrowed": [
+          185928241,
+          221361241,
+          195788405,
+          181810272
+        ]
+      },
+      "overlap_floor_ns": 1000000,
+      "sustained_overlap": {
+        "staged": true,
+        "borrowed": true
+      },
+      "clean_layer_lifecycle_ms": [
+        521.1827905,
+        266.835348,
+        356.14021199999996,
+        516.92064,
+        467.514345,
+        234.2119185
+      ],
+      "layer_lifecycle_paired_ratios": [
+        0.5119803509705488,
+        0.6889649676205615,
+        0.5009726888701137
+      ],
+      "layer_lifecycle_geometric": 0.5611618796224486,
+      "eligible_borrowed_layer_source": true,
+      "next_comparison_prerequisite": "Validate the full production ArenaExpertSource owner and actual expert demand before evaluating a model route.",
+      "model_qualified": false,
+      "physical_bandwidth_or_saturation_qualified": false
     },
     "source_inputs": {
       "files": 340,
