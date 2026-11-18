@@ -21,13 +21,15 @@ import request_profile_reader as reader
 capacity, core = workspace.capacity, workspace.core
 comparison = core.comparison
 P, B, RESULT = capacity.P, capacity.B, capacity.RESULT
-ROOT, KEY = B / 'eager-request-profile-v1', 'eager_request_profile_v1'
+ROOT, KEY = B / 'eager-request-profile-v2', 'eager_request_profile_v2'
 THIS = 'tools/sycl/eager_request_profile.py'
 READER = 'tools/sycl/request_resource_summary.py'
 CURVE_COMMIT = '90a1bc130f47fe87938b3d4db2b769f5c9b64169'
 CURVE_KEY = 'eager_prefill_length_curve_v2'
+EARLIER_COMMIT = '9b17274579273235f6c142eea8d48d0ae21273ea'
+EARLIER_KEY = 'eager_request_profile_v1'
 PYTHON = capacity.reference.model.PYTHON
-ARMS = ('clean', 'trace', 'trace', 'clean')
+ARMS = ('trace', 'clean')
 READ, RUNS = 65537, 3
 ORDER = [(READ, 1)] * len(ARMS)
 NATIVE_BUDGET = dict(wall=1500, cpu=9000, rss_cap=104 << 30,
@@ -48,6 +50,24 @@ def normalize_route(route):
     result = copy.deepcopy(route)
     del result['layout']['free_gpu_bytes']
     return result
+
+
+def earlier_pair():
+    path = str(RESULT.relative_to(P))
+    prior = json.loads(probe.pti.blob(P, EARLIER_COMMIT, path))[EARLIER_KEY]
+    require(prior['stage'] == 'failed' and not prior['passed'] and not prior['complete']
+        and prior['ownership_closed'] and not prior['active']
+        and len(prior['processes']) == 2 and prior['post_run_analysis_v2']['stage'] == 'closed',
+        'original failed cohort and separately recovered trace required')
+    clean, traced = prior['processes']
+    require(clean['passed'] and clean['complete'] and clean['clean_speed']
+        and not traced['passed'] and not traced['clean_speed']
+        and all(p['native_exit_code'] == 0 and p['ownership_closed'] and p['boot_unchanged']
+            and p['fresh_faults'] == [] and len(p['samples']) == RUNS for p in (clean, traced)),
+        'original exact native timing samples required')
+    return dict(commit=EARLIER_COMMIT, key=EARLIER_KEY, timings=timing_ratios(clean, traced),
+        original_cohort_passed=False,
+        use='Descriptive cross-check from a separately recovered trace. Original cohort remains failed.')
 
 
 def basis():
@@ -258,22 +278,45 @@ def after_execution(outcome, row, plan):
             thinking=True, sample_scope='first_long' if i == 0 else 'warmed',
             begin_raw_ns=w['begin'], end_raw_ns=w['end'])
             for i, (s, w) in enumerate(zip(outcome['samples'], windows))])
-    core.write(root / 'analysis-input.json', receipt)
+    analysis_root = root / 'analysis'
+    analysis_root.mkdir(mode=0o700)
+    require(not trace.is_relative_to(analysis_root), 'input trace must be outside the analysis output cap')
+    contract_path = analysis_root / 'input.json'
+    result_path = analysis_root / 'resources.json'
+    core.write(contract_path, receipt)
     command = [PYTHON, '-B', str(P / READER), str(trace),
-        str(root / 'analysis-input.json'), str(root / 'resources.json')]
+        str(contract_path), str(result_path)]
     guards = comparison.build.guards
     guards.no_model_owners([])
-    owner = comparison.build.supervision.Owner(root / 'analysis')
+    owner = comparison.build.supervision.Owner(analysis_root / 'owned',
+        lambda: core.write(analysis_root / 'execution.json', owner.commands))
     entry, _, err = owner.run('summarize', command, dict(PATH='/usr/bin:/bin', LANG='C'), P,
         **ANALYSIS_BUDGET)
     outcome['analysis'] = dict(command=command, exit_code=entry['exit_code'],
-        ownership_closed=comparison.build.supervision.closed(entry), input_sha256=sha(root / 'analysis-input.json'))
+        ownership_closed=comparison.build.supervision.closed(entry), input_sha256=sha(contract_path),
+        budget_error=entry.get('error'), direct_child_reaped=entry['direct_child_reaped'],
+        session_empty=entry['session_empty'])
     require(outcome['analysis']['ownership_closed'] and entry['exit_code'] == 0,
-        'closed trace analysis failed: ' + err.read_text()[-2000:])
-    result = json.loads((root / 'resources.json').read_text())
+        'closed trace analysis failed: ' + str(entry.get('error')) + ' ' + err.read_text()[-1800:])
+    result = json.loads(result_path.read_text())
     require(result['totals_match_request_reader'] and result['trace_sha256'] == receipt['trace_sha256']
         and len(result['requests']) == RUNS, 'trace conservation or identity differs')
     outcome['resources'] = result
+
+
+def timing_ratios(clean, traced):
+    points = {}
+    for scope in ('first_long', 'warmed'):
+        fields = {}
+        for field in ('prompt_ms', 'ttft_s', 'total_s'):
+            def value(process):
+                samples = process['samples']
+                return samples[0][field] if scope == 'first_long' else statistics.median(
+                    sample[field] for sample in samples[1:])
+            ratio = value(traced) / value(clean)
+            fields[field] = dict(trace_over_clean=ratio, within_10_percent=.9 <= ratio <= 1.1)
+        points[scope] = fields
+    return points
 
 
 def decision(processes):
@@ -282,22 +325,12 @@ def decision(processes):
         and all(p['index'] == i and p['passed'] and p['complete'] and p['ownership_closed']
                 and p['clean_speed'] == (ARMS[i] == 'clean')
                 and ('resources' in p) == (ARMS[i] == 'trace') for i, p in enumerate(processes)),
-        'four closed distinct planned model processes required')
-
-    def value(index, field, first):
-        samples = processes[index]['samples']
-        return samples[0][field] if first else statistics.median(s[field] for s in samples[1:])
-
-    points = {}
-    for scope in ('first_long', 'warmed'):
-        fields = {}
-        for field in ('prompt_ms', 'ttft_s', 'total_s'):
-            ratios = [value(t, field, scope == 'first_long') / value(c, field, scope == 'first_long')
-                      for c, t in ((0, 1), (3, 2))]
-            fields[field] = dict(trace_over_clean=ratios, within_10_percent=all(.9 <= r <= 1.1 for r in ratios))
-        points[scope] = fields
+        'two closed distinct planned model processes required')
+    traced, clean = processes
+    points = timing_ratios(clean, traced)
     return dict(observer_cost=points,
-        observer_overhead_qualified=all(v['within_10_percent'] for fields in points.values() for v in fields.values()),
+        fresh_pair_within_observer_budget=all(v['within_10_percent'] for fields in points.values() for v in fields.values()),
+        full_original_observer_cohort_qualified=False,
         physical_saturation_qualified=False, phase_attribution_qualified=False,
         clean_speed_gain_qualified=False, inference_adopted=False,
         limits='Whole request includes 24 decode tokens. PCIe/VRAM bytes and arithmetic saturation remain unmeasured.')
@@ -307,7 +340,8 @@ def current(row):
     require(workspace.device.build.ur_validation.committed(RESULT, (KEY,)) == core.compact(row)
         and source_pins(row['source_commit']) == row['sources'], 'commit exact frozen source and prior stage')
     prior, curve, fixture, reference = basis()
-    require(reference == row['reference'] and curve['binary'] == row['binary']
+    require(reference == row['reference'] and earlier_pair() == row['earlier_pair']
+        and curve['binary'] == row['binary']
         and curve['native_source_commit'] == row['native_source_commit']
         and fixture['tools'] == row['admission']['tools']
         and all(row[k] == prior[k] for k in ('configuration','environment_template','model_assets',
@@ -336,6 +370,14 @@ def current(row):
         require(not execution['active'] and all(execution.get(k) == v for k, v in outcome.items())
             and all(comparison.build.supervision.closed(c) for c in execution['commands']),
             'original closed process receipt differs')
+        if ARMS[i] == 'trace':
+            directory = ROOT / str(i) / 'analysis'
+            analyses = json.loads((directory / 'execution.json').read_text())
+            require(len(analyses) == 1 and comparison.build.supervision.closed(analyses[0])
+                and analyses[0]['exit_code'] == 0
+                and outcome['analysis']['input_sha256'] == sha(directory / 'input.json')
+                and outcome['resources'] == json.loads((directory / 'resources.json').read_text()),
+                'closed trace analysis receipt differs')
     comparison.shared.models.model_pins(row['configuration'], row['model_assets'], full=False)
     return json.loads(Path(row['runtime_manifest']['path']).read_text()), python
 
@@ -349,16 +391,18 @@ def prepare():
     row = {k: copy.deepcopy(prior[k]) for k in ('configuration','environment_template','model_assets',
         'template','boot','driver','native_validation_probe','runtime_manifest','python_contract','python_selected')}
     row.update(stage='prepared', source_commit=revision, sources=sources, reference=reference,
+        earlier_pair=earlier_pair(),
         binary=curve['binary'], native_source_commit=curve['native_source_commit'],
         native_composition_sha256=curve['native_composition_sha256'],
         admission=dict(tools=fixture['tools']), plans=[], processes=[],
         request_hashes={str(READ): reference['request_hashes']}, host_passed=False,
         passed=False, complete=False, active=False, ownership_closed=True,
-        budgets=NATIVE_BUDGET, analysis_budgets=ANALYSIS_BUDGET, whole_bytes=5 << 30,
+        budgets=NATIVE_BUDGET, analysis_budgets=ANALYSIS_BUDGET, whole_bytes=2560 << 20,
         plan=dict(question='Time copy and kernel activity on the same eager 64K route and measure the collector cost.',
             order=list(ARMS), samples='Three exact 65537-read, thinking-on, 24-output requests per fresh process.',
             isolation='Only device collector injection differs. Compare first and warmed process medians separately.',
-            acceptance='Both paired trace/clean ratios must be in 0.9..1.1 for prompt, TTFT and total duration separately.',
+            acceptance='The fresh reversed pair must be in 0.9..1.1 for prompt, TTFT and total duration. '
+                'The earlier native timing pair is a descriptive cross-check. Its stopped cohort remains failed.',
             scope='Use enclosing RAW request windows. Retain clip/overlap, crossing counts and conserved service. '
                 'Measure whole requests, including 24 decode tokens. No hardware saturation claim.',
             stopping='Stop on source, provider, ownership, fault, route, clock or finite budget failure. '
@@ -387,7 +431,7 @@ def prepare():
 
 if __name__ == '__main__':
     require(sys.executable == PYTHON and len(sys.argv) == 2
-        and sys.argv[1] in ('prepare', 'host', '0', '1', '2', '3'), 'pinned Python: prepare | host | 0..3')
+        and sys.argv[1] in ('prepare', 'host', '0', '1'), 'pinned Python: prepare | host | 0..1')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         comparison.build.guards.no_model_owners([])

@@ -19,9 +19,9 @@ class EagerRequestProfileTests(unittest.TestCase):
         self.assertFalse(args.prefill_short_diagnostic)
         self.assertEqual(args.runs, 3)
 
-    def test_one_out_of_range_pair_cannot_be_hidden_by_the_other(self):
+    def test_warmed_overhead_failure_cannot_be_hidden_by_first_use(self):
         processes = []
-        for i, value in enumerate((100., 120., 95., 100.)):
+        for i, value in enumerate((120., 100.)):
             traced = profile.ARMS[i] == 'trace'
             samples = [dict(prompt_ms=v * 1000, ttft_s=v, total_s=v + 2)
                 for v in (110., value, value)]
@@ -32,8 +32,9 @@ class EagerRequestProfileTests(unittest.TestCase):
             processes.append(row)
         result = profile.decision(processes)
         self.assertTrue(result['observer_cost']['first_long']['prompt_ms']['within_10_percent'])
-        self.assertEqual(result['observer_cost']['warmed']['prompt_ms']['trace_over_clean'], [1.2, .95])
-        self.assertFalse(result['observer_overhead_qualified'])
+        self.assertEqual(result['observer_cost']['warmed']['prompt_ms']['trace_over_clean'], 1.2)
+        self.assertFalse(result['fresh_pair_within_observer_budget'])
+        self.assertFalse(result['full_original_observer_cohort_qualified'])
 
     def test_request_gates_require_begin_and_end_for_each_request(self):
         records = {}
