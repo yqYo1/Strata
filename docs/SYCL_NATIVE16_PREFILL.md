@@ -2295,7 +2295,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no fresh fault. Jobs38324/38507/38286become24709/24759/24721;requested
   expert H2D43.61..43.84GBbecomes38.95..39.01GB. Traced warmed time is
   144.01965sversus137.41725s;this is not the clean repeated-gain decision.
-  Next collect the three opposite-order clean pairs. Preserve
+  The first two opposite-order clean pairs close normally with quiet
+  validation and no fresh fault;new/reference warmed-time ratios are
+  0.963803and0.950117. All seven processes/21samples are preserved. The
+  final pair(process7reference,then8candidate)and15final model hashes
+  remain pending;no completed gain/adoption gate is claimed. Preserve
   the bank/coherence/relocation losses;this unit gain does not adopt the
   composed engine or reach1000PPat128K. Reduced jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
