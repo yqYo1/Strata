@@ -2609,6 +2609,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   residual rows at 64K. Its independent 64K capacity comparison keeps its
   mixed outcome. Use the same bank in each proposed prefetch arm and
   recheck actual admission.
+  The nine clean bank512 requests at 65537 actual input tokens requested
+  37,137,228,800–37,214,720,000 bytes of demand uploads. The same native
+  image and exact model assets have 50,292,326,400 bytes across all expert
+  layers, as checked in `prefill_bank_minimum_v2`. Preloading every expert
+  would add 13.08–13.16 GB of requested payload, or 35.14–35.42%.
+  Include this work increase in the separately measured all-expert
+  loading unit. If needed, compare a bounded prefetch subset with the
+  same exact demand fallback and verify its useful versus unused bytes.
 
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the
@@ -2645,9 +2653,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   each interval. Full bank bytes, guards, source immutability and exact QSA
   output are checked outside timing. The small case also checks retirement
   after an exception following an accepted copy. An opt-in RAW clock
-  interval permits separate device-timeline capture. Source preparation
-  excludes throughput and device claims until the fixture is built,
-  checked and measured.
+  interval permits separate device-timeline capture. The controller
+  keeps the first cycle separate from four subsequent cycles per arm. It
+  checks observed copy bytes, kernel counts and interval boundaries and
+  reports concurrent-to-alone device times as an interference diagnostic.
+  Build and device performance remain pending.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
