@@ -2335,13 +2335,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stay onGPU,bank384/window10/48windows/extra0. Actual GU/Down/job/map/upload/
   requested-payload work matches across all arms. Eager logs24unique full-fit
   layers per request,9178/9179/9160individual copies and checked final bank
-  drains. The first clean original-image process also closes normal0/reaped
-  empty with three exact requests,quiet validation,no fresh fault and matching
-  work. Eight clean independent processes remain in their committed order;
-  a single clean process or traced timings qualify no matched speed gain,
-  current decode or route adoption. The limiting arithmetic/VRAM/PCIe/
-  submission resource remains unknown;finish the matched source/upload cohort
-  before selecting its next phase-specific qualification or implementation.
+  drains. The full64Kcohort now closes with12normal0/reaped-empty processes,
+  36exact thinking-on requests,quiet validation,no fresh fault,unchanged boot
+  and15final model hashes. Actual request/job/map/upload/payload work agrees
+  across all three arms. The coherent-source unit FAILS its repeated-gain gate:
+  warmed-time ratios0.984350/0.984745/1.001215,geomean0.990072;the last pair
+  loses0.12%. Preserve that failure and the original ordinary path. Same-image
+  U1eager PASSES independently:ratios0.983994/0.987560/0.976567,geomean0.982696,
+  with all three paired warmed TTFTs improved. Its third first-use pair loses
+  0.53%;do not claim every first use improves. The net eager/original question
+  PASSES:0.968595/0.972495/0.977753,geomean0.972940. Aggregate warmed PPis
+  881.993original/890.059candidate-JIT/904.537eager;eager process PPis
+  904.537/907.461/902.061. Warmed client TTFTmedians are74.501/73.8235/72.648s.
+  Net improvement does not adopt the failed coherent-source ordinary route,
+  current9849decode or the whole model. No arm reaches the1000PPtarget.
+  Historical64Krequest hashes match all three current requests;different
+  timing periods do not identify a regression cause. Keep the36samples and
+  each separate outcome. The next bounded question is same-image eager-path
+  input-length/time/TTFT characterization with five ordinary-route lengths and
+  an independent held-out length;commit its exact plan before new execution.
+  This develops the faster owned candidate while its source-selection and
+  phase-preservation gates remain pending. Retain both phase references and
+  the candidate for that immediate question;retire a superseded generation
+  before another native build. The limiting arithmetic/VRAM/PCIe/submission
+  resource remains unknown;this timing cohort is not a saturation measurement.
   Keep the current-build five-length/time/TTFT curve and hardware attribution
   gaps pending;do not infer a law from these mixed timing periods. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
