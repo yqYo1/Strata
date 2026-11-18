@@ -2524,6 +2524,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   short/invalid/tail and full-context address cases. Commit source and
   repeated component criteria before building. The QSA timing and measured
   copy overlap do not identify a saturated hardware resource.
+  The source inputs (783 for the pair and 776 for the probe), all four
+  generated inputs and the final comparison decision were verified from
+  Git before cleanup. The 152 capture files (571,845,791 bytes), 42,745-byte
+  inventory and spent private probe record were retired. The closed launcher,
+  probe and resource-analysis modes and their checks live in Git history.
+  The shared workspace admission, PTI request reader and collector assets
+  remain available independently.
   Retire a superseded generation
   before another native build. The limiting arithmetic/VRAM/PCIe/submission
   resource remains unknown;this timing cohort is not a saturation measurement.
