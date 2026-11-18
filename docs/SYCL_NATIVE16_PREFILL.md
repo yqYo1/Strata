@@ -2223,16 +2223,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   admissions and three opposite-order clean process pairs;first/warm samples
   stay separate. Safe fixed-work coherence/layout losses remain recorded and
   permit a separate window question;only repeated fixed-bank window gain admits
-  the combination. Coherence is prepared at`e81f93750`,with all15model assets
-  freshly hashed and18generated configurations/launcher plans pinned. Host
-  probes,the32Kcandidate and both traced128Kprocesses pass,each with
-  three exact-read/24-output requests,allBF16residual rows onGPU,planned
-  bank256/window10,normal0,reapedempty,quiet validation and no fresh fault.
-  All three paired traced requests match maps,jobs,dequants,GU/Down selections,
-  uploads and requested bytes. These are not clean speed or a completed
-  coherence comparison. The six-clean-process128Kcomparison is underway;
-  current process outcomes and samples are in`prefill_window_coherence_model_v1`.
-  The other three cohorts remain unprepared.
+  the combination. Coherence closes at source`e81f93750`:nine normal0processes
+  and27thinking-on requests,quiet validation,no fresh fault and15final model
+  hashes. All residual rows remain onGPU;maps,jobs,dequants,GU/Down selections,
+  uploads and requested bytes match within each pair at bank256/window10.
+  The three clean new/original warmed-time ratios are1.008021,1.012501and
+  1.000776(geomean1.007088). The repeated-gain gate FAILS;aggregate warmed
+  PPis921.087original versus915.134new. Keep all samples and first use separate.
+  Do not adopt this as a replacement for the existing ordinary path or offset
+  its loss with another unit's gain. Original14508remains the ordinary-prefill
+  reference;legacy-path preservation/selection is an unresolved adoption hold.
+  The prospective rule permits the separately scoped relocation/window questions
+  after this safe fixed-work loss. It does not adopt the composed engine or
+  qualify decode/task/physical-context behavior. Next compare98K/bank128/same
+  window with relocation0/1,then128K/fixed bank1with window10/16. The other three
+  cohorts remain unprepared;no larger-window model has run.
   U1jit is fixed to isolate native14coherence;its separately positive eager
   component remains eligible.
   `prefill_bank_minimum_v2`closes at`4d027b3e1`:nine normal0processes/27thinking-on

@@ -410042,7 +410042,7 @@
     }
   },
   "prefill_window_coherence_model_v1": {
-    "stage": "running",
+    "stage": "closed",
     "unit": "coherence",
     "source_commit": "e81f9375051e56ca755a6d50c2cf11faa6df73b4",
     "policies": {
@@ -413013,6 +413013,273 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 8,
+        "read": 131072,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata",
+          "sha256": "b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c",
+          "bytes": 26466696
+        },
+        "native_source_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
+        "native_identity": {
+          "pid": 4191118,
+          "start_ticks": 331149257,
+          "sid": 4191054
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 4191118,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 131071,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 131071,
+            "residual_gpu_bytes": 2684334080,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 681574400,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 1059131904,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 83886080,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 256,
+              "window_rows": 81920,
+              "windows": 96,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4245647360,
+              "fixed_including_headroom_bytes": 4172263680,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 8390,
+                "fused_rows": 55570573,
+                "separate_jobs": 29934
+              },
+              "down": {
+                "fused_jobs": 8390,
+                "fused_rows": 55570573,
+                "separate_jobs": 29934
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 38324,
+              "windows": 96,
+              "dequants": 33606,
+              "maximum_physical_window_rows": 81920,
+              "requested_source_map_bytes": 251656320,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 21237,
+            "permanent_hits": 12369,
+            "requested_bank_H2D_bytes": 43611008000,
+            "requested_source_map_H2D_bytes": 251656320
+          },
+          {
+            "rows": 131071,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 131071,
+            "residual_gpu_bytes": 2684334080,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 681574400,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 1059131904,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 83886080,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 256,
+              "window_rows": 81920,
+              "windows": 96,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4252704768,
+              "fixed_including_headroom_bytes": 4172263680,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 8385,
+                "fused_rows": 55565425,
+                "separate_jobs": 30122
+              },
+              "down": {
+                "fused_jobs": 8385,
+                "fused_rows": 55565425,
+                "separate_jobs": 30122
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 38507,
+              "windows": 96,
+              "dequants": 33785,
+              "maximum_physical_window_rows": 81920,
+              "requested_source_map_bytes": 251656320,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 21347,
+            "permanent_hits": 12438,
+            "requested_bank_H2D_bytes": 43839692800,
+            "requested_source_map_H2D_bytes": 251656320
+          },
+          {
+            "rows": 131071,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 131071,
+            "residual_gpu_bytes": 2684334080,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 681574400,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 1059131904,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 83886080,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 256,
+              "window_rows": 81920,
+              "windows": 96,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4252565504,
+              "fixed_including_headroom_bytes": 4172263680,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 8384,
+                "fused_rows": 55534828,
+                "separate_jobs": 29902
+              },
+              "down": {
+                "fused_jobs": 8384,
+                "fused_rows": 55534828,
+                "separate_jobs": 29902
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 38286,
+              "windows": 96,
+              "dequants": 33584,
+              "maximum_physical_window_rows": 81920,
+              "requested_source_map_bytes": 251656320,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 21262,
+            "permanent_hits": 12322,
+            "requested_bank_H2D_bytes": 43663718400,
+            "requested_source_map_H2D_bytes": 251656320
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 131072,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 155331.1,
+            "prompt_tps": 843.8,
+            "ttft_s": 155.572,
+            "total_s": 157.729,
+            "generated_tokens": 24,
+            "request_sha256": "b868ca74f6137b8d356cf7a6917abb7a73ee43b35fade8a16cdf588871d06026",
+            "drafts_offered": 21,
+            "drafts_accepted": 17,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 131072,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 142493.9,
+            "prompt_tps": 919.8,
+            "ttft_s": 142.769,
+            "total_s": 144.92,
+            "generated_tokens": 24,
+            "request_sha256": "69600ed152d0318e2c59b51d174d18d620225ea0ccc83ba51a28c4914d15d96f",
+            "drafts_offered": 21,
+            "drafts_accepted": 17,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 131072,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 143960.4,
+            "prompt_tps": 910.5,
+            "ttft_s": 144.204,
+            "total_s": 146.267,
+            "generated_tokens": 24,
+            "request_sha256": "824c54d9e8f3c198a84713a845ff70ab8f12d221a964ffc991db94ca0675dc08",
+            "drafts_offered": 21,
+            "drafts_accepted": 17,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 143227.15,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "request_hashes": {
@@ -413028,8 +413295,8 @@
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
@@ -413063,6 +413330,171 @@
         "passed": true
       }
     ],
+    "decision": {
+      "unit": "coherence",
+      "read": 131072,
+      "pairs": [
+        {
+          "indices": [
+            3,
+            4
+          ],
+          "time_ratio": 1.0080206923787745
+        },
+        {
+          "indices": [
+            5,
+            6
+          ],
+          "time_ratio": 1.0125009311222517
+        },
+        {
+          "indices": [
+            7,
+            8
+          ],
+          "time_ratio": 1.000776293085227
+        }
+      ],
+      "arms": {
+        "0": {
+          "warmed_process_ms": [
+            141926.65000000002,
+            142301.4,
+            143116.05
+          ],
+          "warmed_process_PP": [
+            923.5192967635041,
+            921.0872134778716,
+            915.844169818829
+          ],
+          "warmed_PP": 921.0872134778716,
+          "warmed_client_TTFT_s": [
+            142.2105,
+            142.5355,
+            143.3885
+          ],
+          "first_samples": [
+            {
+              "actual_read_tokens": 131072,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 153887.1,
+              "prompt_tps": 851.7,
+              "ttft_s": 154.114,
+              "total_s": 156.226,
+              "generated_tokens": 24,
+              "request_sha256": "b868ca74f6137b8d356cf7a6917abb7a73ee43b35fade8a16cdf588871d06026",
+              "drafts_offered": 21,
+              "drafts_accepted": 17,
+              "timing_frontend_state": "post-count-preflight"
+            },
+            {
+              "actual_read_tokens": 131072,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 154224.0,
+              "prompt_tps": 849.9,
+              "ttft_s": 154.459,
+              "total_s": 156.582,
+              "generated_tokens": 24,
+              "request_sha256": "b868ca74f6137b8d356cf7a6917abb7a73ee43b35fade8a16cdf588871d06026",
+              "drafts_offered": 21,
+              "drafts_accepted": 17,
+              "timing_frontend_state": "post-count-preflight"
+            },
+            {
+              "actual_read_tokens": 131072,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 155648.2,
+              "prompt_tps": 842.1,
+              "ttft_s": 155.892,
+              "total_s": 158.212,
+              "generated_tokens": 24,
+              "request_sha256": "b868ca74f6137b8d356cf7a6917abb7a73ee43b35fade8a16cdf588871d06026",
+              "drafts_offered": 21,
+              "drafts_accepted": 17,
+              "timing_frontend_state": "post-count-preflight"
+            }
+          ]
+        },
+        "1": {
+          "warmed_process_ms": [
+            143065.0,
+            144080.3,
+            143227.15
+          ],
+          "warmed_process_PP": [
+            916.1709712368504,
+            909.7149297995633,
+            915.1337578105828
+          ],
+          "warmed_PP": 915.1337578105828,
+          "warmed_client_TTFT_s": [
+            143.3195,
+            144.32299999999998,
+            143.4865
+          ],
+          "first_samples": [
+            {
+              "actual_read_tokens": 131072,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 152971.5,
+              "prompt_tps": 856.8,
+              "ttft_s": 153.205,
+              "total_s": 155.431,
+              "generated_tokens": 24,
+              "request_sha256": "b868ca74f6137b8d356cf7a6917abb7a73ee43b35fade8a16cdf588871d06026",
+              "drafts_offered": 21,
+              "drafts_accepted": 17,
+              "timing_frontend_state": "post-count-preflight"
+            },
+            {
+              "actual_read_tokens": 131072,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 154494.3,
+              "prompt_tps": 848.4,
+              "ttft_s": 154.736,
+              "total_s": 156.984,
+              "generated_tokens": 24,
+              "request_sha256": "b868ca74f6137b8d356cf7a6917abb7a73ee43b35fade8a16cdf588871d06026",
+              "drafts_offered": 21,
+              "drafts_accepted": 17,
+              "timing_frontend_state": "post-count-preflight"
+            },
+            {
+              "actual_read_tokens": 131072,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 155331.1,
+              "prompt_tps": 843.8,
+              "ttft_s": 155.572,
+              "total_s": 157.729,
+              "generated_tokens": 24,
+              "request_sha256": "b868ca74f6137b8d356cf7a6917abb7a73ee43b35fade8a16cdf588871d06026",
+              "drafts_offered": 21,
+              "drafts_accepted": 17,
+              "timing_frontend_state": "post-count-preflight"
+            }
+          ]
+        }
+      },
+      "time_ratios": [
+        1.0080206923787745,
+        1.0125009311222517,
+        1.000776293085227
+      ],
+      "geometric_mean_time_ratio": 1.0070877094691588,
+      "repeated_gain": false,
+      "unit_performance_eligible": false,
+      "eligible_for_next_independent_question": true,
+      "prospective_rule": "Safe fixed-work coherence/relocation outcomes permit independent next questions even if slower;losses stay losses. Only repeated fixed-bank window gain admits a combined question. Neither adopts a route.",
+      "prefill1000_repeated_long_warmed": false,
+      "inference_adopted": false,
+      "decode_preservation_qualified": false,
+      "task_or_agent_qualified": false,
+      "sustained_thinking_MTP_strong_weak_qualified": false,
+      "physical262144_RESTORE_qualified": false,
+      "hardware_resource_saturation_qualified": false,
+      "ordinary_runtime_teardown_qualified": false
+    },
     "source_inputs": {
       "files": 771,
       "sha256": "080f738f110c0d524711e9f37a141b9d8fae2bbc089d859b7abfa6c4fd503b87"
