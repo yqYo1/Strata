@@ -2676,6 +2676,36 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   availability, transfer and attention overlap, and physical bus traffic
   require their own measurements.
 
+  The first-piece producer is implemented at `14107b721`. `off` uses the
+  existing order. `late` runs the first piece after attention in a dedicated
+  59,539,456-byte GPU allocation, copies the first IDs to RAM and merges the
+  other outputs into the ordinary FFN arena. `early` runs that same producer
+  after the first checked attention store and retains its outputs through the
+  remaining attention pieces. Both experimental modes keep later FFN,
+  selected expert uploads and the compute queue fixed. Admission requires a
+  single ordinary GPU-resident full-fit window. The added storage and host
+  readback live through the outer checked drain.
+
+  `prefill_prefix_router_model_v1` ran three independent 32K processes with
+  two matching thinking-enabled requests each. All six requests completed
+  with 48 observed layers, normal process exits and no new driver fault.
+  The Python aggregate failed when it looked for the MTP restoration count
+  in a route dict that had only validated the count in the native log. The
+  separate `prefill_prefix_router_replay_v1` at `36460f958` recovers the
+  original handoff evidence, reruns the original comparisons and rehashes
+  the 15 model assets without launching another GPU process. All full router
+  ID digests, prefix FP32 gate-weight digests, job counts, expert upload
+  bytes and MTP restore counts match across `off`, `late` and `early`.
+
+  Retain this build for the imminent observer-free `late` versus `early`
+  64K order comparison. Before a combined speed decision, add a storage-only
+  control that publishes prefix IDs back to the device map and keeps the
+  original full ID readback. Compare the storage, split readback and earlier
+  dispatch separately. Recheck the actual route and no-fault handoff in each
+  comparison. The 32K numerical cohort includes trace and extra gate-weight
+  readback. Speed, physical context and sustained decode still need their own
+  validation.
+
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the
   attention pass. Each attention piece stores BF16 residuals on the compute
