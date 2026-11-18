@@ -2238,6 +2238,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   qualify decode/task/physical-context behavior. Next compare98K/bank128/same
   window with relocation0/1,then128K/fixed bank1with window10/16. The other three
   cohorts remain unprepared;no larger-window model has run.
+  Full original evidence is`c68086021`. Four first-use/warmed CSVpoints bring
+  the index to625. All27samples,nine native identities,the failed decision and
+  useful request-work/admission values remain in the compact result. Original
+  771Git inputs and18generated JSONpayloads are recovered and compared exactly;
+  all635closed private files(96,707,795B)and317,566Btemporary inventory are
+  retired. Fresh relocation-predecessor and same-build device admission pass
+  afterward. All three engine generations and the required shared records stay
+  for the named next comparisons;legacy source/configuration/cache holds remain separate.
   U1jit is fixed to isolate native14coherence;its separately positive eager
   component remains eligible.
   `prefill_bank_minimum_v2`closes at`4d027b3e1`:nine normal0processes/27thinking-on
