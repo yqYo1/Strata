@@ -421325,5 +421325,213 @@
       "inventory_bytes_retired": 160597,
       "source_recovery_reverified": true
     }
+  },
+  "eager_pti_probe_v1": {
+    "stage": "prepared",
+    "source_commit": "98e1ac6b3001db19381c456ff1778b7bfe260713",
+    "component_gate": {
+      "key": "prefill_window_device_v1",
+      "source_commit": "e247fbff4ce1c272e8814acea8f074eb13aa9c0a",
+      "record_sha256": "dc8c212852996d7a9722bafac9855f6217e0bfcdbaed6719fb93151940c81e0e",
+      "binaries": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata",
+          "sha256": "b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c",
+          "bytes": 26466696
+        },
+        "prefill_moe_routes_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/prefill_moe_routes_test",
+          "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+          "bytes": 111336
+        },
+        "prefill_moe_workspace_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/prefill_moe_workspace_test",
+          "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+          "bytes": 67448
+        },
+        "sycl_expert_bank_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_expert_bank_test",
+          "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+          "bytes": 513048
+        },
+        "sycl_moe_down_scatter_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_moe_down_scatter_bench",
+          "sha256": "a0d2d91436822ad83692aa4d8b74874d189d9602e461394950b94347d130a5da",
+          "bytes": 14282080
+        },
+        "sycl_native16_paired_gemm_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_native16_paired_gemm_bench",
+          "sha256": "4fd3bb3410348f0b03b91579deec35cb33a47bb628a9da0259464567b01c6dbb",
+          "bytes": 14222744
+        },
+        "strata_full_context_diagnostic": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata_full_context_diagnostic",
+          "sha256": "1e3bc251a1e02e3580b64c9f2dfed410c294176497f12e01f34f9befcd3bcef9",
+          "bytes": 26466800
+        },
+        "full_context_diagnostic_host_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/full_context_diagnostic_host_test",
+          "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+          "bytes": 91448
+        }
+      },
+      "historical_controller_reuse": {
+        "build": {
+          "revision": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
+          "recovered_files": 375,
+          "unchanged_live_files": 374,
+          "retired_control": {
+            "path": "tools/sycl/prefill_window_model.py",
+            "sha256": "ba6a59e8c02003d802bf40e1288cc4d646a1a87a08b4769e9389bc7de995c03e"
+          },
+          "native_recompiled": false,
+          "new_GPU_qualification": false
+        },
+        "device": {
+          "revision": "e247fbff4ce1c272e8814acea8f074eb13aa9c0a",
+          "recovered_files": 357,
+          "unchanged_live_files": 356,
+          "retired_control": {
+            "path": "tools/sycl/prefill_window_model.py",
+            "sha256": "ba6a59e8c02003d802bf40e1288cc4d646a1a87a08b4769e9389bc7de995c03e"
+          },
+          "native_recompiled": false,
+          "new_GPU_qualification": false
+        }
+      },
+      "scope": "Component address/math/closure only;actual allocation,model/task/phase/physical-context gates not inherited."
+    },
+    "tools": {
+      "artifacts": {
+        "libunitrace_tool.so": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+          "bytes": 2329704,
+          "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+        },
+        "unitrace": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "bytes": 513168,
+          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+        }
+      },
+      "collector_source_commit": "e57b5ee7fce1de6391c793f1014c44cae3b85d9c",
+      "launcher_source_commit": "8fba6f3aaa22578bf0b7a3ae0cc945b6d3de89c9",
+      "recovered_launcher_source_sha256": "d033ab839454e1779689062f3932ceba830ebac4fe5504a06068078818e6be1f",
+      "original_compiler_inputs": 457,
+      "indexed_compiler_inputs": 460,
+      "original_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/dependencies.json",
+        "files": 457,
+        "sha256": "6fa2604f00edde615f2150815c0de23a90c2caac1c0ad7e75bfcd73e1b146a35",
+        "scope": "Complete preprocessor header closure plus compiler/linker/startup/runtime assets; retained externally for current build/qualification admission."
+      },
+      "indexed_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/compiler-inputs.json",
+        "files": 460,
+        "sha256": "e7d01b2a1a6fe76886e79062f6c25f71afd213cd8f26d88321876cb26db38e20"
+      },
+      "collector_recipe_sha256": "610301c464bbc27755acc4c93449d21b564a79d57e99c3977fd9f9434af4cb79",
+      "launcher_recipe_sha256": "edb1023cff562479c84867ffbc56d3600b130385d06bdba068217300d7c5afee",
+      "retired_artifact_or_fixture_readers_called": false
+    },
+    "prior_clock_gate_sha256": "6f12324ab1a070af5020228d6dbccf97750c2eb65466ab38b5c99004fb6b61a6",
+    "native_source_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
+    "native_base": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "native_overlays": {
+      "include/strata/prefill/fullfit_upload_plan.hpp": "96eb10d416a34333a3582230aa39a25856713d2015d2006f70396aa05049b2d2",
+      "include/strata/prefill/expert_bank_upload.hpp": "03538e5b5d919c18a616da19e84f09b8e413705df964a302b97016253f615f84",
+      "include/strata/prefill/moe_accum_plan.hpp": "3e5fd5fd96aa05f67a4448de2d4c582fd55c868d3bf9e3c2c087f2833bf2791b",
+      "include/strata/prefill/moe_window_routes.hpp": "ddab77fa20b4ded238c5af2c59c7fc2df5ed62bf6a8fa973595e40a3764cdd54",
+      "src/core/expert_source.cpp": "7e3c7c5cfee6cb821f3b74b65f579c8c07feadb5d0910ece8c4792866274899b",
+      "src/prefill/prefill.cpp": "871f5c874ec3a64e1dafa6e75ec85320e5cb6431a7dd5a1e1bceb214b299053c",
+      "src/prefill/layer_major.inc": "c19f5a6c6287caf82bc4bb74bb774084c31cf822d5d802dd226ea07bcec890d2",
+      "src/prefill/moe_window.inc": "7c46d874c0c236c010cfcbfd677d6000df02fdf7e03cd91c9e98558af4262316",
+      "src/prefill/sycl/native16.cpp": "917756a966674e64334138ce5183edbf02fa604cd1b43fe66afa7750c7430bc0",
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "e0fef77e6420f989d35cdb44c5fd1e980c718a374eb509fcfd725cd214750699",
+      "cmake/sycl_vllm_xe2_native16.cmake": "0d33e69ba7ba44d5cd039df6a6c2c21ce12a6c4f97e536b19b28924cfa6a5b59",
+      "tests/sycl/expert_bank.cpp": "e4894bcd42b5a4869ae395846a6dfd48b491d8e208567f319f8b5aeb7e32bcf0",
+      "tests/moe_accum_routes.cpp": "4e3bf8aba6430b30cf41c5e8c6c370242f4a5abedebf7081d8f2a6d31417bb05",
+      "tests/prefill_moe_workspace.cpp": "e5877d7b89b78738b265e5fb71d319b74d98fce32a636d3db0400fa4a9746af8",
+      "bench/sycl/moe_down_scatter.cpp": "85772e2f166377e29e6d5e2e29af9038b9b27903c49476068eac92aa48042d2b"
+    },
+    "native_build_record_sha256": "1f8da86a6b87420fac96ea08f129343f050cdcec6e54a31709df49903d197e49",
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_expert_bank_test",
+      "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+      "bytes": 513048
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "arms": {
+      "control": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_expert_bank_test",
+          "--fullfit-eager-smoke"
+        ],
+        "environment_sha256": "055d17b86bbac19fe11fb58e3ba57a85dcddff661fc073655f46d5b2c940efbc"
+      },
+      "trace": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-device-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/sycl_expert_bank_test",
+          "--fullfit-eager-smoke"
+        ],
+        "environment_sha256": "3117c9950f6f970b35113dc8f876336c0efb219aed73b44a22f02664e0c901b2"
+      }
+    },
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "budgets": {
+      "wall": 180,
+      "cpu": 360,
+      "rss_cap": 4294967296,
+      "text_cap": 33554432,
+      "file_cap": 67108864,
+      "total_cap": 134217728
+    },
+    "whole_bytes": 301989888,
+    "plan": {
+      "question": "Does the exact retained eager fixture close normally with the qualified collector and RAW clock?",
+      "unit": "Only collector injection differs;same same-build fixture,4experts/256and512stride/2layers,normal and cancellation cases,immutable pre-exec safety,quiet validation and complete API trace.",
+      "order": "Control then trace in separate owned processes;commit each closure;no concurrent jobs.",
+      "acceptance": "Exact committed controller/helpers/provider/build/fixture/collector identity;both original numerical cases,checked cancellations/refusals,first-init proof and same-PID provider constructors;normal0/reapedempty,quiet validation,unchangedboot/driver,no fresh fault. Trace must have one target-PID JSON,nonempty positive GPU intervals inside actual enclosing CLOCK_MONOTONIC_RAW bounds.",
+      "stopping": "Stop first mismatch,warning,fault,source/owner/clock failure or finite budget;no retry or refreshed hashes.",
+      "limits": "Small collector admission only;no model,observer-overhead,complete service-count coverage,prefill drain,physical bus/saturation,ordinary teardown,full context or inference adoption.",
+      "retention": "Reuse the current8targets and exact existing collector;no fourth native generation. Keep compact outcomes/identities/clock/provider evidence for immediate64Kresource attribution;retire successful logs,trace,cache and private lifecycle after verified closure."
+    },
+    "source_inputs": {
+      "files": 776,
+      "sha256": "2d48023c2a8ec46e7e9ed50ebafda079e8fc01b5f3972318e94e43a1a8c0c1bb"
+    },
+    "environment_sha256": "164bed9258db25b053e08fb8705a7fb32404c2d9cf9bb66fa8897294e2d05d4f"
   }
 }
