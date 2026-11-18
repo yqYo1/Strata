@@ -2530,10 +2530,48 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   inventory and spent private probe record were retired. The closed launcher,
   probe and resource-analysis modes and their checks live in Git history.
   The shared workspace admission, PTI request reader and collector assets
-  remain available independently.
-  Retire a superseded generation
-  before another native build. The limiting arithmetic/VRAM/PCIe/submission
-  resource remains unknown;this timing cohort is not a saturation measurement.
+  remained available after the resource comparison.
+  The combined-window engine and seven matching fixtures have since been
+  retired, together with their closed device receipts. The recovery binds
+  1,166 Git files (14508 plus 15 owned overlays), 1,468 compiler inputs, the
+  original recipe and 29 link inputs to the eight checked executable hashes.
+  The removed generation contained 1,358 paths and 187,251,978 bytes. The
+  independent original prefill and decode reference builds are retained.
+
+  The V tile comparison compiled the unchanged ordered-exp prefix and two
+  isolated derivatives. Shared local storage requests 20,036 bytes per
+  workgroup. A separate V tile raises this to 36,420 bytes. The two derived
+  kernels differ only in where the existing V gather runs. The first
+  attempt failed before linking because the benchmark's legacy timing loop
+  escaped its compile-time branch. The corrected fixture preserved both
+  generated kernel hashes. The original failure is recorded at `1d598cb71`.
+  The corrected build used nine fresh translation units, 725 actual compiler
+  inputs and 25 link inputs. Both traced smoke processes and all 11 numeric
+  cases, including full-capacity addresses, passed with bitwise output,
+  checked online state, guards and no fresh fault. This is component coverage
+  of the 262144 boundary.
+  Three independent timing processes collected 162 intervals across three
+  shapes. The table reports geometric means of the three process time ratios.
+
+  | Selected cap and row pattern | Separate vs shared storage | Early vs late at separate storage | Early separate vs current |
+  | --- | ---: | ---: | ---: |
+  | 33, gather | 1.664699 | 0.986915 | 1.642917 |
+  | 2051, gather | 1.671171 | 0.994635 | 1.662206 |
+  | 2051, clustered | 1.801015 | 1.000032 | 1.801073 |
+
+  The large gather gains 0.54% from early V within the separate-storage path,
+  in all three processes. The other early-gather comparisons fail that
+  repeated-gain check. Storage and combined comparisons lose at every shape
+  in every process. Keep shared late V. The comparison shows a cost of the
+  extra local storage and the changed placement within the kernel. Device
+  counter evidence for achieved workgroup occupancy or memory saturation
+  is still unavailable.
+  Next evaluate the already available cached-subgroup normalizer at 128K
+  on the retained 14508 engine. Its earlier cap-2051 comparisons passed
+  independently for gather and clustered shapes, and its old small-cap and
+  32K/64K losses remain recorded. Use a fresh matched plan at fixed bank256
+  and window10. Do not combine the reduction switch with bank, window,
+  upload policy, decode or prefill strategy changes.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
