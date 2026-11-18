@@ -2303,9 +2303,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Median warmed client TTFTis144.1225sversus137.9395s. This closes the four
   prospective coherence/relocation/window/combined questions,not model
   qualification. No inference route is adopted and128K1000PPis not reached.
-  A further experiment needs its own committed plan. Next retrieve the best
-  owned64Ksource/configuration and the positive U1eager evidence from the
-  performance index before choosing revalidation or another bounded change.
+  A further experiment needs its own committed plan. The next source question
+  revalidates64Kat fixed384bank/window10:original14508JIT,coherent3a195fJIT,
+  and same-image U1eager. These isolate the coherent-source unit,the upload
+  unit and their net result with three opposite-order clean process pairs per
+  question. Three traced admissions precede the nine clean processes;each has
+  three thinking-on24-output requests. The shared JITcontrols are declared
+  prospectively. Preserve every unit/first-use loss;neither a net gain nor
+  1000PPalone qualifies an ordinary route or current9849decode preservation.
+  The CSV's best coherent64Kevidence is`f9662f7ab`:1006.832warmed PP,three
+  independent processes and65.2565swarmed client TTFT. Positive U1eager
+  evidence`410f6cb8d`uses an earlier same-image cohort;its64Ktime geomean
+  is0.986223,but a32Kfirst-use pair loses10.3%. These are reference evidence,
+  not new same-period comparisons. Use the existing three native generations;
+  no build is needed. The closed window controller retires to its original
+  commits;shared workspace/dispatch readers and this source question live in
+  maintained tools. Source/helper/gate tests must be committed before running;
+  generated configurations must be committed before host or native execution.
   Keep the current-build five-length/time/TTFT curve and hardware attribution
   gaps pending;do not infer a law from these mixed timing periods. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
