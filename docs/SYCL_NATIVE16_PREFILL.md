@@ -2625,6 +2625,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   loading unit. If needed, compare a bounded prefetch subset with the
   same exact demand fallback and verify its useful versus unused bytes.
 
+  A separate selection candidate follows from the distinction between
+  early known demand and predicted demand. Bevy's concurrent decode work
+  exposes true gate decisions before scheduling transfers. Its cache
+  results also show why prefetched bytes alone cannot establish useful
+  work. PDScope's preprint schedules a subset ahead and reconciles it
+  with the true gate result. These are design references for this
+  single-request prefill question. [Bevy, sections 2–3](https://arxiv.org/html/2611.04794v1#S3)
+  [PDScope, section 4.4](https://arxiv.org/html/2610.39216v1#S4.SS4)
+
+  Quantify first-piece known demand before moving any router operation.
+  The existing `MoeWindowRoutes` groups rows stably by expert. For each
+  nonempty expert, `source_rows()[offsets()[expert]]` is its earliest
+  selected row in that window. A post-route diagnostic can therefore
+  derive cumulative demand for the first 8192, 16384 and later rows with
+  one lookup per active expert. Weight it by the actual packed stride,
+  record windows and deduplicate by layer where the bank retains a
+  payload. If early demand has enough bytes to matter, test whether
+  exact prefix routing can be issued before later attention pieces.
+  It needs its own scratch-lifetime and dispatch comparison. Original
+  gate results still determine execution and demand fallback.
+
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the
   attention pass. Each attention piece stores BF16 residuals on the compute
