@@ -442194,6 +442194,12 @@
         "GPU_executed": false,
         "host_checks": true,
         "ownership_closed": true
+      },
+      {
+        "mode": "build",
+        "passed": true,
+        "GPU_executed": false,
+        "ownership_closed": true
       }
     ],
     "prior_host_refusal": {
@@ -442231,9 +442237,28 @@
       "limits": "The QSA workload is the same synthetic input to real kernels and independent of the copied weights. Only a one-layer production allocator, packer and borrowed view are tested. The full engine ArenaExpertSource owner, actual demand, end-to-end timing, decode, quality and physical context require independent tests.",
       "retention": "Keep individual timings, allocation and fill costs, device-window aggregates and source/build/fault proof. Retire the fixture generation and normal output after closure and exact provenance recovery."
     },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-attention-layer-source-v1/build/sycl_fullfit_attention_overlap",
+      "bytes": 1685688,
+      "sha256": "d07d08195fed43c9fdc15de09d607778c3db386aca35cab314978dbf993a2cc1"
+    },
     "source_inputs": {
       "files": 340,
       "sha256": "19972ff3f93da69dc48cb415c71f920aeed5a7097b955617751c43c64f7c0c7b"
+    },
+    "actual_inputs_summary": {
+      "compiled": {
+        "files": 770,
+        "sha256": "86f150a60185745a9b222ec089be8a8c597bb515540597ee6f1936ea05e21aaf"
+      },
+      "links": {
+        "files": 26,
+        "sha256": "4bdb22cb30ec1bd5376d77223f3d39df9f07af98e55e3b6fb5cd393ad52d768e"
+      },
+      "objects": {
+        "files": 9,
+        "sha256": "8cb3e1e4521d8210424f3fb70320c4a2816012045d9f365615172f08688124f7"
+      }
     }
   }
 }
