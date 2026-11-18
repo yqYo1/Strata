@@ -2467,8 +2467,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   services,requested bytes,interval unions/overlap and boundary crossings.
   Whole-request gates include24decode tokens;they do not establish a drained
   prefill critical path,physical PCIe/VRAM traffic or hardware saturation.
-  The model controller,analysis helpers and generated plans are not prepared
-  yet and must be committed before execution.
+  The first model cohort used source `14191596d` with 783 committed inputs,
+  eight generated plans and 15 model assets. Fourteen host tests and both
+  frontend probes passed. The first clean process closed with 902.133 PP
+  and a warmed client TTFT of 72.840 s. The first traced process closed
+  natively with all three request bodies and routes verified, quiet validation
+  and no fresh faults. Its host analysis was stopped because the 4 MiB output
+  budget counted the existing 550,229,888-byte input trace. The cohort stopped
+  at that failure. Its original outcome is retained at `8173b1aab`.
+  A separate analysis run isolated output from the trace, then failed on an
+  optional comparison argument. Preserve `7c1432307`. The corrected reader
+  uses the verified request totals without this argument. It passed the 11
+  host regression tests and recovered all three windows without GPU execution.
+  In the two warmed traced requests, observed GPU intervals span 71.690 and
+  73.075 s within 80.661 and 82.905 s external windows. The QSA prefix family
+  takes 14.382 and 14.374 s of service. Copies classified by PTI as M2D take
+  14.715 and 15.858 s for 48.338 and 48.302 GB of requested API payload.
+  M means unknown memory classification. Copy/kernel overlap is 13.8 and
+  14.7 ms. Kernel interval union is 55.024 and 55.136 s. The first pair puts
+  warmed prompt overhead at 7.98%. The full observer-cost screen is pending.
+  These observations put both transfer costs and the QSA kernel on the
+  shortlist. Counter data for physical PCIe, VRAM and arithmetic limits are
+  still unavailable. Keep the failed cohort and run the reverse order under
+  a prospectively committed plan with isolated analysis output.
   Retire a superseded generation
   before another native build. The limiting arithmetic/VRAM/PCIe/submission
   resource remains unknown;this timing cohort is not a saturation measurement.
