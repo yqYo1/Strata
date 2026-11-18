@@ -2349,6 +2349,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   904.537/907.461/902.061. Warmed client TTFTmedians are74.501/73.8235/72.648s.
   Net improvement does not adopt the failed coherent-source ordinary route,
   current9849decode or the whole model. No arm reaches the1000PPtarget.
+  Full cohort evidence is`64f5b9899`;six first-use/warmed CSVpoints bring
+  the cumulative index to643without replacing earlier milestones.
   Historical64Krequest hashes match all three current requests;different
   timing periods do not identify a regression cause. Keep the36samples and
   each separate outcome. The next bounded question is same-image eager-path
