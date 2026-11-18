@@ -452334,5 +452334,280 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "prefill_prefix_router_model_v1": {
+    "stage": "prepared",
+    "source_commit": "51ed305616282efc269ac77a504b2eb5e47a9a9c",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/strata",
+      "sha256": "179640aaa3f339fa1d4674e9b3adf9b9fd8d0c0618c05d64bba2294726589623",
+      "bytes": 26467632
+    },
+    "native_source_commit": "14107b72188f4fab70127c92cd83a320d6597126",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "observer_admission": {
+      "native_build": "d5e7850a9b380c9ff887cd9c83993bf4e9812d9bff6bf468c18b6644ab90c93b",
+      "fast_configuration_diagnostic": {
+        "scope": "Use immutable historical assets and providers. Qualify new order from fresh model requests."
+      }
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "plans": [
+      {
+        "index": 0,
+        "read": 32769,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/0",
+        "generated": {
+          "config.json": "108970673e82c5c31979f2641da392ce104ae033bd13db71dfcfe0d7df116a0c",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/0/config.json",
+          "--port",
+          "55565",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "2",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/0/bench"
+        ],
+        "environment_sha256": "0342ad72c2fcc8a6eaa8cfc230f9b7d8248fcd98b1d50813f35f77e6a91eb795",
+        "variant": "off",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": true,
+        "upload": "jit"
+      },
+      {
+        "index": 1,
+        "read": 32769,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/1",
+        "generated": {
+          "config.json": "298e1a225a5ead8c765c2352e115fa4c8aa5b3189ba3ac2fdbf1d22a3e9e15f3",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/1/config.json",
+          "--port",
+          "53407",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "2",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/1/bench"
+        ],
+        "environment_sha256": "4c10432a47b0eeb507f29cc6020191b13244ffdb9c3d91e628b7928462db65b5",
+        "variant": "late",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": true,
+        "upload": "jit"
+      },
+      {
+        "index": 2,
+        "read": 32769,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/2",
+        "generated": {
+          "config.json": "5a80a7563d2a86c1da5f1e84e63f9e82f70317c33a8c79f469fe20b4a5b90523",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/2/config.json",
+          "--port",
+          "36089",
+          "--prefill-exact-tokens",
+          "32769",
+          "--think",
+          "--runs",
+          "2",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-model-v1/2/bench"
+        ],
+        "environment_sha256": "9de9bc8fb90f5ecc3efdb56648cba64e40839dc6b5b016eb03798c8acbe7cb26",
+        "variant": "early",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": true,
+        "upload": "jit"
+      }
+    ],
+    "processes": [],
+    "request_hashes": {},
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "budgets": {
+      "wall": 2400,
+      "cpu": 28800,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 134217728
+    },
+    "whole_bytes": 671088640,
+    "plan": {
+      "unit": "Off versus late isolates a dedicated prefix buffer and split ID readback. Late versus early moves the same producer and readback before later attention. Same expert uploads, queue and post-prefix FFN.",
+      "body": "Three owned processes off/late/early, two identical thinking-on 32769-input and 24-output benchmark bodies per process. Finite logs and normal cleanup. Existing SYCL safety flags.",
+      "gate": "All 48 routed ID digests and first 8192-row FP32 gate-weight digests agree per request, along with executed job geometry, transfer totals and MTP handoff. Early and late must admit equal workspace, publish exactly once per layer and complete after checked drains.",
+      "limits": "Numerical route/owner check only. Added copy, hash and trace observability is charged here. Subsequent native-order measurements require clean repeated 64K comparisons. Physical context and sustained decode are separate.",
+      "retention": "Use this exact registered build for the imminent clean router overhead comparison if numerical qualification passes."
+    },
+    "previous_attempt": {
+      "scope": "Use immutable historical assets and providers. Qualify new order from fresh model requests."
+    },
+    "source_inputs": {
+      "files": 777,
+      "sha256": "5dcb02213018d0ccef1372ddd18aeedd1779c00ce82a1180b27c97040ff590a4"
+    },
+    "environment_template_sha256": "8f6905e02a9038f3a21ceef35bdb953ed586afc664d22782a4ccace6f8f69355",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
