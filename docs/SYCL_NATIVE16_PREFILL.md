@@ -2389,8 +2389,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   existing`--prefill-short-diagnostic`flag. Preserve the failed protocol/owner
   observation;separate reconciliation confirms its sole child was reaped and
   no session member remains. No native engine starts and no curve sample is
-  qualified. V2must preserve the original lengths,order,math and fit criteria,
+  qualified. V2preserves the original lengths,order,math and fit criteria,
   adding only the required16Kdiagnostic argument and its real-parser test.
+  All eight planned commands pass the actual CLIparser;all six host tests
+  pass at`8b490fe33`. The775original Git inputs and16generated JSONpayloads
+  are recovered exactly before retiring24failed-client files(173,835B)and
+  the6,859Btemporary inventory. The original failed observation remains
+  unchanged and recoverable at`cc9814fe9`;ownership reconciliation is separate.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for that immediate question;retire a superseded generation
