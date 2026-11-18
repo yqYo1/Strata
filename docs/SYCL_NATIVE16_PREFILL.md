@@ -2425,6 +2425,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   not identify a physical fixed cost and the curve must not be extrapolated
   past80Kor mixed with another placement/window route. Current64K/80KPPis
   903.938/927.148;this is not a paired gain,1000PPor model qualification.
+  Full curve evidence is`90a1bc130`;12first-use/warmed length points bring
+  the single CSVto655rows,with24-output TGleft unqualified.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for that immediate question;retire a superseded generation
