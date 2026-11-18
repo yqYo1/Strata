@@ -2592,6 +2592,45 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   of the rounding difference, separately from the fixed-input speed result.
   Three host tests cover the two selectors, invalid workspace/fallback
   evidence and distinguishing a repeated gain from a same-work gain.
+  The traced 128K ordered-exp reference closes with all three requests,
+  checked handoff and no new driver fault. All 48 bank views in each
+  request have fewer than 512 slots at the fixed bank256 capacity. Clean
+  throughput and the matched candidate comparison are still pending.
+
+  The next transfer experiment will examine full-fit weight prefetch while
+  the layer's attention runs. The 64K profile at `c40c8c1bd` measures
+  14.6–15.9 seconds of M2D copy service and less than 15 ms of copy/kernel
+  overlap. Reaching 1000 PP from its clean reference requires 6.9 seconds of
+  wall-time savings. Treat the copy service as the budget to investigate.
+  Prior bank512 admission at `fb8e32cd3` fits all 48 packed layers and all
+  residual rows at 64K. Its independent 64K capacity comparison keeps its
+  mixed outcome. Use the same bank in each proposed prefetch arm and
+  recheck actual admission.
+
+  On native `14508acbf`, the layer boundary drains the previous readers before
+  rebinding the private bank. Dense activation completes before the
+  attention pass. Each attention piece stores BF16 residuals on the compute
+  queue, and the first accumulator-window call follows the last piece.
+  Test whether the bank can be filled in this interval with the already
+  borrowed immutable weight slabs and existing packed destination. Compare
+  demand-selected and all-expert loading at the same FFN boundary first.
+  Then hold payload, expert IDs and placement fixed while moving issue before
+  attention, moving copies to a second same-context queue with the early
+  completion check fixed, and deferring that check to the first expert
+  reader. Keep the net comparison against demand-selected loading. No
+  copy aggregation is part of these comparisons.
+
+  The additional queue needs its own checked retirement before source or
+  bank release on success, cancellation, enqueue failure or exceptions.
+  Check allocation and span separation against the attention workspace,
+  publish a usable expert map only after successful copy completion and
+  guard the first reader. Leave the main compute queue and decode
+  ownership in place. Begin with a bounded component reproducer using
+  identical payloads and actual attention work, with explicit copy-only and
+  compute-only times, observed queue intervals and interference in the
+  combined case. The existing copy-lane component gains and losses stay
+  recorded. They establish neither this lifetime contract nor the model
+  throughput effect.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
