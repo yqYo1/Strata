@@ -429989,5 +429989,53 @@
       "retained_build": "Original fixture and exact compiler/link outputs pending this one attribution case.",
       "retirement_point": "After the attribution receipt closes, retain compact chronology and retire raw captures and the disposable generation unless a named immediate comparison still needs the same image."
     }
+  },
+  "fullfit_attention_attribution_v1": {
+    "stage": "prepared",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "source_commit": "012254261e7bc45ccbfdfcc3df5e57b5e3005851",
+    "executable": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-attention-overlap-v2/build/sycl_fullfit_attention_overlap",
+      "bytes": 1623936,
+      "sha256": "4eba49d9d668577d259e18484bf1609b572aaf4eb9c088ed12b456115c518716"
+    },
+    "native_source_commit": "98785c3f4073140fbd83742908affbcdc3d0325a",
+    "base_result_commit": "5e85355f5452b3cb0a8e8de360fb42e261e67389",
+    "platform_sha256": "0e48f66eff33711694a3646dd7056f6bb39e99eb191ac1a2ab17426cb0915522",
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+      "--host-timing",
+      "--chrome-call-logging",
+      "--device-timing",
+      "--chrome-device-logging",
+      "--chrome-event-buffer-size",
+      "128",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-attention-overlap-v2/build/sycl_fullfit_attention_overlap",
+      "--component",
+      "0"
+    ],
+    "limits": {
+      "wall": 300,
+      "cpu": 450,
+      "rss_cap": 8589934592,
+      "text_cap": 16777216,
+      "file_cap": 50331648,
+      "total_cap": 67108864
+    },
+    "plan": {
+      "workload": "Exact retained fixture --component 0. Capture one host+device run, 25 windows.",
+      "change": "Enable PTI Level Zero host timing and Chrome call logging only. Preserve safety settings and observed workload.",
+      "measurement": "Join 512 copies and two QSA kernels in each of ten serial-separate/deferred windows via unique collector IDs and flows. Compare warm rounds on a conservative 1ms clock margin, with serial as a sign control.",
+      "stopping": "Fail for missing, ambiguous or out-of-window joins, or ownership, validation, driver or budget failure. No retry or performance claim.",
+      "retention": "One compact chronology and comparison against the previous device trace. Retire both captures and the temporary native generation at this boundary unless a named imminent consumer proves otherwise."
+    },
+    "source_inputs": {
+      "files": 151,
+      "sha256": "5887367776a2461f6afa210ec176cb9785026d2c735e3ed93971d337c4587147"
+    },
+    "environment_sha256": "b1f5c25a0f30ef05afc34100d4341771b4344bd651d6fc4401b692e4c366e730"
   }
 }
