@@ -2365,8 +2365,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   establishes no new model/teardown qualification.
   Historical64Krequest hashes match all three current requests;different
   timing periods do not identify a regression cause. Keep the36samples and
-  each separate outcome. The next bounded question is same-image eager-path
-  input-length/time/TTFT characterization at16K/32K/48K/64K/80Kordinary-route
+  each separate outcome. Same-image eager-path input-length/time/TTFT
+  characterization uses16K/32K/48K/64K/80Kordinary-route
   lengths and independent held-out56K(actual reads add one final token).
   Keep bank384/window10/chunk8192fixed;16Kis diagnostic,not long-input adoption
   evidence. Commit its controller,repetition/order,approximation/held-out rule
@@ -2427,13 +2427,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   903.938/927.148;this is not a paired gain,1000PPor model qualification.
   Full curve evidence is`90a1bc130`;12first-use/warmed length points bring
   the single CSVto655rows,with24-output TGleft unqualified.
+  All24samples,eight native identities and original fit/qualification
+  decisions remain with18shared actual-work cases;every route reconstructs
+  exactly. All775original Git inputs and16generated JSONpayloads recover.
+  The closed controller and its CLI-specific test retire to Git;five reusable
+  fit and three workspace host tests pass. All565ended capture files
+  (85,171,178B)and160,597Btemporary inventory are retired. Fresh static
+  basis/device admission passes after retirement,without GPUwork.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
-  the candidate for that immediate question;retire a superseded generation
+  the candidate for the next bounded64Kclean/observed resource attribution;
+  commit its observer-cost plan and collector admission before execution.
+  Retire a superseded generation
   before another native build. The limiting arithmetic/VRAM/PCIe/submission
   resource remains unknown;this timing cohort is not a saturation measurement.
-  Keep the current-build five-length/time/TTFT curve and hardware attribution
-  gaps pending;do not infer a law from these mixed timing periods. Preserve
+  The current-build five-length/time/TTFT curve is closed;hardware attribution
+  remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
   jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
