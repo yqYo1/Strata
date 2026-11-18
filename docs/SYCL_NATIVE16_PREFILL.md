@@ -2597,20 +2597,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   have fewer than 512 slots at the fixed bank256 capacity. Warmed
   diagnostic PP is 928.548 ordered and 921.508 subgroup. The subgroup
   arm has 123, 3 and 91 more expert jobs in the three matched requests.
-  These traced observations give an explicit work delta to check in
-  the six-process clean cohort. The first clean pair closes normally:
-  warmed PP is 925.223 ordered and 922.422 subgroup, and client TTFT is
-  141.895 and 142.330 seconds. The subgroup warmed time is 1.003037 times
-  the reference. Its first request is faster (856.8 versus 851.3 PP).
-  The same three job deltas recur without tracing. Compared with ordered,
-  the subgroup arm requests 72.6–93.9 MB more weight uploads per request.
-  Reversing the order closes the second clean pair with 926.355 ordered
-  and 924.583 subgroup warmed PP, and client TTFT of 141.739 and
-  141.995 seconds. Its subgroup warmed time ratio is 1.001916. The
-  first-use ratio is 1.022974, reversing the first pair's first-use
-  ordering. The three job and upload deltas match the first pair.
-  All four clean processes finish normally with quiet validation and
-  no new driver fault. One clean pair remains in the original plan.
+  All nine processes and 27 requests finish normally with quiet
+  validation, checked handoff and no new driver fault. The final run
+  verifies all 15 model asset hashes. The six clean processes give
+  the following 131072-token results.
+
+  | Pair order | Warmed ordered PP | Warmed subgroup PP | Warmed time ratio | First-use time ratio |
+  | --- | ---: | ---: | ---: | ---: |
+  | Ordered, subgroup | 925.223 | 922.422 | 1.003037 | 0.993503 |
+  | Subgroup, ordered | 926.355 | 924.583 | 1.001916 | 1.022974 |
+  | Ordered, subgroup | 924.724 | 924.840 | 0.999874 | 1.008852 |
+
+  The geometric mean of the three warmed ratios is 1.001608. Keep the
+  ordered selector. The subgroup fails the repeated-gain criterion.
+  Process-median warmed TTFT is 141.895 seconds ordered and 141.995
+  seconds subgroup. The same job deltas recur in all three clean
+  pairs, with 72.6–93.9 MB more weight upload payload requested per
+  subgroup request. The fixed-input result includes this changed
+  downstream work. Kernel-only attribution and hardware saturation
+  remain unqualified. All original individual samples are retained.
 
   The next transfer experiment will examine full-fit weight prefetch while
   the layer's attention runs. The 64K profile at `c40c8c1bd` measures
