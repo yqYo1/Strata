@@ -413,8 +413,9 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::moe, m.cs);
     if (cudaStreamSynchronize(m.cs) != cudaSuccess) { err = "prefill MoE accumulator: HC writes drain"; return false; }
-    if (upload_census && !upload_census->emit_after_checked_drain(stderr, layer,
-            first_row, rows, format.gu_type, format.d_type, layout.blob_bytes(layer))) {
+    if (upload_census && (!upload_census->emit_after_checked_drain(stderr, layer,
+            first_row, rows, format.gu_type, format.d_type, layout.blob_bytes(layer)) ||
+        !upload_census->emit_first_routes_after_checked_drain(stderr, layer, first_row, *owner.routes))) {
         err = "prefill MoE census: output failed after checked drain"; return false;
     }
     if (owner.scratch_mixed && std::getenv("STRATA_TRACE"))
