@@ -2450,6 +2450,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source/fixture/collector/provider hashes remain unchanged. This qualifies
   the bounded collector probe,not model overhead,complete service/count
   coverage,physical saturation or ordinary teardown. No native rebuild.
+  All776original source inputs recover exactly. The15ended probe files
+  (381,237B)and4,636Btemporary inventory are retired;only its full qualification
+  record remains for the immediate64Kprofile reader and retires with that consumer.
   The next model plan is four fresh64Kprocesses,clean/collector/collector/
   clean,three thinking-on24-output requests each,matched to the closed
   curve's exact bodies and bank384/window10/chunk8192/eager/throughput
