@@ -2631,6 +2631,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   combined case. The existing copy-lane component gains and losses stay
   recorded. They establish neither this lifetime contract nor the model
   throughput effect.
+
+  The opt-in fixture `STRATA_QSA_BENCH_FULLFIT_OVERLAP` uses the original
+  ordered-exp prefix with an 8192-query, cap-2051 gather and a separate
+  synthetic ordinary-RAM payload at the observed layer-2 stride. The
+  512 individual copies total 1,009,254,400 requested bytes. The scheduled
+  arms are compute-only, copy-only, one-queue serial, two-queue serial and
+  two-queue deferred wait. The two serial arms isolate queue choice and the
+  two separate-queue arms isolate wait position. Output is reset before
+  each interval. Full bank bytes, guards, source immutability and exact QSA
+  output are checked outside timing. The small case also checks retirement
+  after an exception following an accepted copy. An opt-in RAW clock
+  interval permits separate device-timeline capture. Source preparation
+  excludes throughput and device claims until the fixture is built,
+  checked and measured.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
