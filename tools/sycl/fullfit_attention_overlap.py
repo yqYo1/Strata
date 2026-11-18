@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Owned QSA/copy overlap experiment. Repository LICENSE.
+"""Owned QSA/copy source-memory comparison. Repository LICENSE.
 
 Build/provenance checks follow this fork's daca8f47e fixture control.
 The engine sources and kernel entry are identical across all arms.
@@ -27,8 +27,8 @@ import request_profile_reader as reader
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'fullfit-attention-overlap-v2'
-KEY = 'fullfit_attention_overlap_v2'
+ROOT = B / 'fullfit-attention-source-memory-v1'
+KEY = 'fullfit_attention_source_memory_v1'
 COMPILE_LOGS = ROOT / 'compile'
 ELF = ROOT / 'build/sycl_fullfit_attention_overlap'
 PYTHON = basis.reference.model.PYTHON
@@ -36,9 +36,18 @@ COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
 ADAPTER = 'bench/sycl/fullfit_attention_overlap.hpp'
 TEST = 'tools/test_fullfit_attention_overlap.py'
-STAGES = ('host', 'build', 'smoke', 'trace', '0', '1', '2')
+SOURCES = ('ordinary', 'host_usm')
+CLEAN_ORDER = ('ordinary', 'host_usm', 'host_usm', 'ordinary', 'ordinary', 'host_usm')
+CASES = {
+    **{f'{phase}-{source}': (phase, source, 0)
+       for phase in ('smoke', 'trace') for source in SOURCES},
+    **{f'clean-{i}': ('clean', source, i//2) for i, source in enumerate(CLEAN_ORDER)},
+}
+STAGES = ('host', 'build', *CASES)
 ARMS = ('compute_only', 'copy_only', 'serial_shared', 'serial_separate', 'deferred_wait')
 COPY = re.compile(r'^zeCommandListAppendMemoryCopy\(([HDMS]2[HDMS])\)\[(\d+)\]$')
+SOURCE_SETUP = re.compile(r'^fullfit_attention_overlap source=(ordinary|host_usm) '
+                          r'bytes=(\d+) alloc_ms=(\S+) fill_ms=(\S+) type=PASS$')
 BUILD_LIMIT = dict(wall=300, cpu=360, rss_cap=10 << 30, text_cap=4 << 20,
                    file_cap=96 << 20, total_cap=384 << 20)
 RUN_LIMIT = dict(wall=300, cpu=450, rss_cap=8 << 30, text_cap=16 << 20,
@@ -75,6 +84,15 @@ def platform():
     resource = validation.committed(RESULT, ('eager_request_profile_v2',))
     require(resource['stage'] == 'closed' and resource['decision']['fresh_pair_within_observer_budget'],
         'closed 64K resource evidence required')
+    overlap = validation.committed(RESULT, ('fullfit_attention_overlap_v2',))
+    chronology = validation.committed(RESULT, ('fullfit_attention_attribution_v1',))
+    require(all(row['stage'] == 'closed' and row['ownership_closed'] and not row['active']
+                for row in (overlap, chronology))
+        and not overlap['decision']['eligible_for_separate_reader_ownership_test']
+        and chronology['result']['decision']['next'] == 'inspect_native_queue_and_command_list_scheduling'
+        and chronology['artifact_retirement']['complete']
+        and all(not (B/name).exists() for name in chronology['artifact_retirement']['scope']),
+        'prior overlap/chronology closure or disposable generation differs')
     tools = pti.verify_tools(pti.committed_json(pti.RESULT, P))
     probe = validation.committed(pti.RESULT, ('unitrace_current_runtime_probe_v2',))
     require(probe['stage'] == 'closed' and probe['ownership_closed']
@@ -87,7 +105,7 @@ def platform():
         compiler_sha256=native['toolchain'][COMPILER], boot=speed['boot'], driver=speed['driver'],
         runtime_manifest=speed['runtime_manifest'], preload=speed['native_validation_probe'],
         environment_template=speed['environment_template'], tools=tools,
-        resource_sha256=signature(resource))
+        resource_sha256=signature(resource), prior_evidence_sha256=signature([overlap, chronology]))
 
 
 def compile_commands():
@@ -114,6 +132,7 @@ def compile_environment(native):
 
 
 def case_environment(pin, mode):
+    phase, source, _ = CASES[mode]
     path = ROOT/mode
     template = pin['environment_template']
     old = template['STRATA_MEASUREMENT_ROOT']
@@ -123,14 +142,15 @@ def case_environment(pin, mode):
     env.update(STRATA_TEST_MAIN_GATES='1', STRATA_UR_PROBE_EXPECTED_LOADER=pin['preload']['loader']['path'],
         UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(path/'validation.log'),
-        STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK='1' if mode == 'trace' else '0')
+        STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK='1' if phase == 'trace' else '0',
+        STRATA_FULLFIT_OVERLAP_SOURCE=source)
     shim = pin['preload']['library']['path']
-    if mode == 'trace':
+    if phase == 'trace':
         env.update(STRATA_UNITRACE_TARGET_PRELOAD=shim, UNITRACE_SystemTime='1',
             UNITRACE_FollowChildProcess='1', UNITRACE_TraceOutputDir=str(path/'trace'))
     else:
         env['LD_PRELOAD'] = shim
-    if mode == 'smoke':
+    if phase == 'smoke':
         env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
             UR_LOG_TRACING='level:info;flush:info;output:stderr')
     required = dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1', NEOReadDebugKeys='1',
@@ -141,8 +161,9 @@ def case_environment(pin, mode):
 
 
 def case_command(pin, mode):
-    target = [str(ELF), '--smoke'] if mode == 'smoke' else [str(ELF), '--component', mode if mode.isdecimal() else '0']
-    if mode == 'trace':
+    phase, _, process = CASES[mode]
+    target = [str(ELF), '--smoke'] if phase == 'smoke' else [str(ELF), '--component', str(process)]
+    if phase == 'trace':
         return [pin['tools']['artifacts']['unitrace']['path'], '--device-timing',
             '--chrome-device-logging', '--chrome-event-buffer-size', '128', *target]
     return target
@@ -185,11 +206,11 @@ def audit_build(row, link_log, native):
 
 
 def samples(text, mode):
-    smoke = mode == 'smoke'
-    traced = mode == 'trace'
-    process = int(mode) if mode.isdecimal() else 0
+    phase, source, process = CASES[mode]
+    smoke = phase == 'smoke'
+    traced = phase == 'trace'
     rounds = 1 if smoke else len(ARMS)
-    rows, clocks, cases = [], [], []
+    rows, clocks, cases, setup = [], [], [], []
     for line in text.splitlines():
         if line.startswith('fullfit_attention_overlap process='):
             pairs = [v.split('=', 1) for v in line.split()[1:]]
@@ -198,6 +219,11 @@ def samples(text, mode):
             rows.append(data)
         elif line.startswith('fullfit_attention_overlap clock_pair_max_s='):
             clocks.append(float(line.rsplit('=',1)[1]))
+        elif line.startswith('fullfit_attention_overlap source='):
+            match = SOURCE_SETUP.fullmatch(line)
+            require(match is not None, 'invalid source setup and allocation type proof')
+            name, size, alloc, fill = match.groups()
+            setup.append(dict(kind=name, bytes=int(size), alloc_ms=float(alloc), fill_ms=float(fill)))
         elif line.startswith('case cells='):
             cases.append(line)
     shape = 'cells=97 queries=3 cap=33' if smoke else 'cells=65536 queries=8192 cap=2051'
@@ -207,6 +233,10 @@ def samples(text, mode):
         'fixture shape, sample count or clock-overhead screen changed')
     require(not smoke or 'fullfit_attention_overlap cancel_after_copy=PASS' in text.splitlines(),
         'missing accepted-copy cancellation check')
+    require(len(setup) == 1 and setup[0]['kind'] == source
+        and setup[0]['bytes'] == (1024 if smoke else 1009254400)
+        and all(math.isfinite(setup[0][k]) and setup[0][k] > 0 for k in ('alloc_ms','fill_ms')),
+        'wrong source kind, extent or setup time')
     result, previous = [], 0
     for i, row in enumerate(rows):
         round_n, order = divmod(i, len(ARMS))
@@ -227,7 +257,7 @@ def samples(text, mode):
         previous = hi
         result.append(dict(round=round_n, arm=arm, milliseconds=elapsed, copies=copies,
             requested_bytes=requested, attention_calls=attention, raw_start=lo, raw_end=hi))
-    return dict(clock_pair_max_s=clocks[0], samples=result)
+    return dict(clock_pair_max_s=clocks[0], source=setup[0], samples=result)
 
 
 def timeline(trace, points, lifetime):
@@ -276,41 +306,46 @@ def timeline(trace, points, lifetime):
 
 
 def assessment(outcomes):
-    trace = next(row for row in outcomes if row['mode'] == 'trace')
-    eligible = [row for row in outcomes if row['mode'].isdecimal()]
-    require([p['mode'] for p in eligible] == ['0','1','2'] and len({p['pid'] for p in eligible}) == 3,
-        'three independent clean processes required')
+    clean = [row for row in outcomes if row['mode'].startswith('clean-')]
+    traces = [row for row in outcomes if row['mode'].startswith('trace-')]
+    require([p['mode'] for p in clean] == [f'clean-{i}' for i in range(len(CLEAN_ORDER))]
+        and [p['mode'] for p in traces] == [f'trace-{source}' for source in SOURCES]
+        and len({p['pid'] for p in [*clean,*traces]}) == 8
+        and all(row['timing']['source']['kind'] == CASES[row['mode']][1] for row in [*clean,*traces]),
+        'matched source, order and independent processes required')
     def medians(row):
         return {arm: statistics.median(p['milliseconds'] for p in row['timing']['samples']
                     if p['arm'] == arm and p['round'] > 0)
                 for arm in ARMS}
-    clean = [medians(row) for row in eligible]
+    warmed = [medians(row) for row in clean]
     first = [{p['arm']:p['milliseconds'] for p in row['timing']['samples'] if p['round'] == 0}
-             for row in eligible]
-    trace_medians = medians(trace)
-    ratios = {}
-    for name, arm, reference in (
-        ('queue_choice', 'serial_separate', 'serial_shared'),
-        ('wait_placement', 'deferred_wait', 'serial_separate'),
-        ('net', 'deferred_wait', 'serial_shared'),
-    ):
-        values = [p[arm]/p[reference] for p in clean]
-        ratios[name] = dict(paired=values, geometric=statistics.geometric_mean(values),
-                            all_three_faster=all(v < 1 for v in values))
-    device = {arm: {key: statistics.median(p[key] for p in trace['timeline']
+             for row in clean]
+    pairs = [{source: index for index,source in enumerate(CLEAN_ORDER[i:i+2], start=i)}
+             for i in range(0,len(CLEAN_ORDER),2)]
+    def time_ratios(rows):
+        ratios = {}
+        for arm in ARMS:
+            values = [rows[pair['host_usm']][arm]/rows[pair['ordinary']][arm] for pair in pairs]
+            ratios[arm] = dict(paired=values, geometric=statistics.geometric_mean(values),
+                               all_three_faster=all(v < 1 for v in values))
+        return ratios
+    def device_medians(trace):
+        return {arm: {key: statistics.median(p[key] for p in trace['timeline']
                         if p['arm'] == arm and p['round'] > 0)
                     for key in ('copy_union_ns','qsa_union_ns','overlap_ns')} for arm in ARMS}
-    trace_cost = {arm: trace_medians[arm]/clean[0][arm] for arm in ARMS}
-    concurrent = device['deferred_wait']
-    interference = dict(copy=concurrent['copy_union_ns']/device['copy_only']['copy_union_ns'],
-        qsa=concurrent['qsa_union_ns']/device['compute_only']['qsa_union_ns'])
-    return dict(ratios=ratios, clean_process_warmed_medians_ms=clean, clean_first_round_ms=first,
-        traced_vs_first_clean=trace_cost,
-        observed_device_interval_medians_ns=device, observed_concurrent_to_alone_union_ratios=interference,
-        estimated_serial_equivalent_ms=[p['copy_only']+p['compute_only'] for p in clean],
-        eligible_for_separate_reader_ownership_test=ratios['net']['all_three_faster']
-            and ratios['wait_placement']['all_three_faster']
-            and concurrent['overlap_ns'] > device['serial_separate']['overlap_ns'],
+    trace_cost = {}
+    for trace in traces:
+        source = trace['timing']['source']['kind']
+        control = warmed[CLEAN_ORDER.index(source)]
+        observed = medians(trace)
+        trace_cost[source] = {arm: observed[arm]/control[arm] for arm in ARMS}
+    ratios = time_ratios(warmed)
+    return dict(clean_progression=list(CLEAN_ORDER), paired_clean_indices=pairs, warmed_ratios=ratios,
+        first_cycle_ratios=time_ratios(first), clean_process_warmed_medians_ms=warmed, clean_first_cycle_ms=first,
+        traced_vs_first_matching_clean=trace_cost,
+        observed_device_interval_medians_ns={row['timing']['source']['kind']:device_medians(row) for row in traces},
+        eligible_host_usm_component_gain=ratios['deferred_wait']['all_three_faster'],
+        next_native_comparison_prerequisite='Hold host USM fixed in both arms for native submission; this safety prerequisite is separate from a staging gain.',
         model_qualified=False, physical_bandwidth_or_saturation_qualified=False)
 
 
@@ -337,10 +372,6 @@ def frozen_cases(pin):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh plan only')
-    previous = validation.committed(RESULT, ('fullfit_attention_overlap_v1',))
-    require(previous['stage'] == 'failed' and previous['failed_before_compiler']
-        and previous['ownership_closed'] and previous['raw_retirement']['complete']
-        and not (B/'fullfit-attention-overlap-v1').exists(), 'preserve the closed V1 refusal')
     revision = SOURCE.git(P, 'rev-parse', 'HEAD').decode().strip()
     inputs = pins(revision)
     native, pin = platform()
@@ -351,19 +382,19 @@ def prepare():
     save(dict(stage='prepared', source_commit=revision, sources=inputs, platform=pin,
         compile_environment=compile_environment(native), commands=compile_commands(),
         cases=frozen_cases(pin), results=[],
-        prior_refusal=dict(commit='e78837070f694a0ef772637124e996f4c84e36c8',
-            compiler_commands=0, source_fixtures_unchanged=True),
         active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=768<<20,
         plan=dict(order=STAGES, compiled_translation_units=6,
-            unit='Same original ordered-exp 65536-cell/8192-query/cap2051 QSA, same 512 ordinary RAM copies at layer-2 stride. Two serial arms isolate queue choice; two same-second-queue arms isolate wait position. Compare net against serial shared queue. Compute/copy alone are controls.',
-            safety='Compile the disposable third generation from scratch. Check cold startup, owner/provider identities, small traced output and cancellation, then bounded PTI device-only timeline. Clean processes keep identical pre-exec safety settings and remove PTI/RAW-clock observer.',
-            decision='Five rotated arm orders in each of three independent clean processes. Require all 25 clean samples per process with identical bytes, exact output and guards, at least 10 ms and clock-pair overhead at most 0.1%. Record the first cycle separately. Later-cycle medians drive each three-pair decision. Same-source overlap eligibility also needs traced positive overlap over serial on the second queue.',
-            limits='Single synthetic weight slab and one real kernel entry, not model speed or physical PCIe measurement. Chosen data do not represent all layers. No engine/decode/quality/full-context qualification.',
-            retention='Keep the timing and device-window aggregates, source/recipe/fault proof and decisions. Retire instrumented logs and the one fixture generation after closure and exact provenance recovery.')))
-    print('Prepared isolated copy/attention component; commit exact plan before running.')
+            unit='Compare ordinary RAM with Strata Host USM in the same context. Fix the QSA 65536-cell/8192-query/cap2051 kernel, scheduling, waits, allocations aside from the source and 512 x 1971200-byte uploads via the same cudaMemcpyAsync compatibility entrypoint. Hold each schedule fixed between sources. Primary schedule is deferred wait on the second SYCL queue.',
+            safety='Compile the disposable third generation from scratch beside the validated prefill and decode images. Check source pointer type, bounded guards, exact output and accepted-copy cancellation in both short UR-observed processes before two full-size PTI device-only controls. Keep environment safety settings fixed. Clean processes remove observers.',
+            decision='Six independent clean processes in AB/BA/AB order. The two processes of each pair use the same rotating schedule. Require 25 samples per process, exact payload/guards/output, at least 10ms and clock-pair overhead at most 0.1%. Separate first cycle, four subsequent cycles and source allocation/initial fill. Pass the source-memory component gain only if all three deferred-wait warmed median time ratios are below 1. Other schedules and device overlap are controls.',
+            limits='Repeat synthetic payloads. Source setup excludes a production RAM-to-USM staging copy. Trace identifies dispatch and device intervals, with physical page pinning, bus bandwidth and engine saturation unknown. No model/decode/quality/full-context qualification.',
+            retention='Keep individual timings, allocation and fill costs, device-window aggregates and source/build/fault proof. Retire the fixture generation and normal output after closure and exact provenance recovery.')))
+    print('Prepared isolated copy-source comparison; commit exact plan before running.')
 
 
 def run_device(row, mode, scope, path, result):
+    phase, _, _ = CASES[mode]
+    provider_check = 'trace' if phase == 'trace' else mode
     env = case_environment(row['platform'], mode)
     plan = row['cases'][mode]
     require(plan['environment_sha256'] == signature(env), 'pre-exec environment changed')
@@ -372,25 +403,26 @@ def run_device(row, mode, scope, path, result):
         preload=row['platform']['preload'], fixture=row['binary'])
     maps = []
     def observe(io, entry):
-        for phase in ('before-runtime','runtime-ready','after-cleanup'):
-            while (line := io.line(240)) != 'QSA_BF16_READY '+phase:
+        for gate in ('before-runtime','runtime-ready','after-cleanup'):
+            while (line := io.line(240)) != 'QSA_BF16_READY '+gate:
                 require(line.startswith(('device=', 'case ', 'fullfit_attention_overlap ')),
                     'unexpected fixture gate output')
             require(str(Path('/proc',str(entry['pid']),'exe').resolve()) == row['binary']['path'],
-                'owned native executable differs at '+phase)
-            if phase == 'before-runtime':
+                'owned native executable differs at '+gate)
+            if gate == 'before-runtime':
                 environ = Path('/proc',str(entry['pid']),'environ').read_bytes().split(b'\0')
                 keys = ('STRATA_TEST_MAIN_GATES', 'STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK',
+                    'STRATA_FULLFIT_OVERLAP_SOURCE',
                     'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission',
                     'STRATA_SYCL_PREFILL_SAME_QUEUE', 'UR_ENABLE_LAYERS', 'UR_LOG_VALIDATION',
                     'ZES_ENABLE_SYSMAN', 'ONEAPI_DEVICE_SELECTOR')
                 require(all(f'{key}={env[key]}'.encode() in environ for key in keys),
                     'actual native environment differs')
             else:
-                maps.append(dict(phase=phase,**pti_probe.mapped(entry['pid'],mapping_row,mode)))
-            if phase == 'runtime-ready':
+                maps.append(dict(phase=gate,**pti_probe.mapped(entry['pid'],mapping_row,provider_check)))
+            if gate == 'runtime-ready':
                 result['GPU_work_admitted'] = True
-            if phase == 'after-cleanup':
+            if gate == 'after-cleanup':
                 result['GPU_executed'] = True
             io.send(b'X')
         require(io.line(45) == 'fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED',
@@ -408,10 +440,10 @@ def run_device(row, mode, scope, path, result):
     require(probe['loader'] == env['STRATA_UR_PROBE_EXPECTED_LOADER']
         and len(maps) == 2 and 'fixture_status=PASS' in text
         and (not (path/'validation.log').exists() or not (path/'validation.log').stat().st_size)
-        and (mode != 'smoke' or 'urEnqueue' in logs), 'native validation, loader or fixture gate differs')
+        and (phase != 'smoke' or 'urEnqueue' in logs), 'native validation, loader or fixture gate differs')
     timing = samples(text,mode)
     result.update(validation=probe, timing=timing)
-    if mode == 'trace':
+    if phase == 'trace':
         traces = sorted((path/'trace').glob('*.json'))
         require(len(traces) == 1 and traces[0].stat().st_size < RUN_LIMIT['file_cap'], 'one bounded device trace required')
         result.update(timeline=timeline(reader.load_json(traces[0]),timing['samples'],(before,after)),
@@ -490,7 +522,7 @@ def run_stage(mode):
 
 if __name__ == '__main__':
     require(sys.executable == PYTHON and len(sys.argv) == 2 and sys.argv[1] in ('prepare',*STAGES),
-        'use the pinned Python and prepare|host|build|smoke|trace|0|1|2')
+        'use the pinned Python and a declared stage: prepare or '+', '.join(STAGES))
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         guards.no_model_owners([])

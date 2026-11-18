@@ -1,7 +1,7 @@
 #pragma once
 
 // Authored for Strata under the repository LICENSE. Use the existing prefix
-// fixture and copy wrapper with synthetic ordinary RAM at the layer-2 stride.
+// fixture and copy wrapper with synthetic sources at the layer-2 stride.
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
 #include "strata/sycl/launch.hpp"
@@ -72,11 +72,34 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     const size_t bank_bytes = payload_bytes + 2 * guard_bytes;
     const char *clock_setting = std::getenv("STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK");
     const bool observe_clock = clock_setting && std::string_view(clock_setting) == "1";
+    const char *source_setting = std::getenv("STRATA_FULLFIT_OVERLAP_SOURCE");
+    const std::string_view source_kind = source_setting ? source_setting : "";
+    require(source_kind == "ordinary" || source_kind == "host_usm", "invalid copy source kind");
+    const bool use_host_usm = source_kind == "host_usm";
     require(bank_bytes <= runtime->device().get_info<sycl::info::device::max_mem_alloc_size>(),
             "full-fit fixture exceeds maximum single device allocation");
 
-    std::vector<uint8_t> source(payload_bytes), observed(bank_bytes);
-    for (size_t i = 0; i < source.size(); ++i) source[i] = payload_byte(i);
+    using Clock = std::chrono::steady_clock;
+    using Milliseconds = std::chrono::duration<double, std::milli>;
+    const auto source_begin = Clock::now();
+    std::vector<uint8_t> ordinary_source(use_host_usm ? 0 : payload_bytes);
+    sycl_backend::Allocation host_source;
+    if (use_host_usm)
+        host_source = sycl_backend::Allocation(runtime, payload_bytes, sycl_backend::MemoryKind::Host);
+    auto *source = use_host_usm ? host_source.as<uint8_t>() : ordinary_source.data();
+    const auto source_allocated = Clock::now();
+    for (size_t i = 0; i < payload_bytes; ++i) source[i] = payload_byte(i);
+    const auto source_initialized = Clock::now();
+    const auto pointer_type = use_host_usm ? sycl::usm::alloc::host : sycl::usm::alloc::unknown;
+    require(sycl::get_pointer_type(source, runtime->context()) == pointer_type &&
+            sycl::get_pointer_type(source + payload_bytes - 1, runtime->context()) == pointer_type,
+            "copy source type or extent differs");
+    std::cout << "fullfit_attention_overlap source=" << source_kind
+              << " bytes=" << payload_bytes
+              << " alloc_ms=" << std::setprecision(12) << Milliseconds(source_allocated - source_begin).count()
+              << " fill_ms=" << Milliseconds(source_initialized - source_allocated).count()
+              << " type=PASS\n";
+    std::vector<uint8_t> observed(bank_bytes);
     sycl_backend::Allocation bank(runtime, bank_bytes, sycl_backend::MemoryKind::Device);
     auto &compute = runtime->compute();
     auto copy = runtime->make_queue(true);
@@ -85,7 +108,8 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     auto *destination = base + guard_bytes;
     sycl_backend::validate_device_span(base, bank_bytes, compute);
     sycl_backend::validate_device_span(base, bank_bytes, copy);
-    sycl_backend::validate_spans({{base, bank_bytes}}, {{source.data(), source.size()}}, 1);
+    sycl_backend::validate_spans({{base, bank_bytes}}, {{source, payload_bytes}}, 1);
+    if (use_host_usm) sycl_backend::validate_host_span(source, payload_bytes, copy);
     require(copy.get_context() == compute.get_context() && copy.get_device() == compute.get_device(),
             "unexpected copy queue device or context");
 
@@ -98,7 +122,7 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     auto submit_copies = [&](sycl::queue &queue, size_t count) {
         for (size_t expert = 0; expert < count; ++expert) {
             const size_t offset = expert * stride;
-            require(cudaMemcpyAsync(destination + offset, source.data() + offset, stride,
+            require(cudaMemcpyAsync(destination + offset, source + offset, stride,
                                     cudaMemcpyHostToDevice, &queue) == cudaSuccess,
                     "expert copy refused");
         }
@@ -111,7 +135,7 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
         const auto last = first + payload_bytes;
         require(std::all_of(observed.begin(), first, [](uint8_t value) { return value == guard; }) &&
                 std::all_of(last, observed.end(), [](uint8_t value) { return value == guard; }) &&
-                std::equal(first, copied, source.begin()) &&
+                std::equal(first, copied, source) &&
                 std::all_of(copied, last, [](uint8_t value) { return value == 0; }),
                 "expert payload or guard mismatch");
     };
@@ -130,7 +154,6 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     }
 
     using Seconds = std::chrono::duration<double>;
-    using Clock = std::chrono::steady_clock;
     Seconds clock_pair_max{};
     for (int i = 0; i < 128; ++i) {
         const auto first = Clock::now();
@@ -177,8 +200,8 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
                       << " payload=PASS guards=PASS output=PASS\n";
         }
     }
-    for (size_t i = 0; i < source.size(); ++i)
-        require(source[i] == payload_byte(i), "ordinary host source changed");
+    for (size_t i = 0; i < payload_bytes; ++i)
+        require(source[i] == payload_byte(i), "host copy source changed");
     return repeats * int(arms.size());
 }
 
