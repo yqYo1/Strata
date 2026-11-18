@@ -425446,7 +425446,7 @@
     }
   },
   "qsa_v_tile_v2": {
-    "stage": "prepared",
+    "stage": "running",
     "source_commit": "daca8f47e62cd90ce1ee8989ac261e38c17581bd",
     "compile_environment": {
       "PATH": "/usr/bin:/bin",
@@ -425731,7 +425731,14 @@
       "separate_early_v.cpp": "c228fa3a14548fe2e8e75e7a4d93b90ce32815aa5618196b501c35fe278b60dc"
     },
     "whole_bytes": 1073741824,
-    "scopes": [],
+    "scopes": [
+      {
+        "mode": "build",
+        "passed": true,
+        "ownership_closed": true,
+        "GPU_executed": false
+      }
+    ],
     "active": false,
     "passed": false,
     "complete": false,
@@ -425773,6 +425780,18 @@
       "decision": "All three process ratios below one per shape to advance any constituent. Preserve storage-only, early-only and combined decisions. No model qualification.",
       "retention": "Archive source and compact observations. Retire isolated fixtures when next consumer is resolved."
     },
+    "binaries": {
+      "numeric": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-v-tile-v2/build/sycl_qsa_v_tile_numeric",
+        "bytes": 1873608,
+        "sha256": "8f1ad418396e6d7826e4847a8dbf1d2b9753e69eaac5768173a029032d1c0183"
+      },
+      "benchmark": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-v-tile-v2/build/sycl_qsa_v_tile_benchmark",
+        "bytes": 1842664,
+        "sha256": "b799c0c35c9b5058d904facb8d622b7f39b4b795b6f669a47f6bf283c38f0f9b"
+      }
+    },
     "sources": {
       "count": 548,
       "sha256": "89e4a12ad5c0a0d4cb147e77c9fe7ddac04ef2c118be6637875cfaed93eb0e0c"
@@ -425780,6 +425799,18 @@
     "platform": {
       "count": 13,
       "sha256": "16faeb8fc509b53ac023f0dc75845cb1a9804c9c9129e9a89edea78d5279f90a"
+    },
+    "compiled": {
+      "count": 725,
+      "sha256": "d6b49d12a3c27479ade2a159917c50374276a3b559480818ac38a9f2b4bbe4c7"
+    },
+    "actual_links": {
+      "count": 25,
+      "sha256": "da12084bf2674c60ba26bf70273d3e15cb302174895b5b6608ac7e24400918d3"
+    },
+    "build_outputs": {
+      "count": 9,
+      "sha256": "181288242051c9b4e884e6c4125afb844694a9ba3632447a3b0a5af87b7fe4bd"
     }
   }
 }
