@@ -434402,7 +434402,7 @@
     }
   },
   "fullfit_attention_copy_api_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "96a3ab1caf73aa80c6684aaa5bad4382ff066b47",
     "platform": {
       "original_binary": {
@@ -437397,11 +437397,278 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "clean-5",
+        "passed": true,
+        "GPU_executed": true,
+        "GPU_work_admitted": true,
+        "pid": 1938260,
+        "native_exit_code": 0,
+        "providers": [
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "affab7e7d0fc889d8a604354c55c5d995789e2400389203fdf92dfbba78222ac"
+          },
+          {
+            "phase": "after-cleanup",
+            "mapped_ELFs": 34,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "affab7e7d0fc889d8a604354c55c5d995789e2400389203fdf92dfbba78222ac"
+          }
+        ],
+        "validation": {
+          "pid": 1938260,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "timing": {
+          "clock_pair_max_s": 4e-08,
+          "source": {
+            "kind": "host_usm",
+            "bytes": 1009254400,
+            "alloc_ms": 62.491874,
+            "fill_ms": 1062.045998
+          },
+          "queue": {
+            "api": "native",
+            "ordinal": 0,
+            "index": 0,
+            "mode": 2,
+            "flags": 2,
+            "priority": 0
+          },
+          "samples": [
+            {
+              "round": 0,
+              "arm": "compute_only",
+              "milliseconds": 222.474456,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "copy_only",
+              "milliseconds": 214.658288,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "serial_separate",
+              "milliseconds": 430.803428,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 0,
+              "arm": "deferred_wait",
+              "milliseconds": 436.660447,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "copy_only",
+              "milliseconds": 219.654913,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "serial_separate",
+              "milliseconds": 432.177877,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "deferred_wait",
+              "milliseconds": 504.267635,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 1,
+              "arm": "compute_only",
+              "milliseconds": 221.903132,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "serial_separate",
+              "milliseconds": 436.275532,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "deferred_wait",
+              "milliseconds": 488.618442,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "compute_only",
+              "milliseconds": 222.040459,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 2,
+              "arm": "copy_only",
+              "milliseconds": 214.397005,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "deferred_wait",
+              "milliseconds": 598.507465,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "compute_only",
+              "milliseconds": 221.932231,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "copy_only",
+              "milliseconds": 219.652028,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 3,
+              "arm": "serial_separate",
+              "milliseconds": 610.268698,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "compute_only",
+              "milliseconds": 221.471038,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "copy_only",
+              "milliseconds": 216.995904,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "serial_separate",
+              "milliseconds": 493.354181,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            },
+            {
+              "round": 4,
+              "arm": "deferred_wait",
+              "milliseconds": 440.829978,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 0,
+              "raw_end": 0
+            }
+          ]
+        },
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "whole_bytes": 805306368,
     "plan": {
@@ -437430,6 +437697,246 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-attention-copy-api-v1/build/sycl_fullfit_attention_overlap",
       "bytes": 1638664,
       "sha256": "474da405313af5b37acbd75c1a09bd6c02fe18405581638dc773914cd4909ae1"
+    },
+    "decision": {
+      "clean_progression": [
+        "sycl",
+        "native",
+        "native",
+        "sycl",
+        "sycl",
+        "native"
+      ],
+      "paired_clean_indices": [
+        {
+          "sycl": 0,
+          "native": 1
+        },
+        {
+          "native": 2,
+          "sycl": 3
+        },
+        {
+          "sycl": 4,
+          "native": 5
+        }
+      ],
+      "warmed_ratios": {
+        "compute_only": {
+          "paired": [
+            1.00288384543287,
+            1.0030652947615883,
+            1.0010617378392295
+          ],
+          "geometric": 1.0023365508390105,
+          "all_three_faster": false
+        },
+        "copy_only": {
+          "paired": [
+            1.322875882447775,
+            1.1823921008230858,
+            1.0179791258713942
+          ],
+          "geometric": 1.1677229893748318,
+          "all_three_faster": false
+        },
+        "serial_separate": {
+          "paired": [
+            1.1867709358900396,
+            1.3580528298510592,
+            1.066286794332597
+          ],
+          "geometric": 1.197804294351237,
+          "all_three_faster": false
+        },
+        "deferred_wait": {
+          "paired": [
+            1.1680821148880733,
+            1.0683083169277532,
+            1.1360573331975934
+          ],
+          "geometric": 1.1233715244013616,
+          "all_three_faster": false
+        }
+      },
+      "first_cycle_ratios": {
+        "compute_only": {
+          "paired": [
+            1.000455738286652,
+            1.000392807887172,
+            1.0068217402668622
+          ],
+          "geometric": 1.002552232315585,
+          "all_three_faster": false
+        },
+        "copy_only": {
+          "paired": [
+            1.4071828544416676,
+            1.211891332084329,
+            1.0002870267902964
+          ],
+          "geometric": 1.1948487955763798,
+          "all_three_faster": false
+        },
+        "serial_separate": {
+          "paired": [
+            1.2312534966392226,
+            1.0844621318583505,
+            0.9672110931404411
+          ],
+          "geometric": 1.0889995804505008,
+          "all_three_faster": false
+        },
+        "deferred_wait": {
+          "paired": [
+            1.2404043403321208,
+            1.2452953051684628,
+            1.0011307657940494
+          ],
+          "geometric": 1.1564019410399133,
+          "all_three_faster": false
+        }
+      },
+      "clean_process_warmed_medians_ms": [
+        {
+          "compute_only": 221.272608,
+          "copy_only": 257.316644,
+          "serial_separate": 481.5867205,
+          "deferred_wait": 473.994143
+        },
+        {
+          "compute_only": 221.91072400000002,
+          "copy_only": 340.3979825,
+          "serial_separate": 571.5331229999999,
+          "deferred_wait": 553.6640809999999
+        },
+        {
+          "compute_only": 222.085443,
+          "copy_only": 253.5573865,
+          "serial_separate": 592.648471,
+          "deferred_wait": 465.47476300000005
+        },
+        {
+          "compute_only": 221.406766,
+          "copy_only": 214.4444185,
+          "serial_separate": 436.39574100000004,
+          "deferred_wait": 435.71200899999997
+        },
+        {
+          "compute_only": 221.68231300000002,
+          "copy_only": 214.4680185,
+          "serial_separate": 435.919172,
+          "deferred_wait": 436.9876625
+        },
+        {
+          "compute_only": 221.91768150000001,
+          "copy_only": 218.32396599999998,
+          "serial_separate": 464.8148565,
+          "deferred_wait": 496.4430385
+        }
+      ],
+      "clean_first_cycle_ms": [
+        {
+          "compute_only": 221.925616,
+          "copy_only": 335.321037,
+          "serial_separate": 480.670479,
+          "deferred_wait": 474.046304
+        },
+        {
+          "compute_only": 222.026756,
+          "copy_only": 471.858014,
+          "serial_separate": 591.827208,
+          "deferred_wait": 588.009093
+        },
+        {
+          "serial_separate": 449.96887,
+          "deferred_wait": 520.254799,
+          "compute_only": 221.946237,
+          "copy_only": 260.114942
+        },
+        {
+          "serial_separate": 414.923543,
+          "deferred_wait": 417.776247,
+          "compute_only": 221.859089,
+          "copy_only": 214.635533
+        },
+        {
+          "compute_only": 220.967076,
+          "copy_only": 214.596693,
+          "serial_separate": 445.407865,
+          "deferred_wait": 436.167244
+        },
+        {
+          "compute_only": 222.474456,
+          "copy_only": 214.658288,
+          "serial_separate": 430.803428,
+          "deferred_wait": 436.660447
+        }
+      ],
+      "traced_vs_first_matching_clean": {
+        "sycl": {
+          "compute_only": 1.0027912673221622,
+          "copy_only": 0.9356382422739821,
+          "serial_separate": 0.9263630453448103,
+          "deferred_wait": 0.9343572426801062
+        },
+        "native": {
+          "compute_only": 0.999715164734445,
+          "copy_only": 0.865139390184253,
+          "serial_separate": 0.8069154637604442,
+          "deferred_wait": 0.800642456702912
+        }
+      },
+      "observed_device_interval_medians_ns": {
+        "sycl": {
+          "compute_only": {
+            "copy_union_ns": 0.0,
+            "qsa_union_ns": 221248332.5,
+            "overlap_ns": 0.0
+          },
+          "copy_only": {
+            "copy_union_ns": 228997648.5,
+            "qsa_union_ns": 0.0,
+            "overlap_ns": 0.0
+          },
+          "serial_separate": {
+            "copy_union_ns": 213401807.5,
+            "qsa_union_ns": 220741978.0,
+            "overlap_ns": 0.0
+          },
+          "deferred_wait": {
+            "copy_union_ns": 218148525.0,
+            "qsa_union_ns": 221238853.0,
+            "overlap_ns": 0.0
+          }
+        },
+        "native": {
+          "compute_only": {
+            "copy_union_ns": 0.0,
+            "qsa_union_ns": 221368905.5,
+            "overlap_ns": 0.0
+          },
+          "copy_only": {
+            "copy_union_ns": 285076762.5,
+            "qsa_union_ns": 0.0,
+            "overlap_ns": 0.0
+          },
+          "serial_separate": {
+            "copy_union_ns": 232369823.0,
+            "qsa_union_ns": 221313593.0,
+            "overlap_ns": 0.0
+          },
+          "deferred_wait": {
+            "copy_union_ns": 213160019.5,
+            "qsa_union_ns": 221557916.0,
+            "overlap_ns": 0.0
+          }
+        }
+      },
+      "eligible_same_ordinal_native_gain": false,
+      "next_comparison_prerequisite": "Keep native append/drain and host USM fixed for an ordinal-1 queue test; the current performance outcome applies only to ordinal 0.",
+      "model_qualified": false,
+      "physical_bandwidth_or_saturation_qualified": false
     },
     "source_inputs": {
       "files": 337,
