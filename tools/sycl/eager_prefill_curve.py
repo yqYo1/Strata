@@ -26,7 +26,7 @@ comparison=core.comparison
 P,B,RESULT=capacity.P,capacity.B,capacity.RESULT
 require,sha,signature=capacity.require,capacity.sha,capacity.signature
 THIS='tools/sycl/eager_prefill_curve.py'
-ROOT,KEY=B/'eager-prefill-length-curve-v1','eager_prefill_length_curve_v1'
+ROOT,KEY=B/'eager-prefill-length-curve-v2','eager_prefill_length_curve_v2'
 MODEL_KEY='prefill_64k_revalidation_v2'
 PYTHON=capacity.reference.model.PYTHON
 READS=(16385,81921,65537,16385,81921,32769,49153,57345)
@@ -38,6 +38,20 @@ compact=core.compact
 def save(row):
     core.write(ROOT/'record.json',row)
     values=json.loads(RESULT.read_text());values[KEY]=compact(row);core.write(RESULT,values)
+
+
+def previous_failure():
+    key='eager_prefill_length_curve_v1'
+    p=admission.device.build.ur_validation.committed(RESULT,(key,))
+    require(p['stage']=='failed' and not p['passed'] and not p['complete'] and not p['active']
+        and not p['ownership_closed'] and p['closure_reconciliation']['ownership_reconciled_closed']
+        and not p['failure_diagnosis']['native_engine_started'] and not p['failure_diagnosis']['GPU_executed']
+        and p['failure_diagnosis']['missing_argument']=='--prefill-short-diagnostic'
+        and not p['processes'][0]['model_executed'] and p['raw_capture_retirement']['complete'],
+        'preserve and close the rejected V1client admission before the corrected plan')
+    return dict(key=key,source_commit=p['source_commit'],evidence_sha256=signature(p),
+        original_archive=p['original_evidence_archive']['commit'],original_failed_outcome_preserved=True,
+        ownership_reconciled_closed=True,native_engine_started=False,GPU_executed=False)
 
 
 def prior_gate(native,component,prior):
@@ -114,7 +128,7 @@ def command(plan):
     return ['/bin/sh',str(P/'bench.sh'),'--config',str(root/'config.json'),'--port',str(plan['port']),
         '--prefill-exact-tokens',str(plan['read']),'--think','--runs',str(RUNS),'--profile-request-gates',
         '--workload-id','native_gdn_20261018','--fail-fast-engine-error','--ready-timeout','600',
-        '--out',str(root/'bench')]
+        '--out',str(root/'bench')]+(['--prefill-short-diagnostic'] if plan['read']<32768 else [])
 
 
 def committed_sources(revision):
@@ -139,6 +153,7 @@ def validate_receipts(processes,reference):
     for i,p in enumerate(processes):
         require(p['index']==i and p['read']==READS[i] and p['heads']==1 and p['kernel']=='eager'
             and p['clean_speed']==(i>=2) and p['passed'] and p['complete'] and p['ownership_closed']
+            and p['diagnostic_short_input']==(p['read']<32768)
             and p['native_exit_code']==0 and not p['fresh_faults'] and p['boot_unchanged']
             and len(p['samples'])==len(p['routes'])==RUNS,'ordered exact closed curve receipts required')
         require(all(s['actual_read_tokens']==p['read'] and s['actual_reused_tokens']==0
@@ -157,12 +172,14 @@ def validate_receipts(processes,reference):
 def after_execution(outcome,row,plan):
     require(outcome['binary']==row['binary'] and outcome['native_source_commit']==row['native_source_commit'],
         'native source/binary changed')
+    outcome['diagnostic_short_input']=plan['read']<32768
     validate_receipts([*row['processes'],outcome],row['prior_model_gate'])
 
 
 def current(row):
     require(admission.device.build.ur_validation.committed(RESULT,(KEY,))==compact(row)
         and committed_sources(row['source_commit'])==row['sources']
+        and row['previous_attempt']==previous_failure()
         and all(sha(P/p)==h for p,h in row['policies'].items()),'frozen committed curve inputs required')
     _,proof,prior=capacity.basis();native,component=admission.device_gate()
     require(row['original_reference_proof_sha256']==signature(proof) and row['component_gate']==component
@@ -198,13 +215,15 @@ def current(row):
 def check_sample(sample,count,read,minimum_ms=10000):
     comparison.check_sample(sample,count,read,minimum_ms)
     require(read in READS and sample['generated_tokens']==24,'exact planned length/24outputs required')
+    require(sample.get('long_input_extent') is (read>=32768),'short diagnostic/long-input label differs')
 
 
 def decision(processes):
     require(len(processes)==len(READS),'complete eight-process/24request cohort required')
     points=[]
     for p in processes[2:]:
-        points.append(dict(read=p['read'],held_out=p['read']==fits.HELD_OUT_READ,first_use=p['samples'][0],
+        points.append(dict(read=p['read'],held_out=p['read']==fits.HELD_OUT_READ,
+            diagnostic_short_input=p['diagnostic_short_input'],first_use=p['samples'][0],
             subsequent_prompt_ms=[s['prompt_ms'] for s in p['samples'][1:]],
             subsequent_TTFT_s=[s['ttft_s'] for s in p['samples'][1:]],
             median_prompt_ms=p['subsequent_median_ms'],median_PP=p['read']*1000/p['subsequent_median_ms'],
@@ -226,11 +245,12 @@ def context():
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()),'fresh curve only;no retry')
+    failed=previous_failure()
     _,proof,prior=capacity.basis();native,component=admission.device_gate();previous=prior_gate(native,component,prior)
     revision=admission.device.build.source.git(P,'rev-parse','HEAD').decode().strip();sources=committed_sources(revision)
     comparison.shared.models.model_pins(prior['configuration'],prior['model_assets'],full=True)
     ROOT.mkdir(mode=0o700)
-    row=dict(stage='prepared',source_commit=revision,sources=sources,
+    row=dict(stage='prepared',source_commit=revision,sources=sources,previous_attempt=failed,
         policies={p:sha(P/p) for p in capacity.POLICIES},original_reference_proof_sha256=signature(proof),
         component_gate=component,prior_model_gate=previous,binary=native['binaries']['strata'],
         native_source_commit=native['source_commit'],native_base=native['native_base_commit'],
@@ -248,6 +268,7 @@ def prepare():
                 'median subsequent2is the length point. All24samples retained. Commit every closed case before next. '
                 'No concurrent builds,tests,GPUjobs,profilers,researchers or reviewers during clean timing.',
             settings='Fixed384bank/window10/chunk8192,eager,all BF16residual rowsGPU/48windows,extra0;'
+                '16Kuses the existing explicit --prefill-short-diagnostic CLI scope. '
                 'native ordered-exp QSA,largeGU/Down,split requested1/active0,private source map. '
                 'Keep current pinned decode1256/KVresident20480/spec4/MTP,heads,dense,Sysman0and copy/direct-submission safety. '
                 'Provider validation remains charged;STRATA_TRACEonly for admissions.',

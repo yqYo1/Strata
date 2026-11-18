@@ -4,10 +4,17 @@ Main-authored,repository LICENSE. Analytic synthetic functions exercise model
 recovery and held-out independence;these tests execute no GPU or model.
 """
 import copy
+from contextlib import redirect_stderr
+import io
 import math
+from pathlib import Path
+import sys
 import unittest
 
 import prefill_curve_fit as fit
+sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
+import eager_prefill_curve as campaign
+import strata_bench as bench
 
 
 def points(function):
@@ -20,6 +27,19 @@ def points(function):
 
 
 class CurveFits(unittest.TestCase):
+    def test_every_controller_command_passes_the_real_cli_scope(self):
+        for read in campaign.READS:
+            with self.subTest(read=read):
+                command=campaign.command(dict(root='/tmp/prefill-curve-cli-test',port=18765,read=read))
+                args=bench.parse_arguments(command[2:])
+                self.assertEqual(args.prefill_exact_tokens,read)
+                self.assertTrue(args.prefill_only and args.think)
+                self.assertEqual(args.prefill_short_diagnostic,read<32768)
+                if read<32768:
+                    command.remove('--prefill-short-diagnostic')
+                    with redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):
+                        bench.parse_arguments(command[2:])
+
     def test_affine_and_curved_functions_recover_coefficients(self):
         for name,function,coefficients in [
             ('affine',lambda x:10000+50000*x,dict(a=10000,b=50000)),
