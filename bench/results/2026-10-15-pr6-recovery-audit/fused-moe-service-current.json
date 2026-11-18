@@ -465017,5 +465017,57 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "prefill_prefix_expert_host_usm_smoke_v1": {
+    "source": "e8e137eac5d0abf5bd1bc4200f3afd37deac936d",
+    "sources": "583697300c3ce8da776f458fc6b828cac19ece66b068b2fb2bfdbc544e93ac1c",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-usm-native-v1/build/sycl_expert_bank_test",
+      "sha256": "a0f9aa787e9915642234da76af3a2958bbb069a520c20ae3efc7ec0deb8aaa4f",
+      "bytes": 517200
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-usm-native-v1/build/sycl_expert_bank_test",
+      "--fullfit-eager-host-usm-smoke"
+    ],
+    "environment_sha256": "c9775ee99bdf9185a4181f0b156efec509da580adf8ceb8c33af9db0329072bb",
+    "native_build": "aab38922f6b11c1220f60389f4279fa31824612408b346ff29939d71ed8d06a4",
+    "cases": [
+      {
+        "experts": 4,
+        "source_stride": 256,
+        "layers": 2,
+        "cancellations": 0,
+        "refusals": 4
+      },
+      {
+        "experts": 4,
+        "source_stride": 512,
+        "layers": 2,
+        "cancellations": 2,
+        "refusals": 4
+      }
+    ],
+    "providers": {
+      "initialized_ELFs": 33,
+      "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+      "required_providers_verified": true,
+      "source": "glibc constructors;not speed or hardware utilization"
+    },
+    "selected_host_bytes_and_guards": true,
+    "native_exit_code": 0,
+    "host_probe_accepted": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "passed": true
   }
 }
