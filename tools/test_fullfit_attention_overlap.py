@@ -23,6 +23,14 @@ def fixture():
 
 
 class MeasurementControls(unittest.TestCase):
+    def test_compiler_outputs_and_logs_are_disjoint(self):
+        self.assertEqual(experiment.COMPILE_LOGS.parent,experiment.ROOT)
+        for command in experiment.compile_commands():
+            output = Path(command[-1])
+            self.assertEqual(command[-2],'-o')
+            self.assertEqual(output.parent,experiment.ROOT/'build')
+            self.assertNotIn(experiment.COMPILE_LOGS,output.parents)
+
     def test_order_payload_and_invalid_clean_samples(self):
         good = fixture()
         self.assertEqual(len(experiment.samples(good,'1')['samples']),25)

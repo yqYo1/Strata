@@ -2701,7 +2701,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   keeps the first cycle separate from four subsequent cycles per arm. It
   checks observed copy bytes, kernel counts and interval boundaries and
   reports concurrent-to-alone device times as an interference diagnostic.
-  Build and device performance remain pending.
+  V1 passed host checks and failed before invoking the compiler because
+  the log directory collided with the precreated output directory.
+  The failed attempt is preserved at `e78837070`, and its four temporary
+  files are retired. V2 separates `compile/` logs from `build/` products
+  and adds a host regression check. It keeps the same fixture sources,
+  comparison order and decision criteria.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced

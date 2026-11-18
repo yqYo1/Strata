@@ -27,8 +27,9 @@ import request_profile_reader as reader
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'fullfit-attention-overlap-v1'
-KEY = 'fullfit_attention_overlap_v1'
+ROOT = B / 'fullfit-attention-overlap-v2'
+KEY = 'fullfit_attention_overlap_v2'
+COMPILE_LOGS = ROOT / 'compile'
 ELF = ROOT / 'build/sycl_fullfit_attention_overlap'
 PYTHON = basis.reference.model.PYTHON
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
@@ -336,6 +337,10 @@ def frozen_cases(pin):
 
 def prepare():
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh plan only')
+    previous = validation.committed(RESULT, ('fullfit_attention_overlap_v1',))
+    require(previous['stage'] == 'failed' and previous['failed_before_compiler']
+        and previous['ownership_closed'] and previous['raw_retirement']['complete']
+        and not (B/'fullfit-attention-overlap-v1').exists(), 'preserve the closed V1 refusal')
     revision = SOURCE.git(P, 'rev-parse', 'HEAD').decode().strip()
     inputs = pins(revision)
     native, pin = platform()
@@ -346,6 +351,8 @@ def prepare():
     save(dict(stage='prepared', source_commit=revision, sources=inputs, platform=pin,
         compile_environment=compile_environment(native), commands=compile_commands(),
         cases=frozen_cases(pin), results=[],
+        prior_refusal=dict(commit='e78837070f694a0ef772637124e996f4c84e36c8',
+            compiler_commands=0, source_fixtures_unchanged=True),
         active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=768<<20,
         plan=dict(order=STAGES, compiled_translation_units=6,
             unit='Same original ordered-exp 65536-cell/8192-query/cap2051 QSA, same 512 ordinary RAM copies at layer-2 stride. Two serial arms isolate queue choice; two same-second-queue arms isolate wait position. Compare net against serial shared queue. Compute/copy alone are controls.',
@@ -428,7 +435,7 @@ def run_stage(mode):
         require(sha(row['binary']['path']) == row['binary']['sha256']
             and all(sha(p) == h for group in row['actual_inputs'].values() for p,h in group.items()),
             'fixture executable or actual native inputs changed')
-    path = ROOT/mode
+    path = COMPILE_LOGS if mode == 'build' else ROOT/mode
     path.mkdir(mode=0o700)
     for name in ('tmp','cache','trace'): (path/name).mkdir(mode=0o700)
     scope = owner.Owner(path/'owned',lambda: write(path/'execution.json',scope.commands))
