@@ -19,6 +19,7 @@ import prefill_workspace_admission as workspace
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
 BUILD_ROOT, BUILD_KEY = B/'prefill-first-demand-native-v1', 'prefill_first_demand_native_v1'
+HOST_ROOT, HOST_KEY = B/'prefill-first-demand-host-v2', 'prefill_first_demand_host_v2'
 ROOT, KEY = B/'prefill-first-demand-v1', 'prefill_first_demand_v1'
 THIS = 'tools/sycl/prefill_first_demand.py'
 OVERLAYS = ('include/strata/prefill/moe_upload_census.hpp', 'src/prefill/moe_window.inc',
@@ -95,15 +96,24 @@ def recipe(prior):
         environment={k:v.replace(old,str(BUILD_ROOT)) for k,v in original['environment'].items()},targets=TARGETS)
 
 
-def check_build(row, committed=True):
+def check_build(row, committed=True, controller_revision=None):
     if committed:
         require(basis.validation.committed(RESULT, (BUILD_KEY,)) == build_context().compact(row),
             'commit the exact native build stage')
     native, proof, _, prior = historical()
+    original_controls = row['controller_sources']
+    expected = dict(original_controls)
+    if controller_revision is not None:
+        recovered = {p:hashlib.sha256(raw).hexdigest() for p,raw in
+                     source.blobs(P,row['source_commit'],original_controls)}
+        require(recovered==original_controls and THIS in expected, 'recover original native controller closure')
+        raw = source.git(P,'show',controller_revision+':'+THIS)
+        expected[THIS] = hashlib.sha256(raw).hexdigest()
+        require(expected!=original_controls,'declare the changed controller-only admission')
     require(row['foundation'] == proof and row['native_base_receipt'] == signature(prior)
         and row['driver'] == builder.guards.driver_guard() and row['recipe'] == recipe(prior)
         and row['retained_decode_reference'] == builder.decode_reference()
-        and source.pin(P,list(row['controller_sources']))['source_sha256'] == row['controller_sources'],
+        and source.pin(P,list(expected))['source_sha256'] == expected,
         'frozen native/archive/controller/phase reference changed')
     require(all(sha(BUILD_ROOT/'source'/p) == h for p,h in row['source_files'].items())
         and all(sha(Path(d['root'])/p) == h for d in native['dependencies'] for p,h in d['source_sha256'].items())
@@ -137,16 +147,45 @@ def prepare_build():
     build_context().save(row)
 
 
+def save_host(row):
+    write(HOST_ROOT/'record.json',row)
+    data=json.loads(RESULT.read_text()); data[HOST_KEY]=row; write(RESULT,data)
+
+
+def host_basis(revision):
+    build = json.loads((BUILD_ROOT/'record.json').read_text())
+    check_build(build,controller_revision=revision)
+    failed, = json.loads((BUILD_ROOT/'host-ownership.json').read_text())
+    require(build['stage']=='failed' and build['complete'] and not build['active']
+        and not build['host_control']['passed'] and failed['error']=="RuntimeError('artifact cap')"
+        and failed['session_empty'] and failed['direct_child_reaped'] and failed['exit_code']==0
+        and not failed['survivors'] and not failed['errors'], 'preserve the original observed host-control failure')
+    for key in ('compiled','generated','links','objects','produced'):
+        require(all(sha(p)==h for p,h in build['actual_inputs'][key].items()),'exact native '+key+' changed')
+    require(all(sha(v['path'])==v['sha256'] for v in build['binaries'].values()), 'same-build executable changed')
+    return build
+
+
+def host_prepare():
+    require(not HOST_ROOT.exists() and HOST_KEY not in json.loads(RESULT.read_text()),'fresh host qualification only')
+    revision=source.git(P,'rev-parse','HEAD').decode().strip()
+    build=host_basis(revision)
+    HOST_ROOT.mkdir(mode=0o700)
+    save_host(dict(stage='prepared',controller_revision=revision,source_commit=build['source_commit'],
+        binary=build['binaries'][HOST_TARGET],build_signature=signature(build_context().compact(build)),
+        previous_failure='The 4 MiB output cap counted the existing build. The original child was reaped with an empty session, without an accepted output observation.',
+        plan='Run the exact built CPU fixture with a separate small owned output root, retaining 4 MiB, and check the unchanged parser assertions.',
+        passed=False,ownership_closed=True))
+
+
 def host_native():
-    path = BUILD_ROOT/'record.json'
-    row = json.loads(path.read_text())
-    check_build(row)
-    require(row['stage']=='built' and row['ownership_closed'] and not row['active']
-        and 'host_control' not in row, 'one owned host control from the built fixture')
-    binary = row['binaries'][HOST_TARGET]
-    require(sha(binary['path']) == binary['sha256'], 'same-build host fixture changed')
-    scope = builder.ownership.Owner(BUILD_ROOT/'host',lambda:write(BUILD_ROOT/'host-ownership.json',scope.commands))
-    result,stdout,_ = scope.run('literal',[binary['path']],row['recipe']['environment'],P,
+    row=json.loads((HOST_ROOT/'record.json').read_text())
+    require(row['stage']=='prepared' and row==basis.validation.committed(RESULT,(HOST_KEY,)),'commit isolated host plan')
+    build=host_basis(row['controller_revision']); binary=row['binary']
+    require(binary==build['binaries'][HOST_TARGET] and row['build_signature']==signature(build_context().compact(build)),
+        'same original compiled host input required')
+    scope=builder.ownership.Owner(HOST_ROOT/'owned',lambda:write(HOST_ROOT/'execution.json',scope.commands))
+    result,stdout,_ = scope.run('literal',[binary['path']],build['recipe']['environment'],P,
         wall=30,cpu=20,rss_cap=256<<20,text_cap=64<<10,file_cap=1<<20,total_cap=4<<20)
     passed = builder.ownership.closed(result) and result['exit_code']==0 and stdout.read_text().startswith('MoE census host controls passed:')
     if passed:
@@ -155,10 +194,10 @@ def host_native():
         except (RuntimeError, ValueError, KeyError) as error:
             row['host_parser_error'] = repr(error)
             passed = False
-    row.update(host_control=dict(passed=passed,ownership_closed=builder.ownership.closed(result),
-        native_gpu_executed=False,binary=binary),passed=passed)
-    if not passed: row['stage']='failed'
-    build_context().save(row)
+    row.update(stage='closed' if passed else 'failed',passed=passed,
+        ownership_closed=builder.ownership.closed(result),native_gpu_executed=False,
+        native_exit_code=result['exit_code'],native_observation_error=result.get('error'))
+    save_host(row)
     require(passed,'literal native route and boundary controls failed')
 
 
@@ -234,15 +273,12 @@ def model_context():
     ctx.ROOT,ctx.KEY,ctx.THIS = ROOT,KEY,THIS
     ctx.READS,ctx.ORDER,ctx.RUNS,ctx.CLEAN_FAST = READS,[(n,1) for n in READS],RUNS,True
     def reference():
-        build = json.loads((BUILD_ROOT/'record.json').read_text())
-        check_build(build)
-        require(build['stage']=='built' and build['passed'] and build['complete'] and
-            build['host_control']['passed'] and build['ownership_closed'] and not build['active'],
-            'same-build CPU controls required before model')
-        for key in ('compiled','generated','links','objects','produced'):
-            require(all(sha(p)==h for p,h in build['actual_inputs'][key].items()),
-                'actual recorded native '+key+' changed')
-        require(all(sha(v['path'])==v['sha256'] for v in build['binaries'].values()), 'same-build executable changed')
+        host=basis.validation.committed(RESULT,(HOST_KEY,))
+        build=host_basis(host['controller_revision'])
+        require(host==json.loads((HOST_ROOT/'record.json').read_text()) and host['stage']=='closed'
+            and host['passed'] and host['ownership_closed'] and host['native_exit_code']==0
+            and host['build_signature']==signature(build_context().compact(build)),
+            'closed same-build CPU controls required before model')
         _,_,speed,_ = historical()
         old = json.loads((basis.reference.model.ROOT/'record.json').read_text())
         require(old['models']==speed['model_assets'] and old['probe']==speed['native_validation_probe'],
@@ -320,7 +356,8 @@ if __name__=='__main__':
         action=sys.argv[1]
         if action=='build-prepare': prepare_build()
         elif action in ('configure','compile'): build_context().execute(action)
-        elif action=='host-native': host_native()
+        elif action=='host-prepare': host_prepare()
+        elif action=='host-run': host_native()
         elif action=='prepare': prepare_model()
         elif action=='host': basis.comparison.host(model_context())
         elif action in ('0','1'): basis.comparison.run(int(action),model_context())
