@@ -2286,7 +2286,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   composed engine or reach1000PPat128K. Reduced jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
   Full window evidence is`6ead5d99b`;four first-use/warmed CSVpoints bring
-  the index to633.
+  the index to633. All27samples,nine native identities and the original gain
+  decision remain compact. Original771Git inputs and18generated payloads
+  are recovered exactly;all635ended files(96,621,178B)and288,349Btemporary
+  inventory are retired. Both phase references,the coherent candidate and
+  required shared records remain;fresh combined-predecessor/device admission
+  is next.
   Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
   RESTORE qualification remain unresolved. Full relocation evidence is
