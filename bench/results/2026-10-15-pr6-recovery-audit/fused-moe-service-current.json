@@ -416307,5 +416307,29 @@
       "inventory_retired": true,
       "inventory_bytes_retired": 287082
     }
+  },
+  "prefill_64k_revalidation_v1": {
+    "stage": "preparation_failed",
+    "source_commit": "00556af9b7b3ea3975f659d4ce1441911f75a086",
+    "command": [
+      "tools/sycl/prefill_64k_revalidate.py",
+      "prepare"
+    ],
+    "exit_code": 1,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "root_created": false,
+    "error": "RuntimeError: device controls changed",
+    "cause": "Closed build375/device357 control inventories include tools/sycl/prefill_window_model.py,retired in00556af9b. Every other named input is present and byte-identical. Strict admission stopped before model full hashes,root creation,or native execution.",
+    "resolution": "Prospective V2historical-control admission must recover the original Git bytes and verify every native input,fixture,provider and remaining live control. Preserve original records and failure;no hash refresh or CLI restoration.",
+    "host_gate_tests": {
+      "tested_source": "00556af9b7b3ea3975f659d4ce1441911f75a086",
+      "tests": 6,
+      "passed": true,
+      "GPU_executed": false
+    }
   }
 }

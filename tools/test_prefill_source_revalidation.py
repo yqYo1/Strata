@@ -3,9 +3,12 @@
 Main-authored synthetic gate fixtures. No engine execution,model result or
 native numerical qualification. Preserve failed units despite a faster net arm.
 """
+import hashlib
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
@@ -59,6 +62,28 @@ class UploadAdmission(unittest.TestCase):
                 with self.assertRaises(RuntimeError):admission.eager_route(value,dict(upload='eager'))
         with self.assertRaises(RuntimeError):admission.eager_route(text,dict(upload='jit'))
         with self.assertRaises(RuntimeError):admission.eager_route(text,dict(upload='unknown'))
+
+
+class HistoricalControlAdmission(unittest.TestCase):
+    def test_only_the_exact_archived_cli_may_be_absent(self):
+        old=admission.RETIRED_CONTROL;live='src/live.hpp'
+        originals={old:b'closed CLI',live:b'unchanged native'}
+        pins={p:hashlib.sha256(raw).hexdigest() for p,raw in originals.items()}
+        source=admission.device.build.source
+        with tempfile.TemporaryDirectory() as name:
+            root=Path(name);(root/live).parent.mkdir();(root/live).write_bytes(originals[live])
+            def current(*args):
+                return dict(source_sha256={p:hashlib.sha256((root/p).read_bytes()).hexdigest()
+                    for p in args[1] if (root/p).is_file()})
+            with patch.object(admission,'P',root),patch.object(source,'blobs',return_value=originals.items()),\
+                    patch.object(source,'git',return_value=b''),patch.object(source,'pin',side_effect=current):
+                self.assertEqual(admission.historical_controls(pins,'old')['unchanged_live_files'],1)
+                (root/live).write_bytes(b'changed native')
+                with self.assertRaises(RuntimeError):admission.historical_controls(pins,'old')
+                (root/live).unlink()
+                with self.assertRaises(RuntimeError):admission.historical_controls(pins,'old')
+                bad=dict(pins);bad[old]='0'*64
+                with self.assertRaises(RuntimeError):admission.historical_controls(bad,'old')
 
 
 class SourceComparisonAdmission(unittest.TestCase):

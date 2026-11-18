@@ -2320,6 +2320,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   commits;shared workspace/dispatch readers and this source question live in
   maintained tools. Source/helper/gate tests must be committed before running;
   generated configurations must be committed before host or native execution.
+  Initial source`00556af9b`preparation stops before model hashing/root creation
+  or GPUexecution:the old build/device readers also pin the retired window
+  controller. Preserve that failed admission. V2reuses only the exact closed
+  native/component records after recovering every original control from Git,
+  requiring all live inputs unchanged and allowing only that named committed
+  CLIretirement. Original strict readers and all native/fixture hashes remain
+  unchanged;the controller-only reuse is not a new build or GPUqualification.
   Keep the current-build five-length/time/TTFT curve and hardware attribution
   gaps pending;do not infer a law from these mixed timing periods. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced

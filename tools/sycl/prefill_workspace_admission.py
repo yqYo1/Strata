@@ -5,7 +5,9 @@ prefill_window_model.py at570f6903e; eager-route reader is preserved from the
 owned eager_fullfit_bench.py at5f1a95453. No XeStrata inputs. Closed comparison
 command modes live in Git; this module is consumed by the current64Krevalidation.
 """
+import hashlib
 import json
+from pathlib import Path
 import re
 import coherent_model_basis as capacity
 import gu_small_bench as dispatch_reader
@@ -15,10 +17,62 @@ import qsa16_stream_bench as core
 P,B,RESULT=capacity.P,capacity.B,capacity.RESULT
 require,sha=capacity.require,capacity.sha
 STRIDE,ROW=2662400,20480
+RETIRED_CONTROL='tools/sycl/prefill_window_model.py'
+
+
+def historical_controls(pins,revision):
+    """Recover a closed control without retaining its obsolete CLI in the tree.
+
+    This exception names only the retired campaign,not changed native inputs or
+    live qualification readers. Current campaign controls are pinned separately.
+    Original strict build/device admission remains unchanged.
+    """
+    recovered={p:hashlib.sha256(raw).hexdigest()
+        for p,raw in device.build.source.blobs(P,revision,pins)}
+    require(recovered==pins and RETIRED_CONTROL in pins and not (P/RETIRED_CONTROL).exists()
+        and not device.build.source.git(P,'ls-tree','HEAD','--',RETIRED_CONTROL),
+        'exact archived closed controller and committed retirement required')
+    live={p:h for p,h in pins.items() if p!=RETIRED_CONTROL}
+    require(device.build.source.pin(P,list(live))['source_sha256']==live,
+        'non-retired historical control or native input changed')
+    return dict(revision=revision,recovered_files=len(pins),unchanged_live_files=len(live),
+        retired_control=dict(path=RETIRED_CONTROL,sha256=pins[RETIRED_CONTROL]),
+        native_recompiled=False,new_GPU_qualification=False)
 
 
 def device_gate():
-    value=json.loads((device.ROOT/'record.json').read_text());native=device.verify(value)
+    # Reuse the exact closed build and component receipts. The old all-tools
+    # reader also froze an unused campaign CLI;recover that single deleted
+    # controller from Git rather than refreshing a receipt or restoring it.
+    build=device.build
+    native=json.loads((build.ROOT/'record.json').read_text())
+    require(build.ur_validation.committed(RESULT,(build.KEY,))==build.compact(native)
+        and native['stage']=='built' and native['passed'] and native['complete']
+        and native['ownership_closed'] and not native['active'],'closed original candidate build required')
+    build_controls=historical_controls(native['controller_sources'],native['source_commit'])
+    original,_=build.original.verify_original(expected=native['foundation'])
+    for pin in original['dependencies']:
+        require(all(sha(Path(pin['root'])/p)==h for p,h in pin['source_sha256'].items()),
+            'original committed dependency changed')
+    require(all(sha(build.ROOT/'source'/p)==h for p,h in native['source_files'].items())
+        and build.guards.driver_guard()==native['driver']
+        and build.bank_gate()==native['bank_gate']
+        and build.decode_reference()==native['retained_decode_reference'],
+        'native composition,platform or independent baseline changed')
+    require(all(sha(p)==h for name in ('compiled','generated','links','objects','produced')
+        for p,h in native['actual_inputs'][name].items()) and len(native['binaries'])==8
+        and all(sha(v['path'])==v['sha256'] and Path(v['path']).stat().st_size==v['bytes']
+            for v in native['binaries'].values()),'exact compiler/link inputs or candidate fixtures changed')
+    value=json.loads((device.ROOT/'record.json').read_text())
+    require(build.ur_validation.committed(RESULT,(device.KEY,))==device.compact(value),
+        'original committed component receipt changed')
+    device_controls=historical_controls(value['sources'],value['source_commit'])
+    require(sha(build.ROOT/'record.json')==value['native_record_sha256']
+        and native['binaries']==value['binaries'] and build.guards.driver_guard()==value['driver']
+        and Path('/proc/sys/kernel/random/boot_id').read_text().strip()==value['boot']
+        and value['fixture_environment']==device.FIXTURE_ENV
+        and build.ownership.artifact_bytes(device.ROOT)<=value['whole_bytes'],
+        'same-build component identity,fixture contract,platform or budget changed')
     require(value['stage']=='closed' and not value['active'] and value['passed'] and value['complete']
         and value['ownership_closed'] and [v['mode'] for v in value['results']]==device.STAGES
         and all(v['passed'] and v['complete'] and v['ownership_closed'] and not v['fresh_faults']
@@ -28,6 +82,7 @@ def device_gate():
         'all seven closed same-build component stages required')
     return native,dict(key=device.KEY,source_commit=value['source_commit'],
         record_sha256=sha(device.ROOT/'record.json'),binaries=value['binaries'],
+        historical_controller_reuse=dict(build=build_controls,device=device_controls),
         scope='Component address/math/closure only;actual allocation,model/task/phase/physical-context gates not inherited.')
 
 

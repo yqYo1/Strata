@@ -23,7 +23,7 @@ capacity,core=admission.capacity,admission.core
 comparison=core.comparison
 P,B,RESULT=capacity.P,capacity.B,capacity.RESULT
 require,sha,signature=capacity.require,capacity.sha,capacity.signature
-ROOT,KEY=B/'prefill-64k-revalidation-v1','prefill_64k_revalidation_v1'
+ROOT,KEY=B/'prefill-64k-revalidation-v2','prefill_64k_revalidation_v2'
 PYTHON=capacity.reference.model.PYTHON
 READ,RUNS=65537,3
 # Three traced admissions,then three balanced clean triples. Every question
@@ -55,8 +55,12 @@ def preceding_evidence():
         and row['ownership_closed'] and not row['active'] and len(row['processes'])==9
         and row['decision']['unit_performance_eligible'] and not row['decision']['inference_adopted'],
         'close the preceding combined question;do not inherit model adoption')
+    failure=admission.device.build.ur_validation.committed(RESULT,('prefill_64k_revalidation_v1',))
+    require(failure['stage']=='preparation_failed' and not failure['passed'] and not failure['GPU_executed']
+        and failure['ownership_closed'] and not failure['active'] and not failure['root_created'],
+        'preserve the failed current-source admission before historical-control reuse')
     return dict(key=key,source_commit=row['source_commit'],source_inputs=row['source_inputs'],
-                decision=row['decision'])
+                decision=row['decision'],original_preparation_failure=failure)
 
 
 def environment(row,plan):
