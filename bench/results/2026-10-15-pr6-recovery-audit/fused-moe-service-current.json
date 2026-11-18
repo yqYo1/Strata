@@ -418321,7 +418321,7 @@
     }
   },
   "eager_prefill_length_curve_v1": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "6d71a5f63b8e9505648fa8f3baf83d670f0239db",
     "policies": {
       "AGENTS.md": "db7a7bfb1e06ee0f36c755eb4be531fc9b5539c697209f0cfb086a470eab7700",
@@ -418880,13 +418880,43 @@
         "environment_sha256": "77e6532add0ac007a599760872ae3fa1690be2658055f3f618854dd655dab58d"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 16385,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": false,
+        "clean_speed": false,
+        "kernel": "eager",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata",
+          "sha256": "b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c",
+          "bytes": 26466696
+        },
+        "native_source_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "wall": 2400,
       "cpu": 20000,
@@ -418927,6 +418957,31 @@
         "passed": true
       }
     ],
+    "failure_diagnosis": {
+      "kind": "benchmark_argument_admission",
+      "exact_error": "strata_bench.py: error: prefill minimum must be an integer from 32768 through 131072",
+      "stderr_sha256": "bd34b275a757b290d6c373ebd2d4bc2d5477241ae2288008a83020ec3de5276f",
+      "missing_argument": "--prefill-short-diagnostic",
+      "native_engine_started": false,
+      "GPU_executed": false,
+      "source_scope": "parse_arguments rejects16385before starting a server;the existing diagnostic flag is required. Keep all original failed outcomes."
+    },
+    "closure_reconciliation": {
+      "original_ownership_closed": false,
+      "original_observation_complete": false,
+      "direct_child_reaped": true,
+      "recorded_session_empty": true,
+      "live_session_members": [],
+      "leader_identity": {
+        "pid": 1090348,
+        "start_ticks": 334369784,
+        "sid": 1090348,
+        "pgid": 1090348
+      },
+      "recorded_owned_identity_no_longer_live": true,
+      "ownership_reconciled_closed": true,
+      "scope": "Post-failure ownership inspection only. Preserve original protocol EOF/error,observation_complete=false,exit2and failed status;no successful model or GPUresult."
+    },
     "source_inputs": {
       "files": 775,
       "sha256": "f743f0c6dea7d98a91a2197696f824a2309c9e9758f77cf85ea9ecbc21735a2c"

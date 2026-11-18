@@ -2384,8 +2384,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `eager_prefill_length_curve_v1`is prepared at`6d71a5f63`:775committed
   source inputs,16generated JSONpayloads and15full model hashes are checked.
   Five analytic host regressions pass,including held-out independence and
-  competing-model/spread handling. Frontend and traced16K/80Kadmissions
-  precede the six clean length points;no curve sample is qualified yet.
+  competing-model/spread handling. Both frontend probes pass. V1stops before
+  GPUexecution:the first16Kclient exits2because the controller omitted the
+  existing`--prefill-short-diagnostic`flag. Preserve the failed protocol/owner
+  observation;separate reconciliation confirms its sole child was reaped and
+  no session member remains. No native engine starts and no curve sample is
+  qualified. V2must preserve the original lengths,order,math and fit criteria,
+  adding only the required16Kdiagnostic argument and its real-parser test.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for that immediate question;retire a superseded generation
