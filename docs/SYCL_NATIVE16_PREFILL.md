@@ -2650,17 +2650,31 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   single-request prefill question. [Bevy, sections 2–3](https://arxiv.org/html/2611.04794v1#S3)
   [PDScope, section 4.4](https://arxiv.org/html/2610.39216v1#S4.SS4)
 
-  Quantify first-piece known demand before moving any router operation.
-  The existing `MoeWindowRoutes` groups rows stably by expert. For each
-  nonempty expert, `source_rows()[offsets()[expert]]` is its earliest
-  selected row in that window. A post-route diagnostic can therefore
-  derive cumulative demand for the first 8192, 16384 and later rows with
-  one lookup per active expert. Weight it by the actual packed stride,
-  record windows and deduplicate by layer where the bank retains a
-  payload. If early demand has enough bytes to matter, test whether
-  exact prefix routing can be issued before later attention pieces.
-  It needs its own scratch-lifetime and dispatch comparison. Original
-  gate results still determine execution and demand fallback.
+  The `prefill_first_demand_v1` diagnostic closes at `e3d947885`. It uses
+  the recovered native window image and a host-only extension of the
+  existing MoE observer. After the existing drain, read one earliest
+  row per selected expert from `source_rows()[offsets()[expert]]` and
+  weight it by the actual packed stride. Four thinking-on `bench.sh`
+  requests compare prefix demand to all 48 layers of full-fit bank512
+  JIT upload counts and bytes. All have zero private-bank hits, checked
+  handoff, normal process exit and no fresh GPU fault. All 15 final model
+  hashes match. The 32K and 64K requests are two independent processes,
+  each with two requests. Their observer timings do not qualify speed.
+
+  | Engine rows | Exact weights needed | Identified by row 8192 | Identified by row 16384 | Additional payload if all 512 experts load |
+  | --- | ---: | ---: | ---: | ---: |
+  | 32768 | 35.39–35.49 GB | 87.15–87.26% | 92.73–92.78% | 14.80–14.91 GB |
+  | 65536 | 37.17–37.21 GB | 82.95–83.10% | 88.21–88.28% | 13.08–13.12 GB |
+
+  The first 8192 rows identify about 30.9 GB at 64K. The next 8192 add
+  about 1.9–2.0 GB. Start with one prefix and exact demand fallback for
+  the tail. First isolate moving the existing prefix router earlier and
+  prove its scratch lifetime and unchanged route IDs, weights and upload
+  work. Then separately change copy issue time, copy queue and first-reader
+  wait with a fixed payload. Keep the final combined comparison against JIT.
+  These are requested bytes known from completed routes. Actual early
+  availability, transfer and attention overlap, and physical bus traffic
+  require their own measurements.
 
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the
@@ -2922,9 +2936,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   do not attribute the third clean-pair slowdown. Direct borrowing misses
   the prospective performance gate against the reused baseline, so keep
   it out of the model trial. Use reusable staging as the source reference
-  for the next comparison. Record actual selected expert IDs and byte demand
-  before changing model placement, then compare demand and scheduling units
-  at the production handoff. QSA state and the GPU bank were fixture-owned.
+  for the next comparison. The first-route census above identifies the
+  size of one exact prefix for the independent scheduling comparison.
+  QSA state and the GPU bank were fixture-owned in the source comparison.
   Full-model throughput, decode and physical context remain unqualified by
   this result.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
