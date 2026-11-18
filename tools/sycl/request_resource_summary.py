@@ -20,7 +20,7 @@ def summarize(trace, receipt, original=None):
     if original is not None:
         reader.require(all(check[k] == original[k] for k in check), 'original request summary mismatch')
     output = []
-    for request, prior in zip(receipt['requests'], original['requests']):
+    for request, prior in zip(receipt['requests'], check['requests']):
         low, high = request['begin_raw_ns'], request['end_raw_ns']
         groups = defaultdict(lambda: dict(calls=0, service_ns=0, requested_API_bytes=0))
         kernels = defaultdict(lambda: dict(calls=0, service_ns=0))

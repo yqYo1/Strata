@@ -14,8 +14,10 @@ sys.dont_write_bytecode = True
 import eager_request_profile as profile
 
 P, B, RESULT = profile.P, profile.B, profile.RESULT
-ROOT = B / 'eager-request-analysis-v1'
+ROOT = B / 'eager-request-analysis-v2'
 ARCHIVE = '8173b1aab2940ec394236fe2330b2c29a4971509'
+FAILED_ANALYSIS = '7c14323071207aeda1de23930951a08f26072026'
+KEY = 'post_run_analysis_v2'
 THIS = 'tools/sycl/recover_eager_request_profile.py'
 owner_api = profile.comparison.build.supervision
 require, sha = profile.require, profile.sha
@@ -28,10 +30,15 @@ def committed_source(revision, name):
 
 
 def input_bytes():
-    archived = json.loads(profile.probe.pti.blob(P, ARCHIVE, str(RESULT.relative_to(P))))[profile.KEY]
+    path = str(RESULT.relative_to(P))
+    archived = json.loads(profile.probe.pti.blob(P, ARCHIVE, path))[profile.KEY]
+    failure = json.loads(profile.probe.pti.blob(P, FAILED_ANALYSIS, path))[profile.KEY]['post_run_analysis']
     live = profile.workspace.device.build.ur_validation.committed(RESULT, (profile.KEY,))
     original = dict(live)
-    original.pop('post_run_analysis', None)
+    require(original.pop('post_run_analysis') == failure and failure['stage'] == 'failed'
+        and failure['ownership_closed'] and failure['exit_code'] == 1
+        and 'NoneType' in failure['error'], 'preserve original failed standalone analysis')
+    original.pop(KEY, None)
     require(archived == original and archived['stage'] == 'failed' and not archived['passed']
         and not archived['complete'] and not archived['active'] and archived['ownership_closed']
         and len(archived['processes']) == 2, 'preserve exact original failed cohort')
@@ -59,24 +66,31 @@ def input_bytes():
 
 def save(row, evidence):
     values = json.loads(RESULT.read_text())
-    values[profile.KEY] = dict(row, post_run_analysis=evidence)
+    values[profile.KEY] = dict(row, **{KEY: evidence})
     profile.core.write(RESULT, values)
 
 
 def prepare():
     row, archived, trace, receipt, data = input_bytes()
-    require(not ROOT.exists() and 'post_run_analysis' not in row, 'fresh analysis only')
+    require(not ROOT.exists() and KEY not in row, 'fresh analysis only')
     source = profile.workspace.device.build.source.git(P, 'rev-parse', 'HEAD').decode().strip()
     pins = {name: committed_source(source, name)
         for name in (THIS, profile.THIS, profile.READER, 'tools/sycl/request_profile_reader.py',
+            'tools/test_request_resource_summary.py', 'tools/test_request_profile_reader.py',
             'tools/sycl/measurement_owner.py', *profile.capacity.POLICIES)}
     require(all(committed_source(archived['source_commit'], name) == pins[name]
-        for name in (profile.THIS, profile.READER, 'tools/sycl/request_profile_reader.py',
+        for name in (profile.THIS, 'tools/sycl/request_profile_reader.py',
             'tools/sycl/measurement_owner.py')), 'analysis grammar and original owner must be unchanged')
+    prior_reader = profile.probe.pti.blob(P, archived['source_commit'], profile.READER)
+    old = b"zip(receipt['requests'], original['requests'])"
+    new = b"zip(receipt['requests'], check['requests'])"
+    require(prior_reader.count(old) == 1 and prior_reader.replace(old, new) == (P / profile.READER).read_bytes(),
+        'only the optional comparison fallthrough may change')
     previous_bytes = owner_api.artifact_bytes(receipt.parent)
     require(previous_bytes > profile.ANALYSIS_BUDGET['total_cap'],
         'cannot verify that the original analysis output-root budget counted the capture')
     plan = dict(stage='prepared', source_commit=source, pins=pins, original_evidence_commit=ARCHIVE,
+        failed_analysis_commit=FAILED_ANALYSIS,
         source_trace=dict(path=str(trace), bytes=trace.stat().st_size, sha256=data['trace_sha256']),
         source_receipt=dict(path=str(receipt), sha256=sha(receipt)),
         original_analysis_artifact_scope=dict(counted_parent=str(receipt.parent),
@@ -94,7 +108,7 @@ def prepare():
 
 def run():
     row, _, trace, receipt, data = input_bytes()
-    plan = row['post_run_analysis']
+    plan = row[KEY]
     require(plan['stage'] == 'prepared' and json.loads((ROOT / 'plan.json').read_text()) == plan
         and not (ROOT / 'execution.json').exists()
         and all(committed_source(plan['source_commit'], n) == h for n, h in plan['pins'].items())
