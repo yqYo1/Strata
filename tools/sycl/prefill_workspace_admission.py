@@ -3,7 +3,8 @@
 Main-authored, repository LICENSE. Device/workspace readers are preserved from
 prefill_window_model.py at570f6903e; eager-route reader is preserved from the
 owned eager_fullfit_bench.py at5f1a95453. No XeStrata inputs. Closed comparison
-command modes live in Git; this module is consumed by the current64Krevalidation.
+command modes live in Git. Retain these readers for the next same-image
+input-length curve and its source/workspace/dispatch admission.
 """
 import hashlib
 import json

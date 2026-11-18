@@ -2351,6 +2351,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   current9849decode or the whole model. No arm reaches the1000PPtarget.
   Full cohort evidence is`64f5b9899`;six first-use/warmed CSVpoints bring
   the cumulative index to643without replacing earlier milestones.
+  All36samples,12native identities and the unchanged unit decisions remain
+  compact with six shared actual-work cases. The773original Git inputs and
+  24generated JSONpayloads are recovered exactly. The closed campaign CLI
+  and its four decision tests retire to Git;reusable workspace/upload
+  admission readers and their three host tests remain for the next curve.
   Historical64Krequest hashes match all three current requests;different
   timing periods do not identify a regression cause. Keep the36samples and
   each separate outcome. The next bounded question is same-image eager-path
