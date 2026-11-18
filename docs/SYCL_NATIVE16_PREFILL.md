@@ -2707,6 +2707,39 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   files are retired. V2 separates `compile/` logs from `build/` products
   and adds a host regression check. It keeps the same fixture sources,
   comparison order and decision criteria.
+
+  V2 closes at `5e85355f5`. Four host checks pass. The fresh six-TU
+  build verifies 722 compiler inputs, 25 link inputs and the final
+  executable. Five small traced cases include cancellation after an
+  accepted copy. The larger fixture produces 25 traced and 75 clean
+  samples with exact output, guard checks, normal exits and no fresh
+  GPU fault.
+
+  | Candidate/reference time | Clean pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Separate serial/shared serial | 0.999875, 0.985145, 1.034187 | 1.006194 |
+  | Deferred/separate serial | 0.994444, 1.001983, 0.959401 | 0.985100 |
+  | Deferred/shared serial | 0.994320, 0.987099, 0.992200 | 0.991202 |
+
+  Both individual changes miss the three-pair gain criterion. The net
+  candidate is 0.88% faster by paired geometric mean. Its copy and QSA
+  device intervals overlap by zero in all five traced cycles. On the
+  separate queue, deferring the wait reduces the gap from the last copy
+  to the first QSA kernel from 4.22–9.76 ms to 7.1–7.5 µs. The clean
+  standalone copy medians range from 226.3 to 329.3 ms, and compute
+  medians range from 221.5 to 221.7 ms. The variation and trace gaps
+  establish neither physical PCIe saturation nor separate engine use.
+  The original prefetch advancement gate fails.
+
+  Retain the disposable fixture for one same-ELF attribution test. Pair
+  host API exit times for the copy loop with the first QSA launch entry
+  and actual device timing. Record the queue or command-list identities
+  when the collector exposes them. An application submission after the
+  final device copy motivates testing compute-first submission as an
+  independent change. Earlier submission with serial device intervals
+  directs the next check to queue scheduling and explicit copy-engine
+  selection. Keep the runtime safety settings. Retire the fixture and
+  raw capture at the attribution boundary after recording the result.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
