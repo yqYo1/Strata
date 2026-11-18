@@ -2281,7 +2281,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gain gate:time ratios0.914916/0.908997/0.904083,geomean0.909321.
   Aggregate warmed PPis864.962reference versus951.557new;new process PPis
   952.034/951.557/949.647. Median warmed client TTFTis151.8305sversus137.9815s.
-  The separately scoped combination is eligible but unprepared. Preserve
+  The separately scoped combination is prepared at`86493d658`:15model
+  hashes and18generated inputs pinned,same coherent engine in both arms,
+  bank256/window10versusbank1/window16. Host probes and model checks are next.
+  No combined performance has been measured. Preserve
   the bank/coherence/relocation losses;this unit gain does not adopt the
   composed engine or reach1000PPat128K. Reduced jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
@@ -2291,7 +2294,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are recovered exactly;all635ended files(96,621,178B)and288,349Btemporary
   inventory are retired. Both phase references,the coherent candidate and
   required shared records remain;fresh combined-predecessor/device admission
-  is next.
+  passes after retirement.
   Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
   RESTORE qualification remain unresolved. Full relocation evidence is
