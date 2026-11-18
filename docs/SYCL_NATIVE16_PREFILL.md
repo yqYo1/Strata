@@ -2864,6 +2864,42 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   results on the dense readers. Once this workload's source is qualified,
   compare actual expert demand and the resulting prefill route before any
   model speed claim. [Level Zero queue descriptors](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_queue.html#ze-command-queue-desc-t)
+
+  `fullfit_attention_layer_source_v1` closes at `2f5164903`. For both
+  arms, the production `PinnedArena` and GGUF packer load layer 2 into an
+  anonymous one-layer arena. Both use the same immutable `ResidentExpertLayer`
+  geometry and copy-only ordinal 1. The reference allocates host USM and
+  copies the resident layer into it. The candidate registers the existing
+  read-only pages at the same address in the copy list's context. Admission
+  checks the pinned B570 API 1.17 provider, extension, type, allocation ID
+  and extent, followed by unknown allocation type and the original content
+  after unimport. The host-only preflight caught the original Down offset
+  typo. The corrected controller supplies offsets directly from the pinned
+  layout and verifies the three layer-role hashes before and after the run.
+
+  Both zero-enqueue metadata cases and both four-expert cancellation checks
+  pass. All 12 native processes close normally with no fresh GPU fault.
+  The copy/QSA cases verify both payloads, QSA outputs and guards. The 512-expert layer
+  contributes 120 clean intervals and 40 trace windows. The borrowed
+  deferred-wait trace retains 181.810–221.361 ms of overlap in all four
+  warmed windows.
+
+  | Borrowed / staged wall time | Three clean pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Layer preparation, warmed deferred interval and retirement | 0.511980, 0.688965, 0.500973 | 0.561162 |
+  | Warmed deferred interval alone | 0.982580, 1.421488, 0.930296 | 1.091216 |
+
+  Borrowing takes 4.0–9.9 ms to prepare and 2.3–4.8 ms to retire. The
+  measured staging path takes 212.3–259.9 ms to allocate and populate and
+  12.2–13.2 ms to retire. Common GGUF loading is recorded separately.
+  The source-lifecycle gate passes while the copy and QSA interval alone
+  has mixed results. The stage reference allocates per process for one
+  layer. A reused staging buffer still needs a matched comparison.
+  Validate a borrowed view of the actual full `ArenaExpertSource` owner
+  and measure exact expert demand before assigning the route to the model.
+  The isolated QSA input and its private bank were fixture-owned. Actual
+  model placement, first reader and subsequent reuse must carry their own
+  checks through end-to-end validation.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
