@@ -2236,8 +2236,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The prospective rule permits the separately scoped relocation/window questions
   after this safe fixed-work loss. It does not adopt the composed engine or
   qualify decode/task/physical-context behavior. Next compare98K/bank128/same
-  window with relocation0/1,then128K/fixed bank1with window10/16. The other three
-  cohorts remain unprepared;no larger-window model has run.
+  window with relocation0/1,then128K/fixed bank1with window10/16. Relocation is
+  prepared at`5d9b768f3`:all15model hashes and18generated configurations/plans
+  are pinned;both arms use the same composed3a195fengine,bank128and window10.
+  Its host/model checks are unrun. Window/combined remain unprepared;no
+  larger-window model has run.
   Full original evidence is`c68086021`. Four first-use/warmed CSVpoints bring
   the index to625. All27samples,nine native identities,the failed decision and
   useful request-work/admission values remain in the compact result. Original
