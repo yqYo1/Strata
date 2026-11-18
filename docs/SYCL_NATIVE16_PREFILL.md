@@ -2616,6 +2616,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   subgroup request. The fixed-input result includes this changed
   downstream work. Kernel-only attribution and hardware saturation
   remain unqualified. All original individual samples are retained.
+  Full route and plan evidence is at `6bdb37b3a`. Recovery verified 776
+  original inputs, all 18 generated case inputs and the exact retained
+  engine and provider identities. The nine native owners were closed.
+  The 635 capture files (96,703,218 bytes), temporary inventory and spent
+  one-shot controller were retired. Four CSV entries capture separate
+  first-use and warmed aggregates for each selector.
 
   The next transfer experiment will examine full-fit weight prefetch while
   the layer's attention runs. The 64K profile at `c40c8c1bd` measures
