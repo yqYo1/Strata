@@ -2262,7 +2262,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gain permits the combination. The fixed-bank window question is prepared
   at`3a520417f`,with15model hashes and18generated configurations pinned.
   Both arms use the same coherent candidate and bank1;only window10/16and
-  its required layout differ. Host probes pass;model admissions are next;
+  its required layout differ. Host probes and the first32Kfallback process
+  pass:three32769-read/thinking-on24-output requests,bank1,all32768BF16rows
+  onGPU,ordinary32768window/extra0,normal0/reapedempty,quiet validation and
+  no fresh fault. The128Kreference and larger-window admissions are next;
   the combination remains unprepared and no larger-window model has run.
   Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
