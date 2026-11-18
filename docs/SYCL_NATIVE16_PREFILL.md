@@ -2580,6 +2580,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   32K/64K losses remain recorded. Use a fresh matched plan at fixed bank256
   and window10. Do not combine the reduction switch with bank, window,
   upload policy, decode or prefill strategy changes.
+
+  The `qsa_normalizer_128k_v1` plan pins the original engine, both existing
+  denominator selectors and the exact previous request bodies. The
+  32769-token candidate and two 131072-token progress checks precede
+  three fresh clean 131072-token pairs in AB, BA, AB order. Each process has
+  three thinking-on requests. Timing separates the first from the two
+  subsequent requests. The route reader checks the actual denominator,
+  residual and bank placement, window geometry and decode handoff. It
+  records changes in jobs and requested bytes as possible downstream effects
+  of the rounding difference, separately from the fixed-input speed result.
+  Three host tests cover the two selectors, invalid workspace/fallback
+  evidence and distinguishing a repeated gain from a same-work gain.
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
