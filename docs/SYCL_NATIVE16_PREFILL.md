@@ -2381,6 +2381,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   process per length does not establish independent repetitions or a physical
   law. Same-length traced/clean work and the preceding64Keager work must
   match exactly. No native build or source-unit adoption is implied.
+  `eager_prefill_length_curve_v1`is prepared at`6d71a5f63`:775committed
+  source inputs,16generated JSONpayloads and15full model hashes are checked.
+  Five analytic host regressions pass,including held-out independence and
+  competing-model/spread handling. Frontend and traced16K/80Kadmissions
+  precede the six clean length points;no curve sample is qualified yet.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for that immediate question;retire a superseded generation
