@@ -423522,7 +423522,7 @@
         "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
       }
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "2008bd30bae20dcde686d079a91edd84deec0b61",
     "reference": {
       "closed_curve_sha256": "96621a58829958f22138dbd4e0d7806ed6c1e9744d3a333ff18f7ac289d98d77",
@@ -423701,7 +423701,890 @@
         "environment_sha256": "925b26504f6ee4b8985abcaa5917c3b49cc0ad16157b8f0c811be3f25e6c3a00"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 65537,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "kernel": "eager",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-window-native-v2/build/strata",
+          "sha256": "b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c",
+          "bytes": 26466696
+        },
+        "native_source_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
+        "enclosing_owned_run_raw_ns": {
+          "begin": 3352901241162584,
+          "end": 3353247801056362
+        },
+        "native_identity": {
+          "pid": 1416879,
+          "start_ticks": 335292943,
+          "sid": 1416814
+        },
+        "external_request_raw_windows": [
+          {
+            "begin": 3352987495034050,
+            "end": 3353079783250724
+          },
+          {
+            "begin": 3353080103147786,
+            "end": 3353160557093149
+          },
+          {
+            "begin": 3353160890711954,
+            "end": 3353241955164089
+          }
+        ],
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1416879,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 888410624,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 384,
+              "window_rows": 65536,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4248543232,
+              "fixed_including_headroom_bytes": 3036152064,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 4217,
+                "fused_rows": 27999153,
+                "separate_jobs": 16404
+              },
+              "down": {
+                "fused_jobs": 4217,
+                "fused_rows": 27999153,
+                "separate_jobs": 16404
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20621,
+              "windows": 48,
+              "dequants": 18222,
+              "maximum_physical_window_rows": 65536,
+              "requested_source_map_bytes": 125829120,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 18222,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_source_map_H2D_bytes": 125829120,
+            "fullfit_upload": {
+              "policy": "eager",
+              "fullfit_layers": 24,
+              "accepted_copy_commands": 9178,
+              "requested_fullfit_H2D_bytes": 16889804800,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            }
+          },
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 888410624,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 384,
+              "window_rows": 65536,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4251119616,
+              "fixed_including_headroom_bytes": 3036152064,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 4217,
+                "fused_rows": 27998388,
+                "separate_jobs": 16374
+              },
+              "down": {
+                "fused_jobs": 4217,
+                "fused_rows": 27998388,
+                "separate_jobs": 16374
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20591,
+              "windows": 48,
+              "dequants": 18204,
+              "maximum_physical_window_rows": 65536,
+              "requested_source_map_bytes": 125829120,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 18204,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_source_map_H2D_bytes": 125829120,
+            "fullfit_upload": {
+              "policy": "eager",
+              "fullfit_layers": 24,
+              "accepted_copy_commands": 9179,
+              "requested_fullfit_H2D_bytes": 16891161600,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            }
+          },
+          {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 888410624,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 335544320,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 384,
+              "window_rows": 65536,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4256808960,
+              "fixed_including_headroom_bytes": 3036152064,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 4217,
+                "fused_rows": 28001231,
+                "separate_jobs": 16351
+              },
+              "down": {
+                "fused_jobs": 4217,
+                "fused_rows": 28001231,
+                "separate_jobs": 16351
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20568,
+              "windows": 48,
+              "dequants": 18182,
+              "maximum_physical_window_rows": 65536,
+              "requested_source_map_bytes": 125829120,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 18182,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_source_map_H2D_bytes": 125829120,
+            "fullfit_upload": {
+              "policy": "eager",
+              "fullfit_layers": 24,
+              "accepted_copy_commands": 9160,
+              "requested_fullfit_H2D_bytes": 16860006400,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 88837.4,
+            "prompt_tps": 737.7,
+            "ttft_s": 89.247,
+            "total_s": 92.285,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 77265.0,
+            "prompt_tps": 848.2,
+            "ttft_s": 77.663,
+            "total_s": 80.42,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 77876.5,
+            "prompt_tps": 841.6,
+            "ttft_s": 78.282,
+            "total_s": 81.011,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 77570.75,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "analysis": {
+          "command": [
+            "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+            "-B",
+            "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/request_resource_summary.py",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-profile-v2/0/trace/strata.1416879.json",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-profile-v2/0/analysis/input.json",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/eager-request-profile-v2/0/analysis/resources.json"
+          ],
+          "exit_code": 0,
+          "ownership_closed": true,
+          "input_sha256": "6a98ec63e6593826fe0ec553f4822084add2aa33c486370cbd88613e04550b36",
+          "budget_error": null,
+          "direct_child_reaped": true,
+          "session_empty": true
+        },
+        "resources": {
+          "requests": [
+            {
+              "request_id": "0",
+              "sample_scope": "first_long",
+              "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+              "actual_read_tokens": 65537,
+              "generated_tokens": 24,
+              "window_ns": 92288216674,
+              "contained_GPU_events": 229519,
+              "contained_GPU_service_ns": 72261388287,
+              "boundary_crossing_GPU_events": 0,
+              "copy_and_other_commands": {
+                "D2D": {
+                  "calls": 9717,
+                  "service_ns": 788099113,
+                  "requested_API_bytes": 128861904128
+                },
+                "D2H": {
+                  "calls": 384,
+                  "service_ns": 148030704,
+                  "requested_API_bytes": 830472192
+                },
+                "D2M": {
+                  "calls": 124,
+                  "service_ns": 123541822,
+                  "requested_API_bytes": 648152524
+                },
+                "H2D": {
+                  "calls": 344,
+                  "service_ns": 1030898712,
+                  "requested_API_bytes": 3577741312
+                },
+                "M2D": {
+                  "calls": 21236,
+                  "service_ns": 14904297637,
+                  "requested_API_bytes": 48379147268
+                },
+                "zeCommandListAppendBarrier": {
+                  "calls": 8,
+                  "service_ns": 936,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[10485760]": {
+                  "calls": 24,
+                  "service_ns": 549158,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[117669888]": {
+                  "calls": 1,
+                  "service_ns": 220833,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[1536]": {
+                  "calls": 12,
+                  "service_ns": 37705,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[307200]": {
+                  "calls": 672,
+                  "service_ns": 2300892,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[327680]": {
+                  "calls": 24,
+                  "service_ns": 89992,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[33555456]": {
+                  "calls": 12,
+                  "service_ns": 859682,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[368640]": {
+                  "calls": 1,
+                  "service_ns": 3645,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[40960]": {
+                  "calls": 1,
+                  "service_ns": 5000,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[4]": {
+                  "calls": 49,
+                  "service_ns": 95703,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[51200]": {
+                  "calls": 21,
+                  "service_ns": 48840,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[512]": {
+                  "calls": 12,
+                  "service_ns": 37289,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[671088640]": {
+                  "calls": 48,
+                  "service_ns": 45916957,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[76800]": {
+                  "calls": 96,
+                  "service_ns": 322233,
+                  "requested_API_bytes": 0
+                }
+              },
+              "top_kernel_families": [
+                {
+                  "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 96,
+                  "service_ns": 14389787979
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::half_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                  "calls": 10774,
+                  "service_ns": 4979606110
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::recurrence_columns<4, true, unsigned short>(float*, unsigned short const*, float const*, float const*, float*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 288,
+                  "service_ns": 4414723729
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DownScatterKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false, (strata::experimental::vllm_xe2_native16::ScatterLayout)2>",
+                  "calls": 4217,
+                  "service_ns": 3152227329
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::GuSwiGLUKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false>",
+                  "calls": 4217,
+                  "service_ns": 2489812318
+                },
+                {
+                  "name": "hgemm_nocopy_tn_32x64_8x4",
+                  "calls": 288,
+                  "service_ns": 2280555821
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 2056,
+                  "service_ns": 2121869647
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::submit_topk<1>(sycl::_V1::queue&, float const*, int const*, long, long, long, int*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 3072,
+                  "service_ns": 2020638515
+                },
+                {
+                  "name": "strata::sycl_backend::for_each<strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 20621,
+                  "service_ns": 1999240680
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::bfloat16_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                  "calls": 1536,
+                  "service_ns": 1714876977
+                },
+                {
+                  "name": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+                  "calls": 6641,
+                  "service_ns": 1658042955
+                },
+                {
+                  "name": "strata::sycl_backend::for_each<strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 768,
+                  "service_ns": 1534587492
+                }
+              ],
+              "kernel_tail": {
+                "families": 135,
+                "calls": 142159,
+                "service_ns": 12460061882
+              },
+              "interval_union_ns": {
+                "copy": 16981144173,
+                "kernel": 55181998742,
+                "other_command": 50488865
+              },
+              "all_interval_union_ns": 72200122423,
+              "copy_kernel_overlap_ns": 13509357
+            },
+            {
+              "request_id": "1",
+              "sample_scope": "warmed",
+              "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+              "actual_read_tokens": 65537,
+              "generated_tokens": 24,
+              "window_ns": 80453945363,
+              "contained_GPU_events": 229312,
+              "contained_GPU_service_ns": 71720278625,
+              "boundary_crossing_GPU_events": 0,
+              "copy_and_other_commands": {
+                "D2D": {
+                  "calls": 9717,
+                  "service_ns": 788425629,
+                  "requested_API_bytes": 128861904128
+                },
+                "D2H": {
+                  "calls": 384,
+                  "service_ns": 147959763,
+                  "requested_API_bytes": 830472192
+                },
+                "D2M": {
+                  "calls": 123,
+                  "service_ns": 122716508,
+                  "requested_API_bytes": 648152520
+                },
+                "H2D": {
+                  "calls": 344,
+                  "service_ns": 949269336,
+                  "requested_API_bytes": 3577741312
+                },
+                "M2D": {
+                  "calls": 21217,
+                  "service_ns": 14593605875,
+                  "requested_API_bytes": 48337521664
+                },
+                "zeCommandListAppendBarrier": {
+                  "calls": 8,
+                  "service_ns": 832,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[10485760]": {
+                  "calls": 24,
+                  "service_ns": 558844,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[117669888]": {
+                  "calls": 1,
+                  "service_ns": 215937,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[1536]": {
+                  "calls": 12,
+                  "service_ns": 37497,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[307200]": {
+                  "calls": 672,
+                  "service_ns": 2224969,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[327680]": {
+                  "calls": 24,
+                  "service_ns": 81658,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[33555456]": {
+                  "calls": 12,
+                  "service_ns": 837600,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[368640]": {
+                  "calls": 1,
+                  "service_ns": 3645,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[40960]": {
+                  "calls": 1,
+                  "service_ns": 5104,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[4]": {
+                  "calls": 49,
+                  "service_ns": 97468,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[51200]": {
+                  "calls": 21,
+                  "service_ns": 51033,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[512]": {
+                  "calls": 12,
+                  "service_ns": 36663,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[671088640]": {
+                  "calls": 48,
+                  "service_ns": 45983521,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[76800]": {
+                  "calls": 96,
+                  "service_ns": 307861,
+                  "requested_API_bytes": 0
+                }
+              },
+              "top_kernel_families": [
+                {
+                  "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 96,
+                  "service_ns": 14376267875
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::half_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                  "calls": 10830,
+                  "service_ns": 4983048725
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::recurrence_columns<4, true, unsigned short>(float*, unsigned short const*, float const*, float const*, float*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 288,
+                  "service_ns": 4399974353
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DownScatterKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false, (strata::experimental::vllm_xe2_native16::ScatterLayout)2>",
+                  "calls": 4217,
+                  "service_ns": 3155113116
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::GuSwiGLUKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false>",
+                  "calls": 4217,
+                  "service_ns": 2491941549
+                },
+                {
+                  "name": "hgemm_nocopy_tn_32x64_8x4",
+                  "calls": 288,
+                  "service_ns": 2278116749
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 2056,
+                  "service_ns": 2117586737
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::submit_topk<1>(sycl::_V1::queue&, float const*, int const*, long, long, long, int*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 3072,
+                  "service_ns": 2014263205
+                },
+                {
+                  "name": "strata::sycl_backend::for_each<strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 20591,
+                  "service_ns": 2000823016
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::bfloat16_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                  "calls": 1536,
+                  "service_ns": 1732220480
+                },
+                {
+                  "name": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+                  "calls": 6622,
+                  "service_ns": 1654024645
+                },
+                {
+                  "name": "strata::sycl_backend::for_each<strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 768,
+                  "service_ns": 1539337379
+                }
+              ],
+              "kernel_tail": {
+                "families": 134,
+                "calls": 141965,
+                "service_ns": 12325141053
+              },
+              "interval_union_ns": {
+                "copy": 16588556791,
+                "kernel": 55033518422,
+                "other_command": 50437264
+              },
+              "all_interval_union_ns": 71659679453,
+              "copy_kernel_overlap_ns": 12833024
+            },
+            {
+              "request_id": "2",
+              "sample_scope": "warmed",
+              "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+              "actual_read_tokens": 65537,
+              "generated_tokens": 24,
+              "window_ns": 81064452135,
+              "contained_GPU_events": 229131,
+              "contained_GPU_service_ns": 72061086626,
+              "boundary_crossing_GPU_events": 0,
+              "copy_and_other_commands": {
+                "D2D": {
+                  "calls": 9717,
+                  "service_ns": 788022534,
+                  "requested_API_bytes": 128861904128
+                },
+                "D2H": {
+                  "calls": 384,
+                  "service_ns": 147956427,
+                  "requested_API_bytes": 830472192
+                },
+                "D2M": {
+                  "calls": 123,
+                  "service_ns": 122400360,
+                  "requested_API_bytes": 648152520
+                },
+                "H2D": {
+                  "calls": 344,
+                  "service_ns": 936927458,
+                  "requested_API_bytes": 3577741312
+                },
+                "M2D": {
+                  "calls": 21195,
+                  "service_ns": 14949589867,
+                  "requested_API_bytes": 48301656064
+                },
+                "zeCommandListAppendBarrier": {
+                  "calls": 8,
+                  "service_ns": 832,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[10485760]": {
+                  "calls": 24,
+                  "service_ns": 569785,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[117669888]": {
+                  "calls": 1,
+                  "service_ns": 221354,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[1536]": {
+                  "calls": 12,
+                  "service_ns": 33643,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[307200]": {
+                  "calls": 672,
+                  "service_ns": 2266624,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[327680]": {
+                  "calls": 24,
+                  "service_ns": 79787,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[33555456]": {
+                  "calls": 12,
+                  "service_ns": 860306,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[368640]": {
+                  "calls": 1,
+                  "service_ns": 3333,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[40960]": {
+                  "calls": 1,
+                  "service_ns": 5000,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[4]": {
+                  "calls": 49,
+                  "service_ns": 94869,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[51200]": {
+                  "calls": 21,
+                  "service_ns": 50508,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[512]": {
+                  "calls": 12,
+                  "service_ns": 35206,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[671088640]": {
+                  "calls": 48,
+                  "service_ns": 46206019,
+                  "requested_API_bytes": 0
+                },
+                "zeCommandListAppendMemoryFill(D)[76800]": {
+                  "calls": 96,
+                  "service_ns": 330255,
+                  "requested_API_bytes": 0
+                }
+              },
+              "top_kernel_families": [
+                {
+                  "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 96,
+                  "service_ns": 14383342358
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::half_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                  "calls": 10824,
+                  "service_ns": 4981145921
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::recurrence_columns<4, true, unsigned short>(float*, unsigned short const*, float const*, float const*, float*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 288,
+                  "service_ns": 4400117164
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DownScatterKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false, (strata::experimental::vllm_xe2_native16::ScatterLayout)2>",
+                  "calls": 4217,
+                  "service_ns": 3157152816
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::GuSwiGLUKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false>",
+                  "calls": 4217,
+                  "service_ns": 2493825526
+                },
+                {
+                  "name": "hgemm_nocopy_tn_32x64_8x4",
+                  "calls": 288,
+                  "service_ns": 2278084053
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 2056,
+                  "service_ns": 2121838711
+                },
+                {
+                  "name": "strata::kernels::(anonymous namespace)::submit_topk<1>(sycl::_V1::queue&, float const*, int const*, long, long, long, int*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+                  "calls": 3072,
+                  "service_ns": 2011374013
+                },
+                {
+                  "name": "strata::sycl_backend::for_each<strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 20568,
+                  "service_ns": 2001675000
+                },
+                {
+                  "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::bfloat16_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                  "calls": 1536,
+                  "service_ns": 1731131661
+                },
+                {
+                  "name": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+                  "calls": 6607,
+                  "service_ns": 1649772226
+                },
+                {
+                  "name": "strata::sycl_backend::for_each<strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                  "calls": 768,
+                  "service_ns": 1540582599
+                }
+              ],
+              "kernel_tail": {
+                "families": 134,
+                "calls": 141850,
+                "service_ns": 12315390411
+              },
+              "interval_union_ns": {
+                "copy": 16930954682,
+                "kernel": 55031013440,
+                "other_command": 50751786
+              },
+              "all_interval_union_ns": 71997857504,
+              "copy_kernel_overlap_ns": 14862404
+            }
+          ],
+          "totals_match_request_reader": true,
+          "physical_bus_bytes_qualified": false,
+          "hardware_saturation_qualified": false,
+          "phase_attribution_qualified": false,
+          "clean_speed_qualified": false,
+          "trace_sha256": "26c69108a1892440d8b5c7171ca8f887b40a223e6dc64ae86b4752c10ed257c2"
+        }
+      }
+    ],
     "request_hashes": {
       "65537": [
         "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
