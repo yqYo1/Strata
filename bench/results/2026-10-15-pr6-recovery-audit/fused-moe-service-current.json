@@ -429991,11 +429991,11 @@
     }
   },
   "fullfit_attention_attribution_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "source_commit": "012254261e7bc45ccbfdfcc3df5e57b5e3005851",
     "executable": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/fullfit-attention-overlap-v2/build/sycl_fullfit_attention_overlap",
@@ -430031,6 +430031,288 @@
       "measurement": "Join 512 copies and two QSA kernels in each of ten serial-separate/deferred windows via unique collector IDs and flows. Compare warm rounds on a conservative 1ms clock margin, with serial as a sign control.",
       "stopping": "Fail for missing, ambiguous or out-of-window joins, or ownership, validation, driver or budget failure. No retry or performance claim.",
       "retention": "One compact chronology and comparison against the previous device trace. Retire both captures and the temporary native generation at this boundary unless a named imminent consumer proves otherwise."
+    },
+    "result": {
+      "host_probe_accepted": true,
+      "native_pid": 1801649,
+      "native_exit_code": 0,
+      "providers": [
+        {
+          "phase": "runtime-ready",
+          "mapped_ELFs": 35,
+          "unknown": 0,
+          "missing": 0,
+          "paths_sha256": "463c152bd1a05860c797813a2e86b825bcf7d46760f7d5514c0ff053c358894f"
+        },
+        {
+          "phase": "after-cleanup",
+          "mapped_ELFs": 35,
+          "unknown": 0,
+          "missing": 0,
+          "paths_sha256": "463c152bd1a05860c797813a2e86b825bcf7d46760f7d5514c0ff053c358894f"
+        }
+      ],
+      "trace": {
+        "sha256": "fd5fb072fa910b8efc27a841dc969e9d0777cf2061bcf19c4e10c880a97a8d76",
+        "bytes": 11218024
+      },
+      "validation": {
+        "pid": 1801649,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "windows": [
+        {
+          "arm": "serial_separate",
+          "round": 0,
+          "classification": "native_append_begins_after_copy",
+          "first_qsa_append_enter_minus_copy_end_ns": 8696068,
+          "first_qsa_append_return_minus_copy_end_ns": 8744318,
+          "first_qsa_device_start_minus_copy_end_ns": 8795425,
+          "last_copy_append_return_minus_device_tail_ns": -51694242,
+          "copy_host_append_union_ns": 109377511,
+          "copy_first_enter_to_last_return_ns": 173324806,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "deferred_wait",
+          "round": 0,
+          "classification": "native_append_returns_before_copy_end",
+          "first_qsa_append_enter_minus_copy_end_ns": -54404582,
+          "first_qsa_append_return_minus_copy_end_ns": -54387060,
+          "first_qsa_device_start_minus_copy_end_ns": 7162,
+          "last_copy_append_return_minus_device_tail_ns": -54483721,
+          "copy_host_append_union_ns": 109805047,
+          "copy_first_enter_to_last_return_ns": 179985456,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "serial_separate",
+          "round": 1,
+          "classification": "native_append_begins_after_copy",
+          "first_qsa_append_enter_minus_copy_end_ns": 4681085,
+          "first_qsa_append_return_minus_copy_end_ns": 4732902,
+          "first_qsa_device_start_minus_copy_end_ns": 4757737,
+          "last_copy_append_return_minus_device_tail_ns": -46988842,
+          "copy_host_append_union_ns": 114115862,
+          "copy_first_enter_to_last_return_ns": 182414702,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "deferred_wait",
+          "round": 1,
+          "classification": "native_append_returns_before_copy_end",
+          "first_qsa_append_enter_minus_copy_end_ns": -56507780,
+          "first_qsa_append_return_minus_copy_end_ns": -56489616,
+          "first_qsa_device_start_minus_copy_end_ns": 7529,
+          "last_copy_append_return_minus_device_tail_ns": -56587539,
+          "copy_host_append_union_ns": 104460412,
+          "copy_first_enter_to_last_return_ns": 167980213,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "serial_separate",
+          "round": 2,
+          "classification": "native_append_begins_after_copy",
+          "first_qsa_append_enter_minus_copy_end_ns": 4605373,
+          "first_qsa_append_return_minus_copy_end_ns": 4644175,
+          "first_qsa_device_start_minus_copy_end_ns": 4679221,
+          "last_copy_append_return_minus_device_tail_ns": -65352850,
+          "copy_host_append_union_ns": 104635480,
+          "copy_first_enter_to_last_return_ns": 168911660,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "deferred_wait",
+          "round": 2,
+          "classification": "native_append_returns_before_copy_end",
+          "first_qsa_append_enter_minus_copy_end_ns": -55577189,
+          "first_qsa_append_return_minus_copy_end_ns": -55560217,
+          "first_qsa_device_start_minus_copy_end_ns": 7397,
+          "last_copy_append_return_minus_device_tail_ns": -55657179,
+          "copy_host_append_union_ns": 105822980,
+          "copy_first_enter_to_last_return_ns": 173199120,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "serial_separate",
+          "round": 3,
+          "classification": "native_append_begins_after_copy",
+          "first_qsa_append_enter_minus_copy_end_ns": 5299138,
+          "first_qsa_append_return_minus_copy_end_ns": 5361946,
+          "first_qsa_device_start_minus_copy_end_ns": 5627078,
+          "last_copy_append_return_minus_device_tail_ns": -88230789,
+          "copy_host_append_union_ns": 128704757,
+          "copy_first_enter_to_last_return_ns": 260873235,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "deferred_wait",
+          "round": 3,
+          "classification": "native_append_returns_before_copy_end",
+          "first_qsa_append_enter_minus_copy_end_ns": -59721253,
+          "first_qsa_append_return_minus_copy_end_ns": -59702147,
+          "first_qsa_device_start_minus_copy_end_ns": 7173,
+          "last_copy_append_return_minus_device_tail_ns": -59810791,
+          "copy_host_append_union_ns": 107757262,
+          "copy_first_enter_to_last_return_ns": 178973989,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "deferred_wait",
+          "round": 4,
+          "classification": "native_append_returns_before_copy_end",
+          "first_qsa_append_enter_minus_copy_end_ns": -58846473,
+          "first_qsa_append_return_minus_copy_end_ns": -58795097,
+          "first_qsa_device_start_minus_copy_end_ns": 7271,
+          "last_copy_append_return_minus_device_tail_ns": -59728477,
+          "copy_host_append_union_ns": 105052273,
+          "copy_first_enter_to_last_return_ns": 169563783,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        },
+        {
+          "arm": "serial_separate",
+          "round": 4,
+          "classification": "native_append_begins_after_copy",
+          "first_qsa_append_enter_minus_copy_end_ns": 4554795,
+          "first_qsa_append_return_minus_copy_end_ns": 4606452,
+          "first_qsa_device_start_minus_copy_end_ns": 4631151,
+          "last_copy_append_return_minus_device_tail_ns": -126155276,
+          "copy_host_append_union_ns": 130057576,
+          "copy_first_enter_to_last_return_ns": 269674129,
+          "qsa_append_threads": 1,
+          "copy_append_threads": 1,
+          "collector_logical_lanes": {
+            "copy": [
+              4237314526,
+              4237314527
+            ],
+            "kernel": [
+              4237314527
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "serial_control_passed": true,
+        "deferred_classes": [
+          "native_append_returns_before_copy_end"
+        ],
+        "next": "inspect_native_queue_and_command_list_scheduling",
+        "speed_qualified": false,
+        "physical_engine_identity_qualified": false,
+        "margin_ns": 1000000,
+        "view": "Collector API entries and returns correlated by operation ID and flow. No independent UR-entry clock or physical engine identity."
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
     },
     "source_inputs": {
       "files": 151,
