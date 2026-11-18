@@ -2731,15 +2731,36 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   establish neither physical PCIe saturation nor separate engine use.
   The original prefetch advancement gate fails.
 
-  Retain the disposable fixture for one same-ELF attribution test. Pair
-  host API exit times for the copy loop with the first QSA launch entry
-  and actual device timing. Record the queue or command-list identities
-  when the collector exposes them. An application submission after the
-  final device copy motivates testing compute-first submission as an
-  independent change. Earlier submission with serial device intervals
-  directs the next check to queue scheduling and explicit copy-engine
-  selection. Keep the runtime safety settings. Retire the fixture and
-  raw capture at the attribution boundary after recording the result.
+  The same-ELF `fullfit_attention_attribution_v1` captures 25 windows and
+  joins 512 copy operations and two QSA kernels in each of ten selected
+  windows via PTI operation flows. In the four warmed deferred-wait
+  rounds the first QSA append returns 55.56–59.70 ms before the final
+  copy completes. QSA starts on the device 7.17–7.53 µs after that
+  completion. In the serial control the QSA append enters 4.55–5.30 ms
+  after copy completion. Output, guards, validation, provider mapping,
+  ownership and the fresh GPU fault check pass. These times locate the
+  serialization after the observed append return. The trace gives
+  logical lanes, with native list and physical-engine identity unresolved.
+
+  Follow the queue route before changing issue order. The earlier
+  metadata run at `794bb2672` puts both `Runtime::compute()` and
+  `make_queue(true)` on ordinal 0, index 0. The relevant Runtime source
+  and headers, boot, driver, provider libraries and queue settings match
+  the current fixture. The metadata case used a host-only build and UR
+  tracing, so the ordinal result guides the next test without identifying
+  which hardware engine ran each operation in the current trace.
+  Hold payload, queue, QSA and the deferred readiness check fixed when
+  comparing ordinary RAM with host USM through SYCL. For a native copy
+  trial, use the same supported host allocation in both arms and
+  compare the checked native submit/drain path at the original ordinal
+  first. Compare native ordinal 0 with native ordinal 1 separately,
+  including the same copy count, timing boundaries and guard checks.
+  Qualify each native configuration with small bounded cases first.
+  Preserve the qualified runtime safety settings and test any later
+  readiness or issue-order changes against a reference using the same
+  copy path. This sequence keeps source memory, submit/drain and queue
+  selection independently measurable. The model gate remains closed.
+  [Level Zero command-list requirements](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list.html)
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
@@ -7175,10 +7196,11 @@ are being developed together. Include the headers, callers, producer/consumer
 layout changes and tests needed for that unit to remain valid. Evaluate
 independent kernels, placement changes and settings in separate matched
 comparisons, holding the other units and workload fixed regardless of the extra
-build/run effort. If several edits are inseparable, state their invariant and why
-they form one unit in the committed plan before measurement. Keep each unit's
-outcome and then validate the combined implementation; an aggregate improvement
-cannot establish which constituent changes to adopt or conceal a phase loss.
+build/run effort. Use identical prerequisites in both arms of a dependent
+comparison. In the committed plan, identify each reference and state the
+invariant that makes any group of edits inseparable. Keep each unit's outcome
+and check the combined implementation and relevant interactions, including
+the prefill and decode gates for changes to their shared processing.
 
 Preserve the qualified runtime safety settings and immutable pre-exec
 SYCL/Level Zero environment in

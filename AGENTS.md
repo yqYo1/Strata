@@ -83,7 +83,7 @@ historical logs or the research library wholesale.
 
 | Action | Required check | Detailed rules |
 | --- | --- | --- |
-| Choose an optimization | Identify measured cost/resource evidence, or a previously faster owned path to revalidate, and the comparison that can accept or reject it. Distinguish attribution from throughput. | [Tuning](#git-integration-and-tuning), [measurement](#measurement-and-gpu-execution) |
+| Choose an optimization | Identify measured cost/resource evidence or a previously faster owned path to revalidate. For a multi-part candidate, plan a matched comparison for each smallest coherent change and for the combination. Distinguish attribution from throughput. | [Tuning](#git-integration-and-tuning), [measurement](#measurement-and-gpu-execution) |
 | Build | Commit the exact engine, benchmark, controller, generated inputs and recipe first; pin compiler, dependencies and environment. Rebuild all affected translation units after a class/header definition change; ABI/layout equality alone does not prove C++ ODR coherence. Preserve the validated fallback and check retained generations before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Run or compare | Verify committed inputs against the build record and actual executable hash. Check job ownership and the frozen comparison plan; keep first-use, subsequent-request and independent-process samples distinct. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
@@ -383,10 +383,12 @@ integration and testing.
   changed together. Include its required headers, callers, producer/consumer
   layouts and tests; compare independently variable kernels, placement and
   settings separately while holding the other units and workload fixed. Extra
-  measurement effort does not waive these comparisons. Justify an inseparable
-  unit in the committed plan, retain every unit's outcome, then validate their
-  combination and any relevant interactions. An aggregate
-  result alone does not qualify its constituent changes or excuse a phase loss.
+  measurement effort does not waive these comparisons. When a change needs
+  another unit to operate, use the same prerequisite in both arms. Justify
+  inseparable edits and record the reference for each unit before measurement.
+  Retain every unit's outcome, then validate the combination and any relevant
+  interactions. An aggregate result alone does not qualify its constituent
+  changes or excuse a phase loss.
   A run's `passed` or `complete` field does not imply that its performance gate
   permits advancement. Inspect the recorded decision and underlying samples;
   do not start a gated model trial when its component performance gate failed.

@@ -328,11 +328,12 @@ even when several parts were implemented together. Required headers, callers,
 producer/consumer layouts and their tests may form one inseparable unit; explain
 that dependency in the committed comparison plan. Independently variable kernels,
 placement and settings need individual comparisons with the other units and
-workload fixed, even when this requires extra builds or runs. Record those arms
-in the plan before collection. Preserve each unit's outcome and then check the
-combination and relevant interactions, including both phases when common
-processing changes. A combined gain or loss alone cannot accept or reject each
-constituent change.
+workload fixed, even when this requires extra builds or runs. For a change that
+requires a prerequisite, compare prerequisite-only with prerequisite plus the
+change. Record the reference and candidate for every unit before collection.
+Preserve each unit's outcome and then check the combination and relevant
+interactions, including both phases when common processing changes. A combined
+gain or loss alone cannot accept or reject each constituent change.
 
 Commit batch sizes, repetition order, timing eligibility and overhead checks
 before collection. A declared minimum batch duration screens timing granularity;
