@@ -2264,6 +2264,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
   RESTORE qualification remain unresolved. Full relocation evidence is
   `a82b3ef93`;four first-use/warmed CSVpoints bring the index to629.
+  All27samples,nine native identities and the failed decision remain compact;
+  original771Git inputs and18generated configurations are recovered exactly.
+  All635ended private files(96,245,904B)and287,079Btemporary inventory are
+  retired. Both phase references,the coherent candidate and required shared
+  records remain for the independent window/combination questions;fresh
+  predecessor/device admission is next.
   Full coherence evidence is`c68086021`. Four first-use/warmed CSVpoints bring
   the index to625. All27samples,nine native identities,the failed decision and
   useful request-work/admission values remain in the compact result. Original
