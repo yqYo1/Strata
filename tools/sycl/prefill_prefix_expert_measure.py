@@ -175,6 +175,13 @@ def model_context(cohort):
                     gate['decision']['matched_work'] and gate['binary'] == value['binaries']['strata'],
                     'matched numerical cohort required')
             gates['numerical'] = signature(gate)
+        prerequisites = {'prefix': ('ffn',), 'combined': ('ffn', 'prefix')}
+        for prior in prerequisites.get(cohort, ()):
+            gate = basis.validation.committed(RESULT, ('prefill_prefix_expert_' + prior + '_v1',))
+            require(gate['stage'] == 'closed' and gate['ownership_closed'] and
+                    gate['decision']['matched_work'] and gate['binary'] == value['binaries']['strata'],
+                    'finish the separate comparison first: ' + prior)
+            gates[prior] = signature(gate)
         _, _, speed = basis.basis()
         old = json.loads((basis.reference.model.ROOT / 'record.json').read_text())
         require(old['models'] == speed['model_assets'] and old['probe'] == speed['native_validation_probe'],
