@@ -2592,10 +2592,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   of the rounding difference, separately from the fixed-input speed result.
   Three host tests cover the two selectors, invalid workspace/fallback
   evidence and distinguishing a repeated gain from a same-work gain.
-  The traced 128K ordered-exp reference closes with all three requests,
-  checked handoff and no new driver fault. All 48 bank views in each
-  request have fewer than 512 slots at the fixed bank256 capacity. Clean
-  throughput and the matched candidate comparison are still pending.
+  Both traced 128K arms close with three requests each, checked handoff
+  and no new driver fault. All 48 bank views in each reference request
+  have fewer than 512 slots at the fixed bank256 capacity. Warmed
+  diagnostic PP is 928.548 ordered and 921.508 subgroup. The subgroup
+  arm has 123, 3 and 91 more expert jobs in the three matched requests.
+  These traced observations give an explicit work delta to check in
+  the six-process clean cohort. Repeated clean performance is pending.
 
   The next transfer experiment will examine full-fit weight prefetch while
   the layer's attention runs. The 64K profile at `c40c8c1bd` measures
