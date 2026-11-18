@@ -425074,7 +425074,7 @@
     }
   },
   "qsa_v_tile_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "ac3d3cbbdd0734630138cea11013c8ba74384863",
     "compile_environment": {
       "PATH": "/usr/bin:/bin",
@@ -425359,7 +425359,14 @@
       "separate_early_v.cpp": "c228fa3a14548fe2e8e75e7a4d93b90ce32815aa5618196b501c35fe278b60dc"
     },
     "whole_bytes": 1073741824,
-    "scopes": [],
+    "scopes": [
+      {
+        "mode": "build",
+        "passed": false,
+        "ownership_closed": true,
+        "error": "RuntimeError('build failed at command 8: /13/../../../../include/c++/13/optional:1296:5: note: candidate template ignored: could not match \\'optional\\' against \\'std::vector\\'\\n 1296 |     operator==(const optional<_Tp>& __lhs, nullopt_t) noexcept\\n      |     ^\\n/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/optional:1296:5: note: candidate template ignored: could not match \\'const optional<_Tp>\\' against \\'const value_type\\' (aka \\'const unsigned short\\')\\n/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/optional:1364:5: note: candidate template ignored: could not match \\'optional\\' against \\'std::vector\\'\\n 1364 |     operator==(const optional<_Tp>& __lhs, const _Up& __rhs)\\n      |     ^\\n/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/optional:1370:5: note: candidate template ignored: could not match \\'const optional<_Tp>\\' against \\'const value_type\\' (aka \\'const unsigned short\\')\\n 1370 |     operator==(const _Up& __lhs, const optional<_Tp>& __rhs)\\n      |     ^\\n/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1266:3: note: candidate template ignored: could not match \\'variant\\' against \\'std::vector\\'\\n 1266 |   _VARIANT_RELATION_FUNCTION_TEMPLATE(==, equal)\\n      |   ^\\n/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/variant:1241:20: note: expanded from macro \\'_VARIANT_RELATION_FUNCTION_TEMPLATE\\'\\n 1241 |     constexpr bool operator __OP(const variant<_Types...>& __lhs, \\\\\\n      |                    ^\\n/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/qsa_bf16_prefix_layout_bench.cpp:186:82: error: use of undeclared identifier \\'candidate_name\\'\\n  186 |         <<\" order=\"<<index<<\" variant=\"<<variant<<\" implementation=\"<<(variant ? candidate_name : baseline_name)\\n      |                                                                                  ^~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/qsa_bf16_prefix_layout_bench.cpp:186:99: error: use of undeclared identifier \\'baseline_name\\'\\n  186 |         <<\" order=\"<<index<<\" variant=\"<<variant<<\" implementation=\"<<(variant ? candidate_name : baseline_name)\\n      |                                                                                                   ^~~~~~~~~~~~~\\n6 errors generated.\\n')"
+      }
+    ],
     "active": false,
     "passed": false,
     "complete": false,
