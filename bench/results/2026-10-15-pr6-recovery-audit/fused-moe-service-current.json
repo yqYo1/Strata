@@ -453297,7 +453297,7 @@
     "error": "KeyError('MTP_expert_restore_bytes') in final aggregation after normal owned model exits"
   },
   "prefill_prefix_router_replay_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "0402de2fba5c20be5465c2cf8e1dd68520a41b8a",
     "controller_sha256": "d5c8c3fa57f887e26b7a5b954f5038203ebe8a4c61ddd0ea7ea7fe908b49683e",
     "original_plan_source": "51ed305616282efc269ac77a504b2eb5e47a9a9c",
@@ -453326,7 +453326,21 @@
       }
     ],
     "plan": "Re-read both original per-process logs and journals for each arm. Recover the MTP restore count already checked by request_route from actual native stdout, then rerun the original decision. Verify all 15 model asset hashes. No new native execution.",
-    "passed": false,
-    "ownership_closed": true
+    "passed": true,
+    "ownership_closed": true,
+    "decision": {
+      "comparisons": {
+        "late_vs_off": true,
+        "early_vs_late": true
+      },
+      "router_equivalence": true,
+      "matched_requests": 2,
+      "observer_speed_qualified": false,
+      "inference_adopted": false,
+      "next": "If numerical and ownership gates pass, compare the storage/readback change and earlier compute placement separately using observer-free repeated 64K requests."
+    },
+    "model_assets_rehashed": 15,
+    "replayed_requests": 6,
+    "new_native_processes": 0
   }
 }
