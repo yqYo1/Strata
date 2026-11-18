@@ -2541,7 +2541,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The V tile comparison compiled the unchanged ordered-exp prefix and two
   isolated derivatives. Shared local storage requests 20,036 bytes per
   workgroup. A separate V tile raises this to 36,420 bytes. The two derived
-  kernels differ only in where the existing V gather runs. The first
+  kernels differ only in where the existing V gather runs. That earlier
+  gather requires separate storage because QK still reads the shared K tile
+  at that point. The separate-late arm isolates the storage change. The
+  separate-early arm compared with separate-late isolates gather order.
+  The first
   attempt failed before linking because the benchmark's legacy timing loop
   escaped its compile-time branch. The corrected fixture preserved both
   generated kernel hashes. The original failure is recorded at `1d598cb71`.
@@ -2565,7 +2569,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in every process. Keep shared late V. The comparison shows a cost of the
   extra local storage and the changed placement within the kernel. Device
   counter evidence for achieved workgroup occupancy or memory saturation
-  is still unavailable.
+  is still unavailable. Commit `94871b2c9` preserves the 162 samples and
+  each comparison decision. The corrected fixture and recipe are reachable
+  at `daca8f47e`. Verified retirement removed its 68 output files
+  (12,212,498 bytes) and the temporary inventory. The original prefill and
+  decode reference executable hashes were rechecked after removal.
   Next evaluate the already available cached-subgroup normalizer at 128K
   on the retained 14508 engine. Its earlier cap-2051 comparisons passed
   independently for gather and clustered shapes, and its old small-cap and

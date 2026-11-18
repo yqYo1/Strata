@@ -4,10 +4,6 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
-#if defined(STRATA_QSA_COMPARE_PREFILL_V_TILE)
-#include "qsa_v_tile_experiment.hpp"
-#include <array>
-#endif
 #include <algorithm>
 #include <bit>
 #include <cmath>
@@ -118,7 +114,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   Buffer<uint16_t> packed_k(size_t(active_rows)*Dim+2*PackedGuard),packed_v(size_t(active_rows)*Dim+2*PackedGuard);
   Buffer<int32_t> packed_bad(size_t(active_rows)+2*PackedGuard);
   const int32_t bad_guard=0x12345678;
-#if defined(STRATA_QSA_COMPARE_PREFIX_STATE) || defined(STRATA_QSA_COMPARE_PREFILL_V_TILE)
+#if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
   const size_t state_values=size_t((cap+31)/32)*4;
   const float state_guard=-913.75f;
   Buffer<float> state(state_values+32);
@@ -149,52 +145,6 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},&rt->compute()),"BF16 matrix unavailable");
     rt->wait();
-#if defined(STRATA_QSA_COMPARE_PREFILL_V_TILE)
-    const auto original = out.get();
-    for (auto candidate : {separate_late_v::qsa_bf16_prefix_ordered_exp_batch,
-                           separate_early_v::qsa_bf16_prefix_ordered_exp_batch}) {
-      out.put(sentinel);
-      require(candidate(dq.data(),pools,di.data(),ds.data(),cap,shape,
-          out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),
-          "separate V tile admission");
-      rt->wait();
-      require(out.get()==original,"separate V changed output or output guards");
-    }
-    // Verify real and padded rows in both KV groups, including untouched tail.
-    for (int kv_head : {0,1}) for (int head : {0,11,15}) {
-      constexpr std::array<PrefillVTileState *, 2> candidates{
-          separate_late_v::qsa_bf16_prefix_v_tile_state_batch,
-          separate_early_v::qsa_bf16_prefix_v_tile_state_batch};
-      const QsaPrefixStateProbe probe{0,kv_head,head,state.data()+16};
-      auto observe = [&](auto submit) {
-        state.put(state_initial);
-        out.put(sentinel);
-        require(submit(),"V tile state probe admission");
-        rt->wait();
-        require(out.get()==original,"V tile state probe changed output or guards");
-        auto values = state.get();
-        for (size_t i=0;i<16;++i)
-          require(values[i]==state_guard && values[values.size()-16+i]==state_guard,"V tile state guards");
-        const int width = steps[kStepWidth];
-        const size_t used = width>=0 && width<=cap ? size_t((width+31)/32)*4 : 0;
-        for (size_t i=used;i<state_values;++i)
-          require(values[16+i]==state_guard,"V tile state wrote beyond selected width");
-        return values;
-      };
-      const auto reference_state = observe([&] {
-        return qsa_bf16_prefix_state_probe_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
-            out.data()+16,queries,{pages,pages},live_cells,scratch,true,probe,&rt->compute());
-      });
-      for (auto candidate : candidates) {
-        const auto changed = observe([&] {
-          return candidate(dq.data(),pools,di.data(),ds.data(),cap,shape,
-              out.data()+16,queries,{pages,pages},live_cells,scratch,probe,&rt->compute());
-        });
-        require(std::memcmp(reference_state.data(),changed.data(),changed.size()*sizeof(float))==0,
-            "separate V changed online FP32 state");
-      }
-    }
-#endif
 #if defined(STRATA_QSA_COMPARE_SUBGROUP)
     const auto subgroup_candidate=out.get();out.put(sentinel);
     require(qsa_bf16_prefix_subgroup_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
