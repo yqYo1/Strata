@@ -452094,7 +452094,7 @@
     }
   },
   "prefill_prefix_router_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "14107b72188f4fab70127c92cd83a320d6597126",
     "native_base_commit": "3a195f247a42d02612e4600d132c1eb6460ddd0f",
     "native_base_receipt": "40155ade5e8787b6c67b1150a2d2f71d89ce113638da8153fe36a197e0cb7c0a",
@@ -452217,8 +452217,8 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plan": {
       "unit": "Reuse the exact previous prefix-demand observer source as the base. Build one binary with off, late and early producer timing. No expert upload policy or queue change.",
       "retention": "Temporary third build for the prefix equivalence and upcoming timing comparison. Preserve both phase references; retire or select after matched results."
@@ -452229,6 +452229,53 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/compile_commands.json": "f825d69a2c5f3003922f1d37026dd8db5d84f289fc57a7aa2760edb16664264a",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/CMakeFiles/rules.ninja": "f55b5e6952ed7d059ea369b40881d2a0225eea082a11d64ca4edc89c0e2c70ac"
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/strata",
+        "sha256": "179640aaa3f339fa1d4674e9b3adf9b9fd8d0c0618c05d64bba2294726589623",
+        "bytes": 26467632
+      },
+      "prefill_moe_routes_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/prefill_moe_routes_test",
+        "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+        "bytes": 111336
+      },
+      "prefill_moe_workspace_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/prefill_moe_workspace_test",
+        "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+        "bytes": 67448
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/sycl_expert_bank_test",
+        "sha256": "a06a455675dafe10f4dc5ba05c5ea9deb5471b3ffe5e75caffc40ad161f7978c",
+        "bytes": 513048
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "a0d2d91436822ad83692aa4d8b74874d189d9602e461394950b94347d130a5da",
+        "bytes": 14282080
+      },
+      "sycl_native16_paired_gemm_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/sycl_native16_paired_gemm_bench",
+        "sha256": "4fd3bb3410348f0b03b91579deec35cb33a47bb628a9da0259464567b01c6dbb",
+        "bytes": 14222744
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/strata_full_context_diagnostic",
+        "sha256": "6424e7069978bfbcd4d86d84742c691be857f5077e5dbe1f7ed17e2c44c2e3c3",
+        "bytes": 26476072
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/sycl_moe_upload_census_host_test",
+        "sha256": "d88f84a73fa8b0d5d5094268bcd3526a8183f90d26f9468de41baf4d7c96906a",
+        "bytes": 107360
+      }
+    },
     "controller_sources": {
       "files": 378,
       "sha256": "a5121bab5a87065c815cfe3c523f8d3a3cd488ef65705db1981c3f9a4b69a5a1"
@@ -452237,6 +452284,44 @@
       "files": 1166,
       "sha256": "2a1bd01b1e075cb4c0f893e5164123a5358eb6f8239e72f9a5df7ab1bede6bb5"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1469,
+        "sha256": "d80633b0d29086bbdaef6dc137318bde16d1f7e1f91d7e95c590f9afe2e763ab"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "3cbb40995c0cee6eb72cfad47fb4064aecde6986ce6ad38bda95fe0990376fae"
+      },
+      "links": {
+        "files": 29,
+        "sha256": "e5892521b3f3a86a1f8ce83f6db53c28593a581d1e667eafd9c7d3ffc9ee6de3"
+      },
+      "objects": {
+        "files": 134,
+        "sha256": "a7be84bfa3dcbb21a6e26778da0c229c7673c85a1baa67876e8918f0f91590a3"
+      },
+      "produced": {
+        "files": 145,
+        "sha256": "02f8675e79e6c40dea73f1307698baffcc3c01908c828de5ea5994cdb974b681"
+      },
+      "Gemm_includers": {
+        "files": 6,
+        "sha256": "f16397883911133cd5efbe0eebf8665bf614e3a49d744c765c3d714df403dd4a"
+      },
+      "class_definition_includers": {
+        "files": 3,
+        "sha256": "c077a820d1a168a38b88566c43c7693487bc0133af1c756154deea9eca8ee080"
+      },
+      "AOT_finalization_recipe_sha256": "0459fe5e99195d4591ec8b4abf2b830e64403b932754f7ec7fe1c04664b0e25a",
+      "temporary_generated_link_objects": 37,
+      "temporary_generated_link_paths_sha256": "b6fca41e06260602029f8bf2c8bf1902c48396dd942e6a321b309886935292cf",
+      "temporary_link_scope": "Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.",
+      "translation_units": 131,
+      "fresh_objects": 134,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
