@@ -442536,6 +442536,491 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "trace-staged",
+        "passed": true,
+        "GPU_executed": true,
+        "GPU_work_admitted": true,
+        "pid": 2038724,
+        "native_exit_code": 0,
+        "providers": [
+          {
+            "phase": "runtime-ready",
+            "mapped_ELFs": 35,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "971a33cb4ed1db44eb8da479c35952b47940b5f6a57677bf21936d58baa013a3"
+          },
+          {
+            "phase": "after-cleanup",
+            "mapped_ELFs": 35,
+            "unknown": 0,
+            "missing": 0,
+            "paths_sha256": "971a33cb4ed1db44eb8da479c35952b47940b5f6a57677bf21936d58baa013a3"
+          }
+        ],
+        "validation": {
+          "pid": 2038724,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "timing": {
+          "clock_pair_max_s": 3.1e-08,
+          "source": {
+            "kind": "staged",
+            "bytes": 1009254400,
+            "arena_ms": 1951.689927,
+            "prepare_ms": 221.795109,
+            "allocation_id": 0,
+            "retire_ms": 12.620444
+          },
+          "queue": {
+            "api": "native",
+            "ordinal": 1,
+            "index": 0,
+            "mode": 2,
+            "flags": 2,
+            "priority": 0
+          },
+          "samples": [
+            {
+              "round": 0,
+              "arm": "compute_only",
+              "milliseconds": 222.848704,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 3369012072171437,
+              "raw_end": 3369012295018592
+            },
+            {
+              "round": 0,
+              "arm": "copy_only",
+              "milliseconds": 239.484302,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 3369012846527736,
+              "raw_end": 3369013086010548
+            },
+            {
+              "round": 0,
+              "arm": "serial_separate",
+              "milliseconds": 445.069746,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369013479388208,
+              "raw_end": 3369013924454400
+            },
+            {
+              "round": 0,
+              "arm": "deferred_wait",
+              "milliseconds": 244.414218,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369014334683382,
+              "raw_end": 3369014579095788
+            },
+            {
+              "round": 1,
+              "arm": "copy_only",
+              "milliseconds": 382.317165,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 3369015011814355,
+              "raw_end": 3369015394128798
+            },
+            {
+              "round": 1,
+              "arm": "serial_separate",
+              "milliseconds": 446.200575,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369015785508011,
+              "raw_end": 3369016231705144
+            },
+            {
+              "round": 1,
+              "arm": "deferred_wait",
+              "milliseconds": 249.380424,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369016626528746,
+              "raw_end": 3369016875907346
+            },
+            {
+              "round": 1,
+              "arm": "compute_only",
+              "milliseconds": 222.020384,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 3369017267927741,
+              "raw_end": 3369017489946582
+            },
+            {
+              "round": 2,
+              "arm": "serial_separate",
+              "milliseconds": 442.248771,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369018006603458,
+              "raw_end": 3369018448848921
+            },
+            {
+              "round": 2,
+              "arm": "deferred_wait",
+              "milliseconds": 249.610307,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369018842896307,
+              "raw_end": 3369019092504717
+            },
+            {
+              "round": 2,
+              "arm": "compute_only",
+              "milliseconds": 221.336155,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 3369019486428712,
+              "raw_end": 3369019707763331
+            },
+            {
+              "round": 2,
+              "arm": "copy_only",
+              "milliseconds": 276.245691,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 3369020246348559,
+              "raw_end": 3369020522592238
+            },
+            {
+              "round": 3,
+              "arm": "deferred_wait",
+              "milliseconds": 245.303603,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369020919401634,
+              "raw_end": 3369021164703659
+            },
+            {
+              "round": 3,
+              "arm": "compute_only",
+              "milliseconds": 221.115489,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 3369021559535296,
+              "raw_end": 3369021780649150
+            },
+            {
+              "round": 3,
+              "arm": "copy_only",
+              "milliseconds": 355.933394,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 3369022289278512,
+              "raw_end": 3369022645209349
+            },
+            {
+              "round": 3,
+              "arm": "serial_separate",
+              "milliseconds": 442.28459,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369023052830871,
+              "raw_end": 3369023495112040
+            },
+            {
+              "round": 4,
+              "arm": "compute_only",
+              "milliseconds": 220.697883,
+              "copies": 0,
+              "requested_bytes": 0,
+              "attention_calls": 1,
+              "raw_start": 3369023885376132,
+              "raw_end": 3369024106072443
+            },
+            {
+              "round": 4,
+              "arm": "copy_only",
+              "milliseconds": 223.822127,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 0,
+              "raw_start": 3369024610563825,
+              "raw_end": 3369024834384356
+            },
+            {
+              "round": 4,
+              "arm": "serial_separate",
+              "milliseconds": 482.326089,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369025279972586,
+              "raw_end": 3369025762295205
+            },
+            {
+              "round": 4,
+              "arm": "deferred_wait",
+              "milliseconds": 243.86309,
+              "copies": 512,
+              "requested_bytes": 1009254400,
+              "attention_calls": 1,
+              "raw_start": 3369026156185187,
+              "raw_end": 3369026400046479
+            }
+          ]
+        },
+        "timeline": [
+          {
+            "arm": "compute_only",
+            "round": 0,
+            "classifications": {},
+            "copy_union_ns": 0,
+            "qsa_union_ns": 222640833,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "copy_only",
+            "round": 0,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 228161382,
+            "qsa_union_ns": 0,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "serial_separate",
+            "round": 0,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 213348348,
+            "qsa_union_ns": 221033333,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "deferred_wait",
+            "round": 0,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 213656642,
+            "qsa_union_ns": 222822395,
+            "overlap_ns": 192394146,
+            "other_commands": 0
+          },
+          {
+            "arm": "copy_only",
+            "round": 1,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 375392626,
+            "qsa_union_ns": 0,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "serial_separate",
+            "round": 1,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 218711015,
+            "qsa_union_ns": 221387603,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "deferred_wait",
+            "round": 1,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 213510730,
+            "qsa_union_ns": 222781250,
+            "overlap_ns": 187220851,
+            "other_commands": 0
+          },
+          {
+            "arm": "compute_only",
+            "round": 1,
+            "classifications": {},
+            "copy_union_ns": 0,
+            "qsa_union_ns": 221803957,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "serial_separate",
+            "round": 2,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 213504467,
+            "qsa_union_ns": 222381770,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "deferred_wait",
+            "round": 2,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 222919416,
+            "qsa_union_ns": 222287603,
+            "overlap_ns": 195901246,
+            "other_commands": 0
+          },
+          {
+            "arm": "compute_only",
+            "round": 2,
+            "classifications": {},
+            "copy_union_ns": 0,
+            "qsa_union_ns": 220714791,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "copy_only",
+            "round": 2,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 270350541,
+            "qsa_union_ns": 0,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "deferred_wait",
+            "round": 3,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 218851655,
+            "qsa_union_ns": 222860624,
+            "overlap_ns": 196993789,
+            "other_commands": 0
+          },
+          {
+            "arm": "compute_only",
+            "round": 3,
+            "classifications": {},
+            "copy_union_ns": 0,
+            "qsa_union_ns": 220671978,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "copy_only",
+            "round": 3,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 350187105,
+            "qsa_union_ns": 0,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "serial_separate",
+            "round": 3,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 213611848,
+            "qsa_union_ns": 220789791,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "compute_only",
+            "round": 4,
+            "classifications": {},
+            "copy_union_ns": 0,
+            "qsa_union_ns": 220498854,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "copy_only",
+            "round": 4,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 213634422,
+            "qsa_union_ns": 0,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "serial_separate",
+            "round": 4,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 254807544,
+            "qsa_union_ns": 221332915,
+            "overlap_ns": 0,
+            "other_commands": 0
+          },
+          {
+            "arm": "deferred_wait",
+            "round": 4,
+            "classifications": {
+              "H2D": 512
+            },
+            "copy_union_ns": 213687002,
+            "qsa_union_ns": 222228124,
+            "overlap_ns": 192355986,
+            "other_commands": 0
+          }
+        ],
+        "trace": {
+          "sha256": "6f35e60c5ca5cddb516fc9ba8d99bd774922ce574957fae8b07d191ff23ac133",
+          "bytes": 3731245
+        },
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "prior_host_refusal": {
