@@ -2741,6 +2741,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ownership and the fresh GPU fault check pass. These times locate the
   serialization after the observed append return. The trace gives
   logical lanes, with native list and physical-engine identity unresolved.
+  The compact evidence is `820cc84db`. Exact Git source and build input
+  recovery permits retirement of the temporary executable and 59 files
+  totaling 20,803,077 bytes. Keep the fixture source for the next
+  source-memory comparison.
 
   Follow the queue route before changing issue order. The earlier
   metadata run at `794bb2672` puts both `Runtime::compute()` and
