@@ -20,6 +20,7 @@ P, B, RESULT = build.P, build.B, build.RESULT
 require, sha, signature, write = build.require, build.sha, build.signature, build.write
 THIS = 'tools/sycl/prefill_prefix_expert_measure.py'
 SMOKE = 'prefill_prefix_expert_smoke_v1'
+VERSION = 'v2'
 MODE = 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD'
 PREFIX_BYTES = 8192 * (2560 * 2 + 4 * 4 + 10 * 4 + 10 * 4 + 4 + 512 * 4)
 COHORTS = {
@@ -109,13 +110,18 @@ def request_route(log, plan):
     else:
         require(admissions == [dict(requested=mode, effective=mode, queue='compute')]
                 and len(layers) == 48, 'prefix expert upload did not admit all layers')
+        packed = workspace.records(log, 'strata packed expert bank: ') if plan['trace_progress'] else None
         experts = payload = 0
         for index, layer in enumerate(layers):
             count, size = int(layer['experts']), int(layer['requested_H2D_bytes'])
             require(int(layer['layer']) == index and 0 < count <= 512 and size > 0
-                and size % count == 0 and size // count in (1510400, 1971200, 1715200, 1868800)
+                and size % count == 0 and size // count % 256 == 0
+                and size // count <= workspace.STRIDE
                 and re.fullmatch('[0-9a-f]{16}', layer['ids_hash']) and layer['readers'] == 'checked',
                 'actual prefix-issued copies differ from expected geometry')
+            if packed is not None:
+                require(packed[index]['full_fit'] == '1' and size == count * int(packed[index]['stride']),
+                        'prefix copy payload disagrees with the actual packed layer')
             experts += count
             payload += size
         require(ends == [dict(effective=mode, layers='48', experts=str(experts),
@@ -158,8 +164,8 @@ def model_context(cohort):
     spec = importlib.util.spec_from_file_location('prefix_expert_policy', basis.core.__file__)
     ctx = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctx)
-    ctx.ROOT = B / ('prefill-prefix-expert-' + cohort + '-v1')
-    ctx.KEY, ctx.THIS = 'prefill_prefix_expert_' + cohort + '_v1', THIS
+    ctx.ROOT = B / f'prefill-prefix-expert-{cohort}-{VERSION}'
+    ctx.KEY, ctx.THIS = f'prefill_prefix_expert_{cohort}_{VERSION}', THIS
     ctx.READS, ctx.ORDER, ctx.RUNS, ctx.CLEAN_FAST = (read,) * len(order), [(read, 1)] * len(order), runs, True
     base_environment, base_current = ctx.environment, ctx.current
 
@@ -170,14 +176,14 @@ def model_context(cohort):
                 and smoke['native_build'] == signature(builder.compact(value)), 'same-build fixture required')
         gates = {SMOKE: signature(smoke)}
         if not traced:
-            gate = basis.validation.committed(RESULT, ('prefill_prefix_expert_numerical_v1',))
+            gate = basis.validation.committed(RESULT, (f'prefill_prefix_expert_numerical_{VERSION}',))
             require(gate['stage'] == 'closed' and gate['ownership_closed'] and
                     gate['decision']['matched_work'] and gate['binary'] == value['binaries']['strata'],
                     'matched numerical cohort required')
             gates['numerical'] = signature(gate)
         prerequisites = {'prefix': ('ffn',), 'combined': ('ffn', 'prefix')}
         for prior in prerequisites.get(cohort, ()):
-            gate = basis.validation.committed(RESULT, ('prefill_prefix_expert_' + prior + '_v1',))
+            gate = basis.validation.committed(RESULT, (f'prefill_prefix_expert_{prior}_{VERSION}',))
             require(gate['stage'] == 'closed' and gate['ownership_closed'] and
                     gate['decision']['matched_work'] and gate['binary'] == value['binaries']['strata'],
                     'finish the separate comparison first: ' + prior)
