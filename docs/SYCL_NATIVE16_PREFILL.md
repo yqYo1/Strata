@@ -2335,8 +2335,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stay onGPU,bank384/window10/48windows/extra0. Actual GU/Down/job/map/upload/
   requested-payload work matches across all arms. Eager logs24unique full-fit
   layers per request,9178/9179/9160individual copies and checked final bank
-  drains. Nine clean independent processes remain in their committed order;
-  traced timings do not qualify a speed gain,current decode or route adoption.
+  drains. The first clean original-image process also closes normal0/reaped
+  empty with three exact requests,quiet validation,no fresh fault and matching
+  work. Eight clean independent processes remain in their committed order;
+  a single clean process or traced timings qualify no matched speed gain,
+  current decode or route adoption. The limiting arithmetic/VRAM/PCIe/
+  submission resource remains unknown;finish the matched source/upload cohort
+  before selecting its next phase-specific qualification or implementation.
   Keep the current-build five-length/time/TTFT curve and hardware attribution
   gaps pending;do not infer a law from these mixed timing periods. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
