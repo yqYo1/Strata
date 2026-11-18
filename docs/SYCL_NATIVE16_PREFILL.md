@@ -2827,6 +2827,43 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the small ordinal-1 case first, then distinguish device overlap and clean
   wall time. Keep that queue comparison independent of the failed API
   replacement and of later ordinary-RAM source admission.
+
+  `fullfit_attention_copy_ordinal_v1` closes at `ff6be2692`. The same native
+  owner, index 0, mode, flags, priority, memory, copy sizes and QSA workload
+  run with copy ordinal 0 and copy-only ordinal 1. The small cases verify both
+  list configurations, accepted-copy unwind, buffer guards and exact output.
+  All ten native processes close normally with zero fresh GPU faults. Keep
+  120 clean intervals and 40 device-trace windows.
+
+  | Native ordinal 1 / ordinal 0 wall time | Three independent pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Copy and QSA, deferred wait, warmed | 0.546616, 0.541617, 0.459654 | 0.514361 |
+  | Copy and QSA, deferred wait, first cycle | 0.761036, 0.432872, 0.584085 | 0.577316 |
+  | Copy only, warmed | 0.972306, 1.043566, 1.161285 | 1.056219 |
+  | QSA only, warmed | 0.999932, 0.998919, 0.999763 | 0.999538 |
+
+  The four warmed deferred windows show 220.270–221.728 ms of device
+  overlap on ordinal 1 and zero on ordinal 0. The first ordinal-1 window
+  has 220.288 ms. The clean deferred-wait medians are 436.8–498.4 ms for
+  ordinal 0 and 229.1–256.1 ms for ordinal 1. The repeated-speed and
+  repeated-overlap gates both pass. Individual copy-only timings vary
+  and their geometric mean increases. The overlapping workload is the
+  demonstrated gain. Device service traces leave actual PCIe traffic and
+  saturation unknown.
+
+  The independent source-layout check reads the exact model asset already
+  bound to the clean reference. Its 48 contiguous layer offsets and
+  48 payload lengths are divisible by the host's 4096-byte page size.
+  Layers hold 773,324,800–1,363,148,800 bytes. The host's explicit huge-page
+  pool has zero pages. These are layout conditions for a bounded read-only
+  layer view of the anonymous RAM arena. Check the actual owner, start
+  address, import scope and type in the production Runtime before issuing
+  DMA. Keep the same native ordinal-1 owner and wait placement when
+  comparing a borrowed layer view with host USM, and charge source
+  preparation and retirement. Preserve the earlier negative mapped-source
+  results on the dense readers. Once this workload's source is qualified,
+  compare actual expert demand and the resulting prefill route before any
+  model speed claim. [Level Zero queue descriptors](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_queue.html#ze-command-queue-desc-t)
   The current-build five-length/time/TTFT curve is closed;hardware attribution
   remains pending. Do not pool mixed timing periods into a law. Preserve
   the bank/coherence/relocation losses as independent outcomes. Reduced
