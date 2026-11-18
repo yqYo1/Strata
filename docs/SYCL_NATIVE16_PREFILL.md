@@ -2275,13 +2275,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   dequants fall33606/33785/33584to19079/19107/19085. Requested expert H2Dfalls
   68.54..68.95GBto38.95..39.01GB;this is payload,not measured wire traffic.
   Traced warmed time149.73605sversus136.69505sis mechanism evidence,not the
-  clean repeated-gain decision. The first two opposite-order clean pairs
-  also close normally with quiet validation and no fresh fault. New/reference
-  warmed-time ratios are0.914916and0.908997;new process PPis952.034and951.557.
-  All seven processes/21samples are preserved. The final clean pair and15
-  final model hashes remain pending;no completed performance/adoption gate
-  is claimed and the combination remains unprepared. Resume with process7
-  (window10reference),then8(window16candidate),committing each before next.
+  clean repeated-gain decision. The full window cohort now closes with nine
+  normal0processes/27requests,quiet validation,no fresh fault and15final model
+  hashes. All three opposite-order clean pairs pass the fixed-bank window
+  gain gate:time ratios0.914916/0.908997/0.904083,geomean0.909321.
+  Aggregate warmed PPis864.962reference versus951.557new;new process PPis
+  952.034/951.557/949.647. Median warmed client TTFTis151.8305sversus137.9815s.
+  The separately scoped combination is eligible but unprepared. Preserve
+  the bank/coherence/relocation losses;this unit gain does not adopt the
+  composed engine or reach1000PPat128K. Reduced jobs/dequants/requested bytes
+  do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
   Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
   RESTORE qualification remain unresolved. Full relocation evidence is
