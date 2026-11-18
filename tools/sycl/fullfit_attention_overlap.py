@@ -386,6 +386,8 @@ def run_device(row, mode, scope, path, result):
             if phase == 'after-cleanup':
                 result['GPU_executed'] = True
             io.send(b'X')
+        require(io.line(45) == 'fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED',
+            'fixture did not report normal completion after the cleanup gate')
         io.exit(45)
     before = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
     result.update(GPU_work_admitted=False, GPU_executed=None)
