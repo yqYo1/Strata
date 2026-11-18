@@ -2398,7 +2398,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   unchanged and recoverable at`cc9814fe9`;ownership reconciliation is separate.
   Corrected V2is prepared at`a9a90b203`:775committed source inputs,
   16generated JSONpayloads and15full model hashes are pinned again. No
-  native build changes;frontend and traced admissions remain to be run.
+  native build changes;both frontend probes pass. Traced admissions remain
+  to be run before clean curve sampling.
   This develops the faster owned candidate while its source-selection and
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for that immediate question;retire a superseded generation
