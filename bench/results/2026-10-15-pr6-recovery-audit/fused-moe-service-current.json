@@ -425446,7 +425446,7 @@
     }
   },
   "qsa_v_tile_v2": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "daca8f47e62cd90ce1ee8989ac261e38c17581bd",
     "compile_environment": {
       "PATH": "/usr/bin:/bin",
@@ -426141,11 +426141,168 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "2",
+        "passed": true,
+        "ownership_closed": true,
+        "clock_median_ns": 90.0,
+        "clock_p99_ns": 150,
+        "points": [
+          {
+            "case": [
+              78453,
+              8192,
+              33,
+              "gather"
+            ],
+            "samples_ms": {
+              "shared_late": [
+                8.691991,
+                8.772352,
+                8.715926,
+                8.636225,
+                8.651724,
+                9.347794
+              ],
+              "separate_late": [
+                14.547622,
+                15.148203,
+                14.467702,
+                14.40248,
+                15.151058,
+                14.531482
+              ],
+              "separate_early": [
+                14.494953,
+                14.590112,
+                14.964978,
+                14.388242,
+                14.289927,
+                14.839672
+              ]
+            },
+            "medians_ms": {
+              "shared_late": 8.703958499999999,
+              "separate_late": 14.539552,
+              "separate_early": 14.5425325
+            }
+          },
+          {
+            "case": [
+              78453,
+              8192,
+              2051,
+              "gather"
+            ],
+            "samples_ms": {
+              "shared_late": [
+                223.967045,
+                225.030998,
+                224.086541,
+                224.142518,
+                225.64722,
+                224.916595
+              ],
+              "separate_late": [
+                375.098423,
+                375.494669,
+                376.034819,
+                376.565168,
+                375.202594,
+                375.446806
+              ],
+              "separate_early": [
+                372.878594,
+                373.140179,
+                373.300111,
+                373.487866,
+                372.784203,
+                373.730726
+              ]
+            },
+            "medians_ms": {
+              "shared_late": 224.5295565,
+              "separate_late": 375.4707375,
+              "separate_early": 373.220145
+            }
+          },
+          {
+            "case": [
+              78453,
+              8192,
+              2051,
+              "clustered"
+            ],
+            "samples_ms": {
+              "shared_late": [
+                140.505232,
+                139.958413,
+                140.713575,
+                139.906015,
+                140.52994,
+                140.653753
+              ],
+              "separate_late": [
+                253.241213,
+                253.001433,
+                253.177806,
+                253.007426,
+                253.150356,
+                252.781122
+              ],
+              "separate_early": [
+                253.763607,
+                252.605638,
+                253.18572,
+                252.97777,
+                252.779307,
+                252.595683
+              ]
+            },
+            "medians_ms": {
+              "shared_late": 140.517586,
+              "separate_late": 253.078891,
+              "separate_early": 252.8785385
+            }
+          }
+        ],
+        "host_probe_accepted": true,
+        "GPU_executed": true,
+        "checks": [
+          {
+            "role": "benchmark",
+            "pid": 1504643,
+            "first_init": {
+              "pid": 1504643,
+              "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "normal_exit": 0
+          }
+        ],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "plan": {
       "order": [
@@ -426195,6 +426352,124 @@
         "bytes": 1842664,
         "sha256": "b799c0c35c9b5058d904facb8d622b7f39b4b795b6f669a47f6bf283c38f0f9b"
       }
+    },
+    "decision": {
+      "shapes": [
+        {
+          "case": [
+            78453,
+            8192,
+            33,
+            "gather"
+          ],
+          "units": {
+            "storage": {
+              "process_ratios": [
+                1.658156292098177,
+                1.6655110991018958,
+                1.6704528175312419
+              ],
+              "geomean": 1.6646990662747196,
+              "eligible": false
+            },
+            "early_gather": {
+              "process_ratios": [
+                0.9840410339046736,
+                0.9766462467253546,
+                1.0002049925609813
+              ],
+              "geomean": 0.9869151989169502,
+              "eligible": false
+            },
+            "combined": {
+              "process_ratios": [
+                1.63169383205183,
+                1.6266151638172868,
+                1.670795247932306
+              ],
+              "geomean": 1.642916810129376,
+              "eligible": false
+            }
+          }
+        },
+        {
+          "case": [
+            78453,
+            8192,
+            2051,
+            "gather"
+          ],
+          "units": {
+            "storage": {
+              "process_ratios": [
+                1.6674628805484883,
+                1.6738014706017246,
+                1.672255285018567
+              ],
+              "geomean": 1.6711710321663622,
+              "eligible": false
+            },
+            "early_gather": {
+              "process_ratios": [
+                0.9956440139704222,
+                0.9942563907622296,
+                0.9940059443380724
+              ],
+              "geomean": 0.994635188844077,
+              "eligible": true
+            },
+            "combined": {
+              "process_ratios": [
+                1.6601994355359797,
+                1.664187809012983,
+                1.6622316937592132
+              ],
+              "geomean": 1.6622055151695407,
+              "eligible": false
+            }
+          }
+        },
+        {
+          "case": [
+            78453,
+            8192,
+            2051,
+            "clustered"
+          ],
+          "units": {
+            "storage": {
+              "process_ratios": [
+                1.8020195330783777,
+                1.7999773837347426,
+                1.8010478133320622
+              ],
+              "geomean": 1.801014716930502,
+              "eligible": false
+            },
+            "early_gather": {
+              "process_ratios": [
+                1.001723880019789,
+                0.9991671234379139,
+                0.9992083397425666
+              ],
+              "geomean": 1.000032400012104,
+              "eligible": false
+            },
+            "combined": {
+              "process_ratios": [
+                1.8051259985467212,
+                1.7984782247595448,
+                1.79962199535651
+              ],
+              "geomean": 1.8010730698291297,
+              "eligible": false
+            }
+          }
+        }
+      ],
+      "model_advance": false,
+      "engine_adopted": false,
+      "limits": "Component admission, packing, attention and checked drain. Model throughput and hardware saturation unmeasured."
     },
     "sources": {
       "count": 548,
