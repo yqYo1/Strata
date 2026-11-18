@@ -9,7 +9,7 @@ import fullfit_attention_overlap as experiment
 
 def fixture():
     lines = ['fullfit_attention_overlap source=host_usm bytes=1009254400 alloc_ms=10.0 fill_ms=20.0 type=PASS',
-             'fullfit_attention_overlap copy_api=sycl ordinal=0 index=0 mode=2 flags=2 priority=0 domain=PASS',
+             'fullfit_attention_overlap copy_api=native ordinal=0 index=0 mode=2 flags=2 priority=0 domain=PASS',
              'fullfit_attention_overlap clock_pair_max_s=0.00000007']
     for round_n in range(experiment.FULL_ROUNDS):
         for place in range(len(experiment.ARMS)):
@@ -46,7 +46,7 @@ class MeasurementControls(unittest.TestCase):
             good.replace('type=PASS','type=FAIL',1),
             good.replace('alloc_ms=10.0','alloc_ms=nan',1),
             good.replace('bytes=1009254400','bytes=1009254401',1),
-            good.replace('copy_api=sycl','copy_api=native',1),
+            good.replace('copy_api=native','copy_api=sycl',1),
             good.replace('ordinal=0','ordinal=1',1),
             good.replace('flags=2','flags=6',1),
             good.replace('domain=PASS','domain=FAIL',1),
@@ -72,31 +72,38 @@ class MeasurementControls(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 experiment.timeline(dict(traceEvents=entries), [point], (100000,150000))
 
-    def test_copy_api_pairs_keep_waits_fixed_and_first_cycle_separate(self):
+    def test_copy_ordinal_requires_repeated_speed_and_device_overlap(self):
         def row(mode, index, times):
+            ordinal = experiment.QUEUE_GROUPS[experiment.CASES[mode][1]]
             timing = dict(samples=[dict(arm=arm,round=n,milliseconds=elapsed+1000*(n==0))
                 for n in range(experiment.FULL_ROUNDS) for arm,elapsed in zip(experiment.ARMS,times)],
-                queue=dict(api=experiment.CASES[mode][1]))
+                queue=dict(ordinal=ordinal))
             return dict(mode=mode,pid=index,timing=timing,
-                timeline=[dict(arm=arm,round=n,overlap_ns=10000 if arm=='deferred_wait' else 0,
-                    copy_union_ns=20000 if arm!='compute_only' else 0,
-                    qsa_union_ns=30000 if arm!='copy_only' else 0)
+                timeline=[dict(arm=arm,round=n,overlap_ns=2_000_000 if ordinal and arm=='deferred_wait' else 0,
+                    copy_union_ns=3_000_000 if arm!='compute_only' else 0,
+                    qsa_union_ns=4_000_000 if arm!='copy_only' else 0)
                           for n in range(experiment.FULL_ROUNDS) for arm in experiment.ARMS])
         timings = (70,100,185,120)
-        native = (70,99,185,110)
-        outcomes = [row('trace-'+api,10+i,timings) for i,api in enumerate(experiment.COPY_APIS)]
-        outcomes += [row(f'clean-{i}',i,native if api=='native' else timings)
-                     for i,api in enumerate(experiment.CLEAN_ORDER)]
+        copy_only = (70,99,185,110)
+        outcomes = [row('trace-'+group,10+i,timings) for i,group in enumerate(experiment.QUEUE_GROUPS)]
+        outcomes += [row(f'clean-{i}',i,copy_only if group=='ordinal1' else timings)
+                     for i,group in enumerate(experiment.CLEAN_ORDER)]
         decision = experiment.assessment(outcomes)
         self.assertEqual(decision['paired_clean_indices'],
-                         [dict(sycl=0,native=1),dict(sycl=3,native=2),dict(sycl=4,native=5)])
-        self.assertTrue(decision['eligible_same_ordinal_native_gain'])
+                         [dict(ordinal0=0,ordinal1=1),dict(ordinal0=3,ordinal1=2),dict(ordinal0=4,ordinal1=5)])
+        self.assertTrue(decision['eligible_native_ordinal_overlap'])
         self.assertEqual(decision['warmed_ratios']['deferred_wait']['paired'],[110/120]*3)
         self.assertEqual(decision['warmed_ratios']['compute_only']['paired'],[1.0]*3)
         self.assertEqual(decision['clean_first_cycle_ms'][0]['copy_only'],1100)
         self.assertEqual(decision['clean_process_warmed_medians_ms'][0]['copy_only'],100)
+        actual = next(p for p in outcomes[1]['timeline'] if p['arm']=='deferred_wait' and p['round']==3)
+        actual['overlap_ns'] = experiment.OVERLAP_FLOOR_NS - 1
+        decision = experiment.assessment(outcomes)
+        self.assertTrue(decision['warmed_ratios']['deferred_wait']['all_three_faster'])
+        self.assertFalse(decision['eligible_native_ordinal_overlap'])
+        actual['overlap_ns'] = experiment.OVERLAP_FLOOR_NS
         outcomes[4] = row('clean-2',2,(70,99,185,121))
-        self.assertFalse(experiment.assessment(outcomes)['eligible_same_ordinal_native_gain'])
+        self.assertFalse(experiment.assessment(outcomes)['eligible_native_ordinal_overlap'])
         outcomes[4]['pid'] = outcomes[3]['pid']
         with self.assertRaises(RuntimeError):
             experiment.assessment(outcomes)

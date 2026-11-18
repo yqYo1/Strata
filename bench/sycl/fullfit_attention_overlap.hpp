@@ -1,11 +1,10 @@
 #pragma once
 
 // Authored for Strata under the repository LICENSE. Hold the prefix fixture
-// and host USM payload fixed when comparing the two transfer APIs.
+// and host USM payload fixed when comparing two native queue groups.
 #include <level_zero/ze_api.h>
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
 #include "strata/sycl/checked_cleanup.hpp"
-#include "strata/sycl/compat/cuda_runtime.h"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <array>
@@ -16,7 +15,6 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <optional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -50,7 +48,8 @@ inline ze_command_list_handle_t immediate_list(sycl::queue &queue) {
 }
 
 inline ze_command_queue_desc_t list_config(ze_command_list_handle_t list,
-                                           ze_context_handle_t context, ze_device_handle_t device) {
+                                           ze_context_handle_t context, ze_device_handle_t device,
+                                           uint32_t expected_ordinal) {
     ze_command_queue_desc_t config{};
     config.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
     ze_context_handle_t actual_context{};
@@ -63,11 +62,11 @@ inline ze_command_queue_desc_t list_config(ze_command_list_handle_t list,
     check_ze(zeCommandListImmediateGetMode(list, &config.mode), "read list mode");
     check_ze(zeCommandListImmediateGetFlags(list, &config.flags), "read list flags");
     check_ze(zeCommandListImmediateGetPriority(list, &config.priority), "read list priority");
-    require(config.ordinal == 0 && config.index == 0 &&
+    require(config.ordinal == expected_ordinal && config.index == 0 &&
             config.mode == ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS &&
             (config.flags & ZE_COMMAND_QUEUE_FLAG_IN_ORDER) &&
             !(config.flags & ZE_COMMAND_QUEUE_FLAG_COPY_OFFLOAD_HINT),
-            "fixture requires asynchronous ordinal 0, index 0 with copy offload disabled");
+            "fixture requires the requested asynchronous ordinal, index 0 with copy offload disabled");
     return config;
 }
 
@@ -78,10 +77,10 @@ public:
         check_ze(zeCommandListCreateImmediate(context, device, &reference, &list_), "create copy list");
         require(list_ != nullptr, "Level Zero returned no copy list");
         try {
-            const auto actual = list_config(list_, context, device);
+            const auto actual = list_config(list_, context, device, reference.ordinal);
             require(actual.ordinal == reference.ordinal && actual.index == reference.index &&
                     actual.flags == reference.flags && actual.mode == reference.mode &&
-                    actual.priority == reference.priority, "native copy list differs from SYCL list");
+                    actual.priority == reference.priority, "native copy list differs from its descriptor");
         } catch (...) {
             close(); // No accepted command is possible during construction.
             throw;
@@ -157,9 +156,9 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     const size_t bank_bytes = payload_bytes + 2 * guard_bytes;
     const char *clock_setting = std::getenv("STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK");
     const bool observe_clock = clock_setting && std::string_view(clock_setting) == "1";
-    const char *copy_setting = std::getenv("STRATA_FULLFIT_OVERLAP_COPY_API");
-    const std::string_view copy_api = copy_setting ? copy_setting : "";
-    require(copy_api == "sycl" || copy_api == "native", "invalid copy API");
+    const char *copy_setting = std::getenv("STRATA_FULLFIT_OVERLAP_COPY_ORDINAL");
+    const std::string_view copy_ordinal = copy_setting ? copy_setting : "";
+    require(copy_ordinal == "0" || copy_ordinal == "1", "invalid copy ordinal");
     require(bank_bytes <= runtime->device().get_info<sycl::info::device::max_mem_alloc_size>(),
             "full-fit fixture exceeds maximum single device allocation");
 
@@ -196,20 +195,21 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     const auto context = sycl::get_native<backend>(compute.get_context());
     const auto compute_list = immediate_list(compute);
     const auto copy_list = immediate_list(copy);
-    list_config(compute_list, context, device);
-    const auto copy_config = list_config(copy_list, context, device);
+    list_config(compute_list, context, device, 0);
+    auto copy_config = list_config(copy_list, context, device, 0);
     require(compute_list != copy_list, "compute and copy must use distinct command lists");
     uint32_t groups_count = 0;
     check_ze(zeDeviceGetCommandQueueGroupProperties(device, &groups_count, nullptr), "count queue groups");
-    require(groups_count > 0 && groups_count < 64, "unexpected queue group count");
+    require(groups_count >= 2 && groups_count < 64, "unexpected queue group count");
     std::vector<ze_command_queue_group_properties_t> groups(groups_count);
     for (auto &group : groups) group.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_GROUP_PROPERTIES;
     check_ze(zeDeviceGetCommandQueueGroupProperties(device, &groups_count, groups.data()), "read queue groups");
     constexpr auto compute_copy = ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COMPUTE |
                                   ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COPY;
-    require(groups_count > copy_config.ordinal &&
-            (groups[copy_config.ordinal].flags & compute_copy) == compute_copy &&
-            groups[copy_config.ordinal].numQueues == 1, "fixture requires a single compute/copy queue");
+    require(groups_count >= 2 && (groups[0].flags & compute_copy) == compute_copy &&
+            groups[0].numQueues == 1 && groups[1].flags == ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COPY &&
+            groups[1].numQueues == 1, "fixture requires single compute/copy and copy-only queue groups");
+    copy_config.ordinal = copy_ordinal == "1" ? 1 : 0;
     ze_memory_allocation_properties_t memory{};
     memory.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
     check_ze(zeMemGetAllocProperties(context, source, &memory, nullptr), "check native copy source");
@@ -218,17 +218,13 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     check_ze(zeMemGetAllocProperties(context, base, &memory, &bank_device), "check native destination");
     require(memory.type == ZE_MEMORY_TYPE_DEVICE && bank_device == device,
             "native destination must be local device USM");
-    std::optional<NativeCopyList> native;
-    if (copy_api == "native") native.emplace(context, device, copy_config);
-    std::cout << "fullfit_attention_overlap copy_api=" << copy_api
+    NativeCopyList native(context, device, copy_config);
+    std::cout << "fullfit_attention_overlap copy_api=native"
               << " ordinal=" << copy_config.ordinal << " index=" << copy_config.index
               << " mode=" << copy_config.mode << " flags=" << copy_config.flags
               << " priority=" << copy_config.priority << " domain=PASS\n";
     // This guard dies before either allocation and before either transfer list.
-    auto wait_copy = [&] {
-        if (native) native->wait();
-        else copy.wait_and_throw();
-    };
+    auto wait_copy = [&] { native.wait(); };
     CopyDrain pending{*runtime, wait_copy};
 
     auto reset_bank = [&] {
@@ -240,12 +236,7 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     auto submit_copies = [&](size_t count) {
         for (size_t expert = 0; expert < count; ++expert) {
             const size_t offset = expert * stride;
-            if (native)
-                native->append(destination + offset, source + offset, stride);
-            else
-                require(cudaMemcpyAsync(destination + offset, source + offset, stride,
-                                        cudaMemcpyHostToDevice, &copy) == cudaSuccess,
-                        "expert copy refused");
+            native.append(destination + offset, source + offset, stride);
         }
     };
     auto verify_bank = [&](size_t copied_experts) {

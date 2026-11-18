@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Owned QSA/copy submit-and-drain comparison at ordinal 0. Repository LICENSE.
+"""Owned QSA overlap comparison of two native copy queue groups. Repository LICENSE.
 
 Build/provenance checks follow this fork's daca8f47e fixture control.
 The engine sources and kernel entry are identical across all arms.
@@ -27,8 +27,8 @@ import request_profile_reader as reader
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'fullfit-attention-copy-api-v1'
-KEY = 'fullfit_attention_copy_api_v1'
+ROOT = B / 'fullfit-attention-copy-ordinal-v1'
+KEY = 'fullfit_attention_copy_ordinal_v1'
 COMPILE_LOGS = ROOT / 'compile'
 ELF = ROOT / 'build/sycl_fullfit_attention_overlap'
 PYTHON = basis.reference.model.PYTHON
@@ -37,12 +37,12 @@ ZE_LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
 ADAPTER = 'bench/sycl/fullfit_attention_overlap.hpp'
 TEST = 'tools/test_fullfit_attention_overlap.py'
-COPY_APIS = ('sycl', 'native')
-CLEAN_ORDER = ('sycl', 'native', 'native', 'sycl', 'sycl', 'native')
+QUEUE_GROUPS = {'ordinal0': 0, 'ordinal1': 1}
+CLEAN_ORDER = ('ordinal0', 'ordinal1', 'ordinal1', 'ordinal0', 'ordinal0', 'ordinal1')
 CASES = {
-    **{f'{phase}-{api}': (phase, api, 0)
-       for phase in ('smoke', 'trace') for api in COPY_APIS},
-    **{f'clean-{i}': ('clean', api, i//2) for i, api in enumerate(CLEAN_ORDER)},
+    **{f'{phase}-{group}': (phase, group, 0)
+       for phase in ('smoke', 'trace') for group in QUEUE_GROUPS},
+    **{f'clean-{i}': ('clean', group, i//2) for i, group in enumerate(CLEAN_ORDER)},
 }
 STAGES = ('host', 'build', *CASES)
 ARMS = ('compute_only', 'copy_only', 'serial_separate', 'deferred_wait')
@@ -50,8 +50,9 @@ FULL_ROUNDS = 5
 COPY = re.compile(r'^zeCommandListAppendMemoryCopy\(([HDMS]2[HDMS])\)\[(\d+)\]$')
 SOURCE_SETUP = re.compile(r'^fullfit_attention_overlap source=host_usm '
                           r'bytes=(\d+) alloc_ms=(\S+) fill_ms=(\S+) type=PASS$')
-QUEUE_SETUP = re.compile(r'^fullfit_attention_overlap copy_api=(sycl|native) '
+QUEUE_SETUP = re.compile(r'^fullfit_attention_overlap copy_api=native '
                          r'ordinal=(\d+) index=(\d+) mode=(\d+) flags=(\d+) priority=(\d+) domain=PASS$')
+OVERLAP_FLOOR_NS = 1_000_000
 BUILD_LIMIT = dict(wall=300, cpu=360, rss_cap=10 << 30, text_cap=4 << 20,
                    file_cap=96 << 20, total_cap=384 << 20)
 RUN_LIMIT = dict(wall=300, cpu=450, rss_cap=8 << 30, text_cap=16 << 20,
@@ -88,12 +89,12 @@ def platform():
     resource = validation.committed(RESULT, ('eager_request_profile_v2',))
     require(resource['stage'] == 'closed' and resource['decision']['fresh_pair_within_observer_budget'],
         'closed 64K resource evidence required')
-    source_memory = validation.committed(RESULT, ('fullfit_attention_source_memory_v1',))
-    require(source_memory['stage'] == 'closed' and source_memory['ownership_closed']
-        and not source_memory['active'] and not source_memory['decision']['eligible_host_usm_component_gain']
-        and source_memory['artifact_retirement']['complete']
-        and not (B/'fullfit-attention-source-memory-v1').exists(),
-        'preserve closed source-memory outcome and retire the old generation')
+    copy_api = validation.committed(RESULT, ('fullfit_attention_copy_api_v1',))
+    require(copy_api['stage'] == 'closed' and copy_api['ownership_closed']
+        and not copy_api['active'] and not copy_api['decision']['eligible_same_ordinal_native_gain']
+        and copy_api['artifact_retirement']['complete']
+        and not (B/'fullfit-attention-copy-api-v1').exists(),
+        'preserve closed copy API outcome and retire the old generation')
     copy_engine = validation.committed(pti.RESULT, ('prefill_copy_engine_v6',))
     ze_check = copy_engine['validation_provider']
     require(copy_engine['stage'] == 'closed' and copy_engine['ownership_closed']
@@ -115,7 +116,7 @@ def platform():
         compiler_sha256=native['toolchain'][COMPILER], boot=speed['boot'], driver=speed['driver'],
         runtime_manifest=speed['runtime_manifest'], preload=speed['native_validation_probe'],
         environment_template=speed['environment_template'], tools=tools,
-        resource_sha256=signature(resource), prior_evidence_sha256=signature(source_memory),
+        resource_sha256=signature(resource), prior_evidence_sha256=signature(copy_api),
         ze_loader=dict(path=ZE_LOADER,sha256=runtime[ZE_LOADER]), ze_validation=ze_check)
 
 
@@ -143,7 +144,7 @@ def compile_environment(native):
 
 
 def case_environment(pin, mode):
-    phase, api, _ = CASES[mode]
+    phase, group, _ = CASES[mode]
     path = ROOT/mode
     template = pin['environment_template']
     old = template['STRATA_MEASUREMENT_ROOT']
@@ -154,7 +155,7 @@ def case_environment(pin, mode):
         UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(path/'validation.log'),
         STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK='1' if phase == 'trace' else '0',
-        STRATA_FULLFIT_OVERLAP_COPY_API=api)
+        STRATA_FULLFIT_OVERLAP_COPY_ORDINAL=str(QUEUE_GROUPS[group]))
     shim = pin['preload']['library']['path']
     if phase == 'trace':
         env.update(STRATA_UNITRACE_TARGET_PRELOAD=shim, UNITRACE_SystemTime='1',
@@ -226,7 +227,7 @@ def audit_build(row, link_log, native):
 
 
 def samples(text, mode):
-    phase, api, process = CASES[mode]
+    phase, group, process = CASES[mode]
     smoke = phase == 'smoke'
     traced = phase == 'trace'
     rounds = 1 if smoke else FULL_ROUNDS
@@ -247,8 +248,8 @@ def samples(text, mode):
         elif line.startswith('fullfit_attention_overlap copy_api='):
             match = QUEUE_SETUP.fullmatch(line)
             require(match is not None, 'invalid queue setup proof')
-            name, ordinal, index, queue_mode, flags, priority = match.groups()
-            queues.append(dict(api=name,ordinal=int(ordinal),index=int(index),mode=int(queue_mode),
+            ordinal, index, queue_mode, flags, priority = match.groups()
+            queues.append(dict(api='native',ordinal=int(ordinal),index=int(index),mode=int(queue_mode),
                                flags=int(flags),priority=int(priority)))
         elif line.startswith('case cells='):
             cases.append(line)
@@ -262,10 +263,10 @@ def samples(text, mode):
     require(len(setup) == 1 and setup[0]['bytes'] == (1024 if smoke else 1009254400)
         and all(math.isfinite(setup[0][k]) and setup[0][k] > 0 for k in ('alloc_ms','fill_ms')),
         'wrong source kind, extent or setup time')
-    require(len(queues) == 1 and queues[0]['api'] == api
-        and (queues[0]['ordinal'],queues[0]['index'],queues[0]['mode']) == (0,0,2)
+    require(len(queues) == 1
+        and (queues[0]['ordinal'],queues[0]['index'],queues[0]['mode']) == (QUEUE_GROUPS[group],0,2)
         and queues[0]['flags'] & 2 and not queues[0]['flags'] & 4,
-        'wrong copy API or queue configuration')
+        'wrong native queue configuration')
     result, previous = [], 0
     for i, row in enumerate(rows):
         round_n, order = divmod(i, len(ARMS))
@@ -338,10 +339,11 @@ def assessment(outcomes):
     clean = [row for row in outcomes if row['mode'].startswith('clean-')]
     traces = [row for row in outcomes if row['mode'].startswith('trace-')]
     require([p['mode'] for p in clean] == [f'clean-{i}' for i in range(len(CLEAN_ORDER))]
-        and [p['mode'] for p in traces] == [f'trace-{api}' for api in COPY_APIS]
+        and [p['mode'] for p in traces] == [f'trace-{group}' for group in QUEUE_GROUPS]
         and len({p['pid'] for p in [*clean,*traces]}) == 8
-        and all(row['timing']['queue']['api'] == CASES[row['mode']][1] for row in [*clean,*traces]),
-        'matched copy API, order and independent processes required')
+        and all(row['timing']['queue']['ordinal'] == QUEUE_GROUPS[CASES[row['mode']][1]]
+                for row in [*clean,*traces]),
+        'matched copy ordinal, order and independent processes required')
     def medians(row):
         return {arm: statistics.median(p['milliseconds'] for p in row['timing']['samples']
                     if p['arm'] == arm and p['round'] > 0)
@@ -349,12 +351,12 @@ def assessment(outcomes):
     warmed = [medians(row) for row in clean]
     first = [{p['arm']:p['milliseconds'] for p in row['timing']['samples'] if p['round'] == 0}
              for row in clean]
-    pairs = [{api: index for index,api in enumerate(CLEAN_ORDER[i:i+2], start=i)}
+    pairs = [{group: index for index,group in enumerate(CLEAN_ORDER[i:i+2], start=i)}
              for i in range(0,len(CLEAN_ORDER),2)]
     def time_ratios(rows):
         ratios = {}
         for arm in ARMS:
-            values = [rows[pair['native']][arm]/rows[pair['sycl']][arm] for pair in pairs]
+            values = [rows[pair['ordinal1']][arm]/rows[pair['ordinal0']][arm] for pair in pairs]
             ratios[arm] = dict(paired=values, geometric=statistics.geometric_mean(values),
                                all_three_faster=all(v < 1 for v in values))
         return ratios
@@ -362,19 +364,27 @@ def assessment(outcomes):
         return {arm: {key: statistics.median(p[key] for p in trace['timeline']
                         if p['arm'] == arm and p['round'] > 0)
                     for key in ('copy_union_ns','qsa_union_ns','overlap_ns')} for arm in ARMS}
-    trace_cost = {}
+    trace_cost, overlap, device = {}, {}, {}
     for trace in traces:
-        api = trace['timing']['queue']['api']
-        control = warmed[CLEAN_ORDER.index(api)]
+        group = CASES[trace['mode']][1]
+        control = warmed[CLEAN_ORDER.index(group)]
         observed = medians(trace)
-        trace_cost[api] = {arm: observed[arm]/control[arm] for arm in ARMS}
+        trace_cost[group] = {arm: observed[arm]/control[arm] for arm in ARMS}
+        device[group] = device_medians(trace)
+        windows = [p for p in trace['timeline'] if p['arm']=='deferred_wait' and p['round']>0]
+        require([p['round'] for p in windows] == list(range(1,FULL_ROUNDS)),
+            'actual warmed ordinal trace order differs')
+        overlap[group] = [p['overlap_ns'] for p in windows]
+    repeated_overlap = all(candidate - base >= OVERLAP_FLOOR_NS
+                           for base,candidate in zip(overlap['ordinal0'],overlap['ordinal1']))
     ratios = time_ratios(warmed)
     return dict(clean_progression=list(CLEAN_ORDER), paired_clean_indices=pairs, warmed_ratios=ratios,
         first_cycle_ratios=time_ratios(first), clean_process_warmed_medians_ms=warmed, clean_first_cycle_ms=first,
         traced_vs_first_matching_clean=trace_cost,
-        observed_device_interval_medians_ns={row['timing']['queue']['api']:device_medians(row) for row in traces},
-        eligible_same_ordinal_native_gain=ratios['deferred_wait']['all_three_faster'],
-        next_comparison_prerequisite='Keep native append/drain and host USM fixed for an ordinal-1 queue test; the current performance outcome applies only to ordinal 0.',
+        observed_device_interval_medians_ns=device, warmed_deferred_overlap_ns=overlap,
+        overlap_floor_ns=OVERLAP_FLOOR_NS, repeated_extra_overlap=repeated_overlap,
+        eligible_native_ordinal_overlap=ratios['deferred_wait']['all_three_faster'] and repeated_overlap,
+        next_comparison_prerequisite='Keep any eligible queue selection fixed while validating ordinary RAM source admission and the actual prefill buffer owners.',
         model_qualified=False, physical_bandwidth_or_saturation_qualified=False)
 
 
@@ -413,12 +423,12 @@ def prepare():
         cases=frozen_cases(pin), results=[],
         active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=768<<20,
         plan=dict(order=STAGES, compiled_translation_units=6,
-            unit='Compare the existing SYCL copy and wait with native Level Zero append and host synchronization. Hold host USM, QSA 65536-cell/8192-query/cap2051 kernel, waits and 512 x 1971200-byte uploads fixed. Both copy paths use distinct immediate lists in the same ordinal-0/index-0 group and match flags, mode, priority, context and device. Measure the deferred-wait schedule against its matching control.',
-            safety='Build the disposable third image beside both reference engines. Initial native command list is externally owned by the fixture and never borrows SYCL ownership. Check same-context USM, guards, output and accepted-copy exception unwind in both short processes with UR and Level Zero validation. Run two device-only traces, then remove observers for speed. Keep copy offload and direct submission disabled throughout. Stop on any API, owner, validation, timeout or device-fault error.',
-            decision='Six independent clean processes in AB/BA/AB order. Both processes of each pair use the same rotating schedule. Require 20 samples per process, exact payload/guards/output, at least 10ms and clock-pair overhead at most 0.1%. Separate first cycle and four subsequent cycles. Pass the native API gain at ordinal 0 only if all three deferred-wait warmed median ratios are below 1. Other schedules and device overlap are controls.',
-            limits='Repeated synthetic payloads with no production staging cost. Device intervals establish neither physical bus traffic nor hardware saturation. A subsequent ordinal comparison holds the native append/drain path fixed. No model/decode/quality/full-context qualification.',
+            unit='Change only the explicit native immediate copy-list queue group from compute/copy ordinal 0 to copy-only ordinal 1. Verify one queue per group and the same index 0, flags, mode, priority, context and device. Hold append/drain, host USM, QSA 65536-cell/8192-query/cap2051 on ordinal 0, waits and 512 x 1971200-byte uploads fixed.',
+            safety='Build the disposable third image beside both reference engines. Check same-context USM, guards, output and accepted-copy exception unwind in both short processes with UR and Level Zero validation. Run two device-only traces, then remove observers for speed. Keep copy offload and direct submission disabled throughout. Stop on any API, owner, validation, timeout or device-fault error.',
+            decision='Six independent clean processes in AB/BA/AB order. Both processes of each pair use the same rotating schedule. Require 20 exact payload/guard/output samples per process, at least 10ms and clock-pair overhead at most 0.1%. Separate first cycle and four subsequent cycles. Advance only with all three deferred-wait warmed median ratios below 1 and at least 1ms additional observed overlap in every matched warmed deferred-wait trace round. Other schedules are controls.',
+            limits='Repeated synthetic payloads with no production staging cost. Device intervals establish neither physical bus traffic nor hardware saturation. An eligible result still needs independent ordinary-RAM admission, exact-demand prefill and model validation. No model/decode/quality/full-context qualification.',
             retention='Keep individual timings, allocation and fill costs, device-window aggregates and source/build/fault proof. Retire the fixture generation and normal output after closure and exact provenance recovery.')))
-    print('Prepared same-ordinal copy API comparison; commit exact plan before running.')
+    print('Prepared fixed-API copy ordinal comparison; commit exact plan before running.')
 
 
 def run_device(row, mode, scope, path, result):
@@ -443,7 +453,7 @@ def run_device(row, mode, scope, path, result):
             if gate == 'before-runtime':
                 environ = Path('/proc',str(entry['pid']),'environ').read_bytes().split(b'\0')
                 keys = ('STRATA_TEST_MAIN_GATES', 'STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK',
-                    'STRATA_FULLFIT_OVERLAP_COPY_API',
+                    'STRATA_FULLFIT_OVERLAP_COPY_ORDINAL',
                     'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission',
                     'STRATA_SYCL_PREFILL_SAME_QUEUE', 'UR_ENABLE_LAYERS', 'UR_LOG_VALIDATION',
                     'ZES_ENABLE_SYSMAN', 'ONEAPI_DEVICE_SELECTOR')
@@ -478,11 +488,11 @@ def run_device(row, mode, scope, path, result):
             r'\b(?:VALIDATION ERROR|ERROR_INVALID|THREADING VIOLATION)\b',logs,re.I))),
         'native validation, loader or fixture gate differs')
     timing = samples(text,mode)
-    if mode != 'smoke-sycl':
-        smoke = next(stage for stage in row['results'] if stage['mode'] == 'smoke-sycl')
-        fields = ('ordinal','index','mode','flags','priority')
+    if mode != 'smoke-ordinal0':
+        smoke = next(stage for stage in row['results'] if stage['mode'] == 'smoke-ordinal0')
+        fields = ('api','index','mode','flags','priority')
         require(all(timing['queue'][name] == smoke['timing']['queue'][name] for name in fields),
-            'queue configuration differs from the bounded SYCL control')
+            'queue configuration differs from the bounded ordinal-0 control')
     result.update(validation=probe, timing=timing)
     if phase == 'trace':
         traces = sorted((path/'trace').glob('*.json'))
