@@ -532,6 +532,25 @@ const char* prefill_moe_prefix_router_name(PrefillMoePrefixRouter mode) {
     return "off";
 }
 
+enum class PrefillPrefixExpertUpload { off, ffn, prefix };
+
+PrefillPrefixExpertUpload prefill_prefix_expert_upload_requested() {
+    static const auto mode = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD");
+        if (!value || std::strcmp(value, "off") == 0) return PrefillPrefixExpertUpload::off;
+        if (std::strcmp(value, "ffn") == 0) return PrefillPrefixExpertUpload::ffn;
+        if (std::strcmp(value, "prefix") == 0) return PrefillPrefixExpertUpload::prefix;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD requires off, ffn or prefix");
+    }();
+    return mode;
+}
+
+const char* prefill_prefix_expert_upload_name(PrefillPrefixExpertUpload mode) {
+    if (mode == PrefillPrefixExpertUpload::ffn) return "ffn";
+    if (mode == PrefillPrefixExpertUpload::prefix) return "prefix";
+    return "off";
+}
+
 struct PrefillMoeRouterPiece {
     uint16_t* mixed;
     float* injection;
@@ -597,6 +616,10 @@ struct MoeWindowContext {
     uint8_t* prefix_router_storage = nullptr;
     int64_t prefix_router_layer = -1;
     uint64_t prefix_router_completed = 0;
+    PrefillPrefixExpertUpload prefix_expert_upload = PrefillPrefixExpertUpload::off;
+    std::vector<int32_t> prefix_experts;
+    detail::PrefillFullfitUploadReceipt prefix_upload;
+    uint64_t prefix_upload_layers = 0, prefix_upload_experts = 0, prefix_upload_bytes = 0;
     std::shared_ptr<const detail::MoeWindowRoutes> routes;
     std::function<bool(int64_t, int64_t, std::string&)> complete_piece;
     uint64_t windows = 0, dequants = 0, jobs = 0, source_bytes = 0;

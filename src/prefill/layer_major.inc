@@ -67,6 +67,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if(gdn_chunk_on)strata::gdn_chunk64::validate_device(m.cs);
     const int window_requested = moe_window_requested();
     const auto prefix_router_requested = prefill_moe_prefix_router_requested();
+    const auto prefix_expert_upload_requested = prefill_prefix_expert_upload_requested();
     const bool window_on = window_requested && !requires_prefix_checkpoints;
     const bool scratch_mixed_on = moe_scratch_mixed_requested();
     const bool split_accumulator_requested = moe_split_accumulator_requested();
@@ -495,6 +496,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             source_views.push_back(view);
         }
     }
+    const bool prefix_expert_upload_admitted = prefix_expert_upload_requested != PrefillPrefixExpertUpload::off &&
+        prefix_router_admitted && prefix_router_requested == PrefillMoePrefixRouter::early &&
+        source_view_on && !expert_upload_staging_requested() && !detail::prefill_fullfit_eager_requested();
+    if (prefix_expert_upload_requested != PrefillPrefixExpertUpload::off)
+        std::fprintf(stderr, "strata MoE prefix expert upload: requested=%s effective=%s queue=compute\n",
+            prefill_prefix_expert_upload_name(prefix_expert_upload_requested),
+            prefill_prefix_expert_upload_name(prefix_expert_upload_admitted ?
+                prefix_expert_upload_requested : PrefillPrefixExpertUpload::off));
     // Default copying isolates transient provider pointers. A qualified view
     // borrows the loaded Arena until checked retirement and needs no upload slab.
     // Also count the cache's small blocking staging allocation and two maps.
@@ -857,6 +866,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             window_context->prefix_router = prefix_router_requested;
             window_context->prefix_router_storage = prefix_router_storage.get();
         }
+        if (prefix_expert_upload_admitted)
+            window_context->prefix_expert_upload = prefix_expert_upload_requested;
         if (bank_plan.staged()) {
             window_context->expert_slots.reset(new detail::ExpertBankSlots(int32_t(bank_plan.slots)));
             window_context->expert_cache = &layer_cache;
@@ -1242,6 +1253,18 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             std::fprintf(stderr, "strata MoE prefix router complete: effective=%s layers=%llu rows=%zu final_drain=checked\n",
                 prefill_moe_prefix_router_name(prefix_router_requested),
                 (unsigned long long)window_context->prefix_router_completed, PrefillMoePrefixStorage::rows);
+        }
+        if (prefix_expert_upload_admitted) {
+            if (window_context->prefix_upload_layers != uint64_t(g.n_layers) ||
+                !window_context->prefix_experts.empty() || window_context->prefix_upload.experts) {
+                err = "prefill MoE prefix expert upload: incomplete layer coverage"; return false;
+            }
+            std::fprintf(stderr, "strata MoE prefix expert upload complete: effective=%s layers=%llu "
+                "experts=%llu requested_H2D_bytes=%llu final_drain=checked\n",
+                prefill_prefix_expert_upload_name(prefix_expert_upload_requested),
+                (unsigned long long)window_context->prefix_upload_layers,
+                (unsigned long long)window_context->prefix_upload_experts,
+                (unsigned long long)window_context->prefix_upload_bytes);
         }
         if (window_context->expert_slots)
             std::fprintf(stderr, "strata MoE expert bank complete: uploads=%llu requested_H2D_bytes=%llu permanent_hits=%llu permanent_slots=%d total_slots=%d final_drain=checked\n",

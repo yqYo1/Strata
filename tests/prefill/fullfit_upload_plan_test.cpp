@@ -50,6 +50,18 @@ int main() try {
     const auto unpublished=failed.begin(4);check(unpublished.upload && unpublished.slot==2);
     ExpertBankSlots nonempty(512,true);const auto first=nonempty.begin(1);nonempty.queued(first);
     refuses([&]{enqueue_prefill_fullfit_upload(plan,nonempty,[](auto){return true;});});
+    const std::vector<int32_t> routed{511,2,42, 42,0,511, 1,512,2};
+    const auto prefix = prefill_prefix_expert_ids(routed, 2, 3);
+    check(prefix == std::vector<int32_t>({0,2,42,511}));
+    bytes(prefix,256,4);
+    refuses([&]{prefill_prefix_expert_ids(routed,3,3);});
+    refuses([&]{prefill_prefix_expert_ids({0,-1},1,2);});
+    refuses([&]{prefill_prefix_expert_ids({2,2},1,2);});
+    refuses([&]{prefill_prefix_expert_ids(routed,4,3);});
+    refuses([&]{prefill_prefix_expert_ids(routed,0,3);});
+    refuses([&]{prefill_prefix_expert_ids(routed,1,0);});
+    refuses([&]{prefill_prefix_expert_ids(routed,1,513);});
     std::puts("prefill full-fit upload oracle: byte_cases=6 refusals=10 failure_publication=checked");
+    std::puts("prefill prefix expert IDs: sparse_and_repeated=checked refusals=7 checked_copy=pass");
     return 0;
 } catch (const std::exception& error) { std::fprintf(stderr,"%s\n",error.what());return 1; }

@@ -32,9 +32,34 @@ bool produce_prefill_moe_router_piece(Engine& m, const core::LayerView& v,
     m.gemm.bf16(m.mixed_bf, static_cast<const uint16_t*>(w.shared_gate->data), out.shared_gate, rows, 1, N);
     return true;
 }
+
+template<class Engine>
+void enqueue_prefill_prefix_experts(Engine& m, MoeWindowContext& owner, int64_t layer) {
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    if (owner.prefix_router_layer != layer || owner.prefix_experts.empty() ||
+        owner.prefix_upload.experts || !owner.expert_slots || !owner.private_expert_bank ||
+        owner.expert_cache != m.cache || owner.private_expert_bank->owner() != m.cache ||
+        owner.private_expert_bank->layout().stride != uint64_t(layout.blob_bytes(layer)) ||
+        owner.expert_source_stride != uint64_t(layout.blob_bytes(layer)) ||
+        owner.expert_upload_staging || owner.command_trace || !owner.scratch_mixed ||
+        !owner.prefix_router_storage || !m.layer_major_active || !m.native16_active ||
+        m.layer_major_residual.gpu_rows != m.layer_major_residual.rows || m.copy != m.cs)
+        throw std::invalid_argument("prefill prefix expert upload: owner, extent or queue contract");
+    const auto& bank = *owner.private_expert_bank;
+    if (m.borrowed)
+        sycl_backend::validate_spans({{bank.device_slot(0), size_t(bank.layout().backing_bytes)}},
+            {{m.borrowed_base, size_t(m.borrowed_capacity)}}, 1);
+    sycl_backend::cpu_wait_profile::Host host(sycl_backend::cpu_wait_profile::upload_submit);
+    owner.prefix_upload = detail::stage_prefill_fullfit_eager(*owner.expert_slots,
+        bank, owner.expert_slab, owner.expert_slab_bytes, owner.expert_source_stride,
+        owner.prefix_experts, m.cs, {{m.region, size_t(m.region_bytes)},
+         {owner.bank, size_t(owner.bank_bytes)}, {owner.prefix_router_storage, PrefillMoePrefixStorage::bytes},
+         {m.R, size_t(m.T * D * 4)}, {m.emb, size_t(m.T * N * 4)},
+         {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}});
+}
 }  // namespace
 
-bool Prefill::run_prefill_moe_prefix_router(int64_t layer, int64_t rows, std::string& err) {
+bool Prefill::run_prefill_moe_prefix_router(int64_t layer, int64_t rows, std::string& err) try {
     Impl& m = *impl_;
     auto& owner = *m.moe_window;
     using Storage = PrefillMoePrefixStorage;
@@ -59,7 +84,19 @@ bool Prefill::run_prefill_moe_prefix_router(int64_t layer, int64_t rows, std::st
         err = "prefill MoE prefix router: prefix readback/drain"; return false;
     }
     owner.prefix_router_layer = layer;
+    if (owner.prefix_expert_upload != PrefillPrefixExpertUpload::off) {
+        if (!owner.prefix_experts.empty() || owner.prefix_upload.experts)
+            throw std::logic_error("prefill prefix expert upload: previous layer still owns its receipt");
+        owner.prefix_experts = detail::prefill_prefix_expert_ids(owner.ids, Storage::rows, K);
+        if (owner.prefix_expert_upload == PrefillPrefixExpertUpload::prefix) {
+            if (should_stop && should_stop()) { err = "cancelled"; return false; }
+            enqueue_prefill_prefix_experts(m, owner, layer);
+        }
+    }
     return true;
+} catch (const std::exception& exception) {
+    err = std::string("prefill MoE prefix router: ") + exception.what();
+    return false;
 }
 
 // Main-authored expert-major window. Saved matrix inputs remain FP16;
@@ -306,7 +343,22 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     const auto& layout = strata::kernels::cpu::expert_layout();
     const auto& format = layout.fmt[size_t(layer)];
     detail::PrefillFullfitUploadReceipt eager_upload;
-    if (detail::prefill_fullfit_eager_requested() && owner.private_expert_bank &&
+    const bool use_prefix_upload = owner.prefix_expert_upload != PrefillPrefixExpertUpload::off;
+    if (use_prefix_upload) {
+        if (owner.prefix_expert_upload == PrefillPrefixExpertUpload::ffn) {
+            if (should_stop && should_stop()) { err = "cancelled"; return false; }
+            enqueue_prefill_prefix_experts(m, owner, layer);
+        }
+        eager_upload = owner.prefix_upload;
+        if (!first_missing || owner.prefix_experts.empty() ||
+            eager_upload.experts != owner.prefix_experts.size() ||
+            eager_upload.copy_commands != eager_upload.experts ||
+            eager_upload.payload_bytes != eager_upload.experts * uint64_t(layout.blob_bytes(layer)))
+            throw std::logic_error("prefill prefix expert upload: invalid layer receipt");
+        owner.staged_uploads += eager_upload.experts;
+        stats_.experts_streamed += eager_upload.experts;
+        owner.staged_upload_bytes += eager_upload.payload_bytes;
+    } else if (detail::prefill_fullfit_eager_requested() && owner.private_expert_bank &&
         owner.expert_slots && owner.expert_slots->full_fit() &&
         !owner.expert_slots->permanent_used() && !owner.expert_upload_staging) {
         if (m.layer_major_residual.gpu_rows!=m.layer_major_residual.rows ||
@@ -442,6 +494,9 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         }
         ++owner.jobs;
     }
+    if (use_prefix_upload && std::any_of(eager_upload.first_upload.begin(), eager_upload.first_upload.end(),
+            [](bool pending) { return pending; }))
+        throw std::logic_error("prefill prefix expert upload: selected expert without a reader");
     // The host status destination belongs to the outer checked lease, even if DMA fails.
     owner.status_observed = ~uint32_t(0);
     {
@@ -498,6 +553,19 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         std::fprintf(stderr, "strata MoE mixed owners: phase=retired layer=%lld first=%lld rows=%lld route_status=0 shared_HC=checked_drain callbacks=after_return\n",
             (long long)layer, (long long)first_row, (long long)rows);
     ++owner.windows; owner.source_bytes += uint64_t(rows * K * 4);
+    if (use_prefix_upload) {
+        const auto ids_hash = core::fnv1a64(reinterpret_cast<const uint8_t*>(owner.prefix_experts.data()),
+            owner.prefix_experts.size() * sizeof(int32_t));
+        std::fprintf(stderr, "strata MoE prefix expert upload layer: layer=%lld experts=%llu "
+            "requested_H2D_bytes=%llu ids_hash=%016llx readers=checked\n",
+            (long long)layer, (unsigned long long)eager_upload.experts,
+            (unsigned long long)eager_upload.payload_bytes, (unsigned long long)ids_hash);
+        ++owner.prefix_upload_layers;
+        owner.prefix_upload_experts += eager_upload.experts;
+        owner.prefix_upload_bytes += eager_upload.payload_bytes;
+        owner.prefix_experts.clear();
+        owner.prefix_upload = {};
+    }
     if (first_missing) {
         owner.prefix_router_layer = -1;
         ++owner.prefix_router_completed;

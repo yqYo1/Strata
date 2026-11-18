@@ -2726,6 +2726,33 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   position, copy queue and first-reader wait against fixed payloads. Physical
   context and sustained decode retain their own qualification gates.
 
+  The next production-path control fixes `STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER=early`,
+  the ordinary resident host source, the private full-fit bank and the existing
+  in-order compute queue. `STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD` is opt-in
+  with `off`, `ffn` and `prefix` modes. The two bulk-issue modes derive the
+  same sorted demand set from the same first8192 rows at the same point. They
+  submit the same individual copies either immediately after that readback or
+  at the existing FFN boundary. Remaining experts still use JIT. Keep the
+  router order, arithmetic, attention, allocation and decode policy fixed.
+  First qualify the same-build CPU and small bank fixture, then check off, ffn
+  and prefix with the same 32769-token requests. Require all48 layers, identical
+  route/weight digests, expert-job and upload conservation and the expected
+  MTP handoff. Check ffn and prefix for identical selected expert digests and
+  bytes. Each selected mapping must have an actual reader. Stop on a mismatch,
+  timeout or fresh GPU fault. This arm qualifies only same-queue issue timing.
+
+  For clean64K comparisons, use three requests per process and three independent
+  matched pairs per question. Compare JIT off to ffn first, with off, ffn, ffn,
+  off, off, ffn process order. Then compare ffn to prefix with ffn, prefix,
+  prefix, ffn, ffn, prefix order. Compare prefix with JIT off at the combination
+  gate. Preserve first use and warmed samples separately, record actual
+  dispatch and transferred bytes, and require a repeatable warmed benefit for
+  throughput adoption. Mixed signs require further evaluation. A separate queue,
+  staging, and first reader wait each need their own fixed-prerequisite test.
+  Neither the source placement nor the issue point in this comparison proves
+  transfer overlap. Review the temporary third build after these comparisons
+  or on the first failed safety or qualification gate.
+
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the
   attention pass. Each attention piece stores BF16 residuals on the compute
