@@ -453363,5 +453363,402 @@
       },
       "reason": "Closed numerical diagnostic and saved-log replay. Keep the validated build for the named early-versus-late clean 64K comparison; its numerical admission uses committed evidence."
     }
+  },
+  "prefill_prefix_router_timing_v1": {
+    "stage": "prepared",
+    "source_commit": "cc884a60426a185467ac0d03cf50114e4db4e09f",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-native-v1/build/strata",
+      "sha256": "179640aaa3f339fa1d4674e9b3adf9b9fd8d0c0618c05d64bba2294726589623",
+      "bytes": 26467632
+    },
+    "native_source_commit": "14107b72188f4fab70127c92cd83a320d6597126",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "observer_admission": {
+      "native_build": "d5e7850a9b380c9ff887cd9c83993bf4e9812d9bff6bf468c18b6644ab90c93b",
+      "fast_configuration_diagnostic": {
+        "scope": "Use immutable historical assets and providers. Qualify new order from fresh model requests."
+      },
+      "numerical_evidence": {
+        "commit": "36460f9586df1081ee882db2ebdcc8954056f0ab",
+        "replay_sha256": "8fbab024d94c7913b2a3907c23c7728f6e315a201a01b9b4a4017b6bcea82924",
+        "original_failed_aggregation": true,
+        "observed_equivalent_rows": 32768,
+        "native_recompiled": false,
+        "retirement_sha256": "7269ee323d1ee10b7f187648702c208e301d13a4caf4a10789cd01e8984073de"
+      }
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "plans": [
+      {
+        "index": 0,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/0",
+        "generated": {
+          "config.json": "e148213678f10287f00cad2f17d6f1d8af8646cc21b220af36c3b7ad24947602",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/0/config.json",
+          "--port",
+          "54161",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/0/bench"
+        ],
+        "environment_sha256": "0e379524933ca4e2e8b29e8fbe6baff0ef03ee23fd21be1435525bc651b27b2d",
+        "variant": "late",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": false,
+        "upload": "jit"
+      },
+      {
+        "index": 1,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/1",
+        "generated": {
+          "config.json": "af5aee1d31af28dc50c737d4d14eb1fff0b2d47bde6d70924acaf73f56687e46",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/1/config.json",
+          "--port",
+          "48063",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/1/bench"
+        ],
+        "environment_sha256": "382d4e6cfd39ce5b3ac0fccca9e5bd4d2a5cc04cdef5e59265b6824719a14152",
+        "variant": "early",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": false,
+        "upload": "jit"
+      },
+      {
+        "index": 2,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/2",
+        "generated": {
+          "config.json": "511bdfb8e0db3d57b0d58d622bb96c63fe17cdfabf197fe03802be1982bbe6ad",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/2/config.json",
+          "--port",
+          "54175",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/2/bench"
+        ],
+        "environment_sha256": "6485aa723a9b6faee42fb7baf3ab75e5eaeacb2222ec81f1c0af4be8b2003c76",
+        "variant": "early",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": false,
+        "upload": "jit"
+      },
+      {
+        "index": 3,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/3",
+        "generated": {
+          "config.json": "9949bdf8a45a4359abffb230c0b2214ee105ef5cbc997dcaadbb471f7ee9803a",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/3/config.json",
+          "--port",
+          "40957",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/3/bench"
+        ],
+        "environment_sha256": "ce9724e2db4e73755c6f00252507d97413826aa35aa61fefda56c2d6fda75462",
+        "variant": "late",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": false,
+        "upload": "jit"
+      },
+      {
+        "index": 4,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/4",
+        "generated": {
+          "config.json": "17b200c1cece48d05ef69f810ffc420ec9a53e902bdb63798a234058117375cc",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/4/config.json",
+          "--port",
+          "44743",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/4/bench"
+        ],
+        "environment_sha256": "4de4822b09cb7a9afc14ff7840d76ff0c63e220e9e27e74561539296682d0c54",
+        "variant": "late",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": false,
+        "upload": "jit"
+      },
+      {
+        "index": 5,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/5",
+        "generated": {
+          "config.json": "0571b21a43815bd6f68c086b6c59ca73b7d09138ddc22fc18dab5ecc219c436d",
+          "plan.json": "61a8ffa96f4ccf7d89bef67ac64ba6449a0d7468d428fc9bcbbda0ec8790203c"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/5/config.json",
+          "--port",
+          "37757",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-router-timing-v1/5/bench"
+        ],
+        "environment_sha256": "cd9138c950e4cd8be6227a7d909ab55a9214b646aae0ff096acc80d7ea424260",
+        "variant": "early",
+        "bank": 512,
+        "window": 10,
+        "relocate": 0,
+        "trace_progress": false,
+        "upload": "jit"
+      }
+    ],
+    "processes": [],
+    "request_hashes": {},
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "budgets": {
+      "wall": 2400,
+      "cpu": 28800,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 134217728
+    },
+    "whole_bytes": 671088640,
+    "plan": {
+      "unit": "Keep the same saved prefix owner, split readback, tensors, JIT transfers and compute queue. Change only whether the prefix producer executes after all attention or after its first piece.",
+      "order": "Late/early, early/late, late/early in six independent processes. Three matching 65537-input thinking-enabled 24-output requests per process. Separate first request and warmed pair median.",
+      "gate": "Identical actual work per request and same executable. Compare all three paired warmed prompt ratios and TTFT, preserving first-use separately. Every eligible pair remains in the record. No minimum gain cutoff and no speed-based sample replacement.",
+      "limits": "Same-build isolated producer order, no actual concurrent expert upload. Clean clocks with existing quiet validation and no timing/census observers. This does not cover the storage-only control, sustained decode, agent, quality or physical context.",
+      "retention": "Keep individual samples, measured placement and matched comparison; retire captured output after closure. Review the additional build against the next named experiment."
+    },
+    "previous_attempt": {
+      "scope": "Use immutable historical assets and providers. Qualify new order from fresh model requests."
+    },
+    "source_inputs": {
+      "files": 778,
+      "sha256": "124620ca4f6dd8e7e43f0c8917dcce317d205ed4f6760b26965ba1f226ae3aff"
+    },
+    "environment_template_sha256": "8b1766e43dffed1f545f4274a6768b6602f620883dadd3aedca51436646a5f97",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
