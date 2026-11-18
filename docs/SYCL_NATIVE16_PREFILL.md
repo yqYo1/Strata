@@ -2259,8 +2259,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   neither the placement change nor the composed engine is adopted. This
   preserves the separate bank/coherence losses. The prospective rule permits
   the next independent128K/fixed-bank1window10/16question;only its repeated
-  gain permits the combination. Window/combined remain unprepared;
-  no larger-window model has run. Hardware saturation,current9849decode
+  gain permits the combination. The fixed-bank window question is prepared
+  at`3a520417f`,with15model hashes and18generated configurations pinned.
+  Both arms use the same coherent candidate and bank1;only window10/16and
+  its required layout differ. Host probes and model admissions are next;
+  the combination remains unprepared and no larger-window model has run.
+  Hardware saturation,current9849decode
   preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
   RESTORE qualification remain unresolved. Full relocation evidence is
   `a82b3ef93`;four first-use/warmed CSVpoints bring the index to629.
@@ -2269,7 +2273,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All635ended private files(96,245,904B)and287,079Btemporary inventory are
   retired. Both phase references,the coherent candidate and required shared
   records remain for the independent window/combination questions;fresh
-  predecessor/device admission is next.
+  predecessor/device admission passes after retirement.
   Full coherence evidence is`c68086021`. Four first-use/warmed CSVpoints bring
   the index to625. All27samples,nine native identities,the failed decision and
   useful request-work/admission values remain in the compact result. Original
