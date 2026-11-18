@@ -2312,7 +2312,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
   Full combined evidence is`570f6903e`;four first-use/warmed CSVpoints bring
-  the index to637.
+  the index to637. All27samples,nine native identities and the original
+  successful decision remain compact. Original771Git inputs and18generated
+  payloads are recovered exactly;all635ended files(96,622,772B)and287,082B
+  temporary inventory are retired. Both phase references,the coherent
+  candidate and required shared records remain for the pending source/phase
+  validation;select and retire a superseded generation before a new build.
   Full window evidence is`6ead5d99b`;four first-use/warmed CSVpoints bring
   the index to633. All27samples,nine native identities and the original gain
   decision remain compact. Original771Git inputs and18generated payloads
