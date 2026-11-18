@@ -2438,6 +2438,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   phase-preservation gates remain pending. Retain both phase references and
   the candidate for the next bounded64Kclean/observed resource attribution;
   commit its observer-cost plan and collector admission before execution.
+  Its first gate is`eager_pti_probe_v1`:control then collector on the exact
+  retained eager-bank fixture,4experts/256and512strides/2layers,normal and
+  cancellation cases. Pin original collector/source/provider identities,
+  checked drains,quiet validation,normal closure and enclosing RAW clocks;
+  no model launch until that gate passes. No native rebuild is required.
   Retire a superseded generation
   before another native build. The limiting arithmetic/VRAM/PCIe/submission
   resource remains unknown;this timing cohort is not a saturation measurement.
