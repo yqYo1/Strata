@@ -5,6 +5,9 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#if defined(STRATA_QSA_BENCH_PREFILL_V_TILE)
+#include "qsa_v_tile_experiment.hpp"
+#endif
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -20,7 +23,11 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
-#if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
+#if defined(STRATA_QSA_BENCH_PREFILL_V_TILE)
+constexpr std::array<PrefillVTileAttention *, 3> v_tile_arms{qsa_bf16_prefix_ordered_exp_batch,
+    separate_late_v::qsa_bf16_prefix_ordered_exp_batch, separate_early_v::qsa_bf16_prefix_ordered_exp_batch};
+constexpr std::array<const char *, 3> v_tile_names{"shared_late", "separate_late", "separate_early"};
+#elif defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
 constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
 constexpr const char *baseline_name="ordered_exp", *candidate_name="cached_subgroup";
@@ -107,9 +114,13 @@ void run(int cells,int queries,int cap,bool clustered) {
   auto shape=qsa_real_shapes();shape.page_size=Page;
   const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
   auto invoke=[&](int variant) {
+#if defined(STRATA_QSA_BENCH_PREFILL_V_TILE)
+    auto attention = v_tile_arms.at(variant);
+#else
     auto attention=variant ? candidate_attention : baseline_attention;
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
     if (variant==2) attention=qsa_bf16_prefix_subgroup_batch;
+#endif
 #endif
     rt->wait();const auto start=std::chrono::steady_clock::now();
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
@@ -123,6 +134,26 @@ void run(int cells,int queries,int cap,bool clustered) {
         c[c.size()-16+i]==bad_marker && y[i]==marker && y[y.size()-16+i]==marker,"output/scratch guards");
   };
   invoke(0);guards();
+#if defined(STRATA_QSA_BENCH_PREFILL_V_TILE)
+  const auto reference = out.get();
+  for (size_t i=16;i<reference.size()-16;++i)
+    require(std::isfinite(std::bit_cast<float>(uint32_t(reference[i])<<16)),"reference all finite");
+  for (int arm=0;arm<3;++arm) {
+    invoke(arm);guards();require(out.get()==reference,"warm V tile bit comparison");
+  }
+  constexpr int orders[6][3]{{0,1,2},{2,1,0},{1,2,0},{0,2,1},{2,0,1},{1,0,2}};
+  for (int round=0;round<6;++round) for (int index=0;index<3;++index) {
+    const int variant=orders[(round+2*process_id)%6][index];
+    const double ms=invoke(variant);
+    guards();require(out.get()==reference,"timed V tile bit comparison");
+    std::cout<<"sample process="<<process_id<<" cells="<<cells<<" queries="<<queries<<" cap="<<cap
+        <<" pattern="<<(clustered ? "clustered" : "gather")<<" round="<<round
+        <<" order="<<index<<" variant="<<variant<<" implementation="<<v_tile_names[variant]
+        <<" milliseconds="<<std::setprecision(12)<<ms
+        <<" compared="<<q.size()<<" exact_bits=PASS guards=PASS status=PASS\n";
+  }
+  constexpr int sample_count=18;
+#else
   std::array<std::vector<uint16_t>,2> reference{out.get(),out.get()};
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
   // Independent existing subgroup export is the candidate's reference; never
@@ -135,6 +166,8 @@ void run(int cells,int queries,int cap,bool clustered) {
     const float b=std::bit_cast<float>(uint32_t(reference[1][i])<<16);
     max_abs=std::max(max_abs,std::fabs(double(a)-b));
   }
+  constexpr int sample_count=12;
+#endif
   std::cout<<"reference baseline=ordered_exp candidate=uncached_subgroup differing="<<differing
       <<" compared="<<q.size()<<" max_absolute="<<std::setprecision(12)<<max_abs
       <<" comparison=diagnostic_not_model_quality\n";
@@ -157,7 +190,8 @@ void run(int cells,int queries,int cap,bool clustered) {
   require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
       dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
   std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap
-      <<" pattern="<<(clustered ? "clustered" : "gather")<<" samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS\n";
+      <<" pattern="<<(clustered ? "clustered" : "gather")<<" samples="<<sample_count
+      <<" full_bits=PASS guards=PASS inputs=PASS status=PASS\n";
 }
 }
 int main(int argc,char **argv) {
