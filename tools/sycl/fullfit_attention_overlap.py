@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Owned QSA/copy source-memory comparison. Repository LICENSE.
+"""Owned QSA/copy submit-and-drain comparison at ordinal 0. Repository LICENSE.
 
 Build/provenance checks follow this fork's daca8f47e fixture control.
 The engine sources and kernel entry are identical across all arms.
@@ -27,27 +27,31 @@ import request_profile_reader as reader
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'fullfit-attention-source-memory-v1'
-KEY = 'fullfit_attention_source_memory_v1'
+ROOT = B / 'fullfit-attention-copy-api-v1'
+KEY = 'fullfit_attention_copy_api_v1'
 COMPILE_LOGS = ROOT / 'compile'
 ELF = ROOT / 'build/sycl_fullfit_attention_overlap'
 PYTHON = basis.reference.model.PYTHON
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
+ZE_LOADER = '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
 ADAPTER = 'bench/sycl/fullfit_attention_overlap.hpp'
 TEST = 'tools/test_fullfit_attention_overlap.py'
-SOURCES = ('ordinary', 'host_usm')
-CLEAN_ORDER = ('ordinary', 'host_usm', 'host_usm', 'ordinary', 'ordinary', 'host_usm')
+COPY_APIS = ('sycl', 'native')
+CLEAN_ORDER = ('sycl', 'native', 'native', 'sycl', 'sycl', 'native')
 CASES = {
-    **{f'{phase}-{source}': (phase, source, 0)
-       for phase in ('smoke', 'trace') for source in SOURCES},
-    **{f'clean-{i}': ('clean', source, i//2) for i, source in enumerate(CLEAN_ORDER)},
+    **{f'{phase}-{api}': (phase, api, 0)
+       for phase in ('smoke', 'trace') for api in COPY_APIS},
+    **{f'clean-{i}': ('clean', api, i//2) for i, api in enumerate(CLEAN_ORDER)},
 }
 STAGES = ('host', 'build', *CASES)
-ARMS = ('compute_only', 'copy_only', 'serial_shared', 'serial_separate', 'deferred_wait')
+ARMS = ('compute_only', 'copy_only', 'serial_separate', 'deferred_wait')
+FULL_ROUNDS = 5
 COPY = re.compile(r'^zeCommandListAppendMemoryCopy\(([HDMS]2[HDMS])\)\[(\d+)\]$')
-SOURCE_SETUP = re.compile(r'^fullfit_attention_overlap source=(ordinary|host_usm) '
+SOURCE_SETUP = re.compile(r'^fullfit_attention_overlap source=host_usm '
                           r'bytes=(\d+) alloc_ms=(\S+) fill_ms=(\S+) type=PASS$')
+QUEUE_SETUP = re.compile(r'^fullfit_attention_overlap copy_api=(sycl|native) '
+                         r'ordinal=(\d+) index=(\d+) mode=(\d+) flags=(\d+) priority=(\d+) domain=PASS$')
 BUILD_LIMIT = dict(wall=300, cpu=360, rss_cap=10 << 30, text_cap=4 << 20,
                    file_cap=96 << 20, total_cap=384 << 20)
 RUN_LIMIT = dict(wall=300, cpu=450, rss_cap=8 << 30, text_cap=16 << 20,
@@ -84,15 +88,21 @@ def platform():
     resource = validation.committed(RESULT, ('eager_request_profile_v2',))
     require(resource['stage'] == 'closed' and resource['decision']['fresh_pair_within_observer_budget'],
         'closed 64K resource evidence required')
-    overlap = validation.committed(RESULT, ('fullfit_attention_overlap_v2',))
-    chronology = validation.committed(RESULT, ('fullfit_attention_attribution_v1',))
-    require(all(row['stage'] == 'closed' and row['ownership_closed'] and not row['active']
-                for row in (overlap, chronology))
-        and not overlap['decision']['eligible_for_separate_reader_ownership_test']
-        and chronology['result']['decision']['next'] == 'inspect_native_queue_and_command_list_scheduling'
-        and chronology['artifact_retirement']['complete']
-        and all(not (B/name).exists() for name in chronology['artifact_retirement']['scope']),
-        'prior overlap/chronology closure or disposable generation differs')
+    source_memory = validation.committed(RESULT, ('fullfit_attention_source_memory_v1',))
+    require(source_memory['stage'] == 'closed' and source_memory['ownership_closed']
+        and not source_memory['active'] and not source_memory['decision']['eligible_host_usm_component_gain']
+        and source_memory['artifact_retirement']['complete']
+        and not (B/'fullfit-attention-source-memory-v1').exists(),
+        'preserve closed source-memory outcome and retire the old generation')
+    copy_engine = validation.committed(pti.RESULT, ('prefill_copy_engine_v6',))
+    ze_check = copy_engine['validation_provider']
+    require(copy_engine['stage'] == 'closed' and copy_engine['ownership_closed']
+        and not copy_engine['active'] and copy_engine['boot'] == speed['boot']
+        and copy_engine['driver'] == speed['driver']
+        and sha(ze_check['path']) == ze_check['sha256'],
+        'qualified Level Zero validation provider required')
+    runtime = json.loads(Path(speed['runtime_manifest']['path']).read_text())
+    require(runtime.get(ZE_LOADER) == sha(ZE_LOADER), 'pinned Level Zero linker input changed')
     tools = pti.verify_tools(pti.committed_json(pti.RESULT, P))
     probe = validation.committed(pti.RESULT, ('unitrace_current_runtime_probe_v2',))
     require(probe['stage'] == 'closed' and probe['ownership_closed']
@@ -105,7 +115,8 @@ def platform():
         compiler_sha256=native['toolchain'][COMPILER], boot=speed['boot'], driver=speed['driver'],
         runtime_manifest=speed['runtime_manifest'], preload=speed['native_validation_probe'],
         environment_template=speed['environment_template'], tools=tools,
-        resource_sha256=signature(resource), prior_evidence_sha256=signature([overlap, chronology]))
+        resource_sha256=signature(resource), prior_evidence_sha256=signature(source_memory),
+        ze_loader=dict(path=ZE_LOADER,sha256=runtime[ZE_LOADER]), ze_validation=ze_check)
 
 
 def compile_commands():
@@ -120,7 +131,7 @@ def compile_commands():
         commands.append([COMPILER, *flags, *extra, '-MD', '-MF', str(obj.with_suffix('.d')),
                          '-c', str(P/name), '-o', str(obj)])
         objects.append(str(obj))
-    commands.append([COMPILER, *flags, *objects, '-Wl,-t', '-pthread', '-ldl', '-o', str(ELF)])
+    commands.append([COMPILER, *flags, *objects, ZE_LOADER, '-Wl,-t', '-pthread', '-ldl', '-o', str(ELF)])
     return commands
 
 
@@ -132,7 +143,7 @@ def compile_environment(native):
 
 
 def case_environment(pin, mode):
-    phase, source, _ = CASES[mode]
+    phase, api, _ = CASES[mode]
     path = ROOT/mode
     template = pin['environment_template']
     old = template['STRATA_MEASUREMENT_ROOT']
@@ -143,7 +154,7 @@ def case_environment(pin, mode):
         UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(path/'validation.log'),
         STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK='1' if phase == 'trace' else '0',
-        STRATA_FULLFIT_OVERLAP_SOURCE=source)
+        STRATA_FULLFIT_OVERLAP_COPY_API=api)
     shim = pin['preload']['library']['path']
     if phase == 'trace':
         env.update(STRATA_UNITRACE_TARGET_PRELOAD=shim, UNITRACE_SystemTime='1',
@@ -152,7 +163,11 @@ def case_environment(pin, mode):
         env['LD_PRELOAD'] = shim
     if phase == 'smoke':
         env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
-            UR_LOG_TRACING='level:info;flush:info;output:stderr')
+            UR_LOG_TRACING='level:info;flush:info;output:stderr',
+            ZE_ENABLE_VALIDATION_LAYER='1', ZE_ENABLE_PARAMETER_VALIDATION='1',
+            ZE_ENABLE_THREADING_VALIDATION='1', ZE_ENABLE_HANDLE_LIFETIME='0',
+            ZEL_ENABLE_LOADER_LOGGING='1', ZEL_LOADER_LOG_CONSOLE='1',
+            ZEL_LOADER_LOGGING_LEVEL='warn', ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT='0')
     required = dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1', NEOReadDebugKeys='1',
         EnableDirectSubmission='0', STRATA_SYCL_PREFILL_SAME_QUEUE='1', ZES_ENABLE_SYSMAN='0')
     require(all(env[k] == v for k,v in required.items()) and
@@ -173,6 +188,10 @@ def audit_build(row, link_log, native):
     allowed = {str((P/p).resolve()): h for p,h in row['sources'].items()}
     ext = json.loads(Path(row['platform']['external']['path']).read_text())
     allowed.update(ext)
+    loader = row['platform']['ze_loader']
+    require(loader['path'] == ZE_LOADER and loader['sha256'] == sha(ZE_LOADER),
+        'pinned Level Zero linker input changed')
+    ext[ZE_LOADER] = loader['sha256']
     compiled = {}
     deps = sorted((ROOT/'build').glob('*.d'))
     require(len(deps) == len(qsa.NATIVE)+1, 'one dependency file per fresh translation unit')
@@ -199,18 +218,19 @@ def audit_build(row, link_log, native):
         require((path.is_relative_to(ROOT/'build') and path.suffix == '.o') or ext.get(str(path)) == digest,
             'unfrozen link input: '+str(path))
         links[str(path)] = digest
-    require(len(links) >= 12, 'actual link input capture incomplete')
+    require(len(links) >= 12 and links.get(ZE_LOADER) == loader['sha256'],
+        'actual link input capture incomplete')
     row.update(actual_inputs=dict(compiled=compiled, links=links,
         objects={str(path): sha(path) for path in (ROOT/'build').glob('*.o')}),
         binary=dict(path=str(ELF), bytes=ELF.stat().st_size, sha256=sha(ELF)))
 
 
 def samples(text, mode):
-    phase, source, process = CASES[mode]
+    phase, api, process = CASES[mode]
     smoke = phase == 'smoke'
     traced = phase == 'trace'
-    rounds = 1 if smoke else len(ARMS)
-    rows, clocks, cases, setup = [], [], [], []
+    rounds = 1 if smoke else FULL_ROUNDS
+    rows, clocks, cases, setup, queues = [], [], [], [], []
     for line in text.splitlines():
         if line.startswith('fullfit_attention_overlap process='):
             pairs = [v.split('=', 1) for v in line.split()[1:]]
@@ -222,8 +242,14 @@ def samples(text, mode):
         elif line.startswith('fullfit_attention_overlap source='):
             match = SOURCE_SETUP.fullmatch(line)
             require(match is not None, 'invalid source setup and allocation type proof')
-            name, size, alloc, fill = match.groups()
-            setup.append(dict(kind=name, bytes=int(size), alloc_ms=float(alloc), fill_ms=float(fill)))
+            size, alloc, fill = match.groups()
+            setup.append(dict(kind='host_usm', bytes=int(size), alloc_ms=float(alloc), fill_ms=float(fill)))
+        elif line.startswith('fullfit_attention_overlap copy_api='):
+            match = QUEUE_SETUP.fullmatch(line)
+            require(match is not None, 'invalid queue setup proof')
+            name, ordinal, index, queue_mode, flags, priority = match.groups()
+            queues.append(dict(api=name,ordinal=int(ordinal),index=int(index),mode=int(queue_mode),
+                               flags=int(flags),priority=int(priority)))
         elif line.startswith('case cells='):
             cases.append(line)
     shape = 'cells=97 queries=3 cap=33' if smoke else 'cells=65536 queries=8192 cap=2051'
@@ -233,10 +259,13 @@ def samples(text, mode):
         'fixture shape, sample count or clock-overhead screen changed')
     require(not smoke or 'fullfit_attention_overlap cancel_after_copy=PASS' in text.splitlines(),
         'missing accepted-copy cancellation check')
-    require(len(setup) == 1 and setup[0]['kind'] == source
-        and setup[0]['bytes'] == (1024 if smoke else 1009254400)
+    require(len(setup) == 1 and setup[0]['bytes'] == (1024 if smoke else 1009254400)
         and all(math.isfinite(setup[0][k]) and setup[0][k] > 0 for k in ('alloc_ms','fill_ms')),
         'wrong source kind, extent or setup time')
+    require(len(queues) == 1 and queues[0]['api'] == api
+        and (queues[0]['ordinal'],queues[0]['index'],queues[0]['mode']) == (0,0,2)
+        and queues[0]['flags'] & 2 and not queues[0]['flags'] & 4,
+        'wrong copy API or queue configuration')
     result, previous = [], 0
     for i, row in enumerate(rows):
         round_n, order = divmod(i, len(ARMS))
@@ -257,7 +286,7 @@ def samples(text, mode):
         previous = hi
         result.append(dict(round=round_n, arm=arm, milliseconds=elapsed, copies=copies,
             requested_bytes=requested, attention_calls=attention, raw_start=lo, raw_end=hi))
-    return dict(clock_pair_max_s=clocks[0], source=setup[0], samples=result)
+    return dict(clock_pair_max_s=clocks[0], source=setup[0], queue=queues[0], samples=result)
 
 
 def timeline(trace, points, lifetime):
@@ -285,7 +314,7 @@ def timeline(trace, points, lifetime):
             match = COPY.fullmatch(name)
             if match:
                 direction, size = match.groups()
-                require(direction in ('M2D','H2D') and int(size) == 1971200, 'unexpected timed copy kind or extent')
+                require(direction == 'H2D' and int(size) == 1971200, 'unexpected timed copy kind or extent')
                 classifications[direction] = classifications.get(direction,0) + 1
                 nbytes += int(size)
                 copies.append((lo,hi))
@@ -309,10 +338,10 @@ def assessment(outcomes):
     clean = [row for row in outcomes if row['mode'].startswith('clean-')]
     traces = [row for row in outcomes if row['mode'].startswith('trace-')]
     require([p['mode'] for p in clean] == [f'clean-{i}' for i in range(len(CLEAN_ORDER))]
-        and [p['mode'] for p in traces] == [f'trace-{source}' for source in SOURCES]
+        and [p['mode'] for p in traces] == [f'trace-{api}' for api in COPY_APIS]
         and len({p['pid'] for p in [*clean,*traces]}) == 8
-        and all(row['timing']['source']['kind'] == CASES[row['mode']][1] for row in [*clean,*traces]),
-        'matched source, order and independent processes required')
+        and all(row['timing']['queue']['api'] == CASES[row['mode']][1] for row in [*clean,*traces]),
+        'matched copy API, order and independent processes required')
     def medians(row):
         return {arm: statistics.median(p['milliseconds'] for p in row['timing']['samples']
                     if p['arm'] == arm and p['round'] > 0)
@@ -320,12 +349,12 @@ def assessment(outcomes):
     warmed = [medians(row) for row in clean]
     first = [{p['arm']:p['milliseconds'] for p in row['timing']['samples'] if p['round'] == 0}
              for row in clean]
-    pairs = [{source: index for index,source in enumerate(CLEAN_ORDER[i:i+2], start=i)}
+    pairs = [{api: index for index,api in enumerate(CLEAN_ORDER[i:i+2], start=i)}
              for i in range(0,len(CLEAN_ORDER),2)]
     def time_ratios(rows):
         ratios = {}
         for arm in ARMS:
-            values = [rows[pair['host_usm']][arm]/rows[pair['ordinary']][arm] for pair in pairs]
+            values = [rows[pair['native']][arm]/rows[pair['sycl']][arm] for pair in pairs]
             ratios[arm] = dict(paired=values, geometric=statistics.geometric_mean(values),
                                all_three_faster=all(v < 1 for v in values))
         return ratios
@@ -335,17 +364,17 @@ def assessment(outcomes):
                     for key in ('copy_union_ns','qsa_union_ns','overlap_ns')} for arm in ARMS}
     trace_cost = {}
     for trace in traces:
-        source = trace['timing']['source']['kind']
-        control = warmed[CLEAN_ORDER.index(source)]
+        api = trace['timing']['queue']['api']
+        control = warmed[CLEAN_ORDER.index(api)]
         observed = medians(trace)
-        trace_cost[source] = {arm: observed[arm]/control[arm] for arm in ARMS}
+        trace_cost[api] = {arm: observed[arm]/control[arm] for arm in ARMS}
     ratios = time_ratios(warmed)
     return dict(clean_progression=list(CLEAN_ORDER), paired_clean_indices=pairs, warmed_ratios=ratios,
         first_cycle_ratios=time_ratios(first), clean_process_warmed_medians_ms=warmed, clean_first_cycle_ms=first,
         traced_vs_first_matching_clean=trace_cost,
-        observed_device_interval_medians_ns={row['timing']['source']['kind']:device_medians(row) for row in traces},
-        eligible_host_usm_component_gain=ratios['deferred_wait']['all_three_faster'],
-        next_native_comparison_prerequisite='Hold host USM fixed in both arms for native submission; this safety prerequisite is separate from a staging gain.',
+        observed_device_interval_medians_ns={row['timing']['queue']['api']:device_medians(row) for row in traces},
+        eligible_same_ordinal_native_gain=ratios['deferred_wait']['all_three_faster'],
+        next_comparison_prerequisite='Keep native append/drain and host USM fixed for an ordinal-1 queue test; the current performance outcome applies only to ordinal 0.',
         model_qualified=False, physical_bandwidth_or_saturation_qualified=False)
 
 
@@ -384,12 +413,12 @@ def prepare():
         cases=frozen_cases(pin), results=[],
         active=False, passed=False, complete=False, ownership_closed=True, whole_bytes=768<<20,
         plan=dict(order=STAGES, compiled_translation_units=6,
-            unit='Compare ordinary RAM with Strata Host USM in the same context. Fix the QSA 65536-cell/8192-query/cap2051 kernel, scheduling, waits, allocations aside from the source and 512 x 1971200-byte uploads via the same cudaMemcpyAsync compatibility entrypoint. Hold each schedule fixed between sources. Primary schedule is deferred wait on the second SYCL queue.',
-            safety='Compile the disposable third generation from scratch beside the validated prefill and decode images. Check source pointer type, bounded guards, exact output and accepted-copy cancellation in both short UR-observed processes before two full-size PTI device-only controls. Keep environment safety settings fixed. Clean processes remove observers.',
-            decision='Six independent clean processes in AB/BA/AB order. The two processes of each pair use the same rotating schedule. Require 25 samples per process, exact payload/guards/output, at least 10ms and clock-pair overhead at most 0.1%. Separate first cycle, four subsequent cycles and source allocation/initial fill. Pass the source-memory component gain only if all three deferred-wait warmed median time ratios are below 1. Other schedules and device overlap are controls.',
-            limits='Repeat synthetic payloads. Source setup excludes a production RAM-to-USM staging copy. Trace identifies dispatch and device intervals, with physical page pinning, bus bandwidth and engine saturation unknown. No model/decode/quality/full-context qualification.',
+            unit='Compare the existing SYCL copy and wait with native Level Zero append and host synchronization. Hold host USM, QSA 65536-cell/8192-query/cap2051 kernel, waits and 512 x 1971200-byte uploads fixed. Both copy paths use distinct immediate lists in the same ordinal-0/index-0 group and match flags, mode, priority, context and device. Measure the deferred-wait schedule against its matching control.',
+            safety='Build the disposable third image beside both reference engines. Initial native command list is externally owned by the fixture and never borrows SYCL ownership. Check same-context USM, guards, output and accepted-copy exception unwind in both short processes with UR and Level Zero validation. Run two device-only traces, then remove observers for speed. Keep copy offload and direct submission disabled throughout. Stop on any API, owner, validation, timeout or device-fault error.',
+            decision='Six independent clean processes in AB/BA/AB order. Both processes of each pair use the same rotating schedule. Require 20 samples per process, exact payload/guards/output, at least 10ms and clock-pair overhead at most 0.1%. Separate first cycle and four subsequent cycles. Pass the native API gain at ordinal 0 only if all three deferred-wait warmed median ratios are below 1. Other schedules and device overlap are controls.',
+            limits='Repeated synthetic payloads with no production staging cost. Device intervals establish neither physical bus traffic nor hardware saturation. A subsequent ordinal comparison holds the native append/drain path fixed. No model/decode/quality/full-context qualification.',
             retention='Keep individual timings, allocation and fill costs, device-window aggregates and source/build/fault proof. Retire the fixture generation and normal output after closure and exact provenance recovery.')))
-    print('Prepared isolated copy-source comparison; commit exact plan before running.')
+    print('Prepared same-ordinal copy API comparison; commit exact plan before running.')
 
 
 def run_device(row, mode, scope, path, result):
@@ -400,7 +429,9 @@ def run_device(row, mode, scope, path, result):
     require(plan['environment_sha256'] == signature(env), 'pre-exec environment changed')
     art = row['platform']['tools']['artifacts']
     mapping_row = dict(admission=dict(runtime_manifest=row['platform']['runtime_manifest'], tools=dict(artifacts=art)),
-        preload=row['platform']['preload'], fixture=row['binary'])
+        preload=dict(row['platform']['preload'],level_zero_loader=row['platform']['ze_loader']), fixture=row['binary'])
+    if phase == 'smoke':
+        mapping_row['preload']['level_zero_validation'] = row['platform']['ze_validation']
     maps = []
     def observe(io, entry):
         for gate in ('before-runtime','runtime-ready','after-cleanup'):
@@ -412,10 +443,13 @@ def run_device(row, mode, scope, path, result):
             if gate == 'before-runtime':
                 environ = Path('/proc',str(entry['pid']),'environ').read_bytes().split(b'\0')
                 keys = ('STRATA_TEST_MAIN_GATES', 'STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK',
-                    'STRATA_FULLFIT_OVERLAP_SOURCE',
+                    'STRATA_FULLFIT_OVERLAP_COPY_API',
                     'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission',
                     'STRATA_SYCL_PREFILL_SAME_QUEUE', 'UR_ENABLE_LAYERS', 'UR_LOG_VALIDATION',
                     'ZES_ENABLE_SYSMAN', 'ONEAPI_DEVICE_SELECTOR')
+                if phase == 'smoke':
+                    keys += ('ZE_ENABLE_VALIDATION_LAYER', 'ZE_ENABLE_PARAMETER_VALIDATION',
+                             'ZE_ENABLE_THREADING_VALIDATION', 'ZE_ENABLE_HANDLE_LIFETIME')
                 require(all(f'{key}={env[key]}'.encode() in environ for key in keys),
                     'actual native environment differs')
             else:
@@ -440,8 +474,15 @@ def run_device(row, mode, scope, path, result):
     require(probe['loader'] == env['STRATA_UR_PROBE_EXPECTED_LOADER']
         and len(maps) == 2 and 'fixture_status=PASS' in text
         and (not (path/'validation.log').exists() or not (path/'validation.log').stat().st_size)
-        and (phase != 'smoke' or 'urEnqueue' in logs), 'native validation, loader or fixture gate differs')
+        and (phase != 'smoke' or ('urEnqueue' in logs and not re.search(
+            r'\b(?:VALIDATION ERROR|ERROR_INVALID|THREADING VIOLATION)\b',logs,re.I))),
+        'native validation, loader or fixture gate differs')
     timing = samples(text,mode)
+    if mode != 'smoke-sycl':
+        smoke = next(stage for stage in row['results'] if stage['mode'] == 'smoke-sycl')
+        fields = ('ordinal','index','mode','flags','priority')
+        require(all(timing['queue'][name] == smoke['timing']['queue'][name] for name in fields),
+            'queue configuration differs from the bounded SYCL control')
     result.update(validation=probe, timing=timing)
     if phase == 'trace':
         traces = sorted((path/'trace').glob('*.json'))

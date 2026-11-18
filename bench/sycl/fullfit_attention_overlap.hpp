@@ -1,7 +1,9 @@
 #pragma once
 
-// Authored for Strata under the repository LICENSE. Use the existing prefix
-// fixture and copy wrapper with synthetic sources at the layer-2 stride.
+// Authored for Strata under the repository LICENSE. Hold the prefix fixture
+// and host USM payload fixed when comparing the two transfer APIs.
+#include <level_zero/ze_api.h>
+#include <sycl/ext/oneapi/backend/level_zero.hpp>
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
 #include "strata/sycl/launch.hpp"
@@ -14,9 +16,12 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 #include <time.h>
+#include <variant>
 #include <vector>
 
 namespace strata::bench {
@@ -26,15 +31,97 @@ inline void require(bool valid, const char *message) {
     if (!valid) throw std::runtime_error(message);
 }
 
+inline void check_ze(ze_result_t result, const char *operation) {
+    if (result != ZE_RESULT_SUCCESS)
+        throw std::runtime_error(std::string(operation) + " failed with Level Zero status " +
+                                 std::to_string(static_cast<unsigned int>(result)));
+}
+
+inline constexpr auto backend = sycl::backend::ext_oneapi_level_zero;
+
+inline ze_command_list_handle_t immediate_list(sycl::queue &queue) {
+    require(queue.get_backend() == backend &&
+            queue.has_property<sycl::property::queue::in_order>(),
+            "fixture queue must be in-order Level Zero");
+    auto handle = sycl::get_native<backend>(queue);
+    require(std::holds_alternative<ze_command_list_handle_t>(handle),
+            "fixture queue must return an immediate list");
+    return std::get<ze_command_list_handle_t>(handle);
+}
+
+inline ze_command_queue_desc_t list_config(ze_command_list_handle_t list,
+                                           ze_context_handle_t context, ze_device_handle_t device) {
+    ze_command_queue_desc_t config{};
+    config.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
+    ze_context_handle_t actual_context{};
+    ze_device_handle_t actual_device{};
+    check_ze(zeCommandListGetContextHandle(list, &actual_context), "read list context");
+    check_ze(zeCommandListGetDeviceHandle(list, &actual_device), "read list device");
+    require(actual_context == context && actual_device == device, "list context/device differs");
+    check_ze(zeCommandListGetOrdinal(list, &config.ordinal), "read list ordinal");
+    check_ze(zeCommandListImmediateGetIndex(list, &config.index), "read list index");
+    check_ze(zeCommandListImmediateGetMode(list, &config.mode), "read list mode");
+    check_ze(zeCommandListImmediateGetFlags(list, &config.flags), "read list flags");
+    check_ze(zeCommandListImmediateGetPriority(list, &config.priority), "read list priority");
+    require(config.ordinal == 0 && config.index == 0 &&
+            config.mode == ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS &&
+            (config.flags & ZE_COMMAND_QUEUE_FLAG_IN_ORDER) &&
+            !(config.flags & ZE_COMMAND_QUEUE_FLAG_COPY_OFFLOAD_HINT),
+            "fixture requires asynchronous ordinal 0, index 0 with copy offload disabled");
+    return config;
+}
+
+class NativeCopyList {
+public:
+    NativeCopyList(ze_context_handle_t context, ze_device_handle_t device,
+                   const ze_command_queue_desc_t &reference) {
+        check_ze(zeCommandListCreateImmediate(context, device, &reference, &list_), "create copy list");
+        require(list_ != nullptr, "Level Zero returned no copy list");
+        try {
+            const auto actual = list_config(list_, context, device);
+            require(actual.ordinal == reference.ordinal && actual.index == reference.index &&
+                    actual.flags == reference.flags && actual.mode == reference.mode &&
+                    actual.priority == reference.priority, "native copy list differs from SYCL list");
+        } catch (...) {
+            close(); // No accepted command is possible during construction.
+            throw;
+        }
+    }
+    NativeCopyList(const NativeCopyList &) = delete;
+    NativeCopyList &operator=(const NativeCopyList &) = delete;
+    ~NativeCopyList() noexcept { close(); }
+
+    void append(void *destination, const void *source, size_t bytes) {
+        pending_ = true; // An ambiguous append failure still requires a drain.
+        check_ze(zeCommandListAppendMemoryCopy(list_, destination, source, bytes, nullptr, 0, nullptr),
+                 "append copy");
+    }
+    void wait() {
+        if (!pending_) return;
+        check_ze(zeCommandListHostSynchronize(list_, 5'000'000'000ull), "drain copy list");
+        pending_ = false;
+    }
+
+private:
+    void close() noexcept {
+        sycl_backend::checked_cleanup([&] { wait(); }, [&] {
+            check_ze(zeCommandListDestroy(list_), "destroy copy list");
+        }, "native copy list retirement");
+    }
+    ze_command_list_handle_t list_{};
+    bool pending_ = false;
+};
+
+template<class WaitCopy>
 struct CopyDrain {
     sycl_backend::Runtime &runtime;
-    sycl::queue &copy;
+    WaitCopy &wait_copy;
     ~CopyDrain() noexcept {
         sycl_backend::checked_cleanup([&] {
             // Runtime::wait does not own a queue returned by make_queue.
             std::exception_ptr error;
             try {
-                copy.wait_and_throw();
+                wait_copy();
             } catch (...) {
                 error = std::current_exception();
             }
@@ -54,11 +141,9 @@ inline uint64_t raw_clock_ns() {
     return uint64_t(ts.tv_sec) * 1000000000 + uint64_t(ts.tv_nsec);
 }
 
-enum class Arm { compute_only, copy_only, serial_shared, serial_separate, deferred_wait };
-inline constexpr std::array arm_names{"compute_only", "copy_only", "serial_shared",
-                                       "serial_separate", "deferred_wait"};
-inline constexpr std::array arms{Arm::compute_only, Arm::copy_only, Arm::serial_shared,
-                                  Arm::serial_separate, Arm::deferred_wait};
+enum class Arm { compute_only, copy_only, serial_separate, deferred_wait };
+inline constexpr std::array arm_names{"compute_only", "copy_only", "serial_separate", "deferred_wait"};
+inline constexpr std::array arms{Arm::compute_only, Arm::copy_only, Arm::serial_separate, Arm::deferred_wait};
 
 template<class ResetAttention, class SubmitAttention, class CheckAttention>
 int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, int process,
@@ -72,29 +157,24 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     const size_t bank_bytes = payload_bytes + 2 * guard_bytes;
     const char *clock_setting = std::getenv("STRATA_FULLFIT_OVERLAP_OBSERVE_CLOCK");
     const bool observe_clock = clock_setting && std::string_view(clock_setting) == "1";
-    const char *source_setting = std::getenv("STRATA_FULLFIT_OVERLAP_SOURCE");
-    const std::string_view source_kind = source_setting ? source_setting : "";
-    require(source_kind == "ordinary" || source_kind == "host_usm", "invalid copy source kind");
-    const bool use_host_usm = source_kind == "host_usm";
+    const char *copy_setting = std::getenv("STRATA_FULLFIT_OVERLAP_COPY_API");
+    const std::string_view copy_api = copy_setting ? copy_setting : "";
+    require(copy_api == "sycl" || copy_api == "native", "invalid copy API");
     require(bank_bytes <= runtime->device().get_info<sycl::info::device::max_mem_alloc_size>(),
             "full-fit fixture exceeds maximum single device allocation");
 
     using Clock = std::chrono::steady_clock;
     using Milliseconds = std::chrono::duration<double, std::milli>;
     const auto source_begin = Clock::now();
-    std::vector<uint8_t> ordinary_source(use_host_usm ? 0 : payload_bytes);
-    sycl_backend::Allocation host_source;
-    if (use_host_usm)
-        host_source = sycl_backend::Allocation(runtime, payload_bytes, sycl_backend::MemoryKind::Host);
-    auto *source = use_host_usm ? host_source.as<uint8_t>() : ordinary_source.data();
+    sycl_backend::Allocation host_source(runtime, payload_bytes, sycl_backend::MemoryKind::Host);
+    auto *source = host_source.as<uint8_t>();
     const auto source_allocated = Clock::now();
     for (size_t i = 0; i < payload_bytes; ++i) source[i] = payload_byte(i);
     const auto source_initialized = Clock::now();
-    const auto pointer_type = use_host_usm ? sycl::usm::alloc::host : sycl::usm::alloc::unknown;
-    require(sycl::get_pointer_type(source, runtime->context()) == pointer_type &&
-            sycl::get_pointer_type(source + payload_bytes - 1, runtime->context()) == pointer_type,
+    require(sycl::get_pointer_type(source, runtime->context()) == sycl::usm::alloc::host &&
+            sycl::get_pointer_type(source + payload_bytes - 1, runtime->context()) == sycl::usm::alloc::host,
             "copy source type or extent differs");
-    std::cout << "fullfit_attention_overlap source=" << source_kind
+    std::cout << "fullfit_attention_overlap source=host_usm"
               << " bytes=" << payload_bytes
               << " alloc_ms=" << std::setprecision(12) << Milliseconds(source_allocated - source_begin).count()
               << " fill_ms=" << Milliseconds(source_initialized - source_allocated).count()
@@ -103,15 +183,53 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     sycl_backend::Allocation bank(runtime, bank_bytes, sycl_backend::MemoryKind::Device);
     auto &compute = runtime->compute();
     auto copy = runtime->make_queue(true);
-    CopyDrain pending{*runtime, copy};
     auto *base = bank.as<uint8_t>();
     auto *destination = base + guard_bytes;
     sycl_backend::validate_device_span(base, bank_bytes, compute);
     sycl_backend::validate_device_span(base, bank_bytes, copy);
     sycl_backend::validate_spans({{base, bank_bytes}}, {{source, payload_bytes}}, 1);
-    if (use_host_usm) sycl_backend::validate_host_span(source, payload_bytes, copy);
+    sycl_backend::validate_host_span(source, payload_bytes, copy);
     require(copy.get_context() == compute.get_context() && copy.get_device() == compute.get_device(),
             "unexpected copy queue device or context");
+
+    const auto device = sycl::get_native<backend>(compute.get_device());
+    const auto context = sycl::get_native<backend>(compute.get_context());
+    const auto compute_list = immediate_list(compute);
+    const auto copy_list = immediate_list(copy);
+    list_config(compute_list, context, device);
+    const auto copy_config = list_config(copy_list, context, device);
+    require(compute_list != copy_list, "compute and copy must use distinct command lists");
+    uint32_t groups_count = 0;
+    check_ze(zeDeviceGetCommandQueueGroupProperties(device, &groups_count, nullptr), "count queue groups");
+    require(groups_count > 0 && groups_count < 64, "unexpected queue group count");
+    std::vector<ze_command_queue_group_properties_t> groups(groups_count);
+    for (auto &group : groups) group.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_GROUP_PROPERTIES;
+    check_ze(zeDeviceGetCommandQueueGroupProperties(device, &groups_count, groups.data()), "read queue groups");
+    constexpr auto compute_copy = ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COMPUTE |
+                                  ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COPY;
+    require(groups_count > copy_config.ordinal &&
+            (groups[copy_config.ordinal].flags & compute_copy) == compute_copy &&
+            groups[copy_config.ordinal].numQueues == 1, "fixture requires a single compute/copy queue");
+    ze_memory_allocation_properties_t memory{};
+    memory.stype = ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES;
+    check_ze(zeMemGetAllocProperties(context, source, &memory, nullptr), "check native copy source");
+    require(memory.type == ZE_MEMORY_TYPE_HOST, "native source must be host USM");
+    ze_device_handle_t bank_device{};
+    check_ze(zeMemGetAllocProperties(context, base, &memory, &bank_device), "check native destination");
+    require(memory.type == ZE_MEMORY_TYPE_DEVICE && bank_device == device,
+            "native destination must be local device USM");
+    std::optional<NativeCopyList> native;
+    if (copy_api == "native") native.emplace(context, device, copy_config);
+    std::cout << "fullfit_attention_overlap copy_api=" << copy_api
+              << " ordinal=" << copy_config.ordinal << " index=" << copy_config.index
+              << " mode=" << copy_config.mode << " flags=" << copy_config.flags
+              << " priority=" << copy_config.priority << " domain=PASS\n";
+    // This guard dies before either allocation and before either transfer list.
+    auto wait_copy = [&] {
+        if (native) native->wait();
+        else copy.wait_and_throw();
+    };
+    CopyDrain pending{*runtime, wait_copy};
 
     auto reset_bank = [&] {
         compute.memset(base, guard, bank_bytes);
@@ -119,12 +237,15 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
         compute.wait_and_throw();
         runtime->check();
     };
-    auto submit_copies = [&](sycl::queue &queue, size_t count) {
+    auto submit_copies = [&](size_t count) {
         for (size_t expert = 0; expert < count; ++expert) {
             const size_t offset = expert * stride;
-            require(cudaMemcpyAsync(destination + offset, source + offset, stride,
-                                    cudaMemcpyHostToDevice, &queue) == cudaSuccess,
-                    "expert copy refused");
+            if (native)
+                native->append(destination + offset, source + offset, stride);
+            else
+                require(cudaMemcpyAsync(destination + offset, source + offset, stride,
+                                        cudaMemcpyHostToDevice, &copy) == cudaSuccess,
+                        "expert copy refused");
         }
     };
     auto verify_bank = [&](size_t copied_experts) {
@@ -144,8 +265,8 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
         struct Cancelled {};
         reset_bank();
         try {
-            CopyDrain cancel{*runtime, copy};
-            submit_copies(copy, 1);
+            CopyDrain cancel{*runtime, wait_copy};
+            submit_copies(1);
             throw Cancelled{};
         } catch (const Cancelled &) {
             verify_bank(1);
@@ -161,27 +282,26 @@ int compare(const std::shared_ptr<sycl_backend::Runtime> &runtime, bool smoke, i
     }
     std::cout << "fullfit_attention_overlap clock_pair_max_s=" << std::setprecision(12)
               << clock_pair_max.count() << '\n';
-    const int repeats = smoke ? 1 : int(arms.size());
+    const int repeats = smoke ? 1 : 5;
     for (int round = 0; round < repeats; ++round) {
         for (size_t index = 0; index < arms.size(); ++index) {
             const size_t arm_index = (index + round + 2 * process) % arms.size();
             const Arm arm = arms[arm_index];
             const bool copies = arm != Arm::compute_only;
             const bool attention = arm != Arm::copy_only;
-            auto &copy_queue = arm == Arm::serial_shared ? compute : copy;
             reset_bank();
             reset_attention();
             const uint64_t observer_start = observe_clock ? raw_clock_ns() : 0;
             const auto start = Clock::now();
             if (copies) {
-                submit_copies(copy_queue, experts);
+                submit_copies(experts);
                 if (arm != Arm::deferred_wait) {
-                    copy_queue.wait_and_throw();
+                    wait_copy();
                     runtime->check();
                 }
             }
             if (attention) submit_attention();
-            if (arm == Arm::deferred_wait) copy_queue.wait_and_throw();
+            if (arm == Arm::deferred_wait) wait_copy();
             if (attention) compute.wait_and_throw();
             runtime->check();
             const std::chrono::duration<double, std::milli> elapsed =
