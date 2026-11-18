@@ -2283,8 +2283,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   952.034/951.557/949.647. Median warmed client TTFTis151.8305sversus137.9815s.
   The separately scoped combination is prepared at`86493d658`:15model
   hashes and18generated inputs pinned,same coherent engine in both arms,
-  bank256/window10versusbank1/window16. Host probes pass;model checks are next.
-  No combined performance has been measured. Preserve
+  bank256/window10versusbank1/window16. Host probes and the32Kfallback
+  process pass:three32769-read/thinking-on24-output requests,all32768BF16rows
+  onGPU,bank1,ordinary32768window/extra0,normal0/reapedempty,quiet validation
+  and no fresh fault. The128Kmodel checks are next;no combined long-input
+  performance has been measured. Preserve
   the bank/coherence/relocation losses;this unit gain does not adopt the
   composed engine or reach1000PPat128K. Reduced jobs/dequants/requested bytes
   do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
