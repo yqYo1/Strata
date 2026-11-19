@@ -37745,5 +37745,53 @@
         }
       ]
     }
+  },
+  "attention-tg-matched-evidence-20261119": {
+    "topic": "Agent and sustained decode equivalence",
+    "classification": "decision support",
+    "source_commit": "8be1c5431861256c58bb9d210610a4f1022275fb",
+    "report_sha256": "c6d574ad01537085eec29799fc0ee87dd132664160e8a22fc43f1916a470d652",
+    "review_sha256": "7f063a49b7bc81c3eda672724bb3209acb3337ce9e97ebcdebbf580b782dc4a7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The official schema and agent-turn history affect attribution. Compare per-turn real read/reuse, output and draft work. Fixed body hashes cover deterministic requests; replayed chat histories may diverge.",
+    "consumer": "Read when interpreting the next successful same-store-off/on agent and long-generation run.",
+    "schedulable_now": false
+  },
+  "gpu-llm-cohort-variance-methods-20261119": {
+    "topic": "Nested repeated benchmark evidence",
+    "classification": "knowledge collection",
+    "source_commit": "8be1c5431861256c58bb9d210610a4f1022275fb",
+    "report_sha256": "46eb5876de76eb3386aa08ad37a0bfb49122136268bcc77a1a1b512801900810",
+    "review_sha256": "5f48bbb4f91df8cde252156ccda2c8e73b0a5d5f6de7b0b07d39a382e01f8471",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Separate independent-process, request-order and within-process variance. Retain timeout censoring, original order and MTP workload strata. Previous variance collections already cover most general methodology.",
+    "consumer": "Retrieve only when choosing repetitions under observed drift, or when failures censor a comparison.",
+    "schedulable_now": false
+  },
+  "ordinary-bank-triplet-contract-20261119": {
+    "topic": "Historical 384-slot comparison",
+    "classification": "decision support",
+    "source_commit": "5becc2e3e2aabb15b1b46b659b98c1a0bbc6818b",
+    "report_sha256": "c517f4179999a63c5dc2533a92cd53493ce8217f388dcf2981273e98a4a2716f",
+    "review_sha256": "bc303e51feff63874f419fbb2c0c44e430aebab84d8632e5731b57b562b38e97",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Same-ELF copy/direct isolates the store; older ELF comparison measures the whole composition. Per-request evidence already matches bank and map H2D requests. Aggregate dispatch does not prove per-expert ID equality. One losing pair can make the repeated gain inconclusive.",
+    "consumer": "Use for the 65537-input triplets; the review covers the originally pinned timing plan, not the later traced 16098 gate.",
+    "schedulable_now": false
+  },
+  "decode-small-batch-expert-overlap-20261119": {
+    "topic": "Shared and routed expert overlap",
+    "classification": "knowledge collection",
+    "source_commit": "5becc2e3e2aabb15b1b46b659b98c1a0bbc6818b",
+    "report_sha256": "29a825060e2a863563f0b858aff2eded829325e4db4fbc78cd95a1834c43574a",
+    "review_sha256": "93dd79f113dcf09efe8db07641d815d8b4c4d2dcc95762fa08533306be0bbced",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "On the checked verifier, shared work uses all proposed rows T before commit(n_keep). At fixed T, accepted count changes useful output and waste, not the shared GEMV shape. Earlier KTransformers overlap coverage applies.",
+    "consumer": "Revisit only with backend/commit, per-width actual shapes, caller acceptance semantics and measured dependencies.",
+    "schedulable_now": false
   }
 }

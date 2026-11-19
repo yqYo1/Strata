@@ -165,9 +165,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   27 ms of the wrapper recording native exit. Xe recorded a CCS reset.
   This timing leaves the initial stall cause unresolved. The identical
   v1 request completed. Keep the 512-slot early native-copy path out of
-  subsequent runs pending isolation. Start with a bounded traced ordinary
-  SYCL copy/consumer fixture and check the 16097 batched rows on the
-  ordinary 384-slot route before collecting another long timing.
+  subsequent runs pending isolation. After the automatic reset, the ordinary
+  SYCL device fixture checked copied data in two GPU consumers without a
+  reboot. The ordinary-queue model check (`prefill_ordinary_bank_ragged_v1`)
+  also passed six requests across the historical engine and the current
+  copy/direct stores. Each processed 8192 + 7905 batched rows, the final
+  prompt token, and 24 generated tokens. These synthetic inputs reproduce
+  the stalled shape with different prompt bodies. In each current request,
+  the 96 direct writes removed 15,823,994,880 requested D2D bytes versus
+  copying. All three owners exited normally without a fresh Xe fault.
+  The 384-slot setting sizes the common allocation for the largest expert
+  stride. All three arms used the same 1,022,361,600-byte bank.
+  At this shape, 24 layers fit 512 expert slots, 14 fit 469, nine fit 438
+  and one fits 384. This check admits the separate clean 64K comparison.
   The 65537-token requests in the historical 1006.8 tok/s cohort and the
   984.1 tok/s cohort have identical body hashes. Across all three inputs,
   the GU/Down jobs and requested expert H2D bytes also match. The bank
