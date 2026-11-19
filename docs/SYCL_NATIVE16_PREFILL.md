@@ -2821,6 +2821,39 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   exactly 3,013 commands and 11,164,427,264 bytes in each request.
   This is a cross-check on aggregate demand. The trace does not associate
   each copy with a call site or measure physical PCIe traffic.
+  The ordinary 384-slot configuration issues selected weights in advance
+  only on the 24 layers whose packed banks can hold all 512 possible
+  experts. In the two warmed requests at `eager_request_profile_v2`,
+  these layers issued 9,179 and 9,160 copies (16,891,161,600 and
+  16,860,006,400 bytes). The other 24 layers issued 9,025 and 9,022
+  copies at their first readers (20,281,932,800 and 20,277,222,400 bytes).
+  A layer with a 469-, 438- or 384-slot bank reserves one scratch slot.
+  Some layers can fit the entire routed demand in the permanent slots
+  even when all 512 possible experts would not fit. Each of these two
+  requests must have at least five such layers: even the 20 smallest
+  overflow thresholds (384, nine times 438, ten times 469) sum to
+  9,016, and the remaining four layers need at least ten experts each.
+  The aggregate counters do not give the fit layers' identities or bytes.
+
+  The opt-in `STRATA_SYCL_PREFILL_FULLFIT_UPLOAD=eager-demand-fit`
+  candidate retains the ordinary full-bank policy and tries to issue all
+  actual weights before the first expert in a single resident window on
+  an empty partial bank. Overflow keeps ordinary first-use copies and the
+  last scratch slot. No extra backing, host staging or copy queue is used.
+  The next comparison is `eager` versus `eager-demand-fit` in the same
+  binary. Run the host planner and traced device boundary fixture first.
+  Check the actual layers, selected bytes, equal total uploads and jobs,
+  restored state, greedy fixture and MTP handoff at 32K before clean 64K.
+  Compare three independent pairs (AB, BA, AB), three identical fresh
+  prompts per process. Use the second and third prompts for each warmed
+  process result; require gains in all three pairs and keep first-use
+  and client TTFT separately. A numerical or ownership failure, quiet
+  fallback on every partial layer, changed work, or a fresh Xe fault stops
+  advancement. A passing speed result still needs independent decode,
+  agent, long generation, RESTORE and physical-capacity qualification.
+  This trial changes issue order on fit layers only. Staging a bounded
+  prefix of an overflowing layer would be a separate experiment.
+
   The retained request summaries have no per-copy submission IDs or
   pointer classes to join to individual tensor uploads. The split
   accumulator submits both source and inverse int32 row maps. The two

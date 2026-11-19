@@ -129,10 +129,13 @@ void run(int capacity, size_t stride, int experts, unsigned layers, bool unwind,
         << " status=" << observed << " immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
 }
 
+enum class PrivateIssue { jit, demand_fit };
+
 // Exercise the production private view through checked transitions in ONE
 // allocation. The source stride and destination stride deliberately differ.
 void run_private(int backing_slots, uint64_t backing_stride, int experts,
-                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false, bool staged=false, bool custom_queue=false) {
+                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false, bool staged=false, bool custom_queue=false,
+                 PrivateIssue issue=PrivateIssue::jit) {
     auto runtime = sb::runtime_for();
     auto q = custom_queue ? runtime->make_queue(true) : runtime->compute();
     auto drain = [&] { q.wait_and_throw(); runtime->check(); runtime->wait(); };
@@ -170,10 +173,25 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
             lease.arm();
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));
             q.memset(status,0,4);
+            size_t early = 0;
+            if (issue == PrivateIssue::demand_fit) {
+                std::array<int32_t, pd::ExpertBankPlan::experts> counts{};
+                std::fill_n(counts.begin(), experts, 2);
+                early = pd::stage_prefill_demand_fit(counts, slots, [&](int32_t expert) {
+                    return pd::stage_private_expert_bank(slots, bank, slab, slab_bytes,
+                        blob_bytes, expert, &q, source_stride);
+                });
+                need(early == (experts < geometry.slots ? size_t(experts) : 0),
+                     "partial bank admission or fallback");
+                uploads += early;
+            }
             for (int round=0;round<2;++round) for (int e=0;e<experts;++e) {
                 const auto ticket=pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,
                     blob_bytes,e,&q,source_stride,staging.get());
-                uploads+=ticket.upload;hits+=!ticket.upload;
+                const bool first_eager = early && round == 0;
+                if (first_eager) need(!ticket.upload && ticket.permanent && ticket.slot == e,
+                                      "partial bank first reader");
+                uploads+=ticket.upload;hits+=!ticket.upload && !first_eager;
                 need(cache.slot_of(0,e)<0,"private map leaked into general cache");
                 const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
                 for (int job=0;job<2;++job) {
@@ -197,7 +215,8 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
             // Check every padding word, including the unused backing tail.
             q.parallel_for(sycl::range<1>(size_t(geometry.backing_bytes/4)),[=](sycl::id<1> item) {
                 const uint64_t at=uint64_t(item[0])*4;
-                if ((at>=geometry.used_bytes || at%geometry.stride>=blob_bytes) &&
+                if ((at>=geometry.used_bytes || at%geometry.stride>=blob_bytes ||
+                     (early && at >= early * geometry.stride)) &&
                     base[item[0]]!=Guard)
                     sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,
                         sycl::memory_scope::device,sycl::access::address_space::global_space>(*status).fetch_or(2);
@@ -670,6 +689,17 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
 }
 
 int main(int argc, char** argv) try {
+    if (argc == 2 && std::string(argv[1]) == "--demand-fit-smoke") {
+        need(pd::prefill_eager_upload_policy() == pd::PrefillEagerUpload::demand_fit,
+             "demand-fit fixture needs the immutable candidate selector");
+        // Five permanent slots plus the scratch slot at stride 512, eleven
+        // plus scratch at stride 256. Include an exact fit and an overflow.
+        for (int experts : {5,6})
+            run_private(6,512,experts,{512,256},512,false,true,false,false,PrivateIssue::demand_fit);
+        run_private(6,512,5,{512},512,true,true,false,false,PrivateIssue::demand_fit);
+        std::cout << "prefill_demand_fit PASS exact_fit overflow readers guards cancellation\n";
+        return 0;
+    }
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
     if (argc==2 && std::string(argv[1])=="--fullfit-host-stage-order-smoke") {
         for (auto stage_order : {pd::PrefillHostStageOrder::all_before_copy, pd::PrefillHostStageOrder::span_before_copy}) {

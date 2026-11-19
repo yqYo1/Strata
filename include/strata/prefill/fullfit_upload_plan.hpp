@@ -28,6 +28,30 @@ inline std::vector<int32_t> prefill_prefix_expert_ids(
     return selected;
 }
 
+// A partial bank reserves its last slot for JIT. Check the complete demand
+// before issuing any copy so an overflow follows exactly the ordinary path.
+template<class Stage>
+inline size_t stage_prefill_demand_fit(const std::array<int32_t, ExpertBankPlan::experts>& counts,
+        ExpertBankSlots& slots, Stage&& stage) {
+    if (slots.full_fit() || slots.permanent_used())
+        throw std::invalid_argument("prefill demand-fit requires an empty partial bank");
+    size_t selected = 0;
+    for (int32_t count : counts) {
+        if (count < 0) throw std::invalid_argument("negative prefill demand count");
+        selected += count != 0;
+    }
+    if (selected >= size_t(slots.slots())) return 0;
+    int32_t rank = 0;
+    for (int32_t expert = 0; expert < ExpertBankPlan::experts; ++expert) {
+        if (!counts[size_t(expert)]) continue;
+        const auto ticket = stage(expert);
+        if (!ticket.upload || !ticket.permanent || ticket.expert != expert || ticket.slot != rank)
+            throw std::logic_error("prefill demand-fit publication mismatch");
+        ++rank;
+    }
+    return selected;
+}
+
 struct PrefillFullfitCopy {
     uint64_t source_offset=0, destination_offset=0, bytes=0;
     size_t first=0, experts=0;

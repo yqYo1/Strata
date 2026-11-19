@@ -352,6 +352,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     const auto& format = layout.fmt[size_t(layer)];
     detail::PrefillFullfitUploadReceipt eager_upload;
     const bool use_prefix_upload = owner.prefix_expert_upload != PrefillPrefixExpertUpload::off;
+    bool verify_selected_readers = use_prefix_upload;
     if (use_prefix_upload) {
         if (owner.prefix_expert_upload == PrefillPrefixExpertUpload::ffn) {
             if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -395,6 +396,39 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             "publication=accepted_same_queue native_completion=unchecked_until_outer_drain\n",
             (long long)layer,(long long)first_row,(unsigned long long)eager_upload.experts,
             (unsigned long long)eager_upload.copy_commands,(unsigned long long)eager_upload.payload_bytes);
+    } else if (detail::prefill_eager_upload_policy() == detail::PrefillEagerUpload::demand_fit &&
+               owner.private_expert_bank && owner.expert_slots && !owner.expert_slots->full_fit() &&
+               !owner.expert_slots->permanent_used() && !owner.expert_upload_staging &&
+               first_row == 0 && rows == m.layer_major_residual.rows) {
+        // A single fully resident window has its final expert counts here.
+        // Keep the normal per-expert source, validation, queue and slot publisher.
+        if (m.layer_major_residual.gpu_rows != rows || !owner.scratch_mixed ||
+            m.copy != m.cs || owner.expert_cache != m.cache ||
+            owner.private_expert_bank->owner() != m.cache || owner.command_trace)
+            throw std::invalid_argument("prefill demand-fit owner/queue/residual contract");
+        const auto stride = layout.blob_bytes(layer);
+        hp::Host host(hp::upload_submit);
+        eager_upload.experts = detail::stage_prefill_demand_fit(owner.routes->counts(),
+            *owner.expert_slots, [&](int32_t expert) {
+                if (should_stop && should_stop()) throw std::runtime_error("cancelled");
+                const auto ticket = detail::stage_private_expert_bank(*owner.expert_slots,
+                    *owner.private_expert_bank, owner.expert_slab, owner.expert_slab_bytes,
+                    stride, expert, m.cs, owner.expert_source_stride);
+                eager_upload.first_upload[size_t(expert)] = true;
+                return ticket;
+            });
+        verify_selected_readers = eager_upload.experts != 0;
+        eager_upload.copy_commands = eager_upload.experts;
+        eager_upload.payload_bytes = eager_upload.experts * stride;
+        owner.staged_uploads += eager_upload.experts;
+        stats_.experts_streamed += eager_upload.experts;
+        owner.staged_upload_bytes += eager_upload.payload_bytes;
+        if (m.layer_major_profile || census_requested || std::getenv("STRATA_TRACE"))
+            std::fprintf(stderr, "strata prefill demand-fit: layer=%lld rows=%lld slots=%d "
+                         "accepted_copies=%llu requested_H2D_bytes=%llu\n",
+                         (long long)layer, (long long)rows, owner.expert_slots->slots(),
+                         (unsigned long long)eager_upload.copy_commands,
+                         (unsigned long long)eager_upload.payload_bytes);
     }
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
     if (owner.defer_prefix_completion) {
@@ -513,9 +547,10 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         }
         ++owner.jobs;
     }
-    if (use_prefix_upload && std::any_of(eager_upload.first_upload.begin(), eager_upload.first_upload.end(),
+    if (verify_selected_readers &&
+        std::any_of(eager_upload.first_upload.begin(), eager_upload.first_upload.end(),
             [](bool pending) { return pending; }))
-        throw std::logic_error("prefill prefix expert upload: selected expert without a reader");
+        throw std::logic_error("prefill eager expert upload: selected expert without a reader");
     // The host status destination belongs to the outer checked lease, even if DMA fails.
     owner.status_observed = ~uint32_t(0);
     {

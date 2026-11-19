@@ -47,14 +47,21 @@ private:
     ExpertBankLayout layout_;
 };
 
-inline bool prefill_fullfit_eager_requested() {
-    static const bool selected=[] {
+enum class PrefillEagerUpload { jit, full_bank, demand_fit };
+
+inline PrefillEagerUpload prefill_eager_upload_policy() {
+    static const auto selected=[] {
         const char* value=std::getenv("STRATA_SYCL_PREFILL_FULLFIT_UPLOAD");
-        if (!value || !std::strcmp(value,"jit")) return false;
-        if (!std::strcmp(value,"eager")) return true;
-        throw std::invalid_argument("prefill full-fit upload: expected jit or eager");
+        if (!value || !std::strcmp(value,"jit")) return PrefillEagerUpload::jit;
+        if (!std::strcmp(value,"eager")) return PrefillEagerUpload::full_bank;
+        if (!std::strcmp(value,"eager-demand-fit")) return PrefillEagerUpload::demand_fit;
+        throw std::invalid_argument("prefill full-fit upload: expected jit, eager or eager-demand-fit");
     }();
     return selected;
+}
+
+inline bool prefill_fullfit_eager_requested() {
+    return prefill_eager_upload_policy() != PrefillEagerUpload::jit;
 }
 
 enum class PrefillHostStageOrder { all_before_copy, span_before_copy };

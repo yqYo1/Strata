@@ -30,7 +30,44 @@ static void bytes(const std::vector<int32_t>& ids,uint64_t source_stride,size_t 
     }
     check(std::all_of(destination.begin()+ids.size()*256,destination.end(),[](uint8_t v){return v==0xa5;}));
 }
+static void demand_fit_cases() {
+    std::array<int32_t, ExpertBankPlan::experts> counts{};
+    ExpertBankSlots slots(4);
+    std::vector<int32_t> submitted;
+    auto stage = [&](int32_t expert) {
+        auto ticket = slots.begin(expert);
+        slots.queued(ticket);
+        submitted.push_back(expert);
+        return ticket;
+    };
+    counts[0] = 8; counts[17] = 9000; counts[511] = 1;
+    counts[400] = 7;
+    check(stage_prefill_demand_fit(counts, slots, stage) == 0);
+    check(submitted.empty() && slots.permanent_used() == 0);
+    counts[400] = -1;
+    refuses([&]{ stage_prefill_demand_fit(counts, slots, stage); });
+    check(submitted.empty());
+    counts[400] = 0;
+    check(stage_prefill_demand_fit(counts, slots, stage) == 3);
+    check(submitted == std::vector<int32_t>({0,17,511}));
+    for (int32_t expert : submitted) check(!slots.begin(expert).upload);
+    refuses([&]{ stage_prefill_demand_fit(counts, slots, stage); });
+    const auto scratch = slots.begin(21);
+    check(scratch.upload && !scratch.permanent && scratch.slot == 3);
+    slots.queued(scratch);
+    slots.reset();
+    submitted.clear();
+    refuses([&]{ stage_prefill_demand_fit(counts, slots, [&](int32_t expert) {
+        if (expert == 17) throw std::runtime_error("failed copy");
+        return stage(expert);
+    }); });
+    check(submitted == std::vector<int32_t>{0} && slots.permanent_used() == 1);
+    ExpertBankSlots full(512,true);
+    refuses([&]{ stage_prefill_demand_fit(counts, full, stage); });
+}
 int main() try {
+    demand_fit_cases();
+    std::puts("prefill demand-fit: exact fit, overflow, scratch and failed publication passed");
     const auto bank=ExpertBankLayout::packed(512*256,256);
     const std::vector<int32_t> ids{2,3,4,8,9,21};
     bytes(ids,256,6);bytes(ids,512,6);bytes({0,1,510,511},256,4);
