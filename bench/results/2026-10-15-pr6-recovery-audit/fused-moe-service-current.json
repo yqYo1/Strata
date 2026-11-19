@@ -468502,7 +468502,7 @@
     }
   },
   "prefill_prefix_expert_transport_native_v2": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "03dc58398d556e35c4842859758a88197a0bbc45",
     "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "archive": {
@@ -468638,8 +468638,8 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plan": {
       "unit": "Fixed FFN issue, private bank and request-owned host USM. Isolate explicit completion, native API and ordinal with matched controls.",
       "host": [
@@ -468653,6 +468653,58 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/compile_commands.json": "9d4b6ff95485fe6c7938b475f44fe0a70c08d4bcada1b542166a9759868f8024",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/CMakeFiles/rules.ninja": "34c28eec6a90dafb83d45554ee1f24ef07508c1927a7e9202c8d294215f5e334"
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/strata",
+        "sha256": "e999fa66aaaf3548cd0d1c4e15aa5318ba9621067ee0644706f0003b7aa97c70",
+        "bytes": 26496640
+      },
+      "prefill_moe_routes_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/prefill_moe_routes_test",
+        "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+        "bytes": 111336
+      },
+      "prefill_moe_workspace_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/prefill_moe_workspace_test",
+        "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+        "bytes": 67448
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/sycl_expert_bank_test",
+        "sha256": "a5aa32c4f2e532193bedd782cdfea50adab5603b18ea965cb906945938f48213",
+        "bytes": 528112
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/sycl_moe_down_scatter_bench",
+        "sha256": "5fd7a01884d314e9260d0e770bd30b923b0dbfd092384a4bc360cf6d34e5a8eb",
+        "bytes": 14282080
+      },
+      "sycl_native16_paired_gemm_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/sycl_native16_paired_gemm_bench",
+        "sha256": "8abd8ffa830c880039b7bacad8b1b73fa68b07c6f07c66bffbd7555ec23c8b86",
+        "bytes": 14222744
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/strata_full_context_diagnostic",
+        "sha256": "2c524f909b47591fb6734a3343f555ad481c42b384e8a4b1b169dc3f3acfbc09",
+        "bytes": 26500808
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/sycl_moe_upload_census_host_test",
+        "sha256": "d88f84a73fa8b0d5d5094268bcd3526a8183f90d26f9468de41baf4d7c96906a",
+        "bytes": 107360
+      },
+      "prefill_fullfit_upload_plan_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build/prefill_fullfit_upload_plan_test",
+        "sha256": "2a60487e48d7b9c18a4e6021252fcf4b5b3438f6de2bec55964e32a83baf29c3",
+        "bytes": 109640
+      }
+    },
     "controller_sources": {
       "files": 380,
       "sha256": "0abdb67c074a95e02f096a1a90ee1e5e115800fd07dd95760c7e0de3def81f8e"
@@ -468661,6 +468713,44 @@
       "files": 1168,
       "sha256": "8cb9e807eda6f9f2f077443075259a680d16e48924692eca4fe0b895b256e927"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1472,
+        "sha256": "ba3a13d389f3b62a9b4c619df5e3c4b24a772da36030ec9a12d6b3fcc1c76912"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "111b6747e3058727815cf9c97fa5a73764c3f18a475ceaf6d121fae3d0140c4b"
+      },
+      "links": {
+        "files": 30,
+        "sha256": "aa037df9a9963d78817d68cec3c5e6921ddd9d32a5121362c1706acb194a9346"
+      },
+      "objects": {
+        "files": 135,
+        "sha256": "0a04fb9d690c564e399efd9106448d0bc284cb4684f4c68a1a781fb899b89da4"
+      },
+      "produced": {
+        "files": 146,
+        "sha256": "e1f2d92695ee44d3929c4e8ba4bbf848c987f261038c4d2924ea62449c3b3122"
+      },
+      "Gemm_includers": {
+        "files": 6,
+        "sha256": "453d3d711ade8370b3ffbd795bcbbaf8691321e25a12d168c3ba15e46464fcd6"
+      },
+      "class_definition_includers": {
+        "files": 3,
+        "sha256": "3a1fbd044bf3f31572b4c9389ff72fd068abc264149e32e579387c26f06159d2"
+      },
+      "AOT_finalization_recipe_sha256": "8cf56b1dcdfd05797de21dc7d444cf4ab10f0f19b013517ab29ffff583df6ba5",
+      "temporary_generated_link_objects": 37,
+      "temporary_generated_link_paths_sha256": "df3f7abdde958963364d1d6bdfa8af692cd7c4fe7124c55735594e17069b326d",
+      "temporary_link_scope": "Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.",
+      "translation_units": 132,
+      "fresh_objects": 135,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
