@@ -13,11 +13,11 @@ PROJECT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / 'tools/sycl'))
 import prefill_resident_input_build as bank
 
-ROOT = bank.B / 'prefill-mixed-gather-fixture-v2'
+ROOT = bank.B / 'prefill-mixed-gather-dispatch-v1'
 BUILD = bank.ROOT / 'build'
 SOURCE = bank.ROOT / 'source'
 BASE = '0ed10ef1d81428ce94e463494d8eb43a1c5fa33b'
-CANDIDATE = '20f39e0dc1d609d53910a9c96bcbd54f1e878ec2'
+CANDIDATE = 'c386a8051714b374013a8a2f55e3834591fa8356'
 HEADER = 'include/strata/prefill/native16.hpp'
 KERNEL = 'src/prefill/sycl/native16.cpp'
 FIXTURE = 'tests/sycl/moe_accum.cpp'
@@ -38,13 +38,15 @@ def recipe(parent):
         require(before == (SOURCE / name).read_bytes() and after == (PROJECT / name).read_bytes(),
                 'gather source differs from the declared parent or candidate: ' + name)
         overlay[name] = after
-    # The only header addition is a namespace-level function declaration.
-    # The existing runtime, route classes and all other declarations remain identical.
+    # Only the vec8 declaration and namespace-level selection policy were added.
+    # Keep all class definitions identical across the reused translation units.
     header = overlay[HEADER]
-    start = header.index(b'// Long-prefill component arm: eight raw FP16 values per work item.\n'
+    start = header.index(b'// Eight raw FP16 values per work item.\n'
                          b'void prefill_moe_gather_mixed_vec8(')
-    end = header.index(b';\n', start) + 2
-    require(header[:start] + header[end:] == git_file(BASE, HEADER), 'shared header definition changed')
+    end = header.index(b'void moe_accumulate(', start)
+    require(hashlib.sha256(header[start:end]).hexdigest() ==
+            '48a8668d7d54f6d019689abfdab5bdbf82263b7e8a4b5d3a411714651663a1b9'
+            and header[:start] + header[end:] == git_file(BASE, HEADER), 'shared header definition changed')
     units = json.loads((BUILD / 'compile_commands.json').read_bytes())
     objects, commands = {}, []
     for name in (KERNEL, FIXTURE):
@@ -96,6 +98,13 @@ def fixture_host_slices(log, fixture_object):
 
 
 def main(action):
+    screen = bank.basis.validation.committed(bank.RESULT, ('prefill_mixed_gather_component_v1',))
+    require(screen['faster_each_process'] == [False, False, True, True]
+            and [s['stage'] for s in screen['stages']] == ['contiguous', 'ragged', '0', '1', '2']
+            and all(s['passed'] for s in screen['stages'])
+            and all([(p['rows'], p['cluster']) for p in s['samples']] ==
+                    [(211, 1), (211, 16), (6640, 1), (6640, 16)]
+                    for s in screen['stages'][2:]), 'complete the raw gather comparison first')
     parent = bank.previous.read(bank.ROOT / 'record.json')
     bank.check(parent)
     require(parent['stage'] == 'built' and parent['passed'] and parent['ownership_closed']

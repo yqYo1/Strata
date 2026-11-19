@@ -15,10 +15,10 @@ import prefill_resident_input_model as model
 
 bank, require = fixture.bank, fixture.require
 owner, validation = bank.builder.ownership, bank.basis.validation
-BUILD_KEY = 'prefill_mixed_gather_fixture_build_v2'
-KEY = 'prefill_mixed_gather_component_v1'
+BUILD_KEY = 'prefill_mixed_gather_dispatch_build_v1'
+KEY = 'prefill_mixed_gather_dispatch_v1'
 STAGES = ('contiguous', 'ragged', '0', '1', '2')
-SHAPES = tuple(itertools.product((211, 6640), (1, 16)))
+SHAPES = tuple(itertools.product((2334, 8192), (1, 16)))
 
 
 def check_samples(text, process):
@@ -95,7 +95,7 @@ def measure(action):
     if i == 0:
         env.update(LD_DEBUG='libs', UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                    UR_LOG_TRACING='level:info;flush:info;output:stderr')
-    case = 'mixed-gather-' + ('vec8-' if i < 2 else 'time-') + action
+    case = 'mixed-gather-' + ('vec8-' if i < 2 else 'dispatch-') + action
     cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if line.startswith('-- cursor: ')]
