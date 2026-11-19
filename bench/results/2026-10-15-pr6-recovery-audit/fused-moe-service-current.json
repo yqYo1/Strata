@@ -500367,6 +500367,95 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 4,
+        "operation": "timing",
+        "placement": "host-usm",
+        "host_probe_accepted": true,
+        "setup_ms": 0.133422,
+        "clock_triplet_median_ms": 4e-05,
+        "samples": {
+          "ready": [
+            {
+              "enqueue_ms": 20.730153,
+              "drain_ms": 26.392138,
+              "total_ms": 47.122291
+            },
+            {
+              "enqueue_ms": 21.241209,
+              "drain_ms": 28.050075,
+              "total_ms": 49.291284
+            },
+            {
+              "enqueue_ms": 21.212617,
+              "drain_ms": 29.427628,
+              "total_ms": 50.640245
+            },
+            {
+              "enqueue_ms": 21.101441,
+              "drain_ms": 31.38276,
+              "total_ms": 52.484201
+            },
+            {
+              "enqueue_ms": 26.107246,
+              "drain_ms": 37.748116,
+              "total_ms": 63.855362
+            }
+          ],
+          "queued": [
+            {
+              "enqueue_ms": 40.403917,
+              "drain_ms": 70.654753,
+              "total_ms": 111.05867
+            },
+            {
+              "enqueue_ms": 38.283842,
+              "drain_ms": 61.834479,
+              "total_ms": 100.118321
+            },
+            {
+              "enqueue_ms": 27.60033,
+              "drain_ms": 39.755157,
+              "total_ms": 67.355487
+            },
+            {
+              "enqueue_ms": 14.424959,
+              "drain_ms": 14.42506,
+              "total_ms": 28.850019
+            },
+            {
+              "enqueue_ms": 15.64598,
+              "drain_ms": 13.779821,
+              "total_ms": 29.425801
+            }
+          ]
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 80183,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "active": false,
