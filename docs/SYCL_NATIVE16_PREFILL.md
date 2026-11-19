@@ -2724,6 +2724,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
   each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
   requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  In these two requests the expert-bank counters record 18,204 and
+  18,182 uploads, requesting 37,173,094,400 and 37,137,228,800 bytes.
+  Subtracting those totals from the corresponding M2D counters leaves
+  exactly 3,013 commands and 11,164,427,264 bytes in each request.
+  This is a cross-check on aggregate demand. The trace does not associate
+  each copy with a call site or measure physical PCIe traffic.
   Clean 64K needs 6.896 s less prefill time to reach 1000 PP. QSA prefix
   is the largest observed kernel family. Its service and the competing copy
   cost both warrant independent work. The next QSA component comparison
