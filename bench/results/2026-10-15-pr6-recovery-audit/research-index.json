@@ -37886,5 +37886,25 @@
     "finding": "The ordered-exp PV loop reuses two probability fragments across four output tiles. Compare retaining those fragments with the existing loop, keeping accumulation and uniform barriers unchanged. The NaN-query fixture reaches score handling but does not independently isolate its guard.",
     "consumer": "Use for a narrow component comparison on the 14.38 s QSA service family. Check register pressure and final machine code; the SPIR-V finding alone cannot establish physical traffic or a speedup.",
     "schedulable_now": false
+  },
+  "qsa-pv-jit-image-identity-20261120": {
+    "topic": "Identify the actual loaded PV kernel on B570",
+    "classification": "decision support",
+    "source_commit": "42376cf3db1ee157355a127d393a06bf549134ef",
+    "report_sha256": "71cbe561c4a2b0072e72c200364034ffb8993666c24396a57f5e409dfb6d2609",
+    "review_sha256": "fa2e15e0ddc590dc672da4014addf4c4a058454bf96bbd2474e84a275aaef0ee",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "A normal prefix call launches pack and compute kernels. Join the PV dispatch site to the Level Zero launch handle, then query the selected kernel/module. Offline or cached artifacts do not identify what ran. Spill/private allocation descriptors do not measure traffic or occupancy.",
+    "consumer": "Use if attributing a measured fragment-reuse change. Check the exact kernel association, optional query support and returned status on this provider. No native/JIT measurement yet.",
+    "schedulable_now": false
+  },
+  "qsa-pv-actual-fixture-20261120": {
+    "classification": "decision support",
+    "source_commit": "42376cf3db1ee157355a127d393a06bf549134ef",
+    "outcome": "worker closed without a reviewable report",
+    "report_bytes": 0,
+    "consumer": "Superseded by qsa-pv-candidate-source-audit-20261120 using the rendered translation unit.",
+    "schedulable_now": false
   }
 }

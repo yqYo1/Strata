@@ -212,8 +212,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bank-backed arm and compares state and RESTORE across all four input
   and output combinations. Its 253919-token prefix plus 8209-token
   continuation reaches 262128 tokens and exercises a 16-row tail;
-  the final physical context slots need separate coverage. Build, device
-  and model checks are pending. If they pass, `4d9b176e5` compares
+  the final physical context slots need separate coverage. The server reader
+  at `f7e0ddeb0` checks the effective 512-slot bank for the mixed-residency
+  prefix and the staged 384-slot bank for its fully resident suffix. Both
+  use ordinary SYCL copies. The standalone controller at `b89af0bff` checks
+  all four input/output choices at 16385 and exactly 262144 tokens, including
+  the engine's checked final-slot marker and zero output at capacity.
+  Build, device and model checks are pending. If they pass, `4d9b176e5` compares
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
 
@@ -2799,6 +2804,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   holding workgroup size, barriers, V storage, accumulation order and
   tail handling fixed. Check actual generated code, numerical output and
   clean component time on cap-33 and cap-2051 cases before a model trial.
+  Private component source and fixtures are pinned at `1b11f33f8`;
+  controller `db8350162` compares normal outputs, FP32 state and guarded
+  storage before three independent timing processes. The candidate is
+  awaiting compilation and has no measured speed. To identify the loaded
+  machine code, join the PV launch site to its specific Level Zero kernel
+  handle; the same normal call also launches a packing kernel.
 
   Next evaluate the already available cached-subgroup normalizer at 128K
   on the retained 14508 engine. Its earlier cap-2051 comparisons passed
