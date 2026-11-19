@@ -99,9 +99,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   token/step/PLE retirement, prefix-router order, callbacks, cancellation,
   partial-tail handling and decode. For the observed four chunks × 48 layers,
   the separate copy requests about 30 GiB of device-to-device payload.
-  Confirm exact BF16 values including layer-zero initialization and tails,
-  then measure repeated 64K prefill with matched route and decode.
-  The 982.1 tok/s 64K stage-all ELF remains the reference.
+  The device component at `fe515ce995169764eb19316abf987b4426ffa9b4` checks
+  exact BF16 bits for 1/63/8191/8192 rows, including broadcast initialization,
+  guard regions, invalid spans and checked retirement. Each timed interval
+  includes 16 stores and their drains. The three copy/direct process
+  medians in ms are 52.197/36.225, 52.059/38.887 and 52.196/36.618
+  (geometric mean time ratio 0.714). The copy arm requests 2.5 GiB per
+  interval, and the direct arm requests zero. All seven processes retired
+  without a fresh GPU fault. These intervals start with ready inputs.
+  Advance to an exact stage-all build with just the four attention-store
+  overlays. Use its same executable for both arms. Verify actual destination,
+  matched routing and handoff with 32769 input tokens, then run three
+  independent pairs at 65537 with the same store drain and settings.
+  The 982.1 tok/s stage-all result is the historical speed reference.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective

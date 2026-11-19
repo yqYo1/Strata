@@ -76,7 +76,7 @@ def hashed(payload):
     return {path: hashlib.sha256(raw).hexdigest() for path, raw in payload.items()}
 
 
-def recover(native, prior, revision):
+def recover(native, prior, revision, *, verify_live=True):
     payload = dict(source.blobs(P, basis.original.SOURCE, native['project']['source_sha256']))
     require(hashed(payload) == native['project']['source_sha256'], 'coherent base differs')
     for key in BUILD_HISTORY:
@@ -106,9 +106,10 @@ def recover(native, prior, revision):
             and dict(files=len(previous_files), sha256=signature(hashed(previous_files))) == preceding['source_files'],
             'recover the original transport image before applying scheduling overlays')
     changes = dict(source.blobs(P, revision, OVERLAYS))
-    require(set(changes) == set(OVERLAYS)
-            and all((P / path).read_bytes() == raw for path, raw in changes.items()),
-            'commit exact transport and test overlays')
+    require(set(changes) == set(OVERLAYS), 'commit exact transport and test overlays')
+    if verify_live:
+        require(all((P / path).read_bytes() == raw for path, raw in changes.items()),
+                'live transport and test overlays differ from the committed recipe')
     if KEY == STAGE_BUILD:
         schedule = prior[SCHEDULE_BUILD]
         previous = dict(source.blobs(P, schedule['source_commit'], schedule['overlays']))
@@ -198,12 +199,15 @@ def prepare():
     save(row)
 
 
-def host():
-    row = json.loads((ROOT / 'record.json').read_text())
-    check(row)
+def host(*, root_path=None, check_build=None, save_record=None):
+    root_path = ROOT if root_path is None else root_path
+    check_build = check if check_build is None else check_build
+    save_record = save if save_record is None else save_record
+    row = json.loads((root_path / 'record.json').read_text())
+    check_build(row)
     require(row['stage'] == 'built' and row['passed'] and row['ownership_closed']
             and not row['active'] and 'host_control' not in row, 'one same-build host control')
-    root = ROOT / 'host-control'
+    root = root_path / 'host-control'
     root.mkdir(mode=0o700)
     owner = builder.ownership.Owner(root / 'owned', lambda: write(root / 'ownership.json', owner.commands))
     binary = row['binaries'][HOST]
@@ -216,7 +220,7 @@ def host():
                                exit_code=result['exit_code'], error=result.get('error'))
     if not passed:
         row.update(stage='failed', passed=False, complete=False)
-    save(row)
+    save_record(row)
     require(passed, 'prefix expert host check failed')
 
 

@@ -57,11 +57,11 @@ def native():
 
 def bank_smoke(*, controller=THIS, key=SMOKE, arg='--fullfit-eager-schedule-smoke',
                marker='prefill_fullfit_schedule_fixture PASS first_reader_and_cancellation=checked',
-               expected=None):
+               expected=None, build_root=None, native_reader=None):
     sources = build.source.pin(P, [controller, THIS, 'docs/SYCL_NATIVE16_PREFILL.md'])
-    binary, original = native()
+    binary, original = (native if native_reader is None else native_reader)()
     require(key not in json.loads(RESULT.read_text()), 'one planned fixture run')
-    root = build.ROOT / 'bank-smoke'
+    root = (build.ROOT if build_root is None else build_root) / 'bank-smoke'
     root.mkdir(mode=0o700)
     for part in ('tmp', 'cache'):
         (root / part).mkdir()
