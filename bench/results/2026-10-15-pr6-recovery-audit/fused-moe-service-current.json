@@ -525126,9 +525126,122 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "stage": "2",
+        "case": "mixed-gather-time-2",
+        "environment_sha256": "ebc909b2bb4f65bfdfc48d654966bff7cae9b5e4cfc7503dd72420bb70301517",
+        "samples": [
+          {
+            "rows": 211,
+            "cluster": 1,
+            "scalar_ms": [
+              2.17932,
+              2.17208,
+              2.15851,
+              2.49928,
+              10.5696,
+              9.59538
+            ],
+            "vec8_ms": [
+              2.66641,
+              2.29535,
+              2.26766,
+              8.93351,
+              2.23976,
+              2.57086
+            ],
+            "median_time_ratio": 1.040099602445176
+          },
+          {
+            "rows": 211,
+            "cluster": 16,
+            "scalar_ms": [
+              2.28415,
+              2.17104,
+              6.74004,
+              6.60531,
+              2.14842,
+              2.14836
+            ],
+            "vec8_ms": [
+              2.16171,
+              10.0731,
+              2.13342,
+              2.18759,
+              2.12945,
+              8.63307
+            ],
+            "median_time_ratio": 0.9762322145632396
+          },
+          {
+            "rows": 6640,
+            "cluster": 1,
+            "scalar_ms": [
+              26.9723,
+              26.9832,
+              26.9857,
+              26.9723,
+              26.9707,
+              26.9793
+            ],
+            "vec8_ms": [
+              20.0399,
+              20.0243,
+              20.0165,
+              20.0072,
+              20.0129,
+              21.4476
+            ],
+            "median_time_ratio": 0.7421614928936306
+          },
+          {
+            "rows": 6640,
+            "cluster": 16,
+            "scalar_ms": [
+              26.5243,
+              26.5327,
+              26.5403,
+              26.5258,
+              26.5295,
+              26.5177
+            ],
+            "vec8_ms": [
+              19.6764,
+              19.6728,
+              20.5008,
+              19.6883,
+              22.1911,
+              19.9227
+            ],
+            "median_time_ratio": 0.7465983605784908
+          }
+        ],
+        "device": "Intel(R) Arc(TM) B570 Graphics",
+        "runtime_driver": "1.17.39758+17",
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "source_commit": "7e83c5f62aea0dca58eb0de1dde6eff1074a8811",
-    "measured_model": false
+    "measured_model": false,
+    "faster_each_process": [
+      false,
+      false,
+      true,
+      true
+    ]
   }
 }
