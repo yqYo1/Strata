@@ -17,9 +17,10 @@ import prefill_prefix_expert_build as stage
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'prefill-status-destination-v2'
-KEY = 'prefill_status_destination_v2'
+ROOT = B / 'prefill-status-destination-v3'
+KEY = 'prefill_status_destination_v3'
 FIRST = 'prefill_status_destination_v1'
+SECOND = 'prefill_status_destination_v2'
 SOURCE = 'tests/sycl/prefill_status_destination.cpp'
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
 BOOT = Path('/proc/sys/kernel/random/boot_id')
@@ -130,8 +131,13 @@ def tool_paths(flags, env):
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'one fresh component plan required')
     previous = validation.committed(RESULT, (FIRST,))
+    compiled = validation.committed(RESULT, (SECOND,))
     require(previous['stage'] == 'blocked-prepare' and previous['ownership_closed'] and not previous['GPU_executed'],
             'keep the original pre-GPU dependency census refusal')
+    require(compiled['stage'] == 'failed' and compiled['ownership_closed'] and not compiled['active']
+            and not compiled['processes'] and compiled['compile_commands'] == 1
+            and 'binary' not in compiled and 'different header set' in compiled['error'],
+            'keep the original compile census refusal')
     admitted, providers, env = platform()
     revision = stage.source.git(P, 'rev-parse', 'HEAD').decode().strip()
     sources = basis.comparison.build.controls(revision, controller=Path(__file__))
@@ -161,7 +167,9 @@ def prepare():
               dependencies_sha256=signature(pinned_dependencies),
               headers=sorted(headers), provider_sha256=signature(providers), providers=providers, environment=env,
               environment_sha256=signature(env), admitted=admitted, build=[compile_command, link_command],
-              earlier_prepare_refusal=signature(previous),
+              earlier_refusals={FIRST: signature(previous), SECOND: signature(compiled)},
+              header_eligibility='Pin the union from -M before compilation. Require the same source and necessary '
+                                 'project headers in -MD and refuse any file outside that conservative union.',
               steps=[['smoke', 'ordinary'], ['smoke', 'host-usm'], *[['timing', x] for x in ORDER]],
               plan=dict(window='Each request uses the engine compatibility stream and the real memcpy+drain wrappers. '
                                'Ordinary and host USM use identical 4-byte extents, source, order and checks.',
@@ -186,7 +194,8 @@ def current(row):
     admitted, providers, env = platform()
     require(admitted == row['admitted'] and providers == row['providers'] and env == row['environment']
             and signature(env) == row['environment_sha256'] and signature(providers) == row['provider_sha256']
-            and signature(validation.committed(RESULT, (FIRST,))) == row['earlier_prepare_refusal'],
+            and all(signature(validation.committed(RESULT, (key,))) == v
+                    for key, v in row['earlier_refusals'].items()),
             'platform or immutable environment changed')
     controller = basis.comparison.build.controls(row['source_commit'], controller=Path(__file__))
     fixture = dict(stage.source.blobs(P, row['source_commit'], [SOURCE]))[SOURCE]
@@ -208,7 +217,11 @@ def build_fixture(row):
     try:
         compile_result, _, _ = owner.run('compile', row['build'][0], row['environment'], P, **BUDGET)
         require(ownership.closed(compile_result) and compile_result['exit_code'] == 0, 'fixture compilation failed')
-        require(dependency_paths((ROOT / 'fixture.d').read_text()) == set(row['headers']), 'compiler used a different header set')
+        actual = dependency_paths((ROOT / 'fixture.d').read_text())
+        expected = set(row['headers'])
+        project_headers = {name for name in expected if Path(name).is_relative_to(P)
+                           or Path(name).is_relative_to(stage.STAGE_ROOT / 'source')}
+        require(project_headers <= actual <= expected, 'compile dependency escapes pinned coverage')
         link, out, err = owner.run('link', row['build'][1], row['environment'], P, **BUDGET)
         require(ownership.closed(link) and link['exit_code'] == 0, 'fixture link failed')
         files = {Path(line).resolve() for line in (out.read_text() + '\n' + err.read_text()).splitlines()
@@ -217,7 +230,10 @@ def build_fixture(row):
                 and all(str(p) in row['dependencies'] or p == ROOT / 'fixture.o' for p in files),
                 'actual runtime link closure missing or has an unpinned input')
         row.update(stage='built', binary=dict(path=str(ELF), sha256=sha(ELF), bytes=ELF.stat().st_size),
-                   actual_build_inputs={str(p): sha(p) for p in (ROOT / 'fixture.o', *files)})
+                   actual_build_inputs={str(p): sha(p) for p in (ROOT / 'fixture.o', *files)},
+                   actual_header_count=len(actual), conservative_header_count=len(expected),
+                   actual_headers_sha256=signature(sorted(actual)),
+                   conservative_headers_not_reported=sorted(expected - actual))
     except BaseException as error:
         row.update(stage='failed', error=repr(error))
     finally:
