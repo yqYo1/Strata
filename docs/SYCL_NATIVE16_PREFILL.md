@@ -2993,6 +2993,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.99878/1.01122/0.99390. All five GPU processes closed normally without
   a fresh Xe fault. Retain the original ordered-exp kernel for all three
   shapes. The reuse candidate did not qualify for a model trial.
+  Skipping padded-head ordered softmax already had a separate 72-sample
+  test at `24d666972`. It zeroed the unused probabilities and alpha once
+  before the tile loop. Wall-time ratios were 1.063/1.056 at 32K and
+  1.056/1.045 at 117488 cells (contiguous/strided). The current measured
+  source adds only an unrelated cached-subgroup export to that original
+  translation unit; the ordered-exp template and its entrypoint match.
+  The November proposal to publish zeros every tile has no demonstrated
+  advantage over that already tested variant. Defer it pending a distinct
+  mechanism or shape-specific evidence.
   In the measured bench ELF (`eeb1a47d`), the smoke trace binds each UR
   kernel name to its launch handle. Each arm launched both a WG64 pack and
   a WG128 compute kernel (eight calls to each in the original arm, seven

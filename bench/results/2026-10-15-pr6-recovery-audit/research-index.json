@@ -37995,7 +37995,7 @@
     "report_sha256": "39f62feaf929259ad5a3f3ec0540e5ddf4a95862d413dd8db612a240c7760c74",
     "review_sha256": "acab78d04aabd21572005f7ec650c28cf6827730ab81e773d0875081aa6e3030",
     "finding": "At WG128/SIMD16, subgroups 4–7 have a second padded row. A subgroup-uniform branch can skip that row’s softmax collectives if every tile publishes all 32 zero probabilities and a defined alpha and all outer barriers remain unconditional. The 14.38 s historical service is a whole-kernel observation. It does not bound the saving to a quarter of service.",
-    "consumer": "Next isolated padding comparison after the independent PV experiment. Check real-head state bits, define padded diagnostics and expose padded P in a test hook; output-only checks miss those rows. Compare actual loaded code and clean timing.",
+    "consumer": "Defer another padding-only comparison. The older ordered-exp trial at 24d666972 skipped all four padded softmax rows, initialized their BF16 P and alpha once, and preserved workgroup barriers. Its 72 samples were slower in all four shape groups. In the current b35d66a4 measured engine the only source difference from the old 6e40afc1 kernel is a separate 574-byte cached-subgroup export. Per-tile zero publication or a materially different selected shape needs evidence of a distinct benefit before a new trial.",
     "retention": {
       "retired_files": 28,
       "retired_bytes": 4591091,
