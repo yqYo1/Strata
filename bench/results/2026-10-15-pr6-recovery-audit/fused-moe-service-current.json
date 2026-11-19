@@ -486967,6 +486967,51 @@
       "fresh_objects": 135,
       "partial_archive_reuse": false,
       "uncovered": 0
+    },
+    "artifact_retirement": {
+      "complete": false,
+      "evidence_commit": "fe6d810020758c2759891c1ac75c2df12ed2dca2",
+      "source_commit": "7537fb7bc02cc035ac2d395a383a7b5eaa95564a",
+      "source_files": 1168,
+      "source_sha256": "1a4b8c0cdb83cd7a97169ed6281d247c7a4d7229d4362c44ca61eb4efee19e2b",
+      "controller_files": 382,
+      "controller_sha256": "242a57a7520eae064fba05ba052db8c6a828d387712b262584d6eb0e93e0c4cc",
+      "recipe_sha256": "a1396b82947b7f9eed368ed5bb26979f4a531c34ed07a0558041a4a0d72aed88",
+      "checked_ELF": "2d6c4021902ca20ce3b05d09593899ee07c53e09a7528fb9df2b759e1e62e09f",
+      "all_actual_inputs_checked": true,
+      "kept_prefill": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+        "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+        "bytes": 26448640,
+        "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+      },
+      "kept_decode": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+        "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+        "bytes": 26476232,
+        "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+      },
+      "capture": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1",
+        "files": 1363,
+        "bytes": 190433115,
+        "sha256": "ad5b301e2f9db316a1ca85e366443f4421fb3acc10c76beb59bddbf772fa12a0"
+      },
+      "next_consumer": {
+        "stage_all_evidence": "fe6d810020758c2759891c1ac75c2df12ed2dca2",
+        "stage_all_source": "7537fb7bc02cc035ac2d395a383a7b5eaa95564a",
+        "stage_all_ELF": "2d6c4021902ca20ce3b05d09593899ee07c53e09a7528fb9df2b759e1e62e09f",
+        "component_evidence": "fe515ce995169764eb19316abf987b4426ffa9b4",
+        "component_ELF": "6fcc67a8d7b5ec15ab8e238e1e2da2708a1209a9c39e39a0bc36b3e8b4050ada",
+        "attention_store_source": "d40ba6312fc64c9eb7bffa90889a9cea82488f54",
+        "overlays": {
+          "include/strata/prefill/native16.hpp": "cf4948f05568272b42feda64d90bcdd29a7cd5210d5df93fa04f21238553b590",
+          "src/prefill/sycl/native16.cpp": "ba4b1fc44ea3752641f6fc742e6e8c2fbcb2ec900442fccb522ce3c823d62e58",
+          "src/prefill/prefill.cpp": "c493c0d164756640c5a8876428c63fa91255a50ab93fa9c5dd78d04f325f2dc7",
+          "src/prefill/layer_major.inc": "707a8d379f0d0ea598a917dc286f7dd9fb7657a35f111867f39b1dd457e1c5d6"
+        }
+      },
+      "reason": "The staging-order timing, numerical, CPU observer and failed callsite analyses are closed. The next comparison recreates the exact stage-all composition plus the isolated store change. Its copy/direct arms use the same fresh full build and no old binary. Retain both independent phase references."
     }
   },
   "prefill_prefix_expert_host_stage_smoke_v1": {
@@ -502234,6 +502279,22 @@
       "geomean_ratio": 0.7138003252533143,
       "model_eligible": true,
       "model_tested": false
+    },
+    "artifact_retirement": {
+      "complete": false,
+      "evidence_commit": "fe515ce995169764eb19316abf987b4426ffa9b4",
+      "checked_ELF": "6fcc67a8d7b5ec15ab8e238e1e2da2708a1209a9c39e39a0bc36b3e8b4050ada",
+      "source_commit": "d40ba6312fc64c9eb7bffa90889a9cea82488f54",
+      "actual_dependencies_checked": 844,
+      "linked_inputs_checked": 26,
+      "header_sets_sha256": "4ad589213f9217987ba0c006228be4fbf4299c90230912217c088755c6093623",
+      "capture": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-component-v1",
+        "files": 33,
+        "bytes": 1660967,
+        "sha256": "3acf3456fa8fefc7a44af7ba99054ebc639c0a9ea41d4fdfe004c41f946bf441"
+      },
+      "reason": "All correctness and timing processes are closed. The native comparison reads the immutable component evidence from Git and rebuilds the complete model engine."
     }
   }
 }

@@ -37415,5 +37415,104 @@
         }
       ]
     }
+  },
+  "prefill_attention_bank_owner_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "d40ba6312fc64c9eb7bffa90889a9cea82488f54",
+    "reviewed_report_sha256": "f2d14b4fe5a90f65edaf12c4b70893c06ab27c5c2b7b883f724497c7dd4ba35d",
+    "source_manifest_sha256": "a87572199fdea2daf83eed7fc38044d5023d14608f5debeaf637b12a8d4cc4b5",
+    "reviewer_sha256": "e60cec1622906b6f7e34cbb0a20be8d383992fe048a391b6d5fa4d85b8be6ec3",
+    "run": "run_7693426f50e9",
+    "task": "task_dd7cc5669bef",
+    "dispatch": "ctx_1f3c406af96b",
+    "terminal": "term_fb70559b-6695-4512-bb3b-ca407f5b6c22",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 15,
+    "worker_side_orca_status": {
+      "call": "call_b27438317ed4478ba128341e6a1a896e",
+      "sha256": "5bae0d7fd631424e9b118b705842cda0cfc2112d15579b83a48640ff34529187"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Window pieces execute only attention half 0 before the bank-backed FFN path. The in-loop callback is FFN-only; completed-layer callbacks see the bank. This corrects the report’s stale-R16 counterexample.",
+      "The native reviewer found no present safety blocker in the reachable topology. Opt-in direct store still requires production numerical, route and context checks."
+    ],
+    "consumer": "Use for the current same-ELF copy/direct model admission. Retrieve source for callback or phase-audit work only.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_attention_bank_owner_20261119",
+          "files": 3,
+          "bytes": 16597,
+          "tree_sha256": "ade075315c8b7ecf252478344c35b0792a6287b42c51b8a1f494a0095c247c3a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_attention_bank_owner_20261119-control",
+          "files": 9,
+          "bytes": 19002,
+          "tree_sha256": "f31e67156c04d2b4eb8ed7187ed8bba226a80a1cbe262cfbde79be4a6ab56c88"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill_attention_bank_owner_20261119",
+          "files": 12,
+          "bytes": 3785401,
+          "tree_sha256": "f2b1c6812600423d413961bea4e563b6bdd267b2d7466f23a7f7a5bffe460ba6"
+        }
+      ]
+    }
+  },
+  "gpu_direct_producer_destination_methods_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "d40ba6312fc64c9eb7bffa90889a9cea82488f54",
+    "reviewed_report_sha256": "757defffe23823fec3d77d1013e41e78b0f8c83bff6c2eebf3942f4843b49983",
+    "source_manifest_sha256": "0f259377a8dc1f2204c390a4e8c3c8e8338136c1288173cdb93cf4d3b97984e5",
+    "reviewer_sha256": "55518e6347136c1354ba4e96930ea6bcc9145c81cd5396a222efeaa830e5957d",
+    "run": "run_7693426f50e9",
+    "task": "task_7973ca7cd9c1",
+    "dispatch": "ctx_1064671a594f",
+    "terminal": "term_72d7a628-8d11-4fe3-9621-268f0f409c32",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 10,
+    "worker_side_orca_status": {
+      "call": "call_69656f05bd6043aa917ac29cb3edac3c",
+      "sha256": "134eb2404dac880571dd6df4391739035c447262728f0bbf590a83f4e6976f00"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Consumer-layout writes can remove a copy or reorder, with separate questions for arithmetic fusion and conversion. Tiled output can recover locality when direct stores become scattered.",
+      "Review anchors: NVIDIA transpose technical blog, Intel oneMKL 2025.2 DFT stride documentation, Intel GPU optimization guide and oneDNN v3.6.2 format propagation. Workgroup bank and padding parameters need Xe-specific evidence.",
+      "Preserve the owned copy arm. Independently compare copy vs direct stores vs tiled conversion if profiling establishes a specific critical-path reorder."
+    ],
+    "consumer": "Retrieve for an actual critical-path producer/consumer layout mismatch; no candidate is schedulable solely from the general methods.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu_direct_producer_destination_methods_20261119",
+          "files": 2,
+          "bytes": 16127,
+          "tree_sha256": "f9736f54045c72fdc94d1f204a08423e7a45b83b651c0d9d0df88161a57dfb72"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu_direct_producer_destination_methods_20261119-control",
+          "files": 9,
+          "bytes": 18313,
+          "tree_sha256": "bc568898de51b842a5d064aaa975bd11a9bfb472c6824c31deee2f7a01dc5789"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/gpu_direct_producer_destination_methods_20261119",
+          "files": 7,
+          "bytes": 3406557,
+          "tree_sha256": "dfa19738dba1b7f49cb5e9f0f7de778066d42806b845f14d6ce7a9712f39aad2"
+        }
+      ]
+    }
   }
 }
