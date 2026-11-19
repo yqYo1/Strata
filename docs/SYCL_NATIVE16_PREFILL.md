@@ -237,7 +237,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   on the B570. A two-piece window (8 + 3 rows) also passed for all four
   input/output combinations, including the final callback. Validation was
   quiet and the process exited normally without a fresh Xe fault.
-  Model state, physical capacity and clean speed remain open. After the
+  The four 32769-token server arms passed with identical state, output and
+  RESTORE data, including the intervening 33-token cache-layout request and
+  the 8209-token continuation. Direct input eliminated 30,870,077,440 bytes
+  of requested GPU-local copies on the fresh prompt and direct output
+  eliminated another 32,212,254,720 bytes. The combined arm eliminated both.
+  All four owners closed with zero native exit and no fresh Xe fault.
+  Near-capacity state, the physical final slot and clean speed remain open. After the
   required model state checks, `4d9b176e5` compares
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
