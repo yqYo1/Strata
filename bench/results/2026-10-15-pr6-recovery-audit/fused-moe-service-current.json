@@ -519607,5 +519607,93 @@
       },
       "passed": true
     }
+  },
+  "prefill_demand_fit_device_v2": {
+    "source": "ddeff7615019480c004433a931eb1522156affe2",
+    "base": "b043dfd3a2dd2939118c41d44fde001d1bd16c9d",
+    "parent": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
+    "controller": "4be931f634a87b20925c8b38afaf9925693e0368b657588c62113c9e0375ffa3",
+    "plan": "Five fresh fixture and runtime units. Four independent immutable startup policies. B570 exact fit, overflow, guards and cancellation with partial-only and combined issue. Compare with the committed V1 combined-mode outcome. Retire closed isolated fixture artifacts after their original source recovery. No engine or speed qualification.",
+    "receipt_checks": {
+      "policies": 4,
+      "rejected": 5,
+      "exact_fit": 468,
+      "overflow": 438
+    },
+    "source_files_sha256": "5675869201279ed8fdda648849e30be66d153f21b9750a9c47c3bc4013a7326a",
+    "commands_sha256": "6ad6dbea132cf7b8a9cd4744badc2e5164e23eba09900ac8dc584899c2dbcb86",
+    "build": {
+      "compiler": {
+        "units": [
+          "src/core/expert_cache.cpp",
+          "src/sycl/command_profile.cpp",
+          "src/sycl/compat.cpp",
+          "src/sycl/runtime.cpp",
+          "tests/sycl/expert_bank.cpp"
+        ],
+        "inputs": 728,
+        "inputs_sha256": "8c596f527b73cfeb2e66bbd467e6961eb4fe8f31ab2448a39d1ea6ba7acf7bd2",
+        "objects": {
+          "CMakeFiles/strata_sycl_runtime.dir/src/sycl/runtime.cpp.o": "26b18888935e94110659be7ed4699bfe5d9d3d68b7b2619b0c622702398e1106",
+          "CMakeFiles/strata_sycl_runtime.dir/src/sycl/compat.cpp.o": "9730670a14e36af6cb3471db6bed36c394b3333bf485f0e9d35793f97241ce54",
+          "CMakeFiles/strata_sycl_runtime.dir/src/sycl/command_profile.cpp.o": "54d4980117a46f976f5922a7ccfb4583de9b71eafd72b61da79a8c495e8e8a75",
+          "CMakeFiles/sycl_expert_bank_test.dir/tests/sycl/expert_bank.cpp.o": "8df63a46c0470bc8c1105d811081ae460b8cc528143421739d404fcd85e38121",
+          "CMakeFiles/sycl_expert_bank_test.dir/src/core/expert_cache.cpp.o": "153dcd2d3f75bef79a0e6678f4fc989c58781014f1c2588fc34421a18c3256fb"
+        }
+      },
+      "link_sha256": "3a8abfb580c8cd45d75dd80af986737a4191d75b3ca5461de1aa9d11e42ac7e3",
+      "links": {
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0": "07fe6d52f3350f6e30f4bdcdf3c7def120736dbe440e046e51ab3df9fd166055",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-devicelib-host.a": "770b0944b181690a21d78a0cb2e1d091d38b3caa209e185e276a943dea7bd8e9",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.a": "37843fd2b9c0208cb32982e6a7d379bba55f3155f63409b6441eba4b17ec2c09",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirng.a": "12e2b569987ffc7a4e06aa7c78b54e61d8cbdbbfd1a0da4ec27ba15973967302",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libimf.a": "30ad5764c3a5158dd6aeeef0bf65071f6a7bdc938fe6211a788c08dcd1c7069d",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc.a": "ae97435c0d22c761e0b88a3fb85c1a1e61c829e43aa13a336cb0fea72fd445cd",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc_s.a": "83733db4362b8a11d7886d64bf7d5e85be63490afbe00d6911a4a8289345e3e1",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f"
+      },
+      "produced": {
+        "libstrata_sycl_runtime.a": "d240bbaca10be78be27ae4a9bdc8d2ea0e968514c33629643f0fa3faa7ce1d6e"
+      },
+      "compiler_temporaries": 5,
+      "binary": "40c935a5c9a8c377d5da3844f04dfd8a7c3aad8c349cb14ab254fefe9db125c5",
+      "partial_archive_reuse": false
+    },
+    "build_passed": true,
+    "stage": "build",
+    "passed": true,
+    "ownership_closed": true,
+    "build_outcome": {
+      "host_probe_accepted": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    }
   }
 }
