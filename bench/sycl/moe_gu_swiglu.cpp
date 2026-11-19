@@ -111,6 +111,80 @@ void topology(sycl::queue &q) {
   for (auto value : checked.get()) need(value == 1, "TLA/local/subgroup lane mapping mismatch");
   std::cout << "{\"kind\":\"topology\",\"work_items\":384,\"status\":\"PASS\"}\n";
 }
+
+#ifdef STRATA_PREFILL_GU_A_PROBE
+void prefill_gu_a_probe(sycl::queue &q, xe::Tile tile, int rows, bool invalid) {
+  constexpr int map_offset = 7, meta_pad = 16;
+  const bool wide = tile == xe::Tile::wide_128x128;
+  const int bank_rows = rows * 2 + 7;
+  const auto layout = xe::prefill_gu_a_layout(rows, tile);
+  const size_t words = layout.size();
+  const size_t status_index = meta_pad + map_offset + rows + meta_pad;
+  std::vector<int32_t> meta(status_index + 1 + meta_pad, -777);
+  for (int r = 0; r < rows; ++r) {
+    // Exercise sorted expert rows, then a reversed map with both corrupt endpoints.
+    const int mapped = invalid ? 2 * (rows - 1 - r) + 1 : 2 * r + 3;
+    meta[meta_pad + map_offset + r] = mapped;
+  }
+  if (invalid) {
+    meta[meta_pad + map_offset] = -1;
+    meta[meta_pad + map_offset + rows - 1] = bank_rows;
+  }
+  const size_t bank_values = size_t(bank_rows) * K;
+  std::vector<uint16_t> bank_bits(bank_values + 2, Sentinel), dense_bits(size_t(rows) * K);
+  Buffer bank(bank_bits.size(), q), dense(dense_bits.size(), q);
+  sb::Allocation metadata(runtime, meta.size() * sizeof(int32_t), sb::MemoryKind::Device);
+  sb::Allocation capture(runtime, (words + 2 * Pad) * sizeof(xe::PrefillGuAWord), sb::MemoryKind::Device);
+  std::vector<xe::PrefillGuAWord> captured(words + 2 * Pad);
+  std::vector<int32_t> observed_meta(meta.size());
+  const xe::PrefillGuAWord poison{UINT32_MAX, Sentinel, Sentinel};
+  auto *bank_input = bank.data() + 2;
+  need(uintptr_t(bank_input) % 64 == 4, "mapped input lost 4-byte offset");
+  xe::PrefillGuAProbe p{rows, bank_rows, map_offset, dense.data(), bank_input,
+      metadata.as<int32_t>() + meta_pad, capture.as<xe::PrefillGuAWord>() + Pad,
+      metadata.as<uint32_t>() + status_index, words};
+
+  // The two FP16 bit tags jointly identify the entire bank cell, including
+  // NaN payloads. Compare both registers with an independently packed bank.
+  for (int high : {0, 1}) {
+    for (size_t i = 0; i < bank_values; ++i)
+      bank_bits[2 + i] = high ? uint16_t((i >> 16) ^ 0xbefd) : uint16_t(i * 40503 + 123);
+    for (int r = 0; r < rows; ++r) {
+      const int from = meta[meta_pad + map_offset + r];
+      auto out = dense_bits.begin() + size_t(r) * K;
+      if (from < 0 || from >= bank_rows) std::fill_n(out, K, uint16_t(0));
+      else std::copy_n(bank_bits.begin() + 2 + size_t(from) * K, K, out);
+    }
+    bank.set(bank_bits);
+    dense.set(dense_bits);
+    std::fill(captured.begin(), captured.end(), poison);
+    meta[status_index] = 32;
+    submit_wait(q, [&] { return q.memcpy(metadata.data(), meta.data(), meta.size() * sizeof(int32_t)); });
+    submit_wait(q, [&] { return q.memcpy(capture.data(), captured.data(), captured.size() * sizeof(poison)); });
+    submit_wait(q, [&] { return xe::probe_prefill_gu_a(*runtime, q, tile, p); });
+    submit_wait(q, [&] { return q.memcpy(captured.data(), capture.data(), captured.size() * sizeof(poison)); });
+    submit_wait(q, [&] { return q.memcpy(observed_meta.data(), metadata.data(), meta.size() * sizeof(int32_t)); });
+    meta[status_index] = invalid ? 36 : 32;
+    need(observed_meta == meta, "prefill GU A map, sticky status or guard changed");
+    const auto guard_ok = [&](const auto &v) {
+      return v.cell == poison.cell && v.dense_bits == poison.dense_bits && v.mapped_bits == poison.mapped_bits;
+    };
+    need(std::all_of(captured.begin(), captured.begin() + Pad, guard_ok) &&
+         std::all_of(captured.end() - Pad, captured.end(), guard_ok), "prefill GU A capture guard");
+    for (size_t i = 0; i < words; ++i) {
+      const auto &v = captured[Pad + i];
+      need(v.cell == layout[i], "prefill GU A device lane differs from host layout");
+      const int row = int(v.cell / K), col = int(v.cell % K);
+      const uint16_t expected = row < rows ? dense_bits[size_t(row) * K + col] : 0;
+      need(v.dense_bits == expected && v.mapped_bits == expected, "prefill GU A register-bit mismatch");
+    }
+    need(bank.get() == bank_bits && dense.get() == dense_bits, "prefill GU A source or guard changed");
+  }
+  std::cout << "prefill_gu_a rows=" << rows << " tile=" << (wide ? "wide" : "compact")
+            << " invalid=" << invalid << " checked_words=" << 2 * words
+            << " block2d_reorder=exact mapped=exact coverage=full guards=PASS\n";
+}
+#endif
 struct Case {
   int rows;
   sycl::queue &q;
@@ -300,6 +374,41 @@ int main(int argc,char **argv) {
     if (mode=="--ownership") {
       ownership(); std::cout << "fixture_status=PASS mode=ownership GPU_submissions=0\n"; return 0;
     }
+#ifdef STRATA_PREFILL_GU_A_PROBE
+    if (mode=="--prefill-mapped-a-layout") {
+      need(argc == 2, "prefill GU A layout takes no arguments");
+      for (auto tile : {xe::Tile::compact_16x64, xe::Tile::wide_128x128}) {
+        const bool wide = tile == xe::Tile::wide_128x128;
+        const int block = wide ? 128 : 16;
+        for (int rows : {1, 3, 16, 17, 128, 129, 211, 2334, 6640, 8191, 8192}) {
+          const auto cells = xe::prefill_gu_a_layout(rows, tile);
+          const size_t valid = std::count_if(cells.begin(), cells.end(),
+              [rows](uint32_t cell) { return cell / K < uint32_t(rows); });
+          const size_t copies = 96 * (wide ? 2 : 4);
+          need(cells.size() == size_t((rows + block - 1) / block * block) * copies &&
+               valid == rows * copies, "prefill GU A valid/masked coverage");
+          std::cout << "prefill_gu_a_layout rows=" << rows << " tile=" << (wide ? "wide" : "compact")
+                    << " valid=" << valid << " masked=" << cells.size() - valid << '\n';
+        }
+      }
+      std::cout << "fixture_status=PASS mode=" << mode << " GPU_submissions=0\n";
+      return 0;
+    }
+    if (mode=="--prefill-mapped-a-smoke" || mode=="--prefill-mapped-a-validate") {
+      need(argc == 2, "prefill GU A probe takes no arguments");
+      runtime = sb::runtime_for();
+      auto q = runtime->make_queue(true);
+      topology(q);
+      const bool smoke = mode == "--prefill-mapped-a-smoke";
+      for (auto tile : {xe::Tile::compact_16x64, xe::Tile::wide_128x128}) {
+        if (smoke) prefill_gu_a_probe(q, tile, 3, false);
+        else for (int rows : {16, 17, 128, 129, 211, 2334})
+          for (bool invalid : {false, true}) prefill_gu_a_probe(q, tile, rows, invalid);
+      }
+      std::cout << "fixture_status=PASS mode=" << mode << '\n';
+      return 0;
+    }
+#endif
     const bool public_profile=mode=="--profile-public";
     const bool public_smoke=mode=="--smoke-public";
     int public_arm=0;
