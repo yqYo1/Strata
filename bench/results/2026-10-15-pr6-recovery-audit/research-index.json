@@ -37874,5 +37874,17 @@
     "finding": "Direct store adds three checked device spans, an interval-validity check and an alias check; it skips the copy wrapper and retains the existing completion boundary. Span validation uses host registry, device and context lookups. Avoided D2D API payload alone does not quantify traffic or elapsed savings.",
     "consumer": "Use to design a bounded host and device cost profile if needed. Any reused validation must preserve buffer owner, context, generation and retirement checks.",
     "schedulable_now": false
+  },
+  "qsa-pv-probability-reload-20261120": {
+    "topic": "BF16 probability reuse in the QSA prefix matrix product",
+    "classification": "decision support",
+    "source_commit": "9bac6e77a9f7490915115d1debf4515663cf2bf0",
+    "report_sha256": "4e20fd4bf1c90256bf1c5d81f128db1e2a05d4922265454b43bec3b12f1c5bf6",
+    "review_sha256": "43e3b9f5850ba43e160b38f6483dfac680ffc8e32c1bc96ac7baa9e5603705c7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The ordered-exp PV loop reuses two probability fragments across four output tiles. Compare retaining those fragments with the existing loop, keeping accumulation and uniform barriers unchanged. The NaN-query fixture reaches score handling but does not independently isolate its guard.",
+    "consumer": "Use for a narrow component comparison on the 14.38 s QSA service family. Check register pressure and final machine code; the SPIR-V finding alone cannot establish physical traffic or a speedup.",
+    "schedulable_now": false
   }
 }
