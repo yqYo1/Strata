@@ -8,6 +8,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
+- Keep staging all selected expert spans before native append. The 65537-token
+  staging-order comparison at `fe6d81002` keeps other inputs fixed. Subsequent
+  medians are 982.1 tok/s for all-at-once and 980.0 tok/s for per-span.
+  Per-span won one of the three warmed pairs. Keep early native copy issue and
+  first-reader completion as separate, interacting choices. Earlier issue
+  alone increased warmed prompt time by 0.51%. With deferred completion fixed,
+  earlier issue reduced time by 9.42%. The combination reduced time by 9.76%.
+  See `prefill_prefix_expert_schedule_timing_v1` and
+  `prefill_prefix_expert_host_stage_timing_v1` for the fixed reference arms.
+- The 32769-token same-binary observer bracket (`bcacbe020`,
+  `prefill_prefix_expert_stage_profile_v2`) closes three processes and six
+  thinking-enabled requests with matched routes/work, normal exits and no
+  fresh faults. Only the full host API trace was removed from the earlier
+  instrumentation; warm prompt ratios are 1.229/1.218
+  and client TTFT ratios 1.230/1.222
+  against the two clean controls, above the 1.20x gate. Clean warm PP is
+  860.9/852.8 tok/s and TTFT 38.353/38.603 s.
+  Keep the profiled request as diagnostic evidence. Its warmed H2D/kernel interval
+  overlap is 5.25 s, CPU time in known waits
+  is 21.10 s, and CPU row grouping is
+  0.089 s. The original
+  V1 cleanup failure remains at `b9117a05c`; physical ownership and session
+  cleanup were verified at `4053aaa12`. Physical saturation and the per-layer
+  critical path remain unmeasured. The next named diagnostic reuses
+  this exact validated ELF and selects only the CPU wait scopes, with the same
+  clean matched controls, to separate host wait accounting from collector
+  disturbance. Keep other work and qualification requirements fixed.
+
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
   performance gates fail in each clean campaign. Maximum-run evidence43d1a03e
