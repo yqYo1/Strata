@@ -5,6 +5,9 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+#include "qsa_prefill_probability.hpp"
+#endif
 #if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
 #include "fullfit_attention_overlap.hpp"
 #endif
@@ -24,7 +27,11 @@ using namespace strata;
 using namespace strata::kernels;
 namespace {
 #if !defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
-#if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
+constexpr auto candidate_attention = prefill_probability_reuse::qsa_bf16_prefix_ordered_exp_batch;
+constexpr const char *baseline_name = "ordered_exp", *candidate_name = "reuse_probability";
+#elif defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
 constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
 constexpr const char *baseline_name="ordered_exp", *candidate_name="cached_subgroup";
@@ -41,6 +48,20 @@ constexpr const char *baseline_name="kvec4", *candidate_name="kvvec4";
 std::shared_ptr<sycl_backend::Runtime> rt;
 int process_id=0;
 void require(bool x,const char *s) { if (!x) throw std::runtime_error(s); }
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+void check_timer() {
+  std::array<int64_t, 10000> intervals{};
+  for (auto &ns : intervals) {
+    const auto begin = std::chrono::steady_clock::now();
+    const auto end = std::chrono::steady_clock::now();
+    ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+  }
+  std::sort(intervals.begin(), intervals.end());
+  const double median = (intervals[4999] + intervals[5000]) * 0.5;
+  require(intervals.front() >= 0 && median < 1000 && intervals[9899] < 5000, "steady_clock overhead");
+  std::cout<<"timer calls=10000 median_ns="<<median<<" p99_ns="<<intervals[9899]<<'\n';
+}
+#endif
 void drain() noexcept {
   sycl_backend::checked_cleanup([] { if (rt) rt->wait(); },[] {},"QSA pitch performance fixture drain");
 }
@@ -112,10 +133,16 @@ void run(int cells,int queries,int cap,bool clustered) {
   auto shape=qsa_real_shapes();shape.page_size=Page;
   const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
 #if !defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+  const std::vector<uint16_t> unwritten(out.memory.size()/sizeof(uint16_t), marker);
+#endif
   auto invoke=[&](int variant) {
     auto attention=variant ? candidate_attention : baseline_attention;
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
     if (variant==2) attention=qsa_bf16_prefix_subgroup_batch;
+#endif
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+    out.put(unwritten);
 #endif
     rt->wait();const auto start=std::chrono::steady_clock::now();
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
@@ -149,6 +176,10 @@ void run(int cells,int queries,int cap,bool clustered) {
 #else
   invoke(0);guards();
   std::array<std::vector<uint16_t>,2> reference{out.get(),out.get()};
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+  require(std::find(reference[0].begin()+16, reference[0].end()-16, marker) == reference[0].end()-16,
+          "ordered-exp reference left output unwritten");
+#endif
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
   // Independent existing subgroup export is the candidate's reference; never
   // bless a candidate by saving its own first output. Kept outside timing.
@@ -204,6 +235,9 @@ int main(int argc,char **argv) {
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
         <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gated,"runtime-ready");
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+    check_timer();
+#endif
 #if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
     if (source_admission) bench::fullfit_overlap::source_admission(rt);
     else if (std::string(argv[1])=="--smoke") run(97,3,33,false);

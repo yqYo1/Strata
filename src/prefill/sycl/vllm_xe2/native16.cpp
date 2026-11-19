@@ -150,6 +150,115 @@ template <Tile Policy, bool Capture, ScatterLayout Mapping> class DownScatterKer
 template <bool Capture> class SplitDownScatterKernel;
 template <bool Capture> class SplitRowAddressDownKernel;
 template <Tile Policy, bool Capture> class GuSwiGLUKernel;
+#ifdef STRATA_PREFILL_GU_A_PROBE
+template <Tile Policy> class PrefillGuAProbeKernel;
+
+// Enumerate the public TLA coordinates on the host before any submission.
+// The N subgroups replicate A. Bijection is required within each replica.
+template <Tile Policy>
+std::vector<uint32_t> inspect_prefill_gu_a_layout(int rows) {
+  using P = ShapePolicy<Policy>;
+  const TileMMA<cutlass::half_t, Policy> mma{};
+  constexpr int replicas = Policy == Tile::wide_128x128 ? 2 : 4;
+  const int groups_m = (rows + P::rows - 1) / P::rows;
+  auto identity = make_identity_tensor(make_shape(rows, 2560));
+  std::vector<uint32_t> cells;
+  cells.reserve(size_t(groups_m) * 3 * replicas * P::rows * 32);
+  for (int m = 0; m < groups_m; ++m) {
+    auto grid = local_tile(identity, select<0, 2>(mma.tile_mnk()), make_coord(m, _));
+    for (int kt : {0, 39, 79}) {
+      auto tile = grid(_, _, kt);
+      std::vector<uint8_t> visits(replicas * P::rows * 32);
+      for (int local = 0; local < P::threads; ++local) {
+        auto lane = mma.get_slice(local);
+        const auto coords = lane.partition_A(tile);
+        const auto atom = lane.atom_partition_A(tile);
+        const auto frag = lane.partition_sg_fragment_A(tile);
+        static_assert(decltype(size(coords))::value == decltype(size(frag.tensor()))::value);
+        for (int i = 0; i < size(coords); ++i) {
+          const auto c = coords(i);
+          const auto a = atom(local % 16, i);
+          const int row = get<0>(c), col = get<1>(c);
+          const int r = row - m * P::rows, k = col - 32 * kt;
+          if (get<0>(a) != row || get<1>(a) != col || r < 0 || r >= P::rows || k < 0 || k >= 32)
+            throw std::runtime_error("prefill GU A: lane and atom coordinates or tile bounds differ");
+          const int replica = local / 16 % replicas;
+          if (visits[(replica * P::rows + r) * 32 + k]++)
+            throw std::runtime_error("prefill GU A: duplicate lane coordinate within N replica");
+          cells.push_back(uint32_t(row * 2560 + col));
+        }
+      }
+      if (std::find(visits.begin(), visits.end(), uint8_t(0)) != visits.end())
+        throw std::runtime_error("prefill GU A: incomplete tile coverage");
+    }
+  }
+  return cells;
+}
+
+template <Tile Policy>
+sycl::event enqueue_prefill_gu_a_probe(sycl::queue &q, PrefillGuAProbe p) {
+  using P = ShapePolicy<Policy>;
+  using MMA = TileMMA<cutlass::half_t, Policy>;
+  constexpr int k = 2560, tile_k = 32;
+  const size_t groups_m = (p.rows + P::rows - 1) / P::rows;
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  const sycl::nd_range<3> range(sycl::range<3>(groups_m, 3, P::threads),
+                                sycl::range<3>(1, 1, P::threads));
+  return q.submit([&](sycl::handler &h) {
+    h.parallel_for<PrefillGuAProbeKernel<Policy>>(range, props, [=](sycl::nd_item<3> item) {
+      const int local = int(item.get_local_linear_id());
+      const int sample = int(item.get_group(1));
+      constexpr int sampled_tiles[] = {0, 39, 79};
+      const int kt = sampled_tiles[sample];
+      const MMA mma{};
+      auto dense = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.dense)),
+                               make_layout(make_shape(p.rows, k), make_stride(k, _1{})));
+      auto identity = make_identity_tensor(dense.shape());
+      auto grid = local_tile(identity, select<0, 2>(mma.tile_mnk()), make_coord(int(item.get_group(0)), _));
+      auto tile = grid(_, _, kt);
+      auto copy_a = get_block_2d_copy_A<void>(mma, dense);
+      auto copy_lane = copy_a.get_slice(local);
+      auto lane = mma.get_slice(local);
+      auto packed = copy_lane.partition_sg_fragment_D(grid(_, _, 0));
+      auto dense_a = lane.partition_sg_fragment_A(grid(_, _, 0));
+      auto mapped_a = lane.partition_sg_fragment_A(grid(_, _, 0));
+      auto source = copy_lane.partition_S(grid);
+      copy(copy_a, source(_, _, _, kt), packed);
+      reorder(packed, dense_a);
+
+      const auto coordinates = lane.partition_A(tile);
+      constexpr int words = decltype(size(coordinates))::value;
+      static_assert(words == decltype(size(mapped_a.tensor()))::value);
+      static_assert(P::threads * words == P::rows * tile_k *
+          (Policy == Tile::wide_128x128 ? 2 : 4));
+      const size_t base = (item.get_group_linear_id() * P::threads + local) * words;
+      CUTE_UNROLL
+      for (int i = 0; i < words; ++i) {
+        const auto c = coordinates(i);
+        const int row = get<0>(c), col = get<1>(c);
+        uint16_t bits = 0;
+        if (row >= 0 && row < p.rows && col >= 0 && col < k) {
+          const int mapped_row = p.map[p.map_offset + row];
+          if (mapped_row >= 0 && mapped_row < p.bank_rows)
+            bits = p.bank[size_t(mapped_row) * k + col];
+          else if (col == 0)
+            sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed, sycl::memory_scope::device,
+                sycl::access::address_space::global_space>(*p.status).fetch_or(4);
+        }
+        mapped_a(i) = sycl::bit_cast<cutlass::half_t>(bits);
+      }
+      CUTE_UNROLL
+      for (int i = 0; i < words; ++i) {
+        const auto c = coordinates(i);
+        p.result[base + i] = {uint32_t(get<0>(c)) * k + uint32_t(get<1>(c)),
+            sycl::bit_cast<uint16_t>(dense_a(i)), sycl::bit_cast<uint16_t>(mapped_a(i))};
+      }
+    });
+  });
+}
+#endif
 
 template <bool Capture> struct GuSwiGLUEpilogue {
   GuSwiGLUProblem p;
@@ -1127,6 +1236,43 @@ sycl::event Gemm::beta0(const Problem &p, Tile tile) {
     return select_tile<cutlass::bfloat16_t, cutlass::half_t>(queue_, p, g, tile);
   return select_tile<cutlass::bfloat16_t, cutlass::bfloat16_t>(queue_, p, g, tile);
 }
+
+#ifdef STRATA_PREFILL_GU_A_PROBE
+std::vector<uint32_t> prefill_gu_a_layout(int rows, Tile tile) {
+  if (rows < 1 || rows > 8192) throw std::invalid_argument("prefill GU A layout: invalid rows");
+  if (tile == Tile::wide_128x128) return inspect_prefill_gu_a_layout<Tile::wide_128x128>(rows);
+  if (tile == Tile::compact_16x64) return inspect_prefill_gu_a_layout<Tile::compact_16x64>(rows);
+  throw std::invalid_argument("prefill GU A layout: invalid tile");
+}
+
+sycl::event probe_prefill_gu_a(sycl_backend::Runtime &runtime, sycl::queue &q,
+                               Tile tile, const PrefillGuAProbe &p) {
+  constexpr size_t k = 2560;
+  if (p.rows < 1 || p.rows > 8192 || p.bank_rows < 1 || p.bank_rows > 262144 ||
+      p.map_offset < 0 || p.map_offset > 262144 * 10 ||
+      (tile != Tile::wide_128x128 && tile != Tile::compact_16x64))
+    throw std::invalid_argument("prefill GU A probe: invalid geometry");
+  const size_t block = tile == Tile::wide_128x128 ? 128 : 16;
+  const size_t replicas = tile == Tile::wide_128x128 ? 2 : 4;
+  const size_t padded = (p.rows + block - 1) / block * block;
+  if (p.result_words != padded * 3 * 32 * replicas || uintptr_t(p.dense) % 64)
+    throw std::invalid_argument("prefill GU A probe: invalid capture extent or block2D alignment");
+  const size_t dense_bytes = p.rows * k * 2, bank_bytes = p.bank_rows * k * 2;
+  const size_t map_bytes = size_t(p.map_offset + p.rows) * sizeof(int32_t);
+  const size_t result_bytes = p.result_words * sizeof(PrefillGuAWord);
+  validate_spans({{p.result, result_bytes}, {p.status, sizeof(uint32_t)}},
+                 {{p.dense, dense_bytes}, {p.bank, bank_bytes}, {p.map, map_bytes}}, 4);
+  validate_device_span(p.result, result_bytes, q);
+  validate_device_span(p.status, sizeof(uint32_t), q);
+  validate_device_span(p.dense, dense_bytes, q);
+  validate_device_span(p.bank, bank_bytes, q);
+  validate_device_span(p.map, map_bytes, q);
+  if (!check_device(runtime, q))
+    throw std::invalid_argument("prefill GU A probe: native FP16 required");
+  if (tile == Tile::wide_128x128) return enqueue_prefill_gu_a_probe<Tile::wide_128x128>(q, p);
+  return enqueue_prefill_gu_a_probe<Tile::compact_16x64>(q, p);
+}
+#endif
 
 sycl::event Gemm::gu_swiglu(const GuSwiGLUProblem &p, Tile tile) {
   if (!has_fp16_ || p.rows < 1 || p.rows > 8192)

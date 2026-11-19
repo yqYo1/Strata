@@ -228,6 +228,58 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
 
+- The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
+  the previous layer's resident BF16 rows directly in the native attention
+  norm, mix and residual write. Layer zero, the PLE bridge at layer one when
+  active, host-backed rows and non-window pieces keep their existing
+  inputs. Native16 admission rejects the legacy float boundary and phase
+  audits before window execution. Decode uses its existing route. The window's
+  checked queue drain still precedes bank reuse and callbacks. A window
+  can end with a partial second device span. After the attention stores
+  drain, the window FFN updates the bank in place and drains before
+  `complete_piece` advances the layer cursor. The final layer restores
+  each completed BF16 span into the float callback buffer.
+  For 65536 batched rows, each eligible layer avoids 1.25 GiB of requested
+  D2D input copies. With PLE active, 46 eligible layers would avoid 57.5 GiB.
+  Verify actual bytes and placement before using this estimate. This
+  candidate has no measured speed or model qualification yet.
+  Use the retained ordinary 384-slot configuration after the existing
+  comparison closes. First verify BF16 results and guards at 1, 63, 7905,
+  8191 and 8192 rows, including partial overlap refusal and both output
+  destinations. The same-build fixture also exercises two resident pieces
+  of 8 and 3 rows, prior FFN publication, norm/mix, both attention stores,
+  final FFN update and callback restoration in all four arms. It uses
+  synthetic projections. Actual model dispatch, cancellation and fallback
+  still need separate evidence. In the numerical runs verify the unborrowed
+  PLE layer, mixed host tail and disabled selector against their copied-input
+  controls. Check the existing audit admission refusal separately. Use the
+  cache-enabled native verification route for active state hashes: the
+  clean benchmark disables the prompt cache and cannot emit that evidence.
+  The model controller takes the traced 48-layer input counters from
+  `1bf54ec32` at the checked layer drains. It requires zero eligible
+  reads through the PLE layer and the expected bytes at every later
+  layer. Equal final totals can hide an erroneous earlier read.
+  Exercise the four combinations on independent native servers at
+  32769 and 253919 initial tokens. After switching to 33 unrelated
+  tokens, restore the original and process 8209 fresh tokens, including
+  a 16-row tail in the batched suffix. Match active state, publications
+  and restored decode-cache payload for every arm. These cases leave
+  output room; the physical final slot has its own test.
+  Then compare the four combinations of copied/borrowed input
+  and copied/direct output on the same coherently rebuilt engine. Check
+  per-request routes, numerical fingerprints and both copy counters before
+  measuring clean 65537-token requests. Use four fresh-process blocks with
+  orders ABCD, BDAC, CADB, DCBA, with A=copied input/copied output,
+  B=borrowed input/copied output, C=copied input/direct output and
+  D=borrowed input/direct output. Each process makes three exact requests.
+  Evaluate input-only (B/A), output-only (C/A), combined (D/A) and
+  incremental input (D/C) using paired warmed prompt times. A repeatable
+  gain requires all four block ratios below one for the stated contrast.
+  Keep first-use timings, client TTFT and target attainment separate.
+  Stop on a safety, route, workload, validation or ownership failure.
+  Adoption also requires a physical 262144 fill, mixed GPU/host tails,
+  RESTORE and repeated matched agent and sustained-decode evidence.
+
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
   performance gates fail in each clean campaign. Maximum-run evidence43d1a03e

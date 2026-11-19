@@ -667,6 +667,9 @@ struct MoeWindowContext {
     bool accumulation = false;
     bool direct_attention_bank = false;
     uint64_t attention_bank_pieces = 0, attention_direct_pieces = 0, attention_copy_bytes = 0;
+    bool read_attention_bank = false;
+    uint64_t attention_input_pieces = 0, attention_borrowed_pieces = 0;
+    uint64_t attention_input_copy_bytes = 0, attention_borrowed_bytes = 0;
     uint32_t status_observed = 0;
     std::vector<int32_t> ids;
     std::vector<float> prefix_weight_audit;
@@ -2418,6 +2421,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #if defined(STRATA_ENABLE_SYCL)
         detail::LayerMajorSpan attention_bank_span{};
         uint16_t* attention_bank = nullptr;
+        const uint16_t* attention_residual = m.R16;
         bool direct_attention_bank = false;
         bool attention_bank_written = false;
         if (m.moe_window) {
@@ -2463,8 +2467,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 const auto profile_input_start = m.layer_major_profile ? detail::LayerMajorCoarseProfile::Clock::now()
                     : detail::LayerMajorCoarseProfile::Clock::time_point{};
                 const auto span = m.layer_major_residual.span(c0, T);
+                auto copied_input_bytes = span.bytes;
                 if (m.layer_major_profile) {
-                    m.layer_major_profile->rows[LB].input_bytes[int(span.device)] += span.bytes;
                     m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::input, m.cs, span.device);
                 }
                 const auto* base = static_cast<const uint8_t*>(span.device
@@ -2475,10 +2479,34 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     ? sycl_backend::cpu_wait_profile::residual_input_device
                     : sycl_backend::cpu_wait_profile::residual_input_host);
                 if (m.native16_active) {
-                    if (m.layer_major_residual.dtype != detail::LayerMajorResidualDtype::bf16 ||
-                        cudaMemcpyAsync(m.R16, base + size_t(span.offset_bytes), size_t(span.bytes),
-                            span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+                    if (m.layer_major_residual.dtype != detail::LayerMajorResidualDtype::bf16) {
+                        err = "prefill native16: expected BF16 residual input"; return false;
+                    }
+                    // PLE restores, modifies and repacks its input in scratch at layer 1.
+                    // Other eligible attention halves read the previous layer's bank on m.cs.
+                    const bool bank_input = window_piece && span.device && LB > 0 && !(LB == 1 && ple_on) &&
+                        !m.layer_major_audit && !m.layer26_phase_audit && m.copy == m.cs &&
+                        m.layer_major_gpu_input == m.moe_window->bank;
+                    if (bank_input && m.moe_window->read_attention_bank) {
+                        auto& queue = sycl_backend::queue_for(m.cs);
+                        if (!queue.is_in_order() ||
+                            static_cast<const void*>(base + span.offset_bytes) != attention_bank) {
+                            err = "prefill attention input: bank owner or queue differs"; return false;
+                        }
+                        sycl_backend::validate_device_span(attention_bank, size_t(span.bytes), queue);
+                        sycl_backend::validate_spans({{m.R16, size_t(span.bytes)}},
+                                                     {{attention_bank, size_t(span.bytes)}}, alignof(uint16_t));
+                        attention_residual = attention_bank;
+                        copied_input_bytes = 0;
+                        ++m.moe_window->attention_borrowed_pieces;
+                        m.moe_window->attention_borrowed_bytes += span.bytes;
+                    } else if (cudaMemcpyAsync(m.R16, base + size_t(span.offset_bytes), size_t(span.bytes),
+                               span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
                         err = "prefill native16: BF16 residual input copy failed"; return false;
+                    }
+                    if (bank_input) {
+                        ++m.moe_window->attention_input_pieces;
+                        m.moe_window->attention_input_copy_bytes += copied_input_bytes;
                     }
                 } else if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp16) {
                     const uint16_t* packed = reinterpret_cast<const uint16_t*>(base + size_t(span.offset_bytes));
@@ -2503,6 +2531,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 input_cpu_profile.finish();
 #endif
                 if (m.layer_major_profile) {
+                    m.layer_major_profile->rows[LB].input_bytes[int(span.device)] += copied_input_bytes;
                     m.layer_major_profile->end(detail::LayerMajorCoarseProfile::input, m.cs);
                     m.layer_major_profile->add(span.device ? detail::LayerMajorCoarseProfile::input_submit_device : detail::LayerMajorCoarseProfile::input_submit_host, profile_input_start);
                 }
@@ -2883,12 +2912,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 pt.mark(kPfHc, cs);
 #if defined(STRATA_ENABLE_SYCL)
                 if (m.native16_active) {
-                    native16::norm(m.R16, static_cast<const float*>(wn->data), EPS, m.grs, m.xn16, T, m.cs);
+                    native16::norm(attention_residual, static_cast<const float*>(wn->data), EPS, m.grs, m.xn16, T, m.cs);
                     if (!bf16_proj16(m.gemm, wd, m.xn16, m.lo_b16, T, sd, err)) return false;
                     native16::silu(m.lo_b16, m.lo16, T, m.cs);
                     if (!bf16_proj16(m.gemm, wu, m.lo16, m.gated_b16, T, su, err) ||
                         !bf16_proj(m.gemm, wi, m.xn16, m.inj, T, si, err)) return false;
-                    native16::mix(m.R16, m.grs, static_cast<const float*>(wn->data), m.gated_b16,
+                    native16::mix(attention_residual, m.grs, static_cast<const float*>(wn->data), m.gated_b16,
                                    m.mixed_bf, m.mixed_h, T, m.cs);
                 } else {
 #endif
@@ -4150,12 +4179,16 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 }
 #if defined(STRATA_ENABLE_SYCL)
                 if (m.native16_active) {
-                    if (direct_attention_bank) {
+                    if (direct_attention_bank || attention_residual != m.R16) {
                         if (stream_all || issuer.joinable()) {
-                            err = "prefill MoE window: invalid direct attention topology"; return false;
+                            err = "prefill MoE window: invalid attention bank topology"; return false;
                         }
-                        native16::write_prefill_attention_bank(attention_bank, m.R16, m.bo_b16, m.inj, T, m.cs);
-                        attention_bank_written = true;
+                        auto* target = direct_attention_bank ? attention_bank : m.R16;
+                        if (attention_residual != m.R16)
+                            native16::write_prefill_attention_from_bank(target, attention_residual, m.bo_b16, m.inj, T, m.cs);
+                        else
+                            native16::write_prefill_attention_bank(target, attention_residual, m.bo_b16, m.inj, T, m.cs);
+                        attention_bank_written = direct_attention_bank;
                     } else {
                         native16::write(m.R16, m.bo_b16, m.inj, T, m.cs);
                     }
