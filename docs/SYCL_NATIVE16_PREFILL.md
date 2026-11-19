@@ -2749,6 +2749,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   account for 89.0% of the routed rows. A gather-free input to those jobs
   could avoid about 133.5 GiB of intermediate writes per prompt. The
   resulting XMX reader cost and benefit to end-to-end prefill are untested.
+  Child `6a4af5fd2` keeps the existing scalar gather and adds a component
+  arm that copies eight FP16 bit patterns per work item. The operation
+  retains invalid-row zeroing, sticky status bit 4 and four-byte base
+  alignment. The new numerical cases cover one/two banks, nonzero route
+  offset, 8,191-row tail and base offsets 4/8/12 modulo 16. Fixture
+  `20f39e0dc` compares 64 distinct jobs per batch over the same 65,536-row
+  bank and one reused destination. The synthetic job sizes of 211 and
+  6,640 approximate average separate and fused jobs. Each uses spread and
+  16-row clustered maps. Three independent processes alternate six pairs
+  per shape. The timed interval covers checked submission through drain.
+  Shape-specific advancement requires all three candidate median batch
+  times to improve, with equal planned maps, numerical checks, outputs,
+  normal exits, no new fault and no timer-floor failures. Keep each
+  shape's individual results. Test this candidate separately after the
+  pending bank-input and QSA decisions on their already pinned images.
+  The mapped-input GU alternative would also need a lane-to-fragment
+  proof and an explicit policy for banks below the GU's 64-byte alignment.
   The source inputs (783 for the pair and 776 for the probe), all four
   generated inputs and the final comparison decision were verified from
   Git before cleanup. The 152 capture files (571,845,791 bytes), 42,745-byte

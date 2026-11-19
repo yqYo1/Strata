@@ -37918,5 +37918,17 @@
     "finding": "The normal and state-probe exports are defined. The producer publishes the BF16 operands before both reads, and the tile is retired after all four accumulations. The original flag-set test omitted backend/translator options. This is source equivalence only.",
     "consumer": "Controller 0ed10ef1d requires the complete ordered icpx invocation for each kernel and separate fresh pack checks. Confirm actual compilation, device output/state and timing on B570.",
     "schedulable_now": false
+  },
+  "moe-mixed-gather-reader-20261120": {
+    "topic": "Alternatives for the mixed expert input gather",
+    "classification": "decision support",
+    "source_commit": "2dabc1306b1899c1510af5553417c14822777a38",
+    "report_sha256": "d9cc1e7b56106ff5040ede5dec8773e2b4264fbfdba2e96385432331d53a27cf",
+    "review_sha256": "1b776a5a2a5f910fb63d0915c9bec9170d5094e20f5c45103c101a348cd40aab",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The fused GU+SwiGLU path covers 89% of routed rows. It currently accepts affine A only; arbitrary source rows need a new operand loader or staging. The existing mixed gather inherits four-byte alignment from validate_spans and the dense GU has a separate 64-byte base requirement. Correct the report source label to the manifest revision.",
+    "consumer": "First compare scalar/vec8 gather independently on the ordinary single-bank shapes. For the higher-ceiling fused alternative, prove per-lane A mapping, tail masks and status behavior before a GPU trial. No achieved bandwidth or model gain.",
+    "schedulable_now": false
   }
 }
