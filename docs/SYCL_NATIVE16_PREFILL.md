@@ -2984,9 +2984,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.99878/1.01122/0.99390. All five GPU processes closed normally without
   a fresh Xe fault. Retain the original ordered-exp kernel for all three
   shapes. The reuse candidate did not qualify for a model trial.
-  To identify the loaded machine code, join the PV launch site to its
-  specific Level Zero kernel handle. The normal call also launches a pack
-  kernel.
+  In the measured bench ELF (`eeb1a47d`), the smoke trace binds each UR
+  kernel name to its launch handle. Each arm launched both a WG64 pack and
+  a WG128 compute kernel (eight calls to each in the original arm, seven
+  in the candidate). The WG128 entry names identify unique embedded SPIR-V
+  modules: original `8f0d4d74`, 170708 bytes, and candidate `1afa03f7`,
+  38816 bytes. The original loads both P and V within the nested output
+  tile and cell loops. The candidate loads P in a separate cell loop before
+  the output loop and still loads V in the inner loop. The proposed change
+  survived translation to SPIR-V. The trace does not identify final native
+  instructions or register traffic; the decision above uses measured time.
 
   Next evaluate the already available cached-subgroup normalizer at 128K
   on the retained 14508 engine. Its earlier cap-2051 comparisons passed
