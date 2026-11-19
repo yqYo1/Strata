@@ -178,28 +178,35 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stride. All three arms used the same 1,022,361,600-byte bank.
   At this shape, 24 layers fit 512 expert slots, 14 fit 469, nine fit 438
   and one fits 384. This check admits the separate clean 64K comparison.
-  The clean ordinary-queue comparison is running. Its first reference
-  process (`4e2112651`) used the original ELF and all three original
-  prompt bodies. Every recorded route, MoE work count and draft count
-  matched the historical cohort. Its two warmed requests gave 868.0 and
-  898.5 tok/s. Wait for all three interleaved reference processes before
-  interpreting the period difference or comparing the current stores.
-  An independent prefill input candidate is pinned at `b9707c75b` on
-  `perf/prefill-bank-input`. It borrows eligible previous-layer BF16 rows
-  in VRAM for attention. Its fixture and four-way model plan await this
-  cohort's closure and a coherent build. The retained timing engines
-  continue to use their original sources and selectors.
-  The 65537-token requests in the historical 1006.8 tok/s cohort and the
-  984.1 tok/s cohort have identical body hashes. Across all three inputs,
-  the GU/Down jobs and requested expert H2D bytes also match. The bank
-  requests 37.215, 37.173 and 37.137 GB respectively. The historical
-  path uses 384 expert slots. The current 512-slot path stages experts from
-  the first chunk and overlaps their upload with the remaining attention.
-  A same-period comparison will run the retained reference and current
-  copy/direct stores on the historical 384-slot configuration. Compare
-  the two current arms to isolate the store and use the old binary to check
-  whether its 1000 tok/s result reproduces. Keep first-request TTFT and
-  subsequent-request throughput separate.
+  The same-period 384-slot comparison at `ecac777fc` closed nine
+  independent processes and 27 exact 65537-token requests. Each process
+  used the same three fresh bodies, with 24 output tokens and thinking
+  enabled. All native exits were zero and no fresh GPU fault appeared.
+  Warmed rates use the second and third prompt times in each process.
+
+  | 384-slot route | Warmed process rates (tok/s) | Median PP | First-request TTFT (s) | Warmed TTFT (s) |
+  | --- | --- | ---: | ---: | ---: |
+  | Historical ELF | 883.0/883.6/862.4 | 883.0 | 86.948 | 74.467 |
+  | Current ELF, copy output | 902.0/899.3/958.7 | 902.0 | 84.791 | 72.871 |
+  | Current ELF, direct output | 902.0/876.5/896.6 | 896.6 | 87.738 | 73.289 |
+
+  Paired warmed direct/copy time ratios were 1.00004/1.02603/1.06925. The direct path
+  avoided 60 GiB of requested GPU-local copies per request. Its
+  repeated-gain condition failed on ordinary384. Retain copy on this
+  route. The earlier 512-slot warmed gain remains scoped to that route;
+  the faulted early native-copy configuration stays out of subsequent runs.
+  The historical ELF previously reached 1006.8 tok/s. Its three new
+  processes used identical request hashes, expert work, requested H2D
+  volume and MTP counts. The period difference remains unattributed.
+  The ordinary official suite now checks the identical 16098-token request
+  body from both original journals, six-turn agent sessions and repeated
+  thinking-enabled high/low-acceptance generation. Keep both decode and
+  prefill placement fixed on the verified ordinary queue.
+  The distinct resident-input candidate is pinned at `45f2ba9dd` on
+  `perf/prefill-bank-input`. Its guarded build and device fixture cover
+  adjacent resident pieces, including a partial tail, through FFN and
+  callback. It awaits execution. Verify before timing input-only,
+  output-only and combined changes.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
