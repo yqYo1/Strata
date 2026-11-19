@@ -474287,6 +474287,23 @@
       "sha256": "98b36463bb29a48c6f8bbd333a46dd2791d8f3b5bec85f7697e71e9b8c94c532"
     },
     "environment_template_sha256": "f3bdd0ae053df308371d4121d7641a3705bcf2206b64a7b6643d0b638027c11d",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "disposition": {
+      "standalone_speed_gate_passed": false,
+      "retained_reference": "arena FFN issue",
+      "copy_ordinal_reference": "native0",
+      "next": "Compare copy ordinal 0 with copy-only ordinal 1 at the same completion placement. Then compare earlier issue and deferred completion separately before a combined overlap case."
+    },
+    "artifact_retirement": {
+      "complete": false,
+      "evidence_commit": "fd14097d588c50df2d6776ae5471d1e1087c9714",
+      "capture": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-api-v1",
+        "files": 426,
+        "bytes": 63438500,
+        "tree_sha256": "4dd05ae8280288d8b13bcace1ab8d4301d7ace3ed9a04adf5258ed22fef67668"
+      },
+      "reason": "Later transport comparisons consume committed results and the existing native image. No raw API timing consumer remains."
+    }
   }
 }

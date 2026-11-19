@@ -16,6 +16,14 @@ Compare (A) the current direct Arena view, (B) a bounded reusable host-USM slab 
 
 Separate caller preparation, `queue.memcpy` call, explicit/implicit completion, device copy service, and request critical-path wall time. Report thread CPU separately from wall time and polling; do not add overlapping queue spans. Keep first-use import/allocation distinct from warm requests and independent processes. Requested bytes remain logical when physical counters are unavailable. A transfer microbenchmark is not request-throughput evidence.
 
+### Registered source and sparse runs
+
+The Level Zero external-memory mapping extension, introduced in 1.14, requires both the system pointer and size to be host-page aligned. Use the OS page size. Set `ZE_HOST_MEM_ALLOC_FLAG_MEM_READ_ONLY` for read-only backing. Keep the source alive until the copy list has drained and `zeMemFree` releases the mapping. Assign each imported page range to one owner. Releasing overlapping imports can invalidate device access to the other range. Treat file mappings and other backing outside the specified storage classes as provider-dependent. [Level Zero external-memory mapping v1.21.26](https://oneapi-src.github.io/level-zero-spec/level-zero/1.21.26/core/EXT_ExternalMemMap.html)
+
+The B570 admission check at `37017156e` observed `HOST=1` for the tested source with zero application copy or kernel commands. Validate the actual provider and allocator backing for each new import route. Copy service, physical traffic and model speed require separate evidence. See `prefill_pinned_host_contract_cl_20261116` and `prefill_mapped_source_contract_cj_20261116` in the [research index](../../bench/results/2026-10-15-pr6-recovery-audit/research-index.json).
+
+For a sparse-copy batching comparison, begin with exact adjacency in both the source and destination, with the same source owner, format and useful bytes. Measure the reduction in commands and the effect on first-ready time. Treat copying across gaps or adding packing for scattered destinations as separate changes that add work. Check alignment after page rounding before importing neighboring ranges.
+
 ## Provenance and primary references
 
 This note summarizes local source paths in the assigned host-transfer report; no code was copied. Current online specifications are not pins of the installed compiler/runtime, and the report establishes no active UR branch. Intel transfer/import advice is vendor-stack-specific; FPGA pinning and NVIDIA pageable staging supply only transferable cost examples.

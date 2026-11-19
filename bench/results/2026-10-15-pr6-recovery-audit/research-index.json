@@ -36489,5 +36489,144 @@
       "regular_bytes": 121083964,
       "inventory_sha256": "157e3ba3afbfe624d8aaf8675c2c032313ad89deae02e9d90f6f628c0aa26c20"
     }
+  },
+  "prefill_native_overlap_order_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "f66fbafd6fa8668ab5dd885ddc212a5726259371",
+    "reviewed_report_sha256": "b49df9df1bbd407360215c0678cc33000b4af541fd707c2815b6c56e7416ce2e",
+    "source_manifest_sha256": "19044fbceb20d05b3c087f2fd7fbe2e2622d927eebbad05d4bd52adde9b05f46",
+    "reviewer_sha256": "a7647acc35fcc3194f30992c35efd74ee37fec104c11f53731fb0349709fd60d",
+    "run": "run_7693426f50e9",
+    "task": "task_d157a5eae1c4",
+    "dispatch": "ctx_34a315d42a0d",
+    "terminal": "term_564f59e1-a8ed-464c-8d28-a1d021a6fe11",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 17,
+    "worker_side_orca_status": {
+      "call": "call_5b44078f2b404e67a00c32447fc79df6",
+      "sha256": "a75089d18e640b417ce67ddb9dec8692b23f81f6e2a53cf8dbd755a367046977"
+    },
+    "ownership_closed": true,
+    "findings": "The earliest eligible issue site follows the 8192-row router selection. With immediate completion, early issue itself cannot overlap later attention. Delayed completion at the FFN issue site can only overlap work between that site and the first reader. Compare these controls and their interaction, keeping the same payload, source, route, copy owner and cancellation drains.",
+    "consumer": "Current copy scheduling and combined model-overlap validation. Check lifetime and publication before first expert access.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-native-overlap-order-20261119-control",
+          "files": 16,
+          "bytes": 28657,
+          "tree_sha256": "771d63c62e0d8d070c736f4ca165a13e753c4083bf32078b139dbca0f558d409"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-native-overlap-order-20261119",
+          "files": 2,
+          "bytes": 19521,
+          "tree_sha256": "d3df9391f38f3a021340b02b1fce662f3e2eff395dbbbde695c6dfd940f4e7c7"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-native-overlap-order-20261119",
+          "files": 14,
+          "bytes": 3775944,
+          "tree_sha256": "a4c74a1e889922f2fec1fade1ec426e425245b1f308a916acdf02323f4513536"
+        }
+      ]
+    },
+    "launch_recipe": "Use a named Codex profile extending :read-only, with write access to the report directory and network enabled for Orca IPC. Launch directly through an Orca terminal, with no nested bwrap. The normal worker-start refused the custom terminal, so use the same Run with task-create and dispatch --inject. Keep bounded systemd scope and per-capture limits; a process-wide 8 MiB file limit caused SIGXFSZ in the independent startup probe."
+  },
+  "prefill_64k_variance_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "a721ab84c705240c423afeaf58aa7e3e4d970079",
+    "reviewed_report_sha256": "2adbf079af2f8245a67b96a59b75e4ad7bffae55cdbdb450f4cac76051b5a3d0",
+    "source_manifest_sha256": "ded610ff1ef75462de0182e9f580644e3cb7c608927e2391778359b1c16d2863",
+    "reviewer_sha256": "1b4f8e492fff511b732a62ba5d5c4b97505242083127d42785f20f03cf0af641",
+    "run": "run_7693426f50e9",
+    "task": "task_92c4b5df9878",
+    "dispatch": "ctx_3cd3ecfc913c",
+    "terminal": "term_60e52305-a0d9-45c3-9f80-99c66da20b69",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 19,
+    "worker_side_orca_status": {
+      "call": "call_c5f66defde7e4d6fa0ae8efbd57e6148",
+      "sha256": "73a440255257174d73e6c44d67b747808306ec97a0d083baa036977df1b76134"
+    },
+    "ownership_closed": true,
+    "findings": "The observed outlier remains unexplained. If exact work diverges again, start with per-layer IDs, demand bitmap, accepted upload tickets and logical bytes at existing readback. Pick a targeted margin/input or checksum diagnostic at the first divergent layer.",
+    "consumer": "First-divergence localization only upon another observed mismatch. Preserve the failed original fence result and replay.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-64k-variance-20261119-control",
+          "files": 9,
+          "bytes": 20720,
+          "tree_sha256": "c79c0d9488040f3b92b846a95200e9f12e1fe1aa14691d187783e1ea4955e436"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-64k-variance-20261119",
+          "files": 2,
+          "bytes": 20507,
+          "tree_sha256": "cf7af5c673318ab17af720eaac86175565d199eb87a99a0290c9675f6487c7f6"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-64k-variance-20261119",
+          "files": 16,
+          "bytes": 3795760,
+          "tree_sha256": "ec56ad0afee5686c29cead967d66fb23234840ee8cace651ba7741682186db13"
+        }
+      ]
+    }
+  },
+  "prefill_no_staging_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "a721ab84c705240c423afeaf58aa7e3e4d970079",
+    "reviewed_report_sha256": "0979d07d131379ba683a222744f35427ec47d4f0efa050eec4fa601460aeed38",
+    "source_manifest_sha256": "a9af82cbf9794495dd8e00dd468a4ece55f5b76a41918e6494619b88c1fa0ca7",
+    "reviewer_sha256": "0cf39f16926c0630bef9c82917af375c1f4a1c873d72d5622a2eb51d3c6a8c1c",
+    "run": "run_7693426f50e9",
+    "task": "task_19b9d48ab956",
+    "dispatch": "ctx_17a64197571b",
+    "terminal": "term_2d5112ae-4983-425a-a42f-e2a0d269b713",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 19,
+    "worker_side_orca_status": {
+      "call": "call_2e91000532c448ba858d053e33d2ab2e",
+      "sha256": "e7db83ec5d108b0db10ab602c110cb177140fa1ee42aa11ae84830285e90ccc6"
+    },
+    "ownership_closed": true,
+    "findings": "Native review kept the substance on exact host mapping admission and contiguous sparse-copy ranges. The maintained note preserves those primary references and observed limits.",
+    "consumer": "docs/research/sycl-host-transfer-preparation.md#registered-source-and-sparse-runs",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-no-staging-20261119-control",
+          "files": 10,
+          "bytes": 23021,
+          "tree_sha256": "9464c337a61df8349c6d6178b3428d7e4e9d888b49993ec088103a6d1381bee4"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-no-staging-20261119",
+          "files": 2,
+          "bytes": 20858,
+          "tree_sha256": "3a5b154058d2c675f953614d1f55b7d94dc6efad80da756f4dd7f4c0e39e16a2"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-no-staging-20261119",
+          "files": 16,
+          "bytes": 3795760,
+          "tree_sha256": "ec56ad0afee5686c29cead967d66fb23234840ee8cace651ba7741682186db13"
+        }
+      ]
+    }
   }
 }
