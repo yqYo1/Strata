@@ -499276,7 +499276,7 @@
     "compile_commands": 2
   },
   "prefill_status_destination_v5": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "95a863dbe1e58df801f0e05bfad046cafeb5c38a",
     "source_sha256": "e953eed269d57d3fd7b297f262a499eec965dc2fd595508597f979c3e4600403",
     "dependencies_sha256": "6aec49f7a9abb71888fed4dd9496a2557173b076b7379709c2bb6548d6ce0f78",
@@ -500634,12 +500634,101 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 7,
+        "operation": "timing",
+        "placement": "host-usm",
+        "host_probe_accepted": true,
+        "setup_ms": 0.152537,
+        "clock_triplet_median_ms": 4e-05,
+        "samples": {
+          "ready": [
+            {
+              "enqueue_ms": 25.845251,
+              "drain_ms": 29.785063,
+              "total_ms": 55.630314
+            },
+            {
+              "enqueue_ms": 25.973173,
+              "drain_ms": 32.943172,
+              "total_ms": 58.916345
+            },
+            {
+              "enqueue_ms": 26.036844,
+              "drain_ms": 33.815415,
+              "total_ms": 59.852259
+            },
+            {
+              "enqueue_ms": 26.988317,
+              "drain_ms": 37.419518,
+              "total_ms": 64.407835
+            },
+            {
+              "enqueue_ms": 26.823543,
+              "drain_ms": 39.528845,
+              "total_ms": 66.352388
+            }
+          ],
+          "queued": [
+            {
+              "enqueue_ms": 18.842096,
+              "drain_ms": 29.581526,
+              "total_ms": 48.423622
+            },
+            {
+              "enqueue_ms": 17.875361,
+              "drain_ms": 14.67024,
+              "total_ms": 32.545601
+            },
+            {
+              "enqueue_ms": 30.274706,
+              "drain_ms": 32.616915,
+              "total_ms": 62.891621
+            },
+            {
+              "enqueue_ms": 33.415052,
+              "drain_ms": 31.613191,
+              "total_ms": 65.028243
+            },
+            {
+              "enqueue_ms": 31.807224,
+              "drain_ms": 25.637185,
+              "total_ms": 57.444409
+            }
+          ]
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 84443,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "active": false,
     "ownership_closed": true,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-status-destination-v5/sycl_prefill_status_destination",
       "sha256": "69667f20df43dea4fb4804eb7c377435fb40027a49576a224306b11cc5ccef84",
@@ -500682,6 +500771,49 @@
       "/opt/intel/oneapi/compiler/2026.2/include/sycl/detail/image_ocl_types.hpp",
       "/opt/intel/oneapi/compiler/2026.2/include/sycl/detail/key_value_iterator.hpp"
     ],
-    "compile_commands": 2
+    "compile_commands": 2,
+    "decision": {
+      "pairs": [
+        {
+          "ready": {
+            "ref_ms": 51.301975,
+            "candidate_ms": 39.921259000000006,
+            "ratio": 0.7781622247486575
+          },
+          "queued": {
+            "ref_ms": 5.752981875000001,
+            "candidate_ms": 3.751214,
+            "ratio": 0.6520469004606415
+          }
+        },
+        {
+          "ready": {
+            "ref_ms": 57.153819,
+            "candidate_ms": 50.773667,
+            "ratio": 0.8883687545009022
+          },
+          "queued": {
+            "ref_ms": 4.0999265,
+            "candidate_ms": 8.552857874999999,
+            "ratio": 2.0861002935052615
+          }
+        },
+        {
+          "ready": {
+            "ref_ms": 70.153229,
+            "candidate_ms": 60.004796,
+            "ratio": 0.855339046474967
+          },
+          "queued": {
+            "ref_ms": 5.780952,
+            "candidate_ms": 7.333088125,
+            "ratio": 1.268491439645235
+          }
+        }
+      ],
+      "ready_geomean_ratio": 0.8393322412282833,
+      "queued_geomean_ratio": 1.1994086775757653,
+      "model_eligible": false
+    }
   }
 }
