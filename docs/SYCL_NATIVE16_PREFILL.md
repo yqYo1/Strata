@@ -266,7 +266,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reference clocked 1045.73–1051.06 PP across three warmed process medians
   (median 1048.98). It used context and resident KV both 131072; the current
   control uses 262144 and 20480 respectively. Both request split mode 10 and
-  384 expert slots. For 117488 batched rows the production planner instead
+  384 expert slots. In the historical reference, increasing the input from
+  65537 to 117489 tokens increased the median warmed expert-bank upload
+  request from 37.173 to 38.541 GB. That reduces the requested bank bytes
+  per input token from 567.2 to 328.0 kB. These counts cover this bank only.
+  Compare the four current requests with their historical counterparts by
+  request hash, expert-bank bytes, jobs, fused Down jobs and routing-map bytes.
+  Record any differences separately from the speed decision. The historical
+  117K route rebuilt 223,227,900 draft-head bytes; the current route expects
+  zero. Equal expert work would still leave that handoff difference.
+  For 117488 batched rows the production planner instead
   tries 128 slots and one split accumulator window. With the current model,
   it budgets 2,406,154,240 bytes of BF16 residual, 531,988,736 bytes of extra
   accumulator including its guard, a 340,787,200-byte expert bank, 241,555,328

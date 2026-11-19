@@ -61,6 +61,29 @@ def check_work(outcome, row, plan):
     require([s['request_sha256'] for s in outcome['samples']] == row['observer_admission']['historical_requests'],
             'actual 117489-token request bodies differ from the historical four')
     bank.ordinary.check_work(outcome, row, plan)
+    if plan['index'] == 0:
+        history = build.previous.historic(HISTORY, 'native_prefill_preservation_v2')
+        outcome['historical_work_delta'] = historical_work_delta(outcome, history)
+
+
+def historical_work_delta(outcome, history):
+    # These counters have the same producer on both builds. The draft-head
+    # restore policy changed between builds and is deliberately outside this comparison.
+    counter_names = {
+        'jobs': 'jobs', 'fused_down_jobs': 'fused_down_jobs',
+        'requested_bank_H2D_bytes': 'requested_bank_H2D_bytes',
+        'requested_one_routing_map_H2D_bytes': 'requested_dequant_H2D_bytes',
+    }
+    hashes = [s['request_sha256'] for s in outcome['samples']]
+    refs = [p for p in history['processes'] if p['read'] == READ and p['kernel'] == 'reference']
+    require(len(refs) == 3 and len(outcome['routes']) == len(hashes) == len(set(hashes)) == 4 and all(
+        p['passed'] and p['complete'] and p['route_shape']['split_guard_checked']
+        and p['route_shape']['prefill_slots'] == 128
+        and [s['request_sha256'] for s in p['samples']] == hashes
+        and p['request_route_checks'] == refs[0]['request_route_checks'] for p in refs),
+        'historical 117K work must agree across the three reference processes')
+    return [{name: route['fast_window'][current] - prior[name] for name, current in counter_names.items()}
+            for route, prior in zip(outcome['routes'], refs[0]['request_route_checks'], strict=True)]
 
 
 def decision(processes):
