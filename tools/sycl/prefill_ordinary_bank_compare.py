@@ -9,6 +9,7 @@ sys.dont_write_bytecode = True
 import coherent_prefill_bench as original
 import prefill_attention_bank_capacity as capacity
 import prefill_attention_bank_measure as store
+import prefill_attention_bank_restore as restore
 
 build, basis, require = capacity.build, capacity.basis, capacity.require
 READ = 65537
@@ -16,6 +17,7 @@ ARMS = ('reference', 'copy', 'direct', 'copy', 'direct', 'reference', 'direct', 
 THIS = 'tools/sycl/prefill_ordinary_bank_compare.py'
 SMOKE = 'prefill_ordinary_bank_device_after_stall_v1'
 FAILED_SUITE = 'prefill_attention_bank_generation_v2'
+RAGGED = 'prefill_ordinary_bank_ragged_v1'
 
 
 def device_smoke():
@@ -55,20 +57,21 @@ def cohort_basis():
     return native, prior, build.read(Path(speed['runtime_manifest']['path'])), None
 
 
-def native_context(row, plan):
+def native_context(row, plan, read, arms):
     index = plan['index']
-    require(0 <= index < len(ARMS) and (plan['read'], plan['heads']) == (READ, 1),
+    require(0 <= index < len(arms) and (plan['read'], plan['heads']) == (read, 1),
             'unexpected process or request size')
     identity = {key: row[key] for key in ('binary', 'native_source_commit', 'boot', 'native_validation_probe')}
-    if ARMS[index] == 'reference':
+    if arms[index] == 'reference':
         admission = row['observer_admission']
         identity.update(binary=admission['historical_binary'], native_source_commit=admission['historical_source'])
     return identity
 
 
-def check_work(outcome, row, _plan):
-    require([s['request_sha256'] for s in outcome['samples']] == row['observer_admission']['historical_requests'],
-            'actual requests differ from historical 64K inputs')
+def check_work(outcome, row, plan):
+    if plan['read'] == READ:
+        require([s['request_sha256'] for s in outcome['samples']] == row['observer_admission']['historical_requests'],
+                'actual requests differ from historical 64K inputs')
     def counts(process):
         return [(route['actual_GU_dispatch'], route['fast_window'], sample['drafts_offered'], sample['drafts_accepted'])
                 for route, sample in zip(process['routes'], process['samples'], strict=True)]
@@ -94,35 +97,43 @@ def decision(processes):
                 repeated_1000={arm: min(values) >= 1000 for arm, values in speeds.items()})
 
 
-def context():
+def context(ragged):
     historical = original.context()
     ctx = original.core.source.device.load_module('ordinary_bank_comparison', original.core.__file__)
-    ctx.ROOT = basis.B / 'prefill-ordinary-bank-comparison-v1'
-    ctx.KEY, ctx.THIS = 'prefill_ordinary_bank_comparison_v1', THIS
-    ctx.READS = (READ,) * len(ARMS)
-    ctx.ORDER = [(READ, 1)] * len(ARMS)
-    ctx.CLEAN_FAST, ctx.RUNS, ctx.check_sample = True, historical.RUNS, historical.check_sample
-    ctx.basis, ctx.native_context, ctx.after_execution, ctx.decision = cohort_basis, native_context, check_work, decision
+    ctx.KEY = RAGGED if ragged else 'prefill_ordinary_bank_comparison_v1'
+    ctx.ROOT, ctx.THIS = basis.B / ctx.KEY.replace('_', '-'), THIS
+    read, arms = (16098, ARMS[:3]) if ragged else (READ, ARMS)
+    ctx.READS, ctx.ORDER = (read,) * len(arms), [(read, 1)] * len(arms)
+    ctx.CLEAN_FAST, ctx.RUNS, ctx.check_sample = True, (2 if ragged else historical.RUNS), historical.check_sample
+    ctx.MIN_PROMPT_MS = 0 if ragged else 10000
+    ctx.basis, ctx.after_execution = cohort_basis, check_work
+    ctx.native_context = lambda row, p: native_context(row, p, read, arms)
+    ctx.decision = (lambda processes: dict(completed_arms=list(arms), input_tokens=read,
+                    all_passed=all(p['passed'] for p in processes), speed_qualified=False)) if ragged else decision
     base_current = ctx.current
 
     def environment(row, plan):
         env = historical.environment(row, plan)
-        if ARMS[plan['index']] != 'reference':
-            env[store.SELECTOR] = str(int(ARMS[plan['index']] == 'direct'))
+        if ragged:
+            env['STRATA_TRACE'] = '1'
+        if arms[plan['index']] != 'reference':
+            env[store.SELECTOR] = str(int(arms[plan['index']] == 'direct'))
         return env
 
     def route(text, plan):
         result = historical.request_route(text, plan)
-        arm = ARMS[plan['index']]
+        arm = arms[plan['index']]
+        require('strata MoE prefix expert upload layer:' not in text and
+                'strata MoE prefix router: requested=early' not in text, 'unexpected early expert upload')
         if arm != 'reference':
-            result['attention_store'] = store.check_store(text, dict(plan, variant=arm))
+            result['attention_store'] = restore.require_store(text, dict(direct=arm == 'direct'), plan)
         return result
 
     def current(row):
-        require(row['read_order'] == list(ctx.READS) and [p['variant'] for p in row['plans']] == list(ARMS),
+        require(row['read_order'] == list(ctx.READS) and [p['variant'] for p in row['plans']] == list(arms),
                 'frozen triplet order differs')
         for p in row['plans']:
-            expected = native_context(row, p)
+            expected = ctx.native_context(row, p)
             require(build.read(Path(p['root']) / 'plan.json') ==
                     {k: expected[k] for k in ('binary', 'native_validation_probe')}, 'native plan differs')
         return base_current(row)
@@ -131,45 +142,60 @@ def context():
     return ctx
 
 
-def prepare_plans(ctx, row):
+def prepare_plans(ctx, row, ragged):
     speed = build.read(original.ROOT / 'record.json')
     original_plan = next(p for p in speed['plans'] if p['read'] == READ)
     original_env = original.context().environment(speed, original_plan)
-    for p, arm in zip(row['plans'], ARMS, strict=True):
+    arms = ARMS[:3] if ragged else ARMS
+    for p, arm in zip(row['plans'], arms, strict=True):
         p['variant'] = arm
         env = ctx.environment(row, p)
         env.pop(store.SELECTOR, None)
+        if ragged:
+            require(env.pop('STRATA_TRACE') == '1', 'ragged diagnostic needs layer progress')
+            p['trace_progress'] = True
+            p['command'].append('--prefill-short-diagnostic')
         require({k: v.replace(p['root'], original_plan['root']) for k, v in env.items()} == original_env
                 and row['configuration']['args'] == speed['configuration']['args'],
                 'frozen comparison must reproduce the original 64K environment and arguments')
         path = Path(p['root']) / 'plan.json'
-        identity = native_context(row, p)
+        identity = ctx.native_context(row, p)
         ctx.write(path, {k: identity[k] for k in ('binary', 'native_validation_probe')})
         p['generated']['plan.json'] = basis.sha(path)
-    row.update(read_order=list(ctx.READS), whole_bytes=len(ARMS) * row['budgets']['total_cap'] + (8 << 20), plan=dict(
+    row.update(read_order=list(ctx.READS), whole_bytes=len(arms) * row['budgets']['total_cap'] + (8 << 20), plan=dict(
         question='Measure the direct BF16 attention store on the ordinary 384-slot 64K prefill path.',
-        order=list(ARMS), runs_per_process=ctx.RUNS, historical_source=speed['native_source_commit'],
+        order=list(arms), runs_per_process=ctx.RUNS, historical_source=speed['native_source_commit'],
         acceptance='Compare first and subsequent requests separately. Require matching input bodies, actual '
                    '384-slot route, jobs, H2D requests and MTP counts. A repeatable store gain requires lower '
                    'warmed prompt time in all three direct/copy comparisons. Compare the retained historical '
                    'ELF separately as a whole-engine speed reference. Record TTFT and the 1000 target separately.',
         stopping='Stop on the first ownership, workload, route, validation, fault or budget failure.'))
+    if ragged:
+        row['plan'].update(question='Check ordinary same-queue prefill at the previous 16098-token stall shape.',
+            acceptance='Two fresh exact requests in each arm with trace and parameter validation. Check the '
+                       '8192+7905 batched rows, final token, 24 generated tokens, native closure and fresh faults.')
 
 
 if __name__ == '__main__':
     require(sys.executable == original.model.PYTHON, 'use pinned benchmark interpreter')
-    action, = sys.argv[1:]
+    modes = sys.argv[1:]
+    ragged = modes[:1] == ['ragged']
+    action, = modes[1:] if ragged else modes
     with (basis.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         build.builder.guards.no_model_owners([])
         if action == 'device-smoke':
             device_smoke()
             sys.exit(0)
-        experiment = context()
+        if not ragged:
+            gate = basis.validation.committed(basis.RESULT, (RAGGED,))
+            require(gate['stage'] == 'closed' and gate['passed'] and gate['complete']
+                    and gate['ownership_closed'] and not gate['active'], 'closed 384-slot ragged gate required')
+        experiment = context(ragged)
         if action == 'prepare':
             publish = experiment.save
             def publish_prepared(row):
-                prepare_plans(experiment, row)
+                prepare_plans(experiment, row, ragged)
                 publish(row)
             experiment.save = publish_prepared
             experiment.prepare()
