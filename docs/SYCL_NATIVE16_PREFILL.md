@@ -278,9 +278,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All eight server processes closed normally with no fresh Xe fault, and
   the final 15 model asset hashes matched. Physical slot 262144 and clean
   speed remain separate checks.
-  After the required model state checks, `4d9b176e5` compares
-  copy, direct input, direct output and both over 16 independent clean
-  processes with three 65537-token prompts apiece.
+  The four-way comparison from `4d9b176e5` closed at `73d9394a9`.
+  Each of 16 independent clean processes handled three fresh 65537-token
+  prompts. Every request produced 24 tokens and accepted 16 of 21 drafts.
+  Across the four counterbalanced blocks, warmed process median rates were
+  888.26 tok/s for copy, 885.30 for direct input, 891.71 for direct output,
+  and 888.00 for both. Direct output shortened warmed prefill time against
+  copy in every block by 0.30–1.11%. Median client TTFT was 73.70 s for
+  direct output and 73.99 s for copy. Direct input and the combined change
+  had mixed results. Keep direct output as a candidate on this executable.
+  The earlier direct-output loss on a different executable remains recorded.
+  The short outputs leave sustained decode open, and full-capacity model
+  admission and final-slot execution still require their own checks.
   Also revalidate the historical 117489-token workload on this ordinary
   build with the configured context kept at 262144. At `792ec1ee5` the
   reference clocked 1045.73–1051.06 PP across three warmed process medians
