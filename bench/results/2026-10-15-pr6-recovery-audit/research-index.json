@@ -37793,5 +37793,38 @@
     "finding": "On the checked verifier, shared work uses all proposed rows T before commit(n_keep). At fixed T, accepted count changes useful output and waste, not the shared GEMV shape. Earlier KTransformers overlap coverage applies.",
     "consumer": "Revisit only with backend/commit, per-width actual shapes, caller acceptance semantics and measured dependencies.",
     "schedulable_now": false
+  },
+  "prefill-off-path-source-comparison-20261119": {
+    "topic": "Host-side work with eager expert upload off",
+    "classification": "decision support",
+    "source_commit": "e372c83cbfce3b3d93bb3c81bc1f009de6bf6e77",
+    "report_sha256": "4c10b13025964ac9ae11998b91bda204afc05a47a23a06f03981ea59e0de5250",
+    "review_sha256": "c526b9aada248ef5c4d86509163cf6bed2a975fb75ae26aa23653b07ddb279ae",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The ordinary path gates optional uploads, kernels and workspace. It retains per-expert reads and clears of the eager receipt state; their overhead is unmeasured.",
+    "consumer": "Interpret the ongoing same-period historical-versus-current 384-slot comparison. Only isolate the receipt checks if the old route repeatedly wins with matched work.",
+    "schedulable_now": false
+  },
+  "resident-input-owner-audit-20261119": {
+    "topic": "Borrowed attention input lifetime",
+    "classification": "decision support",
+    "source_commit": "b9707c75b80b6064b85eabcd78adae1cad9209d3",
+    "report_sha256": "eae88910c8193a057e66fbf7cbb62f3bbaaf690ddcdae7b0fbe693d644b45514",
+    "review_sha256": "23e36e662f8fdc451e04811063192094bc0a9a80ea67cd1dbfb33f904ac6e289",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Both selectors are independent. A resident second chunk can be partial. FFN consumes and updates the bank before complete_piece; the final layer restores each BF16 span into the float callback buffer. Helper-level alias checks do not qualify owner transitions.",
+    "consumer": "Use the 45f2ba9dd same-engine fixture covering both destinations and the resident tail. Model fallback, cancellation, numerical equivalence and the clean four-arm comparison remain open.",
+    "schedulable_now": false
+  },
+  "xe-abort-fault-order-20261119": {
+    "stage": "closed_without_report",
+    "task": "task_03466e8004c3",
+    "dispatch": "ctx_89f3e1986201",
+    "classification": "decision support",
+    "finding": "Worker repeated the exclusive filesystem preflight after its first success and closed failed. No source finding or device-cause attribution.",
+    "consumer": "Keep the observed stall and reset chronology in the original v2 result. Reopen only if the ordinary-queue workaround stops being sufficient.",
+    "schedulable_now": false
   }
 }
