@@ -17,8 +17,9 @@ import prefill_prefix_expert_build as stage
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'prefill-status-destination-v1'
-KEY = 'prefill_status_destination_v1'
+ROOT = B / 'prefill-status-destination-v2'
+KEY = 'prefill_status_destination_v2'
+FIRST = 'prefill_status_destination_v1'
 SOURCE = 'tests/sycl/prefill_status_destination.cpp'
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
 BOOT = Path('/proc/sys/kernel/random/boot_id')
@@ -99,9 +100,18 @@ def platform():
 
 
 def dependency_paths(output):
-    colon = output.find(':')
-    require(colon >= 0, 'compiler dependency output is missing a target')
-    return {str(Path(path).resolve()) for path in shlex.split(output[colon + 1:].replace('\\\n', ' '))}
+    headers = set()
+    for line in output.replace('\\\n', ' ').splitlines():
+        if not line.strip() or line.startswith(('# __CLANG_OFFLOAD_BUNDLE____START__ ',
+                                               '# __CLANG_OFFLOAD_BUNDLE____END__ ')):
+            continue
+        target, separator, inputs = line.partition(':')
+        require(separator and target.endswith('.o') and inputs.strip(), 'invalid compiler dependency rule')
+        paths = [Path(token) for token in shlex.split(inputs)]
+        require(all(p.is_absolute() and p.is_file() for p in paths), 'invalid compiler dependency file')
+        headers.update(str(p.resolve()) for p in paths)
+    require(headers, 'compiler dependency rules are empty')
+    return headers
 
 
 def tool_paths(flags, env):
@@ -119,6 +129,9 @@ def tool_paths(flags, env):
 
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'one fresh component plan required')
+    previous = validation.committed(RESULT, (FIRST,))
+    require(previous['stage'] == 'blocked-prepare' and previous['ownership_closed'] and not previous['GPU_executed'],
+            'keep the original pre-GPU dependency census refusal')
     admitted, providers, env = platform()
     revision = stage.source.git(P, 'rev-parse', 'HEAD').decode().strip()
     sources = basis.comparison.build.controls(revision, controller=Path(__file__))
@@ -148,6 +161,7 @@ def prepare():
               dependencies_sha256=signature(pinned_dependencies),
               headers=sorted(headers), provider_sha256=signature(providers), providers=providers, environment=env,
               environment_sha256=signature(env), admitted=admitted, build=[compile_command, link_command],
+              earlier_prepare_refusal=signature(previous),
               steps=[['smoke', 'ordinary'], ['smoke', 'host-usm'], *[['timing', x] for x in ORDER]],
               plan=dict(window='Each request uses the engine compatibility stream and the real memcpy+drain wrappers. '
                                'Ordinary and host USM use identical 4-byte extents, source, order and checks.',
@@ -171,7 +185,8 @@ def current(row):
             'commit exact component state before execution')
     admitted, providers, env = platform()
     require(admitted == row['admitted'] and providers == row['providers'] and env == row['environment']
-            and signature(env) == row['environment_sha256'] and signature(providers) == row['provider_sha256'],
+            and signature(env) == row['environment_sha256'] and signature(providers) == row['provider_sha256']
+            and signature(validation.committed(RESULT, (FIRST,))) == row['earlier_prepare_refusal'],
             'platform or immutable environment changed')
     controller = basis.comparison.build.controls(row['source_commit'], controller=Path(__file__))
     fixture = dict(stage.source.blobs(P, row['source_commit'], [SOURCE]))[SOURCE]
