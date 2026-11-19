@@ -217,6 +217,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controls. Check the existing audit admission refusal separately. Use the
   cache-enabled native verification route for active state hashes: the
   clean benchmark disables the prompt cache and cannot emit that evidence.
+  The model controller takes the traced 48-layer input counters from
+  `1bf54ec32` at the checked layer drains. It requires zero eligible
+  reads through the PLE layer and the expected bytes at every later
+  layer. Equal final totals can hide an erroneous earlier read.
+  Exercise the four combinations on independent native servers at
+  32769 and 253919 initial tokens. After switching to 33 unrelated
+  tokens, restore the original and process 8209 fresh tokens, including
+  a 16-row tail in the batched suffix. Match active state, publications
+  and restored decode-cache payload for every arm. These cases leave
+  output room; the physical final slot has its own test.
   Then compare the four combinations of copied/borrowed input
   and copied/direct output on the same coherently rebuilt engine. Check
   per-request routes, numerical fingerprints and both copy counters before
