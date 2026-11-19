@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <cfenv>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <memory>
@@ -251,6 +252,100 @@ void mixed_gather(int rows, int primary_rows, bool vec8 = false, size_t job_inde
     std::cout<<"mixed_gather rows="<<rows<<" primary_rows="<<primary_rows<<" compared_values="<<observed.size()
              <<" admission_rejects="<<rejects<<" invalid_rows=4 status="<<observed_status<<" inputs_immutable=1 guards=PASS PASS\n";
 }
+// Each of 64 expert jobs has a different, stable subset of the same 64K
+// source bank. The timed batch reuses one destination, as in the model.
+void time_mixed_gather(int job_rows, int cluster, int process) {
+    constexpr int rows = 65536, experts = 64;
+    const int groups = (job_rows + cluster - 1) / cluster;
+    std::vector<int32_t> ids(size_t(rows)*K), occupied(rows);
+    for (int r = 0; r < rows; ++r)
+        for (size_t k = 0; k < K; ++k) ids[size_t(r)*K+k] = int32_t(400+k);
+    for (int g = 0; g < groups; ++g) for (int e = 0; e < experts; ++e) {
+        const int64_t sequence = int64_t(g)*experts + e;
+        const int base = int(sequence*(rows/cluster)/(int64_t(groups)*experts)) * cluster;
+        for (int j = 0; j < std::min(cluster, job_rows-g*cluster); ++j) {
+            const int r = base + j;
+            need(r < rows && occupied[r] < int(K), "synthetic expert capacity");
+            ids[size_t(r)*K + occupied[r]++] = e;
+        }
+    }
+    const auto plan = pd::MoeWindowRoutes::build_accum(rows, ids.data(), ids.size());
+    const auto& map = plan->source_rows();
+    for (int e = 0; e < experts; ++e) {
+        const auto& job = plan->jobs().at(e);
+        const auto first = map.begin() + job.global_row;
+        need(job.expert == e && job.rows == job_rows && job.global_row == e*job_rows
+             && std::is_sorted(first, first+job_rows)
+             && std::adjacent_find(first, first+job_rows) == first+job_rows, "stable real gather jobs");
+    }
+    const size_t values = size_t(job_rows)*N;
+    std::vector<uint16_t> host_input(size_t(rows)*N), observed(values), verify_chunk(1u<<19);
+    std::vector<int32_t> observed_source(map.size());
+    for (size_t i = 0; i < host_input.size(); ++i)
+        host_input[i] = uint16_t((i/N)*31337 + (i%N)*97 + ((i/N)>>3));
+    uint32_t observed_status = 0;
+    Buffer<uint16_t> input(host_input.size()), output(values);
+    Buffer<int32_t> source(map.size());
+    Buffer<uint32_t> status(1);
+    Pending pending;
+    auto& q = runtime->compute();
+    input.poison(q); output.poison(q); source.poison(q); status.poison(q);
+    q.memcpy(input.data(),host_input.data(),host_input.size()*sizeof(uint16_t));
+    q.memcpy(source.data(),map.data(),map.size()*sizeof(int32_t));
+    runtime->wait();
+    auto run_batch = [&](bool vec8, int first_job, int count) {
+        const auto gather = vec8 ? pn::prefill_moe_gather_mixed_vec8 : pn::moe_gather_mixed;
+        q.memset(output.data(),0xa5,values*sizeof(uint16_t));
+        q.fill(status.data(),uint32_t(0),1);
+        runtime->wait();
+        const auto begin = std::chrono::steady_clock::now();
+        for (int j = 0; j < count; ++j) {
+            const int e = (first_job+j) % experts;
+            gather(*plan, size_t(e), input.data(), nullptr, rows, source.data(), output.data(), status.data(), &q);
+        }
+        runtime->wait();
+        const auto end = std::chrono::steady_clock::now();
+        q.memcpy(observed.data(),output.data(),values*sizeof(uint16_t));
+        q.memcpy(&observed_status,status.data(),sizeof(observed_status));
+        runtime->wait();
+        need(observed_status == 0, "timed gather raised an invalid-row status");
+        const auto& last = plan->jobs().at((first_job+count-1)%experts);
+        for (int row = 0; row < job_rows; ++row) {
+            const size_t from = size_t(map.at(size_t(last.global_row)+row))*N;
+            need(std::equal(host_input.begin()+from, host_input.begin()+from+N,
+                            observed.begin()+size_t(row)*N), "timed final job differs from source bits");
+        }
+        output.guards(); status.guards();
+        return std::chrono::duration<double,std::milli>(end-begin).count();
+    };
+    // Check both one-job and full-batch dispatch before admitting samples.
+    for (bool vec8 : {false,true}) {
+        (void)run_batch(vec8,0,1);
+        (void)run_batch(vec8,0,experts);
+    }
+    for (int pair = 0; pair < 6; ++pair) for (int position = 0; position < 2; ++position) {
+        const int start = (process*13+pair*9) % experts;
+        const bool vec8 = (process+pair+position) % 2 != 0;
+        const double ms = run_batch(vec8,start,experts);
+        need(ms >= 0.25 && ms < 2500, "gather batch outside timing bounds");
+        std::cout << "gather_sample process=" << process << " rows=" << job_rows << " cluster=" << cluster
+                  << " jobs=" << experts << " first=" << start << " pair=" << pair << " order=" << position
+                  << " words=" << (vec8 ? 8 : 1) << " ms=" << ms << " last_output_bits=PASS\n";
+    }
+    for (size_t offset = 0; offset < host_input.size(); offset += verify_chunk.size()) {
+        const size_t words = std::min(verify_chunk.size(), host_input.size()-offset);
+        q.memcpy(verify_chunk.data(), input.data()+offset, words*sizeof(uint16_t));
+        runtime->wait();
+        need(std::equal(verify_chunk.begin(), verify_chunk.begin()+words, host_input.begin()+offset),
+             "timed input bank changed");
+    }
+    q.memcpy(observed_source.data(), source.data(), map.size()*sizeof(int32_t));
+    runtime->wait();
+    need(observed_source == map, "timed source map changed");
+    input.guards(); source.guards();
+    std::cout << "gather_case rows=" << job_rows << " cluster=" << cluster
+              << " batches=12 input_bits=PASS source_map=PASS guards=PASS\n";
+}
 } // namespace
 int main(int argc,char** argv) {
     try {
@@ -259,7 +354,22 @@ int main(int argc,char** argv) {
         gate("before-runtime");runtime=sb::runtime_for();
         std::cout<<"device="<<runtime->device().get_info<sycl::info::device::name>()<<" driver="<<runtime->device().get_info<sycl::info::device::driver_version>()<<'\n';
         gate("runtime-ready");
-        if(mode=="mixed-gather-vec8-contiguous")mixed_gather(16384,16384,true);
+        if (mode=="mixed-gather-time-0" || mode=="mixed-gather-time-1" || mode=="mixed-gather-time-2") {
+            std::array<int64_t,1024> intervals{};
+            for (auto& ns : intervals) {
+                const auto begin = std::chrono::steady_clock::now();
+                const auto end = std::chrono::steady_clock::now();
+                ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end-begin).count();
+            }
+            std::sort(intervals.begin(), intervals.end());
+            need(intervals.front() >= 0 && intervals[512] < 1000 && intervals[1013] < 5000,
+                 "native gather timer overhead");
+            std::cout << "gather_clock samples=1024 median_upper_ns=" << intervals[512]
+                      << " p99_ns=" << intervals[1013] << '\n';
+            const int process = mode.back()-'0';
+            for (int job_rows : {211,6640}) for (int cluster : {1,16})
+                time_mixed_gather(job_rows,cluster,process);
+        } else if(mode=="mixed-gather-vec8-contiguous")mixed_gather(16384,16384,true);
         else if(mode=="mixed-gather-vec8-ragged")mixed_gather(16383,8192,true,1);
         else if(mode=="mixed-gather-smoke")mixed_gather(8193,8192);
         else if(mode=="mixed-gather-contiguous")mixed_gather(16384,16384);
