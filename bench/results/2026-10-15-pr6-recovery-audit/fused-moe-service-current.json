@@ -486700,5 +486700,166 @@
       "reason": "Logical work, route/demand summary and individual prefill samples are retained in Git. No raw-capture consumer remains.",
       "next_comparison": "Compare stage-all with staging each interval immediately before native append in one future build. Keep the dedicated list, selected IDs, copy extents, wait and placement fixed. Verify aligned disjoint ranges, guards and checked cancellation in a bounded same-build fixture before model timing. The net comparison alone does not establish the host-staging bottleneck."
     }
+  },
+  "prefill_prefix_expert_host_stage_native_v1": {
+    "stage": "prepared",
+    "source_commit": "7537fb7bc02cc035ac2d395a383a7b5eaa95564a",
+    "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "archive": {
+      "prefill_window_native_v2": "40155ade5e8787b6c67b1150a2d2f71d89ce113638da8153fe36a197e0cb7c0a",
+      "prefill_first_demand_native_v1": "032c44658909e088d9110109985e608160bc22234e41960df0cfeae53affe241",
+      "prefill_prefix_router_native_v1": "d5e7850a9b380c9ff887cd9c83993bf4e9812d9bff6bf468c18b6644ab90c93b",
+      "prefill_prefix_expert_native_v1": "4ae6a3bce52108399666f0fb6aece29e753e0678c6e1d1e172128232c87d176f",
+      "prefill_prefix_expert_host_usm_native_v1": "aab38922f6b11c1220f60389f4279fa31824612408b346ff29939d71ed8d06a4",
+      "prefill_prefix_expert_host_usm_timing_v1": "0ecec4c0f07eba010576db5d5fee1a9c8e32d47dce40740bd20a7a33fa6bd4a6",
+      "prefill_prefix_expert_transport_native_v1": "b3eab2593116036124735685bce599848996202d69a9d1bfa0aeb06fdbddb8c5",
+      "prefill_prefix_expert_transport_native_v2": "5b4f688d84476401d53f9e9edadc83f357da69039ee104aed23d1467fe8a9499",
+      "prefill_prefix_expert_transport_ordinal_v1": "0f67b2274bcd787663ca28f6a7812a9e7a1bd47d3137a9dda3a5b734ca971896",
+      "fullfit_attention_copy_ordinal_v1": "d6670670d6c0403c9bd87dd84d3bf386d575483f63680589b9b61d3df8cdb2b3",
+      "prefill_prefix_expert_schedule_native_v1": "e5f62a43409ecc7b652dfad01e43e8a618512a86833a08c9e628309e5a7104d5",
+      "prefill_prefix_expert_net_timing_v1": "3ecb730e81443c736596c80f6bce93920e8bc34f2c6df806f71c2f0e2a87ed9a"
+    },
+    "overlays": {
+      "cmake/sycl_vllm_xe2_native16.cmake": "c40f26301cb26fde042d57e6f38ccea5f0d4c52e2d8c0622df5ffc95bd95eefe",
+      "include/strata/prefill/expert_bank_upload.hpp": "b342884ec123e30da3486ab21483093da7413c46e4789f96ff5b7b4d53679a8c",
+      "include/strata/prefill/fullfit_upload_plan.hpp": "dd89bbcec5be765f5f7faca9b47117230b7557bce3d5cf0cf35d041284e5595d",
+      "include/strata/sycl/native_copy_list.hpp": "229a0f03e08ea3ffc9fb1f4ab5a6b3ef29f5e24f78f92992bbcc57928222a27a",
+      "src/prefill/prefill.cpp": "67a69070b45ce087e2d55eea72814a48dbd18c18917ba2ea7907d4687cb42b94",
+      "src/prefill/layer_major.inc": "5951c7a08b140ac87aa5157bc11275c50b2df8f227486b2c1b8e285c19a21374",
+      "src/prefill/moe_window.inc": "3f51e345291e206dcb3927682ecf335b74c79ef8fbfb754a680893e20f4de3ce",
+      "tests/sycl/expert_bank.cpp": "af867bbd3088edfc1f8957ae1d6d70e30f7323dc3aa4a75b4b9541c7a1632a6c"
+    },
+    "recipe": {
+      "configure": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/source",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+        "-DSTRATA_CPU_ARCH:STRING=znver3",
+        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+        "-DSTRATA_PORTABLE:BOOL=OFF",
+        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+        "-DSTRATA_SYCL_TESTS:BOOL=ON",
+        "-DSTRATA_WERROR:BOOL=ON",
+        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+        "-DSTRATA_SYCL_DEVICE_ARCH=",
+        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+        "-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON",
+        "-DSTRATA_SYCL_PREFILL_NATIVE_COPY=ON"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/cache",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_IQ3_PAIR": "1",
+        "STRATA_IQ3_PAIR_AUDIT": "1",
+        "STRATA_CPU_SERVICE": "0",
+        "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+        "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+        "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+        "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+        "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+        "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+        "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+      },
+      "targets": [
+        "strata",
+        "prefill_moe_routes_test",
+        "prefill_moe_workspace_test",
+        "sycl_expert_bank_test",
+        "sycl_moe_down_scatter_bench",
+        "sycl_native16_paired_gemm_bench",
+        "strata_full_context_diagnostic",
+        "full_context_diagnostic_host_test",
+        "sycl_moe_upload_census_host_test",
+        "prefill_fullfit_upload_plan_test"
+      ]
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "retained_decode_reference": {
+      "source": "9849e35803f011aaafb2753c1e0f31411e40308e",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+        "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+        "bytes": 26476232,
+        "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+      },
+      "record_sha256": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c",
+      "project_inputs": "776f972a3694682ace45aa4f262ec0cfd6e975004c78a55a0291d373919023bb",
+      "recipe_sha256": "1c14fb531398338c49a4aa3ee0612e1fdad81f46ee9ce2a50ac01805b00b5fdd",
+      "scope": "Artifact continuity and original Git/recipe preservation only;new prefill build inherits no decode/model qualification."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "plan": {
+      "unit": "Fixed copy-only list, private bank and request-owned host USM. Compare stage-all with staging immediately before each native append.",
+      "host": [
+        "prefill_fullfit_upload_plan_test"
+      ],
+      "retention": "Third build only for this comparison after preserving both independent phase references. Review at closure or first failed gate."
+    },
+    "controller_sources": {
+      "files": 382,
+      "sha256": "242a57a7520eae064fba05ba052db8c6a828d387712b262584d6eb0e93e0c4cc"
+    },
+    "source_files": {
+      "files": 1168,
+      "sha256": "1a4b8c0cdb83cd7a97169ed6281d247c7a4d7229d4362c44ca61eb4efee19e2b"
+    },
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
   }
 }
