@@ -36966,5 +36966,37 @@
       ],
       "limit": "Clean records qualify prefix extents. The clean logs omit the per-layer first-miss census."
     }
+  },
+  "prefill_prefix_id_readback_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "1512965cd709a0327adf52ca2ab64fea52884741",
+    "reviewed_report_sha256": "3a19d18c5e414a990fc3166e67a9653e398394ff8fcde101d7be63206436cafd",
+    "reviewer_sha256": "2999407050ead10ce4e62b91e2cd0cf98ed150720d01015dfaf2ad9886c35db0",
+    "source_manifest_sha256": "ab3a4fe30bea04636710c0bbd417a054155cee02654aff59084494b288a5e172",
+    "run": "run_7693426f50e9",
+    "task": "task_4e0e97805dc3",
+    "dispatch": "ctx_9c2cea003d0c",
+    "terminal": "term_8c2a4023-1377-477a-adac-2a23da599209",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 22,
+    "worker_side_orca_status": {
+      "call": "call_3045b334893244f9830e9425b0c7ede1",
+      "sha256": "adf290e0891f4f5daf4442a71c3061de5e5b5b9af991c3e92c27de140e1ba54a"
+    },
+    "ownership_closed": true,
+    "findings": "The early prefix reads 327,680 ID bytes per layer. A 512-bit device union plus status can shorten that dependency, while the later FFN router still needs ordered full IDs. Aggregate requested D2H therefore increases by the bitmap/status. Keep range and duplicate validation before scheduling, ascending selected IDs, unchanged full-ID route grouping and checked producer lifetime. Extra kernel and queue time remain unknown.",
+    "api_recheck": "The Khronos reference lists 32-bit and conditionally 64-bit atomic_ref operands. Its repeated atomic64 sentence qualifies the 64-bit case. Installed DPC++ 2026.2 atomic_ref.hpp uses SPIR-V AtomicOr for integer fetch_or and the pinned native16.cpp compiles this same uint32 global-space pattern. Validate the specific scope/address-space implementation and work-group reduction before measuring speed.",
+    "sources": [
+      "https://github.khronos.org/SYCL_Reference/iface/atomic_ref.html#type-t",
+      "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:atomic-references"
+    ],
+    "consumer": "A future separately qualified comparison of early full-ID readback versus GPU union with deferred full IDs. First measure prefix-to-first-copy and whole FFN boundary while preserving the exact route, identical jobs and copy payload.",
+    "retirement": {
+      "complete": false,
+      "review_point": "Retire the reviewed report/control/source at the staging-order campaign boundary, preserving this compact finding."
+    }
   }
 }
