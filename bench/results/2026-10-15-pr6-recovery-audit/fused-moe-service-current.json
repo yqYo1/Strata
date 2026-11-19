@@ -518595,6 +518595,52 @@
         "passed": true,
         "ownership_closed": true,
         "host_probe_accepted": true
+      },
+      {
+        "stage": "smoke",
+        "passed": true,
+        "ownership_closed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "--smoke"
+        ],
+        "environment_sha256": "05747bf0cca7312484d37e5532642a668abc7a01d8b5978a278705a4d3925291",
+        "validation": {
+          "pid": 1694202,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "clock_median_ns": 21.0,
+        "clock_p99_ns": 31,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "passed": false,
