@@ -212,11 +212,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   above still selects copy. The CSV retains each configuration and workload.
   In the copy arm the median engine decode time per output token was 84.75 ms
   for code (2036 of 2340 offered drafts accepted) and 142.33 ms for prose
-  (3442 of 10143). The 70 tok/s target allows 14.29 ms per output. These
-  samples do not split the time spent verifying and drafting. The historical
-  resource run with 3157 outputs and 900 windows used a different executable
-  and cannot supply that split. Measure it on the same ordinary workloads
-  and account for the final EOS window before estimating a draft-cost ceiling.
+  (3442 of 10143). In this fixed-width configuration the first verifier
+  window takes one token and each later window offers three drafts. The
+  counters imply 781 code windows and 3382 prose windows, producing 3.604
+  and 2.017 output tokens per window. Final EOS handling accounts for two
+  and one extra verified positions respectively. Total engine decode time
+  divided by windows was about 305.5 ms for code and 287.1 ms for prose.
+  The 70 tok/s target at these observed output yields allows 51.5 and
+  28.8 ms per window. Those totals include the work around verification.
+  Measure verify, commit and draft on these same workloads before assigning
+  the gap. The older 3157-output/900-window executable cannot supply that split.
   The resident-input candidate at `1bf54ec32` is integrated into
   `feature/sycl` for validation. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after
@@ -243,8 +248,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   of requested GPU-local copies on the fresh prompt and direct output
   eliminated another 32,212,254,720 bytes. The combined arm eliminated both.
   All four owners closed with zero native exit and no fresh Xe fault.
-  Near-capacity state, the physical final slot and clean speed remain open. After the
-  required model state checks, `4d9b176e5` compares
+  At 253919 tokens all four arms passed at `4775de3b0`. Each placed 114688
+  batched rows on the GPU and 139230 in RAM. On the fresh prompt, direct
+  input avoided 108,045,271,040 requested D2D bytes and direct output
+  avoided 112,742,891,520. On the 8209-token restored suffix those values
+  were 7,732,592,640 and 8,068,792,320 bytes. The combined arm eliminated
+  both copies in each request. Active state, output hashes, publications,
+  decode-cache loan and restored payload matched through 262128 tokens.
+  All eight server processes closed normally with no fresh Xe fault, and
+  the final 15 model asset hashes matched. Physical slot 262144 and clean
+  speed remain separate checks.
+  After the required model state checks, `4d9b176e5` compares
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
 
@@ -2979,9 +2993,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.99878/1.01122/0.99390. All five GPU processes closed normally without
   a fresh Xe fault. Retain the original ordered-exp kernel for all three
   shapes. The reuse candidate did not qualify for a model trial.
-  To identify the loaded machine code, join the PV launch site to its
-  specific Level Zero kernel handle. The normal call also launches a pack
-  kernel.
+  In the measured bench ELF (`eeb1a47d`), the smoke trace binds each UR
+  kernel name to its launch handle. Each arm launched both a WG64 pack and
+  a WG128 compute kernel (eight calls to each in the original arm, seven
+  in the candidate). The WG128 entry names identify unique embedded SPIR-V
+  modules: original `8f0d4d74`, 170708 bytes, and candidate `1afa03f7`,
+  38816 bytes. The original loads both P and V within the nested output
+  tile and cell loops. The candidate loads P in a separate cell loop before
+  the output loop and still loads V in the inner loop. The proposed change
+  survived translation to SPIR-V. The trace does not identify final native
+  instructions or register traffic; the decision above uses measured time.
 
   Next evaluate the already available cached-subgroup normalizer at 128K
   on the retained 14508 engine. Its earlier cap-2051 comparisons passed
