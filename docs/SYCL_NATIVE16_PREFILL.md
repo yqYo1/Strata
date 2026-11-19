@@ -178,6 +178,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stride. All three arms used the same 1,022,361,600-byte bank.
   At this shape, 24 layers fit 512 expert slots, 14 fit 469, nine fit 438
   and one fits 384. This check admits the separate clean 64K comparison.
+  The clean ordinary-queue comparison is running. Its first reference
+  process (`4e2112651`) used the original ELF and all three original
+  prompt bodies. Every recorded route, MoE work count and draft count
+  matched the historical cohort. Its two warmed requests gave 868.0 and
+  898.5 tok/s. Wait for all three interleaved reference processes before
+  interpreting the period difference or comparing the current stores.
+  An independent prefill input candidate is pinned at `b9707c75b` on
+  `perf/prefill-bank-input`. It borrows eligible previous-layer BF16 rows
+  in VRAM for attention. Its fixture and four-way model plan await this
+  cohort's closure and a coherent build. The retained timing engines
+  continue to use their original sources and selectors.
   The 65537-token requests in the historical 1006.8 tok/s cohort and the
   984.1 tok/s cohort have identical body hashes. Across all three inputs,
   the GU/Down jobs and requested expert H2D bytes also match. The bank
