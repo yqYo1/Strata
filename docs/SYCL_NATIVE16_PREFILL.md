@@ -2883,7 +2883,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   (229519, 229312 and 229131) with zero boundary crossings in both traces.
   Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
   each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
-  requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  requested API payload. PTI explicitly classifies another 344 copies
+  per request as H2D, taking 0.949 and 0.937 s for 3.578 GB each.
+  The M2D source memory type remains unknown. Copy/kernel overlap is
+  12.8 and 14.9 ms.
   For these 65,536 fresh batched rows, row `t` selects up to
   `min(t + 1, 2051)` cells. The 12 attention layers and two KV heads
   execute 100,638,720 tiles of 32 cells. The QK and PV matrix products
@@ -3056,6 +3059,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its 12-target build recipe hashes to `4eeb51b69215bc2d2e0bea04e1676e7007e69fb119367d8532b7717714a817dc`.
   This verifies source composition; a coherent model build, actual
   dispatch counts, state checks and paired clean model speeds are pending.
+  In the two warmed 64K requests of `eager_request_profile_v2`, all
+  scalar mixed gathers took 2.001 and 2.002 seconds of GPU service
+  (20,591 and 20,568 calls). The count includes the small jobs that keep
+  their scalar implementation. Eliminating all that service would cover
+  about 29% of the 6.896-second gap from the paired clean 64K prompt to
+  1000 PP if every saved second shortened the request. The model comparison
+  must measure how much of this time the large jobs actually save.
   The mapped-input alternative now has a diagnostic at child `19999c6c1`.
   Its host mode checks the actual compact and wide TLA lane/atom
   coordinates, replicas and valid/padded rows over three of 80 K tiles.
