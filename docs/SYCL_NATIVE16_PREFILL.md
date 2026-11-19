@@ -193,8 +193,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 - The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
   the previous layer's resident BF16 rows directly in the native attention
   norm, mix and residual write. Layer zero, the PLE bridge at layer one when
-  active, host-backed rows, boundary audits and non-window pieces keep
-  their existing inputs. Decode uses its existing route. The window's
+  active, host-backed rows and non-window pieces keep their existing
+  inputs. Native16 admission rejects the legacy float boundary and phase
+  audits before window execution. Decode uses its existing route. The window's
   checked queue drain still precedes bank reuse and callbacks. A window
   can end with a partial second device span. After the attention stores
   drain, the window FFN updates the bank in place and drains before
@@ -212,8 +213,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   final FFN update and callback restoration in all four arms. It uses
   synthetic projections. Actual model dispatch, cancellation and fallback
   still need separate evidence. In the numerical runs verify the unborrowed
-  PLE layer, mixed host tail, disabled selector and audit fallback against
-  their copied-input controls. Then compare the four combinations of copied/borrowed input
+  PLE layer, mixed host tail and disabled selector against their copied-input
+  controls. Check the existing audit admission refusal separately. Use the
+  cache-enabled native verification route for active state hashes: the
+  clean benchmark disables the prompt cache and cannot emit that evidence.
+  Then compare the four combinations of copied/borrowed input
   and copied/direct output on the same coherently rebuilt engine. Check
   per-request routes, numerical fingerprints and both copy counters before
   measuring clean 65537-token requests. Use four fresh-process blocks with
