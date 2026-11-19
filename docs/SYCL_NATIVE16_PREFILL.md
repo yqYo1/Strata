@@ -178,17 +178,49 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stride. All three arms used the same 1,022,361,600-byte bank.
   At this shape, 24 layers fit 512 expert slots, 14 fit 469, nine fit 438
   and one fits 384. This check admits the separate clean 64K comparison.
-  The 65537-token requests in the historical 1006.8 tok/s cohort and the
-  984.1 tok/s cohort have identical body hashes. Across all three inputs,
-  the GU/Down jobs and requested expert H2D bytes also match. The bank
-  requests 37.215, 37.173 and 37.137 GB respectively. The historical
-  path uses 384 expert slots. The current 512-slot path stages experts from
-  the first chunk and overlaps their upload with the remaining attention.
-  A same-period comparison will run the retained reference and current
-  copy/direct stores on the historical 384-slot configuration. Compare
-  the two current arms to isolate the store and use the old binary to check
-  whether its 1000 tok/s result reproduces. Keep first-request TTFT and
-  subsequent-request throughput separate.
+  The same-period 384-slot comparison at `ecac777fc` closed nine
+  independent processes and 27 exact 65537-token requests. Each process
+  used the same three fresh bodies, with 24 output tokens and thinking
+  enabled. All native exits were zero and no fresh GPU fault appeared.
+  Warmed rates use the second and third prompt times in each process.
+
+  | 384-slot route | Warmed process rates (tok/s) | Median PP | First-request TTFT (s) | Warmed TTFT (s) |
+  | --- | --- | ---: | ---: | ---: |
+  | Historical ELF | 883.0/883.6/862.4 | 883.0 | 86.948 | 74.467 |
+  | Current ELF, copy output | 902.0/899.3/958.7 | 902.0 | 84.791 | 72.871 |
+  | Current ELF, direct output | 902.0/876.5/896.6 | 896.6 | 87.738 | 73.289 |
+
+  Paired warmed direct/copy time ratios were 1.00004/1.02603/1.06925. The direct path
+  avoided 60 GiB of requested GPU-local copies per request. Its
+  repeated-gain condition failed on ordinary384. Retain copy on this
+  route. The earlier 512-slot warmed gain remains scoped to that route;
+  the faulted early native-copy configuration stays out of subsequent runs.
+  The historical ELF previously reached 1006.8 tok/s. Its three new
+  processes used identical request hashes, expert work, requested H2D
+  volume and MTP counts. Replacing the old measurement root in the five
+  path-valued settings of the original environment template reproduces the
+  new template hash. The period difference remains unattributed.
+  The ordinary official suite now checks the identical 16098-token request
+  body from both original journals, six-turn agent sessions and repeated
+  thinking-enabled high/low-acceptance generation. Keep both decode and
+  prefill placement fixed on the verified ordinary queue.
+  On `perf/prefill-bank-input`, the resident-input native source is
+  `1bf54ec32`. It lets eligible prefill layers read the preceding layer's
+  BF16 bank directly and traces cumulative reads and copied bytes after
+  the existing layer drain. Decode is outside this change. The model
+  controller at `6e6a37930` checks the expected 46 of 48 layers in each
+  bank-backed arm and compares state and RESTORE across all four input
+  and output combinations. Its 253919-token prefix plus 8209-token
+  continuation reaches 262128 tokens and exercises a 16-row tail;
+  the final physical context slots need separate coverage. The server reader
+  at `f7e0ddeb0` checks the effective 512-slot bank for the mixed-residency
+  prefix and the staged 384-slot bank for its fully resident suffix. Both
+  use ordinary SYCL copies. The standalone controller at `b89af0bff` checks
+  all four input/output choices at 16385 and exactly 262144 tokens, including
+  the engine's checked final-slot marker and zero output at capacity.
+  Build, device and model checks are pending. If they pass, `4d9b176e5` compares
+  copy, direct input, direct output and both over 16 independent clean
+  processes with three 65537-token prompts apiece.
 
 - The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
   the previous layer's resident BF16 rows directly in the native attention
@@ -2744,6 +2776,60 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
   each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
   requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  In these two requests the expert-bank counters record 18,204 and
+  18,182 uploads, requesting 37,173,094,400 and 37,137,228,800 bytes.
+  Subtracting those totals from the corresponding M2D counters leaves
+  exactly 3,013 commands and 11,164,427,264 bytes in each request.
+  This is a cross-check on aggregate demand. The trace does not associate
+  each copy with a call site or measure physical PCIe traffic.
+  The retained request summaries have no per-copy submission IDs or
+  pointer classes to join to individual tensor uploads. The split
+  accumulator submits both source and inverse int32 row maps. The two
+  together request 251,658,240 bytes, about 2.25% of the difference if
+  both were classified as M2D.
+  The actual IQ3_S pack index (`b2a01487`) also identifies a smaller,
+  directly testable transfer change. Across 48 layers, 672 canonical
+  tensor payloads total 1,455,214,080 bytes. Joining adjacent ranges only
+  when both source and destination touch gives 217 copies of the exact
+  same bytes. The 105 persistent tensors and the full decode restore
+  are outside this change. Child `f40b91b14` implements it behind
+  `STRATA_SYCL_PREFILL_CANONICAL_CONTIGUOUS_COPIES=1`. The original
+  prepare, retirement, completion and publication still bracket each layer.
+  First verify the actual 672/217 submissions and identical bytes between
+  the 48 fixture markers, all tensor values, PLE bindings and full restore.
+  Child `fa2191d38` checks each successful UR copy against the IQ3_S pack
+  offset, the published device bank address and the exact tensor extent.
+  It checks the final timed layer before overwriting it, then replays and
+  reads back all layers outside the timer. These checks await execution.
+  In the recorded ordinary build (`a3dddff2`), the fixture links seven
+  archived libraries with 106 direct object members. Their archive order,
+  file hashes and Ninja dependency lists were inspected. No member includes
+  the canonical-bank class definition. Only the model and full-context
+  generator objects included it in that build, and neither enters the
+  fixture link. A separate fixture can therefore compile the candidate
+  header against these exact archives without changing the model executable.
+  Recheck that closure at build time. A model trial still requires a fresh
+  coherent generator build. The source tree's SYCL CMake file differs from
+  the recorded one, so retain the original configured compile/link recipes.
+  Then compare six fresh processes in rows/runs, runs/rows, rows/runs
+  order. Each accumulates full activation call time across 48 layers in
+  four sweeps, with a 10 ms floor. Record the first separately; all three
+  paired subsequent-sweep medians must improve before a model trial.
+  This source-based count neither assigns those copies to PTI M2D nor
+  qualifies a speed change. Keep the native packed projections independent.
+  The two original IQ3_S shard directories, filtered by the native dense
+  loader's matrix criteria, give 300 GPU weight owners across 48 layers,
+  totaling 2,116,951,040 bytes. Per-layer packed payload ranges from
+  30,423,040 to 50,918,400 bytes. Keeping layers 3 and 7 would occupy
+  64,471,040 bytes during prefill and avoid 128,942,080 requested bytes
+  if it eliminated both their activation copies and post-prefill reloads.
+  Actual admission, graph ownership and duration for partial retention
+  remain open. The layer-copy candidate above retains no extra weight owner.
+  The earlier 117489-token, 1256-expert-slot run spent about 384–385 ms
+  restoring all native packed owners. Its enclosing 650–817 ms also included
+  canonical restoration. Use the inner interval when estimating savings
+  for native owners. Neither interval establishes costs at 384 slots or
+  admission at the physical context limit.
   Clean 64K needs 6.896 s less prefill time to reach 1000 PP. QSA prefix
   is the largest observed kernel family. Its service and the competing copy
   cost both warrant independent work. The next QSA component comparison
@@ -2758,6 +2844,41 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   short/invalid/tail and full-context address cases. Commit source and
   repeated component criteria before building. The QSA timing and measured
   copy overlap do not identify a saturated hardware resource.
+  The two warmed traces also isolate 20,591 and 20,568 mixed-input expert
+  gather commands (2.001 and 2.002 s). In each, all 48 windows used a
+  single resident input bank. The 125,829,120-byte int32 source map covers
+  31,457,280 routed rows, each copying 2,560 FP16 values. The explicit
+  gathers therefore request 150 GiB of input and 150 GiB of output per
+  prompt, equivalent to about 161 GB/s of logical tensor work. Cache
+  reuse, physical VRAM traffic and bandwidth saturation remain unknown.
+  Only 4,217 jobs reached fused gate/up in either request, but they
+  account for 89.0% of the routed rows. A gather-free input to those jobs
+  could avoid about 133.5 GiB of intermediate writes per prompt. The
+  resulting XMX reader cost and benefit to end-to-end prefill are untested.
+  Child `6a4af5fd2` keeps the existing scalar gather and adds a component
+  arm that copies eight FP16 bit patterns per work item. The operation
+  retains invalid-row zeroing, sticky status bit 4 and four-byte base
+  alignment. The new numerical cases cover one/two banks, nonzero route
+  offset, 8,191-row tail and base offsets 4/8/12 modulo 16. Fixture
+  `20f39e0dc` compares 64 distinct jobs per batch over the same 65,536-row
+  bank and one reused destination. The synthetic job sizes of 211 and
+  6,640 approximate average separate and fused jobs. Each uses spread and
+  16-row clustered maps. Three independent processes alternate six pairs
+  per shape. The timed interval covers checked submission through drain.
+  Shape-specific advancement requires all three candidate median batch
+  times to improve, with equal planned maps, numerical checks, outputs,
+  normal exits, no new fault and no timer-floor failures. Keep each
+  shape's individual results. Test this candidate separately after the
+  pending bank-input and QSA decisions on their already pinned images.
+  The mapped-input alternative now has a diagnostic at child `19999c6c1`.
+  Its host mode checks the actual compact and wide TLA lane/atom
+  coordinates, replicas and valid/padded rows over three of 80 K tiles.
+  Its opt-in device mode compares the dense block2D load after reorder,
+  the indirect FP16 read and the host address oracle, slot by slot using
+  two bit tags. It exercises sorted and reversed maps, invalid rows,
+  sticky status and a four-byte-aligned single bank. Run the host witness
+  before the traced three-row smoke, then all shape/bit cases before
+  considering full DPAS. Device build and execution are pending.
   The source inputs (783 for the pair and 776 for the probe), all four
   generated inputs and the final comparison decision were verified from
   Git before cleanup. The 152 capture files (571,845,791 bytes), 42,745-byte
@@ -2808,6 +2929,33 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   at `daca8f47e`. Verified retirement removed its 68 output files
   (12,212,498 bytes) and the temporary inventory. The original prefill and
   decode reference executable hashes were rechecked after removal.
+
+  A separate candidate retains the two BF16 probability fragments used in
+  the probability-times-V product across its four output tiles. In the
+  retained 14508 reference ELF (`dcb8efd4`), the selected ordered-exp
+  compute kernel is in the generic SPIR-V image. The current ordinary384
+  ELF (`a3dddff2`) contains the identical 170752-byte module, SHA-256
+  `e9144cf11a608a279c94d7588e7fec7787e19fcca8f5ddcdf3381c742edbadd7`.
+  The probability matrix load remains inside both loops in that image.
+  Its address depends on the cell offset, while the V address also depends
+  on the output tile. This yields eight probability-fragment loads per
+  subgroup per 32-cell tile in the intermediate code, with two distinct
+  addresses. The final driver-generated instructions, register pressure
+  and physical local-memory traffic are unknown. Test fragment reuse alone,
+  holding workgroup size, barriers, V storage, accumulation order and
+  tail handling fixed. Check actual generated code, numerical output and
+  clean component time on cap-33 and cap-2051 cases before a model trial.
+  The fixture and build definition at `45a1b7b77` check each normal
+  export's complete fresh K/V pack before the other can rewrite it. The
+  controller at `0ed10ef1d` requires the complete ordered compiler command
+  for both kernels, including the device target and translator arguments,
+  to match the checked original recipe apart from the two artifact paths.
+  Three independent clean timing processes follow the exact BF16 output
+  and FP32-state checks. Compilation and device measurement are pending.
+  To identify the loaded machine code, join the PV launch site to its
+  specific Level Zero kernel handle. The normal call also launches a pack
+  kernel.
+
   Next evaluate the already available cached-subgroup normalizer at 128K
   on the retained 14508 engine. Its earlier cap-2051 comparisons passed
   independently for gather and clustered shapes, and its old small-cap and
