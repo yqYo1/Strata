@@ -14,15 +14,17 @@ from types import SimpleNamespace
 
 sys.dont_write_bytecode = True
 import generation_engine as gen
+import official_suite_evidence as evidence_reader
 import prefill_attention_bank_restore as restore
 import qualify_qsa_k_model as official
 import ur_validation as validation
 
 P, B, RESULT, basis = restore.P, restore.B, restore.RESULT, restore.basis
 build, require, sha, signature = restore.build, restore.require, restore.sha, restore.signature
-ROOT, KEY = B / 'prefill-attention-bank-generation-v1', 'prefill_attention_bank_generation_v1'
+ROOT, KEY = B / 'prefill-attention-bank-generation-v2', 'prefill_attention_bank_generation_v2'
 THIS = 'tools/sycl/prefill_attention_bank_generation.py'
 RESTORE_EVIDENCE = 'f2a044c7ff3f332327e7af1e748bfb3664c9c231'
+PREVIOUS = 'prefill_attention_bank_generation_v1'
 ORDER = ('original', 'candidate', 'candidate', 'original', 'original', 'candidate')
 WORKLOAD_ID = 'attention_bank_admission_20261119'
 SELECTOR = restore.SELECTOR
@@ -95,6 +97,12 @@ def save(row):
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'fresh full suite only')
     native, base = reference()
+    failed = validation.committed(RESULT, (PREVIOUS,))
+    require(failed['stage'] == 'failed' and not failed['passed'] and not failed['active']
+            and failed['ownership_closed'] and len(failed['processes']) == 1
+            and failed['binary'] == native['binaries']['strata']
+            and failed['post_closure_diagnostic']['rerun_required']
+            and not failed['post_closure_diagnostic']['qualified'], 'preserve the closed v1 observer failure')
     revision = validation.git('rev-parse', 'HEAD').decode().strip()
     config = dict(base['configuration'], exe=str(P / 'tools/sycl/engine_once.py'), env={}, cwd=str(P))
     args = config['args']
@@ -108,15 +116,18 @@ def prepare():
     row.update(stage='prepared', source_commit=revision, sources=pins(revision), configuration=config,
                binary=native['binaries']['strata'], native_source_commit=native['source_commit'],
                native_build_sha256=signature(build.builder.compact(native)), restore_evidence=RESTORE_EVIDENCE,
+               previous_failed_comparison=PREVIOUS,
                python_contract=contract, python_selected=manifest['selected'], plans=[], processes=[],
                budgets=LIMITS, host_passed=False, active=False, ownership_closed=True, passed=False, complete=False,
                plan=dict(unit='Same native ELF and decode configuration, switch only the long-prefill store.',
                          execution='Six independent official bench.sh --long --long-generation --think --runs 1 '
                                    'processes in three alternating pairs. Every process includes the six-turn agent session.',
-                         acceptance='Closed runtime/owner/fault, complete official journal, actual long-prefill store route '
+                         acceptance='Closed runtime/owner/fault, complete official v5 journal, actual long-prefill store route '
                                     'for both sustained workloads, matched fixed requests. Keep exact lengths and drafts. '
                                     'Report per-workload/arm MTP classes only if every eligible sample meets its threshold; '
-                                    'screen per-workload and agent decode preservation by paired TG geometric mean >=1.',
+                                    'screen per-workload and agent decode preservation by paired TG geometric mean >=1. '
+                                    'Claim preservation for comparable decode work when all paired generated and MTP '
+                                    'counts also match, including the actual agent input and reuse counts.',
                          scope='Agent histories may differ because they replay their own previous replies. Fixed long inputs '
                                'need >=32768 fresh tokens, >=1024 output including thinking and a visible answer. '
                                'The upstream nominal 32K prompt remains supplemental. This does not adopt an engine.',
@@ -234,7 +245,7 @@ def run(index):
         entry, _, _ = owner.run('bench', plan['command'], env, P, interaction=observe, **row['budgets'])
         require(OWNER.closed(entry) and entry['exit_code'] == 0,
                 'official bench exit/ownership failed: ' + entry.get('error', 'output or return code'))
-        evidence = official.evidence(root, row)
+        evidence = evidence_reader.read_complete_suite(root, WORKLOAD_ID)
         outcome['evidence'] = evidence
         if row['processes']:
             official.matched(evidence['samples'], row['processes'][0]['evidence']['samples'])
@@ -262,7 +273,7 @@ def run(index):
                    ownership_closed=outcome.get('ownership_closed',False),
                    active=bool(owner and owner.active),passed=done,complete=done)
         if done:
-            row['decision'] = official.decision(row['processes'])
+            row['decision'] = evidence_reader.decide(row['processes'])
         persist()
         save(row)
     print(json.dumps({k:outcome.get(k) for k in ('index','arm','passed','complete','fresh_faults','error')}),flush=True)

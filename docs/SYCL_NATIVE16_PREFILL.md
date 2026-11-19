@@ -149,6 +149,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   thinking-enabled long-generation comparisons. Exercise the observed
   high/low MTP-acceptance cases, keep decode settings fixed in both arms,
   and separate clean speed from the native RESTORE diagnostics.
+  The first copy process completes all 18 requests and exits normally.
+  Its v4 result reader rejects the official v5 suite at `a246cf27f`.
+  A post-closure check reconciles the v5 request journal and native counters,
+  including six agent turns and both sustained requests. Code and prose
+  read 33211/33281 tokens, generate 2815/6823 tokens including thinking, and
+  reach 12.35/7.21 tok/s at 87.0%/33.9% draft acceptance. These are single
+  copy-arm diagnostics. The original failed gate stays recorded.
+  V2 starts a fresh three-pair comparison with the same ELF and suite.
+  The new reader reports work counts alongside timing ratios so different
+  generated lengths or MTP work remain visible in the interpretation.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
