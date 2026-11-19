@@ -210,8 +210,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All three comparisons passed the predeclared decode-preservation gate with
   matched work counts. The separate ordinary384 long-prefill speed gate
   above still selects copy. The CSV retains each configuration and workload.
-  On `perf/prefill-bank-input`, the resident-input native source is
-  `1bf54ec32`. It lets eligible prefill layers read the preceding layer's
+  The resident-input candidate at `1bf54ec32` is integrated into
+  `feature/sycl` for validation. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after
   the existing layer drain. Decode is outside this change. The model
   controller at `6e6a37930` checks the expected 46 of 48 layers in each
