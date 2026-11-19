@@ -285,8 +285,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The 253919-token mixed-host path follows a different planner branch.
   After the current bank comparison, use the same ordinary copy route,
   executable, decoder placement and 262144 configuration. Trace one fresh
-  117489-token admission before timing. Check 117488 GPU rows, zero host rows,
-  the effective 128-slot bank, 48 completed windows and the tail guard. If
+  117489-token process before timing. The first request must pass its route
+  check before the next starts. Trace the same four distinct bodies to
+  establish per-request expert and MTP work for the clean comparison. Check
+  117488 GPU rows, zero host rows, the effective 128-slot bank, 48 completed
+  windows and the tail guard. If
   placement differs, retain the actual admission and address the cause before
   comparing rates. For clean speed use the historical four thinking-on
   request hashes in three independent processes. Keep first use separate;
