@@ -17,8 +17,8 @@ import qsa_cached_subgroup as diagnostics
 build, validation, require = capacity.build, capacity.validation, capacity.require
 P, RESULT, sha = capacity.P, capacity.RESULT, capacity.sha
 signature, read = build.signature, build.read
-ROOT = build.B / "prefill-canonical-copy-fixture-v1"
-KEY = "prefill_canonical_copy_fixture_build_v1"
+ROOT = build.B / "prefill-canonical-copy-fixture-v2"
+KEY = "prefill_canonical_copy_fixture_build_v2"
 SOURCE = "fa2191d384e7b36589b261056dfc5c43eeb4f702"
 PARENT = "20f39e0dc1d609d53910a9c96bcbd54f1e878ec2"
 HEADER = "include/strata/core/canonical_dense_bank.hpp"
@@ -32,6 +32,10 @@ TEST = "tests/core/test_prefill_canonical_trace.py"
 
 
 def native_inputs():
+    first = validation.committed(RESULT, ("prefill_canonical_copy_fixture_build_v1",))
+    require(first["stage"] == "failed" and first["ownership_closed"] and not first["processes"]
+            and first["error"] == "RuntimeError('incomplete actual fixture link')",
+            "preserve the original input-closure failure")
     official = validation.committed(RESULT, (generation.KEY,))
     require(official["complete"] and official["ownership_closed"] and not official["active"]
             and len(official["processes"]) == 6 and all(p["ownership_closed"] and p["native_exit_code"] == 0
@@ -93,7 +97,11 @@ def commands(native):
     members = archive_members(native, directory, archives)
     link[link.index(OBJECT)] = str(ROOT / "fixture.o")
     link[link.index("-o") + 1] = str(BINARY)
-    return dict(compile=compile_args, link=link, cwd=str(directory), archive_members_sha256=signature(members),
+    # icpx unbundles the fixture and emits a device image registration wrapper.
+    # Keep both final linker objects and the real producer commands in the owned root.
+    link = [link[0], "-v", "-save-temps=obj", *(str(directory / a) if a in archives else a for a in link[1:])]
+    return dict(compile=compile_args, link=link, cwd=str(ROOT), archive_root=str(directory),
+                archive_members_sha256=signature(members),
                 archive_members={k: len(v) for k, v in members.items()})
 
 
@@ -211,8 +219,29 @@ def compiled_inputs(native, frozen):
 
 
 def link_inputs(native, logs, directory, obj_hash):
+    fixture = ROOT / "fixture.o"
+    require(sha(fixture) == obj_hash, "fixture bundle changed")
+    host = ROOT / "fixture-host-x86_64-unknown-linux-gnu.o"
+    device = ROOT / "fixture-sycl-spir64-unknown-unknown.o"
+    wrapper = ROOT / (TARGET + "-wrapper-sycl-spir64-unknown-unknown.o")
+    tool_steps = []
+    for line in logs.splitlines():
+        if line.lstrip().startswith('"/'):
+            tool_steps.append(shlex.split(line))
+    unbundles = [a for a in tool_steps if Path(a[0]).name == "clang-offload-bundler" and "-unbundle" in a
+                 and "-input=" + str(fixture) in a]
+    require(unbundles and all("-output=" + str(host) in a and "-output=" + str(device) in a
+            and "-targets=host-x86_64-unknown-linux-gnu,sycl-spir64-unknown-unknown" in a for a in unbundles),
+            "fixture host/device object producer missing")
+    wrappers = [a for a in tool_steps if Path(a[0]).name == "clang-offload-wrapper"]
+    wrapper_ir, = [v[3:] for a in wrappers for v in a if v.startswith("-o=")]
+    require(Path(wrapper_ir).is_relative_to(ROOT / "tmp") and any(Path(a[0]).name == "clang" and
+            wrapper_ir in a and "-o" in a and a[a.index("-o") + 1] == str(wrapper) for a in tool_steps),
+            "device registration wrapper producer missing")
+    final, = [a for a in tool_steps if Path(a[0]).name == "ld" and "-o" in a and a[a.index("-o") + 1] == str(BINARY)]
+    require(str(host) in final and str(wrapper) in final, "generated host and device objects missing from final link")
     allowed = {**native["actual_inputs"]["links"], **native["actual_inputs"]["produced"],
-               **read(Path(native["external_inputs"]["path"])), str(ROOT / "fixture.o"): obj_hash}
+               **read(Path(native["external_inputs"]["path"])), str(host): sha(host), str(wrapper): sha(wrapper)}
     found = {}
     for line in logs.splitlines():
         token = line.strip()
@@ -227,6 +256,7 @@ def link_inputs(native, logs, directory, obj_hash):
             continue
         require(str(path) in allowed and sha(path) == allowed[str(path)], "unfrozen linker input: " + str(path))
         found[str(path)] = allowed[str(path)]
+    require(str(host) in found and str(wrapper) in found, "linker did not open both generated objects")
     return found
 
 
@@ -255,8 +285,8 @@ def compile_fixture():
                 row["compiler_dependencies"] = dict(count=len(deps), sha256=signature(deps))
             else:
                 linked = link_inputs(native, out.read_text() + "\n" + err.read_text(), directory, row["object_sha256"])
-                require(all(str(directory / name) in linked for name in recipe["archive_members"])
-                        and str(ROOT / "fixture.o") in linked and any("libsycl" in p for p in linked),
+                require(all(str(Path(recipe["archive_root"]) / name) in linked for name in recipe["archive_members"])
+                        and any("libsycl" in p for p in linked),
                         "incomplete actual fixture link")
                 row["link_inputs"] = dict(count=len(linked), sha256=signature(linked))
         row.update(stage="built", build_passed=True, binary=dict(path=str(BINARY), sha256=sha(BINARY),
