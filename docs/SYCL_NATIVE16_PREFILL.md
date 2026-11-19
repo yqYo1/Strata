@@ -2900,6 +2900,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   measure the model's selected-row locality and compare equivalent physical
   layouts with the same logical IDs, values and reduction order. Include
   repacking in that comparison.
+  First test changing just the K loader's lane mapping with the existing
+  packed layout. Four adjacent SIMD lanes read 32 contiguous bytes for
+  one cell. This can reduce global address segments per subgroup but can
+  increase conflicts writing transposed K to shared local memory. The
+  isolated test retains QK/PV matrix operations, ordered softmax, V loads,
+  publication barriers and packing. Compare exact full-output bits and
+  guards on identical inputs. Measure both arms through the pack and
+  drain over six alternating pairs in each of three processes. Include
+  width 33 and 2,051, spread, clustered and sorted four-cell groups with
+  invalid entries and missing pages. Report separate medians per shape.
+  Require three lower candidate medians on both wide spread and four-cell
+  maps, valid timers, quiet validation and no fresh fault before a model
+  trial. These synthetic maps do not measure real cache-line traffic.
   In each trace, 9717 D2D commands requested 128,861,904,128 bytes in
   0.7884 and 0.7880 s of GPU service. Removing BF16 input/output copies
   can also change submission or scheduling costs, but the measured D2D

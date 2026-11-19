@@ -5,8 +5,15 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT) || defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+#define STRATA_QSA_COMPARE_EXACT_BITS
+#endif
 #if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
 #include "qsa_prefill_probability.hpp"
+#elif defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+namespace strata::kernels::prefill_k_lanes4 {
+decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ordered_exp_batch;
+}
 #endif
 #if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
 #include "fullfit_attention_overlap.hpp"
@@ -31,6 +38,10 @@ namespace {
 constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention = prefill_probability_reuse::qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name = "ordered_exp", *candidate_name = "reuse_probability";
+#elif defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
+constexpr auto candidate_attention = prefill_k_lanes4::qsa_bf16_prefix_ordered_exp_batch;
+constexpr const char *baseline_name = "ordered_exp", *candidate_name = "k_lanes4";
 #elif defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
 constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
@@ -48,7 +59,7 @@ constexpr const char *baseline_name="kvec4", *candidate_name="kvvec4";
 std::shared_ptr<sycl_backend::Runtime> rt;
 int process_id=0;
 void require(bool x,const char *s) { if (!x) throw std::runtime_error(s); }
-#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+#if defined(STRATA_QSA_COMPARE_EXACT_BITS)
 void check_timer() {
   std::array<int64_t, 10000> intervals{};
   for (auto &ns : intervals) {
@@ -89,7 +100,8 @@ void gate(bool enabled,const char *phase) {
   if (!enabled) return;
   std::cout<<"QSA_BF16_READY "<<phase<<'\n';require(std::cin.get()=='X',"Main gate token");
 }
-void run(int cells,int queries,int cap,bool clustered) {
+void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
+  const char* pattern = blocks4 ? "blocks4" : clustered ? "clustered" : "gather";
   constexpr int Dim=256,Heads=24,KV=2,Page=16;
   const int pages=(cells+Page-1)/Page,rows=pages*KV*Page;
   std::vector<int32_t> table(pages),ids(size_t(queries)*cap),steps(size_t(queries)*kStepCount);
@@ -112,6 +124,12 @@ void run(int cells,int queries,int cap,bool clustered) {
     for (int c=0;c<cap;++c) {
       int32_t cell=clustered ? int32_t((uint64_t(b)*11+c)%cells)
           : int32_t((uint64_t(b)*8191+uint64_t(c)*7919+37)%cells);
+      if (blocks4) {
+        // Distinct ascending groups of four, shifted by query. Both arms use the same IDs.
+        const int groups = (cap + 3) / 4, available = cells / 4;
+        require(available >= groups, "four-cell fixture capacity");
+        cell = int32_t(4 * ((int64_t(c / 4) * available + (int64_t(b) * 73) % available) / groups) + c % 4);
+      }
       if (c%97==13) cell=-1;
       if (c%103==7) cell=cells+13;
       ids[size_t(b)*cap+c]=cell;
@@ -133,7 +151,7 @@ void run(int cells,int queries,int cap,bool clustered) {
   auto shape=qsa_real_shapes();shape.page_size=Page;
   const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
 #if !defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
-#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+#if defined(STRATA_QSA_COMPARE_EXACT_BITS)
   const std::vector<uint16_t> unwritten(out.memory.size()/sizeof(uint16_t), marker);
 #endif
   auto invoke=[&](int variant) {
@@ -141,7 +159,7 @@ void run(int cells,int queries,int cap,bool clustered) {
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
     if (variant==2) attention=qsa_bf16_prefix_subgroup_batch;
 #endif
-#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+#if defined(STRATA_QSA_COMPARE_EXACT_BITS)
     out.put(unwritten);
 #endif
     rt->wait();const auto start=std::chrono::steady_clock::now();
@@ -176,7 +194,7 @@ void run(int cells,int queries,int cap,bool clustered) {
 #else
   invoke(0);guards();
   std::array<std::vector<uint16_t>,2> reference{out.get(),out.get()};
-#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+#if defined(STRATA_QSA_COMPARE_EXACT_BITS)
   require(std::find(reference[0].begin()+16, reference[0].end()-16, marker) == reference[0].end()-16,
           "ordered-exp reference left output unwritten");
 #endif
@@ -205,7 +223,7 @@ void run(int cells,int queries,int cap,bool clustered) {
     const int variant=variants[(process_id+round+index)%2];const double ms=invoke(variant);
     guards();require(out.get()==reference[variant],"timed full-output reference bit comparison");
     std::cout<<"sample process="<<process_id<<" cells="<<cells<<" queries="<<queries<<" cap="<<cap
-        <<" pattern="<<(clustered ? "clustered" : "gather")<<" round="<<round
+        <<" pattern="<<pattern<<" round="<<round
         <<" order="<<index<<" variant="<<variant<<" implementation="<<(variant ? candidate_name : baseline_name)
         <<" milliseconds="<<std::setprecision(12)<<ms
         <<" compared="<<q.size()<<" exact_bits=PASS guards=PASS status=PASS\n";
@@ -215,7 +233,7 @@ void run(int cells,int queries,int cap,bool clustered) {
   require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
       dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
   std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap
-      <<" pattern="<<(clustered ? "clustered" : "gather")<<" samples="<<sample_count
+      <<" pattern="<<pattern<<" samples="<<sample_count
       <<" full_bits=PASS guards=PASS inputs=PASS status=PASS\n";
 }
 }
@@ -235,7 +253,7 @@ int main(int argc,char **argv) {
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
         <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gated,"runtime-ready");
-#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+#if defined(STRATA_QSA_COMPARE_EXACT_BITS)
     check_timer();
 #endif
 #if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
@@ -244,7 +262,12 @@ int main(int argc,char **argv) {
     else run(65536,8192,2051,false);
 #else
     if (std::string(argv[1])=="--smoke") run(97,3,33,false);
-    else { run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true); }
+    else {
+      run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true);
+#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+      run(78453,8192,2051,false,true);
+#endif
+    }
 #endif
     rt->wait();rt.reset();gate(gated,"after-cleanup");
     std::cout<<"fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED\n";
