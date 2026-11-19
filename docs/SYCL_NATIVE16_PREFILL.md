@@ -2745,6 +2745,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prepare, retirement, completion and publication still bracket each layer.
   First verify the actual 672/217 submissions and identical bytes between
   the 48 fixture markers, all tensor values, PLE bindings and full restore.
+  Child `fa2191d38` checks each successful UR copy against the IQ3_S pack
+  offset, the published device bank address and the exact tensor extent.
+  It checks the final timed layer before overwriting it, then replays and
+  reads back all layers outside the timer. These checks await execution.
+  In the recorded ordinary build (`a3dddff2`), the fixture links seven
+  archived libraries with 106 direct object members. Their archive order,
+  file hashes and Ninja dependency lists were inspected. No member includes
+  the canonical-bank class definition. Only the model and full-context
+  generator objects included it in that build, and neither enters the
+  fixture link. A separate fixture can therefore compile the candidate
+  header against these exact archives without changing the model executable.
+  Recheck that closure at build time. A model trial still requires a fresh
+  coherent generator build. The source tree's SYCL CMake file differs from
+  the recorded one, so retain the original configured compile/link recipes.
   Then compare six fresh processes in rows/runs, runs/rows, rows/runs
   order. Each accumulates full activation call time across 48 layers in
   four sweeps, with a 10 ms floor. Record the first separately; all three
@@ -2759,6 +2773,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   if it eliminated both their activation copies and post-prefill reloads.
   Actual admission, graph ownership and duration for partial retention
   remain open. The layer-copy candidate above retains no extra weight owner.
+  The earlier 117489-token, 1256-expert-slot run spent about 384–385 ms
+  restoring all native packed owners. Its enclosing 650–817 ms also included
+  canonical restoration. Use the inner interval when estimating savings
+  for native owners. Neither interval establishes costs at 384 slots or
+  admission at the physical context limit.
   Clean 64K needs 6.896 s less prefill time to reach 1000 PP. QSA prefix
   is the largest observed kernel family. Its service and the competing copy
   cost both warrant independent work. The next QSA component comparison

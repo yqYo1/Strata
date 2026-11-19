@@ -37958,13 +37958,29 @@
   "canonical-prefill-exact-copy-runs-20261120": {
     "topic": "Decision support: review the exact canonical-layer copy proposal and its device/time gates.",
     "classification": "decision support",
-    "schedulable_now": true,
-    "prerequisite": "f40b91b14, matched pack index b2a01487, 672 original layer copies / 217 exact runs over 1,455,214,080 bytes and native/RESTORE phase separation."
+    "source_commit": "f40b91b14bf1503d97b47f92a5ee858d98de5437",
+    "capture_commit": "771e19a9dc85acf99f9b814b3075e4be17106d44",
+    "verified_child_source_inputs": 11,
+    "report_sha256": "52b08a3e7553a45636bf91e398c998f6bcd9b304804ba345b7b480bc546bdc6a",
+    "review_sha256": "75773e50b580d57cd1925c56cbf08a9bd983c866dd4d4f26be1ed8c9b02c75de",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Joining exact source/destination adjacency preserves ownership in f40. The 672 versus 217 count and equal 1,455,214,080 bytes are pack predictions. Earlier 117K model is from 362c16aa and cannot qualify this change.",
+    "consumer": "Verify the actual loop, compiled caller closure, per-call addresses/bytes, final contents, full restore and separate clean timing. Source fa2191d38 implements the trace reader and post-timing payload replay.",
+    "schedulable_now": false
   },
   "native-dense-partial-residency-20261120": {
     "topic": "Decision support: assess selective preservation of original packed native weight owners through a long prefill at fixed expert/residual capacity.",
     "classification": "decision support",
-    "schedulable_now": true,
-    "prerequisite": "eager_request_profile_v2 records 65,536 GPU-only BF16 rows and a 384-slot expert bank. The actual pack has 300 native projections and matching earlier dense phase records measure 2,116,951,040 packed bytes. Audit existing holds before estimating placement headroom."
+    "source_commit": "f40b91b14bf1503d97b47f92a5ee858d98de5437",
+    "capture_commit": "771e19a9dc85acf99f9b814b3075e4be17106d44",
+    "verified_child_source_inputs": 11,
+    "report_sha256": "1318d92c33d0734136eb6bfaa435071fef33c722d06e2295576160faec834997",
+    "review_sha256": "0f364cf3731f280a592baf96df4ea05457faa432756e9375ec631e39ea404f6d",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Retaining S exact packed weight bytes can avoid at most 2S requested bytes. Prior 117489-token/1256-slot full NativeDense restore was about 384–385 ms; the enclosing 650–817 ms includes canonical restore. Current 64K/384 free samples give no full-tail admission.",
+    "consumer": "Retain current rebuild. Reopen on current keyed transfer costs or 262144-tail admission with graph/owner preservation, measured free bytes and largest single allocation.",
+    "schedulable_now": false
   }
 }
