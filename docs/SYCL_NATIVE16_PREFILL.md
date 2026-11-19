@@ -202,11 +202,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   body from both original journals, six-turn agent sessions and repeated
   thinking-enabled high/low-acceptance generation. Keep both decode and
   prefill placement fixed on the verified ordinary queue.
-  The distinct resident-input candidate is pinned at `45f2ba9dd` on
-  `perf/prefill-bank-input`. Its guarded build and device fixture cover
-  adjacent resident pieces, including a partial tail, through FFN and
-  callback. It awaits execution. Verify before timing input-only,
-  output-only and combined changes.
+  On `perf/prefill-bank-input`, the resident-input native source is
+  `1bf54ec32`. It lets eligible prefill layers read the preceding layer's
+  BF16 bank directly and traces cumulative reads and copied bytes after
+  the existing layer drain. Decode is outside this change. The model
+  controller at `6e6a37930` checks the expected 46 of 48 layers in each
+  bank-backed arm and compares state and RESTORE across all four input
+  and output combinations. Its 253919-token prefix plus 8209-token
+  continuation reaches 262128 tokens and exercises a 16-row tail;
+  the final physical context slots need separate coverage. Build, device
+  and model checks are pending. If they pass, `4d9b176e5` compares
+  copy, direct input, direct output and both over 16 independent clean
+  processes with three 65537-token prompts apiece.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
@@ -2774,6 +2781,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   at `daca8f47e`. Verified retirement removed its 68 output files
   (12,212,498 bytes) and the temporary inventory. The original prefill and
   decode reference executable hashes were rechecked after removal.
+
+  A separate candidate retains the two BF16 probability fragments used in
+  the probability-times-V product across its four output tiles. In the
+  retained 14508 reference ELF (`dcb8efd4`), the selected ordered-exp
+  compute kernel is in the generic SPIR-V image, SHA-256
+  `e9144cf11a608a279c94d7588e7fec7787e19fcca8f5ddcdf3381c742edbadd7`.
+  The probability matrix load remains inside both loops in that image.
+  Its address depends on the cell offset, while the V address also depends
+  on the output tile. This yields eight probability-fragment loads per
+  subgroup per 32-cell tile in the intermediate code, with two distinct
+  addresses. The final driver-generated instructions, register pressure
+  and physical local-memory traffic are unknown. Test fragment reuse alone,
+  holding workgroup size, barriers, V storage, accumulation order and
+  tail handling fixed. Check actual generated code, numerical output and
+  clean component time on cap-33 and cap-2051 cases before a model trial.
+
   Next evaluate the already available cached-subgroup normalizer at 128K
   on the retained 14508 engine. Its earlier cap-2051 comparisons passed
   independently for gather and clustered shapes, and its old small-cap and
