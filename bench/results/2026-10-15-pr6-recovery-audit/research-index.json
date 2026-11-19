@@ -38121,11 +38121,15 @@
   "prefill-mixed-host-expert-demand-20261120": {
     "topic": "Assess whether mixed-residency long prefill can avoid loading all experts before host-backed rows have consumed them.",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "c329d7040 closes a fresh 253919-token prefix with 114688 GPU and 139230 RAM-backed batched rows, ordinary effective512 expert policy, and an independently restored resident suffix. The partial-bank candidate for a single resident window leaves this separate route unchanged.",
     "source_commit": "c329d7040f05d966b47aba9ad9865ea530b340d3",
     "worker": "Orca gpt-6-luna medium",
     "reviewer": "native gpt-6-luna max",
-    "report_budget_bytes": 12288
+    "report_budget_bytes": 12288,
+    "report_sha256": "145dad5c7ba96fc13c555f2c688baa1a72065927c3d24838d283a76f21e34e85",
+    "review_sha256": "f81c8ee64b246b57cce2239ef30a1030f11d8279919e149fa93e1f3250d0cf58",
+    "finding": "On the 253919-input probe, 253918 batched rows include 114688 GPU and 139230 host-backed rows (16 full 8192 chunks plus 8158). Top-k is 10. The ordinary path publishes the full residency map after its checked upload drain and resets the whole map. Each resident GPU window and each host-tail chunk have distinct times at which the host can see expert IDs. Actual regional demand unions are missing.",
+    "consumer": "Retain corrected report and review through one decision on measuring the regional expert union/first-use and late host-tail demand. Compare its measured bytes and ordering before selecting a smaller bank or speculating on speed."
   }
 }
