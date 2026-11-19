@@ -118,8 +118,7 @@ public:
         void* old=*owner_;*owner_=nullptr;state_=State::Bank;
         checked(cudaFree(old),"release exact canonical arena");
     }
-    bool activate_prefill_layer(int layer,void* stream,const Overlay& native,std::string& err,
-                                bool contiguous_copies) try {
+    bool activate(int layer,void* stream,const Overlay& native,std::string& err) try {
         if(state_!=State::Bank || layer<0 || layer>=48 || !stream || !validate(true)) {err="canonical activate identity/state";return false;}
         Overlay next=persistent_view_;
         for(const auto& [name,offset]:offsets_[size_t(layer)]) {
@@ -128,13 +127,9 @@ public:
         for(const auto& [name,ref]:native) if(!next.emplace(name,ref).second) {err="native/canonical overlay collision";return false;}
         auto queue=static_cast<cudaStream_t>(stream);
         checked(cudaStreamSynchronize(queue),"retire old canonical view");view_.clear();
-        if(contiguous_copies) upload_prefill_contiguous(offsets_[size_t(layer)],queue);
-        else for(const auto& [name,offset]:offsets_[size_t(layer)]) upload(name,static_cast<uint8_t*>(bank_)+offset,queue);
+        for(const auto& [name,offset]:offsets_[size_t(layer)]) upload(name,static_cast<uint8_t*>(bank_)+offset,queue);
         checked(cudaStreamSynchronize(queue),"active canonical upload completion");view_.swap(next);return true;
     } catch(const std::exception& e) {err=e.what();return false;}
-    bool activate(int layer,void* stream,const Overlay& native,std::string& err) {
-        return activate_prefill_layer(layer,stream,native,err,false);
-    }
     bool restore_full(void* stream,std::string& err) {
         if(state_!=State::Bank || !stream || !validate(true)) stop("restore canonical identity/state");
         auto queue=static_cast<cudaStream_t>(stream);checked(cudaStreamSynchronize(queue),"restore canonical readers");
@@ -206,28 +201,6 @@ private:
             const auto* ref=table_->find(name);if(!ref || !same(*ref,expected)) return false;
         }
         return true;
-    }
-    // The source arena uses the pack's alignment and the target uses a
-    // 256-byte stride. Join rows only when both live payloads touch exactly.
-    void upload_prefill_contiguous(const std::map<std::string,uint64_t>& offsets,cudaStream_t queue) {
-        uint64_t src=0, dst=0, bytes=0;
-        auto submit=[&]() {
-            checked(cudaMemcpyAsync(static_cast<uint8_t*>(bank_)+dst,snapshot_.bytes.data()+src,
-                                    bytes,cudaMemcpyHostToDevice,queue),"prefill canonical contiguous H2D");
-        };
-        for(const auto& [name,offset]:offsets) {
-            const auto& row=snapshot_.rows.at(name);
-            if(!row.original.bytes) continue;
-            // adopt() already checked the source ranges and constructed every
-            // destination below bank_bytes_. No copy crosses a gap or an owner.
-            if(bytes && (row.offset!=src+bytes || offset!=dst+bytes)) {
-                submit();
-                bytes=0;
-            }
-            if(!bytes) {src=row.offset;dst=offset;}
-            bytes+=row.original.bytes;
-        }
-        if(bytes) submit();
     }
     void upload(const std::string& name,void* dst,cudaStream_t queue) {
         const auto& row=snapshot_.rows.at(name);

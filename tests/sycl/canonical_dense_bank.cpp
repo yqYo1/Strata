@@ -5,8 +5,6 @@
 #include "strata/core/layout.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include <algorithm>
-#include <array>
-#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -100,18 +98,8 @@ static void source_reference(const std::string& pack,const EngineSnapshot::Row& 
     need(out.empty() || !std::memcmp(out.data(),expected,out.size()),"independent converted source differs");
 }
 int main(int argc,char** argv) {
-    bool contiguous=false,copy_trace=false,copy_timing=false;
 #if defined(STRATA_CANONICAL_ALLOC_FAULT) || defined(STRATA_CANONICAL_NATIVE_ALLOC_FAULT)
     need(argc>=4,"MODE PACK GGUF...");fault_mode=argv[1];--argc;++argv;
-#else
-    if(argc>1) {
-        const std::string mode=argv[1];
-        copy_trace=mode=="--prefill-copy-rows" || mode=="--prefill-copy-runs";
-        copy_timing=mode=="--time-prefill-copy-rows" || mode=="--time-prefill-copy-runs";
-        if(copy_trace || copy_timing) {
-            contiguous=mode.ends_with("-runs");--argc;++argv;
-        }
-    }
 #endif
     need(argc>=3,"PACK GGUF...");std::string err,pack=argv[1];std::vector<std::string> shards(argv+2,argv+argc);
     std::set<std::string> skip;need(NativeDense::served_names(shards,true,skip,err),err);
@@ -181,7 +169,7 @@ int main(int argc,char** argv) {
         need(arena==original_arena && native.residency()==NativeDense::Residency::Full,"prepare withdrew owners");
         need(native.enter_layer_bank({true},err),err);bank.enter();need(arena==nullptr,"exact canonical owner not withdrawn");
         strata::kernels::PleWeights ple;need(bank.bind_ple(ple,err),err);ple_bindings(wt,ple);
-        auto validate_layer=[&](int layer) {
+        for(int layer=0;layer<48;++layer){need(native.activate_layer(layer,queue,{true},err),err);need(bank.activate(layer,queue,native.layer_view(),err),err);
             LayerView current(wt,layer,&bank.view());
             for(const auto& [name,row]:bank.snapshot().rows){const bool persistent=strata::core::detail::canonical_persistent(name);
                 if(persistent || strata::core::detail::canonical_layer(name)==layer){const auto it=bank.view().find(name);need(it!=bank.view().end(),"active or persistent row absent");
@@ -190,57 +178,6 @@ int main(int argc,char** argv) {
             const int lookahead=std::min(layer+1,47);LayerView next(wt,lookahead,&bank.view());
             need(current.get("hc_ffn_norm.weight")->data && next.get("hc_attn_norm.weight")->data,"HC lookahead pool absent");
             if(layer==1){need(ple.value_bf16 && ple.norm_key && ple.norm_query && ple.norm_conv && ple.conv1d_f16,"PLE persistent bindings absent");}
-        };
-        for(int layer=0;layer<48;++layer){need(native.activate_layer(layer,queue,{true},err),err);
-            if(copy_trace) std::fprintf(stderr,"prefill canonical layer=%d begin contiguous=%d src=%p\n",
-                                        layer,contiguous,static_cast<const void*>(bank.snapshot().bytes.data()));
-            need(bank.activate_prefill_layer(layer,queue,native.layer_view(),err,contiguous),err);
-            if(copy_trace) {
-                const auto& rows=bank.snapshot().rows;
-                const auto first=std::find_if(rows.begin(),rows.end(),[layer](const auto& entry) {
-                    const auto& name=entry.first;
-                    return entry.second.original.bytes && detail::canonical_layer(name)==layer &&
-                           !detail::canonical_persistent(name);
-                });
-                need(first!=rows.end(),"missing canonical trace anchor");
-                std::fprintf(stderr,"prefill canonical layer=%d end contiguous=%d first=%s dst=%p\n",
-                             layer,contiguous,first->first.c_str(),bank.view().at(first->first).data);
-            }
-            validate_layer(layer);
-        }
-        if(copy_timing) {
-            using Clock=std::chrono::steady_clock;
-            std::array<int64_t,1024> ns{};
-            for(auto& n:ns) {
-                const auto a=Clock::now(), b=Clock::now();
-                n=std::chrono::duration_cast<std::chrono::nanoseconds>(b-a).count();
-            }
-            std::sort(ns.begin(),ns.end());
-            need(ns.front()>=0 && ns[512]<1000 && ns[1013]<5000,"canonical timer overhead");
-            std::printf("prefill canonical clock median_ns=%lld p99_ns=%lld\n",
-                        (long long)ns[512],(long long)ns[1013]);
-            for(int sweep=0;sweep<4;++sweep) {
-                double total_ms=0;
-                for(int layer=0;layer<48;++layer) {
-                    need(native.activate_layer(layer,queue,{true},err),err);
-                    const auto start=Clock::now();
-                    const bool ok=bank.activate_prefill_layer(layer,queue,native.layer_view(),err,contiguous);
-                    const auto end=Clock::now();
-                    need(ok,err);
-                    total_ms+=std::chrono::duration<double,std::milli>(end-start).count();
-                }
-                need(total_ms>=10 && total_ms<30000,"canonical sweep outside timing budget");
-                std::printf("prefill canonical sweep=%d contiguous=%d layers=48 call_ms=%.6f\n",
-                            sweep,contiguous,total_ms);
-            }
-            // Inspect the final timed result before overwriting it. Replay all
-            // layers outside the four timing intervals, ending on the same layer.
-            validate_layer(47);
-            for(int layer=0;layer<48;++layer) {
-                need(native.activate_layer(layer,queue,{true},err),err);
-                need(bank.activate_prefill_layer(layer,queue,native.layer_view(),err,contiguous),err);
-                validate_layer(layer);
-            }
         }
         gpu(cudaStreamSynchronize(queue));need(native.restore_full(queue,{true},err),err);
 #ifdef STRATA_CANONICAL_ALLOC_FAULT
