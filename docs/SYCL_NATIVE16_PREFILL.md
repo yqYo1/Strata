@@ -210,6 +210,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All three comparisons passed the predeclared decode-preservation gate with
   matched work counts. The separate ordinary384 long-prefill speed gate
   above still selects copy. The CSV retains each configuration and workload.
+  In the copy arm the median engine decode time per output token was 84.75 ms
+  for code (2036 of 2340 offered drafts accepted) and 142.33 ms for prose
+  (3442 of 10143). The 70 tok/s target allows 14.29 ms per output. These
+  samples do not split the time spent verifying and drafting. The historical
+  resource run with 3157 outputs and 900 windows used a different executable
+  and cannot supply that split. Measure it on the same ordinary workloads
+  and account for the final EOS window before estimating a draft-cost ceiling.
   The resident-input candidate at `1bf54ec32` is integrated into
   `feature/sycl` for validation. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after

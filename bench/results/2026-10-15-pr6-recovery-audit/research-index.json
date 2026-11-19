@@ -38000,8 +38000,16 @@
   "decode-official-round-cost-bound-20261120": {
     "topic": "Bound decode per-round cost for the completed ordinary384 strong- and weak-MTP workloads.",
     "classification": "decision support",
-    "schedulable_now": true,
-    "prerequisite": "f6bb38a61 closes six matched-work thinking runs at 33211/33281 input, 2815/6823 output, 87.01%/33.93% draft acceptance. Prior resource receipts measure a different route. Determine what the actual native counters and work definitions let Main infer about the 70 tok/s target."
+    "schedulable_now": false,
+    "prerequisite": "f6bb38a61 closes six matched-work thinking runs at 33211/33281 input, 2815/6823 output, 87.01%/33.93% draft acceptance. Prior resource receipts measure a different route. Determine what the actual native counters and work definitions let Main infer about the 70 tok/s target.",
+    "source_commit": "51f5f8a05d8261650a8c5605350737413a088872",
+    "capture_commit": "f6bb38a61ac317822d5b21315ae30bfe412d64f7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_sha256": "a513de1a14ff29942fcbeb076d383cc1b9ad40c16aaa8e2c26e13b11063e1ed1",
+    "review_sha256": "f034289add620864273176154503e28824396ac43775d897ac4e407d87b83d9c",
+    "finding": "Scope mismatch. Both report and review used the historical resource-only code run (3157 output, 900 windows) for their numerical bounds. Its verifier/draft split cannot be applied to ordinary384 code or prose. The correct official samples are at prefill_attention_bank_generation_v3 with 2815/6823 output. No matched upper bound for a free draft or per-window hardware attribution follows.",
+    "consumer": "Use the ordinary384 per-workload engine decode time, accepted/offered counts and explicit scoped windows/terminal emissions in future diagnostics. The independent pre-task IPC status receipt matches the dispatch runtime; the filesystem-only check intentionally does not certify Orca. The report is excluded as a numeric reference for this cohort."
   },
   "arc-host-copy-size-routing-20261120": {
     "topic": "Identify whether the qualified Intel UR/Level Zero stack changes its host-memory copy path across the actual canonical copy sizes.",
