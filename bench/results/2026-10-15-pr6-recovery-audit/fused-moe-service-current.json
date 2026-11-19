@@ -515997,7 +515997,7 @@
     "error": "RuntimeError('incomplete actual fixture link')"
   },
   "prefill_canonical_copy_fixture_build_v2": {
-    "stage": "measuring",
+    "stage": "closed",
     "frozen": {
       "candidate": "fa2191d384e7b36589b261056dfc5c43eeb4f702",
       "source_sha256": {
@@ -516298,8 +516298,8 @@
       "gate": "Match exact calls, addresses, bytes, restored data and owners in traced rows/runs. Three independent rows/runs, runs/rows, rows/runs pairs. Four full 48-layer sweeps after validation per timing process. First sweep separate. All three paired medians of the final three sweeps must improve to advance."
     },
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "processes": [
       {
         "index": 0,
@@ -516585,6 +516585,47 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 7,
+        "mode": "runs",
+        "host_probe_accepted": true,
+        "clock_ns": [
+          20,
+          21
+        ],
+        "first_timed_sweep_ms": 372.285532,
+        "subsequent_ms": [
+          343.160403,
+          469.97512,
+          382.081739
+        ],
+        "subsequent_median_ms": 382.081739,
+        "validation": {
+          "pid": 1564501,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "scope": "Isolated fixture only. Model and full-context generator objects are outside its link.",
@@ -516602,6 +516643,14 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-canonical-copy-fixture-v2/sycl_canonical_dense_bank_test",
       "sha256": "3466b9a24c59309e82d3bdc2bd49d09d587cdd16ca9fa2a4f7e7f8d77f2b09d1",
       "bytes": 11735112
+    },
+    "decision": {
+      "runs_over_rows": [
+        1.0707602692884808,
+        1.0427538974653898,
+        1.0327733541211184
+      ],
+      "model_eligible": false
     }
   }
 }
