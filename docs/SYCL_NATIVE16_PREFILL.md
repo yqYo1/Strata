@@ -231,6 +231,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   only with equal work and paired per-token times within a factor of 1.10.
   GPU-reach wait and CPU-pool wall time are nested inside verification.
   These counters cannot by themselves identify VRAM, RAM or CPU saturation.
+  The eight traced state/RESTORE processes at `4775de3b0` expose a separate
+  first-token cost on the resident-input executable (`b35d66a4`). On the
+  first one-token decode per process, the verifier's graph capture clock
+  covered 4.771–5.030 s of the 5.033–5.222 s decode (94.1–96.5% within
+  each request). The intervening 33-token prompt reused the graph. After
+  RESTORE the same one-token window took 28–52 ms to capture, in a total
+  decode of 156–256 ms. The clock in the compiled `Verifier::capture`
+  includes recording and finalizing segments, diagnostic output and the free
+  VRAM query. Driver compilation time within it is unknown. Measure these
+  parts before moving first-request work into startup. Use the separate
+  sustained-generation suite above for the steady decode question.
   The resident-input candidate at `1bf54ec32` is integrated into
   `feature/sycl` for validation. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after
