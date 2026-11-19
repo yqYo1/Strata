@@ -525611,5 +525611,37 @@
     "model_speed_measured": false,
     "device_executed": false,
     "consumer": "Traced contiguous and ragged bit checks and three independent threshold/maximum dispatch trials. Retire the boundary fixture after the decision; keep the qualified resident-input model."
+  },
+  "prefill_mixed_gather_dispatch_v1": {
+    "build_sha256": "7a28f653f0a2b706ab7f6a1165ed778131bc859a5e711439743423afc8d0f533",
+    "controls": "bc437d1378c5e73b372b858e8d1be1b91c624b242b65c41627d6fad8e0c44f7a",
+    "stages": [
+      {
+        "stage": "contiguous",
+        "case": "mixed-gather-vec8-contiguous",
+        "environment_sha256": "4b89d3ee2a1749ec83c7fbafd26b3df8edc0b1ae2918e566b4ca69ec038a0e00",
+        "compared_values": 20971520,
+        "invalid_rows": 4,
+        "admission_rejects": 6,
+        "device": "Intel(R) Arc(TM) B570 Graphics",
+        "runtime_driver": "1.17.39758+17",
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
+    "source_commit": "e74e8176ec2f218635d06826fe68142a32238f75",
+    "measured_model": false
   }
 }
