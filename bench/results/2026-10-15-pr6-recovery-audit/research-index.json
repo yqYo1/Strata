@@ -38185,5 +38185,14 @@
     "consumer": "Compare the lane-only candidate at c11c99275 first. It preserves prepared K bytes and transposed SLM destinations. A separate global K reorder needs pack-cost and total measurements.",
     "retention": "Keep report and source view through the K loader versus prepared-layout decision, then retire duplicates.",
     "worker_completion": "Task task_3c9633498b84 and dispatch ctx_88bd3f9e14b7 completed. The native review verified separate worker-side Orca status in the report header. Filesystem proof passed 15/15. The exact manually created terminal was closed after settlement."
+  },
+  "qsa-prefill-packed-row-validity-20261120": {
+    "topic": "Packed logical-row validity at the four-cell production page size",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "The ordered-exp producer checks the logical-to-physical page table and scale validity. The attention consumer reads the page table again for every selected cell and then reads bad_rows. Both are present in the measured eeebba1d source. The four-cell lane comparison does not change this representation. The prior constant-divisor trial at dcc1e86eb was slower.",
+    "source_commit": "5c58ff175",
+    "report_budget_bytes": 12288,
+    "consumer": "Determine whether prefill can remove a dependent page lookup per selected cell while preserving missing-row and bad-scale semantics, the public scratch ABI and arbitrary page sizes."
   }
 }
