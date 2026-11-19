@@ -2,10 +2,12 @@
 
 import fcntl
 from pathlib import Path
+import subprocess
 import sys
 
 sys.dont_write_bytecode = True
 import prefill_attention_bank_build as previous
+import prefill_window_device as device
 
 basis, stage, builder = previous.basis, previous.stage, previous.builder
 require, sha, signature = previous.require, previous.sha, previous.signature
@@ -130,9 +132,67 @@ def save(row):
     stage.save_build(row)
 
 
+def device_fixture():
+    row = previous.read(ROOT / 'record.json')
+    native = check(row)
+    require(row['stage'] == 'built' and row['passed'] and row['complete'] and row['ownership_closed']
+            and not row['active'] and row['host_control']['passed'], 'closed coherent build and host control required')
+    key = 'prefill_resident_input_device_v1'
+    require(key not in basis.validation.committed(RESULT), 'inspect the previous fixture outcome')
+    root = ROOT / 'input-device'
+    root.mkdir(mode=0o700)
+    for name in ('tmp', 'cache'):
+        (root / name).mkdir(mode=0o700)
+    probe = native['native_validation_probe']
+    env = dict(row['recipe']['environment'], **device.FIXTURE_ENV)
+    env.update(TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'), LD_DEBUG='libs',
+               LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
+               UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+               UR_LOG_TRACING='level:info;flush:info;output:stderr',
+               UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(root / 'validation.log'))
+    binary = row['binaries'][TARGET]
+    args = [binary['path'], 'input-correctness']
+    owner = builder.ownership.Owner(root / 'owned', lambda: stage.write(root / 'ownership.json', owner.commands))
+    cursor, = (line.removeprefix('-- cursor: ') for line in subprocess.check_output(
+        ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
+        if line.startswith('-- cursor: '))
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    outcome = dict(source=INPUT_SOURCE, build_source=row['source_commit'], binary=binary,
+                   native_build_sha256=signature(builder.compact(row)), command=args,
+                   environment_sha256=signature(env), budgets=device.SMALL)
+    try:
+        command, out, err = owner.run('input-correctness', args, env, P, **device.SMALL)
+        require(builder.ownership.closed(command) and command['exit_code'] == 0, 'input fixture failed')
+        log = err.read_text()
+        require('urEnqueue' in log and (not (root / 'validation.log').exists()
+                or (root / 'validation.log').stat().st_size == 0), 'missing trace or validation warning')
+        validation = basis.validation.preload_evidence(log, command['pid'])
+        require(validation['loader'] == probe['loader']['path'], 'fixture loader changed')
+        device.diagnostics.diagnostics(log, command['pid'])
+        providers = device.loaded_providers(log, dict(environment=env, native_validation_probe=probe,
+                                                       runtime_manifest=row['foundation']['runtime_manifest']))
+        sizes = [1, 63, 7905, 8191, 8192]
+        required = [f'attention input rows={n} copy_and_direct=1 bits={n * 10240} guards=1' for n in sizes]
+        required.extend(('attention window rows=11 pieces=8+3 arms=4 checked_final_callback=1',
+                         'attention_bank_fixture=PASS'))
+        observed = [line for line in out.read_text().splitlines() if line.startswith(('attention ', 'attention_bank_fixture='))]
+        require(observed == required, 'incomplete BF16, guard or owner-transition cases')
+        outcome.update(native_exit_code=0, rows=sizes, resident_window=[8, 3], arms=4,
+                       validation=validation, providers=providers, host_probe_accepted=True)
+    except BaseException as error:
+        outcome['error'] = repr(error)
+    finally:
+        basis.validation.finish(outcome, owner, cursor, boot)
+        outcome['passed'] &= outcome.get('driver_after') == row['driver']
+        data = previous.read(RESULT)
+        data[key] = outcome
+        stage.write(RESULT, data)
+    require(outcome['passed'], outcome.get('error', 'same-build device checks did not pass'))
+
+
 if __name__ == '__main__':
     action, = sys.argv[1:]
-    require(action in ('prepare', 'configure', 'compile', 'host'), 'prepare|configure|compile|host')
+    require(action in ('prepare', 'configure', 'compile', 'host', 'device'), 'prepare|configure|compile|host|device')
     builder.ROOT, builder.KEY, builder.TARGETS = ROOT, KEY, TARGETS
     builder.check, builder.save = check, save
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
@@ -142,5 +202,7 @@ if __name__ == '__main__':
             prepare()
         elif action == 'host':
             stage.host(root_path=ROOT, check_build=check, save_record=save)
+        elif action == 'device':
+            device_fixture()
         else:
             builder.execute(action)
