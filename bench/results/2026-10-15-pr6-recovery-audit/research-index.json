@@ -38147,7 +38147,7 @@
   "decode-first-window-capture-20261120": {
     "topic": "Identify the cost inside the actual first T=1 verifier graph capture and safe ways to shorten client TTFT.",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "Eight traced processes at 4775de3b0 on executable b35d66a4 show 4.771–5.030 seconds in first capture and 28–52 ms after RESTORE. The compiled source and exact capture envelope can be recovered from the build manifest.",
     "source_commit": "698f9d7bfdf1aff796144ab0b6ae32a789eb0065",
     "worker": "Orca gpt-6-luna medium",
@@ -38160,6 +38160,14 @@
       "reason": "Terminal exited on SIGXFSZ after passing its read-only filesystem check. The launch applied an 8 MiB per-file limit to the whole Codex process. The affected file is unknown.",
       "proof_sha256": "5638661898fdeaa04098aa4e8ca66f7dcbb95801b6c2586b1257c84bc1b6a927",
       "retry": "Keep isolated report scope, the 12 KiB report budget, 180 CPU seconds and 600 s wall limit; remove the whole-process file-size limit for the retry."
-    }
+    },
+    "capture_commit": "4775de3b03d73734270b3c8049e4845e345e3a6d",
+    "report_sha256": "944b67f3721d057bffd97758ec8c63b1df8e25fe79c10d6de08695d6eb9cb197",
+    "review_sha256": "24a35839b1774f860ceb6af8abe26d940ce60785ce4db95ca1aac3d43e7ddf72",
+    "finding": "First T=1 verifier capture covered 94.1–96.5% of decode time within each traced first request. Its printed interval includes segment recording, finalization, diagnostics and free-VRAM lookup. Commit-graph setup lies outside that clock. Driver compilation remains unmeasured.",
+    "source_identity": "4775de3b0 records the measured requests. Both compiled verifier files match the build manifest and their Git blobs at native base 14508acbf1b70eb994fdf37f97fb6d0f5cff7d43 (src/core/verify.cpp 6a720510, include/strata/core/verify.hpp 0e81b57a). The files at the result commit differ.",
+    "worker_completion": "Orca dispatch ctx_f78883154729 completed on run_d0b75f0ad501. Exact worker observed exited, terminal disconnected. The worker verified all 17 filesystem inputs and had no GPU access. Only filesystem preflight was proven from inside the worker.",
+    "consumer": "Use for a bounded cold-TTFT comparison of empty cache, verified persistent-cache hit in a fresh process, and same-process RESTORE. Time capture segments and commit separately. Preserve pointer lifetimes and graph-owned state.",
+    "retention": "Retain report and source view through the cold-capture discriminator decision, then retire duplicates. No sustained-generation or physical-context qualification."
   }
 }
