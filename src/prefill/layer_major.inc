@@ -1261,6 +1261,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (std::getenv("STRATA_TRACE")) {
             std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: completed %lld chunks\n",
                          (long long)layer, (long long)g.n_layers, (long long)cursor.calls);
+            if (window_context) {
+                std::fprintf(stderr, "strata trace: prefill attention input after layer %lld: "
+                    "eligible=%llu borrowed=%llu borrowed_bytes=%llu requested_D2D_bytes=%llu\n",
+                    (long long)layer, (unsigned long long)window_context->attention_input_pieces,
+                    (unsigned long long)window_context->attention_borrowed_pieces,
+                    (unsigned long long)window_context->attention_borrowed_bytes,
+                    (unsigned long long)window_context->attention_input_copy_bytes);
+            }
             std::fflush(stderr);
         }
         // No callback retains the per-pass cursor/layer references past this
