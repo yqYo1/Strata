@@ -38106,13 +38106,17 @@
   "niko-0216-vanilla-bench-launch-20261120": {
     "topic": "Resolve the actual unmodified Niko 0.2.16+4 Arc bench.sh launcher and hardware setting selection after the terminal/engine reorganization.",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "58ee32277 moves tools/bench.sh into terminal and has an Arc build tree. Prior vanilla readiness describes the old layout. We need an unchanged upstream measurement on B570 with comparable IQ3_S weights and hardware-tuned settings.",
     "source_commit": "c329d7040f05d966b47aba9ad9865ea530b340d3",
     "upstream_commit": "58ee3227720629ff2e41d640165ebe89c880dfef",
     "worker": "Orca gpt-6-luna medium",
     "reviewer": "native gpt-6-luna max",
-    "report_budget_bytes": 12288
+    "report_budget_bytes": 12288,
+    "report_sha256": "2b4a36f4de45b7d8914dc0dc07d01709ac8b883cb5e4c633586c32be8f7dc573",
+    "review_sha256": "62d8f95050c3d0318ab9b9fa393dc139cb02676646b53c7651f1f89f0020b127",
+    "finding": "The 0.2.16+4 quick benchmark and engine launcher now resolve from terminal/. The current Niko server may pass a health check while pointing to a different executable or profile. The reviewed launcher choices and actual minimum long-test context are recorded in upstream-status.json.",
+    "consumer": "First unmodified default/tuned 58ee32277 long and agent comparison. Retain report and corrections until then."
   },
   "prefill-mixed-host-expert-demand-20261120": {
     "topic": "Assess whether mixed-residency long prefill can avoid loading all experts before host-backed rows have consumed them.",
