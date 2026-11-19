@@ -2,6 +2,7 @@
 """Measure CPU wait scopes in the fixed prefill route; repository LICENSE."""
 
 import fcntl
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -13,14 +14,16 @@ from prefill_prefix_expert_host_stage import B, RESULT, basis, build, builder, r
 import prefill_prefix_expert_host_stage as stage
 
 THIS = 'tools/sycl/prefill_prefix_expert_profile.py'
-ROOT = B / 'prefill-prefix-expert-cpu-wait-v1'
-KEY = 'prefill_prefix_expert_cpu_wait_v1'
+ROOT = B / 'prefill-prefix-expert-cpu-wait-v2'
+KEY = 'prefill_prefix_expert_cpu_wait_v2'
+PREPARE_REFUSAL = 'prefill_prefix_expert_cpu_wait_v1'
 PREVIOUS = 'prefill_prefix_expert_stage_profile_v2'
 TIMING = 'prefill_prefix_expert_host_stage_timing_v1'
 ROLES = ('clean-before', 'cpu-wait-scopes', 'clean-after')
 READ, RUNS = 32769, 2
 SELECTOR = 'STRATA_PREFILL_CPU_WAIT_PROFILE'
 SCOPES = ('strata prefill cpu wait:', 'strata prefill cpu host:', 'strata prefill status:')
+DECISIONS = 'docs/SYCL_NATIVE16_PREFILL.md'
 
 
 def read(path):
@@ -56,6 +59,64 @@ def reference(row):
             and not previous['decision']['normal_route_attribution_qualified'],
             'exact closed speed and observer references required')
     return {TIMING: signature(timing), PREVIOUS: signature(previous)}
+
+
+def admitted_stage_basis():
+    row = read(build.STAGE_ROOT / 'record.json')
+    require(basis.validation.committed(RESULT, (build.STAGE_BUILD,)) == builder.compact(row)
+            and row['stage'] == 'built' and all(row[k] for k in ('passed', 'complete', 'ownership_closed'))
+            and not row['active'] and row['host_control']['passed'], 'the exact closed stage build is required')
+    native, foundation, speed = basis.basis(expected=row['foundation'])
+    archive = build.archive()
+    require(row['archive'] == {key: signature(value) for key, value in archive.items()}
+            and row['foundation'] == foundation and row['recipe'] == build.recipe(archive)
+            and row['driver'] == builder.guards.driver_guard()
+            and row['retained_decode_reference'] == builder.decode_reference(), 'native basis or recipe changed')
+
+    controls = row['controller_sources']
+    recovered = dict(build.source.blobs(build.P, row['source_commit'], controls))
+    require(build.hashed(recovered) == controls, 'original committed controller inputs differ')
+    current = build.source.pin(build.P, list(controls))['source_sha256']
+    refusal = basis.validation.committed(RESULT, (PREPARE_REFUSAL,))
+    changes = {k: dict(original=h, current=current.get(k)) for k, h in controls.items() if h != current.get(k)}
+    inputs = row['actual_inputs']
+    require(refusal['stage'] == 'blocked-at-prepare' and not refusal['GPU_executed']
+            and changes == refusal['changed_pinned_inputs'] and set(changes) == {DECISIONS}
+            and current.keys() == controls.keys() and DECISIONS not in row['source_files']
+            and all(Path(path).name != Path(DECISIONS).name
+                    for field in ('compiled', 'generated', 'links', 'objects', 'produced') for path in inputs[field]),
+            'only the previously recorded committed documentation delta is permitted')
+    source = build.recover(native, archive, row['source_commit'])
+    require(build.hashed(source) == row['source_files']
+            and all(build.sha(build.STAGE_ROOT / 'source' / path) == digest
+                    for path, digest in row['source_files'].items())
+            and all(build.sha(Path(dep['root']) / path) == digest for dep in native['dependencies']
+                    for path, digest in dep['source_sha256'].items())
+            and all(build.sha(path) == digest for path, digest in row['configured_files'].items()),
+            'native source, dependency or configured-file mismatch')
+    require(all(build.sha(path) == digest for field in ('compiled', 'generated', 'links', 'objects', 'produced')
+                for path, digest in inputs[field].items())
+            and all(build.sha(binary['path']) == binary['sha256'] for binary in row['binaries'].values()),
+            'actual compiled inputs or executable differ')
+
+    smoke = basis.validation.committed(RESULT, (stage.SMOKE,))
+    numerical = basis.validation.committed(RESULT, (stage.NUMERICAL,))
+    native_digest = signature(builder.compact(row))
+    require(smoke['passed'] and smoke['ownership_closed'] and smoke['native_exit_code'] == 0
+            and smoke['native_build'] == native_digest and numerical['stage'] == 'closed'
+            and numerical['passed'] and numerical['complete'] and numerical['ownership_closed']
+            and not numerical['active'] and numerical['decision']['matched_work']
+            and numerical['binary'] == row['binaries']['strata'], 'same-build smoke and numerical gates required')
+    model = read(basis.reference.model.ROOT / 'record.json')
+    require(model['models'] == speed['model_assets'] and model['probe'] == speed['native_validation_probe'],
+            'exact model assets and validation probe required')
+    model['observer_admission'] = dict(gates={stage.SMOKE: signature(smoke),
+            'stage_order_numerical': signature(numerical)}, native_build=native_digest,
+        fast_configuration_diagnostic=speed['observer_admission']['fast_configuration_diagnostic'],
+        original_controller_count=len(controls), original_controller_digest=signature(controls),
+        historical_documentation=changes, original_preparation_refusal=signature(refusal))
+    providers = read(Path(speed['runtime_manifest']['path']))
+    return dict(binaries=row['binaries'], native_source_commit=row['source_commit']), model, providers, None
 
 
 def campaign():
@@ -104,7 +165,7 @@ def campaign():
                              'Physical resource saturation and critical-path latency are unmeasured.')
         return result
 
-    ctx.basis, ctx.current, ctx.environment = stage_timing.basis, current, environment
+    ctx.basis, ctx.current, ctx.environment = admitted_stage_basis, current, environment
     ctx.request_route, ctx.check_sample = request_route, stage_timing.check_sample
     ctx.validate_model_text, ctx.after_execution, ctx.decision = validate_model_text, compare_work, decision
     return ctx
