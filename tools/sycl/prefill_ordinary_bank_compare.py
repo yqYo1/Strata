@@ -14,10 +14,29 @@ build, basis, require = capacity.build, capacity.basis, capacity.require
 READ = 65537
 ARMS = ('reference', 'copy', 'direct', 'copy', 'direct', 'reference', 'direct', 'reference', 'copy')
 THIS = 'tools/sycl/prefill_ordinary_bank_compare.py'
+SMOKE = 'prefill_ordinary_bank_device_after_stall_v1'
+FAILED_SUITE = 'prefill_attention_bank_generation_v2'
+
+
+def device_smoke():
+    failure = basis.validation.committed(basis.RESULT, (FAILED_SUITE,))
+    require(failure['stage'] == 'failed' and failure['ownership_closed'] and not failure['active']
+            and len(failure['processes']) == 1 and failure['processes'][0]['fresh_faults'],
+            'closed faulted process required')
+    root = basis.B / 'ordinary-bank-device-after-stall-v1'
+    root.mkdir(mode=0o700)
+    store.stage.schedule.bank_smoke(controller=THIS, key=SMOKE, arg='--fullfit-eager-smoke',
+        marker='prefill_fullfit_eager_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED',
+        expected=[(4, 256, 2, 0, 4), (4, 512, 2, 2, 4)],
+        build_root=root, native_reader=capacity.retained_build)
 
 
 def cohort_basis():
     candidate, speed = capacity.retained_build()
+    smoke = basis.validation.committed(basis.RESULT, (SMOKE,))
+    require(smoke['passed'] and smoke['ownership_closed'] and not smoke['fresh_faults']
+            and smoke['native_exit_code'] == 0 and smoke['binary'] == candidate['binaries']['sycl_expert_bank_test'],
+            'same-build isolated traced GPU check required')
     prior = build.read(original.model.ROOT / 'record.json')
     require(prior['models'] == speed['model_assets'] and prior['probe'] == speed['native_validation_probe'],
             'historical configuration or model assets differ')
@@ -143,6 +162,9 @@ if __name__ == '__main__':
     with (basis.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         build.builder.guards.no_model_owners([])
+        if action == 'device-smoke':
+            device_smoke()
+            sys.exit(0)
         experiment = context()
         if action == 'prepare':
             publish = experiment.save

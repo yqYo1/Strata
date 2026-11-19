@@ -156,9 +156,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   read 33211/33281 tokens, generate 2815/6823 tokens including thinking, and
   reach 12.35/7.21 tok/s at 87.0%/33.9% draft acceptance. These are single
   copy-arm diagnostics. The original failed gate stays recorded.
-  V2 starts a fresh three-pair comparison with the same ELF and suite.
-  The new reader reports work counts alongside timing ratios so different
-  generated lengths or MTP work remain visible in the interpretation.
+  The v5 comparison stops during its first copy-arm process at the 16098-token
+  prompt, before it reaches agent or long generation. Layers 0 through 3
+  published checked expert-reader receipts. The watchdog reported 480 seconds
+  without progress at layer 4, offset 8192, and the native process terminated
+  with SIGABRT. Five CPU expert workers were parked. The first kernel fault
+  record follows the final engine log write by 4.83 seconds and is within
+  27 ms of the wrapper recording native exit. Xe recorded a CCS reset.
+  This timing leaves the initial stall cause unresolved. The identical
+  v1 request completed. Keep the 512-slot early native-copy path out of
+  subsequent runs pending isolation. Start with a bounded traced ordinary
+  SYCL copy/consumer fixture and check the 16097 batched rows on the
+  ordinary 384-slot route before collecting another long timing.
   The 65537-token requests in the historical 1006.8 tok/s cohort and the
   984.1 tok/s cohort have identical body hashes. Across all three inputs,
   the GU/Down jobs and requested expert H2D bytes also match. The bank
