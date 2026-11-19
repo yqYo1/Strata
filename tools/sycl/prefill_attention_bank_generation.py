@@ -29,6 +29,8 @@ PREVIOUS = 'prefill_attention_bank_generation_v2'
 ORDINARY = 'prefill_ordinary_bank_comparison_v1'
 ORDER = ('original', 'candidate', 'candidate', 'original', 'original', 'candidate')
 WORKLOAD_ID = 'attention_bank_admission_20261119'
+# The v1 completed request and v2 failed request have the same journal start.
+RAGGED_BODY = '8e1e3c6acd1fdf832e55ef486b1de3dcfcb38d2bb5e3abfff539ddf56521a561'
 SELECTOR = restore.SELECTOR
 OWNER = restore.owner_module
 LIMITS = dict(wall=5400, cpu=21600, rss_cap=104 << 30, text_cap=24 << 20,
@@ -219,7 +221,9 @@ def routes(text, samples, arm):
         frame = text[start:head.start()]
         start = head.end()
         if sample['phase'] == 'prompt/16K' or sample['phase'].startswith('long-generation/'):
-            require(sample['phase'] != 'prompt/16K' or read == 16098, 'the previous 16K stall shape changed')
+            if sample['phase'] == 'prompt/16K':
+                require(read == 16098 and sample['request_sha256'] == RAGGED_BODY,
+                        'the previous 16K request body or shape changed')
             route = restore.require_store(frame, dict(direct=arm=='candidate'), dict(read=read))
             banks = re.findall(r'^strata MoE expert bank: requested_slots=(\d+) effective_slots=(\d+) '
                                r'staged=(\d+) host_slab_bytes=\d+ device_bytes=(\d+) ', frame, re.M)
