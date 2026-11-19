@@ -2796,6 +2796,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
   each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
   requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  In each trace, 9717 D2D commands requested 128,861,904,128 bytes in
+  0.7884 and 0.7880 s of GPU service. Removing BF16 input/output copies
+  can also change submission or scheduling costs, but the measured D2D
+  service alone is far below the 6.896 s improvement the clean 64K run
+  needs. Give the separate QSA probability-reuse comparison priority after
+  checking the four 32K bank combinations. Run its optional targets only
+  while the GPU is idle and verify the original model and fixtures again
+  before continuing the near-capacity model cases.
   In these two requests the expert-bank counters record 18,204 and
   18,182 uploads, requesting 37,173,094,400 and 37,137,228,800 bytes.
   Subtracting those totals from the corresponding M2D counters leaves
