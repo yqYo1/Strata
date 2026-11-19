@@ -37906,5 +37906,17 @@
     "report_bytes": 0,
     "consumer": "Superseded by qsa-pv-candidate-source-audit-20261120 using the rendered translation unit.",
     "schedulable_now": false
+  },
+  "qsa-pv-candidate-source-audit-20261120": {
+    "topic": "Audit the isolated QSA probability reuse kernel and trial",
+    "classification": "decision support",
+    "source_commit": "42376cf3db1ee157355a127d393a06bf549134ef",
+    "report_sha256": "c059dd17975ae53311f81d372f50af7059f2ecc6517d00d598b15e5d6d3a18da",
+    "review_sha256": "7beca7c02f50e9e97f4ec0b1df486c5b5aa9f5d0489fcf6e61b2e8fff77810ad",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The normal and state-probe exports are defined. The producer publishes the BF16 operands before both reads, and the tile is retired after all four accumulations. The original flag-set test omitted backend/translator options. This is source equivalence only.",
+    "consumer": "Controller 0ed10ef1d requires the complete ordered icpx invocation for each kernel and separate fresh pack checks. Confirm actual compilation, device output/state and timing on B570.",
+    "schedulable_now": false
   }
 }

@@ -2738,6 +2738,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   short/invalid/tail and full-context address cases. Commit source and
   repeated component criteria before building. The QSA timing and measured
   copy overlap do not identify a saturated hardware resource.
+  The two warmed traces also isolate 20,591 and 20,568 mixed-input expert
+  gather commands (2.001 and 2.002 s). In each, all 48 windows used a
+  single resident input bank. The 125,829,120-byte int32 source map covers
+  31,457,280 routed rows, each copying 2,560 FP16 values. The explicit
+  gathers therefore request 150 GiB of input and 150 GiB of output per
+  prompt, equivalent to about 161 GB/s of logical tensor work. Cache
+  reuse, physical VRAM traffic and bandwidth saturation remain unknown.
+  Only 4,217 jobs reached fused gate/up in either request, but they
+  account for 89.0% of the routed rows. A gather-free input to those jobs
+  could avoid about 133.5 GiB of intermediate writes per prompt. The
+  resulting XMX reader cost and benefit to end-to-end prefill are untested.
   The source inputs (783 for the pair and 776 for the probe), all four
   generated inputs and the final comparison decision were verified from
   Git before cleanup. The 152 capture files (571,845,791 bytes), 42,745-byte
@@ -2804,12 +2815,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   holding workgroup size, barriers, V storage, accumulation order and
   tail handling fixed. Check actual generated code, numerical output and
   clean component time on cap-33 and cap-2051 cases before a model trial.
-  Private component source and fixtures are pinned at `1b11f33f8`;
-  controller `db8350162` compares normal outputs, FP32 state and guarded
-  storage before three independent timing processes. The candidate is
-  awaiting compilation and has no measured speed. To identify the loaded
-  machine code, join the PV launch site to its specific Level Zero kernel
-  handle; the same normal call also launches a packing kernel.
+  The fixture and build definition at `45a1b7b77` check each normal
+  export's complete fresh K/V pack before the other can rewrite it. The
+  controller at `0ed10ef1d` requires the complete ordered compiler command
+  for both kernels, including the device target and translator arguments,
+  to match the checked original recipe apart from the two artifact paths.
+  Three independent clean timing processes follow the exact BF16 output
+  and FP32-state checks. Compilation and device measurement are pending.
+  To identify the loaded machine code, join the PV launch site to its
+  specific Level Zero kernel handle. The normal call also launches a pack
+  kernel.
 
   Next evaluate the already available cached-subgroup normalizer at 128K
   on the retained 14508 engine. Its earlier cap-2051 comparisons passed
