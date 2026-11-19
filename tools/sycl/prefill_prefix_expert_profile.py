@@ -61,7 +61,7 @@ def reference(row):
     return {TIMING: signature(timing), PREVIOUS: signature(previous)}
 
 
-def admitted_stage_basis():
+def admitted_stage_basis(*, documentation_delta=None):
     row = read(build.STAGE_ROOT / 'record.json')
     require(basis.validation.committed(RESULT, (build.STAGE_BUILD,)) == builder.compact(row)
             and row['stage'] == 'built' and all(row[k] for k in ('passed', 'complete', 'ownership_closed'))
@@ -79,13 +79,14 @@ def admitted_stage_basis():
     current = build.source.pin(build.P, list(controls))['source_sha256']
     refusal = basis.validation.committed(RESULT, (PREPARE_REFUSAL,))
     changes = {k: dict(original=h, current=current.get(k)) for k, h in controls.items() if h != current.get(k)}
+    expected_changes = refusal['changed_pinned_inputs'] if documentation_delta is None else documentation_delta
     inputs = row['actual_inputs']
     require(refusal['stage'] == 'blocked-at-prepare' and not refusal['GPU_executed']
-            and changes == refusal['changed_pinned_inputs'] and set(changes) == {DECISIONS}
+            and changes == expected_changes and set(changes) == {DECISIONS}
             and current.keys() == controls.keys() and DECISIONS not in row['source_files']
             and all(Path(path).name != Path(DECISIONS).name
                     for field in ('compiled', 'generated', 'links', 'objects', 'produced') for path in inputs[field]),
-            'only the previously recorded committed documentation delta is permitted')
+            'only the frozen committed documentation delta is permitted')
     source = build.recover(native, archive, row['source_commit'])
     require(build.hashed(source) == row['source_files']
             and all(build.sha(build.STAGE_ROOT / 'source' / path) == digest
