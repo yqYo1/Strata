@@ -121,13 +121,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   977.8→984.1 tok/s and client TTFT is 67.226→66.788 s. First-use TTFT
   improves in two pairs and regresses in one. All processes exit normally
   without a fresh GPU fault. The 982.1 tok/s old stage-all result remains
-  historical context. Keep the direct path opt-in for the remaining
-  physical 262144, RESTORE, agent-session and sustained decode gates.
-  The previous physical-fill test used 114688 GPU rows and a 16384-row
-  fallback window. Before using the fast route by default, verify the new
-  ELF's actual GPU-window direct counts, the host-residual tail and the final
-  checked one-token commit with zero output room. Preserve the separate
-  server state/RESTORE and decode-throughput checks.
+  historical context.
+  The same-build standalone capacity comparison (`e5408e1c2`) passes both
+  arms at exactly 262144 physical input tokens. Both process 262143 batched
+  rows, then commit the last token in one checked verifier window, with zero
+  output and a checked refill drain. The physical route uses fallback mode 2
+  with 16384-row windows, 114688 GPU-resident BF16 rows, and 147455 host-backed
+  rows. Direct writes cover all 672 eligible attention pieces and remove
+  105 GiB of requested D2D copies. Both 16385-input controls emit the same
+  four greedy fixture IDs. All four native cases close normally with quiet
+  validation, no fresh GPU fault, and all 15 final asset hashes matched.
+  The original setup failure at `eb11bc3db` precedes any child launch.
+  These are standalone correctness runs. Keep the direct path opt-in while
+  checking server cache state and RESTORE against the same copy control,
+  then qualify the independent thinking-enabled long-generation and agent
+  cases. The validated 64K timing and physical-capacity native build remain
+  the reference for that comparison.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective

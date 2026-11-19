@@ -37514,5 +37514,119 @@
         }
       ]
     }
+  },
+  "ragged-batch-residency-transitions-20261119": {
+    "stage": "native_reviewed",
+    "classification": "knowledge collection",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "attempts": [
+      {
+        "scope": "attention-bank-physical-tail-20261119",
+        "source_commit": "fca0903533e4de4ae1db43133df7f85ebb9e5bee",
+        "task": "task_d04007ae3972",
+        "dispatch": "ctx_f69bc74052ad",
+        "terminal": "term_13de7548-00b8-4f40-a7ff-06905b3d9d47",
+        "outcome": "failed",
+        "ownership_closed": true,
+        "reason": "Worker used an invalid spelling of the status subcommand after passing filesystem checks."
+      },
+      {
+        "scope": "attention-bank-physical-tail-v2-20261119",
+        "source_commit": "349067395c1bee6eddd225d811aa69334cea98a0",
+        "task": "task_d3cd05917818",
+        "dispatch": "ctx_7cdbb718fd78",
+        "terminal": "term_06ca9579-7fa1-4842-94de-d8a4bc0b45eb",
+        "outcome": "failed",
+        "ownership_closed": true,
+        "reason": "Worker-side status succeeded; the pinned input invocation failed before a report was written."
+      },
+      {
+        "scope": "ragged-batch-residency-transitions-20261119",
+        "source_commit": "fca0903533e4de4ae1db43133df7f85ebb9e5bee",
+        "task": "task_82a451e9c8ed",
+        "dispatch": "ctx_dde69c9df6a7",
+        "terminal": "term_0efe6f11-86a7-4de8-89e5-9395d294fb33",
+        "outcome": "succeeded",
+        "ownership_closed": true,
+        "file": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ragged-batch-residency-transitions-20261119/report.md",
+          "sha256": "0d3165cac7f7a75167c4577d034810d1254e67326a6f152f01f08226c7207d2c",
+          "bytes": 11001
+        },
+        "reviewer_sha256": "15fbb4fa26ed0f44e8b2f4f90e9737f6528488e16f357b05f126c1e7a128ed13",
+        "worker_status": {
+          "call": "call_e2cc80dbd8444719b6483d0825d4c855",
+          "sha256": "3896cfc74e20164452c69830a160cc1d7dfb4d727693c323e0ae0dbe2d37bbcb"
+        },
+        "proved_filesystem_inputs": 12
+      }
+    ],
+    "findings": [
+      "CoRa groups ragged tile regions and compares padding overhead by batch size, 3.5% at 32 and 2.3% at 128 in its evaluated configuration.",
+      "vDNN reports 1–18% overhead across six evaluated networks, which have different memory-pressure regimes.",
+      "Use explicit extent descriptors and retain separate matched padded, staged and variable-extent controls. Neither report predicts Intel Arc performance."
+    ],
+    "consumer": "Reference for a concrete measured host/GPU residual-transition cost or variable tile adoption. No pending worker.",
+    "schedulable_now": false,
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-bank-physical-tail-20261119",
+          "files": 1,
+          "bytes": 7040,
+          "sha256": "6c99db4bfd7b99e0dd7f7cebbeb52df12fce2b25d7702a60317611d9ad604304"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-bank-physical-tail-20261119-control",
+          "files": 8,
+          "bytes": 17369,
+          "sha256": "af6f5ce1583e39cc6c242bfb081811a687ed825ea6a6c9f75958e05665aafce5"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/attention-bank-physical-tail-20261119",
+          "files": 11,
+          "bytes": 3701904,
+          "sha256": "f5262fbbe6cf57ada97bc91ad2d25ee5b23ea3f4964b89831983555263a5dd0f"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-bank-physical-tail-v2-20261119",
+          "files": 0,
+          "bytes": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-bank-physical-tail-v2-20261119-control",
+          "files": 7,
+          "bytes": 15555,
+          "sha256": "79aad00d81d76519f429f5975738568e6f0f56ca4a380b71c837037877ea9ec3"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/attention-bank-physical-tail-v2-20261119",
+          "files": 11,
+          "bytes": 3701904,
+          "sha256": "f5262fbbe6cf57ada97bc91ad2d25ee5b23ea3f4964b89831983555263a5dd0f"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ragged-batch-residency-transitions-20261119",
+          "files": 1,
+          "bytes": 7117,
+          "sha256": "5ae4c40e94e705230d1e024ede1578de673a7e78a130a4a745212cea5954984b"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ragged-batch-residency-transitions-20261119-control",
+          "files": 9,
+          "bytes": 18308,
+          "sha256": "130648d4147a230abf27e6cb3726e8f57146749047f829dbb68ba1b957673da7"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/ragged-batch-residency-transitions-20261119",
+          "files": 11,
+          "bytes": 3701904,
+          "sha256": "f5262fbbe6cf57ada97bc91ad2d25ee5b23ea3f4964b89831983555263a5dd0f"
+        }
+      ]
+    }
   }
 }
