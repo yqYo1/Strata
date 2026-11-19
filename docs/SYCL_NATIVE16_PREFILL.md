@@ -200,10 +200,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   volume and MTP counts. Replacing the old measurement root in the five
   path-valued settings of the original environment template reproduces the
   new template hash. The period difference remains unattributed.
-  The ordinary official suite now checks the identical 16098-token request
-  body from both original journals, six-turn agent sessions and repeated
-  thinking-enabled high/low-acceptance generation. Keep both decode and
-  prefill placement fixed on the verified ordinary queue.
+  The ordinary official suite closed six independent processes at
+  `f6bb38a61` with exit zero, closed owners and no fresh GPU fault. It checked
+  the identical 16098-token request, six-turn agent sessions, and thinking-on
+  sustained generation. Code read 33211 tokens and generated 2815 at 87.01%
+  draft acceptance. Prose read 33281 and generated 6823 at 33.93%.
+  Direct/copy paired TG geometric means were 1.00786 for code, 1.01896
+  for prose and 1.02267 for agent follow-ups. The first code pair was 0.99328.
+  All three comparisons passed the predeclared decode-preservation gate with
+  matched work counts. The separate ordinary384 long-prefill speed gate
+  above still selects copy. The CSV retains each configuration and workload.
   On `perf/prefill-bank-input`, the resident-input native source is
   `1bf54ec32`. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after
