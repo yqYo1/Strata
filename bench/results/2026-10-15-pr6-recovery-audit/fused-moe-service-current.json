@@ -516706,7 +516706,7 @@
     }
   },
   "prefill_resident_input_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "a31f3bbfec095fc7f3fa1047113b417a02414676",
     "native_source_commit": "1bf54ec3277f60c77417dac68642966f3782652d",
     "qsa_fixture_commit": "45a1b7b773d41e0de532d779ce7e48428ca76154",
@@ -516829,8 +516829,8 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plan": {
       "unit": "Only the input-borrow engine overlays enter the model. The separate QSA component targets reuse its reference libraries and are built on demand.",
       "build": "New directory, no object reuse, dependencies and all actual link inputs checked.",
@@ -516843,6 +516843,63 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/compile_commands.json": "faf2f7f0bbb7c44dfbbfff9fc27757ade75ae25adc98103193c9084347077f49",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/CMakeFiles/rules.ninja": "ea9d2180d22be0e210b6af1a9f0a5b71a0475bc356ea25521359947247bc9d1c"
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/strata",
+        "sha256": "b35d66a4f29737a47abcdd7180c80eaf838b8658ec49ca2586948198d6a7613f",
+        "bytes": 26522768
+      },
+      "prefill_moe_routes_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/prefill_moe_routes_test",
+        "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+        "bytes": 111336
+      },
+      "prefill_moe_workspace_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/prefill_moe_workspace_test",
+        "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+        "bytes": 67448
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_expert_bank_test",
+        "sha256": "04c92923c843fc9bab1fa558fb3a23c409b433135b7e414eecd26b569b2a1de7",
+        "bytes": 533912
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "7eda2d39334babd6d7b0918d7fb65c25c0fe182ec02ca8db50c6b07ae6e9909b",
+        "bytes": 14298384
+      },
+      "sycl_native16_paired_gemm_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_native16_paired_gemm_bench",
+        "sha256": "b78ef4c52c21ec92f8a758ae177e0135500a528d19383d5c89937cd1462e39dd",
+        "bytes": 14239072
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/strata_full_context_diagnostic",
+        "sha256": "71821c98d803856390b5e433216eba6f369d6c94f78f618a3db705756b56b93e",
+        "bytes": 26522920
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_moe_upload_census_host_test",
+        "sha256": "d88f84a73fa8b0d5d5094268bcd3526a8183f90d26f9468de41baf4d7c96906a",
+        "bytes": 107360
+      },
+      "prefill_fullfit_upload_plan_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/prefill_fullfit_upload_plan_test",
+        "sha256": "2a60487e48d7b9c18a4e6021252fcf4b5b3438f6de2bec55964e32a83baf29c3",
+        "bytes": 109640
+      },
+      "sycl_prefill_attention_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_prefill_attention_bank_test",
+        "sha256": "c37d721a946e5b513f010f8295b74a4a21eee11276ee46afd26a66a4cefb08e9",
+        "bytes": 2814656
+      }
+    },
     "controller_sources": {
       "files": 380,
       "sha256": "b5f5a10a1ae2f13f0442f6207fa74228fb239db0dd246dc8c7df64bb4e305af9"
@@ -516851,6 +516908,44 @@
       "files": 1171,
       "sha256": "eacc59137f2dd139893336d6f38bca8bcb654cbe07ba117b12ea3cbd04a01449"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1473,
+        "sha256": "dc83495d68a0ca0c2f21e9b1425adff57762ed5491ea5527f2797a4a1c583a12"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "138796ba258d8220d3dfca9d07c8acb6a86ab3ad4d183541611ee0192ebea3aa"
+      },
+      "links": {
+        "files": 30,
+        "sha256": "aa037df9a9963d78817d68cec3c5e6921ddd9d32a5121362c1706acb194a9346"
+      },
+      "objects": {
+        "files": 136,
+        "sha256": "8e00cfaad9b56eef60010bde59bca2b822a40c90b528081f703d453fc8c81314"
+      },
+      "produced": {
+        "files": 147,
+        "sha256": "f723608bec8dabab9b3d2e1f50126b27b2f956e2ccf1971461a8105bd7ba0149"
+      },
+      "Gemm_includers": {
+        "files": 6,
+        "sha256": "83616864f1ed07947f81d59c07f406f06d2b42054c77e50f8dd99b7cb825366f"
+      },
+      "class_definition_includers": {
+        "files": 3,
+        "sha256": "45afd1ee9cf6baedd374f99a9052d2016427995efb4e629d65116aa921e3663f"
+      },
+      "AOT_finalization_recipe_sha256": "899faa0479749032a9485db4111d760a9456ca4eeb7ec647b84e3384fb7ad421",
+      "temporary_generated_link_objects": 44,
+      "temporary_generated_link_paths_sha256": "90586ae031ab13eaebd645c5c314fcbd48faa587f0393e0603bb4af836d13971",
+      "temporary_link_scope": "Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.",
+      "translation_units": 133,
+      "fresh_objects": 136,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
