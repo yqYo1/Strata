@@ -506506,5 +506506,57 @@
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_ordinary_bank_device_after_stall_v1": {
+    "source": "ba5b3d58dd9393cb8eb5d053e91b8199bb447b3a",
+    "sources": "2bf6251d88170582dd9f30e712ab8ec89a4b9aab0de82261b47bf350bc0254a8",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/sycl_expert_bank_test",
+      "sha256": "04c92923c843fc9bab1fa558fb3a23c409b433135b7e414eecd26b569b2a1de7",
+      "bytes": 533912
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/sycl_expert_bank_test",
+      "--fullfit-eager-smoke"
+    ],
+    "environment_sha256": "1d456f8583a45a7deb70d1064db9b8c184f38996c8dbe0007cba5513bba67259",
+    "native_build": "a10b771689b5bc89d7dd3a9f0dfea7c4fe0cc90290748b5b28ea25fdd0d3318d",
+    "cases": [
+      [
+        4,
+        256,
+        2,
+        0,
+        4
+      ],
+      [
+        4,
+        512,
+        2,
+        2,
+        4
+      ]
+    ],
+    "providers": {
+      "initialized_ELFs": 33,
+      "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+      "required_providers_verified": true,
+      "source": "glibc constructors;not speed or hardware utilization"
+    },
+    "selected_host_bytes_and_guards": true,
+    "native_exit_code": 0,
+    "host_probe_accepted": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "passed": true
   }
 }
