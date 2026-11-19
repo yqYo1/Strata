@@ -487047,7 +487047,18 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "passed": true
+    "passed": true,
+    "artifact_retirement": {
+      "complete": false,
+      "capture": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/bank-smoke",
+        "files": 6,
+        "bytes": 4680726,
+        "tree_sha256": "ee4912640573f72e65d5c2df3cbf825bd338e7fa0073f56b5f774f0d8037d058"
+      },
+      "evidence_commit": "1d358eb1ab329cb329d84a7de354b5c18af32c63",
+      "reason": "The checked cases and exact native executable and recipe remain recorded. Retire the raw trace."
+    }
   },
   "prefill_prefix_expert_host_stage_numerical_v1": {
     "stage": "closed",
@@ -487811,7 +487822,18 @@
       "sha256": "8ad694b64c9f3da98ce4314757f05dfb6e6906f928fdc56420a674355f502233"
     },
     "environment_template_sha256": "aeb0da8a576428a44fc070cf70251655474a35bc34a514f8a09407848c2372f4",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "artifact_retirement": {
+      "complete": false,
+      "capture": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-numerical-v1",
+        "files": 146,
+        "bytes": 22840297,
+        "tree_sha256": "a374c7ffa250990bc0e07cd4c5b58f37502746df28cab0555665040723696e40"
+      },
+      "evidence_commit": "a01061e29855276b2c1eecaf4fca59ebff190700",
+      "reason": "Logical work, exact stage-order receipts and individual prefill samples are retained in Git. No raw-capture consumer remains."
+    }
   },
   "prefill_prefix_expert_host_stage_timing_v1": {
     "stage": "closed",
@@ -490321,6 +490343,19 @@
       "sha256": "8ad694b64c9f3da98ce4314757f05dfb6e6906f928fdc56420a674355f502233"
     },
     "environment_template_sha256": "78c47a40de8eb91ca9030d0bc0923f5d10c657ced5aa27ccf86681c1b8be75ef",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "artifact_retirement": {
+      "complete": false,
+      "capture": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-timing-v1",
+        "files": 426,
+        "bytes": 63443522,
+        "tree_sha256": "e4ae1d8375c423918c2806ab2a25d194d30dea9f1a539fa2f212f60479ceb4a5"
+      },
+      "evidence_commit": "fe6d810020758c2759891c1ac75c2df12ed2dca2",
+      "reason": "Logical work, exact stage-order receipts and individual prefill samples are retained in Git. No raw-capture consumer remains.",
+      "next_consumer": "Use the exact retained executable in one separate request-level staging, copy and GPU-wait attribution. Use the validated stage-all route as the speed reference. Check observable native flow joins, clock and trace coverage before attributing resource use; measure observer overhead separately. Review this executable after that diagnostic.",
+      "stage_order_disposition": "The warmed gain was mixed. Use stage-all for continued optimization; do not promote per-span."
+    }
   }
 }
