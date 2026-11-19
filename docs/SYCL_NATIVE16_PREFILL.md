@@ -3001,6 +3001,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   eleven other members. Link only the fixture with that archive. Its next
   consumer is the traced numerical check followed by the independent
   scalar/vec8 timing comparison. Retire the fixture after that decision.
+  At `071032b9c`, the traced 8,192-row and split 8,191-row cases passed
+  bitwise, including invalid rows and slice offsets of 4, 8 and 12 bytes
+  modulo 16. In three
+  independent processes the 6,640-row vec8/scalar time ratios were
+  0.7421–0.7422 (spread) and 0.7418–0.7466 (clustered). At 211 rows
+  neither map won in all three processes. Keep scalar for small jobs.
+  The opt-in `STRATA_SYCL_PREFILL_MOE_GATHER_VEC8=1` trial starts at 2,334
+  rows, the lower edge of the existing large MoE job population; fusion
+  selection stays independent. The default is scalar. The request footer
+  records jobs and rows submitted to vec8. For the next fixture use the
+  actual production selector at 2,334 and 8,192 rows on both maps. Keep
+  the original three-process order, timing floor, six alternating pairs
+  and bit/guard checks. Require faster median time per process for each
+  of the four shapes before model timing. If it passes, verify that the
+  same model binary in both arms selects the expected jobs on real inputs,
+  preserves state and RESTORE, then compare clean 64K PP and client TTFT.
+  Keep decode placement and kernels fixed and check sustained generation
+  separately. The original component results establish no model speedup.
   The mapped-input alternative now has a diagnostic at child `19999c6c1`.
   Its host mode checks the actual compact and wide TLA lane/atom
   coordinates, replicas and valid/padded rows over three of 80 K tiles.

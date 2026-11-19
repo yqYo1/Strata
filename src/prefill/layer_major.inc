@@ -1360,6 +1360,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 (unsigned long long)window_context->staged_upload_bytes,
                 (unsigned long long)window_context->staged_hits,
                 window_context->expert_slots->permanent_used(), window_context->expert_slots->slots());
+        if (window_context->scratch_mixed)
+            std::fprintf(stderr, "strata MoE prefill gather: vec8_jobs=%llu vec8_rows=%llu scalar_jobs=%llu min_rows=%lld\n",
+                (unsigned long long)window_context->vec8_gather_jobs,
+                (unsigned long long)window_context->vec8_gather_rows,
+                (unsigned long long)(window_context->jobs - window_context->vec8_gather_jobs),
+                (long long)native16::prefill_moe_vec8_min_rows);
         std::fprintf(stderr, "strata MoE GU fusion: fused_jobs=%llu fused_rows=%llu separate_jobs=%llu min_rows=2334\n",
             (unsigned long long)window_context->gu_fused_jobs,
             (unsigned long long)window_context->gu_fused_rows,

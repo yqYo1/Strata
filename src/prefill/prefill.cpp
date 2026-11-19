@@ -695,8 +695,18 @@ struct MoeWindowContext {
     uint64_t windows = 0, dequants = 0, jobs = 0, source_bytes = 0;
     uint64_t gu_fused_jobs = 0, gu_fused_rows = 0;
     uint64_t down_fused_jobs = 0, down_fused_rows = 0;
+    uint64_t vec8_gather_jobs = 0, vec8_gather_rows = 0;
     std::unique_ptr<sycl_backend::command_profile::Trace> command_trace;
 };
+bool prefill_moe_large_vec8_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_MOE_GATHER_VEC8");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_GATHER_VEC8 requires 0 or 1");
+    }();
+    return enabled;
+}
 int moe_window_requested() {
     static const int enabled = [] {
         const char* v = std::getenv("STRATA_SYCL_PREFILL_MOE_WINDOW");

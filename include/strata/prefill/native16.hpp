@@ -48,10 +48,16 @@ void moe_job_weights(const detail::MoeWindowRoutes& plan, const float* weights,
 void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
                       const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
                       const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream);
-// Long-prefill component arm: eight raw FP16 values per work item.
+// Eight raw FP16 values per work item.
 void prefill_moe_gather_mixed_vec8(const detail::MoeWindowRoutes& plan, size_t job_index,
                       const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
                       const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream);
+// Trial boundary for the large-job population measured separately in long prefill.
+// Gather selection does not depend on whether the following GEMM accepts fusion.
+inline constexpr int64_t prefill_moe_vec8_min_rows = 2334;
+constexpr auto prefill_moe_mixed_gather_kernel(bool allow_vec8, int64_t rows) {
+    return allow_vec8 && rows >= prefill_moe_vec8_min_rows ? prefill_moe_gather_mixed_vec8 : moe_gather_mixed;
+}
 void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
                     const uint16_t* down, const int32_t* source,
                     const int32_t* original_slots, const float* job_weights,
