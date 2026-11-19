@@ -38189,10 +38189,15 @@
   "qsa-prefill-packed-row-validity-20261120": {
     "topic": "Packed logical-row validity at the four-cell production page size",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "The ordered-exp producer checks the logical-to-physical page table and scale validity. The attention consumer reads the page table again for every selected cell and then reads bad_rows. Both are present in the measured eeebba1d source. The four-cell lane comparison does not change this representation. The prior constant-divisor trial at dcc1e86eb was slower.",
-    "source_commit": "5c58ff175",
+    "source_commit": "db863dfaf9b5f5cf622e2d4fce793e726f0e5b5c",
     "report_budget_bytes": 12288,
-    "consumer": "Determine whether prefill can remove a dependent page lookup per selected cell while preserving missing-row and bad-scale semantics, the public scratch ABI and arbitrary page sizes."
+    "report_sha256": "007cf32a069238b6750d8190b337cf09924f9ad64a8e457660a3421c4859456d",
+    "review_sha256": "29d5185b5b8bd9bbec7340596c01c92f389a69f7e5d17b2493f44c666fd22de2",
+    "finding": "The packer writes K/V and bad_rows. Attention looks up selected pages again. A private validity flag would need to preserve missing-page and invalid-scale behavior, diagnostic bytes and scratch lifetime. Review corrects the producer count at 262144 cells and four cells/page to 524288 source reads (2097152 requested bytes). Actual transactions and performance are unknown.",
+    "consumer": "Use the corrected count and the review when deciding whether to measure the cost of private validity metadata after the independent four-lane reader comparison.",
+    "retention": "Keep the digest with the report through that decision. The source-level undercount in the original report is superseded by the digest.",
+    "worker_completion": "Orca Luna medium task task_e1555a0b6074 and dispatch ctx_b4fff13e29bf completed. The exact terminal was closed. Filesystem proof passed 16/16. Worker-side Orca status was self-reported without an independent receipt. Native Luna max reviewed the report."
   }
 }
