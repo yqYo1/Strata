@@ -261,6 +261,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   After the required model state checks, `4d9b176e5` compares
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
+  Also revalidate the historical 117489-token workload on this ordinary
+  build with the configured context kept at 262144. At `792ec1ee5` the
+  reference clocked 1045.73–1051.06 PP across three warmed process medians
+  (median 1048.98). It used context and resident KV both 131072; the current
+  control uses 262144 and 20480 respectively. Both request split mode 10 and
+  384 expert slots. For 117488 batched rows the production planner instead
+  tries 128 slots and one split accumulator window. With the current model,
+  it budgets 2,406,154,240 bytes of BF16 residual, 531,988,736 bytes of extra
+  accumulator including its guard, a 340,787,200-byte expert bank, 241,555,328
+  bytes of QSA prefix, 256 bytes of score status and 512 MiB of headroom.
+  The total is 4,057,356,672 bytes before admission. In the three 64K control
+  requests at `880c93b14`, the same formula with its actual 384-slot bank
+  and no extra accumulator reproduces the logged fixed budget exactly.
+  Those requests reported 188–195 MB of free VRAM beyond the projected 117K
+  need. The shared arena, single-allocation limits and actual request-time
+  free memory must also admit the split. The 253919-token mixed-host path
+  follows a different planner branch.
+  After the current bank comparison, use the same ordinary copy route,
+  executable, decoder placement and 262144 configuration. Trace one fresh
+  117489-token admission before timing. Check 117488 GPU rows, zero host rows,
+  the effective 128-slot bank, 48 completed windows and the tail guard. If
+  placement differs, retain the actual admission and address the cause before
+  comparing rates. For clean speed use the historical four thinking-on
+  request hashes in three independent processes. Keep first use separate;
+  report each median of the last three prompt times, their PP and client
+  TTFT. Reproduction of the 1000 PP milestone requires all three warmed
+  process rates at or above 1000. This comparison does not qualify decode
+  speed or filling the final physical context slot.
 
 - The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
   the previous layer's resident BF16 rows directly in the native attention
