@@ -14,6 +14,7 @@ from types import SimpleNamespace
 
 sys.dont_write_bytecode = True
 import generation_engine as gen
+import coherent_prefill_bench as historical
 import official_suite_evidence as evidence_reader
 import prefill_attention_bank_restore as restore
 import qualify_qsa_k_model as official
@@ -21,10 +22,11 @@ import ur_validation as validation
 
 P, B, RESULT, basis = restore.P, restore.B, restore.RESULT, restore.basis
 build, require, sha, signature = restore.build, restore.require, restore.sha, restore.signature
-ROOT, KEY = B / 'prefill-attention-bank-generation-v2', 'prefill_attention_bank_generation_v2'
+ROOT, KEY = B / 'prefill-attention-bank-generation-v3', 'prefill_attention_bank_generation_v3'
 THIS = 'tools/sycl/prefill_attention_bank_generation.py'
 RESTORE_EVIDENCE = 'f2a044c7ff3f332327e7af1e748bfb3664c9c231'
-PREVIOUS = 'prefill_attention_bank_generation_v1'
+PREVIOUS = 'prefill_attention_bank_generation_v2'
+ORDINARY = 'prefill_ordinary_bank_comparison_v1'
 ORDER = ('original', 'candidate', 'candidate', 'original', 'original', 'candidate')
 WORKLOAD_ID = 'attention_bank_admission_20261119'
 SELECTOR = restore.SELECTOR
@@ -43,6 +45,22 @@ def reference():
     return native, speed
 
 
+def ordinary_controls(native):
+    row = validation.committed(RESULT, (ORDINARY,))
+    require(row['stage'] == 'closed' and row['complete'] and row['passed'] and row['ownership_closed']
+            and not row['active'] and len(row['processes']) == len(row['plans']) == 9
+            and all(p['complete'] and p['passed'] and p['ownership_closed'] and p['native_exit_code'] == 0
+                    and not p['fresh_faults'] for p in row['processes']), 'complete all nine ordinary 64K processes')
+    controls = {}
+    for index, name, variant in ((1, 'original', 'copy'), (2, 'candidate', 'direct')):
+        plan, done = row['plans'][index], row['processes'][index]
+        require(plan['variant'] == variant and done['binary'] == native['binaries']['strata']
+                and done['native_source_commit'] == native['source_commit'] and len(done['routes']) == 3,
+                'exact ordinary same-ELF copy/direct controls required')
+        controls[name] = {k: plan[k] for k in ('root', 'environment_sha256')}
+    return controls
+
+
 def pins(revision):
     sources = basis.core.pins(revision)
     sources.update(basis.comparison.build.controls(revision, controller=P / THIS))
@@ -59,8 +77,16 @@ def pins(revision):
 
 
 def environment(row, plan):
-    env = restore.measure.context('timing').environment(row, dict(root=plan['root'], index=0, heads=1))
+    env = historical.context().environment(row, dict(root=plan['root'], index=0, heads=1))
     env[SELECTOR] = str(int(plan['arm'] == 'candidate'))
+    control = row['ordinary_controls'][plan['arm']]
+    rebased = {k: v.replace(plan['root'], control['root']) for k, v in env.items()}
+    require(basis.comparison.fingerprint(rebased) == control['environment_sha256']
+            and env['STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS'] == '384'
+            and env.get('STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER', 'off') == 'off'
+            and env.get('STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY', 'sycl') == 'sycl'
+            and env.get('STRATA_SYCL_PREFILL_PREFIX_EXPERT_DEFER_COMPLETION', '0') == '0',
+            'full execution environment must match the checked ordinary route')
     env['PATH'] = str(Path(row['python_selected']['path']).parent) + ':/usr/bin:/bin'
     env.pop('STRATA_SNAPSHOT_VERIFY', None)
     require(not any(k in env for k in ('STRATA_TRACE', 'STRATA_STATE_HASH', 'STRATA_DECODE_TIMING',
@@ -100,9 +126,8 @@ def prepare():
     failed = validation.committed(RESULT, (PREVIOUS,))
     require(failed['stage'] == 'failed' and not failed['passed'] and not failed['active']
             and failed['ownership_closed'] and len(failed['processes']) == 1
-            and failed['binary'] == native['binaries']['strata']
-            and failed['post_closure_diagnostic']['rerun_required']
-            and not failed['post_closure_diagnostic']['qualified'], 'preserve the closed v1 observer failure')
+            and failed['binary'] == native['binaries']['strata'] and failed['processes'][0]['fresh_faults'],
+            'preserve the failed 512-slot early-copy suite')
     revision = validation.git('rev-parse', 'HEAD').decode().strip()
     config = dict(base['configuration'], exe=str(P / 'tools/sycl/engine_once.py'), env={}, cwd=str(P))
     args = config['args']
@@ -116,14 +141,15 @@ def prepare():
     row.update(stage='prepared', source_commit=revision, sources=pins(revision), configuration=config,
                binary=native['binaries']['strata'], native_source_commit=native['source_commit'],
                native_build_sha256=signature(build.builder.compact(native)), restore_evidence=RESTORE_EVIDENCE,
-               previous_failed_comparison=PREVIOUS,
+               previous_failed_comparison=PREVIOUS, ordinary_controls=ordinary_controls(native),
                python_contract=contract, python_selected=manifest['selected'], plans=[], processes=[],
                budgets=LIMITS, host_passed=False, active=False, ownership_closed=True, passed=False, complete=False,
-               plan=dict(unit='Same native ELF and decode configuration, switch only the long-prefill store.',
+               plan=dict(unit='Verified ordinary 384-slot configuration in both arms. Switch only the prefill store.',
                          execution='Six independent official bench.sh --long --long-generation --think --runs 1 '
                                    'processes in three alternating pairs. Every process includes the six-turn agent session.',
-                         acceptance='Closed runtime/owner/fault, complete official v5 journal, actual long-prefill store route '
-                                    'for both sustained workloads, matched fixed requests. Keep exact lengths and drafts. '
+                         acceptance='Closed runtime/owner/fault, complete official v5 journal, ordinary 384-slot '
+                                    'bank and actual store for the prior 16098-token prompt and both sustained '
+                                    'workloads, matched fixed requests. Keep exact lengths and drafts. '
                                     'Report per-workload/arm MTP classes only if every eligible sample meets its threshold; '
                                     'screen per-workload and agent decode preservation by paired TG geometric mean >=1. '
                                     'Claim preservation for comparable decode work when all paired generated and MTP '
@@ -157,6 +183,7 @@ def current(row):
             'commit exact benchmark inputs and comparison state')
     native, speed = reference()
     require(row['native_build_sha256'] == signature(build.builder.compact(native))
+            and row['ordinary_controls'] == ordinary_controls(native)
             and row['binary'] == native['binaries']['strata'] and row['native_source_commit'] == native['source_commit']
             and all(row[k] == speed[k] for k in ('template','environment_template','model_assets','runtime_manifest',
                                                'native_validation_probe','boot','driver'))
@@ -177,6 +204,9 @@ def current(row):
 
 
 def routes(text, samples, arm):
+    require('strata MoE prefix expert upload layer:' not in text and
+            'strata MoE prefix router: requested=early' not in text,
+            'unexpected early expert upload on ordinary route')
     heads = list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read'
                              r'[^\n]*, (\d+) generated[^\n]*$', text, re.M))
     require(len(heads) == len(samples), 'native request footer count differs')
@@ -188,12 +218,15 @@ def routes(text, samples, arm):
                 'native footer and API counters differ')
         frame = text[start:head.start()]
         start = head.end()
-        if sample['phase'].startswith('long-generation/'):
+        if sample['phase'] == 'prompt/16K' or sample['phase'].startswith('long-generation/'):
+            require(sample['phase'] != 'prompt/16K' or read == 16098, 'the previous 16K stall shape changed')
             route = restore.require_store(frame, dict(direct=arm=='candidate'), dict(read=read))
-            require(route['gpu_rows'] == read-1 and route['window_mode'] == 10,
-                    'expected all-GPU long-generation route')
+            banks = re.findall(r'^strata MoE expert bank: requested_slots=(\d+) effective_slots=(\d+) '
+                               r'staged=(\d+) host_slab_bytes=\d+ device_bytes=(\d+) ', frame, re.M)
+            require(banks == [('384', '384', '1', '1022361600')] and route['gpu_rows'] == read-1
+                    and route['window_mode'] == 10, 'expected ordinary all-GPU 384-slot residual route')
             result.append(dict(phase=sample['phase'], read=read, **route))
-    require(len(result) == 2, 'both measured long-generation routes required')
+    require(len(result) == 3, 'ragged 16K and both sustained generation routes required')
     return result
 
 
