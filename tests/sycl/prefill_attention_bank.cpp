@@ -1,5 +1,6 @@
 // Main-authored fixture. Repository LICENSE applies.
 #include "strata/prefill/native16.hpp"
+#include "strata/prefill/layer_major_plan.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
 #include "strata/sycl/runtime.hpp"
@@ -195,6 +196,79 @@ void check_prefill_attention_bank_input(size_t rows) {
     std::cout << "attention input rows=" << rows << " copy_and_direct=1 bits=" << f.cells << " guards=1\n";
 }
 
+// Exercise the lifetime of one resident window, including its partial second
+// piece. The real model separately qualifies PLE/audit and host-tail dispatch.
+void check_prefill_resident_window() {
+    namespace detail = strata::prefill::detail;
+    constexpr int64_t rows = 11, chunk = 8;
+    Fixture f(rows, false);
+    const auto plan = detail::LayerMajorResidualPlan::make(
+        rows, chunk, D, f.cells * sizeof(uint16_t), rows, detail::LayerMajorResidualDtype::bf16);
+    Allocation weights(f.runtime, D * sizeof(float), MemoryKind::Device);
+    Allocation scales(f.runtime, chunk * HC * sizeof(float), MemoryKind::Device);
+    Allocation normalized(f.runtime, chunk * D * sizeof(uint16_t), MemoryKind::Device);
+    Allocation mixed(f.runtime, chunk * N * sizeof(uint16_t), MemoryKind::Device);
+    Allocation mixed_fp16(f.runtime, chunk * N * sizeof(uint16_t), MemoryKind::Device);
+    Allocation callback(f.runtime, chunk * D * sizeof(float), MemoryKind::Device);
+    std::vector<float> reference, delivered(f.cells);
+    // Destroy this guard before releasing any of the callback or device owners.
+    struct Drain {
+        Fixture& f;
+        ~Drain() { checked_cleanup([&] { f.drain(); }, [] {}, "resident window retirement"); }
+    } drain_on_exit{f};
+    f.queue.fill(weights.as<float>(), 1.f, D);
+    for (bool borrow : {false, true}) for (bool direct : {false, true}) {
+        f.queue.memcpy(f.bank(), f.input.data(), f.cells * sizeof(uint16_t));
+        // Publish a previous layer's FFN result. The next attention must read
+        // this update, including the tail, even when scratch still holds poison.
+        native::write(f.bank(), f.projection.as<uint16_t>(), f.injection.as<float>(), rows, &f.queue);
+        f.drain();
+        for (int64_t row = 0; row < rows; row += chunk) {
+            const auto count = std::min(chunk, rows - row);
+            const auto span = plan.span(row, count);
+            require(span.device && span.offset_bytes == row * D * sizeof(uint16_t), "wrong bank input span");
+            auto* bank = f.bank() + row * D;
+            auto* scratch = f.scratch.as<uint16_t>();
+            auto* injection = f.injection.as<float>() + row * HC;
+            if (borrow) f.queue.fill(scratch, Sentinel, size_t(chunk) * D);
+            else f.queue.memcpy(scratch, bank, span.bytes);
+            const auto* input = borrow ? bank : scratch;
+            native::norm(input, weights.as<float>(), 1e-6f, scales.as<float>(), normalized.as<uint16_t>(),
+                         count, &f.queue);
+            native::mix(input, scales.as<float>(), weights.as<float>(), normalized.as<uint16_t>(),
+                        mixed.as<uint16_t>(), mixed_fp16.as<uint16_t>(), count, &f.queue);
+            if (borrow)
+                native::write_prefill_attention_from_bank(direct ? bank : scratch, bank, mixed.as<uint16_t>(),
+                                                         injection, count, &f.queue);
+            else if (direct)
+                native::write_prefill_attention_bank(bank, scratch, mixed.as<uint16_t>(), injection, count, &f.queue);
+            else
+                native::write(scratch, mixed.as<uint16_t>(), injection, count, &f.queue);
+            if (!direct) f.queue.memcpy(bank, scratch, span.bytes);
+            f.drain();
+        }
+        // Complete FFN in the bank before the final callback restores its rows.
+        native::write(f.bank(), f.projection.as<uint16_t>(), f.injection.as<float>(), rows, &f.queue);
+        f.drain();
+        detail::LayerMajorChunkCursor cursor{rows, chunk};
+        for (int64_t row = 0; row < rows; row += chunk) {
+            const auto count = std::min(chunk, rows - row);
+            cursor.accept(row, count);
+            native::restore(f.bank() + row * D, callback.as<float>(), count * D, &f.queue);
+            f.queue.memcpy(delivered.data() + row * D, callback.data(), count * D * sizeof(float));
+            f.drain();
+        }
+        require(cursor.complete() && cursor.calls == 2, "missing restored window piece");
+        const auto bank = f.result();
+        for (size_t i = 0; i < f.cells; ++i)
+            require(std::bit_cast<uint32_t>(delivered[i]) == uint32_t(bank[Guard + i]) << 16,
+                    "callback and final BF16 bank differ");
+        if (reference.empty()) reference = delivered;
+        else require(delivered == reference, "window handoff changed the final callback");
+    }
+    std::cout << "attention window rows=11 pieces=8+3 arms=4 checked_final_callback=1\n";
+}
+
 double elapsed_ms(Clock::time_point a, Clock::time_point b) {
     return std::chrono::duration<double, std::milli>(b - a).count();
 }
@@ -239,6 +313,7 @@ int main(int argc, char** argv) {
             correctness(8192, true);
         } else if (operation == "input-correctness") {
             for (size_t rows : {1, 63, 7905, 8191, 8192}) check_prefill_attention_bank_input(rows);
+            check_prefill_resident_window();
         } else {
             require(operation == "copy" || operation == "direct", "unknown attention-store arm");
             timing(operation == "direct");

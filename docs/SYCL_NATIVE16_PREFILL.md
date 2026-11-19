@@ -195,7 +195,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   norm, mix and residual write. Layer zero, the PLE bridge at layer one when
   active, host-backed rows, boundary audits and non-window pieces keep
   their existing inputs. Decode uses its existing route. The window's
-  checked queue drain still precedes bank reuse and callbacks.
+  checked queue drain still precedes bank reuse and callbacks. A window
+  can end with a partial second device span. After the attention stores
+  drain, the window FFN updates the bank in place and drains before
+  `complete_piece` advances the layer cursor. The final layer restores
+  each completed BF16 span into the float callback buffer.
   For 65536 batched rows, each eligible layer avoids 1.25 GiB of requested
   D2D input copies. With PLE active, 46 eligible layers would avoid 57.5 GiB.
   Verify actual bytes and placement before using this estimate. This
@@ -203,7 +207,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Use the retained ordinary 384-slot configuration after the existing
   comparison closes. First verify BF16 results and guards at 1, 63, 7905,
   8191 and 8192 rows, including partial overlap refusal and both output
-  destinations. Then compare the four combinations of copied/borrowed input
+  destinations. The same-build fixture also exercises two resident pieces
+  of 8 and 3 rows, prior FFN publication, norm/mix, both attention stores,
+  final FFN update and callback restoration in all four arms. It uses
+  synthetic projections. Actual model dispatch, cancellation and fallback
+  still need separate evidence. In the numerical runs verify the unborrowed
+  PLE layer, mixed host tail, disabled selector and audit fallback against
+  their copied-input controls. Then compare the four combinations of copied/borrowed input
   and copied/direct output on the same coherently rebuilt engine. Check
   per-request routes, numerical fingerprints and both copy counters before
   measuring clean 65537-token requests. Use four fresh-process blocks with
