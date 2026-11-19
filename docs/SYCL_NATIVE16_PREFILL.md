@@ -2977,8 +2977,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Shape-specific advancement requires all three candidate median batch
   times to improve, with equal planned maps, numerical checks, outputs,
   normal exits, no new fault and no timer-floor failures. Keep each
-  shape's individual results. Test this candidate separately after the
-  pending bank-input and QSA decisions on their already pinned images.
+  shape's individual results. Build the gather fixture with
+  `bench/sycl/build_prefill_mixed_gather.py` against the verified
+  resident-input build. Compile the two changed units with their original
+  production and test flags. The header adds a free function. Recreate a
+  private prefill archive with the new kernel object and the original
+  eleven other members. Link only the fixture with that archive. Its next
+  consumer is the traced numerical check followed by the independent
+  scalar/vec8 timing comparison. Retire the fixture after that decision.
   The mapped-input alternative now has a diagnostic at child `19999c6c1`.
   Its host mode checks the actual compact and wide TLA lane/atom
   coordinates, replicas and valid/padded rows over three of 80 K tiles.
