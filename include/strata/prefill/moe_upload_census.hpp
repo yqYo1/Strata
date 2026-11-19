@@ -1,6 +1,7 @@
 #pragma once
 // Main-authored; repository LICENSE applies. Host metadata only: no SYCL,
 // GPU events, extra device readback, or change to the expert execution order.
+#include "strata/prefill/moe_window_routes.hpp"
 #include <array>
 #include <cstdint>
 #include <cstdio>
@@ -57,6 +58,44 @@ struct MoeUploadCensus {
         };
         return histogram(uploads) && std::fputs("],\"cache_hit_rows_histogram\":[", out) >= 0 &&
             histogram(hits) && std::fputs("]}\n", out) >= 0;
+    }
+
+    // The grouped source rows are stable in original token order. Emit one
+    // entry per expert after the existing drain so the observer cannot change
+    // router scheduling, copy submission, or bank publication.
+    bool emit_first_routes_after_checked_drain(FILE* out, int64_t layer,
+            int64_t first, const MoeWindowRoutes& routes) const noexcept {
+        const int32_t rows = routes.rows();
+        if (!out || layer < 0 || layer >= 48 || first < 0 || rows < 1 || first > 262144 - rows)
+            return false;
+        const auto& counts = routes.counts();
+        const auto& offsets = routes.offsets();
+        const auto& source = routes.source_rows();
+        std::array<int32_t, MoeWindowRoutes::experts> first_rows;
+        first_rows.fill(-1);
+        uint32_t nonempty = 0;
+        int32_t initial_experts = 0;
+        for (size_t expert = 0; expert < counts.size(); ++expert) {
+            if (!counts[expert]) continue;
+            const auto offset = size_t(offsets[expert]);
+            if (offset >= source.size() || source[offset] < 0 || source[offset] >= rows) return false;
+            first_rows[expert] = source[offset];
+            ++nonempty;
+            initial_experts += source[offset] == 0;
+        }
+        if (nonempty != upload_count + hit_count || initial_experts != MoeWindowRoutes::top_k)
+            return false;
+        if (std::fprintf(out, "strata MoE first-route census: {\"version\":1,\"layer\":%lld,\"first_row\":%lld,\"rows\":%d,\"experts\":[",
+                (long long)layer, (long long)first, rows) < 0)
+            return false;
+        bool comma = false;
+        for (size_t expert = 0; expert < first_rows.size(); ++expert) {
+            if (first_rows[expert] < 0) continue;
+            if (std::fprintf(out, "%s[%zu,%d]", comma ? "," : "", expert, first_rows[expert]) < 0)
+                return false;
+            comma = true;
+        }
+        return std::fputs("]}\n", out) >= 0;
     }
 };
 } // namespace strata::prefill::detail

@@ -20,6 +20,11 @@ void mix(const uint16_t* residual, const float* scales, const float* weight,
          int64_t rows, void* stream);
 void write(uint16_t* residual, const uint16_t* output, const float* inject,
            int64_t rows, void* stream);
+// The long-prefill attention window can store directly into a distinct bank.
+// The original residual and the output bank remain live to the caller's drain.
+void write_prefill_attention_bank(uint16_t* bank, const uint16_t* residual,
+                                  const uint16_t* output, const float* inject,
+                                  int64_t rows, void* stream);
 void swiglu(const uint16_t* gate_up, uint16_t* hidden_fp16, int64_t rows, void* stream);
 void swiglu_pair(const uint16_t* gate, const uint16_t* up, uint16_t* hidden_fp16,
                  int64_t rows, void* stream);

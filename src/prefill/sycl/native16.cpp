@@ -123,6 +123,22 @@ void write(uint16_t* r, const uint16_t* bo, const float* inj, int64_t rows, void
         r[i] = store(sycl::fma(load(bo[t * N + d]), gate, load(r[i])));
     });
 }
+void write_prefill_attention_bank(uint16_t* bank, const uint16_t* residual,
+                                  const uint16_t* bo, const float* inj, int64_t rows, void* stream) {
+    const size_t n = count(rows, D);
+    const Span target{bank, n * 2};
+    const std::initializer_list<Span> inputs{{residual, n * 2}, {bo, size_t(rows) * N * 2},
+                                              {inj, size_t(rows) * HC * 4}};
+    validate_spans({target}, inputs);
+    const auto& queue = queue_for(stream);
+    validate_device_span(target.pointer, target.bytes, queue);
+    for (const auto& input : inputs) validate_device_span(input.pointer, input.bytes, queue);
+    for_each(n, stream, [=](size_t i) {
+        const size_t t = i / D, c = i % D / N, d = i % N;
+        const float gate = 2.f * sigmoid(inj[t * HC + c] / float(HC));
+        bank[i] = store(sycl::fma(load(bo[t * N + d]), gate, load(residual[i])));
+    });
+}
 void swiglu(const uint16_t* gu, uint16_t* y, int64_t rows, void* stream) {
     const size_t n = count(rows, FF);
     validate_spans({{y, n * 2}}, {{gu, n * 4}});
@@ -169,8 +185,7 @@ void accumulator_spans(void* stream, std::initializer_list<Span> outputs,
 }
 size_t accumulator_routes(const detail::MoeWindowRoutes& plan, void* stream) {
     const size_t routes = size_t(plan.rows()) * detail::MoeWindowRoutes::top_k;
-    const auto limit = plan.split_accumulator() ? detail::MoeWindowRoutes::max_split_accum_rows
-                                               : detail::MoeWindowRoutes::max_accum_rows;
+    const auto limit = plan.accumulator_row_limit();
     if (plan.rows() < 1 || plan.rows() > limit ||
         plan.original_slots().size() != routes || plan.source_rows().size() != routes ||
         !queue_for(stream).has_property<sycl::property::queue::in_order>())

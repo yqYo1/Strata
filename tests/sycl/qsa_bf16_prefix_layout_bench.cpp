@@ -5,6 +5,9 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+#include "fullfit_attention_overlap.hpp"
+#endif
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -20,6 +23,7 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
+#if !defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
 constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
@@ -32,6 +36,7 @@ constexpr const char *baseline_name="kvvec4", *candidate_name="ordered_exp";
 constexpr auto baseline_attention=qsa_bf16_prefix_kvec4_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_kvvec4_batch;
 constexpr const char *baseline_name="kvec4", *candidate_name="kvvec4";
+#endif
 #endif
 std::shared_ptr<sycl_backend::Runtime> rt;
 int process_id=0;
@@ -106,6 +111,7 @@ void run(int cells,int queries,int cap,bool clustered) {
   QsaAttnPools pools;pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
   auto shape=qsa_real_shapes();shape.page_size=Page;
   const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
+#if !defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
   auto invoke=[&](int variant) {
     auto attention=variant ? candidate_attention : baseline_attention;
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
@@ -116,12 +122,31 @@ void run(int cells,int queries,int cap,bool clustered) {
         out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
     rt->wait();return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
   };
+#endif
   auto guards=[&] {
     const auto &a=pk.get();const auto &b=pv.get();const auto &c=pb.get();const auto &y=out.get();
     for (size_t i=0;i<16;++i) require(a[i]==marker && a[a.size()-16+i]==marker &&
         b[i]==marker && b[b.size()-16+i]==marker && c[i]==bad_marker &&
         c[c.size()-16+i]==bad_marker && y[i]==marker && y[y.size()-16+i]==marker,"output/scratch guards");
   };
+#if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+  auto submit_ordered = [&] {
+    require(qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+        out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
+  };
+  submit_ordered();
+  rt->wait();
+  guards();
+  const auto reference = out.get();
+  for(size_t i=16;i<reference.size()-16;++i)
+    require(std::isfinite(std::bit_cast<float>(uint32_t(reference[i])<<16)),"reference all finite");
+  const std::vector<uint16_t> poison(reference.size(), marker);
+  const int sample_count = bench::fullfit_overlap::compare(
+    rt,queries!=8192,process_id,[&] { out.put(poison); },submit_ordered,[&](bool submitted) {
+      guards();
+      require(out.get() == (submitted ? reference : poison),"fullfit overlap changed QSA output");
+    });
+#else
   invoke(0);guards();
   std::array<std::vector<uint16_t>,2> reference{out.get(),out.get()};
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
@@ -154,25 +179,39 @@ void run(int cells,int queries,int cap,bool clustered) {
         <<" milliseconds="<<std::setprecision(12)<<ms
         <<" compared="<<q.size()<<" exact_bits=PASS guards=PASS status=PASS\n";
   }
+  constexpr int sample_count=12;
+#endif
   require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
       dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
   std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap
-      <<" pattern="<<(clustered ? "clustered" : "gather")<<" samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS\n";
+      <<" pattern="<<(clustered ? "clustered" : "gather")<<" samples="<<sample_count
+      <<" full_bits=PASS guards=PASS inputs=PASS status=PASS\n";
 }
 }
 int main(int argc,char **argv) {
   try {
     std::cout.setf(std::ios::unitbuf);
-    require((argc==2 || argc==3) && (std::string(argv[1])=="--smoke" ||
-        std::string(argv[1])=="--component"),"--smoke|--component [PROCESS] required");
+#if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+    const bool source_admission = argc == 2 && std::string(argv[1]) == "--source-admission";
+#else
+    constexpr bool source_admission = false;
+#endif
+    require(source_admission || ((argc==2 || argc==3) && (std::string(argv[1])=="--smoke" ||
+        std::string(argv[1])=="--component")),"explicit fixture mode required");
     if (argc==3) { process_id=std::stoi(argv[2]);require(process_id>=0 && process_id<3,"process ordinal"); }
     const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gated=g && std::string(g)=="1";
     gate(gated,"before-runtime");rt=sycl_backend::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
         <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gated,"runtime-ready");
+#if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+    if (source_admission) bench::fullfit_overlap::source_admission(rt);
+    else if (std::string(argv[1])=="--smoke") run(97,3,33,false);
+    else run(65536,8192,2051,false);
+#else
     if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else { run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true); }
+#endif
     rt->wait();rt.reset();gate(gated,"after-cleanup");
     std::cout<<"fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED\n";
     return 0;

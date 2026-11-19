@@ -955,7 +955,7 @@ sycl::event Gemm::down_scatter_split(const DownScatterProblem &p,
                                      float *tail, int64_t primary_rows) {
   using Routes = strata::prefill::detail::MoeWindowRoutes;
   if (!has_fp16_ || !p.plan || !p.plan->split_accumulator() || p.plan->rows() < 2 ||
-      p.plan->rows() > Routes::max_split_accum_rows || primary_rows < 1 || primary_rows >= p.plan->rows())
+      p.plan->rows() > p.plan->accumulator_row_limit() || primary_rows < 1 || primary_rows >= p.plan->rows())
     throw std::invalid_argument("Split Down scatter: native FP16 and two nonempty banks required");
   const size_t rows = size_t(p.plan->rows()), routes = rows * Routes::top_k;
   if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes)
@@ -1001,7 +1001,7 @@ sycl::event Gemm::down_scatter_split_row_address(const DownScatterProblem &p,
                                      float *tail, int64_t primary_rows) {
   using Routes = strata::prefill::detail::MoeWindowRoutes;
   if (!has_fp16_ || !p.plan || !p.plan->split_accumulator() || p.plan->rows() < 2 ||
-      p.plan->rows() > Routes::max_split_accum_rows || primary_rows < 1 || primary_rows >= p.plan->rows())
+      p.plan->rows() > p.plan->accumulator_row_limit() || primary_rows < 1 || primary_rows >= p.plan->rows())
     throw std::invalid_argument("Split Down scatter: native FP16 and two nonempty banks required");
   const size_t rows = size_t(p.plan->rows()), routes = rows * Routes::top_k;
   if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes)
@@ -1047,7 +1047,7 @@ sycl::event Gemm::down_scatter_split_row64(const DownScatterProblem &p,
                                      float *tail, int64_t primary_rows) {
   using Routes = strata::prefill::detail::MoeWindowRoutes;
   if (!has_fp16_ || !p.plan || !p.plan->split_accumulator() || p.plan->rows() < 2 ||
-      p.plan->rows() > Routes::max_split_accum_rows || primary_rows < 1 || primary_rows >= p.plan->rows())
+      p.plan->rows() > p.plan->accumulator_row_limit() || primary_rows < 1 || primary_rows >= p.plan->rows())
     throw std::invalid_argument("Split Down scatter: native FP16 and two nonempty banks required");
   const size_t rows = size_t(p.plan->rows()), routes = rows * Routes::top_k;
   if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes)

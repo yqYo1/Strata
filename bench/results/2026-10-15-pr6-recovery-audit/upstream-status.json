@@ -1,48 +1,87 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-11-15T20:52:36.498148+00:00",
+  "queried_utc": "2026-11-17T20:52:28.026884+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "queried_utc": "2026-11-13T21:06:39.366569+00:00",
-    "observed_sha": "13eedf552417a6a791a7d13c6597e24300ee3a09"
+    "queried_utc": "2026-11-15T20:52:36.498148+00:00",
+    "observed_sha": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535"
   },
-  "observed_sha": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
+  "observed_sha": "c77572806996349b49995e4f98d41b5294d36a21",
   "changed_since_previous_observation": true,
   "source_fetched": true,
-  "fetch_command": [
-    "git",
-    "-c",
-    "credential.https://github.com.helper=!gh auth git-credential",
-    "-C",
-    "/home/yayoi/ghq/github.com/Niko1221/Strata",
-    "fetch",
-    "--no-tags",
-    "origin"
-  ],
-  "remote_check": [
-    "baf16363b4403ef0ed4f538f5d5ed11c43fb9535\trefs/heads/main"
-  ],
+  "fetch_command": "git fetch --no-tags --recurse-submodules=no origin main",
+  "remote_check": {
+    "command": "git ls-remote --heads origin main",
+    "observed_sha": "c77572806996349b49995e4f98d41b5294d36a21",
+    "matches_fetched_origin_main": true,
+    "checked_utc": "2026-11-17T20:52:28.026884+00:00",
+    "fetch_head_mtime_utc": "2026-11-17T20:46:54.696824+00:00"
+  },
   "new_interval": {
     "start": "146df3c468739147f520ac3816de806f71232571",
-    "target": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
-    "commits": 1121,
-    "changed_paths": 2816,
-    "describe": "v0.2.13.1-902-gbaf16363b",
-    "source_access": "Fetched origin/main --no-tags and matched actual ls-remote main atbaf16363;legacy checkout unchanged,no tags forced,no new engine/checkout/model launch.",
+    "target": "c77572806996349b49995e4f98d41b5294d36a21",
+    "commits": 1166,
+    "changed_paths": 2849,
+    "describe": "v0.2.13.1-947-gc77572806",
+    "source_access": "Actual ghq-clone fetch and matching ls-remote main;legacy99f3checkout and working inference inputs unchanged,no tag rewrite or new branch/build.",
     "integration_state": "fetched_not_imported",
     "whole_function_ledger_complete": false,
     "unmodified_hardware_tuned_performance_complete": false,
     "since_previous_check": {
-      "start": "13eedf552417a6a791a7d13c6597e24300ee3a09",
-      "target": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
-      "commits": 742,
-      "changed_paths": 2086,
+      "start": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
+      "target": "c77572806996349b49995e4f98d41b5294d36a21",
+      "commits": 45,
+      "changed_paths": 121,
+      "by_top_level_area": {
+        ".gitattributes": 1,
+        ".github": 2,
+        "AGENTS.md": 1,
+        "CMakeLists.txt": 1,
+        "README.de.md": 1,
+        "README.es.md": 1,
+        "README.fr.md": 1,
+        "README.ja.md": 1,
+        "README.md": 1,
+        "README.pl.md": 1,
+        "README.pt-BR.md": 1,
+        "README.zh-CN.md": 1,
+        "apps": 45,
+        "cmake": 1,
+        "docs": 11,
+        "packaging": 6,
+        "serve": 5,
+        "setup.py": 1,
+        "src": 3,
+        "strata_cli": 4,
+        "strata_control": 7,
+        "tests": 13,
+        "tools": 12
+      },
       "status": "fetched_not_imported"
     },
     "source_only_review": {
-      "state": "preliminary_not_full_ledger",
+      "state": "preliminary_not_full_function_ledger",
       "upstream_license_changed": false,
+      "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "production_inference_paths_changed_in_new45_commit_interval": [],
+      "native_changes": "Three C++test files and a Windows-only test-stack CMake option;no production C++inference/kernel change in the121path interval. This does not evaluate the earlier cumulative pending interval.",
+      "required_function_candidates": [
+        "f5b255007: declared boolean tool argument True/False coercion;serve/frontend.py and serve/test_bool_args.py",
+        "5c0c80d8b: refuse new requests while closing without shutdown timeout;serve/server.py and stop-drain tests",
+        "d8124515a: show MTP draft text only for an MTP drafter;serve/web/app.js",
+        "c77572806/15c14f6c4: persisted drafting choice after restart;App/Control/CLI",
+        "CLI/runtime/updater and Linux engine-dependency packaging fixes across the interval"
+      ],
+      "release_source": "e39a52e33f35902a03d980dbc902ac84569f5bad",
+      "release_note": "App/Terminal0.2.15 and Control0.1.61;engine packages remain0.1.60 as declared by the release commit.",
+      "exclusions": "DeepSeek/35B execution remains excluded;CUDA/HIP inference not imported;XeStrata never an implementation source.",
+      "incremental_port_status": "Three required boolean/stop-drain/MTP-label fixes are ported and33CPU/mock/JavaScript tests pass without skips;see current_sync.functional_import.incremental_function_ports. Persisted drafting/App/Control/CLI/packaging and the broader required-function ledger remain incomplete. No inference adoption or new upstream observation."
+    },
+    "prior_pending_component_review": {
+      "commit": "8216eeb84933c48c0dc808061516f1ddad307686",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
+      "key": "new_interval.source_only_review",
       "required_function_candidates": [
         "1130d824: Control/App Intel Arc Linux setup hotfix",
         "4890fd95/b1277382: expert-arena shortfall accounting and service-visible warnings"
@@ -51,69 +90,8 @@
         "0bf2efe3: fixed-order skinny BF16 GEMMs;upstream A750 repeatability/timing claims are not measurements on this B570",
         "db137d91: compiled model geometry;default-engine checksum claims are not this fork validation"
       ],
-      "inference_adopted": false,
-      "arc_setup_contract_followup": {
-        "state": "source_mapped_not_ported_or_runtime_qualified",
-        "upstream_hotfix": "1130d824aa1791f763d0083008bded14fc09dcb9",
-        "current_fork_source": "93d908410c15d526b855b3de0c54f9d703ea7b48",
-        "required_gaps": [
-          "setup.py sycl_setup routes to ROOT/sycl/setup_intel.py,which is absent;tools/setup_intel.py is separate and not that wired entrypoint.",
-          "strata_cli.launch.runner direct adopt.plan/adopt.write is outside tools/setup_intel.py validate_config/to_native guards."
-        ],
-        "reference": "docs/research/upstream-arc-control-setup.md",
-        "validation_pending": [
-          "Resolve entrypoint/adapter mapping.",
-          "Guard direct config replacement.",
-          "Map actual native accepted CLI flags.",
-          "Host packaged-Control dispatch observation."
-        ],
-        "changes_imported": false,
-        "native_launch_contract_reference": "docs/research/arc-native-launch-contract.md",
-        "native_source_only_gap": "Pinned non-i915 adopt path emits --stream-experts,which the pinned fork parser does not accept;direct config replacement also bypasses adapter validation/preservation. Conditional source inference,no observed launch or completed fix."
-      },
-      "unmodified_arc_benchmark_readiness": {
-        "state": "source_readiness_only_not_built_or_measured",
-        "reference": "docs/research/upstream-arc-benchmark-readiness.md",
-        "remaining": [
-          "Complete benchmark helper dependency closure and target config-to-argv/MTP asset mapping.",
-          "Pin image/compiler/driver/provider and qualify existing safety settings on actual upstream queues/capture.",
-          "Run unmodified hardware-tuned long-input,agent-session and thinking-enabled sustained strong/weak-MTP workloads."
-        ]
-      },
-      "reviewed_through": "504b143342a9fe1aa8320a7b31e11f5c0ac265c3"
-    },
-    "latest_delta_review": {
-      "target": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
-      "state": "two_bounded_static_source_maps_curated_original_resource_samplers_refused",
-      "scopes": [
-        "drafting selection and launch/control/offline/Arc functional dependencies",
-        "CPU IQ3/native expert/pool changes and actual SYCL source resolver;phase-specific candidates"
-      ],
-      "all742commits_or2086paths_reviewed": false,
-      "code_imported": false,
-      "whole_function_ledger_complete": false,
-      "performance_evaluation_complete": false,
-      "retained_map": "docs/UPSTREAM_INTEGRATION.md",
-      "review_sha256": "c341e53691981d989c0a2ae621c6eb2d31e581bb41ea6eec36a5c7752f0198c1",
-      "source_license": "Root LICENSE unchanged;quant source provenance MIT ggml/llama.cpp per bounded review. Check individual components before integration.",
-      "qualified_research_resource_envelope": false,
-      "findings": "One drafting decision and Arc config/native adaptation are required ports. CPU IQ3_SxQ8_K is conditional decode only;no long GPU-prefill candidate from these scopes. Pool quota changes need actual quota evidence. No source imported or performance measured."
-    },
-    "license_changed_since_previous_check": false,
-    "initial_all_tags_fetch": {
-      "exit_code": 1,
-      "main_ref_updated": true,
-      "error_reason_not_preserved": true,
-      "followup": "Verified successful main-only no-tags fetch and exact remote refs;no tag forced/replaced."
-    },
-    "last_check_delta": {
-      "start": "13eedf552417a6a791a7d13c6597e24300ee3a09",
-      "target": "baf16363b4403ef0ed4f538f5d5ed11c43fb9535",
-      "commits": 742,
-      "changed_paths": 2086,
-      "status": "fetched_not_imported"
-    },
-    "license_check": "Root LICENSE bytes unchanged from13eed;subcomponent provenance still requires individual review."
+      "status": "Still pending;new45commit review does not resolve these older functional/inference candidates or any full-ledger/vanilla-performance gate."
+    }
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
   "unmodified_upstream_performance_evaluation_complete": false,
@@ -123,9 +101,9 @@
   "current_engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
   "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-11-17T20:52:36.498148+00:00",
+  "next_check_utc": "2026-11-19T20:52:28.026884+00:00",
   "pending": "Complete the required-function ledger/imports throughbaf16363 (1121commits/2816changed paths beyond partial146df;new742commit delta remains source-review only),including the new Intel Arc setup fix;current630-path functional import remains146df3c4. Finish native SAVE/RESTORE/disk-session,BGEN/capability and desktop ports,full host validation,native v3.1 execution and unmodified hardware-tuned Niko performance evaluation. DFlash2 clean repeated agent/task/physical262144/RESTORE and default adoption remain open. Choose inference components separately;DeepSeek/35B execution remains excluded.",
-  "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
+  "legacy_upstream_clone_root": "main remains99f3dbd0b21d1401b3769e0c0d963913607f380b,v0.1.38,diverged628ahead/7106behind fetched origin/main. Existing local history and .worktree preserved;fetch only,no reset/checkout/rebase/force or root commit. Reconcile original-history consumers before repairing this old mirror.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
     "target": "477ac13cbe8e582c20484871ce459d20d82df09d",
@@ -1607,6 +1585,99 @@
           "normal_exit_code": 0,
           "ownership_closed": true,
           "GPU_executed": false
+        },
+        "declared_boolean_tool_args": {
+          "upstream_commit": "f5b255007c53be06a68ccda4f68569509e76b5ab",
+          "required": true,
+          "state": "ported_and_host_validated",
+          "target": "serve/frontend.py",
+          "behavior": "Convert True/False only for declared boolean types that do not also admit string;preserve plain strings and unknown words.",
+          "test": {
+            "upstream_path": "serve/test_bool_args.py",
+            "local_path": "serve/test_bool_args.py",
+            "sha256": "63b4dd50934a2fa2fcca92e227c998d803fff2396a7adef129a09b57db185267",
+            "content": "Exact Niko source."
+          },
+          "license": "Niko root MIT;same root LICENSE bytes as this fork",
+          "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+          "validation_key": "upstream_c775_small_functions_host_v1",
+          "inference_engine_changed": false,
+          "validation": {
+            "record_commit": "2d2ebd9bdbee5de955ad678e92bfe39d44881158",
+            "evidence_key": "upstream_c775_small_functions_host_v1",
+            "source_commit": "4f1724c88e5fc1fb05ef6d1ff54089a9e08b3dc5",
+            "role": "booleans-and-frontend",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "tests": 29,
+            "skipped": 0,
+            "skip_reasons": [],
+            "stdout_bytes": 0,
+            "stderr_bytes": 4153
+          },
+          "inference_performance_qualified": false
+        },
+        "stop_admission_without_timeout": {
+          "upstream_commit": "5c0c80d8b7414404555222a705de72a26e2a6cdf",
+          "required": true,
+          "state": "ported_and_host_validated",
+          "target": "serve/server.py",
+          "behavior": "Close inference admission before stopping without a drain timeout;preserve local owned-console cleanup and existing timed-drain path.",
+          "test": {
+            "upstream_path": "tests/terminal/test_stop_refuses_new_requests.py",
+            "local_path": "serve/test_stop_refuses_new_requests.py",
+            "sha256": "369ed78535c86e2c526a953ddc67cc2ef25ed5a36fc5e69a7993c4e07d94fcd9",
+            "content": "Exact Niko source;stop test relocated into serve for the maintained host harness."
+          },
+          "license": "Niko root MIT;same root LICENSE bytes as this fork",
+          "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+          "validation_key": "upstream_c775_small_functions_host_v1",
+          "inference_engine_changed": false,
+          "validation": {
+            "record_commit": "2d2ebd9bdbee5de955ad678e92bfe39d44881158",
+            "evidence_key": "upstream_c775_small_functions_host_v1",
+            "source_commit": "4f1724c88e5fc1fb05ef6d1ff54089a9e08b3dc5",
+            "role": "stop-admission",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "tests": 2,
+            "skipped": 0,
+            "skip_reasons": [],
+            "stdout_bytes": 0,
+            "stderr_bytes": 432
+          },
+          "inference_performance_qualified": false
+        },
+        "web_actual_drafter_label": {
+          "upstream_commit": "d8124515af7a0f3151d406462677e605a6e8f2a6",
+          "required": true,
+          "state": "ported_and_host_validated",
+          "target": "serve/web/app.js",
+          "behavior": "Show MTP speculation text only for an MTP drafter or an older engine without a drafter field;DFlash2/off no longer claim MTP.",
+          "test": {
+            "upstream_path": "serve/test_web_speculation.py",
+            "local_path": "serve/test_web_speculation.py",
+            "sha256": "a13d9629297b524766af4ca0167ff53a9f599ec628f22adbedc00021a2cb5f74",
+            "content": "Exact Niko source."
+          },
+          "license": "Niko root MIT;same root LICENSE bytes as this fork",
+          "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+          "validation_key": "upstream_c775_small_functions_host_v1",
+          "inference_engine_changed": false,
+          "validation": {
+            "record_commit": "2d2ebd9bdbee5de955ad678e92bfe39d44881158",
+            "evidence_key": "upstream_c775_small_functions_host_v1",
+            "source_commit": "4f1724c88e5fc1fb05ef6d1ff54089a9e08b3dc5",
+            "role": "actual-drafter-display",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "tests": 2,
+            "skipped": 0,
+            "skip_reasons": [],
+            "stdout_bytes": 0,
+            "stderr_bytes": 358
+          },
+          "inference_performance_qualified": false
         }
       }
     },
@@ -11216,5 +11287,5 @@
       }
     }
   },
-  "recurring_check_scope": "Actual ghq-clone fetch and matching remote main lookup near48hours. No checkout/model/engine changes. Functional integration and hardware-tuned unmodified-upstream evaluation remain incomplete and distinct from this check."
+  "recurring_check_scope": "Actual ghq-clone fetch plus freshly matching remote-main observation near48hours. Required functional imports,cumulative ledger and unmodified hardware-tuned upstream evaluation remain incomplete;no engine or model change."
 }

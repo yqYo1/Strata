@@ -1,25 +1,142 @@
+namespace {
+struct PrefillMoeRouterWeights {
+    const core::WeightRef *norm, *down, *up, *injection, *gate, *shared_gate;
+    bool ready() const {
+        return norm && down && up && injection && gate && shared_gate;
+    }
+};
+
+PrefillMoeRouterWeights prefill_moe_router_weights(const core::LayerView& v, std::string& err) {
+    return {need(v, "hc_ffn_norm.weight", err), need(v, "hc_ffn_down.weight", err),
+            need(v, "hc_ffn_up.weight", err), need(v, "hc_ffn_inject.weight", err),
+            need(v, "ffn_gate_inp.weight", err), need(v, "ffn_gate_inp_shexp.weight", err)};
+}
+
+template<class Engine>
+bool produce_prefill_moe_router_piece(Engine& m, const core::LayerView& v,
+        const PrefillMoeRouterWeights& w, const uint16_t* residual, int64_t rows,
+        PrefillMoeRouterPiece out, std::string& err) {
+    if (w.shared_gate->kind != core::WeightKind::Bf16InF32 || !w.shared_gate->data) {
+        err = "prefill MoE accumulator: shared scalar gate tensor"; return false;
+    }
+    native16::norm(residual, static_cast<const float*>(w.norm->data), EPS, m.grs, m.xn16, rows, m.cs);
+    if (!bf16_proj16(m.gemm, w.down, m.xn16, m.lo_b16, rows, v.name("hc_ffn_down.weight"), err)) return false;
+    native16::silu(m.lo_b16, m.lo16, rows, m.cs);
+    if (!bf16_proj16(m.gemm, w.up, m.lo16, m.gated_b16, rows, v.name("hc_ffn_up.weight"), err) ||
+        !bf16_proj(m.gemm, w.injection, m.xn16, out.injection, rows, v.name("hc_ffn_inject.weight"), err)) return false;
+    native16::mix(residual, m.grs, static_cast<const float*>(w.norm->data), m.gated_b16,
+                  m.mixed_bf, out.mixed, rows, m.cs);
+    if (!bf16_proj(m.gemm, w.gate, m.mixed_bf, out.logits, rows, v.name("ffn_gate_inp.weight"), err)) return false;
+    route(out.logits, out.ids, out.weights, rows, NE, m.cs);
+    // The scalar gate uses the original BF16 producer, not its FP16 sibling.
+    m.gemm.bf16(m.mixed_bf, static_cast<const uint16_t*>(w.shared_gate->data), out.shared_gate, rows, 1, N);
+    return true;
+}
+
+template<class Engine>
+void enqueue_prefill_prefix_experts(Engine& m, MoeWindowContext& owner, int64_t layer) {
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    if (owner.prefix_router_layer != layer || owner.prefix_experts.empty() ||
+        owner.prefix_upload.experts || !owner.expert_slots || !owner.private_expert_bank ||
+        owner.expert_cache != m.cache || owner.private_expert_bank->owner() != m.cache ||
+        owner.private_expert_bank->layout().stride != uint64_t(layout.blob_bytes(layer)) ||
+        owner.expert_source_stride != uint64_t(layout.blob_bytes(layer)) ||
+        owner.expert_upload_staging || owner.command_trace || !owner.scratch_mixed ||
+        !owner.prefix_router_storage || !m.layer_major_active || !m.native16_active ||
+        m.layer_major_residual.gpu_rows != m.layer_major_residual.rows || m.copy != m.cs)
+        throw std::invalid_argument("prefill prefix expert upload: owner, extent or queue contract");
+    const auto& bank = *owner.private_expert_bank;
+    auto* host_staging = owner.prefix_upload_host_storage.data() ? &owner.prefix_upload_host_storage : nullptr;
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    auto* native_copy = owner.prefix_native_copy.get();
+#else
+    sycl_backend::native_copy::NativeCopyList* native_copy = nullptr;
+#endif
+    if (m.borrowed)
+        sycl_backend::validate_spans({{bank.device_slot(0), size_t(bank.layout().backing_bytes)}},
+            {{m.borrowed_base, size_t(m.borrowed_capacity)}}, 1);
+    sycl_backend::cpu_wait_profile::Host host(sycl_backend::cpu_wait_profile::upload_submit);
+    owner.prefix_upload = detail::stage_prefill_fullfit_eager(*owner.expert_slots,
+        bank, owner.expert_slab, owner.expert_slab_bytes, owner.expert_source_stride,
+        owner.prefix_experts, m.cs, {{m.region, size_t(m.region_bytes)},
+         {owner.bank, size_t(owner.bank_bytes)}, {owner.prefix_router_storage, PrefillMoePrefixStorage::bytes},
+         {m.R, size_t(m.T * D * 4)}, {m.emb, size_t(m.T * N * 4)},
+         {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}},
+        host_staging, native_copy, owner.prefix_copy != PrefillPrefixCopy::sycl,
+        owner.defer_prefix_completion ? &owner.pending_prefix_upload : nullptr, owner.prefix_stage_order);
+}
+}  // namespace
+
+bool Prefill::run_prefill_moe_prefix_router(int64_t layer, int64_t rows, std::string& err) try {
+    Impl& m = *impl_;
+    auto& owner = *m.moe_window;
+    using Storage = PrefillMoePrefixStorage;
+    if (!owner.prefix_router_storage || owner.prefix_router_layer != -1 || !owner.bank ||
+        !m.layer_major_active || !m.native16_active || m.copy != m.cs || m.T != int64_t(Storage::rows) ||
+        layer < 0 || layer >= m.g->n_layers || rows != owner.maximum_rows ||
+        rows <= m.T || rows > detail::MoeAccumPlan::maximum_rows ||
+        uint64_t(rows) * D * sizeof(uint16_t) > owner.bank_bytes) {
+        err = "prefill MoE prefix router: invalid bank, lease or extent"; return false;
+    }
+    if (should_stop && should_stop()) { err = "cancelled"; return false; }
+    const core::LayerView v(*m.wt, layer, m.native_dense_overlay);
+    const auto weights = prefill_moe_router_weights(v, err);
+    if (!weights.ready()) return false;
+    owner.ids.resize(size_t(rows * K));
+    const auto out = Storage::view(owner.prefix_router_storage);
+    if (!produce_prefill_moe_router_piece(m, v, weights, owner.bank, m.T, out, err)) return false;
+    // Existing attention store/drain precedes this producer. Keep both host
+    // IDs and device outputs owned through the outer checked lease on failure.
+    if (cudaMemcpyAsync(owner.ids.data(), out.ids, Storage::id_bytes, cudaMemcpyDeviceToHost, m.cs) != cudaSuccess ||
+        cudaStreamSynchronize(m.cs) != cudaSuccess) {
+        err = "prefill MoE prefix router: prefix readback/drain"; return false;
+    }
+    owner.prefix_router_layer = layer;
+    if (owner.prefix_expert_upload != PrefillPrefixExpertUpload::off) {
+        if (!owner.prefix_experts.empty() || owner.prefix_upload.experts)
+            throw std::logic_error("prefill prefix expert upload: previous layer still owns its receipt");
+        owner.prefix_experts = detail::prefill_prefix_expert_ids(owner.ids, Storage::rows, K);
+        if (owner.prefix_expert_upload == PrefillPrefixExpertUpload::prefix) {
+            if (should_stop && should_stop()) { err = "cancelled"; return false; }
+            enqueue_prefill_prefix_experts(m, owner, layer);
+        }
+    }
+    return true;
+} catch (const std::exception& exception) {
+    err = std::string("prefill MoE prefix router: ") + exception.what();
+    return false;
+}
+
 // Main-authored expert-major window. Saved matrix inputs remain FP16;
 // router/shared scalar gate consume the original BF16 mix. Only the expert
 // accumulation order and the <=8192-row GEMM job shapes change numerically.
 bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t rows, std::string& err) try {
     Impl& m = *impl_;
     const bool split_accumulator = m.moe_window && m.moe_window->accumulator_primary_rows != 0;
+    const bool relocated_job_buffers = m.moe_window && m.moe_window->relocated_job_buffers;
     if (!m.moe_window || !m.moe_window->accumulation || !m.native16_active ||
         !m.layer_major_active || m.T != 8192 || m.copy != m.cs || !m.scratch_alias ||
         !m.cache || !m.host_res || layer < 0 || layer >= m.g->n_layers ||
         rows <= m.T || rows > m.moe_window->maximum_rows ||
-        rows > (split_accumulator ? detail::MoeAccumPlan::split_maximum_rows :
+        rows > (relocated_job_buffers ? detail::MoeAccumPlan::long_prefill_maximum_rows :
+                split_accumulator ? detail::MoeAccumPlan::split_maximum_rows :
                                   detail::MoeAccumPlan::maximum_rows) || first_row < 0) {
         err = "prefill MoE accumulator: unsupported entry"; return false;
     }
     auto& owner = *m.moe_window;
+    if (relocated_job_buffers && (first_row != 0 || rows != owner.maximum_rows))
+        throw std::invalid_argument("prefill relocated workspace requires one complete admitted window");
     auto& queue = sycl_backend::queue_for(m.cs);
     const uint64_t offset = detail::layer_major_mul(uint64_t(first_row), D * 2);
     const uint64_t bytes = detail::layer_major_mul(uint64_t(rows), D * 2);
     if (!owner.bank || offset > owner.bank_bytes || bytes > owner.bank_bytes - offset ||
         !owner.mixed || !m.region || !m.emb || reinterpret_cast<uintptr_t>(m.region) % 256)
         throw std::invalid_argument("prefill MoE accumulator: backing bank/arena bounds");
-    const auto plan = split_accumulator ? detail::MoeAccumPlan::make_split_scratch(rows,
+    if (relocated_job_buffers && !split_accumulator)
+        throw std::invalid_argument("prefill relocated workspace requires split accumulator ownership");
+    const auto plan = relocated_job_buffers ? detail::MoeAccumPlan::make_long_prefill_scratch(rows,
+        owner.mixed_bytes, m.region_bytes) :
+        split_accumulator ? detail::MoeAccumPlan::make_split_scratch(rows,
         owner.mixed_bytes, m.region_bytes) :
         owner.scratch_mixed ? detail::MoeAccumPlan::make(rows, owner.mixed_bytes,
             owner.mixed_tail_bytes, owner.mixed_tail_offset) :
@@ -38,14 +155,21 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     if (split_accumulator) {
         if (!owner.scratch_mixed || !owner.accumulator_tail ||
             owner.accumulator_primary_rows != plan.accumulator_primary_rows ||
-            owner.accumulator_tail_bytes != plan.accumulator_tail_bytes())
+            owner.accumulator_tail_bytes != plan.accumulator_tail_bytes() ||
+            owner.extra_workspace != reinterpret_cast<uint8_t*>(owner.accumulator_tail) ||
+            owner.extra_workspace_bytes != (relocated_job_buffers ? plan.extra_bytes :
+                plan.accumulator_tail_allocation_bytes()))
             throw std::invalid_argument("prefill split accumulator: owner/plan mismatch");
-        sycl_backend::validate_device_span(owner.accumulator_tail,
-            size_t(owner.accumulator_tail_bytes), queue);
-        sycl_backend::validate_spans({{owner.accumulator_tail, size_t(owner.accumulator_tail_bytes)}},
+        sycl_backend::validate_device_span(owner.extra_workspace,
+            size_t(owner.extra_workspace_bytes), queue);
+        sycl_backend::validate_spans({{owner.extra_workspace, size_t(owner.extra_workspace_bytes)}},
             {{m.region, size_t(m.region_bytes)}, {mixed, mixed_bytes},
              {bo, size_t(m.T * N * 2)}, {residual, size_t(bytes)}});
-    } else if (owner.accumulator_tail || owner.accumulator_tail_bytes)
+        sycl_backend::validate_spans({{owner.extra_workspace, size_t(owner.extra_workspace_bytes)}},
+            {{m.cache->device_slot(0), size_t(m.cache->bytes())},
+             {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}});
+    } else if (owner.accumulator_tail || owner.accumulator_tail_bytes ||
+               owner.extra_workspace || owner.extra_workspace_bytes || relocated_job_buffers)
         throw std::invalid_argument("prefill ordinary accumulator: unexpected split owner");
     if (owner.scratch_mixed) {
         if (!m.mixed_scratch_owners_ready() ||
@@ -85,9 +209,13 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     using Plane = detail::MoeAccumPlan::Plane;
     auto view = [&](Plane plane) -> void* {
         const auto span = plan.span(plane);
-        if (span.offset > m.region_bytes || span.bytes > m.region_bytes - span.offset)
+        const bool extra = span.storage == detail::MoeAccumPlan::Storage::extra;
+        auto* base = extra ? owner.extra_workspace : m.region;
+        const auto capacity = extra ? owner.extra_workspace_bytes : m.region_bytes;
+        if (!base || (extra && !relocated_job_buffers) || span.offset > capacity ||
+            span.reserved > capacity - span.offset || span.bytes > span.reserved)
             throw std::invalid_argument("prefill MoE accumulator: logical arena extent");
-        void* result = m.region + size_t(span.offset);
+        void* result = base + size_t(span.offset);
         sycl_backend::validate_device_span(result, size_t(span.bytes), queue);
         return result;
     };
@@ -109,19 +237,11 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     auto* sh = static_cast<uint16_t*>(view(Plane::shared_hidden));
     auto* status = static_cast<uint32_t*>(view(Plane::status));
     const core::LayerView v(*m.wt, layer, m.native_dense_overlay);
-    const core::WeightRef *wn = need(v, "hc_ffn_norm.weight", err),
-                          *wd = need(v, "hc_ffn_down.weight", err),
-                          *wu = need(v, "hc_ffn_up.weight", err),
-                          *wi = need(v, "hc_ffn_inject.weight", err),
-                          *wr = need(v, "ffn_gate_inp.weight", err),
-                          *wgi = need(v, "ffn_gate_inp_shexp.weight", err),
-                          *wsg = need(v, "ffn_gate_shexp.weight", err),
+    const auto router_weights = prefill_moe_router_weights(v, err);
+    const core::WeightRef *wsg = need(v, "ffn_gate_shexp.weight", err),
                           *wsu = need(v, "ffn_up_shexp.weight", err),
                           *wsd = need(v, "ffn_down_shexp.weight", err);
-    if (!wn || !wd || !wu || !wi || !wr || !wgi || !wsg || !wsu || !wsd) return false;
-    if (wgi->kind != core::WeightKind::Bf16InF32) {
-        err = "prefill MoE accumulator: shared scalar gate kind"; return false;
-    }
+    if (!router_weights.ready() || !wsg || !wsu || !wsd) return false;
     if (m.layer_major_profile) m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::moe, m.cs);
     if (cudaMemsetAsync(accumulator, 0, size_t(plan.span(Plane::accumulator).bytes), m.cs) != cudaSuccess ||
         cudaMemsetAsync(status, 0, sizeof(uint32_t), m.cs) != cudaSuccess) {
@@ -131,36 +251,58 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             size_t(owner.accumulator_tail_bytes), m.cs) != cudaSuccess) {
         err = "prefill split accumulator: tail initialization"; return false;
     }
-    // Attention/PLE already advanced each chunk exactly once. This helper is FFN only.
-    for (int64_t at = 0; at < rows; at += m.T) {
+    int64_t first_missing = 0;
+    if (owner.prefix_router != PrefillMoePrefixRouter::off) {
+        using Storage = PrefillMoePrefixStorage;
+        if (owner.prefix_router_layer != layer || first_row != 0 || rows != owner.maximum_rows ||
+            !owner.prefix_router_storage || owner.ids.size() != size_t(rows * K)) {
+            err = "prefill MoE prefix router: stale or missing prefix"; return false;
+        }
+        const auto prefix = Storage::view(owner.prefix_router_storage);
+        if (cudaMemcpyAsync(mixed_piece(0, m.T), prefix.mixed, Storage::mixed_bytes, cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess ||
+            cudaMemcpyAsync(injection, prefix.injection, Storage::injection_bytes, cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess ||
+            cudaMemcpyAsync(weights, prefix.weights, Storage::weight_bytes, cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess ||
+            cudaMemcpyAsync(shared_gate, prefix.shared_gate, Storage::shared_gate_bytes, cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess) {
+            err = "prefill MoE prefix router: publish saved FFN outputs"; return false;
+        }
+        first_missing = m.T;
+    } else owner.ids.resize(size_t(rows * K));
+    // Attention and PLE already advanced each chunk exactly once. The optional
+    // prefix producer supplies its outputs once, with the original tail order.
+    for (int64_t at = first_missing; at < rows; at += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         const int64_t count = std::min(m.T, rows - at);
-        const auto* r = residual + at * D;
-        native16::norm(r, static_cast<const float*>(wn->data), EPS, m.grs, m.xn16, count, m.cs);
-        if (!bf16_proj16(m.gemm, wd, m.xn16, m.lo_b16, count, v.name("hc_ffn_down.weight"), err)) return false;
-        native16::silu(m.lo_b16, m.lo16, count, m.cs);
-        if (!bf16_proj16(m.gemm, wu, m.lo16, m.gated_b16, count, v.name("hc_ffn_up.weight"), err) ||
-            !bf16_proj(m.gemm, wi, m.xn16, injection + at * HC, count, v.name("hc_ffn_inject.weight"), err)) return false;
-        native16::mix(r, m.grs, static_cast<const float*>(wn->data), m.gated_b16,
-                      m.mixed_bf, mixed_piece(at, count), count, m.cs);
-        if (!bf16_proj(m.gemm, wr, m.mixed_bf, logits, count, v.name("ffn_gate_inp.weight"), err)) return false;
-        route(logits, inverse + at * K, weights + at * K, count, NE, m.cs);
-        // Never reconstruct this BF16 producer from its already-rounded FP16 sibling.
-        m.gemm.bf16(m.mixed_bf, static_cast<const uint16_t*>(wgi->data), shared_gate + at, count, 1, N);
+        if (!produce_prefill_moe_router_piece(m, v, router_weights, residual + at * D, count,
+                {mixed_piece(at, count), injection + at * HC, inverse + at * K,
+                 weights + at * K, shared_gate + at, logits}, err)) return false;
     }
-    owner.ids.resize(size_t(rows * K));
-    if (cudaMemcpyAsync(owner.ids.data(), inverse, size_t(rows * K * 4), cudaMemcpyDeviceToHost, m.cs) != cudaSuccess ||
+    const bool census_requested = detail::moe_upload_census_requested();
+    if (census_requested) owner.prefix_weight_audit.resize(size_t(m.T * K));
+    if (cudaMemcpyAsync(owner.ids.data() + first_missing * K, inverse + first_missing * K,
+            size_t((rows - first_missing) * K) * sizeof(int32_t), cudaMemcpyDeviceToHost, m.cs) != cudaSuccess ||
+        (census_requested && cudaMemcpyAsync(owner.prefix_weight_audit.data(), weights,
+             owner.prefix_weight_audit.size() * sizeof(float), cudaMemcpyDeviceToHost, m.cs) != cudaSuccess) ||
         cudaStreamSynchronize(m.cs) != cudaSuccess) {
         err = "prefill MoE accumulator: router readback/drain"; return false;
     }
+    if (census_requested) {
+        const auto ids_hash = core::fnv1a64(reinterpret_cast<const uint8_t*>(owner.ids.data()), owner.ids.size() * sizeof(int32_t));
+        const auto weight_hash = core::fnv1a64(reinterpret_cast<const uint8_t*>(owner.prefix_weight_audit.data()),
+                                              owner.prefix_weight_audit.size() * sizeof(float));
+        std::fprintf(stderr, "strata MoE router census: layer=%lld first=%lld rows=%lld ids=%016llx prefix_weights=%016llx\n",
+                     (long long)layer, (long long)first_row, (long long)rows,
+                     (unsigned long long)ids_hash, (unsigned long long)weight_hash);
+    }
     {
         sycl_backend::cpu_wait_profile::Host group(sycl_backend::cpu_wait_profile::host_group);
-        owner.routes = split_accumulator ?
+        owner.routes = relocated_job_buffers ?
+            detail::MoeWindowRoutes::build_long_prefill_accum(rows, owner.ids.data(), owner.ids.size()) :
+            split_accumulator ?
             detail::MoeWindowRoutes::build_split_accum(rows, owner.ids.data(), owner.ids.size()) :
             detail::MoeWindowRoutes::build_accum(rows, owner.ids.data(), owner.ids.size());
     }
     std::unique_ptr<detail::MoeUploadCensus> upload_census;
-    if (detail::moe_upload_census_requested())
+    if (census_requested)
         upload_census = std::make_unique<detail::MoeUploadCensus>();
     if (m.layer_major_profile || upload_census) {
         // Metadata already owned on the host after the existing router drain.
@@ -168,7 +310,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         // This is a planned-job census; only final request/issuer totals prove
         // that all jobs completed. The old chunk census refuses window mode.
         std::array<uint32_t, 8193> job_rows{};
-        std::array<uint32_t, (detail::MoeWindowRoutes::max_split_accum_rows + 8191) / 8192 + 1> jobs_per_expert{};
+        std::array<uint32_t, (detail::MoeWindowRoutes::max_long_prefill_rows + 8191) / 8192 + 1> jobs_per_expert{};
         for (const auto& job : owner.routes->jobs()) ++job_rows[size_t(job.rows)];
         for (int32_t count : owner.routes->counts())
             ++jobs_per_expert[size_t((count + 8191) / 8192)];
@@ -209,7 +351,22 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     const auto& layout = strata::kernels::cpu::expert_layout();
     const auto& format = layout.fmt[size_t(layer)];
     detail::PrefillFullfitUploadReceipt eager_upload;
-    if (detail::prefill_fullfit_eager_requested() && owner.private_expert_bank &&
+    const bool use_prefix_upload = owner.prefix_expert_upload != PrefillPrefixExpertUpload::off;
+    if (use_prefix_upload) {
+        if (owner.prefix_expert_upload == PrefillPrefixExpertUpload::ffn) {
+            if (should_stop && should_stop()) { err = "cancelled"; return false; }
+            enqueue_prefill_prefix_experts(m, owner, layer);
+        }
+        eager_upload = owner.prefix_upload;
+        if (!first_missing || owner.prefix_experts.empty() ||
+            eager_upload.experts != owner.prefix_experts.size() ||
+            eager_upload.copy_commands != eager_upload.experts ||
+            eager_upload.payload_bytes != eager_upload.experts * uint64_t(layout.blob_bytes(layer)))
+            throw std::logic_error("prefill prefix expert upload: invalid layer receipt");
+        owner.staged_uploads += eager_upload.experts;
+        stats_.experts_streamed += eager_upload.experts;
+        owner.staged_upload_bytes += eager_upload.payload_bytes;
+    } else if (detail::prefill_fullfit_eager_requested() && owner.private_expert_bank &&
         owner.expert_slots && owner.expert_slots->full_fit() &&
         !owner.expert_slots->permanent_used() && !owner.expert_upload_staging) {
         if (m.layer_major_residual.gpu_rows!=m.layer_major_residual.rows ||
@@ -239,6 +396,17 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             (long long)layer,(long long)first_row,(unsigned long long)eager_upload.experts,
             (unsigned long long)eager_upload.copy_commands,(unsigned long long)eager_upload.payload_bytes);
     }
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    if (owner.defer_prefix_completion) {
+        if (should_stop && should_stop()) { err = "cancelled"; return false; }
+        if (!use_prefix_upload || !owner.prefix_native_copy || !owner.expert_slots ||
+            owner.prefix_router_layer != layer)
+            throw std::logic_error("prefill deferred expert upload: first-reader ownership mismatch");
+        hp::Host host(hp::upload_submit);
+        detail::finish_prefill_fullfit_deferred(*owner.expert_slots, *owner.prefix_native_copy,
+                                               owner.pending_prefix_upload);
+    }
+#endif
     int32_t loaded = -1;
     for (size_t index = 0; index < owner.routes->jobs().size(); ++index) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -345,6 +513,9 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         }
         ++owner.jobs;
     }
+    if (use_prefix_upload && std::any_of(eager_upload.first_upload.begin(), eager_upload.first_upload.end(),
+            [](bool pending) { return pending; }))
+        throw std::logic_error("prefill prefix expert upload: selected expert without a reader");
     // The host status destination belongs to the outer checked lease, even if DMA fails.
     owner.status_observed = ~uint32_t(0);
     {
@@ -392,14 +563,33 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::moe, m.cs);
     if (cudaStreamSynchronize(m.cs) != cudaSuccess) { err = "prefill MoE accumulator: HC writes drain"; return false; }
-    if (upload_census && !upload_census->emit_after_checked_drain(stderr, layer,
-            first_row, rows, format.gu_type, format.d_type, layout.blob_bytes(layer))) {
+    if (upload_census && (!upload_census->emit_after_checked_drain(stderr, layer,
+            first_row, rows, format.gu_type, format.d_type, layout.blob_bytes(layer)) ||
+        !upload_census->emit_first_routes_after_checked_drain(stderr, layer, first_row, *owner.routes))) {
         err = "prefill MoE census: output failed after checked drain"; return false;
     }
     if (owner.scratch_mixed && std::getenv("STRATA_TRACE"))
         std::fprintf(stderr, "strata MoE mixed owners: phase=retired layer=%lld first=%lld rows=%lld route_status=0 shared_HC=checked_drain callbacks=after_return\n",
             (long long)layer, (long long)first_row, (long long)rows);
     ++owner.windows; owner.source_bytes += uint64_t(rows * K * 4);
+    if (use_prefix_upload) {
+        const auto ids_hash = core::fnv1a64(reinterpret_cast<const uint8_t*>(owner.prefix_experts.data()),
+            owner.prefix_experts.size() * sizeof(int32_t));
+        std::fprintf(stderr, "strata MoE prefix expert upload layer: layer=%lld experts=%llu "
+            "requested_H2D_bytes=%llu ids_hash=%016llx readers=checked\n",
+            (long long)layer, (unsigned long long)eager_upload.experts,
+            (unsigned long long)eager_upload.payload_bytes, (unsigned long long)ids_hash);
+        ++owner.prefix_upload_layers;
+        owner.prefix_upload_experts += eager_upload.experts;
+        owner.prefix_upload_bytes += eager_upload.payload_bytes;
+        owner.prefix_upload_host_bytes += eager_upload.host_staged_bytes;
+        owner.prefix_experts.clear();
+        owner.prefix_upload = {};
+    }
+    if (first_missing) {
+        owner.prefix_router_layer = -1;
+        ++owner.prefix_router_completed;
+    }
     owner.routes.reset();
     return true;
 } catch (const std::exception& exception) {

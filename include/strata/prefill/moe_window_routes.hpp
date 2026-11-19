@@ -20,6 +20,7 @@ public:
     static constexpr int32_t max_rows = 16384;
     static constexpr int32_t max_accum_rows = 81920;
     static constexpr int32_t max_split_accum_rows = 117488;
+    static constexpr int32_t max_long_prefill_rows = 131072;
     static constexpr int32_t max_job_rows = 8192;
 
     struct Job {
@@ -70,6 +71,19 @@ public:
             new MoeWindowRoutes(int32_t(rows), ids, routes, true, true));
     }
 
+    // Separate long-prefill factory. Keep every older factory's refusal range;
+    // the new caller must independently admit both accumulator/workspace owners.
+    static std::shared_ptr<const MoeWindowRoutes> build_long_prefill_accum(
+            int64_t rows, const int32_t* ids, size_t id_count) {
+        if (rows < 2 || rows > max_long_prefill_rows)
+            throw std::invalid_argument("long prefill routes outside [2,131072]");
+        const size_t routes = size_t(rows) * top_k;
+        if (!ids || id_count != routes)
+            throw std::invalid_argument("long prefill route ID span mismatch");
+        return std::shared_ptr<const MoeWindowRoutes>(
+            new MoeWindowRoutes(int32_t(rows), ids, routes, true, true, true));
+    }
+
     MoeWindowRoutes(const MoeWindowRoutes&) = delete;
     MoeWindowRoutes& operator=(const MoeWindowRoutes&) = delete;
     MoeWindowRoutes(MoeWindowRoutes&&) = delete;
@@ -77,6 +91,10 @@ public:
 
     int32_t rows() const noexcept { return rows_; }
     bool split_accumulator() const noexcept { return split_accumulator_; }
+    int32_t accumulator_row_limit() const noexcept {
+        return long_prefill_ ? max_long_prefill_rows :
+            split_accumulator_ ? max_split_accum_rows : max_accum_rows;
+    }
     const std::array<int32_t, experts>& counts() const noexcept { return counts_; }
     const std::array<int32_t, experts + 1>& offsets() const noexcept { return offsets_; }
     const std::vector<int32_t>& source_rows() const noexcept { return source_; }
@@ -90,7 +108,8 @@ public:
 
 private:
     MoeWindowRoutes(int32_t rows, const int32_t* ids, size_t routes, bool inverse,
-                    bool split = false) : rows_(rows), split_accumulator_(split) {
+                    bool split = false, bool long_prefill = false)
+        : rows_(rows), split_accumulator_(split), long_prefill_(long_prefill) {
         // Validate the COMPLETE router output before publishing any upload view.
         for (int32_t t = 0; t < rows; ++t) {
             for (int32_t k = 0; k < top_k; ++k) {
@@ -132,6 +151,7 @@ private:
 
     int32_t rows_;
     bool split_accumulator_ = false;
+    bool long_prefill_ = false;
     std::array<int32_t, experts> counts_{};
     std::array<int32_t, experts + 1> offsets_{};
     std::vector<int32_t> source_;

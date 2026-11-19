@@ -8,6 +8,226 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Current selections
 
+- Keep staging all selected expert spans before native append. The 65537-token
+  staging-order comparison at `fe6d81002` keeps other inputs fixed. Subsequent
+  medians are 982.1 tok/s for all-at-once and 980.0 tok/s for per-span.
+  Per-span won one of the three warmed pairs. Keep early native copy issue and
+  first-reader completion as separate, interacting choices. Earlier issue
+  alone increased warmed prompt time by 0.51%. With deferred completion fixed,
+  earlier issue reduced time by 9.42%. The combination reduced time by 9.76%.
+  See `prefill_prefix_expert_schedule_timing_v1` and
+  `prefill_prefix_expert_host_stage_timing_v1` for the fixed reference arms.
+- The 32769-token same-binary observer bracket (`bcacbe020`,
+  `prefill_prefix_expert_stage_profile_v2`) closes three processes and six
+  thinking-enabled requests with matched routes/work, normal exits and no
+  fresh faults. Only the full host API trace was removed from the earlier
+  instrumentation; warm prompt ratios are 1.229/1.218
+  and client TTFT ratios 1.230/1.222
+  against the two clean controls, above the 1.20x gate. Clean warm PP is
+  860.9/852.8 tok/s and TTFT 38.353/38.603 s.
+  Keep the profiled request as diagnostic evidence. Its warmed H2D/kernel interval
+  overlap is 5.25 s, CPU time in known waits
+  is 21.10 s, and CPU row grouping is
+  0.089 s. The original
+  V1 cleanup failure remains at `b9117a05c`; physical ownership and session
+  cleanup were verified at `4053aaa12`. Physical saturation and the per-layer
+  critical path remain unmeasured.
+- The CPU-wait-only bracket at `002f1105d`, `prefill_prefix_expert_cpu_wait_v2`,
+  closes three processes and six 32769-input thinking-on requests. The ELF,
+  routing, payload and draft counts match. Prompt and TTFT observer ratios
+  are 0.992–1.010 against both clean controls, within the 1.20 limit.
+  Clean warm PP is 879.4/879.6 tok/s and
+  client TTFT is 37.447/37.512 s. All processes exit
+  normally with unchanged driver and no fresh fault. V1 preparation refused
+  a changed decision-document pin at `2566f8ac5`. V2 verified all historical
+  build controls from Git, the committed document delta and the exact live
+  compiler, dependency, fixture and executable files.
+  The warm calling thread accrued 34.55 CPU s.
+  Compatibility-queue waits account for 18.78 CPU s
+  across 1069 calls. Row grouping took
+  0.090 CPU s.
+  Inside 48 MoE status scopes, the four-byte D2H enqueue wrapper took
+  3.702 s wall and the subsequent explicit drain took
+  4.68 ms. These are nested calling-thread times.
+  The wrapper may wait for earlier GPU work. The CPU profile does not measure
+  the wire service or show that reducing CPU cycles will reduce prompt latency.
+- Status readback placement closes at `d99bacc3f`
+  (`prefill_status_destination_v5`). The component invokes the exact
+  compatibility memcpy and stream drain from the retained runtime archive.
+  Both ordinary and host-USM destinations pass status values, bounds and
+  checked cancellation. Six counterbalanced timing processes close 60
+  eligible batches and two smoke processes close normally with no new fault.
+  Same-context host USM stays alive through retirement.
+  [SYCL USM allocation rules](https://github.khronos.org/SYCL_Reference/iface/usm_allocations.html).
+  With a drained producer, the three paired full-time ratios are
+  0.778/0.888/0.855 (geometric mean 0.839).
+  With queued synthetic producers, they are 0.652/2.086/1.268
+  (geometric mean 1.199). The comparison charges one USM allocation per
+  48 queued copies and includes both enqueue and explicit drain. Host USM
+  shifts substantial time to the explicit drain. Queued results miss the
+  repeated-gain gate. Keep ordinary placement on the model route.
+  The V4 clock-floor failure is retained, including the original 4.06–9.97 ms
+  queued batches. V5 increases queued repetitions from 48 to 384 while keeping
+  the 10 ms floor. V1–V3 are separate pre-GPU dependency/launch refusals.
+- A same-ELF queue-audit experiment at `f37718d09` refused coverage.
+  Hardware and software perf collection were unavailable to this account.
+  The CPU-only loader canary passed both caller addresses and a propagated C++
+  exception. The actual native ELF verifies wait return PC 0x72762b and
+  caller slot +272 from the direct PLT call and its unwind row, and stderr was
+  the owned regular file. [GNU libc audit callbacks](https://snapshots.sourceware.org/glibc/trunk/latest/manual/html_node/Audit-API-Callbacks.html).
+  The unloaded 32K control reached 881.2 tok/s warm with 1,069 compatibility
+  waits and 18.71 CPU s inside them. The first audited request collected
+  1,034 of 1,069 waits, below the predeclared 98% count floor. All 1,034 resolve
+  to direct callers and carry 18.555 of 18.586 scoped wall seconds. The gate
+  stopped the subsequent requests. Physical termination of all four recorded
+  owners and absence of a fresh GPU fault were verified at `ac2b46bbc`.
+  Keep the original failure and first-use-only diagnostic.
+- The dominant observed caller at 0x4b400a is the attention store/drain in
+  `Prefill::run_impl`. Its 192 waits total 17.182 wall seconds and 17.135 CPU
+  seconds in that diagnostic. The return and error edge point to
+  `prefill MoE window: attention store/drain`. This drain also covers already
+  queued attention and input retirement. The 17.182 seconds are service at
+  the synchronization boundary. The warm profile and the amount of removable
+  wall time remain unmeasured.
+  Next isolate the BF16 attention residual store. Today the in-place write
+  updates the old chunk residual in scratch and a separate D2D copy saves
+  it into the window bank. Compare it with an out-of-place attention write
+  that reads the same original residual from scratch and writes the same
+  rounded BF16 value directly to the validated bank span. The current
+  in-place write reads its destination, so simply retargeting that pointer
+  could read the wrong value. Preserve the existing stream drain, host
+  token/step/PLE retirement, prefix-router order, callbacks, cancellation,
+  partial-tail handling and decode. For the observed four chunks × 48 layers,
+  the separate copy requests about 30 GiB of device-to-device payload.
+  The device component at `fe515ce995169764eb19316abf987b4426ffa9b4` checks
+  exact BF16 bits for 1/63/8191/8192 rows, including broadcast initialization,
+  guard regions, invalid spans and checked retirement. Each timed interval
+  includes 16 stores and their drains. The three copy/direct process
+  medians in ms are 52.197/36.225, 52.059/38.887 and 52.196/36.618
+  (geometric mean time ratio 0.714). The copy arm requests 2.5 GiB per
+  interval, and the direct arm requests zero. All seven processes retired
+  without a fresh GPU fault. These intervals start with ready inputs.
+  The coherent build adds only the four attention-store overlays to the
+  verified stage-all image. The 32769-input numerical comparison
+  (`7b134c044`) uses the same ELF in both arms. Four requests retain
+  identical routing digests, selected experts and draft counts. Direct
+  writes replace all 192 copy sites and remove 30 GiB of requested D2D
+  bytes per request.
+  At 65537 fresh input tokens, the clean same-ELF comparison
+  (`b973b13dd1408aeae56ef17e7ff5536d57bf6654`) retains six processes and
+  18 samples with thinking on. Direct writes remove 60 GiB of requested
+  D2D bytes per request. All three warmed pairs improve, with prompt-time
+  ratios 0.99301/0.99268/0.99358. The median of warmed process medians is
+  977.8→984.1 tok/s and client TTFT is 67.226→66.788 s. First-use TTFT
+  improves in two pairs and regresses in one. All processes exit normally
+  without a fresh GPU fault. The 982.1 tok/s old stage-all result remains
+  historical context.
+  The same-build standalone capacity comparison (`e5408e1c2`) passes both
+  arms at exactly 262144 physical input tokens. Both process 262143 batched
+  rows, then commit the last token in one checked verifier window, with zero
+  output and a checked refill drain. The physical route uses fallback mode 2
+  with 16384-row windows, 114688 GPU-resident BF16 rows, and 147455 host-backed
+  rows. Direct writes cover all 672 eligible attention pieces and remove
+  105 GiB of requested D2D copies. Both 16385-input controls emit the same
+  four greedy fixture IDs. All four native cases close normally with quiet
+  validation, no fresh GPU fault, and all 15 final asset hashes matched.
+  The original setup failure at `eb11bc3db` precedes any child launch.
+  The same-ELF native server RESTORE comparison (`f2a044c7f`) passes all
+  four independent processes and twelve requests. After switching to an
+  unrelated 33-token conversation, both arms restore 32769 or 253919 saved
+  tokens and read 8209 fresh tokens. The largest completed prompt is 262128.
+  The snapshot byte verifier passes main KV for 12 layers, draft KV, and
+  running state. Each paired request matches active fingerprints, prompt
+  publications and its single greedy fixture token. The unrelated request
+  uses the decode-cache window without lending expert slots. Both longer
+  requests use layer-major prefill and recover the checked 1256-slot decode
+  cache before generation. All native owners close normally without a
+  fresh fault. The original host peer refusal (`1a2115365`) and the
+  obsolete reader assumption about the unrelated request (`3f3687175`)
+  remain recorded.
+  Keep the direct path opt-in for the agent-session and repeated clean
+  thinking-enabled long-generation comparisons. Exercise the observed
+  high/low MTP-acceptance cases, keep decode settings fixed in both arms,
+  and separate clean speed from the native RESTORE diagnostics.
+  The first copy process completes all 18 requests and exits normally.
+  Its v4 result reader rejects the official v5 suite at `a246cf27f`.
+  A post-closure check reconciles the v5 request journal and native counters,
+  including six agent turns and both sustained requests. Code and prose
+  read 33211/33281 tokens, generate 2815/6823 tokens including thinking, and
+  reach 12.35/7.21 tok/s at 87.0%/33.9% draft acceptance. These are single
+  copy-arm diagnostics. The original failed gate stays recorded.
+  The v5 comparison stops during its first copy-arm process at the 16098-token
+  prompt, before it reaches agent or long generation. Layers 0 through 3
+  published checked expert-reader receipts. The watchdog reported 480 seconds
+  without progress at layer 4, offset 8192, and the native process terminated
+  with SIGABRT. Five CPU expert workers were parked. The first kernel fault
+  record follows the final engine log write by 4.83 seconds and is within
+  27 ms of the wrapper recording native exit. Xe recorded a CCS reset.
+  This timing leaves the initial stall cause unresolved. The identical
+  v1 request completed. Keep the 512-slot early native-copy path out of
+  subsequent runs pending isolation. After the automatic reset, the ordinary
+  SYCL device fixture checked copied data in two GPU consumers without a
+  reboot. The ordinary-queue model check (`prefill_ordinary_bank_ragged_v1`)
+  also passed six requests across the historical engine and the current
+  copy/direct stores. Each processed 8192 + 7905 batched rows, the final
+  prompt token, and 24 generated tokens. These synthetic inputs reproduce
+  the stalled shape with different prompt bodies. In each current request,
+  the 96 direct writes removed 15,823,994,880 requested D2D bytes versus
+  copying. All three owners exited normally without a fresh Xe fault.
+  The 384-slot setting sizes the common allocation for the largest expert
+  stride. All three arms used the same 1,022,361,600-byte bank.
+  At this shape, 24 layers fit 512 expert slots, 14 fit 469, nine fit 438
+  and one fits 384. This check admits the separate clean 64K comparison.
+  The same-period 384-slot comparison at `ecac777fc` closed nine
+  independent processes and 27 exact 65537-token requests. Each process
+  used the same three fresh bodies, with 24 output tokens and thinking
+  enabled. All native exits were zero and no fresh GPU fault appeared.
+  Warmed rates use the second and third prompt times in each process.
+
+  | 384-slot route | Warmed process rates (tok/s) | Median PP | First-request TTFT (s) | Warmed TTFT (s) |
+  | --- | --- | ---: | ---: | ---: |
+  | Historical ELF | 883.0/883.6/862.4 | 883.0 | 86.948 | 74.467 |
+  | Current ELF, copy output | 902.0/899.3/958.7 | 902.0 | 84.791 | 72.871 |
+  | Current ELF, direct output | 902.0/876.5/896.6 | 896.6 | 87.738 | 73.289 |
+
+  Paired warmed direct/copy time ratios were 1.00004/1.02603/1.06925. The direct path
+  avoided 60 GiB of requested GPU-local copies per request. Its
+  repeated-gain condition failed on ordinary384. Retain copy on this
+  route. The earlier 512-slot warmed gain remains scoped to that route;
+  the faulted early native-copy configuration stays out of subsequent runs.
+  The historical ELF previously reached 1006.8 tok/s. Its three new
+  processes used identical request hashes, expert work, requested H2D
+  volume and MTP counts. Replacing the old measurement root in the five
+  path-valued settings of the original environment template reproduces the
+  new template hash. The period difference remains unattributed.
+  The ordinary official suite closed six independent processes at
+  `f6bb38a61` with exit zero, closed owners and no fresh GPU fault. It checked
+  the identical 16098-token request, six-turn agent sessions, and thinking-on
+  sustained generation. Code read 33211 tokens and generated 2815 at 87.01%
+  draft acceptance. Prose read 33281 and generated 6823 at 33.93%.
+  Direct/copy paired TG geometric means were 1.00786 for code, 1.01896
+  for prose and 1.02267 for agent follow-ups. The first code pair was 0.99328.
+  All three comparisons passed the predeclared decode-preservation gate with
+  matched work counts. The separate ordinary384 long-prefill speed gate
+  above still selects copy. The CSV retains each configuration and workload.
+  On `perf/prefill-bank-input`, the resident-input native source is
+  `1bf54ec32`. It lets eligible prefill layers read the preceding layer's
+  BF16 bank directly and traces cumulative reads and copied bytes after
+  the existing layer drain. Decode is outside this change. The model
+  controller at `6e6a37930` checks the expected 46 of 48 layers in each
+  bank-backed arm and compares state and RESTORE across all four input
+  and output combinations. Its 253919-token prefix plus 8209-token
+  continuation reaches 262128 tokens and exercises a 16-row tail;
+  the final physical context slots need separate coverage. The server reader
+  at `f7e0ddeb0` checks the effective 512-slot bank for the mixed-residency
+  prefix and the staged 384-slot bank for its fully resident suffix. Both
+  use ordinary SYCL copies. The standalone controller at `b89af0bff` checks
+  all four input/output choices at 16385 and exactly 262144 tokens, including
+  the engine's checked final-slot marker and zero output at capacity.
+  Build, device and model checks are pending. If they pass, `4d9b176e5` compares
+  copy, direct input, direct output and both over 16 independent clean
+  processes with three 65537-token prompts apiece.
+
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
   performance gates fail in each clean campaign. Maximum-run evidence43d1a03e
@@ -2095,7 +2315,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   not establish a CPU critical-path limit. The actual limiting arithmetic/
   VRAM/PCIe resource and compatible ceilings remain unresolved. Next pin/read
   the dominant QSAprefix and copy paths and measure matching kernel/memory
-  ceilings before selecting one independent change. Keep the current-build
+  ceilings before selecting one independent change. The separate `transfer_refresh`
+  result already retains2MiB and335544320Bordinary/Host-USM copy samples on this
+  boot;match the actual called wrapper,shape and environment before reusing it
+  as a ceiling or commissioning another transfer run. Keep the current-build
   five-length/held-out timing curve pending as described below;two lengths
   and mixed routes/timing periods do not qualify a physical law.
   The native14508 symbol resolves to cached-Q/vec4K/vec4V/ordered-exp,
@@ -2132,12 +2355,1113 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and each speed loss. Do not assume that bank128alone frees enough space or
   that131Kfits. Keep current decode and both prefill strategies unchanged.
   Current-build five-length/time/TTFT and full-model qualification remain pending.
-  Reviewed future bank/window research identifies source limits117488split,
-  81920ordinary accumulation and8192per job,not runtime admission. Before
-  implementation,read/pin original moe_window.inc and expert_bank_plan.hpp;
+  The next source proposal `prefill_window_workspace_v1` moves only gathered
+  rows and router logits behind a distinct FP32 accumulator-tail allocation.
+  At131071rows,it needs729,799,424extra bytes;existing-arena planes plus mixed
+  tail need1,177,025,536B,below the source GDNregion lower bound1,180,698,624B.
+  With bank1,the earlier observed free-budget scenario leaves22,492,160B
+  beyond the unchanged512MiBheadroom. This is arithmetic,not actual admission.
+  The ordinary/split public methods and their row limits remain unchanged.
+  The opt-in long-prefill caller is built coherently in V2;component checks
+  pass and model checks remain unrun. Mode16uses
+  the explicitly requested bank and one admitted90113..131072row window;
+  unsupported lengths/budgets retain ordinary mode10 and its host-tail/full
+  context fallback. Mode10plus`STRATA_SYCL_PREFILL_MOE_RELOCATE_JOB_BUFFERS=1`
+  isolates relocation at the unchanged split128bank/window for the98Karm.
+  All settings are fixed before exec. The extra owner covers FP32tail,gathered
+  and logits;checked outer retirement precedes its free,and all three guards
+  are checked after model work. Producer/consumer spans bind the same owner.
+  No arithmetic,chunk8192,QSA,decode placement or U1implementation changes.
+  CPU capacity now passes all49,152row cases81921..131072,old-layout
+  invariants,two-plane separation,guards/chunk maps and negative refusals.
+  The preliminary CPUproof establishes capacity arithmetic;its closed output
+  is retired. Fresh same-build component results are below. Next independently
+  compare relocation,larger-window and combination arms;the bank-only loss remains.
+  Do not drop the positive U1eager-upload component:its32/64Kgain was measured,
+  and a separate period's lower absolute PP does not refute that matched gain.
+  The original owned layout has source limits117488split,
+  81920ordinary accumulation and8192per job,not runtime admission. The proposal
+  pins original moe_window.inc and expert_bank_plan.hpp;
   assess bank-only/window-only/combined arms separately and retain infeasible
-  cells. Hypothetical mode16 is not an accepted native14setting. No larger-window
-  implementation or model trial is currently eligible.
+  cells. Retained native14still rejects mode16. The new source proposal has
+  no model qualification. Extended route checks pass48
+  cases through131072rows,stable inverse/order/no-atomic uniqueness and old
+  factory refusals. Pure CPU CMake targets cover
+  routes and workspace. The existing Down fixture gains explicit long-prefill
+  tiny,full-span/dataflow and production-dispatch cases,including2333/2334/2335/
+  8192job rows,65536bank boundary and131072final row;startup arms are separate
+  processes with immutable environment. Their component safety checks pass below.
+  Every affected TU is rebuilt.
+  `prefill_window_build.py`pins an explicit14508-plus15owned-overlay composition,
+  preserving U1and the byte-identical9849native-job capacity safety check.
+  It rebuilds all objects and checks actual compiler/link inputs and the
+  Gemm/MoeAccumPlan/MoeWindowRoutes definitions across producers/consumers.
+  Its eight targets include CPUproofs,bank/Down safety fixtures,a matching
+  resident-GEMM resource reference and the physical-context diagnostic pair.
+  The initial preparation at`aeb671619`refused before creating a build root:
+  two U1headers contain the later`f13b3baf`cleanup of rejected U2,while the
+  device fixture still matches measured`51ea99cae`. The corrected prospective
+  controller pins the retained source and verifies exactly the removal of
+  the coalesce=false argument and its unreachable branch. Original U1samples
+  keep their original source identity;no build/device qualification is reused.
+  The bank-only cohort is closed. V1at`064ffb767`configures normally0,but is
+  closed before compilation after review finds its census omitted the two
+  pinned AOTfinalization/host-unbundle products. The prospective V2controller
+  accounts for those products,their actual Ninja recipe,relative link paths
+  and private temporary objects;missing external inputs still fail. Original
+  configure success and the observer hold remain. V2at`3a195f247`now builds
+  all eight targets normally0,in271.552s,with133fresh objects/130translation
+  units,1468actual compiler inputs,29external link inputs and no uncovered
+  dependency. All six Gemm includers and the accumulator/route producer and
+  consumer definitions are coherent;both AOTfinalization products are bound.
+  Engine SHA256is`b7c1d818c01264f6a6ceb17e4744a8c7a64054baa70c995787af0fbe2146638c`.
+  The source is the explicit14508-plus15overlay composition,not the entire
+  later tree. Owners are reaped/empty;model checks remain unrun. The live tree also
+  contains independent KV/verify proposals,which must not enter a prefill
+  performance comparison implicitly. Preserve the9849decode
+  reference;its implementation/performance/handoff remain adoption gates.
+  `prefill_window_device.py`closes all seven same-build checks at source
+  `e247fbff4`:three CPUchildren and six GPUchildren,all normal0/reapedempty,
+  quiet parameter validation,unchanged boot/driver and no fresh fault.
+  Host coverage is48routes,49152layouts,134admission bounds and9459KVhash cases.
+  Traced U1and tiny long-prefill pass;full bank checks cover0/1/127/512experts
+  and cancellation. All six117489/131071/131072contiguous/irregular cases pass
+  30bitwise original FP32FMA/BF16capture job checks,guards and terminal rows.
+  Full weight-map and selected-job gather dataflow pass at131072irregular.
+  Separate Down0/large processes each pass eight actual dispatch/fallback
+  cases at2333/2334/2335/8192rows;the large path selects only at>=2334.
+  Native16BF16/vllm/auto/original-split settings are fixed before exec;actual
+  initialized providers and pre-main validation are verified. This is component
+  evidence,not speed/adoption or physical262144qualification. Actual model
+  GPUadmission,old-path coherence and each independent model comparison remain pending.
+  All42closed successful build/component capture files(4,279,332B)and the
+  16,868Btemporary inventory are retired. Exact build/device records,all eight
+  ELFs and source/recipe evidence remain;fresh model admission passes afterward.
+  `prefill_window_model.py`prospectively separates four27request cohorts:
+  old-path coherence at128K,relocation at98K/split128,window length at128K/bank1,
+  then the combination against128K/bank256/window10. Each has three traced
+  admissions and three opposite-order clean process pairs;first/warm samples
+  stay separate. Safe fixed-work coherence/layout losses remain recorded and
+  permit a separate window question;only repeated fixed-bank window gain admits
+  the combination. Coherence closes at source`e81f93750`:nine normal0processes
+  and27thinking-on requests,quiet validation,no fresh fault and15final model
+  hashes. All residual rows remain onGPU;maps,jobs,dequants,GU/Down selections,
+  uploads and requested bytes match within each pair at bank256/window10.
+  The three clean new/original warmed-time ratios are1.008021,1.012501and
+  1.000776(geomean1.007088). The repeated-gain gate FAILS;aggregate warmed
+  PPis921.087original versus915.134new. Keep all samples and first use separate.
+  Do not adopt this as a replacement for the existing ordinary path or offset
+  its loss with another unit's gain. Original14508remains the ordinary-prefill
+  reference;legacy-path preservation/selection is an unresolved adoption hold.
+  The prospective rule permits the separately scoped relocation/window questions
+  after this safe fixed-work loss. It does not adopt the composed engine or
+  qualify decode/task/physical-context behavior. Next compare98K/bank128/same
+  window with relocation0/1,then128K/fixed bank1with window10/16. Relocation is
+  prepared at`5d9b768f3`:all15model hashes and18generated configurations/plans
+  are pinned;both arms use the same composed3a195fengine,bank128and window10.
+  Its host checks and first32Kfallback process pass:three exact32769-read,
+  thinking-on24-output requests,bank128/window10,ordinary layout/extra0,
+  all32768BF16residual rows onGPU,normal0/reapedempty,quiet validation and no
+  fresh fault. The first98Kreference also passes all three98305-read requests:
+  98304rowsGPU,48windows,primary65536,335544576Bextra tail allocation and the
+  original job-plane placement,normal0/reapedempty,quiet validation and no
+  fresh fault. The relocated98Karm also passes all three requests with the
+  same maps,jobs,dequants,GU/Down selections,uploads and requested bytes.
+  Its394265344Bextra owner is actually admitted,and all three guards and final
+  drains pass before retirement;all98304BF16residual rows remain onGPU.
+  Native exit is normal0/reapedempty,validation quiet and no fresh fault.
+  The full relocation cohort closes with nine normal0processes/27requests,
+  quiet validation,no fresh fault and15final model hashes. All three clean
+  pairs conserve maps,jobs,dequants,GU/Down selections,uploads and requested
+  bytes. Relocated/original warmed-time ratios are1.012512,1.000491and1.006909
+  (geomean1.006626);the repeated-gain gate FAILS. Aggregate warmed PPis942.723
+  original versus935.818relocated. Keep first-use and individual samples;
+  neither the placement change nor the composed engine is adopted. This
+  preserves the separate bank/coherence losses. The prospective rule permits
+  the next independent128K/fixed-bank1window10/16question;only its repeated
+  gain permits the combination. The fixed-bank window question is prepared
+  at`3a520417f`,with15model hashes and18generated configurations pinned.
+  Both arms use the same coherent candidate and bank1;only window10/16and
+  its required layout differ. Host probes and the first32Kfallback process
+  pass:three32769-read/thinking-on24-output requests,bank1,all32768BF16rows
+  onGPU,ordinary32768window/extra0,normal0/reapedempty,quiet validation and
+  no fresh fault. The128Kreference also passes all three131072-read requests:
+  all131071BF16rows onGPU,bank1,81920maximum rows/96windows,extra0,
+  normal0/reapedempty,quiet validation and no fresh fault. The larger-window
+  arm also passes all three131072-read requests:729799424Bextra owner is
+  actually admitted,all131071BF16rows remain onGPU,maximum131071rows and
+  48windows,three guards/final drains checked,normal0/reapedempty,quiet
+  validation and no fresh fault. Jobs fall38324/38507/38286to24709/24759/24721;
+  dequants fall33606/33785/33584to19079/19107/19085. Requested expert H2Dfalls
+  68.54..68.95GBto38.95..39.01GB;this is payload,not measured wire traffic.
+  Traced warmed time149.73605sversus136.69505sis mechanism evidence,not the
+  clean repeated-gain decision. The full window cohort now closes with nine
+  normal0processes/27requests,quiet validation,no fresh fault and15final model
+  hashes. All three opposite-order clean pairs pass the fixed-bank window
+  gain gate:time ratios0.914916/0.908997/0.904083,geomean0.909321.
+  Aggregate warmed PPis864.962reference versus951.557new;new process PPis
+  952.034/951.557/949.647. Median warmed client TTFTis151.8305sversus137.9815s.
+  The separately scoped combination is prepared at`86493d658`:15model
+  hashes and18generated inputs pinned,same coherent engine in both arms,
+  bank256/window10versusbank1/window16. Host probes and the32Kfallback
+  process pass:three32769-read/thinking-on24-output requests,all32768BF16rows
+  onGPU,bank1,ordinary32768window/extra0,normal0/reapedempty,quiet validation
+  and no fresh fault. The128Kreference also passes three131072-read requests,
+  bank256/window10,all131071BF16rows onGPU,81920maximum rows/96windows,
+  normal0/reapedempty,quiet validation and no fresh fault. The combined
+  candidate also passes all three131072-read requests,bank1/window16,
+  all131071BF16rows onGPU,729799424Bextra owner admitted,48windows and
+  three guards/final drains checked,normal0/reapedempty,quiet validation and
+  no fresh fault. Jobs38324/38507/38286become24709/24759/24721;requested
+  expert H2D43.61..43.84GBbecomes38.95..39.01GB. Traced warmed time is
+  144.01965sversus137.41725s;this is not the clean repeated-gain decision.
+  The full combined cohort closes with nine normal0processes/27requests,
+  quiet validation,no fresh fault and15final model hashes. All three
+  opposite-order clean pairs pass the declared combined-gain gate:time
+  ratios0.963803/0.950117/0.956801,geomean0.956891. Aggregate warmed PPis
+  911.365reference versus952.512new;new process PPis946.737/957.637/952.512.
+  Median warmed client TTFTis144.1225sversus137.9395s. This closes the four
+  prospective coherence/relocation/window/combined questions,not model
+  qualification. No inference route is adopted and128K1000PPis not reached.
+  A further experiment needs its own committed plan. The next source question
+  revalidates64Kat fixed384bank/window10:original14508JIT,coherent3a195fJIT,
+  and same-image U1eager. These isolate the coherent-source unit,the upload
+  unit and their net result with three opposite-order clean process pairs per
+  question. Three traced admissions precede the nine clean processes;each has
+  three thinking-on24-output requests. The shared JITcontrols are declared
+  prospectively. Preserve every unit/first-use loss;neither a net gain nor
+  1000PPalone qualifies an ordinary route or current9849decode preservation.
+  The CSV's best coherent64Kevidence is`f9662f7ab`:1006.832warmed PP,three
+  independent processes and65.2565swarmed client TTFT. Positive U1eager
+  evidence`410f6cb8d`uses an earlier same-image cohort;its64Ktime geomean
+  is0.986223,but a32Kfirst-use pair loses10.3%. These are reference evidence,
+  not new same-period comparisons. Use the existing three native generations;
+  no build is needed. The closed window controller retires to its original
+  commits;shared workspace/dispatch readers and this source question live in
+  maintained tools. Source/helper/gate tests must be committed before running;
+  generated configurations must be committed before host or native execution.
+  Initial source`00556af9b`preparation stops before model hashing/root creation
+  or GPUexecution:the old build/device readers also pin the retired window
+  controller. Preserve that failed admission. V2reuses only the exact closed
+  native/component records after recovering every original control from Git,
+  requiring all live inputs unchanged and allowing only that named committed
+  CLIretirement. Original strict readers and all native/fixture hashes remain
+  unchanged;the controller-only reuse is not a new build or GPUqualification.
+  V2is prepared at`c429e16d1`:773current source inputs,15full model hashes
+  and24generated JSONpayloads are pinned;seven CPUgate regressions and both
+  frontend probes pass. All three traced64Kadmissions close normal0/reaped
+  empty with nine exact65537-read/thinking-on24-output requests,quiet
+  validation,no fresh fault and unchanged boot. All65536BF16residual rows
+  stay onGPU,bank384/window10/48windows/extra0. Actual GU/Down/job/map/upload/
+  requested-payload work matches across all arms. Eager logs24unique full-fit
+  layers per request,9178/9179/9160individual copies and checked final bank
+  drains. The full64Kcohort now closes with12normal0/reaped-empty processes,
+  36exact thinking-on requests,quiet validation,no fresh fault,unchanged boot
+  and15final model hashes. Actual request/job/map/upload/payload work agrees
+  across all three arms. The coherent-source unit FAILS its repeated-gain gate:
+  warmed-time ratios0.984350/0.984745/1.001215,geomean0.990072;the last pair
+  loses0.12%. Preserve that failure and the original ordinary path. Same-image
+  U1eager PASSES independently:ratios0.983994/0.987560/0.976567,geomean0.982696,
+  with all three paired warmed TTFTs improved. Its third first-use pair loses
+  0.53%;do not claim every first use improves. The net eager/original question
+  PASSES:0.968595/0.972495/0.977753,geomean0.972940. Aggregate warmed PPis
+  881.993original/890.059candidate-JIT/904.537eager;eager process PPis
+  904.537/907.461/902.061. Warmed client TTFTmedians are74.501/73.8235/72.648s.
+  Net improvement does not adopt the failed coherent-source ordinary route,
+  current9849decode or the whole model. No arm reaches the1000PPtarget.
+  Full cohort evidence is`64f5b9899`;six first-use/warmed CSVpoints bring
+  the cumulative index to643without replacing earlier milestones.
+  All36samples,12native identities and the unchanged unit decisions remain
+  compact with six shared actual-work cases. The773original Git inputs and
+  24generated JSONpayloads are recovered exactly. The closed campaign CLI
+  and its four decision tests retire to Git;reusable workspace/upload
+  admission readers and their three host tests remain for the next curve.
+  All845closed capture files(127,754,680B)and237,945Btemporary inventory
+  are retired after the pushed recovery/curation decision. Shared build,
+  device and original speed-basis records remain;no native build is retired.
+  Fresh post-retirement basis/device admission passes for all eight candidate
+  and12original same-build executables,current decode artifact and shared
+  records;three reusable host regressions pass. This executes no GPUwork and
+  establishes no new model/teardown qualification.
+  Historical64Krequest hashes match all three current requests;different
+  timing periods do not identify a regression cause. Keep the36samples and
+  each separate outcome. Same-image eager-path input-length/time/TTFT
+  characterization uses16K/32K/48K/64K/80Kordinary-route
+  lengths and independent held-out56K(actual reads add one final token).
+  Keep bank384/window10/chunk8192fixed;16Kis diagnostic,not long-input adoption
+  evidence. Commit its controller,repetition/order,approximation/held-out rule
+  and stopping criteria before preparation or new execution.
+  The prospective controller uses traced16K/80Kadmissions followed by clean
+  64K/16K/80K/32K/48K/56Kprocesses,three thinking-on24-output requests each.
+  First use and the median subsequent2remain separate. Fit affine/quadratic/
+  NlogNmodels to the five declared training lengths,choose by whole-length
+  LOOerror with a training-spread preference for an adequate affine model,
+  then report independent56Kprediction errors.56Knever changes coefficients
+  or selection. Preserve competing models within the empirical spread;one
+  process per length does not establish independent repetitions or a physical
+  law. Same-length traced/clean work and the preceding64Keager work must
+  match exactly. No native build or source-unit adoption is implied.
+  `eager_prefill_length_curve_v1`is prepared at`6d71a5f63`:775committed
+  source inputs,16generated JSONpayloads and15full model hashes are checked.
+  Five analytic host regressions pass,including held-out independence and
+  competing-model/spread handling. Both frontend probes pass. V1stops before
+  GPUexecution:the first16Kclient exits2because the controller omitted the
+  existing`--prefill-short-diagnostic`flag. Preserve the failed protocol/owner
+  observation;separate reconciliation confirms its sole child was reaped and
+  no session member remains. No native engine starts and no curve sample is
+  qualified. V2preserves the original lengths,order,math and fit criteria,
+  adding only the required16Kdiagnostic argument and its real-parser test.
+  All eight planned commands pass the actual CLIparser;all six host tests
+  pass at`8b490fe33`. The775original Git inputs and16generated JSONpayloads
+  are recovered exactly before retiring24failed-client files(173,835B)and
+  the6,859Btemporary inventory. The original failed observation remains
+  unchanged and recoverable at`cc9814fe9`;ownership reconciliation is separate.
+  Corrected V2is prepared at`a9a90b203`:775committed source inputs,
+  16generated JSONpayloads and15full model hashes are pinned again. No
+  native build changes;both frontend probes pass. Both traced admissions
+  close normal0/reapedempty with six exact16385/81921-read requests,
+  all BF16residual rows onGPU,bank384/window10/extra0,quiet validation and
+  no fresh fault. The full curve closes with eight normal0/reapedempty
+  processes/24thinking-on24-output requests and15final model hashes.
+  Traced/clean16Kand80Kwork and preceding64Keager work agree exactly.
+  Clean warmed prefill seconds at16/32/48/64/80Kare
+  31.52345/44.03335/57.73680/72.50165/88.35810;reserved56Kis64.37670.
+  Actual reads add one token. With`x=actual_read_tokens/65536`,the selected
+  warmed prefill approximation in seconds is
+  `T=20.065975+43.561341*x+8.862286*x*x`;warmed client TTFTis
+  `T=20.248736+43.537613*x+8.921143*x*x`.
+  Whole-length LOOmean/max errors are0.1208/0.3474%for prefill and
+  0.0376/0.0588%for TTFT. Independent56Kpredictions are64.96824/65.17530s
+  versus64.37670/64.56850s observed:errors0.9189/0.9398%,larger than the
+  training two-sample spread envelopes0.5338/0.4373%. Do not turn this
+  descriptive fit into a precise physical law or confidence interval.
+  Initial-request prefill and TTFTselect affine models:
+  `T=27.970634+56.773760*x`and`T=28.121433+56.816400*x`seconds.
+  Their LOOmean/max errors are3.9288/6.0379%and3.9184/6.0326%;reserved56K
+  errors are1.7693/1.7685%. Preserve all three candidate models per series,
+  residuals,adjacent slopes and the original selection rule. No56Kvalue
+  changes coefficients or selection. One independent process per length
+  characterizes this fixed ordinary route only;the fitted intercept does
+  not identify a physical fixed cost and the curve must not be extrapolated
+  past80Kor mixed with another placement/window route. Current64K/80KPPis
+  903.938/927.148;this is not a paired gain,1000PPor model qualification.
+  Full curve evidence is`90a1bc130`;12first-use/warmed length points bring
+  the single CSVto655rows,with24-output TGleft unqualified.
+  All24samples,eight native identities and original fit/qualification
+  decisions remain with18shared actual-work cases;every route reconstructs
+  exactly. All775original Git inputs and16generated JSONpayloads recover.
+  The closed controller and its CLI-specific test retire to Git;five reusable
+  fit and three workspace host tests pass. All565ended capture files
+  (85,171,178B)and160,597Btemporary inventory are retired. Fresh static
+  basis/device admission passes after retirement,without GPUwork.
+  This develops the faster owned candidate while its source-selection and
+  phase-preservation gates remain pending. Retain both phase references and
+  the candidate for the next bounded64Kclean/observed resource attribution;
+  commit its observer-cost plan and collector admission before execution.
+  Its first gate is`eager_pti_probe_v1`:control then collector on the exact
+  retained eager-bank fixture,4experts/256and512strides/2layers,normal and
+  cancellation cases. Pin original collector/source/provider identities,
+  checked drains,quiet validation,normal closure and enclosing RAW clocks;
+  no model launch until that gate passes. It is prepared at`98e1ac6b3`,
+  with776committed inputs and three host regressions passing. Control and
+  collector both close normal0/reapedempty with both original numerical/
+  cancellation cases,quiet validation and no fresh fault. The single trace
+  has positive GPUintervals inside the actual enclosing RAW lifetime;
+  source/fixture/collector/provider hashes remain unchanged. This qualifies
+  the bounded collector probe,not model overhead,complete service/count
+  coverage,physical saturation or ordinary teardown. No native rebuild.
+  All776original source inputs recover exactly. The15ended probe files
+  (381,237B)and4,636Btemporary inventory are retired;only its full qualification
+  record remains for the immediate64Kprofile reader and retires with that consumer.
+  The next model plan is four fresh64Kprocesses,clean/collector/collector/
+  clean,three thinking-on24-output requests each,matched to the closed
+  curve's exact bodies and bank384/window10/chunk8192/eager/throughput
+  configuration. Only device collector injection varies. Keep first use
+  and the subsequent2median separate;both paired ratios for prompt,client
+  TTFTand total duration must remain0.9..1.1for the observer-cost screen.
+  Preserve failures and perturbed observations;this is no speed-adoption
+  gate. Use the qualified device-only settings,without API trace,pause,
+  hardware metrics or a native rebuild. Prospective limits are1GiB/4million
+  events per trace,1280MiBper process and5GiBcampaign. Analyze closed native
+  runs serially with explicit CPU/RSS/time bounds. Retain kernel-family/copy
+  services,requested bytes,interval unions/overlap and boundary crossings.
+  Whole-request gates include24decode tokens;they do not establish a drained
+  prefill critical path,physical PCIe/VRAM traffic or hardware saturation.
+  The first model cohort used source `14191596d` with 783 committed inputs,
+  eight generated plans and 15 model assets. Fourteen host tests and both
+  frontend probes passed. The first clean process closed with 902.133 PP
+  and a warmed client TTFT of 72.840 s. The first traced process closed
+  natively with all three request bodies and routes verified, quiet validation
+  and no fresh faults. Its host analysis was stopped because the 4 MiB output
+  budget counted the existing 550,229,888-byte input trace. The cohort stopped
+  at that failure. Its original outcome is retained at `8173b1aab`.
+  A separate analysis run isolated output from the trace, then failed on an
+  optional comparison argument. Preserve `7c1432307`. The corrected reader
+  uses the verified request totals without this argument. It passed the 11
+  host regression tests and recovered all three windows without GPU execution.
+  In the two warmed traced requests, observed GPU intervals span 71.690 and
+  73.075 s within 80.661 and 82.905 s external windows. The QSA prefix family
+  takes 14.382 and 14.374 s of service. Copies classified by PTI as M2D take
+  14.715 and 15.858 s for 48.338 and 48.302 GB of requested API payload.
+  M means unknown memory classification. Copy/kernel overlap is 13.8 and
+  14.7 ms. Kernel interval union is 55.024 and 55.136 s. The first pair puts
+  warmed prompt overhead at 7.98%. The full observer-cost screen is pending.
+  These observations put both transfer costs and the QSA kernel on the
+  shortlist. Counter data for physical PCIe, VRAM and arithmetic limits are
+  still unavailable. Keep the failed cohort and run the reverse order under
+  a prospectively committed plan with isolated analysis output. The new
+  trace/clean pair has three identical requests per process. Its 10% screen
+  applies to the fresh pair. The earlier clean/trace timings are a descriptive
+  cross-check and the original four-process qualification stays failed.
+  Run the collector unchanged and preserve the same native build, parameters
+  and trace limits. The separate analysis owner counts its own 4 MiB output
+  tree. All 14 host checks pass at `fe99c5ac4`. The original 783 Git inputs and
+  eight generated inputs recover exactly. All 162 closed capture files
+  (571,700,347 bytes) and the 44,960-byte inventory have been retired.
+  The fresh reversed pair closes with six exact thinking-on requests,
+  both native exits zero, quiet validation, no fresh driver fault and all 15
+  final model hashes checked. Clean warmed prefill is 72.433 s (904.797 PP)
+  and client TTFT is 72.627 s. Fresh trace/clean ratios for first prefill,
+  TTFT and total duration are 1.071699, 1.074036 and 1.084660. Warmed ratios
+  are 1.070933, 1.073609 and 1.081274. All six are within the planned 10%
+  envelope. The archived clean-first pair remains a descriptive cross-check.
+  GPU event counts match the earlier trace for all three requests
+  (229519, 229312 and 229131) with zero boundary crossings in both traces.
+  Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
+  each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
+  requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  In these two requests the expert-bank counters record 18,204 and
+  18,182 uploads, requesting 37,173,094,400 and 37,137,228,800 bytes.
+  Subtracting those totals from the corresponding M2D counters leaves
+  exactly 3,013 commands and 11,164,427,264 bytes in each request.
+  This is a cross-check on aggregate demand. The trace does not associate
+  each copy with a call site or measure physical PCIe traffic.
+  The retained request summaries have no per-copy submission IDs or
+  pointer classes to join to individual tensor uploads. The split
+  accumulator submits both source and inverse int32 row maps. The two
+  together request 251,658,240 bytes, about 2.25% of the difference if
+  both were classified as M2D.
+  The actual IQ3_S pack index (`b2a01487`) also identifies a smaller,
+  directly testable transfer change. Across 48 layers, 672 canonical
+  tensor payloads total 1,455,214,080 bytes. Joining adjacent ranges only
+  when both source and destination touch gives 217 copies of the exact
+  same bytes. The 105 persistent tensors and the full decode restore
+  are outside this change. Child `f40b91b14` implements it behind
+  `STRATA_SYCL_PREFILL_CANONICAL_CONTIGUOUS_COPIES=1`. The original
+  prepare, retirement, completion and publication still bracket each layer.
+  First verify the actual 672/217 submissions and identical bytes between
+  the 48 fixture markers, all tensor values, PLE bindings and full restore.
+  Child `fa2191d38` checks each successful UR copy against the IQ3_S pack
+  offset, the published device bank address and the exact tensor extent.
+  It checks the final timed layer before overwriting it, then replays and
+  reads back all layers outside the timer. These checks await execution.
+  In the recorded ordinary build (`a3dddff2`), the fixture links seven
+  archived libraries with 106 direct object members. Their archive order,
+  file hashes and Ninja dependency lists were inspected. No member includes
+  the canonical-bank class definition. Only the model and full-context
+  generator objects included it in that build, and neither enters the
+  fixture link. A separate fixture can therefore compile the candidate
+  header against these exact archives without changing the model executable.
+  Recheck that closure at build time. A model trial still requires a fresh
+  coherent generator build. The source tree's SYCL CMake file differs from
+  the recorded one, so retain the original configured compile/link recipes.
+  Then compare six fresh processes in rows/runs, runs/rows, rows/runs
+  order. Each accumulates full activation call time across 48 layers in
+  four sweeps, with a 10 ms floor. Record the first separately; all three
+  paired subsequent-sweep medians must improve before a model trial.
+  This source-based count neither assigns those copies to PTI M2D nor
+  qualifies a speed change. Keep the native packed projections independent.
+  The two original IQ3_S shard directories, filtered by the native dense
+  loader's matrix criteria, give 300 GPU weight owners across 48 layers,
+  totaling 2,116,951,040 bytes. Per-layer packed payload ranges from
+  30,423,040 to 50,918,400 bytes. Keeping layers 3 and 7 would occupy
+  64,471,040 bytes during prefill and avoid 128,942,080 requested bytes
+  if it eliminated both their activation copies and post-prefill reloads.
+  Actual admission, graph ownership and duration for partial retention
+  remain open. The layer-copy candidate above retains no extra weight owner.
+  The earlier 117489-token, 1256-expert-slot run spent about 384–385 ms
+  restoring all native packed owners. Its enclosing 650–817 ms also included
+  canonical restoration. Use the inner interval when estimating savings
+  for native owners. Neither interval establishes costs at 384 slots or
+  admission at the physical context limit.
+  Clean 64K needs 6.896 s less prefill time to reach 1000 PP. QSA prefix
+  is the largest observed kernel family. Its service and the competing copy
+  cost both warrant independent work. The next QSA component comparison
+  should hold the WG128/SIMD16, 32-cell tile, typed K/V, BF16 rounding and
+  ordered FP32 softmax fixed. Compare the current shared K/V local tile
+  against a separate V tile with the same late gather, then compare late
+  versus early V gathering with the same separate storage. The extra V
+  tile costs 16 KiB per workgroup. Check the actual allocation and
+  occupancy impact, zero-fill and tail rules, uniform barriers, and exact
+  output and state conservation before timing. Start from the owned large
+  cap-2051 gather and clustered production-shaped fixtures and include
+  short/invalid/tail and full-context address cases. Commit source and
+  repeated component criteria before building. The QSA timing and measured
+  copy overlap do not identify a saturated hardware resource.
+  The two warmed traces also isolate 20,591 and 20,568 mixed-input expert
+  gather commands (2.001 and 2.002 s). In each, all 48 windows used a
+  single resident input bank. The 125,829,120-byte int32 source map covers
+  31,457,280 routed rows, each copying 2,560 FP16 values. The explicit
+  gathers therefore request 150 GiB of input and 150 GiB of output per
+  prompt, equivalent to about 161 GB/s of logical tensor work. Cache
+  reuse, physical VRAM traffic and bandwidth saturation remain unknown.
+  Only 4,217 jobs reached fused gate/up in either request, but they
+  account for 89.0% of the routed rows. A gather-free input to those jobs
+  could avoid about 133.5 GiB of intermediate writes per prompt. The
+  resulting XMX reader cost and benefit to end-to-end prefill are untested.
+  Child `6a4af5fd2` keeps the existing scalar gather and adds a component
+  arm that copies eight FP16 bit patterns per work item. The operation
+  retains invalid-row zeroing, sticky status bit 4 and four-byte base
+  alignment. The new numerical cases cover one/two banks, nonzero route
+  offset, 8,191-row tail and base offsets 4/8/12 modulo 16. Fixture
+  `20f39e0dc` compares 64 distinct jobs per batch over the same 65,536-row
+  bank and one reused destination. The synthetic job sizes of 211 and
+  6,640 approximate average separate and fused jobs. Each uses spread and
+  16-row clustered maps. Three independent processes alternate six pairs
+  per shape. The timed interval covers checked submission through drain.
+  Shape-specific advancement requires all three candidate median batch
+  times to improve, with equal planned maps, numerical checks, outputs,
+  normal exits, no new fault and no timer-floor failures. Keep each
+  shape's individual results. Test this candidate separately after the
+  pending bank-input and QSA decisions on their already pinned images.
+  The mapped-input alternative now has a diagnostic at child `19999c6c1`.
+  Its host mode checks the actual compact and wide TLA lane/atom
+  coordinates, replicas and valid/padded rows over three of 80 K tiles.
+  Its opt-in device mode compares the dense block2D load after reorder,
+  the indirect FP16 read and the host address oracle, slot by slot using
+  two bit tags. It exercises sorted and reversed maps, invalid rows,
+  sticky status and a four-byte-aligned single bank. Run the host witness
+  before the traced three-row smoke, then all shape/bit cases before
+  considering full DPAS. Device build and execution are pending.
+  The source inputs (783 for the pair and 776 for the probe), all four
+  generated inputs and the final comparison decision were verified from
+  Git before cleanup. The 152 capture files (571,845,791 bytes), 42,745-byte
+  inventory and spent private probe record were retired. The closed launcher,
+  probe and resource-analysis modes and their checks live in Git history.
+  The shared workspace admission, PTI request reader and collector assets
+  remained available after the resource comparison.
+  The combined-window engine and seven matching fixtures have since been
+  retired, together with their closed device receipts. The recovery binds
+  1,166 Git files (14508 plus 15 owned overlays), 1,468 compiler inputs, the
+  original recipe and 29 link inputs to the eight checked executable hashes.
+  The removed generation contained 1,358 paths and 187,251,978 bytes. The
+  independent original prefill and decode reference builds are retained.
+
+  The V tile comparison compiled the unchanged ordered-exp prefix and two
+  isolated derivatives. Shared local storage requests 20,036 bytes per
+  workgroup. A separate V tile raises this to 36,420 bytes. The two derived
+  kernels differ only in where the existing V gather runs. That earlier
+  gather requires separate storage because QK still reads the shared K tile
+  at that point. The separate-late arm isolates the storage change. The
+  separate-early arm compared with separate-late isolates gather order.
+  The first
+  attempt failed before linking because the benchmark's legacy timing loop
+  escaped its compile-time branch. The corrected fixture preserved both
+  generated kernel hashes. The original failure is recorded at `1d598cb71`.
+  The corrected build used nine fresh translation units, 725 actual compiler
+  inputs and 25 link inputs. Both traced smoke processes and all 11 numeric
+  cases, including full-capacity addresses, passed with bitwise output,
+  checked online state, guards and no fresh fault. This is component coverage
+  of the 262144 boundary.
+  Three independent timing processes collected 162 intervals across three
+  shapes. The table reports geometric means of the three process time ratios.
+
+  | Selected cap and row pattern | Separate vs shared storage | Early vs late at separate storage | Early separate vs current |
+  | --- | ---: | ---: | ---: |
+  | 33, gather | 1.664699 | 0.986915 | 1.642917 |
+  | 2051, gather | 1.671171 | 0.994635 | 1.662206 |
+  | 2051, clustered | 1.801015 | 1.000032 | 1.801073 |
+
+  The large gather gains 0.54% from early V within the separate-storage path,
+  in all three processes. The other early-gather comparisons fail that
+  repeated-gain check. Storage and combined comparisons lose at every shape
+  in every process. Keep shared late V. The comparison shows a cost of the
+  extra local storage and the changed placement within the kernel. Device
+  counter evidence for achieved workgroup occupancy or memory saturation
+  is still unavailable. Commit `94871b2c9` preserves the 162 samples and
+  each comparison decision. The corrected fixture and recipe are reachable
+  at `daca8f47e`. Verified retirement removed its 68 output files
+  (12,212,498 bytes) and the temporary inventory. The original prefill and
+  decode reference executable hashes were rechecked after removal.
+
+  A separate candidate retains the two BF16 probability fragments used in
+  the probability-times-V product across its four output tiles. In the
+  retained 14508 reference ELF (`dcb8efd4`), the selected ordered-exp
+  compute kernel is in the generic SPIR-V image. The current ordinary384
+  ELF (`a3dddff2`) contains the identical 170752-byte module, SHA-256
+  `e9144cf11a608a279c94d7588e7fec7787e19fcca8f5ddcdf3381c742edbadd7`.
+  The probability matrix load remains inside both loops in that image.
+  Its address depends on the cell offset, while the V address also depends
+  on the output tile. This yields eight probability-fragment loads per
+  subgroup per 32-cell tile in the intermediate code, with two distinct
+  addresses. The final driver-generated instructions, register pressure
+  and physical local-memory traffic are unknown. Test fragment reuse alone,
+  holding workgroup size, barriers, V storage, accumulation order and
+  tail handling fixed. Check actual generated code, numerical output and
+  clean component time on cap-33 and cap-2051 cases before a model trial.
+  The fixture and build definition at `45a1b7b77` check each normal
+  export's complete fresh K/V pack before the other can rewrite it. The
+  controller at `0ed10ef1d` requires the complete ordered compiler command
+  for both kernels, including the device target and translator arguments,
+  to match the checked original recipe apart from the two artifact paths.
+  Three independent clean timing processes follow the exact BF16 output
+  and FP32-state checks. Compilation and device measurement are pending.
+  To identify the loaded machine code, join the PV launch site to its
+  specific Level Zero kernel handle. The normal call also launches a pack
+  kernel.
+
+  Next evaluate the already available cached-subgroup normalizer at 128K
+  on the retained 14508 engine. Its earlier cap-2051 comparisons passed
+  independently for gather and clustered shapes, and its old small-cap and
+  32K/64K losses remain recorded. Use a fresh matched plan at fixed bank256
+  and window10. Do not combine the reduction switch with bank, window,
+  upload policy, decode or prefill strategy changes.
+
+  The `qsa_normalizer_128k_v1` plan pins the original engine, both existing
+  denominator selectors and the exact previous request bodies. The
+  32769-token candidate and two 131072-token progress checks precede
+  three fresh clean 131072-token pairs in AB, BA, AB order. Each process has
+  three thinking-on requests. Timing separates the first from the two
+  subsequent requests. The route reader checks the actual denominator,
+  residual and bank placement, window geometry and decode handoff. It
+  records changes in jobs and requested bytes as possible downstream effects
+  of the rounding difference, separately from the fixed-input speed result.
+  Three host tests cover the two selectors, invalid workspace/fallback
+  evidence and distinguishing a repeated gain from a same-work gain.
+  Both traced 128K arms close with three requests each, checked handoff
+  and no new driver fault. All 48 bank views in each reference request
+  have fewer than 512 slots at the fixed bank256 capacity. Warmed
+  diagnostic PP is 928.548 ordered and 921.508 subgroup. The subgroup
+  arm has 123, 3 and 91 more expert jobs in the three matched requests.
+  All nine processes and 27 requests finish normally with quiet
+  validation, checked handoff and no new driver fault. The final run
+  verifies all 15 model asset hashes. The six clean processes give
+  the following 131072-token results.
+
+  | Pair order | Warmed ordered PP | Warmed subgroup PP | Warmed time ratio | First-use time ratio |
+  | --- | ---: | ---: | ---: | ---: |
+  | Ordered, subgroup | 925.223 | 922.422 | 1.003037 | 0.993503 |
+  | Subgroup, ordered | 926.355 | 924.583 | 1.001916 | 1.022974 |
+  | Ordered, subgroup | 924.724 | 924.840 | 0.999874 | 1.008852 |
+
+  The geometric mean of the three warmed ratios is 1.001608. Keep the
+  ordered selector. The subgroup fails the repeated-gain criterion.
+  Process-median warmed TTFT is 141.895 seconds ordered and 141.995
+  seconds subgroup. The same job deltas recur in all three clean
+  pairs, with 72.6–93.9 MB more weight upload payload requested per
+  subgroup request. The fixed-input result includes this changed
+  downstream work. Kernel-only attribution and hardware saturation
+  remain unqualified. All original individual samples are retained.
+  Full route and plan evidence is at `6bdb37b3a`. Recovery verified 776
+  original inputs, all 18 generated case inputs and the exact retained
+  engine and provider identities. The nine native owners were closed.
+  The 635 capture files (96,703,218 bytes), temporary inventory and spent
+  one-shot controller were retired. Four CSV entries capture separate
+  first-use and warmed aggregates for each selector.
+
+  The next transfer experiment will examine full-fit weight prefetch while
+  the layer's attention runs. The 64K profile at `c40c8c1bd` measures
+  14.6–15.9 seconds of M2D copy service and less than 15 ms of copy/kernel
+  overlap. Reaching 1000 PP from its clean reference requires 6.9 seconds of
+  wall-time savings. Treat the copy service as the budget to investigate.
+  Prior bank512 admission at `fb8e32cd3` fits all 48 packed layers and all
+  residual rows at 64K. Its independent 64K capacity comparison keeps its
+  mixed outcome. Use the same bank in each proposed prefetch arm and
+  recheck actual admission.
+  The nine clean bank512 requests at 65537 actual input tokens requested
+  37,137,228,800–37,214,720,000 bytes of demand uploads. The same native
+  image and exact model assets have 50,292,326,400 bytes across all expert
+  layers, as checked in `prefill_bank_minimum_v2`. Preloading every expert
+  would add 13.08–13.16 GB of requested payload, or 35.14–35.42%.
+  Include this work increase in the separately measured all-expert
+  loading unit. If needed, compare a bounded prefetch subset with the
+  same exact demand fallback and verify its useful versus unused bytes.
+
+  A separate selection candidate follows from the distinction between
+  early known demand and predicted demand. Bevy's concurrent decode work
+  exposes true gate decisions before scheduling transfers. Its cache
+  results also show why prefetched bytes alone cannot establish useful
+  work. PDScope's preprint schedules a subset ahead and reconciles it
+  with the true gate result. These are design references for this
+  single-request prefill question. [Bevy, sections 2–3](https://arxiv.org/html/2611.04794v1#S3)
+  [PDScope, section 4.4](https://arxiv.org/html/2610.39216v1#S4.SS4)
+
+  The `prefill_first_demand_v1` diagnostic closes at `e3d947885`. It uses
+  the recovered native window image and a host-only extension of the
+  existing MoE observer. After the existing drain, read one earliest
+  row per selected expert from `source_rows()[offsets()[expert]]` and
+  weight it by the actual packed stride. Four thinking-on `bench.sh`
+  requests compare prefix demand to all 48 layers of full-fit bank512
+  JIT upload counts and bytes. All have zero private-bank hits, checked
+  handoff, normal process exit and no fresh GPU fault. All 15 final model
+  hashes match. The 32K and 64K requests are two independent processes,
+  each with two requests. Their observer timings do not qualify speed.
+
+  | Engine rows | Exact weights needed | Identified by row 8192 | Identified by row 16384 | Additional payload if all 512 experts load |
+  | --- | ---: | ---: | ---: | ---: |
+  | 32768 | 35.39–35.49 GB | 87.15–87.26% | 92.73–92.78% | 14.80–14.91 GB |
+  | 65536 | 37.17–37.21 GB | 82.95–83.10% | 88.21–88.28% | 13.08–13.12 GB |
+
+  The first 8192 rows identify about 30.9 GB at 64K. The next 8192 add
+  about 1.9–2.0 GB. Start with one prefix and exact demand fallback for
+  the tail. First isolate moving the existing prefix router earlier and
+  prove its scratch lifetime and unchanged route IDs, weights and upload
+  work. Then separately change copy issue time, copy queue and first-reader
+  wait with a fixed payload. Keep the final combined comparison against JIT.
+  These are requested bytes known from completed routes. Actual early
+  availability, transfer and attention overlap, and physical bus traffic
+  require their own measurements.
+
+  The first-piece producer is implemented at `14107b721`. `off` uses the
+  existing order. `late` runs the first piece after attention in a dedicated
+  59,539,456-byte GPU allocation, copies the first IDs to RAM and merges the
+  other outputs into the ordinary FFN arena. `early` runs that same producer
+  after the first checked attention store and retains its outputs through the
+  remaining attention pieces. Both experimental modes keep later FFN,
+  selected expert uploads and the compute queue fixed. Admission requires a
+  single ordinary GPU-resident full-fit window. The added storage and host
+  readback live through the outer checked drain.
+
+  `prefill_prefix_router_model_v1` ran three independent 32K processes with
+  two matching thinking-enabled requests each. All six requests completed
+  with 48 observed layers, normal process exits and no new driver fault.
+  The Python aggregate failed when it looked for the MTP restoration count
+  in a route dict that had only validated the count in the native log. The
+  separate `prefill_prefix_router_replay_v1` at `36460f958` recovers the
+  original handoff evidence, reruns the original comparisons and rehashes
+  the 15 model assets without launching another GPU process. All full router
+  ID digests, prefix FP32 gate-weight digests, job counts, expert upload
+  bytes and MTP restore counts match across `off`, `late` and `early`.
+
+  `prefill_prefix_router_timing_v1` closes at `0d3c241c4`. Three matched late
+  versus early pairs use the same native ELF, 65537 actual input tokens and
+  three thinking-on requests with 24 outputs per process. Per-request job
+  counts, JIT upload counts, requested bytes and MTP restoration match in
+  every pair. All six native processes close normally with no fresh GPU
+  fault. The final pass checks all 15 model asset hashes.
+
+  | Native early minus late | Late, early | Early, late | Late, early |
+  | --- | ---: | ---: | ---: |
+  | First request prefill time | -1.217 s | -1.384 s | -0.744 s |
+  | Warmed prefill time | -0.120 s | -0.136 s | +2.571 s |
+  | Warmed client TTFT | -0.084 s | -0.061 s | +2.581 s |
+
+  Early/late time ratios have geometric means of 0.987075 for first-use
+  prefill and 0.984473 for first-use TTFT. The warmed ratios are 1.010633
+  for prefill and 1.011161 for TTFT with mixed pair directions. Median
+  warmed process throughput is 894.82 tok/s late and 889.52 tok/s early.
+  Preserve the repeated first-use observation and the mixed warmed outcome.
+  Use the ordering change as a controlled prerequisite to test transfer
+  overlap. Verify that overlap earns a repeatable net gain on the actual
+  model path. A clean loss in one pair remains part of this comparison.
+
+  Before judging the combined route, use a storage-only control that
+  publishes prefix IDs back to the device map and keeps the original full
+  ID readback. Compare storage, split readback and earlier dispatch as
+  individual changes. For transfer overlap, separately compare copy issue
+  position, copy queue and first-reader wait against fixed payloads. Physical
+  context and sustained decode retain their own qualification gates.
+
+  The same-queue production-path control fixes `STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER=early`,
+  the ordinary resident host source, the private full-fit bank and the existing
+  in-order compute queue. `STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD` is opt-in
+  with `off`, `ffn` and `prefix` modes. The two bulk-issue modes derive the
+  same sorted demand set from the same first8192 rows at the same point. They
+  submit the same individual copies either immediately after that readback or
+  at the existing FFN boundary. Remaining experts still use JIT. Keep the
+  router order, arithmetic, attention, allocation and decode policy fixed.
+  First qualify the same-build CPU and small bank fixture, then check off, ffn
+  and prefix with the same 32769-token requests. Require all48 layers, identical
+  route/weight digests, expert-job and upload conservation and the expected
+  MTP handoff. Check ffn and prefix for identical selected expert digests and
+  bytes. Each selected mapping must have an actual reader. Stop on a mismatch,
+  timeout or fresh GPU fault. This arm qualifies only same-queue issue timing.
+
+  Each clean64K comparison closes three counterbalanced pairs with three
+  requests per process. Expert jobs, selected payload and MTP handoff match
+  where applicable. All18 processes close normally with no fresh GPU faults.
+
+  | Candidate and reference | Warmed time ratios | Decision |
+  | --- | --- | --- |
+  | FFN issue versus JIT, `c6b99c36b` | 0.9726, 0.9676, 0.9553 | Repeated gain |
+  | Earlier issue versus FFN issue, `907dd5a71` | 0.9810, 0.9820, 1.0290 | Mixed |
+  | Earlier issue versus JIT, `760747a44` | 0.9444, 0.9643, 0.9978 | Repeated net gain |
+
+  Preserve first-use and warmed samples separately. The measured net gain
+  establishes the combination under the fixed early router and the same queue.
+  Select FFN issue as the development reference for source placement based on
+  its separate repeated gain. The phase references remain available after
+  retiring the temporary third build.
+
+  The separate source-placement control fixes FFN issue and switches only
+  the selected copy source with `STRATA_SYCL_PREFILL_PREFIX_EXPERT_HOST_USM=0|1`.
+  Use one checked request-owned host-USM allocation with the largest layer
+  extent. Copy only selected payloads to their original offsets ahead of
+  the same individual commands. Drain the previous layer before host-buffer
+  reuse and retire accepted commands before freeing its owners. The ordinary
+  source still services JIT misses. Admission includes this allocation in the
+  existing RAM budget and selects the experimental source only for the
+  single full-fit FFN route. The same-build smoke checks both strides,
+  reuse, cancellation and unselected bytes. Verify matching 32K router,
+  payload and handoff evidence before timing three counterbalanced 64K pairs.
+  The closed source comparison at `9d845d7dd` uses 65537 fresh tokens and
+  three requests in each of six processes. All selected IDs, copy commands,
+  requested bytes and handoffs agree. Host-USM/arena warmed prefill time
+  ratios are 1.07859, 1.01961 and 1.01427 (geometric mean 1.03709).
+  First-use time increases 4.96% by the paired geometric mean. Median
+  warmed throughput is 880.11 versus 866.50 tok/s. Retain the arena source
+  for the model speed reference. The comparison measures the complete
+  source change, including CPU staging, within this scheduling policy.
+
+  Build the independent transport control with
+  `STRATA_SYCL_PREFILL_NATIVE_COPY=ON`. Both native modes use the checked
+  immediate-list owner from the overlap fixture. Fix FFN issue, host USM,
+  selected IDs, copy extents, layouts and arithmetic. Compare same-queue
+  SYCL with and without the added completion bracket, then compare fenced
+  SYCL with native ordinal 0, then native ordinals 0 and 1. The bracket
+  drains preceding compute and verifies copy completion before publishing
+  the private map. Check actual native context, device, ordinal and queue
+  flags. The outer lease retires any accepted native work before releasing
+  either allocation or rebinding the layer. Smoke-test both strides,
+  repeated staging, guarded bytes and cancellation before tracing the
+  four 32K routes. This control holds overlap off. Test earlier issue
+  and a deferred first-reader wait separately before measuring device
+  overlap and the net result against the arena reference.
+
+  The next copy schedule fixes the copy-only engine, native API, host USM and
+  selected experts. Compare ordinary FFN issue and earlier prefix issue with
+  immediate completion, then change the completion point at each issue site.
+  Preserve one of each arm per 64K timing block and keep first use separate.
+  The private bank stays unpublished until the checked native wait. On
+  cancellation, the outer lease drains accepted copies before source or bank
+  release. Validate both source strides, unpublished cancellation and first
+  readers in the small fixture, then match all four 32K model routes.
+  To establish same-layer overlap, match device intervals by request, layer and
+  copy list in a separate observer run. Clean timing measures wall-time
+  benefit. Both are needed to attribute a benefit to overlap, and the net
+  comparison still includes host staging against the arena FFN reference.
+
+  On native `14508acbf`, the layer boundary drains the previous readers before
+  rebinding the private bank. Dense activation completes before the
+  attention pass. Each attention piece stores BF16 residuals on the compute
+  queue, and the first accumulator-window call follows the last piece.
+  Test whether the bank can be filled in this interval with the already
+  borrowed immutable weight slabs and existing packed destination. Compare
+  demand-selected and all-expert loading at the same FFN boundary first.
+  Then hold payload, expert IDs and placement fixed while moving issue before
+  attention, moving copies to a second same-context queue with the early
+  completion check fixed, and deferring that check to the first expert
+  reader. Keep the net comparison against demand-selected loading. No
+  copy aggregation is part of these comparisons.
+
+  The additional queue needs its own checked retirement before source or
+  bank release on success, cancellation, enqueue failure or exceptions.
+  Check allocation and span separation against the attention workspace,
+  publish a usable expert map only after successful copy completion and
+  guard the first reader. Leave the main compute queue and decode
+  ownership in place. Begin with a bounded component reproducer using
+  identical payloads and actual attention work, with explicit copy-only and
+  compute-only times, observed queue intervals and interference in the
+  combined case. The existing copy-lane component gains and losses stay
+  recorded. They establish neither this lifetime contract nor the model
+  throughput effect.
+
+  The opt-in fixture `STRATA_QSA_BENCH_FULLFIT_OVERLAP` uses the original
+  ordered-exp prefix with an 8192-query, cap-2051 gather and a separate
+  synthetic ordinary-RAM payload at the observed layer-2 stride. The
+  512 individual copies total 1,009,254,400 requested bytes. The scheduled
+  arms are compute-only, copy-only, one-queue serial, two-queue serial and
+  two-queue deferred wait. The two serial arms isolate queue choice and the
+  two separate-queue arms isolate wait position. Output is reset before
+  each interval. Full bank bytes, guards, source immutability and exact QSA
+  output are checked outside timing. The small case also checks retirement
+  after an exception following an accepted copy. An opt-in RAW clock
+  interval permits separate device-timeline capture. The controller
+  keeps the first cycle separate from four subsequent cycles per arm. It
+  checks observed copy bytes, kernel counts and interval boundaries and
+  reports concurrent-to-alone device times as an interference diagnostic.
+  V1 passed host checks and failed before invoking the compiler because
+  the log directory collided with the precreated output directory.
+  The failed attempt is preserved at `e78837070`, and its four temporary
+  files are retired. V2 separates `compile/` logs from `build/` products
+  and adds a host regression check. It keeps the same fixture sources,
+  comparison order and decision criteria.
+
+  V2 closes at `5e85355f5`. Four host checks pass. The fresh six-TU
+  build verifies 722 compiler inputs, 25 link inputs and the final
+  executable. Five small traced cases include cancellation after an
+  accepted copy. The larger fixture produces 25 traced and 75 clean
+  samples with exact output, guard checks, normal exits and no fresh
+  GPU fault.
+
+  | Candidate/reference time | Clean pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Separate serial/shared serial | 0.999875, 0.985145, 1.034187 | 1.006194 |
+  | Deferred/separate serial | 0.994444, 1.001983, 0.959401 | 0.985100 |
+  | Deferred/shared serial | 0.994320, 0.987099, 0.992200 | 0.991202 |
+
+  Both individual changes miss the three-pair gain criterion. The net
+  candidate is 0.88% faster by paired geometric mean. Its copy and QSA
+  device intervals overlap by zero in all five traced cycles. On the
+  separate queue, deferring the wait reduces the gap from the last copy
+  to the first QSA kernel from 4.22–9.76 ms to 7.1–7.5 µs. The clean
+  standalone copy medians range from 226.3 to 329.3 ms, and compute
+  medians range from 221.5 to 221.7 ms. The variation and trace gaps
+  establish neither physical PCIe saturation nor separate engine use.
+  The original prefetch advancement gate fails.
+
+  The same-ELF `fullfit_attention_attribution_v1` captures 25 windows and
+  joins 512 copy operations and two QSA kernels in each of ten selected
+  windows via PTI operation flows. In the four warmed deferred-wait
+  rounds the first QSA append returns 55.56–59.70 ms before the final
+  copy completes. QSA starts on the device 7.17–7.53 µs after that
+  completion. In the serial control the QSA append enters 4.55–5.30 ms
+  after copy completion. Output, guards, validation, provider mapping,
+  ownership and the fresh GPU fault check pass. These times locate the
+  serialization after the observed append return. The trace gives
+  logical lanes, with native list and physical-engine identity unresolved.
+  The compact evidence is `820cc84db`. Exact Git source and build input
+  recovery permits retirement of the temporary executable and 59 files
+  totaling 20,803,077 bytes. Keep the fixture source for the next
+  source-memory comparison.
+
+  Follow the queue route before changing issue order. The earlier
+  metadata run at `794bb2672` puts both `Runtime::compute()` and
+  `make_queue(true)` on ordinal 0, index 0. The relevant Runtime source
+  and headers, boot, driver, provider libraries and queue settings match
+  the current fixture. The metadata case used a host-only build and UR
+  tracing, so the ordinal result guides the next test without identifying
+  which hardware engine ran each operation in the current trace.
+  Hold payload, queue, QSA and the deferred readiness check fixed when
+  comparing ordinary RAM with host USM through SYCL. For a native copy
+  trial, use the same supported host allocation in both arms and
+  compare the checked native submit/drain path at the original ordinal
+  first. Compare native ordinal 0 with native ordinal 1 separately,
+  including the same copy count, timing boundaries and guard checks.
+  Qualify each native configuration with small bounded cases first.
+  Preserve the qualified runtime safety settings and test any later
+  readiness or issue-order changes against a reference using the same
+  copy path. This sequence keeps source memory, submit/drain and queue
+  selection independently measurable. The model gate remains closed.
+  [Level Zero command-list requirements](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list.html)
+
+  `fullfit_attention_source_memory_v1` evaluates the first change at
+  `1f03719b3`. The same six-TU image holds the SYCL copy entrypoint, queue,
+  waits, 512 uploads and ordered-exp QSA fixed between ordinary RAM and host
+  USM. A same-context pointer query verifies the source type and both source
+  ends. Both small cases pass accepted-copy cancellation, content and guards.
+  The ten native processes finish normally with checked ownership, quiet
+  validation and zero fresh GPU faults. Keep the 150 clean samples and 50
+  observer windows, with source allocation and fill outside timed intervals.
+  [SYCL USM allocation and pointer query requirements](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:usm)
+
+  | Warmed host-USM / ordinary-RAM wall time | Three clean pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Copy only | 1.022765, 1.553040, 1.006185 | 1.169173 |
+  | Copy and QSA, deferred wait | 0.870347, 1.122055, 1.132908 | 1.034270 |
+  | QSA only | 0.999555, 1.001513, 0.998554 | 0.999873 |
+
+  The deferred-wait source change fails the repeated-gain gate. Copy-only
+  trace time favors host USM (223.1 ms versus 259.0 ms); all three clean
+  copy-only pairs give the opposite ordering. QSA-only medians stay within
+  221.2–222.0 ms across the six clean processes. The observed copy direction
+  changes from M2D to H2D, and copy duration varies substantially more than
+  QSA service. The deferred-wait trace shows 4.854 µs of overlap in the first
+  host-USM cycle and zero in the four warmed cycles. Physical bus traffic,
+  page pinning and the resulting physical limit remain unmeasured.
+
+  Keep ordinary RAM selected for the model. The native comparison uses host
+  USM in both arms as a supported allocation, with source contents fixed.
+  Compare a checked native append/drain owner at ordinal 0 with the SYCL
+  control before testing ordinal 1 on that same native owner. Preserve
+  the current QSA, copy extents, wait positions and safety settings.
+  The host-USM component samples exclude production staging from RAM.
+
+  `fullfit_attention_copy_api_v1` closes at `e10c4bcb7`. Both paths use the
+  same host-USM payload, destination, QSA and wait placement. The raw fixture
+  owns its immediate copy list and matches the SYCL list's context, device,
+  ordinal 0, index 0, asynchronous mode, in-order flag and normal priority.
+  The two small cases pass with the mapped Level Zero validation provider,
+  exact buffer and output checks, and checked unwind after an accepted copy.
+  All ten native processes close normally, with unchanged boot and driver
+  and zero fresh GPU faults. There are 120 clean samples and 40 traced
+  windows. [Level Zero immediate-list synchronization](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list-2.html#zecommandlisthostsynchronize)
+
+  | Warmed native / SYCL wall time at ordinal 0 | Three clean pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Copy only | 1.322876, 1.182392, 1.017979 | 1.167723 |
+  | Copy and QSA, deferred wait | 1.168082, 1.068308, 1.136057 | 1.123372 |
+  | Copy and QSA, serial | 1.186771, 1.358053, 1.066287 | 1.197804 |
+  | QSA only | 1.002884, 1.003065, 1.001062 | 1.002337 |
+
+  Keep the SYCL route selected. The native replacement fails the repeated
+  gain gate at ordinal 0. QSA-only medians remain 221.3–222.1 ms. The two
+  traces conserve all requested copies and QSA calls and show zero overlap
+  in every window. Deferred-wait wall time is 442.9 ms through SYCL and
+  443.3 ms through Level Zero in the observer pair. The larger clean losses
+  drive the selection. The experiment establishes the component's actual
+  list settings and output, with physical bus traffic and saturation
+  unmeasured. Compare ordinal 0 and the copy-only ordinal 1 with the same
+  native owner, allocation, copy count, QSA and completion placement. Test
+  the small ordinal-1 case first, then distinguish device overlap and clean
+  wall time. Keep that queue comparison independent of the failed API
+  replacement and of later ordinary-RAM source admission.
+
+  `fullfit_attention_copy_ordinal_v1` closes at `ff6be2692`. The same native
+  owner, index 0, mode, flags, priority, memory, copy sizes and QSA workload
+  run with copy ordinal 0 and copy-only ordinal 1. The small cases verify both
+  list configurations, accepted-copy unwind, buffer guards and exact output.
+  All ten native processes close normally with zero fresh GPU faults. Keep
+  120 clean intervals and 40 device-trace windows.
+
+  | Native ordinal 1 / ordinal 0 wall time | Three independent pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Copy and QSA, deferred wait, warmed | 0.546616, 0.541617, 0.459654 | 0.514361 |
+  | Copy and QSA, deferred wait, first cycle | 0.761036, 0.432872, 0.584085 | 0.577316 |
+  | Copy only, warmed | 0.972306, 1.043566, 1.161285 | 1.056219 |
+  | QSA only, warmed | 0.999932, 0.998919, 0.999763 | 0.999538 |
+
+  The four warmed deferred windows show 220.270–221.728 ms of device
+  overlap on ordinal 1 and zero on ordinal 0. The first ordinal-1 window
+  has 220.288 ms. The clean deferred-wait medians are 436.8–498.4 ms for
+  ordinal 0 and 229.1–256.1 ms for ordinal 1. The repeated-speed and
+  repeated-overlap gates both pass. Individual copy-only timings vary
+  and their geometric mean increases. The overlapping workload is the
+  demonstrated gain. Device service traces leave actual PCIe traffic and
+  saturation unknown.
+
+  The independent source-layout check reads the exact model asset already
+  bound to the clean reference. Its 48 contiguous layer offsets and
+  48 payload lengths are divisible by the host's 4096-byte page size.
+  Layers hold 773,324,800–1,363,148,800 bytes. The host's explicit huge-page
+  pool has zero pages. These are layout conditions for a bounded read-only
+  layer view of the anonymous RAM arena. Check the actual owner, start
+  address, import scope and type in the production Runtime before issuing
+  DMA. Keep the same native ordinal-1 owner and wait placement when
+  comparing a borrowed layer view with host USM, and charge source
+  preparation and retirement. Preserve the earlier negative mapped-source
+  results on the dense readers. Once this workload's source is qualified,
+  compare actual expert demand and the resulting prefill route before any
+  model speed claim. [Level Zero queue descriptors](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_queue.html#ze-command-queue-desc-t)
+
+  `fullfit_attention_layer_source_v1` closes at `2f5164903`. For both
+  arms, the production `PinnedArena` and GGUF packer load layer 2 into an
+  anonymous one-layer arena. Both use the same immutable `ResidentExpertLayer`
+  geometry and copy-only ordinal 1. The reference allocates host USM and
+  copies the resident layer into it. The candidate registers the existing
+  read-only pages at the same address in the copy list's context. Admission
+  checks the pinned B570 API 1.17 provider, extension, type, allocation ID
+  and extent, followed by unknown allocation type and the original content
+  after unimport. The host-only preflight caught the original Down offset
+  typo. The corrected controller supplies offsets directly from the pinned
+  layout and verifies the three layer-role hashes before and after the run.
+
+  Both zero-enqueue metadata cases and both four-expert cancellation checks
+  pass. All 12 native processes close normally with no fresh GPU fault.
+  The copy/QSA cases verify both payloads, QSA outputs and guards. The 512-expert layer
+  contributes 120 clean intervals and 40 trace windows. The borrowed
+  deferred-wait trace retains 181.810–221.361 ms of overlap in all four
+  warmed windows.
+
+  | Borrowed / staged wall time | Three clean pair ratios | Geometric mean |
+  | --- | --- | ---: |
+  | Layer preparation, warmed deferred interval and retirement | 0.511980, 0.688965, 0.500973 | 0.561162 |
+  | Warmed deferred interval alone | 0.982580, 1.421488, 0.930296 | 1.091216 |
+
+  Borrowing takes 4.0–9.9 ms to prepare and 2.3–4.8 ms to retire. The
+  measured staging path takes 212.3–259.9 ms to allocate and populate and
+  12.2–13.2 ms to retire. Common GGUF loading is recorded separately.
+  The source-lifecycle gate passes while the copy and QSA interval alone
+  has mixed results. The stage reference allocates per process for one
+  layer. Its source owner and staging lifetime are covered by the next
+  comparison.
+
+  `fullfit_attention_arena_source_v1` closes at `1b0b01c9c`. It loads the
+  actual private `ArenaExpertSource` in every arm and validates borrowed
+  registration and release for all 48 layers (50,292,326,400 bytes), with
+  no application copy or kernel enqueues in that metadata test. The three
+  four-expert tests pass cancellation after an accepted copy. All 16 native
+  processes close normally with no fresh GPU fault. The full layer-2 cases
+  copy 1,009,254,400 bytes and verify the payload, guards and QSA output.
+  Copy ordinal 1, QSA, waits and exact transfer extent are fixed across source
+  comparisons. Preserve the independent allocation and source decisions.
+
+  | Layer preparation, warmed deferred interval and release | Three matched time ratios | Geometric mean | Gate |
+  | --- | ---: | ---: | --- |
+  | Reused host USM / per-layer host USM allocation | 0.693929, 0.542989, 0.492079 | 0.570226 | Pass |
+  | Borrowed pages / reused host USM | 0.864334, 0.950116, 1.423323 | 1.053385 | Fail |
+  | Borrowed pages / per-layer host USM allocation | 0.599786, 0.515902, 0.700388 | 0.600668 | Pass |
+
+  Reused host USM takes 259.6–289.9 ms to allocate and prime once, separate
+  from layer timing. Its ongoing preparation is 55.3–65.6 ms, versus
+  39.2–44.2 ms to register the original pages. The third matched borrowed
+  interval takes 357.0 ms for the warmed deferred median, versus 230.4 ms
+  for reused USM. All three traced source modes show real device overlap
+  (187.468–221.583 ms across the 12 warmed deferred windows). Those traces
+  do not attribute the third clean-pair slowdown. Direct borrowing misses
+  the prospective performance gate against the reused baseline, so keep
+  it out of the model trial. Use reusable staging as the source reference
+  for the next comparison. The first-route census above identifies the
+  size of one exact prefix for the independent scheduling comparison.
+  QSA state and the GPU bank were fixture-owned in the source comparison.
+  Full-model throughput, decode and physical context remain unqualified by
+  this result.
+  The current-build five-length/time/TTFT curve is closed;hardware attribution
+  remains pending. Do not pool mixed timing periods into a law. Preserve
+  the bank/coherence/relocation losses as independent outcomes. Reduced
+  jobs/dequants/requested bytes
+  do not isolate the limiting arithmetic/VRAM/PCIe/submission resource.
+  Full combined evidence is`570f6903e`;four first-use/warmed CSVpoints bring
+  the index to637. All27samples,nine native identities and the original
+  successful decision remain compact. Original771Git inputs and18generated
+  payloads are recovered exactly;all635ended files(96,622,772B)and287,082B
+  temporary inventory are retired. Both phase references,the coherent
+  candidate and required shared records remain for the pending source/phase
+  validation;select and retire a superseded generation before a new build.
+  Full window evidence is`6ead5d99b`;four first-use/warmed CSVpoints bring
+  the index to633. All27samples,nine native identities and the original gain
+  decision remain compact. Original771Git inputs and18generated payloads
+  are recovered exactly;all635ended files(96,621,178B)and288,349Btemporary
+  inventory are retired. Both phase references,the coherent candidate and
+  required shared records remain;fresh combined-predecessor/device admission
+  passes after retirement.
+  Hardware saturation,current9849decode
+  preservation,task/agent,long-thinking MTPstrong/weak and physical262144/
+  RESTORE qualification remain unresolved. Full relocation evidence is
+  `a82b3ef93`;four first-use/warmed CSVpoints bring the index to629.
+  All27samples,nine native identities and the failed decision remain compact;
+  original771Git inputs and18generated configurations are recovered exactly.
+  All635ended private files(96,245,904B)and287,079Btemporary inventory are
+  retired. Both phase references,the coherent candidate and required shared
+  records remain for the independent window/combination questions;fresh
+  predecessor/device admission passes after retirement.
+  Full coherence evidence is`c68086021`. Four first-use/warmed CSVpoints bring
+  the index to625. All27samples,nine native identities,the failed decision and
+  useful request-work/admission values remain in the compact result. Original
+  771Git inputs and18generated JSONpayloads are recovered and compared exactly;
+  all635closed private files(96,707,795B)and317,566Btemporary inventory are
+  retired. Fresh relocation-predecessor and same-build device admission pass
+  afterward. All three engine generations and the required shared records stay
+  for the named next comparisons;legacy source/configuration/cache holds remain separate.
+  U1jit is fixed to isolate native14coherence;its separately positive eager
+  component remains eligible.
+  `prefill_bank_minimum_v2`closes at`4d027b3e1`:nine normal0processes/27thinking-on
+  requests,quiet validation,no fresh fault and15final model hashes. At fixed
+  native14/window10/128K,the three bank1/256warmed-time ratios are1.069543,
+  1.045789and1.061431(geomean1.058875):the bank-only performance gate fails.
+  Aggregate warmed PPis887.605versus835.333;first-use and all samples remain
+  separate. All131071BF16residual rows stay onGPU;windows/jobs/dequants/maps
+  and actualGU/Down work match. The678,912,000Bbank reduction adds roughly25GB
+  of requested H2Dpayload per request;physical bus traffic/saturation remain
+  unknown. Four CSVpoints bring the index to621. Preserve V1's invalid
+  synthetic-metadata refusal and this standalone loss. The prospective
+  capacity/mechanism rule permits only the separately planned window question;
+  no larger-window model is admitted before its fresh component/host gates.
+  All637closed private files(96,700,824B),the240,780Btemporary inventory and
+  three ended Pythoncontrols(41,865B)are retired after exact original768source,
+  18generated-input and native-source/recipe recovery from pushed Git. The
+  compact result retains all27samples and the original failed decision;both
+  phase references and every required current C++fixture remain.
   CPUv4host/wait partition plus active kernel timeline use no coarse CUDA-event
   markers;the old marker-associated stall remains causally unresolved. Require
   exact route/count/clock/owner/conservation and<=1.2observer ratios against both
@@ -6517,10 +7841,11 @@ are being developed together. Include the headers, callers, producer/consumer
 layout changes and tests needed for that unit to remain valid. Evaluate
 independent kernels, placement changes and settings in separate matched
 comparisons, holding the other units and workload fixed regardless of the extra
-build/run effort. If several edits are inseparable, state their invariant and why
-they form one unit in the committed plan before measurement. Keep each unit's
-outcome and then validate the combined implementation; an aggregate improvement
-cannot establish which constituent changes to adopt or conceal a phase loss.
+build/run effort. Use identical prerequisites in both arms of a dependent
+comparison. In the committed plan, identify each reference and state the
+invariant that makes any group of edits inseparable. Keep each unit's outcome
+and check the combined implementation and relevant interactions, including
+the prefill and decode gates for changes to their shared processing.
 
 Preserve the qualified runtime safety settings and immutable pre-exec
 SYCL/Level Zero environment in

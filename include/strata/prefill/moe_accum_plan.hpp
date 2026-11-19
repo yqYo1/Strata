@@ -19,13 +19,16 @@ struct MoeAccumPlan {
     // A separately admitted long-prefill candidate. Ordinary make() keeps its
     // original row limit and contiguous FP32 accumulator contract.
     static constexpr int64_t split_maximum_rows = 117488, split_primary_rows = 65536;
+    static constexpr int64_t long_prefill_maximum_rows = 16 * chunk;
     enum class Plane : size_t {
         accumulator, weights, slots, source, job_weights, injection,
         gathered, gu, hidden, down_job, shared_chunk, shared_gate,
         logits, shared_gate_input, shared_up_input, shared_hidden, status, count
     };
+    enum class Storage { region, extra };
     struct Span {
         uint64_t offset = 0, bytes = 0, reserved = 0;
+        Storage storage = Storage::region;
     };
     struct MixedSpan {
         bool tail = false;
@@ -34,6 +37,7 @@ struct MoeAccumPlan {
     int64_t rows = 0, primary_rows = 0, tail_rows = 0;
     int64_t accumulator_primary_rows = 0, accumulator_tail_rows = 0;
     uint64_t primary_bytes = 0, tail_bytes = 0, region_bytes = 0;
+    uint64_t extra_bytes = 0;
     std::array<Span, size_t(Plane::count)> planes{};
 
     static uint64_t multiply(uint64_t a, uint64_t b) {
@@ -108,6 +112,37 @@ public:
         if (plan.primary_rows <= 0 || plan.region_bytes > available_region_bytes ||
             plan.tail_bytes > available_region_bytes - plan.region_bytes)
             throw std::invalid_argument("MoE split mixed tail exceeds idle shared-arena suffix");
+        return plan;
+    }
+
+    // Long-prefill capacity proposal. The existing ordinary/split layouts stay
+    // unchanged. Move exactly two job buffers after the separately owned FP32
+    // accumulator tail, so the contiguous mixed tail still fits in the original
+    // shared-arena suffix. This method allocates/submits nothing. The caller
+    // must charge extra_bytes, bind both owners, prove nonaliasing and drain
+    // before freeing either. A budget calculation is not runtime admission.
+    static MoeAccumPlan make_long_prefill_scratch(int64_t n, uint64_t legacy_r_bytes,
+                                                 uint64_t available_region_bytes) {
+        if (n <= maximum_rows || n > long_prefill_maximum_rows)
+            throw std::invalid_argument("long prefill window requires 81921..131072 rows");
+        auto plan = layout(n, legacy_r_bytes, available_region_bytes,
+                           available_region_bytes, split_primary_rows);
+        plan.extra_bytes = plan.accumulator_tail_allocation_bytes();
+        plan.region_bytes = 0;
+        for (size_t i = 0; i < plan.planes.size(); ++i) {
+            auto& span = plan.planes[i];
+            const bool extra = i == size_t(Plane::gathered) || i == size_t(Plane::logits);
+            auto& used = extra ? plan.extra_bytes : plan.region_bytes;
+            const auto maximum = uint64_t(std::numeric_limits<std::ptrdiff_t>::max());
+            if (used > maximum || span.reserved > maximum - used)
+                throw std::overflow_error("long prefill workspace offset overflow");
+            span.offset = used;
+            span.storage = extra ? Storage::extra : Storage::region;
+            used += span.reserved;
+        }
+        if (plan.primary_rows <= 0 || plan.region_bytes > available_region_bytes ||
+            plan.tail_bytes > available_region_bytes - plan.region_bytes)
+            throw std::invalid_argument("long prefill mixed tail exceeds shared-arena suffix");
         return plan;
     }
 

@@ -8,6 +8,14 @@
 #include "strata/prefill/expert_upload_staging.hpp"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+#include "strata/sycl/native_copy_list.hpp"
+#else
+namespace strata::sycl_backend::native_copy { class NativeCopyList; }
+#endif
+#include <cstring>
+#include <optional>
+#include <utility>
 
 namespace strata::prefill::detail {
 
@@ -49,19 +57,38 @@ inline bool prefill_fullfit_eager_requested() {
     return selected;
 }
 
+enum class PrefillHostStageOrder { all_before_copy, span_before_copy };
+
 struct PrefillFullfitUploadReceipt {
     std::array<bool,512> first_upload{};
     uint64_t experts=0,copy_commands=0,payload_bytes=0;
+    uint64_t host_staged_bytes=0;
 };
 
-// U1 changes only the position of the existing individual copies. Source and
-// bank owners belong to the outer checked lease; no wait or queue is added.
+// The original same-queue route publishes after submission. The fenced
+// controls wait at this call site before publishing either transport's map.
+// Source and bank owners live through the outer checked lease on every exit.
 inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& slots,
         const PrivateExpertBank& bank,const uint8_t* slab,uint64_t slab_bytes,
         uint64_t source_stride,const std::vector<int32_t>& experts,void* stream,
-        std::initializer_list<sycl_backend::Span> live_scratch) {
+        std::initializer_list<sycl_backend::Span> live_scratch,
+        sycl_backend::Allocation* host_staging = nullptr,
+        sycl_backend::native_copy::NativeCopyList* native_copy = nullptr,
+        bool wait_for_copies = false,
+        std::optional<PrefillFullfitUploadPlan>* deferred_publication = nullptr,
+        PrefillHostStageOrder stage_order = PrefillHostStageOrder::all_before_copy) {
+    const bool stage_per_span = stage_order == PrefillHostStageOrder::span_before_copy;
+    if (stage_per_span && (!native_copy || !host_staging))
+        throw std::invalid_argument("prefill per-span staging requires native copy and host USM");
     if (!stream || !slab || slab_bytes!=layer_major_mul(512,source_stride))
         throw std::invalid_argument("prefill eager upload source/queue extent");
+    if (native_copy && (!host_staging || !wait_for_copies))
+        throw std::invalid_argument("native prefill copies require host staging and checked completion");
+    if (deferred_publication && (!native_copy || deferred_publication->has_value()))
+        throw std::invalid_argument("prefill deferred publication requires an unused native copy plan");
+#if !defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    if (native_copy) throw std::logic_error("native prefill copies require the native-copy build");
+#endif
     auto& queue=sycl_backend::queue_for(stream);
     const auto& layout=bank.layout();
     auto* base=bank.device_slot(0);
@@ -69,19 +96,88 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},
         {{slab,size_t(slab_bytes)}},1);
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},live_scratch,1);
-    const auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride);
+    auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride);
     PrefillFullfitUploadReceipt result;
-    enqueue_prefill_fullfit_upload(plan,slots,[&](const PrefillFullfitCopy& copy) {
-        if (cudaMemcpyAsync(base+size_t(copy.destination_offset),slab+size_t(copy.source_offset),
-                size_t(copy.bytes),cudaMemcpyHostToDevice,static_cast<cudaStream_t>(stream))!=cudaSuccess)
-            return false;
+    if (wait_for_copies && cudaStreamSynchronize(static_cast<cudaStream_t>(stream)) != cudaSuccess)
+        throw std::runtime_error("prefill full-fit upload preceding compute drain failed");
+    // Keep source offsets and individual DMA commands identical. The caller
+    // drains the prior layer before rewriting these CPU-writable USM pages.
+    const uint8_t* upload_source = slab;
+    uint8_t* staged = nullptr;
+    const auto stage = [&](const PrefillFullfitCopy& copy) {
+        std::memcpy(staged + size_t(copy.source_offset), slab + size_t(copy.source_offset),
+                    size_t(copy.bytes));
+    };
+    if (host_staging) {
+        require_empty_prefill_fullfit_bank(slots);
+        staged = host_staging->as<uint8_t>();
+        if (!staged || host_staging->size() < slab_bytes ||
+            sycl::get_pointer_type(staged, queue.get_context()) != sycl::usm::alloc::host ||
+            sycl::get_pointer_type(slab, queue.get_context()) == sycl::usm::alloc::device)
+            throw std::invalid_argument("prefill eager upload host staging source or extent");
+        sycl_backend::validate_spans({{staged, size_t(slab_bytes)}},
+            {{slab, size_t(slab_bytes)}, {base, size_t(layout.backing_bytes)}}, 1);
+        sycl_backend::validate_spans({{staged, size_t(slab_bytes)}}, live_scratch, 1);
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+        if (native_copy) native_copy->validate_endpoints(queue, base, staged);
+#endif
+        if (stage_per_span) {
+            // The sorted unique source offsets and padded strides in the
+            // plan keep CPU writes off the already submitted source lines.
+            if (reinterpret_cast<uintptr_t>(staged) % 256)
+                throw std::invalid_argument("prefill per-span staging requires a 256-byte-aligned host base");
+        } else {
+            for (const auto& copy : plan.copies()) stage(copy);
+        }
+        upload_source = staged;
+        result.host_staged_bytes = plan.payload_bytes();
+    }
+    auto submit = [&](const PrefillFullfitCopy& copy) {
+        if (stage_per_span) stage(copy);
+        auto* destination = base + size_t(copy.destination_offset);
+        const auto* source = upload_source + size_t(copy.source_offset);
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+        if (native_copy) native_copy->append(destination, source, size_t(copy.bytes));
+        else
+#endif
+        if (cudaMemcpyAsync(destination, source, size_t(copy.bytes), cudaMemcpyHostToDevice,
+                            static_cast<cudaStream_t>(stream)) != cudaSuccess) return false;
         ++result.copy_commands;
         return true;
-    });
+    };
+    if (wait_for_copies) {
+        require_empty_prefill_fullfit_bank(slots);
+        for (const auto& copy : plan.copies())
+            if (!submit(copy)) throw std::runtime_error("prefill full-fit upload enqueue failed");
+        if (!deferred_publication) {
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+            if (native_copy) native_copy->wait();
+            else
+#endif
+            if (cudaStreamSynchronize(static_cast<cudaStream_t>(stream)) != cudaSuccess)
+                throw std::runtime_error("prefill full-fit upload copy completion failed");
+            for (const auto& copy : plan.copies()) publish_prefill_fullfit_copy(plan, slots, copy);
+        }
+    } else enqueue_prefill_fullfit_upload(plan, slots, submit);
     result.experts=plan.experts().size();result.payload_bytes=plan.payload_bytes();
     for (int32_t expert:plan.experts()) result.first_upload[size_t(expert)]=true;
+    if (deferred_publication) deferred_publication->emplace(std::move(plan));
     return result;
 }
+
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+// The request's checked lease holds the copy list, source, bank, and slots
+// until this publication boundary or a checked failure drain.
+inline void finish_prefill_fullfit_deferred(ExpertBankSlots& slots,
+        sycl_backend::native_copy::NativeCopyList& native_copy,
+        std::optional<PrefillFullfitUploadPlan>& pending) {
+    if (!pending) throw std::logic_error("prefill deferred upload has no accepted plan");
+    require_empty_prefill_fullfit_bank(slots);
+    native_copy.wait();
+    for (const auto& copy : pending->copies()) publish_prefill_fullfit_copy(*pending, slots, copy);
+    pending.reset();
+}
+#endif
 
 template<class Enqueue>
 inline ExpertBankSlots::Ticket stage_private_expert_bank_enqueue(ExpertBankSlots& slots,

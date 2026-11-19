@@ -65,7 +65,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -1391,8 +1391,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -2059,7 +2059,7 @@
   },
   "sycl_command_submission_amortization_collection_scope": {
     "classification": "knowledge collection",
-    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata\u2019s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
+    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
     "schedulable_now": false,
     "status": "native_reviewed_retrieval_reference",
     "eligibility_review": {
@@ -3369,7 +3369,7 @@
       "source": "src/kernels/cpu/iq_single_avx2.cpp",
       "reference": "docs/SYCL_IMPLEMENTATION.md:2475",
       "prior_evidence_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
-      "prior_scope": "Short128-token,512-context tests on this machine; IQ3_XXS/IQ2_S opt-in improved decode medians1.13\u20132.20%, later IQ3_S addition had about0.20% aggregate effect. Not current32K evidence.",
+      "prior_scope": "Short128-token,512-context tests on this machine; IQ3_XXS/IQ2_S opt-in improved decode medians1.13–2.20%, later IQ3_S addition had about0.20% aggregate effect. Not current32K evidence.",
       "provenance": "Main-authored Zen3 adaptation of MIT GGML x86 quants, dated2026-10-04 before XeStrata evaluation; no XeStrata source used by this proposal.",
       "current_build_observation": "Selected original recipe sets Clang and STRATA_CPU_ARCH=znver3; actual engine exports a371-byte iq256_single_gu_rows symbol. This does not prove invocation or current numerical/performance qualification.",
       "prerequisite": "Resolve CPU pool-capacity diagnostic and qualify exact production source/dispatch and applicable parity before a separate immutable flag0/1 long-generation comparison. Do not alter the current six-process plan.",
@@ -3381,7 +3381,7 @@
     "status": "reviewed_conditional_runtime_reference",
     "schedulable_now": false,
     "prerequisite_evidence": "Exact libze-intel-gpu1 package14 to16 and libudev17 to18 identities are retained in client-resources-current.json runtime_asset_delta; the original smoke plan is recoverable at9a5fc5d17. The byte-identical small bank fixture passed on proposed assets at db11be131. This is neither unchanged-runtime evidence nor a retrospective speed claim.",
-    "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14\u2192.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
+    "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14→.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
     "novelty": "Newly observed package transition after closed clean model cohort, not a repeat of historical GPU-hang or general SYCL submission surveys.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/level-zero-package-39395-16-runtime-delta-review.md",
     "report_budget_bytes": 12288,
@@ -3402,7 +3402,7 @@
     "native_review_bytes": 6138,
     "native_review_sha256": "a558a947568f8b699ba466f70bb0e8ade1c38fe860cc0572cc328403fc2f327c",
     "review_digest": {
-      "novelty": "Specific .14\u2192.16 release/package provenance; decision support, not performance evidence.",
+      "novelty": "Specific .14→.16 release/package provenance; decision support, not performance evidence.",
       "corrections": [
         "Upstream .16 tag changes kernels_bin as well as its IGC dependency metadata.",
         "Installed IGC, DPC++ and UR remain unchanged; do not infer a local IGC upgrade or speed/fault effect.",
@@ -6437,7 +6437,7 @@
         "sha256": "c82bb54a15079bdbeaefa7891cf4ebb7ef55e7cf1bb7c6594e22ab068a30ac01"
       },
       "source_corrections": [
-        "The Timeloop paper is ISPASS 2019, not ISCA 2019; its DOI is 10.1109/ISPASS.2019.00042, not the malformed 10.1145/3307650.332221\u2026 entry. The official Timeloop citation page confirms venue/pages; use https://doi.org/10.1109/ISPASS.2019.00042.",
+        "The Timeloop paper is ISPASS 2019, not ISCA 2019; its DOI is 10.1109/ISPASS.2019.00042, not the malformed 10.1145/3307650.332221… entry. The official Timeloop citation page confirms venue/pages; use https://doi.org/10.1109/ISPASS.2019.00042.",
         "The cited Eyeriss PDF URL under people.csail.mit.edu/emer/media/papers/ returned 404 in this review. Its title and ISCA 2016 identity are correct; replace the stale PDF URL with the current official publication page https://eyeriss.mit.edu/energy.html or its current linked PDF."
       ],
       "retrieval_condition": "Actual vLLM Xe2/BF16 measured placement/residency decision; spatial-array methods are not GPU implementation evidence.",
@@ -6777,7 +6777,7 @@
     ],
     "retention": {
       "decision": "Retain temporarily as the source-audited decision-support report through the next eligible MTP candidate decision; then keep compact safety/correction fields in the index and retire the body if it has no remaining consumer.",
-      "consumer": "Main\u2019s future MTP chain-scheduling choice after the active cohort and decode-work eligibility gates close.",
+      "consumer": "Main’s future MTP chain-scheduling choice after the active cohort and decode-work eligibility gates close.",
       "review_point": "At the first eligible MTP source/measurement plan.",
       "retrieval_tags": [
         "mtp-zero-floor-chain",
@@ -6858,12 +6858,12 @@
     "verdict": "ACCEPT_FOR_INDEXED_RETRIEVAL_WITH_CORRECTIONS",
     "review_digest": "Distinct, substantive collection of MTP draft-attention history vs catch-up breadth, acceptance and state/RESTORE tradeoffs; no local bottleneck, speed or adoption result.",
     "corrections": [
-      "Scope \u201cvLLM fixed depth\u201d to the standard native-MTP setting; current docs describe dynamic speculation/adaptive verification for other methods.",
-      "Windowed-MTP\u2019s 28\u201344% is a single preprint\u2019s 1M-context B200 result; it does not predict Strata at 32K or on Intel.",
+      "Scope “vLLM fixed depth” to the standard native-MTP setting; current docs describe dynamic speculation/adaptive verification for other methods.",
+      "Windowed-MTP’s 28–44% is a single preprint’s 1M-context B200 result; it does not predict Strata at 32K or on Intel.",
       "Pilot clocks and aggregate 83%/39% acceptance were dispatcher-supplied, not receipt-verified; require route-specific timing and per-position acceptance before selecting a change."
     ],
     "retention": {
-      "decision": "Retain in the indexed research library for one concrete future MTP window/catch-up decision; do not promote the body into Main\u2019s arrival digest. Prune after that decision if no selected route needs it.",
+      "decision": "Retain in the indexed research library for one concrete future MTP window/catch-up decision; do not promote the body into Main’s arrival digest. Prune after that decision if no selected route needs it.",
       "consumer": "Retrieval for MTP attention-window or accepted-prefix catch-up selection and long-context safety planning.",
       "review_point": "At the first decode-eligible MTP route decision; retire if no concrete consumer is selected.",
       "retrieval_tags": [
@@ -7114,10 +7114,10 @@
       },
       "sglang_current_mutable": "https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/attention/decode_attention.py (LightLLM pointers and Apache-2.0 header verified; mutable main).",
       "primary_papers_blog": [
-        "https://crfm.stanford.edu/2023/10/12/flashdecoding \u2014 primary blog; method motivation only, no code/license claim.",
-        "https://arxiv.org/abs/2501.01005v1 \u2014 FlashInfer paper; load-balanced scheduling background, not implementation/license pin.",
-        "https://arxiv.org/abs/2402.02750v1 \u2014 KIVI paper; 2-bit K per-channel/V per-token claims only.",
-        "https://arxiv.org/abs/2311.01282v4 \u2014 FlashDecoding++ paper; unified-max method background only, no code license inferred."
+        "https://crfm.stanford.edu/2023/10/12/flashdecoding — primary blog; method motivation only, no code/license claim.",
+        "https://arxiv.org/abs/2501.01005v1 — FlashInfer paper; load-balanced scheduling background, not implementation/license pin.",
+        "https://arxiv.org/abs/2402.02750v1 — KIVI paper; 2-bit K per-channel/V per-token claims only.",
+        "https://arxiv.org/abs/2311.01282v4 — FlashDecoding++ paper; unified-max method background only, no code license inferred."
       ]
     },
     "retention": {
@@ -8351,7 +8351,7 @@
     "schedulable_now": false,
     "report": ".cache/strata-research/20261022/cpu-gu-mechanism-methods.md",
     "report_budget_bytes": 12288,
-    "question": "For measured Zen3 CPU GU, identify any not-yet-covered AVX2 instruction/lookup/dataflow method that could reduce IQ2_S NT1 work at the actual NT1\u20134 mix and 6/28 unique experts. Exclude indexed exact-algebra/LUT/AVX2 methods; include one non-LLM packed-code/SIMD analogue only if distinct. Select one bitwise CPU-only discriminator with setup-inclusive hot/stream costs and rejection criteria; separate kernel from pool waits and requested bytes from physical traffic. No saturation, speed or adoption claim.",
+    "question": "For measured Zen3 CPU GU, identify any not-yet-covered AVX2 instruction/lookup/dataflow method that could reduce IQ2_S NT1 work at the actual NT1–4 mix and 6/28 unique experts. Exclude indexed exact-algebra/LUT/AVX2 methods; include one non-LLM packed-code/SIMD analogue only if distinct. Select one bitwise CPU-only discriminator with setup-inclusive hot/stream costs and rejection criteria; separate kernel from pool waits and requested bytes from physical traffic. No saturation, speed or adoption claim.",
     "novelty": "New calibration matches per-format NT mix, group sizes and 1/6 threads; prior methods were not conditioned on it. Select one next test, not a resurvey.",
     "evidence_and_prerequisites": "Main-supplied 105385ccce64b0169ed7d2137e8df9f1fa081f0e; result complete/passed/closed/GPU-free. Actual census and reviewed reports are indexed.",
     "prior_reports": [
@@ -8449,7 +8449,7 @@
     "trigger_result": {
       "path": "bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json",
       "sha256": "ae608777c52288b5e8803aef04a29bbbdd378598933d7c1f21a5b04a948e6672",
-      "observation": "Closed request: six registered workers used 1,435.65 scheduled CPU-s; 144.995s whole-request pool wall gives >=565.68 CPU-s outside run_split_multi_native. Worker pair rows are fairly even (46.66\u201348.46M)."
+      "observation": "Closed request: six registered workers used 1,435.65 scheduled CPU-s; 144.995s whole-request pool wall gives >=565.68 CPU-s outside run_split_multi_native. Worker pair rows are fairly even (46.66–48.46M)."
     },
     "review": {
       "reviewer": "native Codex gpt-6-luna/max",
@@ -8538,7 +8538,7 @@
       "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
       "sha256": "7b313aaf56eb967f7318b253e58184d0a44dae51ad8a756a0a6b36b97319e4f1"
     },
-    "current_source_followup": "Closed framed collection063069d5d/9912c20d4 supplied a fixed-route window-rank estimate20.517% fewer logical CPU bytes. Actual two-workload pilot7fd10a25c/4f42434d2 is rejected:code ratio.791099 and TG14.811\u219216.675;prose ratio1.044499 and TG9.495\u21929.378. Both processes closed normally,15 hashes/fault/loan/route gates passed. Full evidence832285dfc;unused ranker/collector and all raw counts/routes retired after recovery/replay. Original native/profile selected;no clean advancement/adoption."
+    "current_source_followup": "Closed framed collection063069d5d/9912c20d4 supplied a fixed-route window-rank estimate20.517% fewer logical CPU bytes. Actual two-workload pilot7fd10a25c/4f42434d2 is rejected:code ratio.791099 and TG14.811→16.675;prose ratio1.044499 and TG9.495→9.378. Both processes closed normally,15 hashes/fault/loan/route gates passed. Full evidence832285dfc;unused ranker/collector and all raw counts/routes retired after recovery/replay. Original native/profile selected;no clean advancement/adoption."
   },
   "static_cache_cpu_gpu_cost_methods_20261022": {
     "classification": "decision support",
@@ -8716,10 +8716,10 @@
     "report_sha256": "ca17f2f08c0ea340ce4ca0c742338427fcf716e3bfff713f86fb25f59b8d4848",
     "review": {
       "disposition": "accept_with_semantic_correction_preserved",
-      "digest": "High-value correction: the public paper\u2019s Manifold-Constrained Hyper-Connections uses a Sinkhorn/doubly-stochastic residual matrix, while Strata\u2019s MTP operators named hyper-connection use learned down/up projections, gates, RMS scaling, injection and residual writes; the paper is not the local inference contract. Report maps shapes, FP32/BF16 state, stage order and fused/unfused reduction/FMA differences, then compares subgroup, batched/tiled and dependency-legal fusion options.",
+      "digest": "High-value correction: the public paper’s Manifold-Constrained Hyper-Connections uses a Sinkhorn/doubly-stochastic residual matrix, while Strata’s MTP operators named hyper-connection use learned down/up projections, gates, RMS scaling, injection and residual writes; the paper is not the local inference contract. Report maps shapes, FP32/BF16 state, stage order and fused/unfused reduction/FMA differences, then compares subgroup, batched/tiled and dependency-legal fusion options.",
       "corrections_and_limits": [
         "Index/retrieval wording must preserve the paper-versus-implementation semantic mismatch; searching mHC alone must not imply Strata implements the paper algorithm.",
-        "Source mapping is pinned to native 6e40; the current Main context is baa1032ce. Relevant inputs need Main\u2019s normal pinned-source comparison before any later implementation proposal. No local timings or parity test are reported.",
+        "Source mapping is pinned to native 6e40; the current Main context is baa1032ce. Relevant inputs need Main’s normal pinned-source comparison before any later implementation proposal. No local timings or parity test are reported.",
         "The public method papers/docs are references only; no code copied and no XeStrata. Preserve reduction/FMA/task-order caveats and require separate provenance/license review for any future source use."
       ],
       "retrieval_tags": [
@@ -8730,7 +8730,7 @@
         "hyper_connection_mixer",
         "hc=4",
         "hc_lr=320",
-        "T\u00d710240\u00d7320",
+        "T×10240×320",
         "FP32 reduction/FMA order"
       ],
       "retention": "Retain as a reusable MTP operator-contract reference until a concrete hyper-connection decision; then compact the semantic correction and retire if no consumer remains.",
@@ -8787,15 +8787,15 @@
     "report_sha256": "c68fde826e58d80ab7598469fd8f567782d4e7c466bf84e4b10acc59931436cf",
     "review": {
       "disposition": "accept_as_conditional_reference",
-      "digest": "Strong exact-path map: top-10 with T\u22644 gives at most 40 entries and at most four rows per expert; S2/Q2_0 packed experts, Q8_0 activations plus FP32 scales, 32-element correction/FMA/subgroup reduction order, interleaved gate/up and staged quantize/down. It compares expert-local GEMV/tiny GEMM, variable-M grouped GEMM and compatible block-sparse/matrix tiles with padding, launch, register and format counterevidence.",
+      "digest": "Strong exact-path map: top-10 with T≤4 gives at most 40 entries and at most four rows per expert; S2/Q2_0 packed experts, Q8_0 activations plus FP32 scales, 32-element correction/FMA/subgroup reduction order, interleaved gate/up and staged quantize/down. It compares expert-local GEMV/tiny GEMM, variable-M grouped GEMM and compatible block-sparse/matrix tiles with padding, launch, register and format counterevidence.",
       "corrections_and_limits": [
-        "S2 here means the source\u2019s custom Q2_0 packed path; it is not a generic INT2 GEMM. Public SGLang/vLLM/Intel/MAGMA alternatives have different formats or batch regimes and are not drop-ins.",
+        "S2 here means the source’s custom Q2_0 packed path; it is not a generic INT2 GEMM. Public SGLang/vLLM/Intel/MAGMA alternatives have different formats or batch regimes and are not drop-ins.",
         "There are no duplicate-expert histograms, per-kernel service times, occupancy/cache evidence or physical counters; source dimensions and row reuse do not show a bottleneck or winning mapping.",
         "Mutable SGLang/Intel references should remain dated and be pinned before any source reuse. No code copied; XeStrata excluded; future code requires license/provenance review."
       ],
       "retrieval_tags": [
         "MTP S2/Q2_0",
-        "top10 T\u22644",
+        "top10 T≤4",
         "H2560 FF640",
         "Q8_0 scaled activations",
         "per-64 weight scales",
@@ -8829,7 +8829,7 @@
       "passive_generation_resource_capture_source_audit"
     ],
     "nonduplication": "Do not repeat GPU event timestamp support, callback/request ownership audits, or resource journal binding; isolate post-callback aggregation and shutdown protocol.",
-    "consumer": "Main\u2019s current graph-observer collector repair/qualification decision; no report result replaces the failing gate.",
+    "consumer": "Main’s current graph-observer collector repair/qualification decision; no report result replaces the failing gate.",
     "status": "reviewed_conditional_reference",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/lifecycle-canary/collector-shutdown-methods.md",
     "source_commit": "48ebde66f57ad26912dece0588433cfd36760129",
@@ -8961,14 +8961,14 @@
       "corrections": [
         "The cited SGLang v0.5.22 linear.py spot-check supports MergedColumnParallelLinear, but I found no QKVParallelLinear symbol in that file. Keep the citation for merged columns only, or add the exact SGLang source path that establishes its QKV abstraction.",
         "The Eyeriss PDF URL returns 404. The Row-Stationary claim is supported by the MIT DSpace record: https://dspace.mit.edu/entities/publication/f6342515-2b7d-411c-a8ad-a9edb23dd394. Replace the dead URL; retain the stated ASIC-to-SYCL transfer limit.",
-        "The pinned vLLM guide documents layer/weight abstractions, not a fused kernel; the report\u2019s qualification is appropriate. CUTLASS 4.3.3 is a CUDA-only scheduling analogy, not direct performance evidence. Keep the Intel joint_matrix development-branch citation dated and moving; pin an immutable revision before any code-source use.",
+        "The pinned vLLM guide documents layer/weight abstractions, not a fused kernel; the report’s qualification is appropriate. CUTLASS 4.3.3 is a CUDA-only scheduling analogy, not direct performance evidence. Keep the Intel joint_matrix development-branch citation dated and moving; pin an immutable revision before any code-source use.",
         "No source code is copied or proposed. Any later implementation reference still needs separate provenance and license review; XeStrata remains excluded."
       ],
       "retrieval_tags": [
         "MTP QKV same mixed_",
         "shared-expert gate/up Q8_1 reuse",
         "current packing already shared",
-        "Q8_0 \u00d7 Q8_1 per-32 FP32 partials",
+        "Q8_0 × Q8_1 per-32 FP32 partials",
         "multi-output dispatch",
         "activation multicast",
         "no local bottleneck evidence"
@@ -8987,7 +8987,7 @@
     "classification": "knowledge collection",
     "schedulable_now": false,
     "report_budget_bytes": 12288,
-    "question": "For the source-pinned S2/Q2_0 weight codes \u00d7 Q8_0 activations, compare GPU arithmetic mappings for packed-code decode and corrected signed-int dot: lane bit extraction/bit-plane or lookup methods, integer SIMD-dot sequences, and matrix-tile operand conversion where legal. Preserve per-64 weight/per-32 activation scale boundaries, FP32 FMA partials and reduction order; compare relevant Intel/SYCL and non-LLM low-bit GPU/ASIC methods with counterexamples. Exclude expert grouping, routing, cache/placement and down-scatter; no local performance claim or code proposal.",
+    "question": "For the source-pinned S2/Q2_0 weight codes × Q8_0 activations, compare GPU arithmetic mappings for packed-code decode and corrected signed-int dot: lane bit extraction/bit-plane or lookup methods, integer SIMD-dot sequences, and matrix-tile operand conversion where legal. Preserve per-64 weight/per-32 activation scale boundaries, FP32 FMA partials and reduction order; compare relevant Intel/SYCL and non-LLM low-bit GPU/ASIC methods with counterexamples. Exclude expert grouping, routing, cache/placement and down-scatter; no local performance claim or code proposal.",
     "prerequisites_met": [
       "The reviewed S2 report gives the exact packed representation, signed-code correction, activation scale mode and accumulation order.",
       "Arithmetic-method comparison is useful without duplicate-count, cost-curve or physical-counter data."
@@ -9043,16 +9043,16 @@
     "active_report_body_unread_by_main": true,
     "review": {
       "disposition": "accept_as_conditional_reference_with_retrieval_caveat",
-      "digest": "Strong source-pinned inner-kernel map: Q2_0/S2 stores unsigned 2-bit q codes for (q\u22121)\u00b7dw; each Q8_0 block needs dot\u2212sum(x), its own scale pair and FP32 FMA partial. It distinguishes grouped MTP reduction order from scalar GEMV and compares direct unpack, bit planes, LUT, SIMD dot and dense matrix-tile conversion with useful scale, row-count and conversion counterevidence.",
+      "digest": "Strong source-pinned inner-kernel map: Q2_0/S2 stores unsigned 2-bit q codes for (q−1)·dw; each Q8_0 block needs dot−sum(x), its own scale pair and FP32 FMA partial. It distinguishes grouped MTP reduction order from scalar GEMV and compares direct unpack, bit planes, LUT, SIMD dot and dense matrix-tile conversion with useful scale, row-count and conversion counterevidence.",
       "corrections_and_limits": [
-        "BitBLAS README does document W_INT2 \u00d7 A_INT8 as an example, but GitHub marks the repository archived on 2026-02-24. Retain it as a dated method reference, not an actively maintained implementation; pin an exact commit and check its license before any source-level use. The example is not this S2/Q8_0 contract. Sources: https://github.com/microsoft/BitBLAS and https://github.com/microsoft/BitBLAS/blob/main/README.md.",
-        "The mutable Intel LLVM sycl matrix specification currently lists BMG-G21 INT8 combinations including an 8\u00d716\u00d732 shape; this is API/spec evidence only. The report correctly says installed runtime capability, target support and crossover remain unmeasured. The cited BMG-G31 issue is a counterexample on a different device, not B570 evidence. Sources: https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc and https://github.com/intel/llvm/issues/22926.",
-        "The reported algebra, q\u22121 correction and block/reduction distinctions are internally consistent with the report\u2019s pinned Strata source map. LUT-GEMM\u2019s abstract confirms its OPT-175B 3-bit result; the report properly treats it as a different regime, not a local performance prediction. Sources: https://arxiv.org/abs/2206.09557 and https://arxiv.org/abs/2408.06003.",
+        "BitBLAS README does document W_INT2 × A_INT8 as an example, but GitHub marks the repository archived on 2026-02-24. Retain it as a dated method reference, not an actively maintained implementation; pin an exact commit and check its license before any source-level use. The example is not this S2/Q8_0 contract. Sources: https://github.com/microsoft/BitBLAS and https://github.com/microsoft/BitBLAS/blob/main/README.md.",
+        "The mutable Intel LLVM sycl matrix specification currently lists BMG-G21 INT8 combinations including an 8×16×32 shape; this is API/spec evidence only. The report correctly says installed runtime capability, target support and crossover remain unmeasured. The cited BMG-G31 issue is a counterexample on a different device, not B570 evidence. Sources: https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc and https://github.com/intel/llvm/issues/22926.",
+        "The reported algebra, q−1 correction and block/reduction distinctions are internally consistent with the report’s pinned Strata source map. LUT-GEMM’s abstract confirms its OPT-175B 3-bit result; the report properly treats it as a different regime, not a local performance prediction. Sources: https://arxiv.org/abs/2206.09557 and https://arxiv.org/abs/2408.06003.",
         "No source code was copied or proposed; citation of BitBLAS/Intel code documentation does not grant reuse rights. Keep future implementation provenance/license review separate. XeStrata remains excluded."
       ],
       "retrieval_tags": [
         "S2/Q2_0",
-        "q\u22121 zero-point correction",
+        "q−1 zero-point correction",
         "Q8_0 32-element activation scale",
         "S2 64-element weight scale",
         "code4 integer dot",
@@ -9203,8 +9203,8 @@
       "sha256": "29e3afa1b0c86f8a861bd6632f4584fec52eacf9fb282a32eafed9463dc0e87a",
       "disposition": "accept_with_source_correction_and_provisional_lifecycle",
       "corrections": [
-        "Source correction: pinned PTI 4b6d742 pti_view_record_kernel v1 already includes _sycl_node_id, _sycl_queue_id and _sycl_invocation_id; v2 extends it with _device_handle, _engine_ordinal and _engine_index. Replace the report\u2019s \u201cv2 adds SYCL node, queue and invocation IDs\u201d sentence. Actual backend emission still needs qualification.",
-        "Checked Intel LLVM\u2019s pinned design statement that naming is not fully stable, Khronos\u2019s explicit non-unique/non-stable kernel_id name guarantee, Level Zero zeKernelGetName, and PTI external correlation APIs; they support the central method claims.",
+        "Source correction: pinned PTI 4b6d742 pti_view_record_kernel v1 already includes _sycl_node_id, _sycl_queue_id and _sycl_invocation_id; v2 extends it with _device_handle, _engine_ordinal and _engine_index. Replace the report’s “v2 adds SYCL node, queue and invocation IDs” sentence. Actual backend emission still needs qualification.",
+        "Checked Intel LLVM’s pinned design statement that naming is not fully stable, Khronos’s explicit non-unique/non-stable kernel_id name guarantee, Level Zero zeKernelGetName, and PTI external correlation APIs; they support the central method claims.",
         "Do not convert the suggested identity schema into evidence that the installed local collector emits every field. Report accurately notes PTI documentation is draft and local exact revision was not pinned."
       ],
       "retrieval_sections": [
@@ -9338,7 +9338,7 @@
     "classification": "knowledge collection",
     "schedulable_now": false,
     "report_budget_bytes": 12288,
-    "question": "Use primary versioned Intel sources to map which Level Zero Metrics Discovery/streamer/query and supported profiling-tool counters on Arc B570/Xe2 BMG could distinguish the selected QSA kernel\u2019s actual memory/cache behavior, BF16 matrix activity, occupancy/register use and synchronization/issue stalls. Record device/driver/runtime/tool support, metric units/scope, permissions, sampling/replay limits and counters genuinely exposed on this SKU; separate documentation support from local availability and measured results. Return a bounded capability matrix and minimum later read-only local check; no profiler run, code, throughput/bottleneck claim or PCIe wire-byte investigation.",
+    "question": "Use primary versioned Intel sources to map which Level Zero Metrics Discovery/streamer/query and supported profiling-tool counters on Arc B570/Xe2 BMG could distinguish the selected QSA kernel’s actual memory/cache behavior, BF16 matrix activity, occupancy/register use and synchronization/issue stalls. Record device/driver/runtime/tool support, metric units/scope, permissions, sampling/replay limits and counters genuinely exposed on this SKU; separate documentation support from local availability and measured results. Return a bounded capability matrix and minimum later read-only local check; no profiler run, code, throughput/bottleneck claim or PCIe wire-byte investigation.",
     "prerequisites_met": [
       "QSA report supplies exact geometry and competing resource hypotheses.",
       "Existing arithmetic-ceiling, register/spill and PCIe scopes do not establish QSA execution-counter availability.",
@@ -10322,7 +10322,7 @@
         ]
       },
       {
-        "section": "What the experiments establish\u2014and do not; Hard evidence limits",
+        "section": "What the experiments establish—and do not; Hard evidence limits",
         "tags": [
           "fdinfo total-vs-resident",
           "UMD logging limits",
@@ -10631,7 +10631,7 @@
     "status": "report_returned_native_reviewed_ownership_unconfirmed",
     "schedulable_now": false,
     "eligibility_review_sha256": "487e61e1fa5757b84d25e0832b95d7fbccbd3d90777d183ea1b91b6a74b24e59",
-    "scope": "At immutable official SGLang and vLLM revisions that support Qwen4Exp, trace the actual MTP target-verification route for 1\u20134 proposal positions from model adapter/scheduler through attention and routed MoE. Record code-confirmed row shapes, whether verification batches rows or loops positions, where layer/expert dispatch changes, how accepted-prefix/rejected-suffix state is handled, and which CPU/GPU expert-provider modes the framework actually implements. Compare only concrete framework paths and transferable execution structures; include absent/unsupported paths and counterexamples. Map applicability boundaries to Strata\u2019s selected MTP4 path without proposing a port or local benchmark claim.",
+    "scope": "At immutable official SGLang and vLLM revisions that support Qwen4Exp, trace the actual MTP target-verification route for 1–4 proposal positions from model adapter/scheduler through attention and routed MoE. Record code-confirmed row shapes, whether verification batches rows or loops positions, where layer/expert dispatch changes, how accepted-prefix/rejected-suffix state is handled, and which CPU/GPU expert-provider modes the framework actually implements. Compare only concrete framework paths and transferable execution structures; include absent/unsupported paths and counterexamples. Map applicability boundaries to Strata’s selected MTP4 path without proposing a port or local benchmark claim.",
     "prior_overlap": "Do not repeat generic multirow GEMM, worker scheduling, weight-reuse, MTP-off feasibility, GPU queue, or QSA attention surveys. Stay at versioned framework call-path, shape/dispatch and supported CPU/GPU mode facts.",
     "report_budget_bytes": 12288,
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/qwen4-framework-verifier/report.md",
@@ -10929,7 +10929,7 @@
     "retrieval": {
       "report_headings": [
         "Exact IQ mapping: what can and cannot be represented",
-        "Cost model for H=2560, FF=640, NT=1\u20134",
+        "Cost model for H=2560, FF=640, NT=1–4",
         "Positive regimes and counterexamples",
         "Comparison framing for a later decision",
         "Provenance and source record"
@@ -11107,11 +11107,11 @@
     },
     "retrieval": {
       "report_sections": [
-        "Decision summary \u2014 preserve the current single-sample code pass and prose failure.",
-        "What the public suites contribute \u2014 compare suite scope and production-serving metrics.",
-        "Workload dimensions and counterexamples \u2014 choose future ex-ante strata without treating proxies as acceptance labels.",
-        "Prospective calibration and sealed-holdout protocol \u2014 consult when a new workload plan is considered; apply the clarification above.",
-        "Provenance and license boundaries \u2014 consult before dataset or measurement-source reuse."
+        "Decision summary — preserve the current single-sample code pass and prose failure.",
+        "What the public suites contribute — compare suite scope and production-serving metrics.",
+        "Workload dimensions and counterexamples — choose future ex-ante strata without treating proxies as acceptance labels.",
+        "Prospective calibration and sealed-holdout protocol — consult when a new workload plan is considered; apply the clarification above.",
+        "Provenance and license boundaries — consult before dataset or measurement-source reuse."
       ],
       "tags": [
         "thinking-on",
@@ -11801,7 +11801,7 @@
     "schedulable_now": false,
     "status": "reviewed_decision_support",
     "question": "Build a versioned compatibility matrix for size_t ID/range ABI, isolated spir64_gen BMG AOT plus generic JIT image registration, TLA joint-matrix/2D I/O and f16/bf16, and deprecated nd_item barrier status/semantics. Compare official 2026.2 with clean historical Intel references only. Separate documented, build-recorded and locally verified facts; identify only missing pre-model smoke/edge gates.",
-    "avoid": "No generic SYCL/tile survey, code proposal or barrier rewrite. Main\u2019s same-build submission/native16/GU/Down checks remain independent gates.",
+    "avoid": "No generic SYCL/tile survey, code proposal or barrier rewrite. Main’s same-build submission/native16/GU/Down checks remain independent gates.",
     "prerequisites": [
       "Pin the active official SDK/compiler and plan/source from Main: 2026.2, 0bf4502bf7b46713e72a850482aced7ea1ba0728, plan 7e478a6ee; TLA 87f6850680a580654b9ea2c80dbc01aeb36ad231.",
       "Use only clean, license-checked Intel LLVM history and versioned public docs. The recorded historical tree has XeStrata modifications: do not inspect or derive from its changed paths, artifacts, diagnostics or tests. If exact old-binary provenance is unavailable, mark that comparison unknown.",
@@ -12071,7 +12071,7 @@
       "verdict": "accept_with_material_corrections",
       "bytes": 5019,
       "sha256": "d21b5dad5ad96c52201f568fe80120748e0e50b28a7c25f6d62faa9dd8621f24",
-      "digest": "Distinct official-runtime observer-OFF repeated-batch stall;blocked stage and historical1003\u2192975cause remain unknown. Correct audit follows vllm/TLA fallback,not own joint_matrix kernel. q must drain explicitly;Runtime::wait does not track make_queue queues.64calls/16call checkpoints bound32ordinary kernels plus marker per group,a smoke only. Per-API elapsed thresholds cannot cancel stuck calls;only outer process termination is bounded. No new generic survey eligible.",
+      "digest": "Distinct official-runtime observer-OFF repeated-batch stall;blocked stage and historical1003→975cause remain unknown. Correct audit follows vllm/TLA fallback,not own joint_matrix kernel. q must drain explicitly;Runtime::wait does not track make_queue queues.64calls/16call checkpoints bound32ordinary kernels plus marker per group,a smoke only. Per-API elapsed thresholds cannot cancel stuck calls;only outer process termination is bounded. No new generic survey eligible.",
       "output_retired": true
     },
     "main_correction": "The review itself says bf16_out16,but the actual PublicGU::call at moe_gu_swiglu.cpp:244 calls f16_out16(...,output_bf16=true):FP16 input and BF16 GU output,then BF16-to-FP16 swiglu. It enters vllm_submit(input_bf16=false)->adapter.beta0->TLA DenseKernel. Preserve this dtype/path distinction in the new diagnostic. The own-backend joint_matrix audit is not qualifying evidence for that path.",
@@ -12238,7 +12238,53 @@
     "operational_digest": "Distinct static/grouped/dynamic execution assignment,job splitting,ownership/synchronization tradeoffs. Census establishes shape only,no bottleneck/tail/speed/adoption. Intel guide edition ambiguous(URL2023.0 vs text2023.1);other source/license claims not independently verified/pinned. No code reuse proposed. Body remains retrieval-only pending source-pinned material expert-tail attribution and concrete candidate.",
     "next_scope_schedulable_now": false,
     "dispatch_and_scope_archive_commit": "c71df9ddd",
-    "transaction_retirement_ref": "prefill-runtime-comparison-current.json:historical_regression_audit.validation_cost_control_v1.artifact_retirement"
+    "transaction_retirement_ref": "prefill-runtime-comparison-current.json:historical_regression_audit.validation_cost_control_v1.artifact_retirement",
+    "reference_refresh_20261119": {
+      "source_commit": "b95acbc46f7181711ea4e02878fd3ec896023422",
+      "reviewed_report_sha256": "c6a2dd6606affc0d742b21c8147415b9c0f761e500d7626784e615615715bf24",
+      "source_manifest_sha256": "cdacaffaa40106124186458b0fce8a8ba08bfc85d259664eadae5c01ce330b16",
+      "reviewer_sha256": "c95d6f828bc137837211641be70b22998b0cb352ede6d7353557a38811e7f20a",
+      "run": "run_7693426f50e9",
+      "task": "task_c53497b92f6c",
+      "dispatch": "ctx_005dc2fc2ed7",
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "reviewer": "native Codex gpt-6-luna max",
+      "filesystem_inputs_passed": 11,
+      "worker_side_orca_status": {
+        "call": "call_3c6878b955c14a59ae1fd48040c9a39a",
+        "sha256": "73d59bcbf62020cc91f7f03aabc438332ae9258b0caebfed674ad82f50ae6f55"
+      },
+      "ownership_closed": true,
+      "retirement": {
+        "complete": true,
+        "captures": [
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu_skewed_tile_scheduling_20261119",
+            "files": 2,
+            "bytes": 16645,
+            "tree_sha256": "cdbe58bbd17a51bd3456ede98d91564457cd1ec53f154da404ed36b0653da16a"
+          },
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu_skewed_tile_scheduling_20261119-control",
+            "files": 9,
+            "bytes": 18931,
+            "tree_sha256": "e1599eccf17722fb2e49ea48061a9ab0ed950fc0aa8869a670b8009dbbe5e59a"
+          },
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/gpu_skewed_tile_scheduling_20261119",
+            "files": 8,
+            "bytes": 3385331,
+            "tree_sha256": "9e79fdd9c55e676a1113815e50bca0828b70c19ee46a48ca0618dcd2915d2931"
+          }
+        ]
+      },
+      "findings": [
+        "Source references: Intel XeTLA v0.3.5 Stream-K; Triton persistent-matmul tutorial; CUTLASS Blackwell Cluster Launch Control. Pin exact versions/licenses before using them as implementation references.",
+        "The production loop reuses one decoded GU/Down pair. Cross-expert interleaving needs separate residency, lifetime and output ownership. Investigate same-expert tiles first if measured tails justify it."
+      ],
+      "consumer": "Retrieve only for source-pinned device-side expert tile tail imbalance with a bounded comparison."
+    }
   },
   "low_overhead_owned_process_supervision_20261027": {
     "classification": "decision_support",
@@ -12280,7 +12326,7 @@
     },
     "report_bytes": 11466,
     "report_sha256": "82eb2106e60493d14e526905bf339c8a86c4c17b79db8acbfaa94eaf062393d2",
-    "operational_digest": "Report is useful decision support for a host-only owner change: first consolidate repeated per-scan /proc identity reads while preserving 250 ms full discovery, fresh pidfd/start-time/SID validation, the unreaped session anchor, escaped-member tracking, finite caps, cleanup and final reaping proof. Do not cache across scans or lower reconciliation cadence. This owner already polls the leader pidfd every 20 ms, so selector wakeup is a smaller optional test. The idle-child controls show 12.00\u201312.44% of one core; profiled nested times are overhead-contaminated and do not establish inference slowdown. Keep the model diagnostic failed at its 5% gate. Main should reconcile the Orca handle/index state, then run a committed host comparison; a new matched model plan follows only if that gate passes.",
+    "operational_digest": "Report is useful decision support for a host-only owner change: first consolidate repeated per-scan /proc identity reads while preserving 250 ms full discovery, fresh pidfd/start-time/SID validation, the unreaped session anchor, escaped-member tracking, finite caps, cleanup and final reaping proof. Do not cache across scans or lower reconciliation cadence. This owner already polls the leader pidfd every 20 ms, so selector wakeup is a smaller optional test. The idle-child controls show 12.00–12.44% of one core; profiled nested times are overhead-contaminated and do not establish inference slowdown. Keep the model diagnostic failed at its 5% gate. Main should reconcile the Orca handle/index state, then run a committed host comparison; a new matched model plan follows only if that gate passes.",
     "corrections": [
       "The owner already registers the leader pidfd in select.poll and checks it during 20 ms interaction waits. The report's pidfd selector-wakeup option is a small multiplexing change to test, not a missing exit-detection mechanism; it is unlikely to address the measured scan/identity cost.",
       "Bound the per-scan reuse structure. Keep at most the capped owned identities plus capped live session members, fail as soon as the live cap is exceeded, and do not retain a record for every host PID. Do not change the 250 ms full /proc reconciliation cadence or cache observations across scans.",
@@ -14939,7 +14985,7 @@
       "mtp_compute_compute_dag_scheduling_methods_20261023: independent product scheduling; exclude general command-queue/DAG amortization."
     ],
     "consumer": "Retrieve only for a measured recurrent-prefill scheduling decision with source-pinned state/dtype/rounding/chunk/handoff contract. Review at the next recurrent-candidate selection;retire body if no measured consumer emerges.",
-    "limits": "Do not assume this model\u2019s GDN update is affine-composable or numerically equivalent under tree reassociation. Do not propose code or infer a bottleneck.",
+    "limits": "Do not assume this model’s GDN update is affine-composable or numerically equivalent under tree reassociation. Do not propose code or infer a bottleneck.",
     "source_revision": "29868a5b7",
     "scope_review_sha256": "17935ef9372ca8fadef70f2a33a1a83c8968b0b5679819368543c737c4f6aa2f",
     "worker_model": "Orca Codex gpt-6-luna high",
@@ -15373,7 +15419,7 @@
     "decision": {
       "fresh_orca_research_needed": false,
       "schedulable_now": false,
-      "reason": "Existing reviewed references already cover exact clustered unions, membership/incidence representations, dense T\u00d7|U| waste, tile/list compatibility, preparation cost and counterexamples. A new literature survey would duplicate them. Whether this wins on Strata is a local workload/cost question; the available aggregates do not decide it. Revisit after the frozen SG32 selector gates and only if Main needs a concrete candidate discriminator."
+      "reason": "Existing reviewed references already cover exact clustered unions, membership/incidence representations, dense T×|U| waste, tile/list compatibility, preparation cost and counterexamples. A new literature survey would duplicate them. Whether this wins on Strata is a local workload/cost question; the available aggregates do not decide it. Revisit after the frozen SG32 selector gates and only if Main needs a concrete candidate discriminator."
     },
     "essential_constraints": [
       "Preserve separate query-row and KV-head identity, original selected-ID multiplicity/order, page aliases and causal/live validity. A reused physical K/V value must still contribute once per logical incidence.",
@@ -15398,7 +15444,7 @@
         "id": "sparse_attention_interquery_kv_locality_scheduling_methods_20261023",
         "path": ".cache/strata-research/20261023/interquery-locality/report.md",
         "sha256": "7b4d5b0cc78c4845eaf1559a5ffeb368eaf47964921eb81117eedd000dc9d920",
-        "sections": "Current Strata mapping; query clusters and explicit union. Covers sorted neighboring IDs, membership/incidence, dense T\u00d7|U| masked waste, reduced concurrency and QUILT as platform-specific evidence. Pins selected source 6e40afc1beddd059ee518617f6c1efce1da14aca."
+        "sections": "Current Strata mapping; query clusters and explicit union. Covers sorted neighboring IDs, membership/incidence, dense T×|U| masked waste, reduced concurrency and QUILT as platform-specific evidence. Pins selected source 6e40afc1beddd059ee518617f6c1efce1da14aca."
       },
       {
         "id": "qsa_irregular_gqa_matrix_packing_collection_20261027",
@@ -15946,7 +15992,7 @@
       "adoption_qualified": false,
       "verdict": "Useful prospective design with material cost and acceptance-rule corrections; proposal only.",
       "essential_findings": [
-        "Existing NLL callback reads back full-vocabulary logits and waits for every prompt position;cost estimate must include this and6\u20139rather than4\u20136runs. Do not schedule full long-context scoring unchanged.",
+        "Existing NLL callback reads back full-vocabulary logits and waits for every prompt position;cost estimate must include this and6–9rather than4–6runs. Do not schedule full long-context scoring unchanged.",
         "The existing FP32 final-layer bridge can feed the scorer from BF16,but the comparator currently rejects BF16/pair. Commit actual supported scoring/controller contracts first.",
         "A justified prospective engineering noninferiority budget is permitted without an external published margin;it is probability fidelity,not proof of SGLang/vLLM contract equivalence or task success.",
         "Task checks,independent repeated decode/handoff and physical262144fill/tails/RESTORE remain separate gates;do not require identical free-running text."
@@ -19961,7 +20007,7 @@
       "path": ".cache/research/2026-11-01/gdn_fp32_resident_next_decision_20261101.review.json",
       "sha256": "a2f15f9979b61e42c5b69ef5c2a708bb4913c4ca8c92847348c3aba70fed414f",
       "source_commit": "44ca73c50014542057692eac78fc846fca68e15e",
-      "short_digest": "Native 128x128 FP32 loses to oneMKL on all four measured shapes (native/reference ratios 1.296\u20131.379); all 120 steady batches and numerical/fault/ownership/provider gates pass, but every native follow-up gate fails. Native event service is 98.09\u201399.53% of host interval, so host overhead does not explain the loss; this does not establish compute, memory, occupancy, or saturation. Large FP32 output bytes support a storage hypothesis only. T=1 underfill does not explain the T=4096/8192 timing shapes, which tile M fully. Keep oneMKL selected; no model trial or next component experiment is justified before production call-path and output-contract evidence.",
+      "short_digest": "Native 128x128 FP32 loses to oneMKL on all four measured shapes (native/reference ratios 1.296–1.379); all 120 steady batches and numerical/fault/ownership/provider gates pass, but every native follow-up gate fails. Native event service is 98.09–99.53% of host interval, so host overhead does not explain the loss; this does not establish compute, memory, occupancy, or saturation. Large FP32 output bytes support a storage hypothesis only. T=1 underfill does not explain the T=4096/8192 timing shapes, which tile M fully. Keep oneMKL selected; no model trial or next component experiment is justified before production call-path and output-contract evidence.",
       "consumer": "Next actual GDN3 projection-storage contract decision;conditional tile ideas are not schedulable."
     },
     "status": "curated_reference_after_closed_resident_comparison",
@@ -20584,7 +20630,7 @@
     "id": "native16_hc_residual_write_row_reuse_20261101",
     "classification": "decision_support",
     "schedulable_now": false,
-    "novelty": "Prior mtp_mhc_small_operator_gpu_methods_20261022 covers MTP projections/mixing, not this main-prefill native16::write mapping or repeated injection-gate evaluation. Reuse its operation-order contract and semantic correction: Strata HC is not the paper\u2019s Sinkhorn Manifold-Constrained HC.",
+    "novelty": "Prior mtp_mhc_small_operator_gpu_methods_20261022 covers MTP projections/mixing, not this main-prefill native16::write mapping or repeated injection-gate evaluation. Reuse its operation-order contract and semantic correction: Strata HC is not the paper’s Sinkhorn Manifold-Constrained HC.",
     "prior_retrieval": {
       "report_sha256": "ca17f2f08c0ea340ce4ca0c742338427fcf716e3bfff713f86fb25f59b8d4848",
       "review_sha256": "972f51742ed1195e354eeca31d5bd7606a75509886fbd139227c5cca1731f642",
@@ -22237,7 +22283,7 @@
       "suggestion": "Conditional source-pinned comparison of one-row decode and four-row verification, comparing state-resident ordered updates with checkpoint writes or restore-and-replay.",
       "prerequisites": [
         "Pin the actual production source, executable, dispatch path, framework numerical contract and exact external implementation revisions.",
-        "A phase-specific long-generation comparison must show GDN decode/verification or state transaction cost matters to the critical path; separate useful leaf CPU from wait time and establish relevant GPU service or physical-memory traffic. The reported 40\u201344% pool wall alone is insufficient.",
+        "A phase-specific long-generation comparison must show GDN decode/verification or state transaction cost matters to the critical path; separate useful leaf CPU from wait time and establish relevant GPU service or physical-memory traffic. The reported 40–44% pool wall alone is insufficient.",
         "Commit matched workload, acceptance/rejection, context, state/conv-history correctness, RESTORE and measurement criteria before any run."
       ],
       "schedulable_now": false
@@ -22300,7 +22346,7 @@
       "suggestion": "Conditional comparison of current row-local fused gather/dequant against staged scratch only if selected-QSA data movement or consumer service is shown to affect production decode.",
       "prerequisites": [
         "Report SHA transcription corrected against the original receipt and actual ELF;pin the actual production source/entrypoint and exact external implementation revisions before implementation use.",
-        "Measure actual B distribution, selected-ID overlap/locality and matched QSA phase contribution. Separate useful host work from waiting and identify relevant GPU service or physical-memory traffic; 40\u201344% pool wall alone does not identify the limiting resource.",
+        "Measure actual B distribution, selected-ID overlap/locality and matched QSA phase contribution. Separate useful host work from waiting and identify relevant GPU service or physical-memory traffic; 40–44% pool wall alone does not identify the limiting resource.",
         "Commit exact per-row IDs, valid counts, causal/tail/page semantics, precision contract, matched dependency-time comparison and numerical/safety gates before a run; avoid repeating the prior general union/locality survey."
       ],
       "schedulable_now": false
@@ -29409,7 +29455,7 @@
     ],
     "facts": [
       "The production-facing native16 adapter describes and launches one dense GEMM problem at a time; current MoE jobs are expert-major, ragged M spans capped at 8192 rows, with reusable gather and dequant scratch that cannot be overwritten until its consumers finish.",
-      "Intel oneMKL 2025.0 USM group GEMM accepts per-group dimensions and arrays of matrix pointers, but group_size is the count of equal-shape GEMMs in that group. Its published type matrix has FP16\u00d7FP16\u2192FP16 or FP32 output and BF16\u00d7BF16\u2192BF16 or FP32, but no direct FP16\u00d7FP16\u2192BF16 output. FP32 output staging plus conversion would add storage/traffic and another launch; FP16 intermediate rounding changes the current one-final-BF16-RNE contract.",
+      "Intel oneMKL 2025.0 USM group GEMM accepts per-group dimensions and arrays of matrix pointers, but group_size is the count of equal-shape GEMMs in that group. Its published type matrix has FP16×FP16→FP16 or FP32 output and BF16×BF16→BF16 or FP32, but no direct FP16×FP16→BF16 output. FP32 output staging plus conversion would add storage/traffic and another launch; FP16 intermediate rounding changes the current one-final-BF16-RNE contract.",
       "A returned event/API group name does not establish one GPU dispatch or concurrent scheduling; exact installed backend source/trace is needed."
     ],
     "limits": [
@@ -31660,7 +31706,7 @@
   "cpu_compact_multitoken_gu_methods_20261113": {
     "classification": "knowledge_collection",
     "stage": "native_review_complete_private_payload_retired",
-    "title": "Prepared IQ3 GU for NT2\u20134: CPU weight reuse and batching methods",
+    "title": "Prepared IQ3 GU for NT2–4: CPU weight reuse and batching methods",
     "source_commit": "2061b3dc7bbd7e3790b087b59040ae8bea5fd810",
     "policy_commit": "2061b3dc7bbd7e3790b087b59040ae8bea5fd810",
     "model": "gpt-6-luna",
@@ -31669,7 +31715,7 @@
       "schedulable_now": false,
       "reason": "Original Task/processes and nativeLunaMax review are closed;corrected conditional findings retained. Do not repeat or steer. Actual target NTbins are now recorded separately in7d35072c5."
     },
-    "retention": "Conditional4987-byte corrected reference and identities retained;all487private source/report/review files or links are deleted. Main did not read original report body. Retrieve only after actual NT2\u20134 model/service evidence warrants it.",
+    "retention": "Conditional4987-byte corrected reference and identities retained;all487private source/report/review files or links are deleted. Main did not read original report body. Retrieve only after actual NT2–4 model/service evidence warrants it.",
     "task": "task_33206741a41b",
     "dispatch": "ctx_559d80ecc54b",
     "terminal": "term_685d43fa-800a-462f-877c-98e08c76735f",
@@ -31700,13 +31746,13 @@
     "corrected_facts": [
       "Existing native IQ3_XXS NT2+ already selects the AVX2 weight-reusing path;do not propose generic weight reuse as new.",
       "FBGEMM cited license is BSD,not Apache;no external code is adopted.",
-      "Survey retained only as conditional NT2\u20134 methods knowledge. Actual model NTbins,service cost,numerical/performance tests and adoption remain pending."
+      "Survey retained only as conditional NT2–4 methods knowledge. Actual model NTbins,service cost,numerical/performance tests and adoption remain pending."
     ],
     "conditional_reference": {
       "path": "docs/research/cpu-compact-multitoken-gu.json",
       "bytes": 4987,
       "sha256": "830f9c630489d9e871ae053cef06d253ff58bab3705906052c8e25b19f102c90",
-      "consumer": "Future NT2\u20134 CPU GU work after actual model NT/service evidence."
+      "consumer": "Future NT2–4 CPU GU work after actual model NT/service evidence."
     },
     "private_payload_retirement": {
       "stage": "retired",
@@ -31724,7 +31770,7 @@
         "path": "docs/research/cpu-compact-multitoken-gu.json",
         "bytes": 4987,
         "sha256": "830f9c630489d9e871ae053cef06d253ff58bab3705906052c8e25b19f102c90",
-        "consumer": "Future NT2\u20134 CPU GU work after actual model NT/service evidence."
+        "consumer": "Future NT2–4 CPU GU work after actual model NT/service evidence."
       },
       "deletion_verified": true,
       "temporary_inventory_retired": true
@@ -32318,7 +32364,7 @@
     "native_review_key": "orca_research_wave_b_review_20261113",
     "native_review": {
       "decision": "retain and index as knowledge collection",
-      "novelty_and_redundancy": "Adds concrete small-N non-LLM methods\u2014fusion, indirect multi-kernel append, persistent queues, HPC asynchronous pipelines, FPGA invocation pipelines and bounded iteration batching\u2014to the existing generic command/list/graph and host-task references. Some API-boundary overlap is useful for the pinned B570 environment.",
+      "novelty_and_redundancy": "Adds concrete small-N non-LLM methods—fusion, indirect multi-kernel append, persistent queues, HPC asynchronous pipelines, FPGA invocation pipelines and bounded iteration batching—to the existing generic command/list/graph and host-task references. Some API-boundary overlap is useful for the pinned B570 environment.",
       "corrections": [
         "The cited Intel guide confirms Arc B-series uses the Level Zero V2 adapter and immediate command lists are its only supported mode. EnableDirectSubmission=0 disables the driver-bypass path; it does not restore ordinary recorded command lists.",
         "Keep UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 scoped to the pinned measurement environment: it routes copies to the original queue engine and does not remove host appends or event dependencies.",
@@ -32357,7 +32403,7 @@
           "license": "official source refs; re-pin exact versions before runtime admission"
         },
         {
-          "source": "P\u00e9rez et al. SYCL fusion (ACM 2023); Edge (PACT 2019); Yamazaki (SC-W 2024); Ekelund et al. (arXiv v1, 2025); Intel FPGA guide 2024.0",
+          "source": "Pérez et al. SYCL fusion (ACM 2023); Edge (PACT 2019); Yamazaki (SC-W 2024); Ekelund et al. (arXiv v1, 2025); Intel FPGA guide 2024.0",
           "revision": "publication/version pins stated in report",
           "license": "CC BY-NC-SA 4.0 noted for ACM article; other source/implementation terms are not uniformly established; no code copied or proposed"
         }
@@ -32453,9 +32499,9 @@
     "native_review": {
       "review_key": "orca_research_wave_c_20261113",
       "decision": "Retain and index as a conditional source reference with the corrections below; it is not implementation, timing, performance eligibility, qualification, or adoption evidence.",
-      "novelty_and_redundancy": "Resolves the earlier report\u2019s missing finish helper and full GDN queue/consumer chain, and ranks order/fusion options without repeating the broad M1\u20134 survey. Its current native_q8_1 scratch ownership conclusion is incorrect.",
+      "novelty_and_redundancy": "Resolves the earlier report’s missing finish helper and full GDN queue/consumer chain, and ranks order/fusion options without repeating the broad M1–4 survey. Its current native_q8_1 scratch ownership conclusion is incorrect.",
       "corrections": [
-        "NativeDense allocates one q8_1 scratch buffer and publishes that same pointer to every native WeightRef in its table (src/core/native_dense.cpp:216\u2013239; include/strata/core/weights.hpp:88\u201392). In GDN, attn_qkv submits quantize+MMVQ on mixed, and attn_gate passes x_q8_1_ready when both projections are native (src/core/layer.cpp:146\u2013158, 247, 324\u2013326). The gate therefore reuses the shared QKV scratch after intervening work on the same ordered session queue; the report\u2019s statement that this alias is not established, and its per-weight description, are false. A move or cross-queue design must preserve the shared scratch\u2019s queued reader/writer order or add explicit exclusion/events.",
+        "NativeDense allocates one q8_1 scratch buffer and publishes that same pointer to every native WeightRef in its table (src/core/native_dense.cpp:216–239; include/strata/core/weights.hpp:88–92). In GDN, attn_qkv submits quantize+MMVQ on mixed, and attn_gate passes x_q8_1_ready when both projections are native (src/core/layer.cpp:146–158, 247, 324–326). The gate therefore reuses the shared QKV scratch after intervening work on the same ordered session queue; the report’s statement that this alias is not established, and its per-weight description, are false. A move or cross-queue design must preserve the shared scratch’s queued reader/writer order or add explicit exclusion/events.",
         "Canonical x_q8_0/x_q8k buffers are produced when either qkv or gate is non-native, but the native gemv branch ignores those buffers. They remain live through attn_gate only when w_gate is canonical; the report states this unconditionally."
       ],
       "eligibility_recommendation": "Keep the report source-only. Before any trial, pin actual qkv/gate native-format selection and preserve the QKV-to-gate shared q8_1 lifetime; a same-queue move from after recurrence to before recurrence still needs a frozen phase-specific plan and measured dispatch confirmation. A separate queue needs explicit event ordering and exclusive scratch ownership. No speed result is implied.",
@@ -33347,7 +33393,7 @@
   },
   "prefill_expert_mn_tile_geometry_methods_20261115": {
     "title": "Within-job M/N tile geometry for long-prefill routed-expert GEMM",
-    "finite_question": "Given Main-supplied, immutable long-prefill per-expert M-row counts, fixed K/N dimensions, operand formats, selected backend and current tile, compare a small set of documented M\u00d7N tile shapes and subgroup/workgroup mappings for the existing expert GEMM. Hold job formation/order, weight-decoding scheme, K reduction order, epilogue and runtime route fixed. For which M/N and tail regimes do useful matrix-engine operations, padding, A/B reuse, output-tile count, live registers/SLM and dispatch cost favor each shape? Separate source/spec facts from Xe2-specific resource claims that still require Main-owned measurement; give counterexamples and no local speed prediction.",
+    "finite_question": "Given Main-supplied, immutable long-prefill per-expert M-row counts, fixed K/N dimensions, operand formats, selected backend and current tile, compare a small set of documented M×N tile shapes and subgroup/workgroup mappings for the existing expert GEMM. Hold job formation/order, weight-decoding scheme, K reduction order, epilogue and runtime route fixed. For which M/N and tail regimes do useful matrix-engine operations, padding, A/B reuse, output-tile count, live registers/SLM and dispatch cost favor each shape? Separate source/spec facts from Xe2-specific resource claims that still require Main-owned measurement; give counterexamples and no local speed prediction.",
     "classification": "knowledge_collection",
     "related_prior_scope_keys": [
       "long_prefill_skewed_expert_job_execution_scheduling_20261027",
@@ -33357,7 +33403,7 @@
       "xe2_register_spill_collection_scope",
       "current_operation_ceiling_scope"
     ],
-    "why_nonduplicate_substantive": "The prior scopes cover mapping or balancing work across already-formed jobs, ragged adapter/API limits, generic tile-programming/autotuning, register-resource evidence, and source-derived ceilings. This scope freezes those choices and studies only the intra-job M\u00d7N tile shape and its useful-versus-padded work across an actual routed-row distribution. It yields a bounded candidate-selection reference if this stage is measured as relevant.",
+    "why_nonduplicate_substantive": "The prior scopes cover mapping or balancing work across already-formed jobs, ragged adapter/API limits, generic tile-programming/autotuning, register-resource evidence, and source-derived ceilings. This scope freezes those choices and studies only the intra-job M×N tile shape and its useful-versus-padded work across an actual routed-row distribution. It yields a bounded candidate-selection reference if this stage is measured as relevant.",
     "actual_offline_prerequisites": [
       "Before dispatch, Main supplies the immutable current source/build revision, actual selected GEMM route and tile, M histogram from representative long-prefill chunks, K/N and operand-format facts, plus evidence that this stage is a candidate for tuning. Chunk length alone is insufficient.",
       "Collection can use pinned official SYCL/oneAPI/Intel matrix-engine documentation and a few provenance-checked first-party GPU/HPC implementations or original papers/blogs. It needs no local build, test, GPU run, profiler, or code proposal; local hardware-performance claims remain out of scope."
@@ -34722,7 +34768,7 @@
       "review_sha256": "f5b31eb520b499e2c2639e134529235c3c405a1fd265722eca51bc8386a4547d",
       "digest_sha256": "3ad6945af671cfd7a16bf60e382986e2cefca2271514c29af268fcfbae48e8b4"
     },
-    "review_digest": "CJ is high-novelty, low-redundancy decision support: it audits the pinned mapped-source owner, lease admission, range/overlap checks, drain/unimport ordering and fixture accounting beyond CH\u2019s alternatives survey and CF\u2019s profile tooling review. All 12 manifest hashes match. The static claims are sound; the API 1.16 statement should be phrased as the implementation\u2019s gate unless its introduction version is pinned. No code/design adoption follows.\n\nUpdate one runtime boundary: the independent native attempt successfully called same-address read-only `zeMemAllocHost`, then failed the `HOST_IMPORTED` property check; cleanup succeeded and zero application GPU commands were enqueued. The numeric property is unknown. This does not prove generic driver rejection, transfer behavior, or model qualification. Main\u2019s reported compute-runtime source is not proven to match the installed package. No broad research scope is schedulable. Resolve the spec/runtime/package discrepancy and record the numeric property before any newly committed source-admission plan. Retain CJ and its source view through that compact decision, then retire if no named consumer remains. The benchmark\u2019s native16 dependency was outside the manifest; this audit does not approve its provenance.",
+    "review_digest": "CJ is high-novelty, low-redundancy decision support: it audits the pinned mapped-source owner, lease admission, range/overlap checks, drain/unimport ordering and fixture accounting beyond CH’s alternatives survey and CF’s profile tooling review. All 12 manifest hashes match. The static claims are sound; the API 1.16 statement should be phrased as the implementation’s gate unless its introduction version is pinned. No code/design adoption follows.\n\nUpdate one runtime boundary: the independent native attempt successfully called same-address read-only `zeMemAllocHost`, then failed the `HOST_IMPORTED` property check; cleanup succeeded and zero application GPU commands were enqueued. The numeric property is unknown. This does not prove generic driver rejection, transfer behavior, or model qualification. Main’s reported compute-runtime source is not proven to match the installed package. No broad research scope is schedulable. Resolve the spec/runtime/package discrepancy and record the numeric property before any newly committed source-admission plan. Retain CJ and its source view through that compact decision, then retire if no named consumer remains. The benchmark’s native16 dependency was outside the manifest; this audit does not approve its provenance.",
     "resource_envelope_passed": true,
     "resource_summary": {
       "wall_seconds": 546.6300000003539,
@@ -34775,7 +34821,7 @@
       "cgroup_memory_peak_bytes": 311336960,
       "captured_text_bytes_upper_bound": 747602
     },
-    "review_digest": "CL is useful, scoped decision support. All 12 source-manifest hashes and the report hash match. It adds an audit of the newer PinnedNeoHost opt-in\u2019s HOST/ID lease, active-range registry, plain-Source alias refusal and lane/lifetime contract; it partly repeats CJ\u2019s drain/owner analysis, while CH and CF cover broader API and profiling context. The source claims are largely supported. Temper the claim that allocation ID rules out address reuse: the pinned header says only \u201cidentifier,\u201d without uniqueness/reuse semantics.\n\nNew Main evidence supersedes CL\u2019s time-bound Runtime gap: Runtime metadata/import passed with HOST=1, ID=12, default strict rejection, zero app commands, closed owners and no fresh faults. This proves zero-command Runtime admission only; no Source::copy_after/device transfer, correctness, performance, model or production-route gate passed.\n\nIf measured cost evidence keeps the opt-in eligible, next use a newly committed, bounded actual-Runtime copy/lifetime/refusal case while retaining strict default rejection. Do not proceed to model trials from that result alone. No broad survey is warranted. Curate the correction and hashes; retire the report/source view after curation unless a committed next test needs them.",
+    "review_digest": "CL is useful, scoped decision support. All 12 source-manifest hashes and the report hash match. It adds an audit of the newer PinnedNeoHost opt-in’s HOST/ID lease, active-range registry, plain-Source alias refusal and lane/lifetime contract; it partly repeats CJ’s drain/owner analysis, while CH and CF cover broader API and profiling context. The source claims are largely supported. Temper the claim that allocation ID rules out address reuse: the pinned header says only “identifier,” without uniqueness/reuse semantics.\n\nNew Main evidence supersedes CL’s time-bound Runtime gap: Runtime metadata/import passed with HOST=1, ID=12, default strict rejection, zero app commands, closed owners and no fresh faults. This proves zero-command Runtime admission only; no Source::copy_after/device transfer, correctness, performance, model or production-route gate passed.\n\nIf measured cost evidence keeps the opt-in eligible, next use a newly committed, bounded actual-Runtime copy/lifetime/refusal case while retaining strict default rejection. Do not proceed to model trials from that result alone. No broad survey is warranted. Curate the correction and hashes; retire the report/source view after curation unless a committed next test needs them.",
     "native_review": {
       "model": "gpt-6-luna",
       "effort": "max",
@@ -34883,7 +34929,7 @@
       "cgroup_memory_peak_bytes": 344526848,
       "captured_text_bytes_upper_bound": 882094
     },
-    "review_digest": "# Prefill weight pipeline review\n\nReport SHA-256 `b2ebe2d45f38635882a191b05a84b319120d4b274fc754a5b1dd18c57e8323a9`; all 17 pinned source hashes match. Useful bounded decision support: it adds actual expert slices, a serial reader, and a two-fence scratch seam; lease/drain analysis partly repeats prior reviews.\n\nCorrection: type-20 IQ4_NL uses 32-value/18-byte blocks; 144 B is eight blocks per 256 values, not a 256-value block. Offsets and totals remain correct ([primary format definition](https://github.com/ggml-org/ggml/blob/master/src/ggml-common.h#L2860-L2870)). Exact dense-kernel equivalence is conditional: fixture calls `xe::Gemm::beta0`, while production selects `own` or `vllm`; say \u201csame math/storage/rounding sequence\u201d unless the frozen backend is confirmed. Allocation IDs are not proven globally unique or non-reused. Old copied-bank ratios do not qualify this reader.\n\n**Next consumer:** Main\u2019s frozen actual-reader batches and three clean pairs. The fresh build and host controls passed, but metadata-only runs issued zero math/payload-copy commands; actual-reader GPU samples remain pending. Preserve the 4096 source-cost and E2 USM 1024 failures. Only if all three predeclared ratios meet `<=1.10` may Main commit a private-scratch overlap plan with distinct IQ-reader/workspace-reader fences. No model trial or adoption is supported. `schedulable_now=false`; reassess research after cohort closure.\n",
+    "review_digest": "# Prefill weight pipeline review\n\nReport SHA-256 `b2ebe2d45f38635882a191b05a84b319120d4b274fc754a5b1dd18c57e8323a9`; all 17 pinned source hashes match. Useful bounded decision support: it adds actual expert slices, a serial reader, and a two-fence scratch seam; lease/drain analysis partly repeats prior reviews.\n\nCorrection: type-20 IQ4_NL uses 32-value/18-byte blocks; 144 B is eight blocks per 256 values, not a 256-value block. Offsets and totals remain correct ([primary format definition](https://github.com/ggml-org/ggml/blob/master/src/ggml-common.h#L2860-L2870)). Exact dense-kernel equivalence is conditional: fixture calls `xe::Gemm::beta0`, while production selects `own` or `vllm`; say “same math/storage/rounding sequence” unless the frozen backend is confirmed. Allocation IDs are not proven globally unique or non-reused. Old copied-bank ratios do not qualify this reader.\n\n**Next consumer:** Main’s frozen actual-reader batches and three clean pairs. The fresh build and host controls passed, but metadata-only runs issued zero math/payload-copy commands; actual-reader GPU samples remain pending. Preserve the 4096 source-cost and E2 USM 1024 failures. Only if all three predeclared ratios meet `<=1.10` may Main commit a private-scratch overlap plan with distinct IQ-reader/workspace-reader fences. No model trial or adoption is supported. `schedulable_now=false`; reassess research after cohort closure.\n",
     "native_review": {
       "model": "gpt-6-luna",
       "effort": "max",
@@ -36455,5 +36501,1486 @@
     "inference_adopted": false,
     "retention_consumer": "Only reviewed corrections and previous-topic retrieval remain useful; do not retain duplicate report body or lifecycle paperwork.",
     "private_transaction_retired": true
+  },
+  "prefill_prefix_router_lifetimes_20261118": {
+    "classification": "decision support",
+    "stage": "closed_preflight_failed",
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "Read-only Task needs working worker-side preflight. The nested namespace attempt failed."
+    },
+    "source_commit": "14107b72188f4fab70127c92cd83a320d6597126",
+    "policy_commit": "14107b72188f4fab70127c92cd83a320d6597126",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "run": "run_5b0f049e4584",
+    "task": "task_d36a085cf72a",
+    "terminal": "term_15cdb6e7-51d1-4c25-b966-9ed4c37222ec",
+    "source_packet_sha256": "e8d59f6455f6dc2c7caa4a2677bb4e67d9a1a90608b3f649b161d04bb54be624",
+    "ownership_closed": true,
+    "dispatch": "ctx_e91206b5008e",
+    "decision": "The worker-side sandbox could not create a nested user namespace. The native turn completed without an admitted source investigation or report. Orca fenced the assignment and closed the exact terminal. Its detached owned process then exited after targeted teardown.",
+    "turn_completed_utc": "2026-11-18T18:43:56.079Z",
+    "report_produced": false,
+    "review_needed": false,
+    "terminal_fence_and_close_sha256": [
+      "47e35fa2e4bb5ec320ddc1a0de56ce8d66c0159fdcf481e84861f748d329b3fd",
+      "0cd6885a2e3339152a6275788f4b0e887c676dadb1317837887b72a2d11f968f"
+    ],
+    "owned_teardown_signals": [
+      "SIGTERM"
+    ],
+    "retirement": {
+      "files": 490,
+      "regular_bytes": 121083964,
+      "inventory_sha256": "157e3ba3afbfe624d8aaf8675c2c032313ad89deae02e9d90f6f628c0aa26c20"
+    }
+  },
+  "prefill_native_overlap_order_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "f66fbafd6fa8668ab5dd885ddc212a5726259371",
+    "reviewed_report_sha256": "b49df9df1bbd407360215c0678cc33000b4af541fd707c2815b6c56e7416ce2e",
+    "source_manifest_sha256": "19044fbceb20d05b3c087f2fd7fbe2e2622d927eebbad05d4bd52adde9b05f46",
+    "reviewer_sha256": "a7647acc35fcc3194f30992c35efd74ee37fec104c11f53731fb0349709fd60d",
+    "run": "run_7693426f50e9",
+    "task": "task_d157a5eae1c4",
+    "dispatch": "ctx_34a315d42a0d",
+    "terminal": "term_564f59e1-a8ed-464c-8d28-a1d021a6fe11",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 17,
+    "worker_side_orca_status": {
+      "call": "call_5b44078f2b404e67a00c32447fc79df6",
+      "sha256": "a75089d18e640b417ce67ddb9dec8692b23f81f6e2a53cf8dbd755a367046977"
+    },
+    "ownership_closed": true,
+    "findings": "The earliest eligible issue site follows the 8192-row router selection. With immediate completion, early issue itself cannot overlap later attention. Delayed completion at the FFN issue site can only overlap work between that site and the first reader. Compare these controls and their interaction, keeping the same payload, source, route, copy owner and cancellation drains.",
+    "consumer": "Current copy scheduling and combined model-overlap validation. Check lifetime and publication before first expert access.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-native-overlap-order-20261119-control",
+          "files": 16,
+          "bytes": 28657,
+          "tree_sha256": "771d63c62e0d8d070c736f4ca165a13e753c4083bf32078b139dbca0f558d409"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-native-overlap-order-20261119",
+          "files": 2,
+          "bytes": 19521,
+          "tree_sha256": "d3df9391f38f3a021340b02b1fce662f3e2eff395dbbbde695c6dfd940f4e7c7"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-native-overlap-order-20261119",
+          "files": 14,
+          "bytes": 3775944,
+          "tree_sha256": "a4c74a1e889922f2fec1fade1ec426e425245b1f308a916acdf02323f4513536"
+        }
+      ]
+    },
+    "launch_recipe": "Use a named Codex profile extending :read-only, with write access to the report directory and network enabled for Orca IPC. Launch directly through an Orca terminal, with no nested bwrap. The normal worker-start refused the custom terminal, so use the same Run with task-create and dispatch --inject. Keep bounded systemd scope and per-capture limits; a process-wide 8 MiB file limit caused SIGXFSZ in the independent startup probe."
+  },
+  "prefill_64k_variance_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "a721ab84c705240c423afeaf58aa7e3e4d970079",
+    "reviewed_report_sha256": "2adbf079af2f8245a67b96a59b75e4ad7bffae55cdbdb450f4cac76051b5a3d0",
+    "source_manifest_sha256": "ded610ff1ef75462de0182e9f580644e3cb7c608927e2391778359b1c16d2863",
+    "reviewer_sha256": "1b4f8e492fff511b732a62ba5d5c4b97505242083127d42785f20f03cf0af641",
+    "run": "run_7693426f50e9",
+    "task": "task_92c4b5df9878",
+    "dispatch": "ctx_3cd3ecfc913c",
+    "terminal": "term_60e52305-a0d9-45c3-9f80-99c66da20b69",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 19,
+    "worker_side_orca_status": {
+      "call": "call_c5f66defde7e4d6fa0ae8efbd57e6148",
+      "sha256": "73a440255257174d73e6c44d67b747808306ec97a0d083baa036977df1b76134"
+    },
+    "ownership_closed": true,
+    "findings": "The observed outlier remains unexplained. If exact work diverges again, start with per-layer IDs, demand bitmap, accepted upload tickets and logical bytes at existing readback. Pick a targeted margin/input or checksum diagnostic at the first divergent layer.",
+    "consumer": "First-divergence localization only upon another observed mismatch. Preserve the failed original fence result and replay.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-64k-variance-20261119-control",
+          "files": 9,
+          "bytes": 20720,
+          "tree_sha256": "c79c0d9488040f3b92b846a95200e9f12e1fe1aa14691d187783e1ea4955e436"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-64k-variance-20261119",
+          "files": 2,
+          "bytes": 20507,
+          "tree_sha256": "cf7af5c673318ab17af720eaac86175565d199eb87a99a0290c9675f6487c7f6"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-64k-variance-20261119",
+          "files": 16,
+          "bytes": 3795760,
+          "tree_sha256": "ec56ad0afee5686c29cead967d66fb23234840ee8cace651ba7741682186db13"
+        }
+      ]
+    }
+  },
+  "prefill_no_staging_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "a721ab84c705240c423afeaf58aa7e3e4d970079",
+    "reviewed_report_sha256": "0979d07d131379ba683a222744f35427ec47d4f0efa050eec4fa601460aeed38",
+    "source_manifest_sha256": "a9af82cbf9794495dd8e00dd468a4ece55f5b76a41918e6494619b88c1fa0ca7",
+    "reviewer_sha256": "0cf39f16926c0630bef9c82917af375c1f4a1c873d72d5622a2eb51d3c6a8c1c",
+    "run": "run_7693426f50e9",
+    "task": "task_19b9d48ab956",
+    "dispatch": "ctx_17a64197571b",
+    "terminal": "term_2d5112ae-4983-425a-a42f-e2a0d269b713",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 19,
+    "worker_side_orca_status": {
+      "call": "call_2e91000532c448ba858d053e33d2ab2e",
+      "sha256": "e7db83ec5d108b0db10ab602c110cb177140fa1ee42aa11ae84830285e90ccc6"
+    },
+    "ownership_closed": true,
+    "findings": "Native review kept the substance on exact host mapping admission and contiguous sparse-copy ranges. The maintained note preserves those primary references and observed limits.",
+    "consumer": "docs/research/sycl-host-transfer-preparation.md#registered-source-and-sparse-runs",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-no-staging-20261119-control",
+          "files": 10,
+          "bytes": 23021,
+          "tree_sha256": "9464c337a61df8349c6d6178b3428d7e4e9d888b49993ec088103a6d1381bee4"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-no-staging-20261119",
+          "files": 2,
+          "bytes": 20858,
+          "tree_sha256": "3a5b154058d2c675f953614d1f55b7d94dc6efad80da756f4dd7f4c0e39e16a2"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-no-staging-20261119",
+          "files": 16,
+          "bytes": 3795760,
+          "tree_sha256": "ec56ad0afee5686c29cead967d66fb23234840ee8cace651ba7741682186db13"
+        }
+      ]
+    }
+  },
+  "prefill_overlap_device_proof_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "273cc626298e8ec338ccd6b3863703f57027f372",
+    "reviewed_report_sha256": "6cb80d8b2ef057d290b222cdd09aed37d2bf1e2b23974899379a9bea01e53e4b",
+    "source_manifest_sha256": "e3e45574bb98bbe731b6ae03b9a82028c9c2ea6b04591f93adce6f8454dac8a4",
+    "reviewer_sha256": "f85aaec218879a04eac18331c68b2eae996f2478ce42bc0fbc130f75c9fa14eb",
+    "run": "run_7693426f50e9",
+    "task": "task_ca0f4a3b2248",
+    "dispatch": "ctx_73b9074740bc",
+    "terminal": "term_860cf36c-0911-41fe-95e4-8d9d09a5ad02",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 21,
+    "worker_side_orca_status": {
+      "call": "call_d25b5518ee574edfa7ae674d8bb0d4b7",
+      "sha256": "9fcbea6ba64bf5b3fa406af894939a11aa8393b3e84372936b9a89e43c397697"
+    },
+    "ownership_closed": true,
+    "findings": "The component Chrome gpu_op capture lacks request, model-layer and list identity. Qualify a device-interval observer with unique joins, loss checks and clock domains before model attribution. Current serial native fixtures establish neither same-layer model overlap nor cycle impact.",
+    "consumer": "Source-backed dedicated-copy/attention observer design after the scheduling controls are implemented.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-overlap-device-proof-20261119-control",
+          "files": 9,
+          "bytes": 21206,
+          "tree_sha256": "c3cb4e63c3a9d141c047a1b14946bb0a73dc34b273f2f9c9b947e1a554b56c98"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-overlap-device-proof-20261119",
+          "files": 2,
+          "bytes": 21585,
+          "tree_sha256": "185d039b11940bec319439f429599e56675f225ef1e5c2fcf6dfef16ba3689c1"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-overlap-device-proof-20261119",
+          "files": 18,
+          "bytes": 3868474,
+          "tree_sha256": "7c92565e42a9b91ea8ecf2f4828c73db09910dbbb2a90b67a2ad5973ed28b488"
+        }
+      ]
+    }
+  },
+  "decode_verify_work_selection_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "273cc626298e8ec338ccd6b3863703f57027f372",
+    "reviewed_report_sha256": "8e45f1ac5e53a704f39f1468d6c01a917d2661753d6041a03eb0dd8e188358e5",
+    "source_manifest_sha256": "980c1bd6f7a2aecb187a57243c93672e01a18e160589a70e6aea78f13185daf8",
+    "reviewer_sha256": "3619ffa00d6724438fcbaf8bb3f7ff089caa91eed4065c70e1cc9dcba9319da9",
+    "run": "run_7693426f50e9",
+    "task": "task_8e4d3fbb4a98",
+    "dispatch": "ctx_fd2d1d11c731",
+    "terminal": "term_6896c843-31bc-472b-a489-f8fb9e29931f",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 24,
+    "worker_side_orca_status": {
+      "call": "call_a66d2a6ef68b4731bb155b197db0de49",
+      "sha256": "13442110e14577ee895654327137031daf022175d1704841909147da9e3bbab6"
+    },
+    "ownership_closed": true,
+    "findings": "Review rejects repeating fixed cap2/cap4. The completed width cohort shows a tradeoff (+20.14% prose, −11.32% code) with changing committed tokens per round. DraftPolicy picks MTP or suffix lookup. A request-scoped verifier-width policy is a separate design and has no validated gain.",
+    "consumer": "Later test a frozen pre-request cap policy alongside both fixed caps on a mixed held-out thinking workload, with actual emitted tokens and TTFT. Preserve coherent decode state; no adoption or 70 TG claim.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-verify-work-selection-20261119-control",
+          "files": 9,
+          "bytes": 22408,
+          "tree_sha256": "02c4fdf93cc2253c9aceefdb80c1b2f46cc646d013991be4dd036bc085116762"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-verify-work-selection-20261119",
+          "files": 2,
+          "bytes": 23195,
+          "tree_sha256": "74695e92173d92632d8b13033ec5d9a4e8d7c0f079fc64faff10aad6f2fe07f0"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/decode-verify-work-selection-20261119",
+          "files": 21,
+          "bytes": 4421231,
+          "tree_sha256": "29f6c153e7d76f6f63cba59ab75316192b3b8f68e0854bf84581bfab1834a284"
+        }
+      ]
+    }
+  },
+  "prefill_schedule_lease_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "ef3c313361825cdb5793d440a35c1f6a7feb4ca8",
+    "reviewed_report_sha256": "27a0f2e7c24be79e25f6210032afca50351c9e2c06a89a7f9ec400289ec933aa",
+    "source_manifest_sha256": "28284ee5b68dc179bee152b9e2d5d713a76a51072c5d910afb80e9e5d28ae54b",
+    "reviewer_sha256": "b0920ef08f9af56c87f053952f5125018dc98088f9eec9bf07076ae494be8432",
+    "run": "run_7693426f50e9",
+    "task": "task_46c9f148cc65",
+    "dispatch": "ctx_87d143716cc9",
+    "terminal": "term_6203b412-51fb-47ef-be16-ec36849d0a35",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 23,
+    "worker_side_orca_status": {
+      "call": "call_e675106620d44614886ce157e121b2bb",
+      "sha256": "73a440255257174d73e6c44d67b747808306ec97a0d083baa036977df1b76134"
+    },
+    "ownership_closed": true,
+    "findings": "Current candidate keeps the native list, staging, bank and pending plan in the request lease through checked publication, cancellation or fail-stop. No concrete source alias gap was demonstrated. Existing smoke covers cancellation before deferred publication. Cancellation after publication but before the first lookup and an ambiguous partial-append return remain separate controls for wider qualification.",
+    "consumer": "Use before wider adoption or as a source reference if a native append/retirement error is observed.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-schedule-lease-20261119-control",
+          "files": 9,
+          "bytes": 22268,
+          "tree_sha256": "0bfc82725874ee18b11d0bdbb4a0fab98ea38489cd2e51193ffcb5da2f1bd143"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-schedule-lease-20261119",
+          "files": 2,
+          "bytes": 22045,
+          "tree_sha256": "7d270046350ea465d691a5a66fa948a3280105e9f4c5d45bbc5852456a3f5264"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-schedule-lease-20261119",
+          "files": 20,
+          "bytes": 3877161,
+          "tree_sha256": "52d9e19eb4970ecb69f92e11cd055732aa86e78ccd3774920e6a9331ec2cc011"
+        }
+      ]
+    }
+  },
+  "prefill_pti_list_fields_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "8901e3ef1fec5fb0d6c948c09ee0a691d9f9aaea",
+    "reviewed_report_sha256": "0540231a164141f089f12bfc4e7a3252fa450f7fa7a03a731e506a77ab22a109",
+    "source_manifest_sha256": "0cff46c42606c5e256fda8bfdb1bf9877075e45a3feac533646a01c58f84af5d",
+    "reviewer_sha256": "ce3995c6d3f3d895108be1beaffc8b6656267ea8c0d7ab385fbe8023d7a92541",
+    "run": "run_7693426f50e9",
+    "task": "task_cf601611527c",
+    "dispatch": "ctx_95b558901a7d",
+    "terminal": "term_fa8bd4da-d431-4e3b-81b5-b9dd0f14f820",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 29,
+    "worker_side_orca_status": {
+      "call": "call_2b1d7ae8c84b4146be142beedc26951f",
+      "sha256": "651fa35f96566e9810a25ffaf435f0a8c7182943edffaafe8709afddae34b867"
+    },
+    "ownership_closed": true,
+    "findings": "Intel PTI at 4b6d74294 exports matching device args.id and host H2D flow IDs when host API and device tracing are both enabled. Existing device-only CLI omits host API callbacks. Reuse the correlation logic and clock checks from 820cc84db, which already exercised this join on the component. Production still needs checked request/layer and copy-list identity, job conservation, clock and loss checks. A physical-engine or PCIe-utilization claim needs separate evidence.",
+    "consumer": "Decision support for a previously unqualified request/layer/list join. Qualify a bounded host reader for anchors, then use one independently measured serial case and a deferred case. The existing component H2D join need not be rebuilt from scratch.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-pti-list-fields-20261119",
+          "files": 2,
+          "bytes": 25706,
+          "tree_sha256": "afd0b68ac9720d61b38d959293e7dbfcb3391bd658aebc2e0306b46392b63a9b"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-pti-list-fields-20261119-control",
+          "files": 9,
+          "bytes": 23716,
+          "tree_sha256": "836bc0143fffcd222990527e8f03dfd18f16d3636bbddfaea812f68cd7f22afc"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-pti-list-fields-20261119",
+          "files": 26,
+          "bytes": 4247672,
+          "tree_sha256": "4bb4977d7be14135a2f3cfbeba750941a3f86e343dcd8adb9b88263da5c91a9b"
+        }
+      ],
+      "reason": "Owner and review closed. Keep the actionable comparison and collector lessons in the committed index."
+    }
+  },
+  "prefill_span_staging_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "8901e3ef1fec5fb0d6c948c09ee0a691d9f9aaea",
+    "reviewed_report_sha256": "da48649888777b31df8fff6f311695c89bddd98aec7e8ef04e796fab6385dbc2",
+    "source_manifest_sha256": "ab2817d82930f17bc8d8b64caa32710f168f4ef0027660e43483b76deb5de258",
+    "reviewer_sha256": "15564c9c3e8329524879dcb1176d9e09f67e2d46153b39ae519e97cfe58ead6b",
+    "run": "run_7693426f50e9",
+    "task": "task_08e855fc035a",
+    "dispatch": "ctx_797c300558ea",
+    "terminal": "term_0bfb1660-6e1e-4298-89e8-816311eb482c",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 20,
+    "worker_side_orca_status": {
+      "call": "call_41618c40a6884a5b88ed636fb66a6655",
+      "sha256": "73d59bcbf62020cc91f7f03aabc438332ae9258b0caebfed674ad82f50ae6f55"
+    },
+    "ownership_closed": true,
+    "findings": "Current upload-plan extents and request lease support an isolated stage-all versus copy-after-each-span experiment. Ordinary Level Zero copy source may be modified until execution begins; simultaneous CPU writes require nonoverlapping, explicitly aligned admitted ranges. Keep exact source/list, IDs, bank and command count, with checked retirement and guards. Evaluate bounded batching as its own arm and make no estimate of model speed from the audit.",
+    "consumer": "If the scheduling cohort qualifies, pin source stride/base alignment and the safety fixture before changing this loop. Compare only stage/append ordering, then consider a 64K model pair; qualification and failure-path probes are separate from timing.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-span-staging-20261119",
+          "files": 2,
+          "bytes": 20771,
+          "tree_sha256": "5515984594eccb54b3022209f0a776fc18f7e2ee35565cb03d88f922567cbd51"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-span-staging-20261119-control",
+          "files": 9,
+          "bytes": 21101,
+          "tree_sha256": "c2b609e1f0ff8d0fbe495b59eac9524e6f54b3ff0aadb9e1b7104bf117e25698"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-span-staging-20261119",
+          "files": 17,
+          "bytes": 3824019,
+          "tree_sha256": "30b570895d269638a2ffd0447b536170ad694eb8457c04ef4525b01839afb2c7"
+        }
+      ],
+      "reason": "Owner and review closed. Keep the actionable comparison and collector lessons in the committed index."
+    }
+  },
+  "prefill_partial_copy_bank_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "13bd8e0fce73d4cdf01fd897fe9e8da52432a156",
+    "reviewed_report_sha256": "0b2a89cac0193459caf9308a6d95af56b2907cb73e0cc8a77f609f43bce8fb28",
+    "source_manifest_sha256": "b9018c7cbd95ee2d478ba4d6629aaca68930c75aeafb0224e7a4f6a8eca03626",
+    "reviewer_sha256": "385d2769713403b70da3a475168d7a028724d7ba7020383e328c291758f8f8f8",
+    "run": "run_7693426f50e9",
+    "task": "task_7604c9cd1bc5",
+    "dispatch": "ctx_1cce76cc880d",
+    "terminal": "term_098a5801-0e1b-4a7d-8c1f-5a2c0397b468",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 23,
+    "worker_side_orca_status": {
+      "call": "call_a2d21d6b3f0542da849a4683f8770322",
+      "sha256": "c54e6c4437aef888c91aa7775e2ac6e0998a169dfb22307f0054b2ee003bb230"
+    },
+    "ownership_closed": true,
+    "findings": "Keep one unmapped in-order scratch slot below full-fit capacity. Prefix IDs may fit even when the whole layer demand needs scratch. Add checked partial admission with the same 512 backing first, then compare 512/384 backing with identical admission limit, scheduling and placement. Last-reader retirement and over-cap fallback need small fixtures. 340.8 MB less budget does not establish a speed gain.",
+    "observed_32K": {
+      "evidence_commit": "dc84c173eb3ebd06e559477b1e94df03d116cca3",
+      "evidence_key": "prefill_prefix_expert_net_numerical_v1",
+      "matched_arms": true,
+      "actual_read": 32769,
+      "first_rows": 8192,
+      "layers": 48,
+      "scope": "Both traces; per-layer first-row sets recompute all selected-ID hashes and conserve accepted uploads/bytes. 383 is the permanent capacity with one scratch slot.",
+      "samples": [
+        {
+          "request": 0,
+          "max_prefix_experts_per_layer": 362,
+          "max_demand_experts_per_layer": 415,
+          "layers_under_384_prefix": 48,
+          "layers_under_384_all_demand": 33,
+          "post_prefix_first_misses": 2236,
+          "post_prefix_requested_bytes": 4545996800
+        },
+        {
+          "request": 1,
+          "max_prefix_experts_per_layer": 366,
+          "max_demand_experts_per_layer": 414,
+          "layers_under_384_prefix": 48,
+          "layers_under_384_all_demand": 33,
+          "post_prefix_first_misses": 2228,
+          "post_prefix_requested_bytes": 4523161600
+        }
+      ]
+    },
+    "consumer": "Observed 32K and 64K prefix admissions support a proposed 384-capacity safety fixture. Verify oversized-prefix fallback and scratch reuse first. Isolate partial admission at equal backing, then measure backing capacity separately.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-partial-copy-bank-20261119",
+          "files": 2,
+          "bytes": 22984,
+          "tree_sha256": "b0a047c031ac5d6bf845eb206b7aff68b0dfc664e3ca1f6831cad8617a0b02b6"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-partial-copy-bank-20261119-control",
+          "files": 9,
+          "bytes": 23062,
+          "tree_sha256": "bf02edd074a1d8c6faa07aa58c5bebc0c2a16556a0964f01753418d3a7fc7c01"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-partial-copy-bank-20261119",
+          "files": 20,
+          "bytes": 3872013,
+          "tree_sha256": "f357582779d76f1a9b5b1dd8d505a7a8d2f066dc5bd70c01d8885cbc4ffff783"
+        }
+      ],
+      "reason": "Reports and source views are closed. Keep the compact research finding and matched extent census."
+    },
+    "observed_64K": {
+      "evidence_commit": "bff8a578f246eb4e2f5e3fb0c28261549b208759",
+      "evidence_key": "prefill_prefix_expert_net_timing_v1",
+      "actual_read": 65537,
+      "within_process_samples": 3,
+      "matched_arms": 6,
+      "layers": 48,
+      "prefix_rows": 8192,
+      "samples": [
+        {
+          "min_prefix_experts_per_layer": 231,
+          "max_prefix_experts_per_layer": 364,
+          "layers_with_room_for_scratch": 48,
+          "requested_prefix_bytes": 30868864000
+        },
+        {
+          "min_prefix_experts_per_layer": 229,
+          "max_prefix_experts_per_layer": 362,
+          "layers_with_room_for_scratch": 48,
+          "requested_prefix_bytes": 30889676800
+        },
+        {
+          "min_prefix_experts_per_layer": 235,
+          "max_prefix_experts_per_layer": 363,
+          "layers_with_room_for_scratch": 48,
+          "requested_prefix_bytes": 30821811200
+        }
+      ],
+      "limit": "Clean records qualify prefix extents. The clean logs omit the per-layer first-miss census."
+    }
+  },
+  "prefill_prefix_id_readback_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "1512965cd709a0327adf52ca2ab64fea52884741",
+    "reviewed_report_sha256": "3a19d18c5e414a990fc3166e67a9653e398394ff8fcde101d7be63206436cafd",
+    "reviewer_sha256": "2999407050ead10ce4e62b91e2cd0cf98ed150720d01015dfaf2ad9886c35db0",
+    "source_manifest_sha256": "ab3a4fe30bea04636710c0bbd417a054155cee02654aff59084494b288a5e172",
+    "run": "run_7693426f50e9",
+    "task": "task_4e0e97805dc3",
+    "dispatch": "ctx_9c2cea003d0c",
+    "terminal": "term_8c2a4023-1377-477a-adac-2a23da599209",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 22,
+    "worker_side_orca_status": {
+      "call": "call_3045b334893244f9830e9425b0c7ede1",
+      "sha256": "adf290e0891f4f5daf4442a71c3061de5e5b5b9af991c3e92c27de140e1ba54a"
+    },
+    "ownership_closed": true,
+    "findings": "The early prefix reads 327,680 ID bytes per layer. A 512-bit device union plus status can shorten that dependency, while the later FFN router still needs ordered full IDs. Aggregate requested D2H therefore increases by the bitmap/status. Keep range and duplicate validation before scheduling, ascending selected IDs, unchanged full-ID route grouping and checked producer lifetime. Extra kernel and queue time remain unknown.",
+    "api_recheck": "The Khronos reference lists 32-bit and conditionally 64-bit atomic_ref operands. Its repeated atomic64 sentence qualifies the 64-bit case. Installed DPC++ 2026.2 atomic_ref.hpp uses SPIR-V AtomicOr for integer fetch_or and the pinned native16.cpp compiles this same uint32 global-space pattern. Validate the specific scope/address-space implementation and work-group reduction before measuring speed.",
+    "sources": [
+      "https://github.khronos.org/SYCL_Reference/iface/atomic_ref.html#type-t",
+      "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:atomic-references"
+    ],
+    "consumer": "A future separately qualified comparison of early full-ID readback versus GPU union with deferred full IDs. First measure prefix-to-first-copy and whole FFN boundary while preserving the exact route, identical jobs and copy payload.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-prefix-id-readback-20261119",
+          "files": 2,
+          "bytes": 21998,
+          "tree_sha256": "c470cbd88e4fc349e193c29833de20097e79df803fda4f4881ee4a12c0454f3e"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-prefix-id-readback-20261119-control",
+          "files": 9,
+          "bytes": 22088,
+          "tree_sha256": "a181eed4016993319555d5b73cd5fbf2a04427a0572b2366c21ec6bd9912a187"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-prefix-id-readback-20261119",
+          "files": 19,
+          "bytes": 3844845,
+          "tree_sha256": "cdee3c372a0f51d0672c78ca739d31e9ada9c660971dedf17e1f7d62a133b359"
+        }
+      ],
+      "reason": "Report and source view are closed. Keep the reviewed readback finding and API verification."
+    }
+  },
+  "decode_dynamic_host_expert_overlap_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "a533de8455c334264c519a0d34d4938bfcf07fae",
+    "reviewed_report_sha256": "bb99a6313ad16742d9d2305007ff8f732f53c4b08d999ef015178b524b8b3edc",
+    "source_manifest_sha256": "dded18697431c20d3dbd6b34ef8752dabacd94bafe65e48f46aebf12435faf0a",
+    "reviewer_sha256": "8315333e8a8aa790d557f9a4628643b19f50ecb62952d51cd9b9e427a672ab1e",
+    "run": "run_7693426f50e9",
+    "task": "task_fb5eb08865f1",
+    "dispatch": "ctx_8608f8c5fef0",
+    "terminal": "term_e4ef93fe-9cb1-4fbb-b197-00a9c149d13c",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 12,
+    "worker_side_orca_status": {
+      "call": "call_2137d97606eb47f3a9c9393f9350c004",
+      "sha256": "73d59bcbf62020cc91f7f03aabc438332ae9258b0caebfed674ad82f50ae6f55"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "KTransformers defers a bounded portion of host expert work across a layer boundary; placement, CPU kernel throughput and deferred work need independent decisions.",
+      "The pinned ExpertCache API represents storage and lookup; its existence does not establish a serving compute tier.",
+      "Compare only an independently eligible deferred-work change with fixed routing, quantization and MTP, disjoint CPU critical-path/tail time and token latency. Pin the exact primary code revision and license before implementation.",
+      "Primary method source https://madsys.cs.tsinghua.edu.cn/publication/ktransformers-unleashing-the-full-potential-of-cpu/gpu-hybrid-inference-for-moe-models/SOSP25-chen.pdf"
+    ],
+    "consumer": "Retrieve for a late-33K decode experiment only if actual CPU-pool completion delays the next token and a following-layer GPU interval can hide eligible independent work.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode_dynamic_host_expert_overlap_20261119",
+          "files": 2,
+          "bytes": 18407,
+          "tree_sha256": "792c6423dc0d44e45a7ddabe04b4e57356f192638588ccf9117e6d096d6fe96a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode_dynamic_host_expert_overlap_20261119-control",
+          "files": 9,
+          "bytes": 19116,
+          "tree_sha256": "649d278a3fac07970fd7b05f2692f17854d85ea06c376efa1105a890b033e8af"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/decode_dynamic_host_expert_overlap_20261119",
+          "files": 9,
+          "bytes": 3365853,
+          "tree_sha256": "6523563373ff7541b1f05270b4419039d3983236ffede78c67b1495121c54c55"
+        }
+      ]
+    }
+  },
+  "arc_xe_counter_ceiling_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "a533de8455c334264c519a0d34d4938bfcf07fae",
+    "reviewed_report_sha256": "03880c818df5db470164747fb66b166fbe9306a2b82211fd60769d33f2614ea4",
+    "source_manifest_sha256": "a1798d22ac1d39dfa6f4ab22c7a922f1005264dde80eb42fa6aa1eed9f178c6f",
+    "reviewer_sha256": "f9a7540f3568c6b8d3403662ed76b1244ddb7dfe298134812ec3e33c9bf6d072",
+    "run": "run_7693426f50e9",
+    "task": "task_8d0f84b7108b",
+    "dispatch": "ctx_586a85caac04",
+    "terminal": "term_0838a618-ca16-417a-8415-02b781bfd174",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 10,
+    "worker_side_orca_status": {
+      "call": "call_b152623a98fb48669ea19dbb62e64711",
+      "sha256": "73d59bcbf62020cc91f7f03aabc438332ae9258b0caebfed674ad82f50ae6f55"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Calibrate OA/VTune with per-client xe counters and controlled compute, VRAM and copy interventions; counter availability and board applicability require local evidence.",
+      "Set ZET_ENABLE_METRICS before zeInit for a later read-only enumeration. Do not assume a printed BCS capacity key or GPU metric availability from documentation support.",
+      "Any host observation policy change requires the owner. Keep physical resource saturation unknown while calibrated local intervals are absent. Prior counter-scope and enumeration findings remain indexed."
+    ],
+    "consumer": "Reuse for a concrete B570 resource comparison after a permitted local inventory identifies and calibrates a usable metric group.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/arc_xe_counter_ceiling_20261119",
+          "files": 2,
+          "bytes": 16986,
+          "tree_sha256": "c4d5b3b04884bdad5af37492d55ff0c6d619fad18b97524a4f3a155b890c2e36"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/arc_xe_counter_ceiling_20261119-control",
+          "files": 9,
+          "bytes": 18066,
+          "tree_sha256": "71b73d09ffd35f9ee74cb1e16d9132b0cf888c82207022efce1ca42622a4e0e5"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/arc_xe_counter_ceiling_20261119",
+          "files": 7,
+          "bytes": 3385792,
+          "tree_sha256": "beb383c30f7af04a827b4205e61a34ae66d10ea3e88dcaaa91791b3a0a7708d8"
+        }
+      ]
+    }
+  },
+  "prefill_host_event_wait_elimination_20261119": {
+    "source_commit": "b95acbc46f7181711ea4e02878fd3ec896023422",
+    "reviewed_report_sha256": "e19319510b9378c04f1b292788a7a1c486bbb5ce230465fe19cda5414863ef9b",
+    "source_manifest_sha256": "d836524634ef14d69f91e9f32fbb809791ca087cef06408459721d5f4bd0c242",
+    "reviewer_sha256": "7f272e156500ebd229675eb7a37f129f9dce95b34a991e1e7f3b275ddc3befa7",
+    "run": "run_7693426f50e9",
+    "task": "task_c194c03f5eaa",
+    "dispatch": "ctx_6665b8839a99",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 14,
+    "worker_side_orca_status": {
+      "call": "call_87759c76c99e4fa298a42277bfeffef2",
+      "sha256": "816765ab31be52dabf166188ff5304ddcbbbac804b1cb62c8f9a76963c742c74"
+    },
+    "ownership_closed": true,
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_host_event_wait_elimination_20261119",
+          "files": 2,
+          "bytes": 18663,
+          "tree_sha256": "f637b1336443a7486ed0e1cc2daeed824cc0a77e398de3aa4d4006702676b408"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_host_event_wait_elimination_20261119-control",
+          "files": 9,
+          "bytes": 19669,
+          "tree_sha256": "108258350f23a69c83e7db6dcd94dd0efd07e3b8dcce9358208fc4f09a5683a1"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill_host_event_wait_elimination_20261119",
+          "files": 11,
+          "bytes": 3441438,
+          "tree_sha256": "e1993537b35cd01be060a718bf2a45a4ae875e6f910d3ab3f523edf30e4994f7"
+        }
+      ]
+    },
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "worker_path_delivery": "Verified from the exact assigned path and report hash after completion. Structured message left the optional report path field empty.",
+    "findings": [
+      "SYCL dependencies apply only to proven same-context SYCL event edges with correctly retained owners. The native immediate copy list exposes no SYCL event.",
+      "Do not move or weaken native copy publication, failure checks or residency guards. Use a proven interval of independent ready work for any wait-placement candidate.",
+      "The CPU-only cohort attributes compat-queue waits. It measures ordinary SYCL per-event waits separately. Keep the earlier resident-event/later-barrier hold."
+    ],
+    "consumer": "Use only after locating a concrete compatibility-queue or native-list wait on a production dependency path. Test a single proposed wait change with matched model work, lifetime and error checks."
+  },
+  "prefill_compat_drain_callsite_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "a8af814c4be8014e184a7dbf2045f48be35d2fb9",
+    "reviewed_report_sha256": "846368df45c607608b5162d5886582f07ed4c4044eca926cdf22b8e128cddbe1",
+    "source_manifest_sha256": "cfa8daf0d755356126b60f0a743eca54298dd3d224e114380b27d9f354653add",
+    "reviewer_sha256": "42a3f899b86890379274b630f3fc7fafb90ec96d3c1f16d98c3055af60969dce",
+    "run": "run_7693426f50e9",
+    "task": "task_23f49875cba9",
+    "dispatch": "ctx_d982910af3ce",
+    "terminal": "term_d7b8082c-9b37-4b09-b0ca-28bafb695986",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 13,
+    "worker_side_orca_status": {
+      "call": "call_2f09c3e0f76441e3aab5e2ecab760349",
+      "sha256": "73d59bcbf62020cc91f7f03aabc438332ae9258b0caebfed674ad82f50ae6f55"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Long-prefill admits copy==compute for this mode. One wrapper compatibility drain after a successful run_impl has no intervening same-queue submission on the cited path.",
+      "The outer drain also owns an independent native prefix-copy list. Preserve that retirement, the score-status guard, callback-specific drains and failure cleanup.",
+      "The aggregate 1069 compatibility waits do not establish this callsite cost. Measure its time before deciding whether a removal can materially change prefill."
+    ],
+    "consumer": "Pin the actual long-route callsite and repeated owner/callback behavior. Change one compatible queue wait only if its time supports advancement.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_compat_drain_callsite_20261119",
+          "files": 2,
+          "bytes": 15823,
+          "tree_sha256": "e7a5344117c2840a8dac338c6e1b096e7b0836adb06d27d6d345168c4cc35a0a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_compat_drain_callsite_20261119-control",
+          "files": 9,
+          "bytes": 19453,
+          "tree_sha256": "62101d07a84f98b78e1baabe7bdfeed3d643ad79b945beb981fd6253d086a705"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill_compat_drain_callsite_20261119",
+          "files": 10,
+          "bytes": 3773218,
+          "tree_sha256": "bbe505308a9d18bf994b412a5a5d2d8ca73484fa9d29866fa3a67e116e95fefd"
+        }
+      ]
+    }
+  },
+  "decode_acceptance_host_barriers_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "a8af814c4be8014e184a7dbf2045f48be35d2fb9",
+    "reviewed_report_sha256": "4805ca75c10f93a688c26597092bed1f5620a6d92e491d01beda7dfce1111553",
+    "source_manifest_sha256": "5e980317c3f8e449143f005d1123b9a5cd0beec9238c2d7f180aa1b2dccc680b",
+    "reviewer_sha256": "539c80d414bab57320f964db2e670c3a47b236778d600d168cb149c20bc8411c",
+    "run": "run_7693426f50e9",
+    "task": "task_ccc00c486d22",
+    "dispatch": "ctx_1677a1b52ba7",
+    "terminal": "term_ff0a3f44-c39e-49ba-a5ce-f85387f9da12",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 10,
+    "worker_side_orca_status": {
+      "call": "call_1305a066946442c59ec3ebf7732f0d8e",
+      "sha256": "4f108c595095644392ff60b8ca087e781fba0a7cf866c7da7fd91a3863a992b2"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "vLLM v0.11.2 rejection sampler returns fixed-width IDs with placeholders and parse_output filters on host after .cpu().numpy(). This is no evidence of barrier-free commit.",
+      "SGLang v0.5.22 Apache-2.0, TensorRT-LLM 1.1.0rc1 tagged license/Executor fields. Revalidate the exact source and license before implementation.",
+      "Preserve the selected ancestor path and its KV owners, reject unaccepted positions, and prevent streaming before acceptance is known."
+    ],
+    "consumer": "Retrieve after an actual low-batch decode trace shows verifier completion through host acceptance blocks a subsequent useful enqueue.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode_acceptance_host_barriers_20261119",
+          "files": 2,
+          "bytes": 16466,
+          "tree_sha256": "fe77214ec15085752a6e8f5a4754253ac360c2803205cd79fa02716899ffef0c"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode_acceptance_host_barriers_20261119-control",
+          "files": 9,
+          "bytes": 18580,
+          "tree_sha256": "cebe8e530f3b4e5ccb517b756a74d109616ffb65c7021f511b9ea12426abe3bc"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/decode_acceptance_host_barriers_20261119",
+          "files": 7,
+          "bytes": 3336334,
+          "tree_sha256": "98412da588c528a7e4350d7d26de56aacb2f9b836c162c9208e68a16bdce369d"
+        }
+      ]
+    }
+  },
+  "compat_wait_rtld_audit_contract_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "315faf474897595ec350a07227500cdf5e597213",
+    "reviewed_report_sha256": "aeeb952ac6a852ae5754c33d552489a1c04daffed5885792345bef3cdebedddf",
+    "source_manifest_sha256": "fac501c405b19b04e46545529f2c6dd68a9199a60a6d614ec3b37381832b5090",
+    "reviewer_sha256": "f89480c7480aa18df0218280342e87526f0d3a34ecc8769d8f56aa27147fd889",
+    "run": "run_7693426f50e9",
+    "task": "task_905ea95d3c9d",
+    "dispatch": "ctx_968e0370b848",
+    "terminal": "term_a419fc93-ace1-4f06-b463-0deb83a75b95",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 12,
+    "worker_side_orca_status": {
+      "call": "call_b21f96fdf60841adb54d44012f79a881",
+      "sha256": "994e5b506983464fb8d9d767083564acc560b50560ca2a73195d99bbed8a5338"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "The exact retained ELF has the compatibility wait PLT return PC 0x72762b and stack slot +272. CPU-only controls verify two caller PCs and forwarding a genuine C++ exception.",
+      "Restrict the loader observer to the known non-PIE executable and resolved direct callers. The audit may block or receive SIGPIPE on a broken stderr pipe. The actual audited native descriptor resolved to a regular owned file.",
+      "The full native coverage gate failed, so use its named first-use callsite evidence diagnostically. A future production observer needs a fresh caller-scope/overhead comparison."
+    ],
+    "consumer": "Retrieve only for a concrete unchanged-ELF source boundary and a proved regular stderr sink. Keep privilege/runtime policy and exception forwarding fixed.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/compat_wait_rtld_audit_contract_20261119",
+          "files": 2,
+          "bytes": 16456,
+          "tree_sha256": "22a493acda6e0f96dec6ee3b6bbb5465c56af657a3c63d264c29312361cc91e8"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/compat_wait_rtld_audit_contract_20261119-control",
+          "files": 9,
+          "bytes": 19038,
+          "tree_sha256": "454d5024cd3e6b2b516d17943b57ab0741632ede9fcd68c183bcf2bb4621f88b"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/compat_wait_rtld_audit_contract_20261119",
+          "files": 9,
+          "bytes": 3375024,
+          "tree_sha256": "5fef6cdf984c47205339d86195ee37f68479148f2890be23f9b27071439a8e6b"
+        }
+      ]
+    }
+  },
+  "accelerator_rolling_scratch_methods_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "315faf474897595ec350a07227500cdf5e597213",
+    "reviewed_report_sha256": "5980fa9c253ef4a6490170ea1c9b081db20902ae5671aa151fe1b9cc1685a700",
+    "source_manifest_sha256": "5411c428854d29e3cf913ae02637399734ed387945c82db854247376301ff53f",
+    "reviewer_sha256": "31534ed56746e17b08ad7eef913b8ca5ae5990736dd00c07ed0d62803a69955a",
+    "run": "run_7693426f50e9",
+    "task": "task_f6a21e3ce26e",
+    "dispatch": "ctx_007f073ae228",
+    "terminal": "term_65752813-bc34-463b-9220-71fd8e0a3b3a",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 10,
+    "worker_side_orca_status": {
+      "call": "call_b1392496b0284b11abe168af00b4201b",
+      "sha256": "98343c7f29c354bd6ef9b02ad0aee73458f66cb8f134626f052dac244e46cea9"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Compare latest-reader release, rolling slot reuse and double buffering using uncovered transfer delay and admissible headroom.",
+      "EMOGI and DFOGraph illustrate out-of-core accelerator staging. Local GPU memory bandwidth and peer or host link bandwidth are separate. Use exact primary SYCL API clauses for runtime dependencies.",
+      "Retain immutable source and destination owners until the relevant checked last reader. Define performance terms in critical-path time units before adding different stages."
+    ],
+    "consumer": "Retrieve when a measured critical-path H2D tail is constrained by scratch-owner lifetime and room exists for a second usable arena.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/accelerator_rolling_scratch_methods_20261119",
+          "files": 2,
+          "bytes": 15810,
+          "tree_sha256": "a954ab846ca2c7479a378581553b3879ae405d0b8620bafecf61f5812c738532"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/accelerator_rolling_scratch_methods_20261119-control",
+          "files": 9,
+          "bytes": 18489,
+          "tree_sha256": "dd61f3572ca7d9a3b84677f13def28a52e4d6fd844c7ef0e580b1c44e6167a34"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/accelerator_rolling_scratch_methods_20261119",
+          "files": 7,
+          "bytes": 3387413,
+          "tree_sha256": "e5f545c676f698c05783cae70ab1fb599525f4835f6dc4fa009cf67526ebc8b3"
+        }
+      ]
+    }
+  },
+  "prefill_attention_bank_owner_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "d40ba6312fc64c9eb7bffa90889a9cea82488f54",
+    "reviewed_report_sha256": "f2d14b4fe5a90f65edaf12c4b70893c06ab27c5c2b7b883f724497c7dd4ba35d",
+    "source_manifest_sha256": "a87572199fdea2daf83eed7fc38044d5023d14608f5debeaf637b12a8d4cc4b5",
+    "reviewer_sha256": "e60cec1622906b6f7e34cbb0a20be8d383992fe048a391b6d5fa4d85b8be6ec3",
+    "run": "run_7693426f50e9",
+    "task": "task_dd7cc5669bef",
+    "dispatch": "ctx_1f3c406af96b",
+    "terminal": "term_fb70559b-6695-4512-bb3b-ca407f5b6c22",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 15,
+    "worker_side_orca_status": {
+      "call": "call_b27438317ed4478ba128341e6a1a896e",
+      "sha256": "5bae0d7fd631424e9b118b705842cda0cfc2112d15579b83a48640ff34529187"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Window pieces execute only attention half 0 before the bank-backed FFN path. The in-loop callback is FFN-only; completed-layer callbacks see the bank. This corrects the report’s stale-R16 counterexample.",
+      "The native reviewer found no present safety blocker in the reachable topology. Opt-in direct store still requires production numerical, route and context checks."
+    ],
+    "consumer": "Use for the current same-ELF copy/direct model admission. Retrieve source for callback or phase-audit work only.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_attention_bank_owner_20261119",
+          "files": 3,
+          "bytes": 16597,
+          "tree_sha256": "ade075315c8b7ecf252478344c35b0792a6287b42c51b8a1f494a0095c247c3a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_attention_bank_owner_20261119-control",
+          "files": 9,
+          "bytes": 19002,
+          "tree_sha256": "f31e67156c04d2b4eb8ed7187ed8bba226a80a1cbe262cfbde79be4a6ab56c88"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill_attention_bank_owner_20261119",
+          "files": 12,
+          "bytes": 3785401,
+          "tree_sha256": "f2b1c6812600423d413961bea4e563b6bdd267b2d7466f23a7f7a5bffe460ba6"
+        }
+      ]
+    }
+  },
+  "gpu_direct_producer_destination_methods_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "d40ba6312fc64c9eb7bffa90889a9cea82488f54",
+    "reviewed_report_sha256": "757defffe23823fec3d77d1013e41e78b0f8c83bff6c2eebf3942f4843b49983",
+    "source_manifest_sha256": "0f259377a8dc1f2204c390a4e8c3c8e8338136c1288173cdb93cf4d3b97984e5",
+    "reviewer_sha256": "55518e6347136c1354ba4e96930ea6bcc9145c81cd5396a222efeaa830e5957d",
+    "run": "run_7693426f50e9",
+    "task": "task_7973ca7cd9c1",
+    "dispatch": "ctx_1064671a594f",
+    "terminal": "term_72d7a628-8d11-4fe3-9621-268f0f409c32",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 10,
+    "worker_side_orca_status": {
+      "call": "call_69656f05bd6043aa917ac29cb3edac3c",
+      "sha256": "134eb2404dac880571dd6df4391739035c447262728f0bbf590a83f4e6976f00"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Consumer-layout writes can remove a copy or reorder, with separate questions for arithmetic fusion and conversion. Tiled output can recover locality when direct stores become scattered.",
+      "Review anchors: NVIDIA transpose technical blog, Intel oneMKL 2025.2 DFT stride documentation, Intel GPU optimization guide and oneDNN v3.6.2 format propagation. Workgroup bank and padding parameters need Xe-specific evidence.",
+      "Preserve the owned copy arm. Independently compare copy vs direct stores vs tiled conversion if profiling establishes a specific critical-path reorder."
+    ],
+    "consumer": "Retrieve for an actual critical-path producer/consumer layout mismatch; no candidate is schedulable solely from the general methods.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu_direct_producer_destination_methods_20261119",
+          "files": 2,
+          "bytes": 16127,
+          "tree_sha256": "f9736f54045c72fdc94d1f204a08423e7a45b83b651c0d9d0df88161a57dfb72"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu_direct_producer_destination_methods_20261119-control",
+          "files": 9,
+          "bytes": 18313,
+          "tree_sha256": "bc568898de51b842a5d064aaa975bd11a9bfb472c6824c31deee2f7a01dc5789"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/gpu_direct_producer_destination_methods_20261119",
+          "files": 7,
+          "bytes": 3406557,
+          "tree_sha256": "dfa19738dba1b7f49cb5e9f0f7de778066d42806b845f14d6ce7a9712f39aad2"
+        }
+      ]
+    }
+  },
+  "ragged-batch-residency-transitions-20261119": {
+    "stage": "native_reviewed",
+    "classification": "knowledge collection",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "attempts": [
+      {
+        "scope": "attention-bank-physical-tail-20261119",
+        "source_commit": "fca0903533e4de4ae1db43133df7f85ebb9e5bee",
+        "task": "task_d04007ae3972",
+        "dispatch": "ctx_f69bc74052ad",
+        "terminal": "term_13de7548-00b8-4f40-a7ff-06905b3d9d47",
+        "outcome": "failed",
+        "ownership_closed": true,
+        "reason": "Worker used an invalid spelling of the status subcommand after passing filesystem checks."
+      },
+      {
+        "scope": "attention-bank-physical-tail-v2-20261119",
+        "source_commit": "349067395c1bee6eddd225d811aa69334cea98a0",
+        "task": "task_d3cd05917818",
+        "dispatch": "ctx_7cdbb718fd78",
+        "terminal": "term_06ca9579-7fa1-4842-94de-d8a4bc0b45eb",
+        "outcome": "failed",
+        "ownership_closed": true,
+        "reason": "Worker-side status succeeded; the pinned input invocation failed before a report was written."
+      },
+      {
+        "scope": "ragged-batch-residency-transitions-20261119",
+        "source_commit": "fca0903533e4de4ae1db43133df7f85ebb9e5bee",
+        "task": "task_82a451e9c8ed",
+        "dispatch": "ctx_dde69c9df6a7",
+        "terminal": "term_0efe6f11-86a7-4de8-89e5-9395d294fb33",
+        "outcome": "succeeded",
+        "ownership_closed": true,
+        "file": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ragged-batch-residency-transitions-20261119/report.md",
+          "sha256": "0d3165cac7f7a75167c4577d034810d1254e67326a6f152f01f08226c7207d2c",
+          "bytes": 11001
+        },
+        "reviewer_sha256": "15fbb4fa26ed0f44e8b2f4f90e9737f6528488e16f357b05f126c1e7a128ed13",
+        "worker_status": {
+          "call": "call_e2cc80dbd8444719b6483d0825d4c855",
+          "sha256": "3896cfc74e20164452c69830a160cc1d7dfb4d727693c323e0ae0dbe2d37bbcb"
+        },
+        "proved_filesystem_inputs": 12
+      }
+    ],
+    "findings": [
+      "CoRa groups ragged tile regions and compares padding overhead by batch size, 3.5% at 32 and 2.3% at 128 in its evaluated configuration.",
+      "vDNN reports 1–18% overhead across six evaluated networks, which have different memory-pressure regimes.",
+      "Use explicit extent descriptors and retain separate matched padded, staged and variable-extent controls. Neither report predicts Intel Arc performance."
+    ],
+    "consumer": "Reference for a concrete measured host/GPU residual-transition cost or variable tile adoption. No pending worker.",
+    "schedulable_now": false,
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-bank-physical-tail-20261119",
+          "files": 1,
+          "bytes": 7040,
+          "sha256": "6c99db4bfd7b99e0dd7f7cebbeb52df12fce2b25d7702a60317611d9ad604304"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-bank-physical-tail-20261119-control",
+          "files": 8,
+          "bytes": 17369,
+          "sha256": "af6f5ce1583e39cc6c242bfb081811a687ed825ea6a6c9f75958e05665aafce5"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/attention-bank-physical-tail-20261119",
+          "files": 11,
+          "bytes": 3701904,
+          "sha256": "f5262fbbe6cf57ada97bc91ad2d25ee5b23ea3f4964b89831983555263a5dd0f"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-bank-physical-tail-v2-20261119",
+          "files": 0,
+          "bytes": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-bank-physical-tail-v2-20261119-control",
+          "files": 7,
+          "bytes": 15555,
+          "sha256": "79aad00d81d76519f429f5975738568e6f0f56ca4a380b71c837037877ea9ec3"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/attention-bank-physical-tail-v2-20261119",
+          "files": 11,
+          "bytes": 3701904,
+          "sha256": "f5262fbbe6cf57ada97bc91ad2d25ee5b23ea3f4964b89831983555263a5dd0f"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ragged-batch-residency-transitions-20261119",
+          "files": 1,
+          "bytes": 7117,
+          "sha256": "5ae4c40e94e705230d1e024ede1578de673a7e78a130a4a745212cea5954984b"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ragged-batch-residency-transitions-20261119-control",
+          "files": 9,
+          "bytes": 18308,
+          "sha256": "130648d4147a230abf27e6cb3726e8f57146749047f829dbb68ba1b957673da7"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/ragged-batch-residency-transitions-20261119",
+          "files": 11,
+          "bytes": 3701904,
+          "sha256": "f5262fbbe6cf57ada97bc91ad2d25ee5b23ea3f4964b89831983555263a5dd0f"
+        }
+      ]
+    }
+  },
+  "attention-bank-restore-research-20261119": {
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "attempts": [
+      {
+        "topic": "attention-restore-state-domains-20261119",
+        "source_commit": "8cbbf6f0268965a88793b1c5a7f7480c4e2049e5",
+        "task": "task_35b32c73f246",
+        "dispatch": "ctx_243ea93f9ee9",
+        "terminal": "term_61005257-7834-46e1-912e-8fcfe7e4c45f",
+        "outcome": "failed",
+        "ownership_closed": true,
+        "failure": "Mis-copied manifest directory. Fresh handoff invokes an exact prepared shell proof."
+      },
+      {
+        "topic": "restore-state-v2-20261119",
+        "source_commit": "1a2115365164a48d197f3cac0a5ebe40ca04547e",
+        "task": "task_7dcbc0408ff8",
+        "dispatch": "ctx_7d6b69ff5989",
+        "terminal": "term_8c49d1d4-5333-40c5-ade9-340c0a0ebe1a",
+        "outcome": "succeeded",
+        "ownership_closed": true,
+        "report_sha256": "134c592282c00b8c23a7347496889944f61f1a9e421038b02ad10c9128923e62",
+        "review_sha256": "60c43a4a7895ebff3fc3a42f1bc4dd3d9f9ee4bf797fd44f6492ace69f2459f3",
+        "proved_filesystem_inputs": 13,
+        "worker_status": {
+          "call": "call_e27aa31ac5ba4fe29e4498bec20359e9",
+          "sha256": "5a1047b988092c50d1c08c537b7e7e46b00a402d8c5c1426de67978a0b4efb26"
+        },
+        "classification": "decision support"
+      },
+      {
+        "topic": "gpu-payload-restore-validation-methods-20261119",
+        "source_commit": "8cbbf6f0268965a88793b1c5a7f7480c4e2049e5",
+        "task": "task_bd241cb4891e",
+        "dispatch": "ctx_cba81712dfc0",
+        "terminal": "term_5fb745f6-eef1-4f2c-bd6b-5e087a7c3ab6",
+        "outcome": "succeeded",
+        "ownership_closed": true,
+        "report_sha256": "7e680bbc9c36632e83ad3a57a79390a1811f3b48ece81a6825f871290c094939",
+        "review_sha256": "d927891aa459e1b85b46cf620d7d4bd7b91a0911ccf1ab37e0c453664b6d50d7",
+        "proved_filesystem_inputs": 13,
+        "worker_status": {
+          "call": "call_e58d6a80309e493180b53265d3d72e9c",
+          "sha256": "642d55492f299da18a85c9ee2fcb07fea5126021f17b9640f18c7b5c8a9d6e07"
+        },
+        "classification": "knowledge collection",
+        "reference_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-payload-restore-validation-methods-20261119/report.md"
+      }
+    ],
+    "schedulable_now": false,
+    "findings": [
+      "Compare logical running/KV state after each request. Stale/dead parts and the spare pooled row are recorded separately. SNAPSHOT_VERIFY independently checks main and draft K/V, scales, packed spans, running state and the mode-2 resident ring against the saved plan.",
+      "For the restore timing question, perform sanitizer or state-hash checks outside clean timing. CUDA Racecheck does not generally establish inter-stream ordering for global-memory restore, so use a workload-specific event/ownership negative control."
+    ],
+    "consumer": "Exact state-restore audit and future timed transfer study only if a measured restore interval warrants it.",
+    "retirement": {
+      "complete": true,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-restore-state-domains-20261119",
+          "files": 0,
+          "bytes": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-restore-state-domains-20261119-control",
+          "files": 7,
+          "bytes": 15586,
+          "sha256": "29ed7f4d434ad001501154ff6870965ed11ae70c4660c5dc8ea21eb9eb6dfb6e"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/attention-restore-state-domains-20261119",
+          "files": 12,
+          "bytes": 3750277,
+          "sha256": "d8721a1d4fbd2d376d0fd665888125e8a225782d8471eb991f27da454c6d6345"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/restore-state-v2-20261119",
+          "files": 2,
+          "bytes": 18713,
+          "sha256": "8239978a08f162a06c4a48833490c72723d7fc60063a6989e4c50479828ee058"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/restore-state-v2-20261119-control",
+          "files": 10,
+          "bytes": 17651,
+          "sha256": "23c81dc9a166d40a3f0767ed542779d2aa6aaac7acddf9e9ac22dd8523c92649"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/restore-state-v2-20261119",
+          "files": 12,
+          "bytes": 3750277,
+          "sha256": "d8721a1d4fbd2d376d0fd665888125e8a225782d8471eb991f27da454c6d6345"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-payload-restore-validation-methods-20261119",
+          "files": 1,
+          "bytes": 7725,
+          "sha256": "399336cc9a2cad4d87516184c1db3195ff0af887f9b799f4be132c6c8ea7fa62"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-payload-restore-validation-methods-20261119-control",
+          "files": 9,
+          "bytes": 18462,
+          "sha256": "c799bc2f8557a83b8a6c32fb0e8712afad26772966b841309c18abaaa0702330"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/gpu-payload-restore-validation-methods-20261119",
+          "files": 12,
+          "bytes": 3750277,
+          "sha256": "d8721a1d4fbd2d376d0fd665888125e8a225782d8471eb991f27da454c6d6345"
+        }
+      ]
+    }
+  },
+  "attention-tg-matched-evidence-20261119": {
+    "topic": "Agent and sustained decode equivalence",
+    "classification": "decision support",
+    "source_commit": "8be1c5431861256c58bb9d210610a4f1022275fb",
+    "report_sha256": "c6d574ad01537085eec29799fc0ee87dd132664160e8a22fc43f1916a470d652",
+    "review_sha256": "7f063a49b7bc81c3eda672724bb3209acb3337ce9e97ebcdebbf580b782dc4a7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The official schema and agent-turn history affect attribution. Compare per-turn real read/reuse, output and draft work. Fixed body hashes cover deterministic requests; replayed chat histories may diverge.",
+    "consumer": "Read when interpreting the next successful same-store-off/on agent and long-generation run.",
+    "schedulable_now": false
+  },
+  "gpu-llm-cohort-variance-methods-20261119": {
+    "topic": "Nested repeated benchmark evidence",
+    "classification": "knowledge collection",
+    "source_commit": "8be1c5431861256c58bb9d210610a4f1022275fb",
+    "report_sha256": "46eb5876de76eb3386aa08ad37a0bfb49122136268bcc77a1a1b512801900810",
+    "review_sha256": "5f48bbb4f91df8cde252156ccda2c8e73b0a5d5f6de7b0b07d39a382e01f8471",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Separate independent-process, request-order and within-process variance. Retain timeout censoring, original order and MTP workload strata. Previous variance collections already cover most general methodology.",
+    "consumer": "Retrieve only when choosing repetitions under observed drift, or when failures censor a comparison.",
+    "schedulable_now": false
+  },
+  "ordinary-bank-triplet-contract-20261119": {
+    "topic": "Historical 384-slot comparison",
+    "classification": "decision support",
+    "source_commit": "5becc2e3e2aabb15b1b46b659b98c1a0bbc6818b",
+    "report_sha256": "c517f4179999a63c5dc2533a92cd53493ce8217f388dcf2981273e98a4a2716f",
+    "review_sha256": "bc303e51feff63874f419fbb2c0c44e430aebab84d8632e5731b57b562b38e97",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Same-ELF copy/direct isolates the store; older ELF comparison measures the whole composition. Per-request evidence already matches bank and map H2D requests. Aggregate dispatch does not prove per-expert ID equality. One losing pair can make the repeated gain inconclusive.",
+    "consumer": "Use for the 65537-input triplets; the review covers the originally pinned timing plan, not the later traced 16098 gate.",
+    "schedulable_now": false
+  },
+  "decode-small-batch-expert-overlap-20261119": {
+    "topic": "Shared and routed expert overlap",
+    "classification": "knowledge collection",
+    "source_commit": "5becc2e3e2aabb15b1b46b659b98c1a0bbc6818b",
+    "report_sha256": "29a825060e2a863563f0b858aff2eded829325e4db4fbc78cd95a1834c43574a",
+    "review_sha256": "93dd79f113dcf09efe8db07641d815d8b4c4d2dcc95762fa08533306be0bbced",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "On the checked verifier, shared work uses all proposed rows T before commit(n_keep). At fixed T, accepted count changes useful output and waste, not the shared GEMV shape. Earlier KTransformers overlap coverage applies.",
+    "consumer": "Revisit only with backend/commit, per-width actual shapes, caller acceptance semantics and measured dependencies.",
+    "schedulable_now": false
+  },
+  "prefill-off-path-source-comparison-20261119": {
+    "topic": "Host-side work with eager expert upload off",
+    "classification": "decision support",
+    "source_commit": "e372c83cbfce3b3d93bb3c81bc1f009de6bf6e77",
+    "report_sha256": "4c10b13025964ac9ae11998b91bda204afc05a47a23a06f03981ea59e0de5250",
+    "review_sha256": "c526b9aada248ef5c4d86509163cf6bed2a975fb75ae26aa23653b07ddb279ae",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The ordinary path gates optional uploads, kernels and workspace. It retains per-expert reads and clears of the eager receipt state; their overhead is unmeasured.",
+    "consumer": "Interpret the ongoing same-period historical-versus-current 384-slot comparison. Only isolate the receipt checks if the old route repeatedly wins with matched work.",
+    "schedulable_now": false
+  },
+  "resident-input-owner-audit-20261119": {
+    "topic": "Borrowed attention input lifetime",
+    "classification": "decision support",
+    "source_commit": "b9707c75b80b6064b85eabcd78adae1cad9209d3",
+    "report_sha256": "eae88910c8193a057e66fbf7cbb62f3bbaaf690ddcdae7b0fbe693d644b45514",
+    "review_sha256": "23e36e662f8fdc451e04811063192094bc0a9a80ea67cd1dbfb33f904ac6e289",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Both selectors are independent. A resident second chunk can be partial. FFN consumes and updates the bank before complete_piece; the final layer restores each BF16 span into the float callback buffer. Helper-level alias checks do not qualify owner transitions.",
+    "consumer": "Use the 45f2ba9dd same-engine fixture covering both destinations and the resident tail. Model fallback, cancellation, numerical equivalence and the clean four-arm comparison remain open.",
+    "schedulable_now": false
+  },
+  "xe-abort-fault-order-20261119": {
+    "stage": "closed_without_report",
+    "task": "task_03466e8004c3",
+    "dispatch": "ctx_89f3e1986201",
+    "classification": "decision support",
+    "finding": "Worker repeated the exclusive filesystem preflight after its first success and closed failed. No source finding or device-cause attribution.",
+    "consumer": "Keep the observed stall and reset chronology in the original v2 result. Reopen only if the ordinary-queue workaround stops being sufficient.",
+    "schedulable_now": false
+  },
+  "prefill-hyperconnection-projection-sharing-20261119": {
+    "topic": "Mixed activation and projection sharing",
+    "classification": "decision support",
+    "source_commit": "037684cfb42f32190fc5aba9f45c13e4bd1d4d01",
+    "report_sha256": "094574bdc3ec65802fcf63590af02a80c3f8b419b04f3e9ee47b112417f423a1",
+    "review_sha256": "055289307345ba945b715198731c66b88e0f0f9fd7118ad53f3cffbd682c5c2a",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Both FP16/BF16 mix outputs have actual readers. HC down/injection have unlike output types. GDN alpha and beta are a homogeneous BF16 K=2560, N=48 pair with FP32 outputs already strided into ab[T,96]. Verify the bounded substage cost before testing a packed weight and N=96 projection.",
+    "consumer": "Use when attributing GDN projection costs and comparing pack/setup, matched numerical state and clean prefill. No validated speed or model-quality gain.",
+    "schedulable_now": false
+  },
+  "xe-engine-clock-counters-cohort-20261119": {
+    "topic": "Xe client cycles and actual frequency",
+    "classification": "knowledge collection",
+    "source_commit": "037684cfb42f32190fc5aba9f45c13e4bd1d4d01",
+    "report_sha256": "c44cd48c4284cbb51a71a3e0fb52040beb9adc14fd5ed254b51fc0c7076c276a",
+    "review_sha256": "421b96ee8dfa8d2beaa7badf91b522b23eeb820dfee2534adc99bdce8f7c0561",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The reviewed Xe fdinfo implementation exports client cycles and a shared timestamp per class; it cannot supply the proposed MHz proxy. act_freq is a GT actual-frequency point, cur_freq is requested, throttle reasons are instantaneous. Counter reads may synchronize or wake the device.",
+    "consumer": "First diagnostic of repeated unchanged-binary drift. Check actual installed ABI and GT identity; separate observer brackets from clean speed. No further generic survey.",
+    "schedulable_now": false
+  },
+  "prefill-closed-64k-period-20261120": {
+    "topic": "Matched 64K drift with the historical prefill executable",
+    "classification": "decision support",
+    "source_commit": "9bac6e77a9f7490915115d1debf4515663cf2bf0",
+    "report_sha256": "43bb76a07d0d8721957caf099e9f047efe8b54eba58b4ba8b1c132b831fc9a2e",
+    "review_sha256": "f6a79ce62483e43a74fe2887654c849eaff737f9300100a59880170c2406c267",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The identical reference ELF, 65537-token request bodies, effective benchmark settings, expert work and submitted H2D payload reproduce the same workload across the two periods. The reference warmed median changed from 1006.832 to 882.976 PP. Elapsed time alone cannot identify a clock, CPU, GPU or PCIe cause.",
+    "consumer": "Use for same-period comparisons. Interpret the earlier 512-slot model result separately from the standalone store fixture and ordinary384 observations.",
+    "schedulable_now": false
+  },
+  "prefill-direct-store-device-work-20261120": {
+    "topic": "Host checks and GPU work in direct attention output",
+    "classification": "decision support",
+    "source_commit": "9bac6e77a9f7490915115d1debf4515663cf2bf0",
+    "report_sha256": "8e8f312ac34fc5de13f67705661f72fea482c178c7445d355cec7798a40388a5",
+    "review_sha256": "b5a632c064fc94dbf9fe51c309beb2f9ced0079fb62eb2f9f3e48623a8eb50e4",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Direct store adds three checked device spans, an interval-validity check and an alias check; it skips the copy wrapper and retains the existing completion boundary. Span validation uses host registry, device and context lookups. Avoided D2D API payload alone does not quantify traffic or elapsed savings.",
+    "consumer": "Use to design a bounded host and device cost profile if needed. Any reused validation must preserve buffer owner, context, generation and retirement checks.",
+    "schedulable_now": false
+  },
+  "qsa-pv-probability-reload-20261120": {
+    "topic": "BF16 probability reuse in the QSA prefix matrix product",
+    "classification": "decision support",
+    "source_commit": "9bac6e77a9f7490915115d1debf4515663cf2bf0",
+    "report_sha256": "4e20fd4bf1c90256bf1c5d81f128db1e2a05d4922265454b43bec3b12f1c5bf6",
+    "review_sha256": "43e3b9f5850ba43e160b38f6483dfac680ffc8e32c1bc96ac7baa9e5603705c7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The ordered-exp PV loop reuses two probability fragments across four output tiles. Compare retaining those fragments with the existing loop, keeping accumulation and uniform barriers unchanged. The NaN-query fixture reaches score handling but does not independently isolate its guard.",
+    "consumer": "Use for a narrow component comparison on the 14.38 s QSA service family. Check register pressure and final machine code; the SPIR-V finding alone cannot establish physical traffic or a speedup.",
+    "schedulable_now": false
+  },
+  "qsa-pv-jit-image-identity-20261120": {
+    "topic": "Identify the actual loaded PV kernel on B570",
+    "classification": "decision support",
+    "source_commit": "42376cf3db1ee157355a127d393a06bf549134ef",
+    "report_sha256": "71cbe561c4a2b0072e72c200364034ffb8993666c24396a57f5e409dfb6d2609",
+    "review_sha256": "fa2e15e0ddc590dc672da4014addf4c4a058454bf96bbd2474e84a275aaef0ee",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "A normal prefix call launches pack and compute kernels. Join the PV dispatch site to the Level Zero launch handle, then query the selected kernel/module. Offline or cached artifacts do not identify what ran. Spill/private allocation descriptors do not measure traffic or occupancy.",
+    "consumer": "Use if attributing a measured fragment-reuse change. Check the exact kernel association, optional query support and returned status on this provider. No native/JIT measurement yet.",
+    "schedulable_now": false
+  },
+  "qsa-pv-actual-fixture-20261120": {
+    "classification": "decision support",
+    "source_commit": "42376cf3db1ee157355a127d393a06bf549134ef",
+    "outcome": "worker closed without a reviewable report",
+    "report_bytes": 0,
+    "consumer": "Superseded by qsa-pv-candidate-source-audit-20261120 using the rendered translation unit.",
+    "schedulable_now": false
+  },
+  "qsa-pv-candidate-source-audit-20261120": {
+    "topic": "Audit the isolated QSA probability reuse kernel and trial",
+    "classification": "decision support",
+    "source_commit": "42376cf3db1ee157355a127d393a06bf549134ef",
+    "report_sha256": "c059dd17975ae53311f81d372f50af7059f2ecc6517d00d598b15e5d6d3a18da",
+    "review_sha256": "7beca7c02f50e9e97f4ec0b1df486c5b5aa9f5d0489fcf6e61b2e8fff77810ad",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The normal and state-probe exports are defined. The producer publishes the BF16 operands before both reads, and the tile is retired after all four accumulations. The original flag-set test omitted backend/translator options. This is source equivalence only.",
+    "consumer": "Controller 0ed10ef1d requires the complete ordered icpx invocation for each kernel and separate fresh pack checks. Confirm actual compilation, device output/state and timing on B570.",
+    "schedulable_now": false
+  },
+  "moe-mixed-gather-reader-20261120": {
+    "topic": "Alternatives for the mixed expert input gather",
+    "classification": "decision support",
+    "source_commit": "2dabc1306b1899c1510af5553417c14822777a38",
+    "report_sha256": "d9cc1e7b56106ff5040ede5dec8773e2b4264fbfdba2e96385432331d53a27cf",
+    "review_sha256": "1b776a5a2a5f910fb63d0915c9bec9170d5094e20f5c45103c101a348cd40aab",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The fused GU+SwiGLU path covers 89% of routed rows. It currently accepts affine A only; arbitrary source rows need a new operand loader or staging. The existing mixed gather inherits four-byte alignment from validate_spans and the dense GU has a separate 64-byte base requirement. Correct the report source label to the manifest revision.",
+    "consumer": "First compare scalar/vec8 gather independently on the ordinary single-bank shapes. For the higher-ceiling fused alternative, prove per-lane A mapping, tail masks and status behavior before a GPU trial. No achieved bandwidth or model gain.",
+    "schedulable_now": false
+  },
+  "moe-gu-mapped-a-fragments-20261120": {
+    "topic": "Prefill fused gate/up input-fragment mapping",
+    "classification": "decision support",
+    "source_commit": "eedd9d3d55fcaf9349e2ec636dcb891fae93489d",
+    "report_sha256": "46142347de473b76b0c288116f84266090f7a3c3f346ad72998992dcbb8f66be",
+    "review_sha256": "0137123a809b2beeec99cccaaf8381f2334aec24137fe2a030bb5c3d5da13c3e",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "On TLA 87f68506, partition_A is lane-specific; atom_partition_A retains the subgroup thread dimension. Verify the actual block2D/reorder destination bits, all replicas and M tails before inserting indirect A into DPAS. The 4,217 fused jobs cover 28,001,231 of 31,457,280 routed rows in warm request 2; see eager_request_profile_v2 at ecac777fc.",
+    "consumer": "Child 19999c6c1 uses the actual wide/compact policies and a separate host layout witness. One-bank reader only. Hold model/performance trials for numerical and source qualification.",
+    "schedulable_now": false
+  },
+  "ordinary-m2d-residual-20261120": {
+    "topic": "Ordinary queue 64K copy residual and limits of attribution",
+    "classification": "decision support",
+    "source_commit": "11c455e4253a91597b63d77d6f8ee666d05a2c14",
+    "report_sha256": "d8aa400dc198efdab76880777f13fec393e90b987398543869db72a6f18b6653",
+    "review_sha256": "436146adcb9e771140c344320602415f2d71aeb2c871b53d6a02d31b17875f76",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The two warm requests each have 3,013 M2D commands and 11,164,427,264 B beyond the expert counters arithmetically. The compact PTI record has per-direction counts, bytes and times but no per-copy identity joining source or phase. Source-map H2D describes API direction, not PTI class. Its 125,829,120 B is for one map; the split accumulator also uploads the same-sized inverse map.",
+    "consumer": "Use the exact pack and activation path to bound plausible source work. Join request, phase, source key and transfer event before assigning M2D payload or physical bus latency. No duplicate generic collector survey.",
+    "schedulable_now": false
+  },
+  "canonical-prefill-exact-copy-runs-20261120": {
+    "topic": "Decision support: review the exact canonical-layer copy proposal and its device/time gates.",
+    "classification": "decision support",
+    "source_commit": "f40b91b14bf1503d97b47f92a5ee858d98de5437",
+    "capture_commit": "771e19a9dc85acf99f9b814b3075e4be17106d44",
+    "verified_child_source_inputs": 11,
+    "report_sha256": "52b08a3e7553a45636bf91e398c998f6bcd9b304804ba345b7b480bc546bdc6a",
+    "review_sha256": "75773e50b580d57cd1925c56cbf08a9bd983c866dd4d4f26be1ed8c9b02c75de",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Joining exact source/destination adjacency preserves ownership in f40. The 672 versus 217 count and equal 1,455,214,080 bytes are pack predictions. Earlier 117K model is from 362c16aa and cannot qualify this change.",
+    "consumer": "Verify the actual loop, compiled caller closure, per-call addresses/bytes, final contents, full restore and separate clean timing. Source fa2191d38 implements the trace reader and post-timing payload replay.",
+    "schedulable_now": false
+  },
+  "native-dense-partial-residency-20261120": {
+    "topic": "Decision support: assess selective preservation of original packed native weight owners through a long prefill at fixed expert/residual capacity.",
+    "classification": "decision support",
+    "source_commit": "f40b91b14bf1503d97b47f92a5ee858d98de5437",
+    "capture_commit": "771e19a9dc85acf99f9b814b3075e4be17106d44",
+    "verified_child_source_inputs": 11,
+    "report_sha256": "1318d92c33d0734136eb6bfaa435071fef33c722d06e2295576160faec834997",
+    "review_sha256": "0f364cf3731f280a592baf96df4ea05457faa432756e9375ec631e39ea404f6d",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Retaining S exact packed weight bytes can avoid at most 2S requested bytes. Prior 117489-token/1256-slot full NativeDense restore was about 384–385 ms; the enclosing 650–817 ms includes canonical restore. Current 64K/384 free samples give no full-tail admission.",
+    "consumer": "Retain current rebuild. Reopen on current keyed transfer costs or 262144-tail admission with graph/owner preservation, measured free bytes and largest single allocation.",
+    "schedulable_now": false
   }
 }

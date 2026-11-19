@@ -45,6 +45,7 @@
 #include "strata/prefill/moe_accum_plan.hpp"
 #include "strata/prefill/expert_bank_upload.hpp"
 #include "strata/prefill/moe_upload_census.hpp"
+#include "strata/core/pinned.hpp"
 #include "strata/prefill/qsa_native16.hpp"
 #include "strata/prefill/qsa_score_gemm.hpp"
 #include "strata/prefill/gdn_chunk64.hpp"
@@ -512,6 +513,133 @@ struct PeerPrefill {
 };
 
 #if defined(STRATA_ENABLE_SYCL)
+enum class PrefillMoePrefixRouter { off, late, early };
+
+PrefillMoePrefixRouter prefill_moe_prefix_router_requested() {
+    static const auto mode = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER");
+        if (!value || std::strcmp(value, "off") == 0) return PrefillMoePrefixRouter::off;
+        if (std::strcmp(value, "late") == 0) return PrefillMoePrefixRouter::late;
+        if (std::strcmp(value, "early") == 0) return PrefillMoePrefixRouter::early;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER requires off, late or early");
+    }();
+    return mode;
+}
+
+const char* prefill_moe_prefix_router_name(PrefillMoePrefixRouter mode) {
+    if (mode == PrefillMoePrefixRouter::early) return "early";
+    if (mode == PrefillMoePrefixRouter::late) return "late";
+    return "off";
+}
+
+enum class PrefillPrefixExpertUpload { off, ffn, prefix };
+
+PrefillPrefixExpertUpload prefill_prefix_expert_upload_requested() {
+    static const auto mode = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD");
+        if (!value || std::strcmp(value, "off") == 0) return PrefillPrefixExpertUpload::off;
+        if (std::strcmp(value, "ffn") == 0) return PrefillPrefixExpertUpload::ffn;
+        if (std::strcmp(value, "prefix") == 0) return PrefillPrefixExpertUpload::prefix;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD requires off, ffn or prefix");
+    }();
+    return mode;
+}
+
+const char* prefill_prefix_expert_upload_name(PrefillPrefixExpertUpload mode) {
+    if (mode == PrefillPrefixExpertUpload::ffn) return "ffn";
+    if (mode == PrefillPrefixExpertUpload::prefix) return "prefix";
+    return "off";
+}
+
+bool prefill_prefix_expert_host_usm_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_HOST_USM");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PREFIX_EXPERT_HOST_USM must be 0 or 1");
+    }();
+    return enabled;
+}
+
+detail::PrefillHostStageOrder prefill_prefix_expert_stage_order_requested() {
+    static const auto selected = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_STAGE_ORDER");
+        if (!value || std::strcmp(value, "all") == 0)
+            return detail::PrefillHostStageOrder::all_before_copy;
+        if (std::strcmp(value, "per-span") == 0)
+            return detail::PrefillHostStageOrder::span_before_copy;
+        throw std::invalid_argument("prefill expert stage order requires all or per-span");
+    }();
+    return selected;
+}
+
+enum class PrefillPrefixCopy { sycl, sycl_wait, native0, native1 };
+
+bool prefill_prefix_expert_defer_completion_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_DEFER_COMPLETION");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PREFIX_EXPERT_DEFER_COMPLETION must be 0 or 1");
+    }();
+    return enabled;
+}
+
+PrefillPrefixCopy prefill_prefix_copy_requested() {
+    static const auto selected = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY");
+        if (!value || std::strcmp(value, "sycl") == 0) return PrefillPrefixCopy::sycl;
+        if (std::strcmp(value, "sycl-wait") == 0) return PrefillPrefixCopy::sycl_wait;
+        if (std::strcmp(value, "native0") == 0) return PrefillPrefixCopy::native0;
+        if (std::strcmp(value, "native1") == 0) return PrefillPrefixCopy::native1;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY requires sycl, sycl-wait, native0 or native1");
+    }();
+    return selected;
+}
+
+const char* prefill_prefix_copy_name(PrefillPrefixCopy copy) {
+    switch (copy) {
+    case PrefillPrefixCopy::sycl: return "sycl";
+    case PrefillPrefixCopy::sycl_wait: return "sycl-wait";
+    case PrefillPrefixCopy::native0: return "native0";
+    case PrefillPrefixCopy::native1: return "native1";
+    }
+    throw std::logic_error("invalid prefill prefix copy mode");
+}
+
+struct PrefillMoeRouterPiece {
+    uint16_t* mixed;
+    float* injection;
+    int32_t* ids;
+    float* weights;
+    float* shared_gate;
+    float* logits;
+};
+
+// All planes are multiples of 256 bytes. Only the first piece survives across
+// attention chunks, in storage owned by the layer-major queue lease.
+struct PrefillMoePrefixStorage {
+    static constexpr size_t rows = detail::MoeAccumPlan::chunk;
+    static constexpr size_t mixed_bytes = rows * N * sizeof(uint16_t);
+    static constexpr size_t injection_bytes = rows * HC * sizeof(float);
+    static constexpr size_t id_bytes = rows * K * sizeof(int32_t);
+    static constexpr size_t weight_bytes = rows * K * sizeof(float);
+    static constexpr size_t shared_gate_bytes = rows * sizeof(float);
+    static constexpr size_t logits_bytes = rows * NE * sizeof(float);
+    static constexpr size_t bytes = mixed_bytes + injection_bytes + id_bytes +
+        weight_bytes + shared_gate_bytes + logits_bytes;
+
+    static PrefillMoeRouterPiece view(uint8_t* base) {
+        auto* injection = base + mixed_bytes;
+        auto* ids = injection + injection_bytes;
+        auto* weights = ids + id_bytes;
+        auto* shared_gate = weights + weight_bytes;
+        return {reinterpret_cast<uint16_t*>(base), reinterpret_cast<float*>(injection),
+            reinterpret_cast<int32_t*>(ids), reinterpret_cast<float*>(weights),
+            reinterpret_cast<float*>(shared_gate), reinterpret_cast<float*>(shared_gate + shared_gate_bytes)};
+    }
+};
+
 // Request owner, declared before the outer checked lease. A failed drain aborts
 // while this object and all raw upload pointers remain alive.
 struct MoeWindowContext {
@@ -530,12 +658,35 @@ struct MoeWindowContext {
     uint64_t mixed_tail_bytes = 0, mixed_tail_offset = 0;
     float* accumulator_tail = nullptr;
     uint64_t accumulator_tail_bytes = 0;
+    uint8_t* extra_workspace = nullptr; // separately owned FP32 tail + optional job planes
+    uint64_t extra_workspace_bytes = 0;
+    bool relocated_job_buffers = false;
     int64_t accumulator_primary_rows = 0; // zero retains the ordinary route
     bool scratch_mixed = false;
     int64_t maximum_rows = 16384;
     bool accumulation = false;
+    bool direct_attention_bank = false;
+    uint64_t attention_bank_pieces = 0, attention_direct_pieces = 0, attention_copy_bytes = 0;
     uint32_t status_observed = 0;
     std::vector<int32_t> ids;
+    std::vector<float> prefix_weight_audit;
+    PrefillMoePrefixRouter prefix_router = PrefillMoePrefixRouter::off;
+    uint8_t* prefix_router_storage = nullptr;
+    int64_t prefix_router_layer = -1;
+    uint64_t prefix_router_completed = 0;
+    PrefillPrefixExpertUpload prefix_expert_upload = PrefillPrefixExpertUpload::off;
+    sycl_backend::Allocation prefix_upload_host_storage;
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    std::unique_ptr<sycl_backend::native_copy::NativeCopyList> prefix_native_copy;
+#endif
+    PrefillPrefixCopy prefix_copy = PrefillPrefixCopy::sycl;
+    detail::PrefillHostStageOrder prefix_stage_order = detail::PrefillHostStageOrder::all_before_copy;
+    bool defer_prefix_completion = false;
+    std::optional<detail::PrefillFullfitUploadPlan> pending_prefix_upload;
+    std::vector<int32_t> prefix_experts;
+    detail::PrefillFullfitUploadReceipt prefix_upload;
+    uint64_t prefix_upload_layers = 0, prefix_upload_experts = 0, prefix_upload_bytes = 0;
+    uint64_t prefix_upload_host_bytes = 0;
     std::shared_ptr<const detail::MoeWindowRoutes> routes;
     std::function<bool(int64_t, int64_t, std::string&)> complete_piece;
     uint64_t windows = 0, dequants = 0, jobs = 0, source_bytes = 0;
@@ -550,7 +701,8 @@ int moe_window_requested() {
         if (std::strcmp(v, "2") == 0) return 2;
         if (std::strcmp(v, "8") == 0) return 8;
         if (std::strcmp(v, "10") == 0) return 10;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8 or 10");
+        if (std::strcmp(v, "16") == 0) return 16;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8, 10 or 16");
     }();
     return enabled;
 }
@@ -560,6 +712,15 @@ bool moe_split_accumulator_requested() {
         if (!value || std::strcmp(value, "0") == 0) return false;
         if (std::strcmp(value, "1") == 0) return true;
         throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR must be0 or1");
+    }();
+    return enabled;
+}
+bool moe_relocated_job_buffers_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_MOE_RELOCATE_JOB_BUFFERS");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_RELOCATE_JOB_BUFFERS must be0 or1");
     }();
     return enabled;
 }
@@ -2255,6 +2416,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         const int64_t T = std::min(m.T, n - c0), p0 = pos0 + c0;
         bool window_piece = false;
 #if defined(STRATA_ENABLE_SYCL)
+        detail::LayerMajorSpan attention_bank_span{};
+        uint16_t* attention_bank = nullptr;
+        bool direct_attention_bank = false;
+        bool attention_bank_written = false;
         if (m.moe_window) {
             if (window_first >= 0) {
                 if (c0 != window_next || c0 >= window_end) { err = "prefill MoE window: piece order"; return false; }
@@ -2265,6 +2430,21 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 window_piece = first.device && second.device;
                 if (window_piece) window_end = std::min({n, m.layer_major_residual.gpu_rows,
                                                          c0 + m.moe_window->maximum_rows});
+            }
+            if (window_piece) {
+                if (!m.native16_active || LE != LB + 1 || !m.moe_window->bank) {
+                    err = "prefill MoE window: invalid topology"; return false;
+                }
+                attention_bank_span = m.layer_major_residual.span(c0, T);
+                const auto& span = attention_bank_span;
+                if (!span.device || span.offset_bytes > m.moe_window->bank_bytes ||
+                    span.bytes > m.moe_window->bank_bytes - span.offset_bytes) {
+                    err = "prefill MoE window: attention bank span"; return false;
+                }
+                attention_bank = reinterpret_cast<uint16_t*>(
+                    reinterpret_cast<uint8_t*>(m.moe_window->bank) + span.offset_bytes);
+                direct_attention_bank = m.moe_window->direct_attention_bank && !m.layer26_phase_audit &&
+                    !m.layer_major_audit && m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::bf16;
             }
         }
 #endif
@@ -3970,7 +4150,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 }
 #if defined(STRATA_ENABLE_SYCL)
                 if (m.native16_active) {
-                    native16::write(m.R16, m.bo_b16, m.inj, T, m.cs);
+                    if (direct_attention_bank) {
+                        if (stream_all || issuer.joinable()) {
+                            err = "prefill MoE window: invalid direct attention topology"; return false;
+                        }
+                        native16::write_prefill_attention_bank(attention_bank, m.R16, m.bo_b16, m.inj, T, m.cs);
+                        attention_bank_written = true;
+                    } else {
+                        native16::write(m.R16, m.bo_b16, m.inj, T, m.cs);
+                    }
                     normed = false;
                 } else
 #endif
@@ -3999,25 +4187,37 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         }
 #if defined(STRATA_ENABLE_SYCL)
         if (window_piece) {
-            if (!m.native16_active || LE != LB + 1 || !m.moe_window || !m.moe_window->bank ||
-                stream_all || issuer.joinable()) { err = "prefill MoE window: invalid topology"; return false; }
-            const auto span = m.layer_major_residual.span(c0, T);
-            if (!span.device || span.offset_bytes > m.moe_window->bank_bytes ||
-                span.bytes > m.moe_window->bank_bytes - span.offset_bytes) {
-                err = "prefill MoE window: attention bank span"; return false;
+            if (stream_all || issuer.joinable()) { err = "prefill MoE window: invalid topology"; return false; }
+            if (attention_bank_written != direct_attention_bank) {
+                err = "prefill MoE window: missing direct attention store"; return false;
             }
-            auto* destination = reinterpret_cast<uint8_t*>(m.moe_window->bank) + span.offset_bytes;
-            sycl_backend::validate_device_span(destination, size_t(span.bytes), sycl_backend::queue_for(m.cs));
-            if (cudaMemcpyAsync(destination, m.R16, size_t(span.bytes), cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess ||
-                cudaStreamSynchronize(m.cs) != cudaSuccess) {
+            if (!attention_bank_written) {
+                const auto bytes = size_t(attention_bank_span.bytes);
+                sycl_backend::validate_device_span(attention_bank, bytes, sycl_backend::queue_for(m.cs));
+                if (cudaMemcpyAsync(attention_bank, m.R16, bytes, cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess) {
+                    err = "prefill MoE window: attention store/drain"; return false;
+                }
+            }
+            if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
                 err = "prefill MoE window: attention store/drain"; return false;
             }
+            ++m.moe_window->attention_bank_pieces;
+            if (attention_bank_written) ++m.moe_window->attention_direct_pieces;
+            else m.moe_window->attention_copy_bytes += attention_bank_span.bytes;
             // Retire host token/step/PLE inputs before the next piece reuses them.
             // Keep existing event pairs reusable and never report FFN completion.
             if (m.layer_major_profile) m.layer_major_profile->chunk_retired();
             if (m.layer_major_qsa_profile) m.layer_major_qsa_profile->chunk_retired();
             if (window_first < 0) window_first = c0;
             window_next = c0 + T;
+            const auto prefix_router = m.moe_window->prefix_router;
+            if ((prefix_router == PrefillMoePrefixRouter::early && c0 == window_first) ||
+                (prefix_router == PrefillMoePrefixRouter::late && window_next == window_end)) {
+                if (window_first != 0 || window_end != n || !run_prefill_moe_prefix_router(LB, n, err)) {
+                    if (err.empty()) err = "prefill MoE prefix router: expected one full request window";
+                    return false;
+                }
+            }
             if (window_next < window_end) continue;
             if (window_next != window_end) { err = "prefill MoE window: incomplete final piece"; return false; }
             const int64_t first = window_first, count = c0 + T - first;

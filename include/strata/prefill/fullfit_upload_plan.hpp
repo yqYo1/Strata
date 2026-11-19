@@ -8,6 +8,26 @@
 
 namespace strata::prefill::detail {
 
+inline std::vector<int32_t> prefill_prefix_expert_ids(
+        const std::vector<int32_t>& ids, size_t rows, size_t top_k) {
+    constexpr auto experts = ExpertBankPlan::experts;
+    if (!rows || !top_k || top_k > size_t(experts) || rows > ids.size() / top_k)
+        throw std::invalid_argument("prefill prefix expert ID extent");
+    std::array<size_t, experts> last_row{};
+    for (size_t row = 0; row < rows; ++row) {
+        for (size_t k = 0; k < top_k; ++k) {
+            const int32_t expert = ids[row * top_k + k];
+            if (expert < 0 || expert >= experts || last_row[size_t(expert)] == row + 1)
+                throw std::invalid_argument("prefill prefix expert ID range or duplicate");
+            last_row[size_t(expert)] = row + 1;
+        }
+    }
+    std::vector<int32_t> selected;
+    for (int32_t expert = 0; expert < experts; ++expert)
+        if (last_row[size_t(expert)]) selected.push_back(expert);
+    return selected;
+}
+
 struct PrefillFullfitCopy {
     uint64_t source_offset=0, destination_offset=0, bytes=0;
     size_t first=0, experts=0;
@@ -52,22 +72,30 @@ public:
     }
 };
 
-// A copy must be accepted before any of its mappings are published. Failed or
-// ambiguous enqueue exits to the native caller's checked owner lease, without
-// retry. Earlier accepted copies/maps survive until that same checked drain.
+inline void require_empty_prefill_fullfit_bank(const ExpertBankSlots& slots) {
+    if (!slots.full_fit() || slots.slots()!=ExpertBankPlan::experts || slots.permanent_used())
+        throw std::invalid_argument("prefill full-fit upload requires empty private bank");
+}
+
+inline void publish_prefill_fullfit_copy(const PrefillFullfitUploadPlan& plan,
+        ExpertBankSlots& slots, const PrefillFullfitCopy& copy) {
+    for (size_t i=copy.first;i<copy.first+copy.experts;++i) {
+        const auto ticket=slots.begin(plan.experts()[i]);
+        if (!ticket.upload || !ticket.permanent || ticket.slot!=int32_t(i))
+            throw std::runtime_error("prefill full-fit upload publication mismatch");
+        slots.queued(ticket);
+    }
+}
+
+// On the compute queue, accepted copies precede readers in that same queue.
+// A different queue must complete before the caller publishes its mappings.
 template<class Enqueue>
 inline void enqueue_prefill_fullfit_upload(const PrefillFullfitUploadPlan& plan,
         ExpertBankSlots& slots, Enqueue&& enqueue) {
-    if (!slots.full_fit() || slots.slots()!=ExpertBankPlan::experts || slots.permanent_used())
-        throw std::invalid_argument("prefill full-fit upload requires empty private bank");
+    require_empty_prefill_fullfit_bank(slots);
     for (const auto& copy:plan.copies()) {
         if (!enqueue(copy)) throw std::runtime_error("prefill full-fit upload enqueue failed");
-        for (size_t i=copy.first;i<copy.first+copy.experts;++i) {
-            const auto ticket=slots.begin(plan.experts()[i]);
-            if (!ticket.upload || !ticket.permanent || ticket.slot!=int32_t(i))
-                throw std::runtime_error("prefill full-fit upload publication mismatch");
-            slots.queued(ticket);
-        }
+        publish_prefill_fullfit_copy(plan,slots,copy);
     }
 }
 

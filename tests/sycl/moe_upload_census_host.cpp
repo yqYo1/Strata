@@ -4,6 +4,7 @@
 
 int main() {
     using strata::prefill::detail::MoeUploadCensus;
+    using strata::prefill::detail::MoeWindowRoutes;
     MoeUploadCensus census;
     census.record(640, true);
     census.record(1280, false);
@@ -34,6 +35,23 @@ int main() {
     try { empty.record(1, true); }
     catch (const std::invalid_argument&) { refused = true; }
     if (!refused) return 7;
+
+    const int32_t ids[] = {10,2,3,4,5,6,7,8,9,511, 10,2,3,4,5,6,7,8,9,0, 10,2,3,4,5,6,7,8,9,1};
+    const auto routes = MoeWindowRoutes::build_accum(3, ids, std::size(ids));
+    MoeUploadCensus demand;
+    for (int32_t count : routes->counts()) if (count) demand.record(count, true);
+    file = std::tmpfile();
+    if (!file) return 8;
+    const bool valid = demand.emit_first_routes_after_checked_drain(file, 47, 262141, *routes);
+    const bool invalid = demand.emit_first_routes_after_checked_drain(file, 47, 262142, *routes) ||
+        census.emit_first_routes_after_checked_drain(file, 47, 0, *routes);
+    std::rewind(file);
+    const auto first_bytes = std::fread(data, 1, sizeof(data) - 1, file);
+    std::fclose(file);
+    const std::string first_routes(data, first_bytes);
+    if (!valid || invalid || first_routes !=
+            "strata MoE first-route census: {\"version\":1,\"layer\":47,\"first_row\":262141,\"rows\":3,\"experts\":"
+            "[[0,1],[1,2],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[10,0],[511,0]]}\n") return 9;
     std::puts("MoE census host controls passed: literal upload/hit/byte/format bins;invalid rows;empty frame;512expert bound. No GPU qualification.");
     return 0;
 }
