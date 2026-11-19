@@ -38,3 +38,14 @@ class CanonicalTraceTests(unittest.TestCase):
             trace.verify([begin, first, returned("0x22", "UR_RESULT_SUCCESS")], [self.rows], False)
         with self.assertRaisesRegex(ValueError, "failed or malformed"):
             trace.verify([begin, returned("0x21", "UR_RESULT_ERROR_INVALID_VALUE")], [self.rows], False)
+
+    def test_first_timed_sweep_is_excluded_from_the_following_median(self):
+        lines = ["prefill canonical clock median_ns=30 p99_ns=50"]
+        for i, ms in enumerate([250, 40, 50, 30]):
+            lines.append(f"prefill canonical sweep={i} contiguous=1 layers=48 call_ms={ms}")
+        text = "\n".join(lines)
+        self.assertEqual(trace.timing(text, True)["subsequent_median_ms"], 40)
+        for invalid in (text.replace("call_ms=30", "call_ms=9.99"), text.replace("sweep=2", "sweep=3"),
+                        text.replace("p99_ns=50", "p99_ns=5000")):
+            with self.assertRaises(ValueError):
+                trace.timing(invalid, True)

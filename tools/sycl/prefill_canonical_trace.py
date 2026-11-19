@@ -2,8 +2,10 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
+import statistics
 
 INDEX_SHA256 = "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
 TOTAL_BYTES = 1_455_214_080
@@ -114,6 +116,26 @@ def verify(lines, layers, contiguous):
     require(finished and count == (217 if contiguous else 672) and total == TOTAL_BYTES,
             "incomplete fixture, unexpected submission count or byte total")
     return dict(layers=layer, copies=count, requested_bytes=total, blocking_copies=blocking)
+
+
+def timing(stdout, contiguous):
+    samples = []
+    clock = None
+    for line in stdout.splitlines():
+        if line.startswith("prefill canonical clock "):
+            m = re.fullmatch(r"prefill canonical clock median_ns=(\d+) p99_ns=(\d+)", line)
+            require(m and clock is None, "unexpected timer calibration")
+            clock = [int(m[1]), int(m[2])]
+        if line.startswith("prefill canonical sweep="):
+            m = re.fullmatch(r"prefill canonical sweep=(\d+) contiguous=([01]) layers=48 call_ms=([\d.]+)", line)
+            require(m and int(m[1]) == len(samples) and int(m[2]) == contiguous, "wrong sweep or copy mode")
+            ms = float(m[3])
+            require(math.isfinite(ms) and 10 <= ms < 30000, "ineligible activation batch")
+            samples.append(ms)
+    require(clock and 0 <= clock[0] <= clock[1] < 5000 and clock[0] < 1000 and len(samples) == 4,
+            "incomplete sweeps or timer overhead")
+    return dict(clock_ns=clock, first_timed_sweep_ms=samples[0], subsequent_ms=samples[1:],
+                subsequent_median_ms=statistics.median(samples[1:]))
 
 
 if __name__ == "__main__":
