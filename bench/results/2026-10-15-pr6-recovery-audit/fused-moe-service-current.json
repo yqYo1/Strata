@@ -494969,7 +494969,7 @@
     "raw_capture_created": false
   },
   "prefill_prefix_expert_cpu_wait_v2": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "ccc73454ad88f5cccc26a443a317c64bcedcce7a",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/build/strata",
@@ -496133,6 +496133,244 @@
         },
         "passed": true,
         "role": "cpu-wait-scopes"
+      },
+      {
+        "index": 2,
+        "read": 32769,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/build/strata",
+          "sha256": "2d6c4021902ca20ce3b05d09593899ee07c53e09a7528fb9df2b759e1e62e09f",
+          "bytes": 26501944
+        },
+        "native_source_commit": "7537fb7bc02cc035ac2d395a383a7b5eaa95564a",
+        "native_identity": {
+          "pid": 2429,
+          "start_ticks": 342659899,
+          "sid": 2367
+        },
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2429,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1363148800,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 546968064,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 167772160,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 512,
+              "window_rows": 32768,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4245647360,
+              "fixed_including_headroom_bytes": 2638479616,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2084,
+                "fused_rows": 12920342,
+                "separate_jobs": 16144
+              },
+              "down": {
+                "fused_jobs": 2084,
+                "fused_rows": 12920342,
+                "separate_jobs": 16144
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 18228,
+              "windows": 48,
+              "dequants": 17318,
+              "maximum_physical_window_rows": 32768,
+              "requested_source_map_bytes": 62914560,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 17318,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_source_map_H2D_bytes": 62914560,
+            "fullfit_upload": {
+              "policy": "jit",
+              "fullfit_layers": 0,
+              "accepted_copy_commands": 0,
+              "requested_fullfit_H2D_bytes": 0,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            },
+            "prefix_upload": {
+              "experts": 15082,
+              "bytes": 30840652800,
+              "selected": "33b0edc97ae5a3a22b779b55e5578fe6d8112283962fdd40119d6d8b4e5adc1b"
+            },
+            "copy_transport": {
+              "mode": "native1",
+              "allocation": 1363148800,
+              "staged_bytes": 30840652800,
+              "issue": "prefix",
+              "deferred": true
+            },
+            "stage_order": "all"
+          },
+          {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1363148800,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 546968064,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 167772160,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 512,
+              "window_rows": 32768,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4251844608,
+              "fixed_including_headroom_bytes": 2638479616,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2083,
+                "fused_rows": 12918705,
+                "separate_jobs": 16192
+              },
+              "down": {
+                "fused_jobs": 2083,
+                "fused_rows": 12918705,
+                "separate_jobs": 16192
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 18275,
+              "windows": 48,
+              "dequants": 17365,
+              "maximum_physical_window_rows": 32768,
+              "requested_source_map_bytes": 62914560,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 17365,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_source_map_H2D_bytes": 62914560,
+            "fullfit_upload": {
+              "policy": "jit",
+              "fullfit_layers": 0,
+              "accepted_copy_commands": 0,
+              "requested_fullfit_H2D_bytes": 0,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            },
+            "prefix_upload": {
+              "experts": 15137,
+              "bytes": 30969728000,
+              "selected": "e516ae9d2e646bbff37e883793751a5cf3b10ab4899ed4a68ec21e2c1f36b681"
+            },
+            "copy_transport": {
+              "mode": "native1",
+              "allocation": 1363148800,
+              "staged_bytes": 30969728000,
+              "issue": "prefix",
+              "deferred": true
+            },
+            "stage_order": "all"
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 48161.4,
+            "prompt_tps": 680.4,
+            "ttft_s": 48.317,
+            "total_s": 50.029,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 37254.3,
+            "prompt_tps": 879.6,
+            "ttft_s": 37.512,
+            "total_s": 39.155,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 37254.3,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "role": "clean-after"
       }
     ],
     "request_hashes": {
@@ -496142,8 +496380,8 @@
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
@@ -496187,6 +496425,41 @@
         "passed": true
       }
     ],
+    "decision": {
+      "observer_ratios": [
+        {
+          "request": 0,
+          "scope": "first-use",
+          "prompt": [
+            0.9931260249312602,
+            1.003444667306183
+          ],
+          "client_TTFT": [
+            0.9921209888670597,
+            1.0033528571724237
+          ]
+        },
+        {
+          "request": 1,
+          "scope": "second-request",
+          "prompt": [
+            1.0098353088931051,
+            1.0100901104033626
+          ],
+          "client_TTFT": [
+            1.0094800651587577,
+            1.0077308594583068
+          ]
+        }
+      ],
+      "maximum_observer_ratio": 1.2,
+      "observer_cost_qualified": true,
+      "normal_route_attribution_qualified": true,
+      "clean_speedup_qualified": false,
+      "hardware_saturation_known": false,
+      "inference_adopted": false,
+      "limits": "Compare first use and warmed requests against the corresponding positions in both clean controls. The CPU scopes account for calling-thread intervals only. Native waits without an instrumented wrapper can be outside known waits. Physical resource saturation and critical-path latency are unmeasured."
+    },
     "source_inputs": {
       "files": 781,
       "sha256": "0d3e6dc48879c57e7cd9f2ac3143d077280bf346f9fe2eae4dc34ef83314e14d"
