@@ -224,7 +224,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   use ordinary SYCL copies. The standalone controller at `b89af0bff` checks
   all four input/output choices at 16385 and exactly 262144 tokens, including
   the engine's checked final-slot marker and zero output at capacity.
-  Build, device and model checks are pending. If they pass, `4d9b176e5` compares
+  The coherent engine build at `bea6f8199` produced 11 executables from 133
+  translation units. The host upload plan passed. The Level Zero traced
+  BF16 fixture at `b92d822d7` passed for 1, 63, 7905, 8191 and 8192 rows
+  on the B570. A two-piece window (8 + 3 rows) also passed for all four
+  input/output combinations, including the final callback. Validation was
+  quiet and the process exited normally without a fresh Xe fault.
+  Model state, physical capacity and clean speed remain open. After the
+  required model state checks, `4d9b176e5` compares
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
 
