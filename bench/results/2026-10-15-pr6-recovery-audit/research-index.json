@@ -38042,13 +38042,29 @@
   "niko-0216-arc-window-ownership-20261120": {
     "topic": "Audit Niko 0.2.16 Arc wait failures, expert ID snapshot and queue ownership against the active fork paths.",
     "classification": "decision support",
-    "schedulable_now": true,
-    "prerequisite": "Newly fetched 58ee32277 contains f59c0da97, bba1a0e92 and f0f39de26. The retained fork has separate prompt and decode lifetimes and prior Arc stalls. Identify which protections apply without merging an inference engine."
+    "schedulable_now": false,
+    "prerequisite": "Newly fetched 58ee32277 contains f59c0da97, bba1a0e92 and f0f39de26. The retained fork has separate prompt and decode lifetimes and prior Arc stalls. Identify which protections apply without merging an inference engine.",
+    "source_commit": "d86398cd26ca90a13b070b230367546127e1052c",
+    "upstream_commit": "58ee3227720629ff2e41d640165ebe89c880dfef",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_sha256": "ce7d623201181b037bdad07bd04aa26b0adb583dd37ad5a2d6037396e77bbb63",
+    "review_sha256": "e0d0cdce1a706cdd5b008f5511073c68a20e10bf7b271b4bed92496128c4d7e8",
+    "finding": "The measured fork borrows the caller stream, aliases its SYCL copy queue to it, drains it, and destroys only a distinct owned copy queue. Niko f59c0da97 has no new ownership fix for this path. Host-event errors withhold normal output; release or failed copy submission separately causes persistent refusal. No concurrent rewrite of the expert IDs in the synchronous callback has been demonstrated.",
+    "consumer": "Recheck queue destruction if the fork introduces a separate queue. Distinguish ordinary synchronization errors from explicit release in focused host tests. Audit device-side bounded waits against actual dispatch before proposing another change. No prior GPU fault cause follows."
   },
   "niko-0216-cpu-quant-experts-20261120": {
     "topic": "Trace Niko 0.2.16 own-quant CPU expert dispatch and compare the actual IQ3_S paths with the B570 fork.",
     "classification": "decision support",
-    "schedulable_now": true,
-    "prerequisite": "Newly fetched 58ee32277 contains 6da3a80e5 and a relocated engine/sycl build. The fork has CPU expert workers for decode. Identify the lowest useful isolated comparison, existing ISA support and provenance before proposing a port."
+    "schedulable_now": false,
+    "prerequisite": "Newly fetched 58ee32277 contains 6da3a80e5 and a relocated engine/sycl build. The fork has CPU expert workers for decode. Identify the lowest useful isolated comparison, existing ISA support and provenance before proposing a port.",
+    "source_commit": "5315fbc6884572c183adb1a7989e9413eeff29a2",
+    "upstream_commit": "58ee3227720629ff2e41d640165ebe89c880dfef",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_sha256": "8554c44810348bc2d39acd681380a1d03a65f7eed36ebb7646df8a7eb1a4512f",
+    "review_sha256": "3af92a45eb46fdaede5b0d99c89338f1bc9b53cc5210e8fd2aeb8d22e51e1314",
+    "finding": "The upstream-owned CPU quant provider and AVX2 IQ3_S gathered gate/up decoder are distinct changes. The local Ryzen 5 5600X has AVX2 and lacks AVX-VNNI; Niko’s automatic gather choice explicitly rejects non-Intel CPUs. At the qualified settings the automatic gathered variant cannot explain a default speed gain on this PC. Actual CPU IQ3_S miss counts remain unknown.",
+    "consumer": "Identify timed CPU cache-miss jobs by format, token count and phase. For a forced-gather comparison, gate/up and down are separate, and the generic provider fallback needs its own original license and dispatch check. Preserve decode-only selection where appropriate."
   }
 }

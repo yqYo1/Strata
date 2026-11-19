@@ -88,7 +88,14 @@
         "6da3a80e5: Strata-owned quant dispatch for the CPU expert pool in the Arc build. Evaluate the actual IQ3_S path for this PC and each inference phase independently.",
         "f59c0da97 / bba1a0e92 / f0f39de26: prompt-queue ownership on release, device/host window timeout handling, and stable expert dispatch IDs. Compare production entrypoints and preserve independent local safety corrections."
       ],
-      "exclusions": "DeepSeek and 35B-model execution excluded. No CUDA/HIP inference import or XeStrata implementation use."
+      "exclusions": "DeepSeek and 35B-model execution excluded. No CUDA/HIP inference import or XeStrata implementation use.",
+      "arc_component_decisions": {
+        "f59c0da97": "The measured SYCL prefill aliases the copy queue to the caller-owned stream and destroys only a distinct queue. Existing ownership protection covers the upstream change.",
+        "bba1a0e92": "Device-side bounded wait failure is distinct from an event synchronization failure. Check the actual called path before a port. Explicit release or failed copy submission refuses a later run; an ordinary event error alone does not establish persistent refusal.",
+        "f0f39de26": "The fork waits for IDs, runs its CPU callback synchronously, and submits the next segment after it returns. No overlapping writer of those IDs has been demonstrated.",
+        "a73361755": "AVX2 IQ3_S gathered decoder and provider switch 6da3a80e5 have distinct origins. In engine/src/kernels/cpu/expert_layout.cpp, cpu_gather_fast requires GenuineIntel and AVX-VNNI. /proc/cpuinfo on this Ryzen 5 5600X reports AVX2/FMA and no AVX-VNNI or AVX-512F. The measured environment omits STRATA_IQ256_GATHER. Auto does not select the gathered variant on this CPU.",
+        "6da3a80e5": "Separate actual quant/dot fallback and format-specific CPU job counts before any performance comparison. Upstream src/quant/UPSTREAM.md pins ggml 3cf03257f219afbe7334045ff7c6a06ac68c627d and attributes src/quant; it does not by itself resolve the provenance of every external table or row specialization. No inference code imported."
+      }
     },
     "prior_pending_component_review": {
       "commit": "b4978bd42e7e742dc0502acb351df56dee15f433",
