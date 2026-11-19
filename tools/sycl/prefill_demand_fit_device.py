@@ -16,14 +16,15 @@ import prefill_resident_input_build as bank
 
 require, sha, signature = bank.require, bank.sha, bank.signature
 owner_module, validation = bank.builder.ownership, bank.basis.validation
-ROOT = bank.B / 'prefill-demand-fit-device-v1'
-KEY = 'prefill_demand_fit_device_v1'
+ROOT = bank.B / 'prefill-demand-fit-device-v2'
+KEY = 'prefill_demand_fit_device_v2'
 RESULT = P / bank.RESULT.relative_to(MAIN)
 TARGET = 'sycl_expert_bank_test'
-SOURCE = '0efffdacf8ec40ebaab1eb90c13e1bae5f662244'
+SOURCE = 'ddeff7615019480c004433a931eb1522156affe2'
 BASE = 'b043dfd3a2dd2939118c41d44fde001d1bd16c9d'
 CHANGED = ('include/strata/prefill/expert_bank_upload.hpp', 'include/strata/prefill/fullfit_upload_plan.hpp',
-           'src/prefill/moe_window.inc', 'tests/prefill/fullfit_upload_plan_test.cpp', 'tests/sycl/expert_bank.cpp')
+           'src/prefill/layer_major.inc', 'src/prefill/moe_window.inc',
+           'tests/prefill/fullfit_upload_plan_test.cpp', 'tests/sycl/expert_bank.cpp')
 UNITS = {'tests/sycl/expert_bank.cpp', 'src/core/expert_cache.cpp', 'src/sycl/runtime.cpp',
          'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp'}
 BUILD_LIMIT = dict(wall=540, cpu=1200, rss_cap=6 << 30, text_cap=8 << 20, file_cap=192 << 20, total_cap=512 << 20)
@@ -156,16 +157,36 @@ def smoke(row, parent, original, child, outcome):
             and all(sha(ROOT/'build'/p) == h for p,h in row['build']['produced'].items()), 'fixture source or objects changed')
     for name, digest in row['build']['links'].items():
         require(sha(name) == digest, 'linked dependency changed: ' + name)
-    d = ROOT / 'smoke'
+    selectable = {'jit': (0, 0), 'eager': (1, 0), 'demand-fit-only': (0, 1), 'eager-demand-fit': (1, 1)}
+    for policy, (full, partial) in selectable.items():
+        env = dict(parent['recipe']['environment'], **bank.device.FIXTURE_ENV)
+        env.update(STRATA_SYCL_PREFILL_FULLFIT_UPLOAD=policy, TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+        _, out, _ = launch(child, 'policy-' + policy, [str(ROOT / 'build' / TARGET), '--prefill-upload-policy'],
+                           env, P, SMOKE_LIMIT)
+        require(out.read_text().splitlines() == [f'prefill_upload_policy full={full} partial={partial}'],
+                'incorrect immutable selection for ' + policy)
+    outcome['policy_selections'] = selectable
+    outcome['device'] = {}
+    for policy in ('demand-fit-only', 'eager-demand-fit'):
+        outcome['device'][policy] = device_cases(parent, original, child, policy)
+    old = json.loads(git('show', '9b39df072:' + str(RESULT.relative_to(P))))['prefill_demand_fit_device_v1']
+    require(old['passed'] and old['ownership_closed'] and outcome['device']['demand-fit-only']['cases']
+            == outcome['device']['eager-demand-fit']['cases'] == old['smoke_outcome']['cases'],
+            'partial-bank fixture differs across policies or from the completed original')
+    outcome['host_probe_accepted'] = True
+
+
+def device_cases(parent, original, child, policy):
+    d = ROOT / ('smoke-' + policy)
     for k in ('tmp','cache'):
         (d / k).mkdir(mode=0o700, parents=True)
     probe = original['native_validation_probe']
     env = dict(parent['recipe']['environment'], **bank.device.FIXTURE_ENV)
-    env.update(STRATA_SYCL_PREFILL_FULLFIT_UPLOAD='eager-demand-fit', TMPDIR=str(d/'tmp'),
+    env.update(STRATA_SYCL_PREFILL_FULLFIT_UPLOAD=policy, TMPDIR=str(d/'tmp'),
                XDG_CACHE_HOME=str(d/'cache'), LD_DEBUG='libs', LD_PRELOAD=probe['library']['path'],
                STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'], UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                UR_LOG_TRACING='level:info;flush:info;output:stderr', UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(d/'validation.log'))
-    item, out, err = launch(child, 'gpu-smoke', [str(ROOT/'build'/TARGET), '--demand-fit-smoke'], env, P, SMOKE_LIMIT)
+    item, out, err = launch(child, 'gpu-' + policy, [str(ROOT/'build'/TARGET), '--demand-fit-smoke'], env, P, SMOKE_LIMIT)
     log = err.read_text()
     lines = out.read_text().splitlines()
     cases = [dict(s.split('=',1) for s in line.split()[1:]) for line in lines if line.startswith('expert_bank_private_case ')]
@@ -178,7 +199,7 @@ def smoke(row, parent, original, child, outcome):
     bank.device.diagnostics.diagnostics(log, item['pid'])
     providers = bank.device.loaded_providers(log, dict(environment=env, native_validation_probe=probe,
                                                        runtime_manifest=parent['foundation']['runtime_manifest']))
-    outcome.update(cases=cases, validation=activation, providers=providers, environment_sha256=signature(env), host_probe_accepted=True)
+    return dict(cases=cases, validation=activation, providers=providers, environment_sha256=signature(env))
 
 
 def main(action):
@@ -189,7 +210,10 @@ def main(action):
         require(not ROOT.exists() and KEY not in read(RESULT), 'inspect the existing build attempt')
         ROOT.mkdir(mode=0o700)
         row = dict(source=SOURCE, base=BASE, parent=reference, controller=program,
-                   plan='Five fresh fixture and runtime units. Ordinary in-order SYCL copies. Then checked B570 exact fit, overflow, guards, cancellation. No model or speed qualification.')
+                   plan='Five fresh fixture and runtime units. Four independent immutable startup policies. '
+                        'B570 exact fit, overflow, guards and cancellation with partial-only and combined issue. '
+                        'Compare with the committed V1 combined-mode outcome. Retire closed isolated fixture '
+                        'artifacts after their original source recovery. No engine or speed qualification.')
     else:
         row = read(ROOT/'record.json')
         require(row == json.loads(git('show','HEAD:'+str(RESULT.relative_to(P))))[KEY] and row['passed']
