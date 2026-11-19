@@ -505401,7 +505401,7 @@
         "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
       }
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "bf14b4a2e2420a3b28ac8bfc2ce107ccb58d5922",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/strata",
@@ -505923,6 +505923,189 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "near-direct": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "GPU_executed": true,
+        "requests": [
+          {
+            "prompt": 253919,
+            "read": 253919,
+            "reused": 0,
+            "output_hash": "6d4bbfb66910386a154ce3ec0b3d4ce7909406eab7e56213f980fae1600e72ca",
+            "finish": "length",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768,
+              40960,
+              49152,
+              57344,
+              65536,
+              73728,
+              81920,
+              90112,
+              98304,
+              106496,
+              114688,
+              122880,
+              131072,
+              139264,
+              147456,
+              155648,
+              163840,
+              172032,
+              180224,
+              188416,
+              196608,
+              204800,
+              212992,
+              221184,
+              229376,
+              237568,
+              245760,
+              253918
+            ],
+            "active_state": {
+              "L": "253919",
+              "gdn": "4ebce0a695d21dc7",
+              "ple": "57f5e744994111a5",
+              "tail": "0e3da2cafff98ac9",
+              "pooled": "a972ca9991cc91fc",
+              "kv": "991ae0d94cf4f1ce",
+              "mtp": "4766095a4f99047f",
+              "ple_prev": "4061,4062"
+            },
+            "unused_state": {
+              "stale": "00519e6a2876d583",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "8b1ca215488acc67"
+            },
+            "attention_store": {
+              "pieces": 672,
+              "direct": 672,
+              "copy_bytes": 0,
+              "gpu_rows": 114688,
+              "host_rows": 139230,
+              "window_mode": 10,
+              "maximum_rows": 81920
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "finish": "length",
+            "publications": [
+              32
+            ],
+            "active_state": {
+              "L": "33",
+              "gdn": "d9e9a3ad75f9a003",
+              "ple": "9f417bc11288f313",
+              "tail": "dca122c73a9b6f43",
+              "pooled": "3cfd6a9da9e65a29",
+              "kv": "06640dd3c43a1316",
+              "mtp": "9e75b3492fcf6fd2",
+              "ple_prev": "159,160"
+            },
+            "unused_state": {
+              "stale": "5935ffeafc0fb98f",
+              "dead": "bff4a557b4a10f3d",
+              "pooled_full": "fc2a0818461b00b3"
+            },
+            "attention_store": {
+              "pieces": 0,
+              "direct": 0,
+              "copy_bytes": 0
+            },
+            "decode_cache_lent": 0,
+            "prefill_route": "cache-window"
+          },
+          {
+            "prompt": 262128,
+            "read": 8209,
+            "reused": 253919,
+            "output_hash": "f66a8a966619a7aae703ba69f26c7d0b93f5a86b91d51608f9e8b51bb4acc4c5",
+            "finish": "stop",
+            "publications": [
+              262111,
+              262127
+            ],
+            "active_state": {
+              "L": "262128",
+              "gdn": "8f5e6bf7ea01a7d1",
+              "ple": "823f082ceb1feff0",
+              "tail": "1071e32650d6207b",
+              "pooled": "a4702ab17aa7aab9",
+              "kv": "f92375c33bcced3d",
+              "mtp": "11a51245939c1f83",
+              "ple_prev": "271,256"
+            },
+            "unused_state": {
+              "stale": "14650fb0739d0383",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "b11bc66cbd0d515a"
+            },
+            "attention_store": {
+              "pieces": 96,
+              "direct": 96,
+              "copy_bytes": 0,
+              "gpu_rows": 8208,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 8208
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124
+          }
+        ],
+        "validation": {
+          "pid": 556299,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "restored_tokens": 253919,
+        "restore_payload": {
+          "draft": "a89bc3a7e22f0fff",
+          "cells": "253920",
+          "mode": "2",
+          "source": "ram",
+          "resident": "32848",
+          "main": "70393e9517c01c2e",
+          "main_layers": "12",
+          "main_bytes": "3607695360",
+          "draft_bytes": "268139520",
+          "running": "deda5f256f4cdfd4",
+          "running_bytes": "118069304",
+          "upto": "253919",
+          "result": "PASS"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
     "vocab_size": 248320,
@@ -506270,8 +506453,8 @@
     ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "speed_eligible": false,
     "plan": {
       "unit": "Same native server ELF, cache sizes, request sequence and observers; switch only attention bank store.",
