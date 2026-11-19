@@ -69,12 +69,39 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The V4 clock-floor failure is retained, including the original 4.06–9.97 ms
   queued batches. V5 increases queued repetitions from 48 to 384 while keeping
   the 10 ms floor. V1–V3 are separate pre-GPU dependency/launch refusals.
-  Next measure the compatibility queue wait by actual callsite in the isolated
-  long-prefill path. Shortlist the wrapper after successful run_impl, which
-  can drain the same in-order queue twice. Preserve native prefix-list
-  retirement, score-status readiness, callback-borrow retirement and failure
-  cleanup. Compare prefill only after measuring an eligible wait and keep
-  decode separate. The 982.1 tok/s 64K stage-all ELF remains the reference.
+- A same-ELF queue-audit experiment at `f37718d09` refused coverage.
+  Hardware and software perf collection were unavailable to this account.
+  The CPU-only loader canary passed both caller addresses and a propagated C++
+  exception. The actual native ELF verifies wait return PC 0x72762b and
+  caller slot +272 from the direct PLT call and its unwind row, and stderr was
+  the owned regular file. [GNU libc audit callbacks](https://snapshots.sourceware.org/glibc/trunk/latest/manual/html_node/Audit-API-Callbacks.html).
+  The unloaded 32K control reached 881.2 tok/s warm with 1,069 compatibility
+  waits and 18.71 CPU s inside them. The first audited request collected
+  1,034 of 1,069 waits, below the predeclared 98% count floor. All 1,034 resolve
+  to direct callers and carry 18.555 of 18.586 scoped wall seconds. The gate
+  stopped the subsequent requests. Physical termination of all four recorded
+  owners and absence of a fresh GPU fault were verified at `ac2b46bbc`.
+  Keep the original failure and first-use-only diagnostic.
+- The dominant observed caller at 0x4b400a is the attention store/drain in
+  `Prefill::run_impl`. Its 192 waits total 17.182 wall seconds and 17.135 CPU
+  seconds in that diagnostic. The return and error edge point to
+  `prefill MoE window: attention store/drain`. This drain also covers already
+  queued attention and input retirement. The 17.182 seconds are service at
+  the synchronization boundary. The warm profile and the amount of removable
+  wall time remain unmeasured.
+  Next isolate the BF16 attention residual store. Today the in-place write
+  updates the old chunk residual in scratch and a separate D2D copy saves
+  it into the window bank. Compare it with an out-of-place attention write
+  that reads the same original residual from scratch and writes the same
+  rounded BF16 value directly to the validated bank span. The current
+  in-place write reads its destination, so simply retargeting that pointer
+  could read the wrong value. Preserve the existing stream drain, host
+  token/step/PLE retirement, prefix-router order, callbacks, cancellation,
+  partial-tail handling and decode. For the observed four chunks × 48 layers,
+  the separate copy requests about 30 GiB of device-to-device payload.
+  Confirm exact BF16 values including layer-zero initialization and tails,
+  then measure repeated 64K prefill with matched route and decode.
+  The 982.1 tok/s 64K stage-all ELF remains the reference.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective

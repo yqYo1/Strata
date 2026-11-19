@@ -37315,5 +37315,105 @@
         }
       ]
     }
+  },
+  "compat_wait_rtld_audit_contract_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "315faf474897595ec350a07227500cdf5e597213",
+    "reviewed_report_sha256": "aeeb952ac6a852ae5754c33d552489a1c04daffed5885792345bef3cdebedddf",
+    "source_manifest_sha256": "fac501c405b19b04e46545529f2c6dd68a9199a60a6d614ec3b37381832b5090",
+    "reviewer_sha256": "f89480c7480aa18df0218280342e87526f0d3a34ecc8769d8f56aa27147fd889",
+    "run": "run_7693426f50e9",
+    "task": "task_905ea95d3c9d",
+    "dispatch": "ctx_968e0370b848",
+    "terminal": "term_a419fc93-ace1-4f06-b463-0deb83a75b95",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 12,
+    "worker_side_orca_status": {
+      "call": "call_b21f96fdf60841adb54d44012f79a881",
+      "sha256": "994e5b506983464fb8d9d767083564acc560b50560ca2a73195d99bbed8a5338"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "The exact retained ELF has the compatibility wait PLT return PC 0x72762b and stack slot +272. CPU-only controls verify two caller PCs and forwarding a genuine C++ exception.",
+      "Restrict the loader observer to the known non-PIE executable and resolved direct callers. The audit may block or receive SIGPIPE on a broken stderr pipe. The actual audited native descriptor resolved to a regular owned file.",
+      "The full native coverage gate failed, so use its named first-use callsite evidence diagnostically. A future production observer needs a fresh caller-scope/overhead comparison."
+    ],
+    "consumer": "Retrieve only for a concrete unchanged-ELF source boundary and a proved regular stderr sink. Keep privilege/runtime policy and exception forwarding fixed.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/compat_wait_rtld_audit_contract_20261119",
+          "files": 2,
+          "bytes": 16456,
+          "tree_sha256": "22a493acda6e0f96dec6ee3b6bbb5465c56af657a3c63d264c29312361cc91e8"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/compat_wait_rtld_audit_contract_20261119-control",
+          "files": 9,
+          "bytes": 19038,
+          "tree_sha256": "454d5024cd3e6b2b516d17943b57ab0741632ede9fcd68c183bcf2bb4621f88b"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/compat_wait_rtld_audit_contract_20261119",
+          "files": 9,
+          "bytes": 3375024,
+          "tree_sha256": "5fef6cdf984c47205339d86195ee37f68479148f2890be23f9b27071439a8e6b"
+        }
+      ]
+    }
+  },
+  "accelerator_rolling_scratch_methods_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "315faf474897595ec350a07227500cdf5e597213",
+    "reviewed_report_sha256": "5980fa9c253ef4a6490170ea1c9b081db20902ae5671aa151fe1b9cc1685a700",
+    "source_manifest_sha256": "5411c428854d29e3cf913ae02637399734ed387945c82db854247376301ff53f",
+    "reviewer_sha256": "31534ed56746e17b08ad7eef913b8ca5ae5990736dd00c07ed0d62803a69955a",
+    "run": "run_7693426f50e9",
+    "task": "task_f6a21e3ce26e",
+    "dispatch": "ctx_007f073ae228",
+    "terminal": "term_65752813-bc34-463b-9220-71fd8e0a3b3a",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 10,
+    "worker_side_orca_status": {
+      "call": "call_b1392496b0284b11abe168af00b4201b",
+      "sha256": "98343c7f29c354bd6ef9b02ad0aee73458f66cb8f134626f052dac244e46cea9"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Compare latest-reader release, rolling slot reuse and double buffering using uncovered transfer delay and admissible headroom.",
+      "EMOGI and DFOGraph illustrate out-of-core accelerator staging. Local GPU memory bandwidth and peer or host link bandwidth are separate. Use exact primary SYCL API clauses for runtime dependencies.",
+      "Retain immutable source and destination owners until the relevant checked last reader. Define performance terms in critical-path time units before adding different stages."
+    ],
+    "consumer": "Retrieve when a measured critical-path H2D tail is constrained by scratch-owner lifetime and room exists for a second usable arena.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/accelerator_rolling_scratch_methods_20261119",
+          "files": 2,
+          "bytes": 15810,
+          "tree_sha256": "a954ab846ca2c7479a378581553b3879ae405d0b8620bafecf61f5812c738532"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/accelerator_rolling_scratch_methods_20261119-control",
+          "files": 9,
+          "bytes": 18489,
+          "tree_sha256": "dd61f3572ca7d9a3b84677f13def28a52e4d6fd844c7ef0e580b1c44e6167a34"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/accelerator_rolling_scratch_methods_20261119",
+          "files": 7,
+          "bytes": 3387413,
+          "tree_sha256": "e5f545c676f698c05783cae70ab1fb599525f4835f6dc4fa009cf67526ebc8b3"
+        }
+      ]
+    }
   }
 }
