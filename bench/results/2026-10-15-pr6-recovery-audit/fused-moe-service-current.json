@@ -507523,7 +507523,7 @@
     "reason": "Three closed processes with six exact ragged requests. Clean 64K admission reads the committed model result. Removed private traces, journals and generated JIT caches; retained original native build, fixtures and model assets."
   },
   "prefill_ordinary_bank_comparison_v1": {
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "7d1b9b1d42a183604521138cb5fe120dda0041f4",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/strata",
@@ -507967,7 +507967,7 @@
     ],
     "processes": [],
     "request_hashes": {},
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -508018,6 +508018,16 @@
       65537,
       65537,
       65537
+    ],
+    "host_results": [
+      {
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "role": "server",
+        "passed": true
+      }
     ],
     "source_inputs": {
       "files": 789,
