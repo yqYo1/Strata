@@ -499531,7 +499531,7 @@
     }
   },
   "prefill_attention_bank_component_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "d40ba6312fc64c9eb7bffa90889a9cea82488f54",
     "source_sha256": "943555f6fcc8a6b2dbe181563be217c90dd0e517fe8c55aea30b354a69ba8646",
     "admitted": {
@@ -502126,6 +502126,46 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 6,
+        "arm": "direct",
+        "host_probe_accepted": true,
+        "timer_pair_ms": 2e-05,
+        "batches_ms": [
+          38.215791,
+          35.654076,
+          37.166344,
+          36.618314,
+          35.72442
+        ],
+        "median_ms": 36.618314,
+        "requested_D2D_bytes_per_batch": 0,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 200841,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "plan": {
@@ -502135,8 +502175,8 @@
       "gate": "Normal CPU/GPU exits with no fresh faults. Each batch at least 10 ms and clock overhead at most 2%. Advance only if all 3 independent paired time medians improve. This checks the complete store pair with drained input, so qualifying the actual model route needs separate clean model evidence.",
       "retention": "Keep existing 64K stage-all and phase references. This is a compact fixture, not a fourth full engine. Retire on closing its consumer."
     },
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "binary": {
@@ -502172,6 +502212,28 @@
       "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
       "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
     },
-    "commands_observed": 4
+    "commands_observed": 4,
+    "decision": {
+      "pairs": [
+        {
+          "copy_ms": 52.197127,
+          "direct_ms": 36.224685,
+          "ratio": 0.6939976792209273
+        },
+        {
+          "copy_ms": 52.058648,
+          "direct_ms": 38.886712,
+          "ratio": 0.7469789073277509
+        },
+        {
+          "copy_ms": 52.19567,
+          "direct_ms": 36.618314,
+          "ratio": 0.7015584626081052
+        }
+      ],
+      "geomean_ratio": 0.7138003252533143,
+      "model_eligible": true,
+      "model_tested": false
+    }
   }
 }
