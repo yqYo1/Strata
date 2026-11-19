@@ -476789,5 +476789,164 @@
       },
       "reason": "The later scheduling comparison uses a new same-build control. The original ordinal result holds the useful samples and ownership checks."
     }
+  },
+  "prefill_prefix_expert_schedule_native_v1": {
+    "stage": "prepared",
+    "source_commit": "9952d3e6ebf2d0df99647c13e402ced3f209b402",
+    "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "archive": {
+      "prefill_window_native_v2": "40155ade5e8787b6c67b1150a2d2f71d89ce113638da8153fe36a197e0cb7c0a",
+      "prefill_first_demand_native_v1": "032c44658909e088d9110109985e608160bc22234e41960df0cfeae53affe241",
+      "prefill_prefix_router_native_v1": "d5e7850a9b380c9ff887cd9c83993bf4e9812d9bff6bf468c18b6644ab90c93b",
+      "prefill_prefix_expert_native_v1": "4ae6a3bce52108399666f0fb6aece29e753e0678c6e1d1e172128232c87d176f",
+      "prefill_prefix_expert_host_usm_native_v1": "aab38922f6b11c1220f60389f4279fa31824612408b346ff29939d71ed8d06a4",
+      "prefill_prefix_expert_host_usm_timing_v1": "0ecec4c0f07eba010576db5d5fee1a9c8e32d47dce40740bd20a7a33fa6bd4a6",
+      "prefill_prefix_expert_transport_native_v1": "b3eab2593116036124735685bce599848996202d69a9d1bfa0aeb06fdbddb8c5",
+      "prefill_prefix_expert_transport_native_v2": "5b4f688d84476401d53f9e9edadc83f357da69039ee104aed23d1467fe8a9499",
+      "prefill_prefix_expert_transport_ordinal_v1": "0f67b2274bcd787663ca28f6a7812a9e7a1bd47d3137a9dda3a5b734ca971896",
+      "fullfit_attention_copy_ordinal_v1": "d6670670d6c0403c9bd87dd84d3bf386d575483f63680589b9b61d3df8cdb2b3"
+    },
+    "overlays": {
+      "cmake/sycl_vllm_xe2_native16.cmake": "c40f26301cb26fde042d57e6f38ccea5f0d4c52e2d8c0622df5ffc95bd95eefe",
+      "include/strata/prefill/expert_bank_upload.hpp": "a29084a24be2767d34dddae16437b23ad0cbc16ef115772d9370224132becb7a",
+      "include/strata/prefill/fullfit_upload_plan.hpp": "dd89bbcec5be765f5f7faca9b47117230b7557bce3d5cf0cf35d041284e5595d",
+      "include/strata/sycl/native_copy_list.hpp": "229a0f03e08ea3ffc9fb1f4ab5a6b3ef29f5e24f78f92992bbcc57928222a27a",
+      "src/prefill/prefill.cpp": "77f5478711b860917403d8b19426fd4b11d828590bff448966fc86e2ec2498bc",
+      "src/prefill/layer_major.inc": "db5f1a4d1e496d266ac8d60f44d2fb72066498799882ae3ce74b9d7b6a07d45c",
+      "src/prefill/moe_window.inc": "22b810603fac24308d6e4f14ec8b38dcb0800db7ba4f7b7dc26883bf9032f69d",
+      "tests/sycl/expert_bank.cpp": "4a1b910d70e022d656313c3da9011fbf8f0abaf84a6594e30afd22ccf8c9b230"
+    },
+    "recipe": {
+      "configure": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-schedule-native-v1/source",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-schedule-native-v1/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+        "-DSTRATA_CPU_ARCH:STRING=znver3",
+        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+        "-DSTRATA_PORTABLE:BOOL=OFF",
+        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+        "-DSTRATA_SYCL_TESTS:BOOL=ON",
+        "-DSTRATA_WERROR:BOOL=ON",
+        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+        "-DSTRATA_SYCL_DEVICE_ARCH=",
+        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+        "-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON",
+        "-DSTRATA_SYCL_PREFILL_NATIVE_COPY=ON"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-schedule-native-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-schedule-native-v1/cache",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_IQ3_PAIR": "1",
+        "STRATA_IQ3_PAIR_AUDIT": "1",
+        "STRATA_CPU_SERVICE": "0",
+        "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+        "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+        "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+        "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+        "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+        "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+        "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+      },
+      "targets": [
+        "strata",
+        "prefill_moe_routes_test",
+        "prefill_moe_workspace_test",
+        "sycl_expert_bank_test",
+        "sycl_moe_down_scatter_bench",
+        "sycl_native16_paired_gemm_bench",
+        "strata_full_context_diagnostic",
+        "full_context_diagnostic_host_test",
+        "sycl_moe_upload_census_host_test",
+        "prefill_fullfit_upload_plan_test"
+      ]
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "retained_decode_reference": {
+      "source": "9849e35803f011aaafb2753c1e0f31411e40308e",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+        "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+        "bytes": 26476232,
+        "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+      },
+      "record_sha256": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c",
+      "project_inputs": "776f972a3694682ace45aa4f262ec0cfd6e975004c78a55a0291d373919023bb",
+      "recipe_sha256": "1c14fb531398338c49a4aa3ee0612e1fdad81f46ee9ce2a50ac01805b00b5fdd",
+      "scope": "Artifact continuity and original Git/recipe preservation only;new prefill build inherits no decode/model qualification."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "plan": {
+      "unit": "Fixed copy-only list, private bank and request-owned host USM. Isolate earlier issue, first-reader completion and their interaction.",
+      "host": [
+        "prefill_fullfit_upload_plan_test"
+      ],
+      "retention": "Third build only for this comparison after preserving both independent phase references. Review at closure or first failed gate."
+    },
+    "controller_sources": {
+      "files": 380,
+      "sha256": "6e31f70c3f80bfb7fba50f6dff82a6f54af35cc016935fcf3519afc7f11ccabc"
+    },
+    "source_files": {
+      "files": 1168,
+      "sha256": "ed732ab3fb3ed1d4c168533fdd8796279e8d12a01ccf9ea9fdc0619c310f973e"
+    },
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
   }
 }
