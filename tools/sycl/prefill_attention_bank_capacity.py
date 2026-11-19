@@ -14,8 +14,9 @@ import ur_validation as validation
 
 P, B, RESULT, basis = build.P, build.B, build.RESULT, build.basis
 require, sha, signature = build.require, build.sha, build.signature
-ROOT = B / 'prefill-attention-bank-capacity-v1'
-KEY = 'prefill_attention_bank_capacity_v1'
+ROOT = B / 'prefill-attention-bank-capacity-v2'
+KEY = 'prefill_attention_bank_capacity_v2'
+PREVIOUS = 'prefill_attention_bank_capacity_v1'
 THIS = 'tools/sycl/prefill_attention_bank_capacity.py'
 SELECTOR = 'STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE'
 BUILD_EVIDENCE = 'a3ad77136'
@@ -207,6 +208,9 @@ def save(row):
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'fresh committed campaign only')
     check_parser()
+    previous = validation.committed(RESULT, (PREVIOUS,))
+    require(previous['stage'] == 'failed' and not previous['GPU_executed']
+            and previous['prepare_failure']['owners_started'] == 0, 'retain the original pre-launch refusal')
     native, old = retained_build()
     prior = validation.committed(RESULT, ('coherent_context_model_v2',))
     require(prior['outcomes']['full']['passed'] and prior['outcomes']['full']['final_slot_consumed']
@@ -229,6 +233,7 @@ def prepare():
                scope='Standalone capacities only. Server RESTORE, sustained decode and adoption remain separate.'),
                previous_standalone_evidence_sha256=signature(prior))
     ROOT.mkdir(mode=0o700)
+    (ROOT / 'host').mkdir(mode=0o700)
     for name, n in (('short', 16385), ('full', CAPACITY)):
         (ROOT / ('tokens-' + name + '.txt')).write_bytes(token_bytes(n))
     for name in ORDER:
