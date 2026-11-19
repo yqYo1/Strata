@@ -38169,5 +38169,15 @@
     "worker_completion": "Orca dispatch ctx_f78883154729 completed on run_d0b75f0ad501. Exact worker observed exited, terminal disconnected. The worker verified all 17 filesystem inputs and had no GPU access. Only filesystem preflight was proven from inside the worker.",
     "consumer": "Use for a bounded cold-TTFT comparison of empty cache, verified persistent-cache hit in a fresh process, and same-process RESTORE. Time capture segments and commit separately. Preserve pointer lifetimes and graph-owned state.",
     "retention": "Retain report and source view through the cold-capture discriminator decision, then retire duplicates. No sustained-generation or physical-context qualification."
+  },
+  "qsa-prefill-four-cell-k-layout-20261120": {
+    "topic": "Compare a four-cell by four-dimension prepared-K layout with changing only the K loader's lane mapping in the current ordered-exp QSA prefill kernel.",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "7c76b7855 binds 14.376–14.383 seconds of QSA service to 100638720 tiles at 64K. Ordered-exp takes 224.05–224.21 ms spread and 139.68–139.78 ms clustered. The older 6491-query selected-cell capture reports page4, 45.3% median adjacent overlap; raw capture retired. Earlier reuse studies do not establish physical address footprints or repacking cost for this kernel.",
+    "source_commit": "6c535c0c46549070485746eadc451f063e2e3782",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_budget_bytes": 12288
   }
 }
