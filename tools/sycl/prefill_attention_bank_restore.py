@@ -18,9 +18,9 @@ import ur_validation as validation
 build, basis = capacity.build, capacity.basis
 P, B, RESULT = capacity.P, capacity.B, capacity.RESULT
 require, sha, signature = capacity.require, capacity.sha, capacity.signature
-ROOT = B / 'prefill-attention-bank-restore-v2'
-KEY = 'prefill_attention_bank_restore_v2'
-PREVIOUS = 'prefill_attention_bank_restore_v1'
+ROOT = B / 'prefill-attention-bank-restore-v3'
+KEY = 'prefill_attention_bank_restore_v3'
+PREVIOUS = 'prefill_attention_bank_restore_v2'
 THIS = 'tools/sycl/prefill_attention_bank_restore.py'
 CAPACITY_EVIDENCE = 'e5408e1c27a6fa33ce314cc3b09e265b7d00cf52'
 ORDER = ('host', 'short-copy', 'short-direct', 'near-copy', 'near-direct')
@@ -96,7 +96,7 @@ def argv(row):
     args = list(row['configuration']['args'])
     require('--serve' not in args and '--layer-split' not in args, 'one native server selector required')
     for name, value in (('--max-context', '262144'), ('--expert-cache', '1256'),
-                        ('--kv-resident', '20480'), ('--prefill', '8192'), ('--spec', '4')):
+                        ('--kv-resident', '20480'), ('--prefill', '8192'), ('--spec', '4'), ('--short-read', '128')):
         require(args.count(name) == 1 and args[args.index(name)+1] == value, 'fixed decode/shape option differs')
     for name, value in (('--prompt-cache', '6'), ('--prompt-cache-every', '0'),
                         ('--conversation-cache-mib', '8192'), ('--conversation-cache-slots', '2'),
@@ -207,6 +207,17 @@ def inspect(log, row, case, requests, pid):
         request['unused_state'] = {k:state[k] for k in STALE_STATE}
         request['attention_store'] = require_store(frame, case, request)
         cells = [int(t) for t in re.findall(r'^strata serve: DRAFT_PREFILL path=(?:batched|token) mode=[012] cells=(\d+)$', frame, re.M)]
+        if request['prompt'] == 33 and request['read'] == 33:
+            observed = int(capacity.one(frame, r'^strata prefill policy: requested=throughput route=cache-window '
+                       r'tokens=(\d+) chunk=8192$', 'unrelated conversation short route'))
+            require(observed == 32 and request['publications'] == [32] and not cells
+                    and 'strata loan audit: phase=lend' not in frame
+                    and 'strata loan audit: phase=payload' not in frame,
+                    'unrelated switch must read through the fixed decode-cache path')
+            request['decode_cache_lent'] = 0
+            request['prefill_route'] = 'cache-window'
+            continue
+        request['prefill_route'] = 'layer-major'
         position = request['reused']
         ends = []
         for count in cells:
@@ -224,7 +235,7 @@ def inspect(log, row, case, requests, pid):
         require(0 < lent <= 1256, 'no checked decode cache restoration')
         request['decode_cache_lent'] = lent
     old = requests[0]['prompt']
-    restored, kind = capacity.one(log, r'^strata serve: conversation cache: restored (\d+) \((live|checkpoint)\)', 'actual RESTORE')
+    restored, kind = capacity.one(log, r'^strata serve: conversation cache: restored (\d+) tokens \((live|checkpoint)\)', 'actual RESTORE')
     require(int(restored) == old and kind == 'live' and 'conversation cache: skip parking' not in log,
             'the exact parked live conversation must be restored')
     line = capacity.one(log, r'^strata serve: SNAPSHOT_VERIFY (.*)$', 'restored payload')
@@ -242,7 +253,7 @@ def compare(result, control):
             and all(result['restore_payload'][k] == control['restore_payload'][k] for k in shape),
             'copy/direct parked snapshot extent differs')
     for actual, prior in zip(result['requests'], control['requests'], strict=True):
-        for key in ('prompt','read','reused','output_hash','finish','publications','active_state','decode_cache_lent'):
+        for key in ('prompt','read','reused','output_hash','finish','publications','active_state','decode_cache_lent','prefill_route'):
             require(actual[key] == prior[key], 'copy/direct committed server evidence differs: '+key)
         fixed = lambda value: {k:v for k,v in value.items() if k not in ('direct','copy_bytes')}
         require(fixed(actual['attention_store']) == fixed(prior['attention_store']), 'copy/direct store geometry differs')
@@ -262,9 +273,11 @@ def save(row):
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'fresh restore plan required')
     previous = validation.committed(RESULT, (PREVIOUS,))
-    require(previous['stage'] == 'failed' and set(previous['outcomes']) == {'host'}
-            and previous['host_physical_owner_reconciliation']['no_native_gpu_launched']
-            and previous['host_physical_owner_reconciliation']['executor_gone'], 'retain the closed original protocol refusal')
+    failed = previous['outcomes']['short-copy']
+    require(previous['stage'] == 'failed' and set(previous['outcomes']) == {'host','short-copy'}
+            and failed['native_exit_code'] == 0 and failed['ownership_closed'] and not failed['fresh_faults']
+            and failed['error'] == "RuntimeError('native draft and publication boundaries differ')",
+            'preserve V2 receipt for the separately corrected short-route check')
     native, old = reference()
     revision = validation.git('rev-parse', 'HEAD').decode().strip()
     vocab = json.loads((Path(old['configuration']['tokenizer']) / 'vocab.json').read_text())
@@ -279,7 +292,8 @@ def prepare():
                          order='Host peer then independent copy/direct at 32769 and 253919 parked tokens. Each returns after '
                                'an unrelated 33-token request with 8209 fresh input tokens, including an actual 8208-row suffix.',
                          gates='Actual GEN reuse, active STATE_HASH, greedy fixture token, publication sequence, '
-                               'snapshot payload, checked expert decode restore, attention store counts and normal ownership.',
+                               'snapshot payload and normal ownership. Check attention store and expert cache restoration for A/A+suffix. '
+                               'For the independent B request, verify the actual 32-row decode-cache prefill and absence of loan work.',
                          limits='Native pipe protocol and instrumented correctness, with conversation caching enabled in both arms. '
                                 'Public HTTP behavior, task quality, clean PP/TG and production-default selection are separate.',
                          stop='Stop on first mismatch, ownership, validation, fault or finite budget failure.'))
