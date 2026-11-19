@@ -36720,5 +36720,51 @@
         }
       ]
     }
+  },
+  "prefill_schedule_lease_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "ef3c313361825cdb5793d440a35c1f6a7feb4ca8",
+    "reviewed_report_sha256": "27a0f2e7c24be79e25f6210032afca50351c9e2c06a89a7f9ec400289ec933aa",
+    "source_manifest_sha256": "28284ee5b68dc179bee152b9e2d5d713a76a51072c5d910afb80e9e5d28ae54b",
+    "reviewer_sha256": "b0920ef08f9af56c87f053952f5125018dc98088f9eec9bf07076ae494be8432",
+    "run": "run_7693426f50e9",
+    "task": "task_46c9f148cc65",
+    "dispatch": "ctx_87d143716cc9",
+    "terminal": "term_6203b412-51fb-47ef-be16-ec36849d0a35",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 23,
+    "worker_side_orca_status": {
+      "call": "call_e675106620d44614886ce157e121b2bb",
+      "sha256": "73a440255257174d73e6c44d67b747808306ec97a0d083baa036977df1b76134"
+    },
+    "ownership_closed": true,
+    "findings": "Current candidate keeps the native list, staging, bank and pending plan in the request lease through checked publication, cancellation or fail-stop. No concrete source alias gap was demonstrated. Existing smoke covers cancellation before deferred publication. Cancellation after publication but before the first lookup and an ambiguous partial-append return remain separate controls for wider qualification.",
+    "consumer": "Use before wider adoption or as a source reference if a native append/retirement error is observed.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-schedule-lease-20261119-control",
+          "files": 9,
+          "bytes": 22268,
+          "tree_sha256": "0bfc82725874ee18b11d0bdbb4a0fab98ea38489cd2e51193ffcb5da2f1bd143"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-schedule-lease-20261119",
+          "files": 2,
+          "bytes": 22045,
+          "tree_sha256": "7d270046350ea465d691a5a66fa948a3280105e9f4c5d45bbc5852456a3f5264"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-schedule-lease-20261119",
+          "files": 20,
+          "bytes": 3877161,
+          "tree_sha256": "52d9e19eb4970ecb69f92e11cd055732aa86e78ccd3774920e6a9331ec2cc011"
+        }
+      ]
+    }
   }
 }
