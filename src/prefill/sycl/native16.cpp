@@ -139,6 +139,19 @@ void write_prefill_attention_bank(uint16_t* bank, const uint16_t* residual,
         bank[i] = store(sycl::fma(load(bo[t * N + d]), gate, load(residual[i])));
     });
 }
+void write_prefill_attention_from_bank(uint16_t* destination, const uint16_t* bank,
+                                       const uint16_t* bo, const float* inj, int64_t rows, void* stream) {
+    if (destination != bank) {
+        write_prefill_attention_bank(destination, bank, bo, inj, rows, stream);
+        return;
+    }
+    const auto cells = count(rows, D);
+    const auto& queue = queue_for(stream);
+    validate_device_span(destination, cells * sizeof(uint16_t), queue);
+    validate_device_span(bo, size_t(rows) * N * sizeof(uint16_t), queue);
+    validate_device_span(inj, size_t(rows) * HC * sizeof(float), queue);
+    write(destination, bo, inj, rows, stream);
+}
 void swiglu(const uint16_t* gu, uint16_t* y, int64_t rows, void* stream) {
     const size_t n = count(rows, FF);
     validate_spans({{y, n * 2}}, {{gu, n * 4}});

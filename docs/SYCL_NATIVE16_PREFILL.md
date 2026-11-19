@@ -190,6 +190,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   whether its 1000 tok/s result reproduces. Keep first-request TTFT and
   subsequent-request throughput separate.
 
+- The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
+  the previous layer's resident BF16 rows directly in the native attention
+  norm, mix and residual write. Layer zero, the PLE bridge at layer one when
+  active, host-backed rows, boundary audits and non-window pieces keep
+  their existing inputs. Decode uses its existing route. The window's
+  checked queue drain still precedes bank reuse and callbacks.
+  For 65536 batched rows, each eligible layer avoids 1.25 GiB of requested
+  D2D input copies. With PLE active, 46 eligible layers would avoid 57.5 GiB.
+  Verify actual bytes and placement before using this estimate. This
+  candidate has no measured speed or model qualification yet.
+  Use the retained ordinary 384-slot configuration after the existing
+  comparison closes. First verify BF16 results and guards at 1, 63, 7905,
+  8191 and 8192 rows, including partial overlap refusal and both output
+  destinations. Then compare the four combinations of copied/borrowed input
+  and copied/direct output on the same coherently rebuilt engine. Check
+  per-request routes, numerical fingerprints and both copy counters before
+  measuring clean 65537-token requests. Use four fresh-process blocks with
+  orders ABCD, BDAC, CADB, DCBA, with A=copied input/copied output,
+  B=borrowed input/copied output, C=copied input/direct output and
+  D=borrowed input/direct output. Each process makes three exact requests.
+  Evaluate input-only (B/A), output-only (C/A), combined (D/A) and
+  incremental input (D/C) using paired warmed prompt times. A repeatable
+  gain requires all four block ratios below one for the stated contrast.
+  Keep first-use timings, client TTFT and target attainment separate.
+  Stop on a safety, route, workload, validation or ownership failure.
+  Adoption also requires a physical 262144 fill, mixed GPU/host tails,
+  RESTORE and repeated matched agent and sustained-decode evidence.
+
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
   performance gates fail in each clean campaign. Maximum-run evidence43d1a03e

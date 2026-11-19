@@ -153,6 +153,34 @@ void correctness(size_t rows, bool layer_zero) {
               << " guards=1 cancellation_lease=1\n";
 }
 
+void check_prefill_attention_bank_input(size_t rows) {
+    Fixture f(rows, false);
+    f.reset(false);
+    f.launch(false);
+    f.drain();
+    const auto reference = f.result();
+    auto* scratch = f.scratch.as<uint16_t>();
+    auto* bo = f.projection.as<uint16_t>();
+    auto* inj = f.injection.as<float>();
+    for (bool direct_store : {false, true}) {
+        f.queue.memcpy(f.bank(), f.input.data(), f.cells * sizeof(uint16_t));
+        f.queue.fill(scratch, Sentinel, f.cells);
+        native::write_prefill_attention_from_bank(direct_store ? f.bank() : scratch, f.bank(),
+                                                  bo, inj, rows, &f.queue);
+        if (!direct_store)
+            f.queue.memcpy(f.bank(), scratch, f.cells * sizeof(uint16_t));
+        f.drain();
+        require(f.result() == reference, "borrowed attention input changed BF16 output or guards");
+    }
+    if (rows == 1) {
+        bool rejected = false;
+        try { native::write_prefill_attention_from_bank(f.bank() + 2, f.bank(), bo, inj, 1, &f.queue); }
+        catch (const std::invalid_argument&) { rejected = true; }
+        require(rejected && f.result() == reference, "partially overlapping bank input was accepted");
+    }
+    std::cout << "attention input rows=" << rows << " copy_and_direct=1 bits=" << f.cells << " guards=1\n";
+}
+
 double elapsed_ms(Clock::time_point a, Clock::time_point b) {
     return std::chrono::duration<double, std::milli>(b - a).count();
 }
@@ -187,7 +215,7 @@ void timing(bool direct) {
 
 int main(int argc, char** argv) {
     try {
-        require(argc == 2, "expected correctness, copy or direct");
+        require(argc == 2, "expected correctness, input-correctness, copy or direct");
         const std::string_view operation(argv[1]);
         std::cout << std::fixed << std::setprecision(9) << std::unitbuf;
         if (operation == "correctness") {
@@ -195,6 +223,8 @@ int main(int argc, char** argv) {
             correctness(63, true);
             correctness(8191, false);
             correctness(8192, true);
+        } else if (operation == "input-correctness") {
+            for (size_t rows : {1, 63, 7905, 8191, 8192}) check_prefill_attention_bank_input(rows);
         } else {
             require(operation == "copy" || operation == "direct", "unknown attention-store arm");
             timing(operation == "direct");
