@@ -18,8 +18,9 @@ import ur_validation as validation
 build, basis = capacity.build, capacity.basis
 P, B, RESULT = capacity.P, capacity.B, capacity.RESULT
 require, sha, signature = capacity.require, capacity.sha, capacity.signature
-ROOT = B / 'prefill-attention-bank-restore-v1'
-KEY = 'prefill_attention_bank_restore_v1'
+ROOT = B / 'prefill-attention-bank-restore-v2'
+KEY = 'prefill_attention_bank_restore_v2'
+PREVIOUS = 'prefill_attention_bank_restore_v1'
 THIS = 'tools/sycl/prefill_attention_bank_restore.py'
 CAPACITY_EVIDENCE = 'e5408e1c27a6fa33ce314cc3b09e265b7d00cf52'
 ORDER = ('host', 'short-copy', 'short-direct', 'near-copy', 'near-direct')
@@ -260,6 +261,10 @@ def save(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'fresh restore plan required')
+    previous = validation.committed(RESULT, (PREVIOUS,))
+    require(previous['stage'] == 'failed' and set(previous['outcomes']) == {'host'}
+            and previous['host_physical_owner_reconciliation']['no_native_gpu_launched']
+            and previous['host_physical_owner_reconciliation']['executor_gone'], 'retain the closed original protocol refusal')
     native, old = reference()
     revision = validation.git('rev-parse', 'HEAD').decode().strip()
     vocab = json.loads((Path(old['configuration']['tokenizer']) / 'vocab.json').read_text())
@@ -323,8 +328,7 @@ def run(name):
     owner = owner_module.Owner(root/'owned',persist)
     try:
         if name == 'host':
-            peer = protocol.PROTOCOL_PEER.replace('INFO kv=int8 kv_resident=131072',
-                'INFO context=262144 spec=4 kv=int8 kv_resident=20480')
+            peer = host_peer()
             for near in (False,True):
                 case = dict(near=near, requests=input_plan(near))
                 command = [sys.executable,'-B','-c',peer,json.dumps(case['requests'])]
@@ -366,6 +370,12 @@ def run(name):
     print(json.dumps({k:outcome.get(k) for k in ('passed','complete','native_exit_code','restored_tokens',
         'fresh_faults','ownership_closed','error')}),flush=True)
     require(outcome['passed'],'restore gate stopped; preserve the original outcome')
+
+
+def host_peer():
+    marker = 'kv_resident=131072'
+    require(protocol.PROTOCOL_PEER.count(marker) == 1, 'original peer INFO fixture changed')
+    return protocol.PROTOCOL_PEER.replace(marker, 'kv_resident=20480 context=262144 spec=4')
 
 
 if __name__ == '__main__':
