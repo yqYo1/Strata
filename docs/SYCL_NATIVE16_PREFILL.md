@@ -2853,6 +2853,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   agent, long generation, RESTORE and physical-capacity qualification.
   This trial changes issue order on fit layers only. Staging a bounded
   prefix of an overflowing layer would be a separate experiment.
+  The CPU fixture at `0efffdacf` passed the exact permanent-slot limit,
+  overflow fallback, sparse IDs, scratch-slot preservation, and injected
+  submission failure. Both existing full-bank and prefix-ID checks passed.
+  Its pinned Clang 21.1.8 closure covered 191 compiler inputs and produced
+  ELF SHA-256 `27bfba3263eb604a33af529d9f55559755677e41322c432645dbea67f5d43f9c`.
+  All five changed native sources and fixture inputs had identical pre-change
+  bytes in the resident-input native source tree and the child branch base
+  `b043dfd3a`. The next gate is a coherent build and the ordinary B570
+  device fixture. No GPU speed result exists for this scheduling change.
 
   The retained request summaries have no per-copy submission IDs or
   pointer classes to join to individual tensor uploads. The split
