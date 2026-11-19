@@ -237,7 +237,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   on the B570. A two-piece window (8 + 3 rows) also passed for all four
   input/output combinations, including the final callback. Validation was
   quiet and the process exited normally without a fresh Xe fault.
-  Model state, physical capacity and clean speed remain open. After the
+  The four 32769-token server arms passed with identical state, output and
+  RESTORE data, including the intervening 33-token cache-layout request and
+  the 8209-token continuation. Direct input eliminated 30,870,077,440 bytes
+  of requested GPU-local copies on the fresh prompt and direct output
+  eliminated another 32,212,254,720 bytes. The combined arm eliminated both.
+  All four owners closed with zero native exit and no fresh Xe fault.
+  Near-capacity state, the physical final slot and clean speed remain open. After the
   required model state checks, `4d9b176e5` compares
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
@@ -2796,6 +2802,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
   each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
   requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  In each trace, 9717 D2D commands requested 128,861,904,128 bytes in
+  0.7884 and 0.7880 s of GPU service. Removing BF16 input/output copies
+  can also change submission or scheduling costs, but the measured D2D
+  service alone is far below the 6.896 s improvement the clean 64K run
+  needs. Give the separate QSA probability-reuse comparison priority after
+  checking the four 32K bank combinations. Run its optional targets only
+  while the GPU is idle and verify the original model and fixtures again
+  before continuing the near-capacity model cases.
   In these two requests the expert-bank counters record 18,204 and
   18,182 uploads, requesting 37,173,094,400 and 37,137,228,800 bytes.
   Subtracting those totals from the corresponding M2D counters leaves
@@ -2955,8 +2969,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controller at `0ed10ef1d` requires the complete ordered compiler command
   for both kernels, including the device target and translator arguments,
   to match the checked original recipe apart from the two artifact paths.
-  Three independent clean timing processes follow the exact BF16 output
-  and FP32-state checks. Compilation and device measurement are pending.
+  Both fixture executables built from the pinned compiler commands. The
+  traced smoke and eleven numerical cases passed, including the packed
+  inputs, BF16 output, all sixteen FP32 head states and 262144-cell
+  addressing. Each of three untraced timing processes alternated six pairs
+  on each shape, including pack, compute and drain. At cap 2051, reuse divided
+  by original median time was 1.00198/1.00194/1.00065 for gather and
+  1.00364/1.00317/1.00253 for clustered cells. At cap 33 the ratios were
+  0.99878/1.01122/0.99390. All five GPU processes closed normally without
+  a fresh Xe fault. Retain the original ordered-exp kernel for all three
+  shapes. The reuse candidate did not qualify for a model trial.
   To identify the loaded machine code, join the PV launch site to its
   specific Level Zero kernel handle. The normal call also launches a pack
   kernel.

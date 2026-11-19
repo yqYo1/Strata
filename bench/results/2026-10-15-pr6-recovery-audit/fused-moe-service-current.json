@@ -517490,6 +517490,366 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "short-output": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "requests": [
+          {
+            "prompt": 32769,
+            "read": 32769,
+            "reused": 0,
+            "output_hash": "da8c326d8b17883e05109f856f3fd093a3a9fde6473d42082d1f2c58be30e909",
+            "finish": "length",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768
+            ],
+            "active_state": {
+              "L": "32769",
+              "gdn": "0abbd09059c54895",
+              "ple": "6477dba690302ed0",
+              "tail": "ba99d2eea954fa10",
+              "pooled": "cb83369dc4ec3e58",
+              "kv": "246f34f9ffd7326b",
+              "mtp": "311db0dc4d2f0331",
+              "ple_prev": "4095,0"
+            },
+            "unused_state": {
+              "stale": "8367f0f4d06e7983",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "d924c9720c3ec7c7"
+            },
+            "attention_store": {
+              "pieces": 192,
+              "direct": 192,
+              "copy_bytes": 0,
+              "gpu_rows": 32768,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 32768
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124,
+            "attention_input": {
+              "eligible": 184,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 30870077440,
+              "checked_layers": 48
+            },
+            "expert_bank": {
+              "requested": 384,
+              "effective": 384,
+              "staged": true
+            }
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "finish": "length",
+            "publications": [
+              32
+            ],
+            "active_state": {
+              "L": "33",
+              "gdn": "d9e9a3ad75f9a003",
+              "ple": "9f417bc11288f313",
+              "tail": "dca122c73a9b6f43",
+              "pooled": "3cfd6a9da9e65a29",
+              "kv": "06640dd3c43a1316",
+              "mtp": "3634998bcae6ec57",
+              "ple_prev": "159,160"
+            },
+            "unused_state": {
+              "stale": "5935ffeafc0fb98f",
+              "dead": "bff4a557b4a10f3d",
+              "pooled_full": "fc2a0818461b00b3"
+            },
+            "attention_store": {
+              "pieces": 0,
+              "direct": 0,
+              "copy_bytes": 0
+            },
+            "decode_cache_lent": 0,
+            "prefill_route": "cache-window",
+            "attention_input": null
+          },
+          {
+            "prompt": 40978,
+            "read": 8209,
+            "reused": 32769,
+            "output_hash": "4ec308a86927b5455193f71ed63ddefb06069cc0575c2ad34e4899f6ba5abd05",
+            "finish": "length",
+            "publications": [
+              40961,
+              40977
+            ],
+            "active_state": {
+              "L": "40978",
+              "gdn": "aa15f1b17610021f",
+              "ple": "2753ae8a94ca0c8a",
+              "tail": "216262de4e6b2478",
+              "pooled": "9c1ad08d610165a4",
+              "kv": "ff6cef303d92da0d",
+              "mtp": "9731643367085cc2",
+              "ple_prev": "271,256"
+            },
+            "unused_state": {
+              "stale": "fa101663c4bca783",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "2f784adfcd4f1cb7"
+            },
+            "attention_store": {
+              "pieces": 96,
+              "direct": 96,
+              "copy_bytes": 0,
+              "gpu_rows": 8208,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 8208
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124,
+            "attention_input": {
+              "eligible": 92,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 7732592640,
+              "checked_layers": 48
+            },
+            "expert_bank": {
+              "requested": 384,
+              "effective": 384,
+              "staged": true
+            }
+          }
+        ],
+        "validation": {
+          "pid": 1659599,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "restored_tokens": 32769,
+        "restore_payload": {
+          "draft": "4fb9d363e88c5931",
+          "cells": "32772",
+          "mode": "2",
+          "source": "ram",
+          "resident": "32848",
+          "main": "6b9444d9e9b8eee1",
+          "main_layers": "12",
+          "main_bytes": "465624576",
+          "draft_bytes": "34607232",
+          "running": "92e1c5e185456913",
+          "running_bytes": "118069304",
+          "upto": "32769",
+          "result": "PASS"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      "short-both": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "requests": [
+          {
+            "prompt": 32769,
+            "read": 32769,
+            "reused": 0,
+            "output_hash": "da8c326d8b17883e05109f856f3fd093a3a9fde6473d42082d1f2c58be30e909",
+            "finish": "length",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768
+            ],
+            "active_state": {
+              "L": "32769",
+              "gdn": "0abbd09059c54895",
+              "ple": "6477dba690302ed0",
+              "tail": "ba99d2eea954fa10",
+              "pooled": "cb83369dc4ec3e58",
+              "kv": "246f34f9ffd7326b",
+              "mtp": "311db0dc4d2f0331",
+              "ple_prev": "4095,0"
+            },
+            "unused_state": {
+              "stale": "8367f0f4d06e7983",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "d924c9720c3ec7c7"
+            },
+            "attention_store": {
+              "pieces": 192,
+              "direct": 192,
+              "copy_bytes": 0,
+              "gpu_rows": 32768,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 32768
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124,
+            "attention_input": {
+              "eligible": 184,
+              "borrowed": 184,
+              "borrowed_bytes": 30870077440,
+              "copy_bytes": 0,
+              "checked_layers": 48
+            },
+            "expert_bank": {
+              "requested": 384,
+              "effective": 384,
+              "staged": true
+            }
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "finish": "length",
+            "publications": [
+              32
+            ],
+            "active_state": {
+              "L": "33",
+              "gdn": "d9e9a3ad75f9a003",
+              "ple": "9f417bc11288f313",
+              "tail": "dca122c73a9b6f43",
+              "pooled": "3cfd6a9da9e65a29",
+              "kv": "06640dd3c43a1316",
+              "mtp": "3634998bcae6ec57",
+              "ple_prev": "159,160"
+            },
+            "unused_state": {
+              "stale": "5935ffeafc0fb98f",
+              "dead": "bff4a557b4a10f3d",
+              "pooled_full": "fc2a0818461b00b3"
+            },
+            "attention_store": {
+              "pieces": 0,
+              "direct": 0,
+              "copy_bytes": 0
+            },
+            "decode_cache_lent": 0,
+            "prefill_route": "cache-window",
+            "attention_input": null
+          },
+          {
+            "prompt": 40978,
+            "read": 8209,
+            "reused": 32769,
+            "output_hash": "4ec308a86927b5455193f71ed63ddefb06069cc0575c2ad34e4899f6ba5abd05",
+            "finish": "length",
+            "publications": [
+              40961,
+              40977
+            ],
+            "active_state": {
+              "L": "40978",
+              "gdn": "aa15f1b17610021f",
+              "ple": "2753ae8a94ca0c8a",
+              "tail": "216262de4e6b2478",
+              "pooled": "9c1ad08d610165a4",
+              "kv": "ff6cef303d92da0d",
+              "mtp": "9731643367085cc2",
+              "ple_prev": "271,256"
+            },
+            "unused_state": {
+              "stale": "fa101663c4bca783",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "2f784adfcd4f1cb7"
+            },
+            "attention_store": {
+              "pieces": 96,
+              "direct": 96,
+              "copy_bytes": 0,
+              "gpu_rows": 8208,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 8208
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124,
+            "attention_input": {
+              "eligible": 92,
+              "borrowed": 92,
+              "borrowed_bytes": 7732592640,
+              "copy_bytes": 0,
+              "checked_layers": 48
+            },
+            "expert_bank": {
+              "requested": 384,
+              "effective": 384,
+              "staged": true
+            }
+          }
+        ],
+        "validation": {
+          "pid": 1671494,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "restored_tokens": 32769,
+        "restore_payload": {
+          "draft": "4fb9d363e88c5931",
+          "cells": "32772",
+          "mode": "2",
+          "source": "ram",
+          "resident": "32848",
+          "main": "6b9444d9e9b8eee1",
+          "main_layers": "12",
+          "main_bytes": "465624576",
+          "draft_bytes": "34607232",
+          "running": "92e1c5e185456913",
+          "running_bytes": "118069304",
+          "upto": "32769",
+          "result": "PASS"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
     "passed": false,
@@ -518213,5 +518573,636 @@
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "qsa_prefill_probability_v1": {
+    "stage": "closed",
+    "source_commit": "a31f3bbfec095fc7f3fa1047113b417a02414676",
+    "fixture_commit": "45a1b7b773d41e0de532d779ce7e48428ca76154",
+    "build_sha256": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
+    "reference": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/strata",
+      "sha256": "b35d66a4f29737a47abcdd7180c80eaf838b8658ec49ca2586948198d6a7613f",
+      "bytes": 26522768
+    },
+    "generated_sha256": "044a148dc902316783179bf056ee6c86c32b7d24a3c0f1e0fe619929473686e5",
+    "kernel_commands": {
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "01b6d1f1ae33854db8439fc146ff9f7bc1ab1e85f6a2931684d9761322aaf2d7",
+      "bench/sycl/qsa_prefill_probability_generated.cpp": "faa19f24d8db5cad80d9fe4c337d22973cdf4b27c042287f1ea66bf0797977b7"
+    },
+    "processes": [
+      {
+        "stage": "build",
+        "passed": true,
+        "ownership_closed": true,
+        "host_probe_accepted": true
+      },
+      {
+        "stage": "smoke",
+        "passed": true,
+        "ownership_closed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "--smoke"
+        ],
+        "environment_sha256": "05747bf0cca7312484d37e5532642a668abc7a01d8b5978a278705a4d3925291",
+        "validation": {
+          "pid": 1694202,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "clock_median_ns": 21.0,
+        "clock_p99_ns": 31,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "stage": "numeric",
+        "passed": true,
+        "ownership_closed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_test",
+          "sha256": "e08a973903c783bf92fdca36daa2f95ecedf7fa4f20de2997d6f86ec0827af90"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_test",
+          "--component"
+        ],
+        "environment_sha256": "ab5053e78bae95d7c1560a34ffdfb9104a8c8f81b400ecf73c5e7aebdcf2b60b",
+        "validation": {
+          "pid": 1697732,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "cases": [
+          [
+            97,
+            49,
+            33,
+            1
+          ],
+          [
+            97,
+            71,
+            33,
+            3
+          ],
+          [
+            2113,
+            2113,
+            1,
+            3
+          ],
+          [
+            2113,
+            2113,
+            17,
+            3
+          ],
+          [
+            2113,
+            2113,
+            31,
+            3
+          ],
+          [
+            2113,
+            2113,
+            32,
+            3
+          ],
+          [
+            2113,
+            2113,
+            63,
+            3
+          ],
+          [
+            2113,
+            2113,
+            65,
+            3
+          ],
+          [
+            2113,
+            2113,
+            2051,
+            3
+          ],
+          [
+            262144,
+            262144,
+            2051,
+            1
+          ],
+          [
+            262144,
+            13,
+            33,
+            1
+          ]
+        ],
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "stage": "0",
+        "passed": true,
+        "ownership_closed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "--component",
+          "0"
+        ],
+        "environment_sha256": "15dece8f4ad34574bfba3eaac22e54fe1f1c5385b03a7c63048423ca311465d9",
+        "validation": {
+          "pid": 1701853,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "clock_median_ns": 30.0,
+        "clock_p99_ns": 31,
+        "points": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                8.574975,
+                8.420712,
+                8.420512,
+                8.4724,
+                8.513899,
+                9.075503
+              ],
+              "reuse_probability": [
+                8.465758,
+                8.504411,
+                8.499872,
+                9.119136,
+                8.421815,
+                8.43553
+              ]
+            },
+            "median_time_ratio": 0.9987831957979778
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                223.956188,
+                223.691761,
+                224.083985,
+                224.32641,
+                224.133133,
+                224.041052
+              ],
+              "reuse_probability": [
+                223.526473,
+                224.178218,
+                224.67727,
+                224.746766,
+                224.509491,
+                224.50367
+              ]
+            },
+            "median_time_ratio": 1.0019818665030313
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "samples_ms": {
+              "ordered_exp": [
+                139.584612,
+                139.556416,
+                140.010527,
+                139.731145,
+                139.62866,
+                139.857361
+              ],
+              "reuse_probability": [
+                140.101442,
+                140.240816,
+                140.238338,
+                140.138568,
+                140.472419,
+                140.013559
+              ]
+            },
+            "median_time_ratio": 1.0036408279995757
+          }
+        ],
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "stage": "1",
+        "passed": true,
+        "ownership_closed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "--component",
+          "1"
+        ],
+        "environment_sha256": "a1dffa0271e6faa2efbf060b9c99074a1bc0caa25ef23ad8793dc6a5674bbbd3",
+        "validation": {
+          "pid": 1705665,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "clock_median_ns": 20.0,
+        "clock_p99_ns": 30,
+        "points": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                8.464831,
+                8.402554,
+                8.48498,
+                8.429385,
+                8.380552,
+                8.414186
+              ],
+              "reuse_probability": [
+                8.549673,
+                8.482866,
+                8.588756,
+                8.828311,
+                8.442389,
+                8.425327
+              ]
+            },
+            "median_time_ratio": 1.0112189986315847
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                224.293018,
+                224.228375,
+                224.385107,
+                224.192262,
+                223.863155,
+                224.201621
+              ],
+              "reuse_probability": [
+                224.860066,
+                224.117114,
+                224.858684,
+                224.099122,
+                224.724115,
+                224.57587
+              ]
+            },
+            "median_time_ratio": 1.001940077621391
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "samples_ms": {
+              "ordered_exp": [
+                139.78217,
+                139.963884,
+                139.462302,
+                139.472951,
+                139.824555,
+                139.623053
+              ],
+              "reuse_probability": [
+                140.09382,
+                140.144676,
+                140.145486,
+                140.333201,
+                140.194816,
+                140.069098
+              ]
+            },
+            "median_time_ratio": 1.0031672242576513
+          }
+        ],
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "stage": "2",
+        "passed": true,
+        "ownership_closed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "--component",
+          "2"
+        ],
+        "environment_sha256": "523b946a178c685663d37ff82cda2bc2e8c2cdcfc7d67799ef5086c12149e3bc",
+        "validation": {
+          "pid": 1709271,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "clock_median_ns": 30.0,
+        "clock_p99_ns": 31,
+        "points": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                8.533159,
+                8.434242,
+                8.417821,
+                8.87755,
+                8.864025,
+                8.462065
+              ],
+              "reuse_probability": [
+                8.425274,
+                8.44394,
+                8.447597,
+                8.476432,
+                8.899803,
+                8.425966
+              ]
+            },
+            "median_time_ratio": 0.9938990506980078
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                224.1713,
+                223.579006,
+                224.361536,
+                223.650277,
+                224.140092,
+                223.955358
+              ],
+              "reuse_probability": [
+                223.636768,
+                224.467078,
+                224.740582,
+                224.173066,
+                223.783224,
+                224.215402
+              ]
+            },
+            "median_time_ratio": 1.0006539187130776
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "samples_ms": {
+              "ordered_exp": [
+                139.755224,
+                139.692934,
+                139.885949,
+                139.847694,
+                139.807899,
+                139.657302
+              ],
+              "reuse_probability": [
+                140.106659,
+                140.075337,
+                140.163354,
+                140.191235,
+                140.006414,
+                140.165354
+              ]
+            },
+            "median_time_ratio": 1.0025285523799217
+          }
+        ],
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
+    "passed": true,
+    "active": false,
+    "complete": true,
+    "ownership_closed": true,
+    "stages": [
+      "build",
+      "smoke",
+      "numeric",
+      "0",
+      "1",
+      "2"
+    ],
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "whole_bytes": 943718400,
+    "build_command": [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build",
+      "--target",
+      "sycl_qsa_prefill_pv_test",
+      "sycl_qsa_prefill_pv_bench",
+      "-j",
+      "2"
+    ],
+    "plan": {
+      "unit": "Hoist two BF16 P fragments across four ordered-exp PV output tiles. Keep V staging, FP32 alpha scaling, per-output MAD order and both barriers.",
+      "build": "Only the separate component targets. Preserve and recheck every parent binary.",
+      "smoke": "Traced cap33 gather on both actual exports. Parameter validation, checked closure, positional guards and exact output bits precede full numerical coverage.",
+      "numeric": "Eleven cases including cap1/17/31/32/33/63/65/2051, full 262144 addresses, padded heads, invalid scales and scratch refusal. Match complete BF16 output and FP32 state against the original ordered-exp kernel.",
+      "timing": "Three fresh processes, three shapes with 78453 live cells and 8192 queries. Six alternated pairs per shape, including admission, pack, compute and drain. Reset output outside timing. Floors 0.5 ms cap33 and 10 ms cap2051. Native steady_clock overhead median <1 us and p99 <5 us.",
+      "decision": "Require lower median time in all three processes per shape. Both cap2051 patterns must win to try that cap in a separate model plan. Retain the reference at cap33 unless that shape independently passes. Other caps, model speed, physical traffic and register spills remain unqualified.",
+      "retention": "Keep the two fixtures through the component decision and machine-code inspection, then retire them under the parent build policy."
+    },
+    "budgets": {
+      "build": {
+        "wall": 2400,
+        "cpu": 7200,
+        "rss_cap": 12884901888,
+        "text_cap": 33554432,
+        "file_cap": 536870912,
+        "total_cap": 4294967296
+      },
+      "smoke": {
+        "wall": 180,
+        "cpu": 360,
+        "rss_cap": 4294967296,
+        "text_cap": 33554432,
+        "file_cap": 67108864,
+        "total_cap": 83886080
+      },
+      "gpu": {
+        "wall": 900,
+        "cpu": 2400,
+        "rss_cap": 17179869184,
+        "text_cap": 4194304,
+        "file_cap": 67108864,
+        "total_cap": 134217728
+      }
+    },
+    "binaries": {
+      "sycl_qsa_prefill_pv_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_test",
+        "sha256": "e08a973903c783bf92fdca36daa2f95ecedf7fa4f20de2997d6f86ec0827af90"
+      },
+      "sycl_qsa_prefill_pv_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+        "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+      }
+    },
+    "decision": {
+      "per_shape": [
+        false,
+        false,
+        false
+      ],
+      "process_ratios": [
+        [
+          0.9987831957979778,
+          1.0112189986315847,
+          0.9938990506980078
+        ],
+        [
+          1.0019818665030313,
+          1.001940077621391,
+          1.0006539187130776
+        ],
+        [
+          1.0036408279995757,
+          1.0031672242576513,
+          1.0025285523799217
+        ]
+      ],
+      "cap2051_model_plan_eligible": false,
+      "cap33_gather_plan_eligible": false,
+      "other_caps_timed": false,
+      "model_tested": false
+    },
+    "actual_input_groups": {
+      "compiled": {
+        "files": 4,
+        "sha256": "d78bc1ba696e698dd557eceaa1a23aa4ffd00f33780a7e43cb635259417fb63d"
+      },
+      "generated": {
+        "files": 0,
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "links": {
+        "files": 0,
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "objects": {
+        "files": 3,
+        "sha256": "b28d9becc5e33d70517a8a362a27f3dc37de1bf92080b6d0a768e061872162c7"
+      },
+      "produced": {
+        "files": 3,
+        "sha256": "b28d9becc5e33d70517a8a362a27f3dc37de1bf92080b6d0a768e061872162c7"
+      }
+    }
   }
 }
