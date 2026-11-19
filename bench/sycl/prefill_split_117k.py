@@ -76,14 +76,23 @@ def historical_work_delta(outcome, history):
     }
     hashes = [s['request_sha256'] for s in outcome['samples']]
     refs = [p for p in history['processes'] if p['read'] == READ and p['kernel'] == 'reference']
+    draft_counts = ('drafts_offered', 'drafts_accepted')
     require(len(refs) == 3 and len(outcome['routes']) == len(hashes) == len(set(hashes)) == 4 and all(
         p['passed'] and p['complete'] and p['route_shape']['split_guard_checked']
         and p['route_shape']['prefill_slots'] == 128
         and [s['request_sha256'] for s in p['samples']] == hashes
+        and all(s['actual_read_tokens'] == READ and s['actual_reused_tokens'] == 0
+                and s['generated_tokens'] == 24 and all(s[k] == baseline[k] for k in draft_counts)
+                for s, baseline in zip(p['samples'], refs[0]['samples'], strict=True))
         and p['request_route_checks'] == refs[0]['request_route_checks'] for p in refs),
         'historical 117K work must agree across the three reference processes')
-    return [{name: route['fast_window'][current] - prior[name] for name, current in counter_names.items()}
-            for route, prior in zip(outcome['routes'], refs[0]['request_route_checks'], strict=True)]
+    deltas = []
+    for route, prior, sample, baseline in zip(outcome['routes'], refs[0]['request_route_checks'],
+                                              outcome['samples'], refs[0]['samples'], strict=True):
+        delta = {name: route['fast_window'][current] - prior[name] for name, current in counter_names.items()}
+        delta.update({k: sample[k] - baseline[k] for k in draft_counts})
+        deltas.append(delta)
+    return deltas
 
 
 def decision(processes):
@@ -96,6 +105,8 @@ def decision(processes):
     pp = [1000 * READ / sample['warm_prompt_ms'] for sample in times]
     return dict(clean_times=times, warmed_process_PP=pp, median_PP=statistics.median(pp),
                 repeated_1000=all(rate >= 1000 for rate in pp),
+                historical_expert_and_MTP_counts_match=all(
+                    value == 0 for request in processes[0]['historical_work_delta'] for value in request.values()),
                 sustained_decode_qualified=False, physical_final_slot_qualified=False)
 
 

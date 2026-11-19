@@ -291,7 +291,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   request from 37.173 to 38.541 GB. That reduces the requested bank bytes
   per input token from 567.2 to 328.0 kB. These counts cover this bank only.
   Compare the four current requests with their historical counterparts by
-  request hash, expert-bank bytes, jobs, fused Down jobs and routing-map bytes.
+  request hash, expert-bank bytes, jobs, fused Down jobs, routing-map bytes
+  and actual draft offers and accepts. All twelve historical requests produced
+  24 tokens with 16 of 21 drafts accepted. Check each body against its own
+  reference before attributing a time difference to the engine.
   Record any differences separately from the speed decision. The historical
   117K route rebuilt 223,227,900 draft-head bytes; the current route expects
   zero. Equal expert work would still leave that handoff difference.
