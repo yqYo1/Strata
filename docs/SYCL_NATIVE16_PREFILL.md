@@ -2860,8 +2860,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ELF SHA-256 `27bfba3263eb604a33af529d9f55559755677e41322c432645dbea67f5d43f9c`.
   All five changed native sources and fixture inputs had identical pre-change
   bytes in the resident-input native source tree and the child branch base
-  `b043dfd3a`. The next gate is a coherent build and the ordinary B570
-  device fixture. No GPU speed result exists for this scheduling change.
+  `b043dfd3a`. The isolated B570 fixture at `9b39df072` compiled all five
+  runtime and test translation units. The ordinary SYCL queue passed exact
+  fit, overflow and cancellation with unchanged source data, intact guards
+  and checked retirement. Driver and validation checks were quiet.
+  Next, build the model candidate and compare dispatch, total uploaded bytes,
+  state and decode handoff at 32K before the paired clean 64K timing.
 
   The retained request summaries have no per-copy submission IDs or
   pointer classes to join to individual tensor uploads. The split
