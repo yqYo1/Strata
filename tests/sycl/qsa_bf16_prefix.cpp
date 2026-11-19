@@ -207,6 +207,10 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
           require(observed[i]==state_guard && observed[observed.size()-16+i]==state_guard,"state guards");
         const int width=steps[kStepWidth];
         const size_t used=(width>=0 && width<=cap) ? size_t((width+31)/32)*4 : 0;
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+        require(std::find(observed.begin()+16, observed.begin()+16+used, state_guard)==observed.begin()+16+used,
+                "ordered-exp probe left an active state row unwritten");
+#endif
         for (size_t i=used;i<state_values;++i)
           require(observed[16+i]==state_guard,"state capture wrote beyond selected width");
         if (!trial) reference_state=observed;
