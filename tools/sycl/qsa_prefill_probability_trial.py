@@ -31,6 +31,40 @@ def parent():
     return row, foundation
 
 
+def kernel_arguments(build_root):
+    source_root = build_root.parent / 'source'
+    reference = 'src/kernels/sycl/qsa_bf16_prefix.cpp'
+    sources = {str(source_root / reference): 'strata_kernels',
+               str(source_root / bank.PV_KERNEL): 'sycl_qsa_prefill_pv_kernel'}
+    # Ordered recipe from the verified store reference's compile_commands.json
+    # (SHA-256 80e5edd595eac0b810a691fabf9adc0997bb504e6527235d197b98150fe703db).
+    # This build used icpx's default SPIR-V target. A new target, device option
+    # or translator argument needs its own comparison with the original arm.
+    expected = [
+        '/opt/intel/oneapi/compiler/2026.2/bin/icpx', '-DSTRATA_CPU_SERVICE_PROFILE=1',
+        '-DSTRATA_ENABLE_SYCL=1', '-DSTRATA_VERSION="0.1.38"',
+        '-I' + str(source_root / 'include'), '-I' + str(source_root / 'include/strata/sycl/compat'),
+        '-fsycl-id-queries-range=size_t', '-Wno-error=deprecated-declarations',
+        '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13', '-O3', '-DNDEBUG', '-std=c++20',
+        '-ffp-contract=off', '-fsycl', '-fsycl-id-queries-range=size_t', '-Wall', '-Wextra', '-Werror',
+        '-fno-fast-math', '-ffp-contract=off',
+    ]
+    commands = {}
+    for unit in read(build_root / 'compile_commands.json'):
+        path = unit['file']
+        if path not in sources:
+            continue
+        relative = str(Path(path).relative_to(source_root))
+        obj = f'CMakeFiles/{sources[path]}.dir/{relative}.o'
+        args = shlex.split(unit['command'])
+        require(unit['directory'] == str(build_root) and unit['output'] == obj and relative not in commands
+                and args == [*expected, '-o', obj, '-c', path],
+                f'kernel compiler command differs from the pinned ordered recipe: {relative}')
+        commands[relative] = signature(args)
+    require(len(commands) == 2, 'both kernel compile commands required')
+    return commands
+
+
 def prepare():
     require(not ROOT.exists() and KEY not in read(RESULT), 'inspect any previous component trial')
     native, _ = parent()
@@ -40,7 +74,8 @@ def prepare():
     require(all(not (outputs / name).exists() for name in FIXTURES), 'fresh isolated fixture build required')
     row = dict(stage='prepared', source_commit=native['source_commit'], fixture_commit=bank.PV_SOURCE,
                build_sha256=signature(bank.builder.compact(native)), reference=native['binaries']['strata'],
-               generated_sha256=native['source_files'][bank.PV_KERNEL], processes=[], passed=False,
+               generated_sha256=native['source_files'][bank.PV_KERNEL], kernel_commands=kernel_arguments(outputs),
+               processes=[], passed=False,
                active=False, complete=False, ownership_closed=True, stages=list(STAGES),
                boot=read(bank.basis.reference.ROOT / 'record.json')['boot'], whole_bytes=900 << 20,
                build_command=['/usr/bin/cmake', '--build', str(outputs), '--target', *FIXTURES, '-j', '2'],
@@ -121,7 +156,8 @@ def numerical(text):
         require([int(case[k]) for k in ('cells','live_cells','cap','queries')] == [cells,live,cap,queries]
                 and all(case[k] == 'PASS' for k in ('guards','packed_guards','inputs','packed_logical_prefix','status'))
                 and int(case['packed_guard_elements']) == 17 and int(case['packed_k_mod8']) != 0
-                and comparison == dict(exact_ordered_exp_bits='PASS', all16_head_states='PASS', cells=str(cells),
+                and comparison == dict(exact_ordered_exp_bits='PASS', all16_head_states='PASS',
+                                       fresh_pack_both='PASS', cells=str(cells),
                                        cap=str(cap), queries=str(queries)), 'numerical, state or guard check missing')
     require(text.count('case state_admission_rejections=9 status=PASS') == 1, 'probe refusal cases missing')
     return [list(s) for s in shapes]
@@ -156,17 +192,9 @@ def build(row, native, foundation, child):
             inputs[str(Path(unit['file']).relative_to(source_root))] = args
     require(len(extra_objects) == 3 and set(inputs) == {ref, bank.PV_KERNEL, *bank.PV_FIXTURES[:2]},
             'expected only the candidate and the two fixture translation units')
-    # Compare effective optimization, SYCL target, floating point mode and
-    # preprocessor conditions. Duplicate identical flags carry no new setting.
-    def modes(args):
-        return set(a for a in args if a.startswith(('-D','-O','-f','-std=','-m','--gcc-install-dir=')))
-    expected = modes(inputs[ref])
-    require(inputs[ref][0] == inputs[bank.PV_KERNEL][0] and expected == modes(inputs[bank.PV_KERNEL])
-            and {'-O3','-fsycl','-ffp-contract=off','-fno-fast-math'} <= expected
-            and all('-DSTRATA_QSA_PREFILL_PV_COMPONENT=1' in inputs[p] for p in bank.PV_FIXTURES[:2]),
-            'QSA arms or fixture dispatch were compiled under different conditions')
-    row['kernel_compilation'] = dict(reference=signature(inputs[ref]), candidate=signature(inputs[bank.PV_KERNEL]),
-                                     effective_flags=sorted(expected))
+    require(all('-DSTRATA_QSA_PREFILL_PV_COMPONENT=1' in inputs[p] for p in bank.PV_FIXTURES[:2])
+            and {p: signature(inputs[p]) for p in (ref, bank.PV_KERNEL)} == row['kernel_commands'],
+            'compiled QSA kernels or fixture dispatch differ from admission')
     row['binaries'] = {f:dict(path=str(build_root / f), sha256=sha(build_root / f)) for f in FIXTURES}
 
 
@@ -177,6 +205,7 @@ def execute(action):
             'commit the previous outcome before the next stage')
     native, foundation = parent()
     require(signature(bank.builder.compact(native)) == row['build_sha256']
+            and row['kernel_commands'] == kernel_arguments(bank.ROOT / 'build')
             and native['binaries']['strata'] == row['reference']
             and native['source_files'][bank.PV_KERNEL] == row['generated_sha256']
             and all(sha(p) == h for group in row.get('actual_inputs', {}).values() for p,h in group.items())
