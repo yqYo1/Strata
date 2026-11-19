@@ -502,11 +502,20 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const bool prefix_host_usm_requested = prefill_prefix_expert_host_usm_requested();
     const bool prefix_host_usm_admitted = prefix_host_usm_requested && prefix_expert_upload_admitted &&
         prefix_expert_upload_requested == PrefillPrefixExpertUpload::ffn;
+    const auto prefix_copy_requested = prefill_prefix_copy_requested();
+    const auto prefix_copy = prefix_host_usm_admitted ? prefix_copy_requested : PrefillPrefixCopy::sycl;
+    const bool prefix_copy_native = prefix_copy == PrefillPrefixCopy::native0 || prefix_copy == PrefillPrefixCopy::native1;
+#if !defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    if (prefix_copy_native) {
+        err = "prefill MoE native copy mode requires the native-copy build"; return false;
+    }
+#endif
     if (prefix_expert_upload_requested != PrefillPrefixExpertUpload::off)
-        std::fprintf(stderr, "strata MoE prefix expert upload: requested=%s effective=%s queue=compute\n",
+        std::fprintf(stderr, "strata MoE prefix expert upload: requested=%s effective=%s queue=%s\n",
             prefill_prefix_expert_upload_name(prefix_expert_upload_requested),
             prefill_prefix_expert_upload_name(prefix_expert_upload_admitted ?
-                prefix_expert_upload_requested : PrefillPrefixExpertUpload::off));
+                prefix_expert_upload_requested : PrefillPrefixExpertUpload::off),
+            prefix_copy_native ? "native" : "compute");
     // Default copying isolates transient provider pointers. A qualified view
     // borrows the loaded Arena until checked retirement and needs no upload slab.
     // Also count the cache's small blocking staging allocation and two maps.
@@ -687,6 +696,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
     auto drain = [&]() noexcept {
         const auto profile_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+        if (window_context && window_context->prefix_native_copy) {
+            try { window_context->prefix_native_copy->wait(); }
+            catch (...) { return false; }
+        }
+#endif
         compute_drain = cudaStreamSynchronize(m.cs);
         copy_drain = m.copy == m.cs ? compute_drain : cudaStreamSynchronize(m.copy);
         if (profile) profile->add(LmProfile::wrapper_drain, profile_drain_start);
@@ -877,7 +892,18 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             window_context->prefix_upload_host_storage = sycl_backend::Allocation(
                 sycl_backend::runtime_for_device_span(layer_cache.device_slot(0), size_t(layer_cache.bytes()), queue),
                 size_t(host_slab_bytes), sycl_backend::MemoryKind::Host);
+            window_context->prefix_copy = prefix_copy;
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+            if (prefix_copy_native)
+                window_context->prefix_native_copy =
+                    std::make_unique<sycl_backend::native_copy::NativeCopyList>(
+                        queue, prefix_copy == PrefillPrefixCopy::native1 ? 1 : 0);
+#endif
         }
+        if (prefix_host_usm_requested)
+            std::fprintf(stderr, "strata MoE prefix upload transport: requested=%s effective=%s ready=%s\n",
+                prefill_prefix_copy_name(prefix_copy_requested), prefill_prefix_copy_name(prefix_copy),
+                prefix_copy == PrefillPrefixCopy::sycl ? "same_queue" : "host_wait_before_publication");
         if (prefix_host_usm_requested || prefix_expert_upload_admitted)
             std::fprintf(stderr, "strata MoE prefix upload storage: host_usm_requested=%d "
                 "host_usm_effective=%d allocated_bytes=%zu\n", int(prefix_host_usm_requested),
@@ -1283,8 +1309,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 (prefix_host_usm_admitted ? window_context->prefix_upload_bytes : 0)) {
                 err = "prefill MoE prefix upload storage: staged bytes differ"; return false;
             }
-            std::fprintf(stderr, "strata MoE prefix upload storage complete: staged_bytes=%llu queue=compute\n",
-                (unsigned long long)window_context->prefix_upload_host_bytes);
+            std::fprintf(stderr, "strata MoE prefix upload storage complete: staged_bytes=%llu queue=%s\n",
+                (unsigned long long)window_context->prefix_upload_host_bytes, prefix_copy_native ? "native" : "compute");
         }
         if (window_context->expert_slots)
             std::fprintf(stderr, "strata MoE expert bank complete: uploads=%llu requested_H2D_bytes=%llu permanent_hits=%llu permanent_slots=%d total_slots=%d final_drain=checked\n",

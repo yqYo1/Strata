@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check and compare production prefix expert source placement; repository LICENSE."""
+"""Check and compare prefill copy transport controls; repository LICENSE."""
 
 import fcntl
 import importlib.util
@@ -19,12 +19,14 @@ basis, builder = build.basis, build.builder
 P, B, RESULT = build.P, build.B, build.RESULT
 require, sha, signature, write = build.require, build.sha, build.signature, build.write
 THIS = 'tools/sycl/prefill_prefix_expert_measure.py'
-SMOKE = 'prefill_prefix_expert_host_usm_smoke_v1'
-MODE = 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_HOST_USM'
+SMOKE = 'prefill_prefix_expert_transport_smoke_v1'
+MODE = 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY'
 PREFIX_BYTES = 8192 * (2560 * 2 + 4 * 4 + 10 * 4 + 10 * 4 + 4 + 512 * 4)
 COHORTS = {
-    'numerical': ('arena', 'host-usm'),
-    'timing': ('arena', 'host-usm', 'host-usm', 'arena', 'arena', 'host-usm'),
+    'numerical': ('sycl', 'sycl-wait', 'native0', 'native1'),
+    'fence': ('sycl', 'sycl-wait', 'sycl-wait', 'sycl', 'sycl', 'sycl-wait'),
+    'api': ('sycl-wait', 'native0', 'native0', 'sycl-wait', 'sycl-wait', 'native0'),
+    'ordinal': ('native0', 'native1', 'native1', 'native0', 'native0', 'native1'),
 }
 
 
@@ -59,7 +61,7 @@ def bank_smoke():
         text=True, timeout=15).splitlines() if line.startswith('-- cursor: '))
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     candidate = binary['binaries']['sycl_expert_bank_test']
-    args = [candidate['path'], '--fullfit-eager-host-usm-smoke']
+    args = [candidate['path'], '--fullfit-eager-transport-smoke']
     outcome = dict(source=sources['revision'], sources=sources['aggregate_sha256'],
                    binary=candidate, command=args, environment_sha256=signature(env),
                    native_build=signature(builder.compact(binary)))
@@ -77,9 +79,13 @@ def bank_smoke():
             environment=env, native_validation_probe=probe,
             runtime_manifest=binary['foundation']['runtime_manifest']))
         fixture_log = out.read_text()
-        require('prefill_fullfit_host_usm_fixture PASS selected_bytes_and_guards=checked' in fixture_log.splitlines(),
-                'host USM selected bytes, padding or cancellation gate did not close')
-        outcome.update(**device.gpu_cases('bank-smoke', fixture_log), providers=providers,
+        require('prefill_fullfit_transport_fixture PASS sycl_wait_and_native_ordinals=checked'
+                in fixture_log.splitlines(), 'transport, bytes or cancellation gate did not close')
+        cases = [tuple(map(int, row)) for row in re.findall(
+            r'^prefill_fullfit_eager PASS experts=(\d+) source_stride=(\d+) layers=(\d+) cancellations=(\d+) rejects=(\d+)$',
+            fixture_log, re.MULTILINE)]
+        require(cases == [(4, 256, 2, 0, 4), (4, 512, 2, 2, 4)] * 3, 'three transport smoke pairs required')
+        outcome.update(cases=cases, providers=providers,
                        selected_host_bytes_and_guards=True,
                        native_exit_code=entry['exit_code'], host_probe_accepted=True)
     except BaseException as error:
@@ -103,10 +109,12 @@ def request_route(log, plan):
             'fixed prefix router not exercised')
     require(route['permanent_hits'] == 0, 'expected one dequant and upload per demanded expert')
     mode = 'ffn'
+    transport = plan['variant']
+    queue = 'native' if transport in ('native0', 'native1') else 'compute'
     admissions = workspace.records(log, 'strata MoE prefix expert upload: ')
     layers = workspace.records(log, 'strata MoE prefix expert upload layer: ')
     ends = workspace.records(log, 'strata MoE prefix expert upload complete: ')
-    require(admissions == [dict(requested=mode, effective=mode, queue='compute')]
+    require(admissions == [dict(requested=mode, effective=mode, queue=queue)]
             and len(layers) == 48, 'prefix expert upload did not admit all layers')
     packed = workspace.records(log, 'strata packed expert bank: ') if plan['trace_progress'] else None
     experts = payload = 0
@@ -127,15 +135,16 @@ def request_route(log, plan):
             and experts <= route['uploads'] and payload <= route['requested_bank_H2D_bytes'],
             'prefix upload receipt differs from checked bank totals')
     route['prefix_upload'] = dict(experts=experts, bytes=payload, selected=signature(layers))
-    host_usm = int(plan['variant'] == 'host-usm')
-    allocation = host_usm * 512 * workspace.STRIDE
-    staged = host_usm * payload
+    allocation = 512 * workspace.STRIDE
     require(workspace.one(log, 'strata MoE prefix upload storage: ') ==
-            dict(host_usm_requested=str(host_usm), host_usm_effective=str(host_usm),
-                 allocated_bytes=str(allocation))
+            dict(host_usm_requested='1', host_usm_effective='1', allocated_bytes=str(allocation))
             and workspace.one(log, 'strata MoE prefix upload storage complete: ') ==
-            dict(staged_bytes=str(staged), queue='compute'), 'actual host source placement or staged bytes differ')
-    route['source_staging'] = dict(host_usm=bool(host_usm), allocation=allocation, staged_bytes=staged)
+            dict(staged_bytes=str(payload), queue=queue), 'actual host source placement or staged bytes differ')
+    require(workspace.one(log, 'strata MoE prefix upload transport: ') ==
+            dict(requested=transport, effective=transport,
+                 ready='same_queue' if transport == 'sycl' else 'host_wait_before_publication'),
+            'actual copy transport or readiness differs')
+    route['copy_transport'] = dict(mode=transport, allocation=allocation, staged_bytes=payload)
     if plan['trace_progress']:
         frames = re.findall(r'^strata MoE router census: layer=(\d+) first=(\d+) rows=(\d+) '
             r'ids=([0-9a-f]{16}) prefix_weights=([0-9a-f]{16})$', log, re.M)
@@ -171,8 +180,8 @@ def model_context(cohort):
     spec = importlib.util.spec_from_file_location('prefix_expert_policy', basis.core.__file__)
     ctx = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctx)
-    ctx.ROOT = B / f'prefill-prefix-expert-host-usm-{cohort}-v1'
-    ctx.KEY, ctx.THIS = f'prefill_prefix_expert_host_usm_{cohort}_v1', THIS
+    ctx.ROOT = B / f'prefill-prefix-expert-transport-{cohort}-v1'
+    ctx.KEY, ctx.THIS = f'prefill_prefix_expert_transport_{cohort}_v1', THIS
     ctx.READS, ctx.ORDER, ctx.RUNS, ctx.CLEAN_FAST = (read,) * len(order), [(read, 1)] * len(order), runs, True
     base_environment, base_current = ctx.environment, ctx.current
 
@@ -183,7 +192,7 @@ def model_context(cohort):
                 and smoke['native_build'] == signature(builder.compact(value)), 'same-build fixture required')
         gates = {SMOKE: signature(smoke)}
         if not traced:
-            gate = basis.validation.committed(RESULT, ('prefill_prefix_expert_host_usm_numerical_v1',))
+            gate = basis.validation.committed(RESULT, ('prefill_prefix_expert_transport_numerical_v1',))
             require(gate['stage'] == 'closed' and gate['ownership_closed'] and
                     gate['decision']['matched_work'] and gate['binary'] == value['binaries']['strata'],
                     'matched numerical cohort required')
@@ -199,7 +208,8 @@ def model_context(cohort):
 
     def environment(row, plan):
         env = base_environment(row, plan)
-        env.update({MODE: str(int(order[plan['index']] == 'host-usm')),
+        env.update({MODE: order[plan['index']],
+                    'STRATA_SYCL_PREFILL_PREFIX_EXPERT_HOST_USM': '1',
                     'STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD': 'ffn',
                     'STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER': 'early',
                     'STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS': '512',
@@ -260,8 +270,8 @@ def prepare(ctx, cohort):
         envs.append({k: v.replace(plan['root'], '<case>') for k, v in env.items() if k != MODE})
     require(all(env == envs[0] for env in envs), 'another environment variable changed between arms')
     row['plan'] = dict(cohort=cohort, modes=COHORTS[cohort], actual_input=ctx.READS[0], requests=ctx.RUNS,
-        question='Compare the original resident source with reusable host USM at fixed FFN issue, early router, '
-                 'compute queue, selected expert offsets, packed bank, layer math and decode handoff.',
+        question='Fix FFN issue, source, expert offsets, packed bank, layer math and decode handoff. '
+                 'Compare SYCL completion, copy API and queue ordinal separately.',
         gates='Match logical work and observed expert bytes. For both issue arms match selected IDs. '
               'Retain every sample and separate first use. Stop on validation, fault or ownership failure.',
         retention='Keep compact matched work, PP/TTFT and checked closure. Review extra build at closure.')

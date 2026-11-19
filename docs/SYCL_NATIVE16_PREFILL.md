@@ -2768,9 +2768,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   single full-fit FFN route. The same-build smoke checks both strides,
   reuse, cancellation and unselected bytes. Verify matching 32K router,
   payload and handoff evidence before timing three counterbalanced 64K pairs.
-  Include allocation, selection, staging and teardown in the observed request
-  lifecycle. Keep separate queue selection and first-reader wait for later
-  fixed-prerequisite comparisons and observe device overlap there.
+  The closed source comparison at `9d845d7dd` uses 65537 fresh tokens and
+  three requests in each of six processes. All selected IDs, copy commands,
+  requested bytes and handoffs agree. Host-USM/arena warmed prefill time
+  ratios are 1.07859, 1.01961 and 1.01427 (geometric mean 1.03709).
+  First-use time increases 4.96% by the paired geometric mean. Median
+  warmed throughput is 880.11 versus 866.50 tok/s. Retain the arena source
+  for the model speed reference. The comparison measures the complete
+  source change, including CPU staging, within this scheduling policy.
+
+  Build the independent transport control with
+  `STRATA_SYCL_PREFILL_NATIVE_COPY=ON`. Both native modes use the checked
+  immediate-list owner from the overlap fixture. Fix FFN issue, host USM,
+  selected IDs, copy extents, layouts and arithmetic. Compare same-queue
+  SYCL with and without the added completion bracket, then compare fenced
+  SYCL with native ordinal 0, then native ordinals 0 and 1. The bracket
+  drains preceding compute and verifies copy completion before publishing
+  the private map. Check actual native context, device, ordinal and queue
+  flags. The outer lease retires any accepted native work before releasing
+  either allocation or rebinding the layer. Smoke-test both strides,
+  repeated staging, guarded bytes and cancellation before tracing the
+  four 32K routes. This control holds overlap off. Test earlier issue
+  and a deferred first-reader wait separately before measuring device
+  overlap and the net result against the arena reference.
 
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the

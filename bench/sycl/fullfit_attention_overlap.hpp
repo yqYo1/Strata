@@ -6,6 +6,7 @@
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/native_copy_list.hpp"
 #include "strata/core/expert_source.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
@@ -34,13 +35,11 @@ inline void require(bool valid, const char *message) {
     if (!valid) throw std::runtime_error(message);
 }
 
-inline void check_ze(ze_result_t result, const char *operation) {
-    if (result != ZE_RESULT_SUCCESS)
-        throw std::runtime_error(std::string(operation) + " failed with Level Zero status " +
-                                 std::to_string(static_cast<unsigned int>(result)));
-}
-
-inline constexpr auto backend = sycl::backend::ext_oneapi_level_zero;
+using sycl_backend::native_copy::backend;
+using sycl_backend::native_copy::check_ze;
+using sycl_backend::native_copy::immediate_list;
+using sycl_backend::native_copy::list_config;
+using sycl_backend::native_copy::NativeCopyList;
 using Clock = std::chrono::steady_clock;
 using Milliseconds = std::chrono::duration<double, std::milli>;
 inline constexpr size_t expert_stride = 1971200;
@@ -248,80 +247,6 @@ inline void source_admission(const std::shared_ptr<sycl_backend::Runtime> &runti
         source.finish();
     }
 }
-
-inline ze_command_list_handle_t immediate_list(sycl::queue &queue) {
-    require(queue.get_backend() == backend &&
-            queue.has_property<sycl::property::queue::in_order>(),
-            "fixture queue must be in-order Level Zero");
-    auto handle = sycl::get_native<backend>(queue);
-    require(std::holds_alternative<ze_command_list_handle_t>(handle),
-            "fixture queue must return an immediate list");
-    return std::get<ze_command_list_handle_t>(handle);
-}
-
-inline ze_command_queue_desc_t list_config(ze_command_list_handle_t list,
-                                           ze_context_handle_t context, ze_device_handle_t device,
-                                           uint32_t expected_ordinal) {
-    ze_command_queue_desc_t config{};
-    config.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
-    ze_context_handle_t actual_context{};
-    ze_device_handle_t actual_device{};
-    check_ze(zeCommandListGetContextHandle(list, &actual_context), "read list context");
-    check_ze(zeCommandListGetDeviceHandle(list, &actual_device), "read list device");
-    require(actual_context == context && actual_device == device, "list context/device differs");
-    check_ze(zeCommandListGetOrdinal(list, &config.ordinal), "read list ordinal");
-    check_ze(zeCommandListImmediateGetIndex(list, &config.index), "read list index");
-    check_ze(zeCommandListImmediateGetMode(list, &config.mode), "read list mode");
-    check_ze(zeCommandListImmediateGetFlags(list, &config.flags), "read list flags");
-    check_ze(zeCommandListImmediateGetPriority(list, &config.priority), "read list priority");
-    require(config.ordinal == expected_ordinal && config.index == 0 &&
-            config.mode == ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS &&
-            (config.flags & ZE_COMMAND_QUEUE_FLAG_IN_ORDER) &&
-            !(config.flags & ZE_COMMAND_QUEUE_FLAG_COPY_OFFLOAD_HINT),
-            "fixture requires the requested asynchronous ordinal, index 0 with copy offload disabled");
-    return config;
-}
-
-class NativeCopyList {
-public:
-    NativeCopyList(ze_context_handle_t context, ze_device_handle_t device,
-                   const ze_command_queue_desc_t &reference) {
-        check_ze(zeCommandListCreateImmediate(context, device, &reference, &list_), "create copy list");
-        require(list_ != nullptr, "Level Zero returned no copy list");
-        try {
-            const auto actual = list_config(list_, context, device, reference.ordinal);
-            require(actual.ordinal == reference.ordinal && actual.index == reference.index &&
-                    actual.flags == reference.flags && actual.mode == reference.mode &&
-                    actual.priority == reference.priority, "native copy list differs from its descriptor");
-        } catch (...) {
-            close(); // No accepted command is possible during construction.
-            throw;
-        }
-    }
-    NativeCopyList(const NativeCopyList &) = delete;
-    NativeCopyList &operator=(const NativeCopyList &) = delete;
-    ~NativeCopyList() noexcept { close(); }
-
-    void append(void *destination, const void *source, size_t bytes) {
-        pending_ = true; // An ambiguous append failure still requires a drain.
-        check_ze(zeCommandListAppendMemoryCopy(list_, destination, source, bytes, nullptr, 0, nullptr),
-                 "append copy");
-    }
-    void wait() {
-        if (!pending_) return;
-        check_ze(zeCommandListHostSynchronize(list_, 5'000'000'000ull), "drain copy list");
-        pending_ = false;
-    }
-
-private:
-    void close() noexcept {
-        sycl_backend::checked_cleanup([&] { wait(); }, [&] {
-            check_ze(zeCommandListDestroy(list_), "destroy copy list");
-        }, "native copy list retirement");
-    }
-    ze_command_list_handle_t list_{};
-    bool pending_ = false;
-};
 
 template<class WaitCopy>
 struct CopyDrain {

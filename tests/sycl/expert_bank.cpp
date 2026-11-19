@@ -534,7 +534,10 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
     }
 }
 
-void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel, bool host_usm=false) {
+enum class FullfitCopyMode { direct, staged, waited, native0, native1 };
+
+void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel,
+                               FullfitCopyMode mode=FullfitCopyMode::direct) {
     need(pd::prefill_fullfit_eager_requested(),"eager fixture needs immutable pre-exec eager policy");
     auto runtime=sb::runtime_for();auto& q=runtime->compute();
     constexpr size_t stride=256;
@@ -549,11 +552,22 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
     pd::PrivateExpertBank bank(cache,stride);
     sb::Allocation scratch(runtime,4096,sb::MemoryKind::Device);
     sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
+    const bool host_usm = mode != FullfitCopyMode::direct;
+    const bool wait_for_copies = mode == FullfitCopyMode::waited ||
+        mode == FullfitCopyMode::native0 || mode == FullfitCopyMode::native1;
     sb::Allocation staging;
     if (host_usm) {
         staging = sb::Allocation(runtime, 512 * source_stride + 256, sb::MemoryKind::Host);
         std::memset(staging.data(), 0xa5, staging.size());
     }
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    std::unique_ptr<sb::native_copy::NativeCopyList> native_owner;
+    if (mode == FullfitCopyMode::native0 || mode == FullfitCopyMode::native1)
+        native_owner = std::make_unique<sb::native_copy::NativeCopyList>(q, mode == FullfitCopyMode::native1 ? 1 : 0);
+    auto* native = native_owner.get();
+#else
+    sb::native_copy::NativeCopyList* native = nullptr;
+#endif
     auto* status=status_owner.as<uint32_t>();
     pd::ExpertBankSlots slots(512,true);
     std::vector<uint32_t> copied(size_t(cache.bytes())/4);
@@ -564,11 +578,19 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
             host[G+size_t(e)*source_stride/4+i]=value(e,i,generation);
         uint32_t observed=~uint32_t(0);
         try {
-            pd::DraftUploadGuard lease([&]{runtime->wait();++drains;return true;},
+            pd::DraftUploadGuard lease([&]{
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+                if (native) native->wait();
+#endif
+                runtime->wait();
+                ++drains;
+                return true;
+            },
                 []{sb::cleanup_fail_stop("prefill eager fixture retirement");});lease.arm();
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);
             const auto receipt=pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,
-                source_stride,ids,&q,{{scratch.data(),scratch.size()}},host_usm ? &staging : nullptr);
+                source_stride,ids,&q,{{scratch.data(),scratch.size()}},
+                host_usm ? &staging : nullptr, native, wait_for_copies);
             need(receipt.experts==ids.size() && receipt.copy_commands==ids.size() &&
                 receipt.payload_bytes==ids.size()*stride &&
                 receipt.host_staged_bytes==(host_usm ? receipt.payload_bytes : 0),
@@ -629,9 +651,19 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
 }
 
 int main(int argc, char** argv) try {
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    if (argc==2 && std::string(argv[1])=="--fullfit-eager-transport-smoke") {
+        for (auto mode : {FullfitCopyMode::waited, FullfitCopyMode::native0, FullfitCopyMode::native1}) {
+            prefill_fullfit_eager_case(4,256,2,false,mode);
+            prefill_fullfit_eager_case(4,512,2,true,mode);
+        }
+        std::cout<<"prefill_fullfit_transport_fixture PASS sycl_wait_and_native_ordinals=checked\n";
+        return 0;
+    }
+#endif
     if (argc==2 && std::string(argv[1])=="--fullfit-eager-host-usm-smoke") {
-        prefill_fullfit_eager_case(4,256,2,false,true);
-        prefill_fullfit_eager_case(4,512,2,true,true);
+        prefill_fullfit_eager_case(4,256,2,false,FullfitCopyMode::staged);
+        prefill_fullfit_eager_case(4,512,2,true,FullfitCopyMode::staged);
         std::cout<<"prefill_fullfit_host_usm_fixture PASS selected_bytes_and_guards=checked\n";
         std::cout<<"prefill_fullfit_eager_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED\n";
         return 0;

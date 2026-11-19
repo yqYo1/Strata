@@ -47,6 +47,11 @@ void enqueue_prefill_prefix_experts(Engine& m, MoeWindowContext& owner, int64_t 
         throw std::invalid_argument("prefill prefix expert upload: owner, extent or queue contract");
     const auto& bank = *owner.private_expert_bank;
     auto* host_staging = owner.prefix_upload_host_storage.data() ? &owner.prefix_upload_host_storage : nullptr;
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    auto* native_copy = owner.prefix_native_copy.get();
+#else
+    sycl_backend::native_copy::NativeCopyList* native_copy = nullptr;
+#endif
     if (m.borrowed)
         sycl_backend::validate_spans({{bank.device_slot(0), size_t(bank.layout().backing_bytes)}},
             {{m.borrowed_base, size_t(m.borrowed_capacity)}}, 1);
@@ -56,7 +61,8 @@ void enqueue_prefill_prefix_experts(Engine& m, MoeWindowContext& owner, int64_t 
         owner.prefix_experts, m.cs, {{m.region, size_t(m.region_bytes)},
          {owner.bank, size_t(owner.bank_bytes)}, {owner.prefix_router_storage, PrefillMoePrefixStorage::bytes},
          {m.R, size_t(m.T * D * 4)}, {m.emb, size_t(m.T * N * 4)},
-         {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}}, host_staging);
+         {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}},
+        host_staging, native_copy, owner.prefix_copy != PrefillPrefixCopy::sycl);
 }
 }  // namespace
 

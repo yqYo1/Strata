@@ -561,6 +561,30 @@ bool prefill_prefix_expert_host_usm_requested() {
     return enabled;
 }
 
+enum class PrefillPrefixCopy { sycl, sycl_wait, native0, native1 };
+
+PrefillPrefixCopy prefill_prefix_copy_requested() {
+    static const auto selected = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY");
+        if (!value || std::strcmp(value, "sycl") == 0) return PrefillPrefixCopy::sycl;
+        if (std::strcmp(value, "sycl-wait") == 0) return PrefillPrefixCopy::sycl_wait;
+        if (std::strcmp(value, "native0") == 0) return PrefillPrefixCopy::native0;
+        if (std::strcmp(value, "native1") == 0) return PrefillPrefixCopy::native1;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY requires sycl, sycl-wait, native0 or native1");
+    }();
+    return selected;
+}
+
+const char* prefill_prefix_copy_name(PrefillPrefixCopy copy) {
+    switch (copy) {
+    case PrefillPrefixCopy::sycl: return "sycl";
+    case PrefillPrefixCopy::sycl_wait: return "sycl-wait";
+    case PrefillPrefixCopy::native0: return "native0";
+    case PrefillPrefixCopy::native1: return "native1";
+    }
+    throw std::logic_error("invalid prefill prefix copy mode");
+}
+
 struct PrefillMoeRouterPiece {
     uint16_t* mixed;
     float* injection;
@@ -628,6 +652,10 @@ struct MoeWindowContext {
     uint64_t prefix_router_completed = 0;
     PrefillPrefixExpertUpload prefix_expert_upload = PrefillPrefixExpertUpload::off;
     sycl_backend::Allocation prefix_upload_host_storage;
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    std::unique_ptr<sycl_backend::native_copy::NativeCopyList> prefix_native_copy;
+#endif
+    PrefillPrefixCopy prefix_copy = PrefillPrefixCopy::sycl;
     std::vector<int32_t> prefix_experts;
     detail::PrefillFullfitUploadReceipt prefix_upload;
     uint64_t prefix_upload_layers = 0, prefix_upload_experts = 0, prefix_upload_bytes = 0;
