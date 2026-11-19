@@ -123,6 +123,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   without a fresh GPU fault. The 982.1 tok/s old stage-all result remains
   historical context. Keep the direct path opt-in for the remaining
   physical 262144, RESTORE, agent-session and sustained decode gates.
+  The previous physical-fill test used 114688 GPU rows and a 16384-row
+  fallback window. Before using the fast route by default, verify the new
+  ELF's actual GPU-window direct counts, the host-residual tail and the final
+  checked one-token commit with zero output room. Preserve the separate
+  server state/RESTORE and decode-throughput checks.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
