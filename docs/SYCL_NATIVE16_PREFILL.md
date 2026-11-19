@@ -275,9 +275,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   requests at `880c93b14`, the same formula with its actual 384-slot bank
   and no extra accumulator reproduces the logged fixed budget exactly.
   Those requests reported 188–195 MB of free VRAM beyond the projected 117K
-  need. The shared arena, single-allocation limits and actual request-time
-  free memory must also admit the split. The 253919-token mixed-host path
-  follows a different planner branch.
+  need. The split uses 897,762,560 bytes of aligned planes and guards
+  followed by a 265,994,240-byte mixed-input tail inside the existing
+  1,180,698,624-byte shared arena, leaving 16,941,824 bytes. The same
+  plane calculation reproduces the measured 888,410,624-byte tail offset
+  at 64K. The largest proposed individual allocation (the residual)
+  is below the reported 10,132,807,680-byte single-allocation limit.
+  Actual free memory and leases at admission still need verification.
+  The 253919-token mixed-host path follows a different planner branch.
   After the current bank comparison, use the same ordinary copy route,
   executable, decoder placement and 262144 configuration. Trace one fresh
   117489-token admission before timing. Check 117488 GPU rows, zero host rows,
