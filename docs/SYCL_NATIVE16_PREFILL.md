@@ -2792,6 +2792,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and a deferred first-reader wait separately before measuring device
   overlap and the net result against the arena reference.
 
+  The next copy schedule fixes the copy-only engine, native API, host USM and
+  selected experts. Compare ordinary FFN issue and earlier prefix issue with
+  immediate completion, then change the completion point at each issue site.
+  Preserve one of each arm per 64K timing block and keep first use separate.
+  The private bank stays unpublished until the checked native wait. On
+  cancellation, the outer lease drains accepted copies before source or bank
+  release. Validate both source strides, unpublished cancellation and first
+  readers in the small fixture, then match all four 32K model routes.
+  To establish same-layer overlap, match device intervals by request, layer and
+  copy list in a separate observer run. Clean timing measures wall-time
+  benefit. Both are needed to attribute a benefit to overlap, and the net
+  comparison still includes host staging against the arena FFN reference.
+
   On native `14508acbf`, the layer boundary drains the previous readers before
   rebinding the private bank. Dense activation completes before the
   attention pass. Each attention piece stores BF16 residuals on the compute

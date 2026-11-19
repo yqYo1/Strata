@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check and compare prefill copy transport controls; repository LICENSE."""
+"""Check and compare prefill copy scheduling controls; repository LICENSE."""
 
 import fcntl
 import importlib.util
@@ -19,14 +19,30 @@ basis, builder = build.basis, build.builder
 P, B, RESULT = build.P, build.B, build.RESULT
 require, sha, signature, write = build.require, build.sha, build.signature, build.write
 THIS = 'tools/sycl/prefill_prefix_expert_measure.py'
-SMOKE = 'prefill_prefix_expert_transport_smoke_v1'
-MODE = 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY'
+SMOKE = 'prefill_prefix_expert_schedule_smoke_v1'
+ISSUE = 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD'
+DEFER = 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_DEFER_COMPLETION'
 PREFIX_BYTES = 8192 * (2560 * 2 + 4 * 4 + 10 * 4 + 10 * 4 + 4 + 512 * 4)
+SCHEDULES = {
+    'ffn-immediate': ('ffn', '0'),
+    'prefix-immediate': ('prefix', '0'),
+    'ffn-deferred': ('ffn', '1'),
+    'prefix-deferred': ('prefix', '1'),
+}
 COHORTS = {
-    'numerical': ('sycl', 'sycl-wait', 'native0', 'native1'),
-    'fence': ('sycl', 'sycl-wait', 'sycl-wait', 'sycl', 'sycl', 'sycl-wait'),
-    'api': ('sycl-wait', 'native0', 'native0', 'sycl-wait', 'sycl-wait', 'native0'),
-    'ordinal': ('native0', 'native1', 'native1', 'native0', 'native0', 'native1'),
+    'numerical': tuple(SCHEDULES),
+    'timing': (
+        'ffn-immediate', 'prefix-immediate', 'prefix-deferred', 'ffn-deferred',
+        'ffn-deferred', 'prefix-deferred', 'prefix-immediate', 'ffn-immediate',
+        'prefix-immediate', 'ffn-immediate', 'ffn-deferred', 'prefix-deferred',
+    ),
+}
+COMPARISONS = {
+    'earlier_issue': ('ffn-immediate', 'prefix-immediate'),
+    'first_reader_completion': ('ffn-immediate', 'ffn-deferred'),
+    'earlier_issue_with_deferred_completion': ('ffn-deferred', 'prefix-deferred'),
+    'first_reader_completion_with_earlier_issue': ('prefix-immediate', 'prefix-deferred'),
+    'combined_schedule': ('ffn-immediate', 'prefix-deferred'),
 }
 
 
@@ -61,7 +77,7 @@ def bank_smoke():
         text=True, timeout=15).splitlines() if line.startswith('-- cursor: '))
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     candidate = binary['binaries']['sycl_expert_bank_test']
-    args = [candidate['path'], '--fullfit-eager-transport-smoke']
+    args = [candidate['path'], '--fullfit-eager-schedule-smoke']
     outcome = dict(source=sources['revision'], sources=sources['aggregate_sha256'],
                    binary=candidate, command=args, environment_sha256=signature(env),
                    native_build=signature(builder.compact(binary)))
@@ -79,12 +95,13 @@ def bank_smoke():
             environment=env, native_validation_probe=probe,
             runtime_manifest=binary['foundation']['runtime_manifest']))
         fixture_log = out.read_text()
-        require('prefill_fullfit_transport_fixture PASS sycl_wait_and_native_ordinals=checked'
+        require('prefill_fullfit_schedule_fixture PASS first_reader_and_cancellation=checked'
                 in fixture_log.splitlines(), 'transport, bytes or cancellation gate did not close')
         cases = [tuple(map(int, row)) for row in re.findall(
             r'^prefill_fullfit_eager PASS experts=(\d+) source_stride=(\d+) layers=(\d+) cancellations=(\d+) rejects=(\d+)$',
             fixture_log, re.MULTILINE)]
-        require(cases == [(4, 256, 2, 0, 4), (4, 512, 2, 2, 4)] * 3, 'three transport smoke pairs required')
+        require(cases == [(4, 256, 2, 0, 4), (4, 512, 2, 0, 4), (4, 512, 2, 2, 4)] * 2,
+                'all publication and cancellation smoke cases required')
         outcome.update(cases=cases, providers=providers,
                        selected_host_bytes_and_guards=True,
                        native_exit_code=entry['exit_code'], host_probe_accepted=True)
@@ -108,9 +125,8 @@ def request_route(log, plan):
             and retirement == dict(effective='early', layers='48', rows='8192', final_drain='checked'),
             'fixed prefix router not exercised')
     require(route['permanent_hits'] == 0, 'expected one dequant and upload per demanded expert')
-    mode = 'ffn'
-    transport = plan['variant']
-    queue = 'native' if transport in ('native0', 'native1') else 'compute'
+    mode, deferred = SCHEDULES[plan['variant']]
+    transport, queue = 'native1', 'native'
     admissions = workspace.records(log, 'strata MoE prefix expert upload: ')
     layers = workspace.records(log, 'strata MoE prefix expert upload layer: ')
     ends = workspace.records(log, 'strata MoE prefix expert upload complete: ')
@@ -142,9 +158,10 @@ def request_route(log, plan):
             dict(staged_bytes=str(payload), queue=queue), 'actual host source placement or staged bytes differ')
     require(workspace.one(log, 'strata MoE prefix upload transport: ') ==
             dict(requested=transport, effective=transport,
-                 ready='same_queue' if transport == 'sycl' else 'host_wait_before_publication'),
+                 ready='host_wait_at_first_reader' if deferred == '1' else 'host_wait_before_publication'),
             'actual copy transport or readiness differs')
-    route['copy_transport'] = dict(mode=transport, allocation=allocation, staged_bytes=payload)
+    route['copy_transport'] = dict(mode=transport, allocation=allocation, staged_bytes=payload,
+                                   issue=mode, deferred=deferred == '1')
     if plan['trace_progress']:
         frames = re.findall(r'^strata MoE router census: layer=(\d+) first=(\d+) rows=(\d+) '
             r'ids=([0-9a-f]{16}) prefix_weights=([0-9a-f]{16})$', log, re.M)
@@ -180,8 +197,8 @@ def model_context(cohort):
     spec = importlib.util.spec_from_file_location('prefix_expert_policy', basis.core.__file__)
     ctx = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctx)
-    ctx.ROOT = B / f'prefill-prefix-expert-transport-{cohort}-v1'
-    ctx.KEY, ctx.THIS = f'prefill_prefix_expert_transport_{cohort}_v1', THIS
+    ctx.ROOT = B / f'prefill-prefix-expert-schedule-{cohort}-v1'
+    ctx.KEY, ctx.THIS = f'prefill_prefix_expert_schedule_{cohort}_v1', THIS
     ctx.READS, ctx.ORDER, ctx.RUNS, ctx.CLEAN_FAST = (read,) * len(order), [(read, 1)] * len(order), runs, True
     base_environment, base_current = ctx.environment, ctx.current
 
@@ -192,7 +209,7 @@ def model_context(cohort):
                 and smoke['native_build'] == signature(builder.compact(value)), 'same-build fixture required')
         gates = {SMOKE: signature(smoke)}
         if not traced:
-            gate = basis.validation.committed(RESULT, ('prefill_prefix_expert_transport_numerical_v1',))
+            gate = basis.validation.committed(RESULT, ('prefill_prefix_expert_schedule_numerical_v1',))
             require(gate['stage'] == 'closed' and gate['ownership_closed'] and
                     gate['decision']['matched_work'] and gate['binary'] == value['binaries']['strata'],
                     'matched numerical cohort required')
@@ -208,9 +225,9 @@ def model_context(cohort):
 
     def environment(row, plan):
         env = base_environment(row, plan)
-        env.update({MODE: order[plan['index']],
+        issue, deferred = SCHEDULES[order[plan['index']]]
+        env.update({ISSUE: issue, DEFER: deferred, 'STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY': 'native1',
                     'STRATA_SYCL_PREFILL_PREFIX_EXPERT_HOST_USM': '1',
-                    'STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD': 'ffn',
                     'STRATA_SYCL_PREFILL_MOE_PREFIX_ROUTER': 'early',
                     'STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS': '512',
                     'STRATA_SYCL_PREFILL_QSA_MATH': 'bf16-prefix-ordered-exp',
@@ -238,14 +255,27 @@ def model_context(cohort):
         result = dict(matched_work=True, independent_processes=len(processes), measured_modes=list(order),
                       overlap_measured=False, model_adopted=False)
         if not traced:
-            pairs = []
-            for index in range(0, len(order), 2):
-                times = {order[j]: timing(processes[j]) for j in (index, index + 1)}
-                pairs.append(dict(arm_indices=[index, index + 1], times=times,
-                    ratios={key: times[order[1]][key] / times[order[0]][key] for key in times[order[0]]}))
-            ratios = [pair['ratios']['warm_prompt_ms'] for pair in pairs]
-            result.update(pairs=pairs, all_warmed_pairs_faster=all(value < 1 for value in ratios),
-                          warmed_prompt_time_geomean_ratio=statistics.geometric_mean(ratios))
+            blocks = []
+            for first in range(0, len(order), len(SCHEDULES)):
+                indices = {order[i]: i for i in range(first, first + len(SCHEDULES))}
+                require(set(indices) == set(SCHEDULES), 'one instance of each scheduling arm per block')
+                times = {mode: timing(processes[i]) for mode, i in indices.items()}
+                ratios = {
+                    question: {metric: times[candidate][metric] / times[reference][metric]
+                               for metric in times[reference]}
+                    for question, (reference, candidate) in COMPARISONS.items()
+                }
+                interaction = {
+                    metric: ratio / (ratios['earlier_issue'][metric] * ratios['first_reader_completion'][metric])
+                    for metric, ratio in ratios['combined_schedule'].items()
+                }
+                blocks.append(dict(indices=indices, times=times, ratios=ratios, interaction=interaction))
+            decisions = {}
+            for question in COMPARISONS:
+                ratios = [x['ratios'][question]['warm_prompt_ms'] for x in blocks]
+                decisions[question] = dict(all_warmed_pairs_faster=all(value < 1 for value in ratios),
+                                           warmed_prompt_time_geomean_ratio=statistics.geometric_mean(ratios))
+            result.update(blocks=blocks, comparisons=decisions)
         return result
 
     def sample(sample, count, actual_read, minimum_ms=10000):
@@ -267,14 +297,16 @@ def prepare(ctx, cohort):
                     trace_progress=cohort == 'numerical', upload='jit')
         env = ctx.environment(row, plan)
         require(plan['environment_sha256'] == basis.comparison.fingerprint(env), 'prepared environment differs')
-        envs.append({k: v.replace(plan['root'], '<case>') for k, v in env.items() if k != MODE})
+        envs.append({k: v.replace(plan['root'], '<case>') for k, v in env.items() if k not in (ISSUE, DEFER)})
     require(all(env == envs[0] for env in envs), 'another environment variable changed between arms')
     row['plan'] = dict(cohort=cohort, modes=COHORTS[cohort], actual_input=ctx.READS[0], requests=ctx.RUNS,
-        question='Fix FFN issue, source, expert offsets, packed bank, layer math and decode handoff. '
-                 'Compare SYCL completion, copy API and queue ordinal separately.',
-        gates='Match logical work and observed expert bytes. For both issue arms match selected IDs. '
-              'Retain every sample and separate first use. Stop on validation, fault or ownership failure.',
-        retention='Keep compact matched work, PP/TTFT and checked closure. Review extra build at closure.')
+        question='Fix the copy-only list, source, expert offsets, packed bank, layer math and decode handoff. '
+                 'Compare issue position, wait position and their combination within independent blocks.',
+        comparisons=COMPARISONS,
+        gates='Match logical work, selected IDs and requested copy bytes. Preserve first-use and subsequent samples. '
+              'Require all three warmed block comparisons to favor a change for its repeated-speed gate. '
+              'Stop on validation, fault or ownership failure. Measure device overlap under a separate observer plan.',
+        retention='Keep compact matched work, PP/TTFT and checked closure. Review extra build after active use.')
     ctx.save(row)
 
 

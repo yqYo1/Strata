@@ -62,7 +62,8 @@ void enqueue_prefill_prefix_experts(Engine& m, MoeWindowContext& owner, int64_t 
          {owner.bank, size_t(owner.bank_bytes)}, {owner.prefix_router_storage, PrefillMoePrefixStorage::bytes},
          {m.R, size_t(m.T * D * 4)}, {m.emb, size_t(m.T * N * 4)},
          {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}},
-        host_staging, native_copy, owner.prefix_copy != PrefillPrefixCopy::sycl);
+        host_staging, native_copy, owner.prefix_copy != PrefillPrefixCopy::sycl,
+        owner.defer_prefix_completion ? &owner.pending_prefix_upload : nullptr);
 }
 }  // namespace
 
@@ -395,6 +396,17 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             (long long)layer,(long long)first_row,(unsigned long long)eager_upload.experts,
             (unsigned long long)eager_upload.copy_commands,(unsigned long long)eager_upload.payload_bytes);
     }
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    if (owner.defer_prefix_completion) {
+        if (should_stop && should_stop()) { err = "cancelled"; return false; }
+        if (!use_prefix_upload || !owner.prefix_native_copy || !owner.expert_slots ||
+            owner.prefix_router_layer != layer)
+            throw std::logic_error("prefill deferred expert upload: first-reader ownership mismatch");
+        hp::Host host(hp::upload_submit);
+        detail::finish_prefill_fullfit_deferred(*owner.expert_slots, *owner.prefix_native_copy,
+                                               owner.pending_prefix_upload);
+    }
+#endif
     int32_t loaded = -1;
     for (size_t index = 0; index < owner.routes->jobs().size(); ++index) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }

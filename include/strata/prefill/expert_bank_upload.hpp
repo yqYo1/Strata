@@ -14,6 +14,8 @@
 namespace strata::sycl_backend::native_copy { class NativeCopyList; }
 #endif
 #include <cstring>
+#include <optional>
+#include <utility>
 
 namespace strata::prefill::detail {
 
@@ -70,11 +72,14 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
         std::initializer_list<sycl_backend::Span> live_scratch,
         sycl_backend::Allocation* host_staging = nullptr,
         sycl_backend::native_copy::NativeCopyList* native_copy = nullptr,
-        bool wait_for_copies = false) {
+        bool wait_for_copies = false,
+        std::optional<PrefillFullfitUploadPlan>* deferred_publication = nullptr) {
     if (!stream || !slab || slab_bytes!=layer_major_mul(512,source_stride))
         throw std::invalid_argument("prefill eager upload source/queue extent");
     if (native_copy && (!host_staging || !wait_for_copies))
         throw std::invalid_argument("native prefill copies require host staging and checked completion");
+    if (deferred_publication && (!native_copy || deferred_publication->has_value()))
+        throw std::invalid_argument("prefill deferred publication requires an unused native copy plan");
 #if !defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
     if (native_copy) throw std::logic_error("native prefill copies require the native-copy build");
 #endif
@@ -85,7 +90,7 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},
         {{slab,size_t(slab_bytes)}},1);
     sycl_backend::validate_spans({{base,size_t(layout.backing_bytes)}},live_scratch,1);
-    const auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride);
+    auto plan=PrefillFullfitUploadPlan::make(experts,layout,source_stride);
     PrefillFullfitUploadReceipt result;
     if (wait_for_copies && cudaStreamSynchronize(static_cast<cudaStream_t>(stream)) != cudaSuccess)
         throw std::runtime_error("prefill full-fit upload preceding compute drain failed");
@@ -127,18 +132,35 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
         require_empty_prefill_fullfit_bank(slots);
         for (const auto& copy : plan.copies())
             if (!submit(copy)) throw std::runtime_error("prefill full-fit upload enqueue failed");
+        if (!deferred_publication) {
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
-        if (native_copy) native_copy->wait();
-        else
+            if (native_copy) native_copy->wait();
+            else
 #endif
-        if (cudaStreamSynchronize(static_cast<cudaStream_t>(stream)) != cudaSuccess)
-            throw std::runtime_error("prefill full-fit upload copy completion failed");
-        for (const auto& copy : plan.copies()) publish_prefill_fullfit_copy(plan, slots, copy);
+            if (cudaStreamSynchronize(static_cast<cudaStream_t>(stream)) != cudaSuccess)
+                throw std::runtime_error("prefill full-fit upload copy completion failed");
+            for (const auto& copy : plan.copies()) publish_prefill_fullfit_copy(plan, slots, copy);
+        }
     } else enqueue_prefill_fullfit_upload(plan, slots, submit);
     result.experts=plan.experts().size();result.payload_bytes=plan.payload_bytes();
     for (int32_t expert:plan.experts()) result.first_upload[size_t(expert)]=true;
+    if (deferred_publication) deferred_publication->emplace(std::move(plan));
     return result;
 }
+
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+// The request's checked lease holds the copy list, source, bank, and slots
+// until this publication boundary or a checked failure drain.
+inline void finish_prefill_fullfit_deferred(ExpertBankSlots& slots,
+        sycl_backend::native_copy::NativeCopyList& native_copy,
+        std::optional<PrefillFullfitUploadPlan>& pending) {
+    if (!pending) throw std::logic_error("prefill deferred upload has no accepted plan");
+    require_empty_prefill_fullfit_bank(slots);
+    native_copy.wait();
+    for (const auto& copy : pending->copies()) publish_prefill_fullfit_copy(*pending, slots, copy);
+    pending.reset();
+}
+#endif
 
 template<class Enqueue>
 inline ExpertBankSlots::Ticket stage_private_expert_bank_enqueue(ExpertBankSlots& slots,

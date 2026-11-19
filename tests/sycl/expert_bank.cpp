@@ -534,7 +534,7 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
     }
 }
 
-enum class FullfitCopyMode { direct, staged, waited, native0, native1 };
+enum class FullfitCopyMode { direct, staged, waited, native0, native1, native1_deferred };
 
 void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel,
                                FullfitCopyMode mode=FullfitCopyMode::direct) {
@@ -553,8 +553,9 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
     sb::Allocation scratch(runtime,4096,sb::MemoryKind::Device);
     sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
     const bool host_usm = mode != FullfitCopyMode::direct;
+    const bool deferred = mode == FullfitCopyMode::native1_deferred;
     const bool wait_for_copies = mode == FullfitCopyMode::waited ||
-        mode == FullfitCopyMode::native0 || mode == FullfitCopyMode::native1;
+        mode == FullfitCopyMode::native0 || mode == FullfitCopyMode::native1 || deferred;
     sb::Allocation staging;
     if (host_usm) {
         staging = sb::Allocation(runtime, 512 * source_stride + 256, sb::MemoryKind::Host);
@@ -562,8 +563,9 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
     }
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
     std::unique_ptr<sb::native_copy::NativeCopyList> native_owner;
-    if (mode == FullfitCopyMode::native0 || mode == FullfitCopyMode::native1)
-        native_owner = std::make_unique<sb::native_copy::NativeCopyList>(q, mode == FullfitCopyMode::native1 ? 1 : 0);
+    if (mode == FullfitCopyMode::native0 || mode == FullfitCopyMode::native1 || deferred)
+        native_owner = std::make_unique<sb::native_copy::NativeCopyList>(q,
+            mode == FullfitCopyMode::native0 ? 0 : 1);
     auto* native = native_owner.get();
 #else
     sb::native_copy::NativeCopyList* native = nullptr;
@@ -577,6 +579,7 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
         for (int e=0;e<512;++e) for (size_t i=0;i<source_stride/4;++i)
             host[G+size_t(e)*source_stride/4+i]=value(e,i,generation);
         uint32_t observed=~uint32_t(0);
+        std::optional<pd::PrefillFullfitUploadPlan> pending;
         try {
             pd::DraftUploadGuard lease([&]{
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
@@ -590,11 +593,19 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);
             const auto receipt=pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,
                 source_stride,ids,&q,{{scratch.data(),scratch.size()}},
-                host_usm ? &staging : nullptr, native, wait_for_copies);
+                host_usm ? &staging : nullptr, native, wait_for_copies, deferred ? &pending : nullptr);
             need(receipt.experts==ids.size() && receipt.copy_commands==ids.size() &&
                 receipt.payload_bytes==ids.size()*stride &&
                 receipt.host_staged_bytes==(host_usm ? receipt.payload_bytes : 0),
                 "eager accepted transfer conservation");
+#if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+            if (deferred) {
+                need(pending && slots.permanent_used() == 0, "deferred copy published before wait");
+                if (cancel) throw Stop{}; // The checked lease retires accepted but unpublished work.
+                pd::finish_prefill_fullfit_deferred(slots, *native, pending);
+                need(!pending, "deferred publication did not consume the plan");
+            }
+#endif
             for (size_t rank=0;rank<ids.size();++rank) {
                 const int e=ids[rank];const auto ticket=slots.begin(e);
                 need(!ticket.upload && ticket.permanent && ticket.slot==int32_t(rank) &&
@@ -612,7 +623,14 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
             q.memcpy(&observed,status,4);
             if (cancel) throw Stop{}; // every source/destination owner still lives
             runtime->wait();++drains;lease.retire();
-        } catch (const Stop&) { ++cancellations; }
+        } catch (const Stop&) {
+            ++cancellations;
+            if (deferred) {
+                need(pending && slots.permanent_used() == 0, "cancelled deferred copy published slots");
+                q.memcpy(copied.data(),cache.device_slot(0),size_t(cache.bytes())).wait_and_throw();
+                observed=0;
+            }
+        }
         need(observed==0,"eager GPU consumer or checked cancellation");
         for (size_t rank=0;rank<ids.size();++rank) for (size_t i=0;i<stride/4;++i)
             need(copied[rank*stride/4+i]==value(ids[rank],i,generation),"eager full byte readback");
@@ -652,6 +670,15 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
 
 int main(int argc, char** argv) try {
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    if (argc==2 && std::string(argv[1])=="--fullfit-eager-schedule-smoke") {
+        for (auto mode : {FullfitCopyMode::native1, FullfitCopyMode::native1_deferred}) {
+            prefill_fullfit_eager_case(4,256,2,false,mode);
+            prefill_fullfit_eager_case(4,512,2,false,mode);
+            prefill_fullfit_eager_case(4,512,2,true,mode);
+        }
+        std::cout<<"prefill_fullfit_schedule_fixture PASS first_reader_and_cancellation=checked\n";
+        return 0;
+    }
     if (argc==2 && std::string(argv[1])=="--fullfit-eager-transport-smoke") {
         for (auto mode : {FullfitCopyMode::waited, FullfitCopyMode::native0, FullfitCopyMode::native1}) {
             prefill_fullfit_eager_case(4,256,2,false,mode);

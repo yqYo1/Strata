@@ -563,6 +563,16 @@ bool prefill_prefix_expert_host_usm_requested() {
 
 enum class PrefillPrefixCopy { sycl, sycl_wait, native0, native1 };
 
+bool prefill_prefix_expert_defer_completion_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_DEFER_COMPLETION");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PREFIX_EXPERT_DEFER_COMPLETION must be 0 or 1");
+    }();
+    return enabled;
+}
+
 PrefillPrefixCopy prefill_prefix_copy_requested() {
     static const auto selected = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY");
@@ -656,6 +666,8 @@ struct MoeWindowContext {
     std::unique_ptr<sycl_backend::native_copy::NativeCopyList> prefix_native_copy;
 #endif
     PrefillPrefixCopy prefix_copy = PrefillPrefixCopy::sycl;
+    bool defer_prefix_completion = false;
+    std::optional<detail::PrefillFullfitUploadPlan> pending_prefix_upload;
     std::vector<int32_t> prefix_experts;
     detail::PrefillFullfitUploadReceipt prefix_upload;
     uint64_t prefix_upload_layers = 0, prefix_upload_experts = 0, prefix_upload_bytes = 0;

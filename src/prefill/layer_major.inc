@@ -500,11 +500,17 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         prefix_router_admitted && prefix_router_requested == PrefillMoePrefixRouter::early &&
         source_view_on && !expert_upload_staging_requested() && !detail::prefill_fullfit_eager_requested();
     const bool prefix_host_usm_requested = prefill_prefix_expert_host_usm_requested();
-    const bool prefix_host_usm_admitted = prefix_host_usm_requested && prefix_expert_upload_admitted &&
-        prefix_expert_upload_requested == PrefillPrefixExpertUpload::ffn;
     const auto prefix_copy_requested = prefill_prefix_copy_requested();
+    const bool prefix_host_usm_admitted = prefix_host_usm_requested && prefix_expert_upload_admitted &&
+        (prefix_expert_upload_requested == PrefillPrefixExpertUpload::ffn ||
+         prefix_copy_requested == PrefillPrefixCopy::native1);
     const auto prefix_copy = prefix_host_usm_admitted ? prefix_copy_requested : PrefillPrefixCopy::sycl;
     const bool prefix_copy_native = prefix_copy == PrefillPrefixCopy::native0 || prefix_copy == PrefillPrefixCopy::native1;
+    const bool defer_completion_requested = prefill_prefix_expert_defer_completion_requested();
+    const bool defer_prefix_completion = defer_completion_requested && prefix_copy == PrefillPrefixCopy::native1;
+    if (defer_completion_requested && prefix_expert_upload_admitted && !defer_prefix_completion) {
+        err = "prefill deferred expert upload requires host USM and the copy-only engine"; return false;
+    }
 #if !defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
     if (prefix_copy_native) {
         err = "prefill MoE native copy mode requires the native-copy build"; return false;
@@ -893,6 +899,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 sycl_backend::runtime_for_device_span(layer_cache.device_slot(0), size_t(layer_cache.bytes()), queue),
                 size_t(host_slab_bytes), sycl_backend::MemoryKind::Host);
             window_context->prefix_copy = prefix_copy;
+            window_context->defer_prefix_completion = defer_prefix_completion;
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
             if (prefix_copy_native)
                 window_context->prefix_native_copy =
@@ -903,7 +910,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (prefix_host_usm_requested)
             std::fprintf(stderr, "strata MoE prefix upload transport: requested=%s effective=%s ready=%s\n",
                 prefill_prefix_copy_name(prefix_copy_requested), prefill_prefix_copy_name(prefix_copy),
-                prefix_copy == PrefillPrefixCopy::sycl ? "same_queue" : "host_wait_before_publication");
+                prefix_copy == PrefillPrefixCopy::sycl ? "same_queue" :
+                defer_prefix_completion ? "host_wait_at_first_reader" : "host_wait_before_publication");
         if (prefix_host_usm_requested || prefix_expert_upload_admitted)
             std::fprintf(stderr, "strata MoE prefix upload storage: host_usm_requested=%d "
                 "host_usm_effective=%d allocated_bytes=%zu\n", int(prefix_host_usm_requested),
@@ -994,6 +1002,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (qsa_profile) qsa_profile->layer = int(layer);
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
+        if (window_context && window_context->pending_prefix_upload) {
+            err = "prefill prefix expert upload: pending publication at layer boundary"; return false;
+        }
         if (std::getenv("STRATA_TRACE")) {
             std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: loading %lld experts\n",
                          (long long)layer, (long long)g.n_layers, (long long)NE);
@@ -1296,7 +1307,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         if (prefix_expert_upload_admitted) {
             if (window_context->prefix_upload_layers != uint64_t(g.n_layers) ||
-                !window_context->prefix_experts.empty() || window_context->prefix_upload.experts) {
+                !window_context->prefix_experts.empty() || window_context->prefix_upload.experts ||
+                window_context->pending_prefix_upload) {
                 err = "prefill MoE prefix expert upload: incomplete layer coverage"; return false;
             }
             std::fprintf(stderr, "strata MoE prefix expert upload complete: effective=%s layers=%llu "

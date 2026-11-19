@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the matched prefill copy transport controls; repository LICENSE."""
+"""Build the matched prefill copy scheduling controls; repository LICENSE."""
 
 import fcntl
 import hashlib
@@ -12,8 +12,8 @@ import coherent_model_basis as basis
 import prefill_window_build as builder
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'prefill-prefix-expert-transport-native-v2'
-KEY = 'prefill_prefix_expert_transport_native_v2'
+ROOT = B / 'prefill-prefix-expert-schedule-native-v1'
+KEY = 'prefill_prefix_expert_schedule_native_v1'
 HOST = 'prefill_fullfit_upload_plan_test'
 TARGETS = [*builder.TARGETS, 'sycl_moe_upload_census_host_test', HOST]
 OVERLAYS = (
@@ -28,14 +28,27 @@ SOURCE_RESULT = 'prefill_prefix_expert_host_usm_timing_v1'
 CONFIGURE_FAILURE = 'prefill_prefix_expert_transport_native_v1'
 BUILD_HISTORY = ('prefill_window_native_v2', 'prefill_first_demand_native_v1',
                  'prefill_prefix_router_native_v1', 'prefill_prefix_expert_native_v1', SOURCE_BUILD)
-HISTORY = (*BUILD_HISTORY, SOURCE_RESULT, CONFIGURE_FAILURE)
+TRANSPORT_BUILD = 'prefill_prefix_expert_transport_native_v2'
+ORDINAL_RESULT = 'prefill_prefix_expert_transport_ordinal_v1'
+COMPONENT_OVERLAP = 'fullfit_attention_copy_ordinal_v1'
+HISTORY = (*BUILD_HISTORY, SOURCE_RESULT, CONFIGURE_FAILURE, TRANSPORT_BUILD, ORDINAL_RESULT, COMPONENT_OVERLAP)
 source, write = builder.source, builder.write
 require, sha, signature = basis.require, basis.sha, basis.signature
 save_build = builder.save
 
 
 def archive():
-    return {key: basis.validation.committed(RESULT, (key,)) for key in HISTORY}
+    rows = {key: basis.validation.committed(RESULT, (key,)) for key in HISTORY}
+    preceding, ordinal, component = (rows[key] for key in (TRANSPORT_BUILD, ORDINAL_RESULT, COMPONENT_OVERLAP))
+    require(preceding['artifact_retirement']['complete']
+            and preceding['artifact_retirement']['checked_ELF'] == preceding['binaries']['strata']['sha256']
+            and not Path(preceding['artifact_retirement']['capture']['root']).exists()
+            and ordinal['stage'] == 'closed' and ordinal['passed'] and ordinal['ownership_closed']
+            and ordinal['decision']['matched_work'] and ordinal['binary'] == preceding['binaries']['strata']
+            and component['stage'] == 'closed' and component['ownership_closed']
+            and component['decision']['eligible_native_ordinal_overlap'],
+            'closed model ordinal control and independent component overlap required')
+    return rows
 
 
 def hashed(payload):
@@ -65,6 +78,12 @@ def recover(native, prior, revision):
     require(failure['stage'] == 'failed' and failure['ownership_closed'] and not failure['active']
             and failure['failure']['stage'] == 'cmake' and not failure['failure']['gpu_executed'],
             'preserve the closed original configure failure')
+    preceding = prior[TRANSPORT_BUILD]
+    previous_overlay = dict(source.blobs(P, preceding['source_commit'], preceding['overlays']))
+    previous_files = {**payload, **previous_overlay}
+    require(hashed(previous_overlay) == preceding['overlays']
+            and dict(files=len(previous_files), sha256=signature(hashed(previous_files))) == preceding['source_files'],
+            'recover the original transport image before applying scheduling overlays')
     changes = dict(source.blobs(P, revision, OVERLAYS))
     require(set(changes) == set(OVERLAYS)
             and all((P / path).read_bytes() == raw for path, raw in changes.items()),
@@ -140,8 +159,8 @@ def prepare():
                external_inputs=native['external_inputs'], driver=builder.guards.driver_guard(),
                retained_decode_reference=decode, commands=[], active=False, ownership_closed=True,
                passed=False, complete=False,
-               plan=dict(unit='Fixed FFN issue, private bank and request-owned host USM. Isolate explicit '
-                         'completion, native API and ordinal with matched controls.',
+               plan=dict(unit='Fixed copy-only list, private bank and request-owned host USM. Isolate '
+                         'earlier issue, first-reader completion and their interaction.',
                          host=[HOST], retention='Third build only for this comparison after preserving '
                          'both independent phase references. Review at closure or first failed gate.'))
     check(row, False)
