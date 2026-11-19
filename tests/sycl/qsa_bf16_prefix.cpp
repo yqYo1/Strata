@@ -140,9 +140,12 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   const std::vector<float> state_initial(state_values+32,state_guard);
 #endif
   Drain pending; // Destroy before every input/output owner on success and failure.
-  packed_k.put(std::vector<uint16_t>(size_t(active_rows)*Dim+2*PackedGuard,guard));
-  packed_v.put(std::vector<uint16_t>(size_t(active_rows)*Dim+2*PackedGuard,guard));
-  packed_bad.put(std::vector<int32_t>(size_t(active_rows)+2*PackedGuard,bad_guard));
+  auto poison_scratch = [&] {
+    packed_k.put(std::vector<uint16_t>(size_t(active_rows)*Dim+2*PackedGuard,guard));
+    packed_v.put(std::vector<uint16_t>(size_t(active_rows)*Dim+2*PackedGuard,guard));
+    packed_bad.put(std::vector<int32_t>(size_t(active_rows)+2*PackedGuard,bad_guard));
+  };
+  poison_scratch();
   dq.put(q);dks.put(ks);dvs.put(vs);dk.put(k);dv.put(v);dt.put(table);di.put(ids);ds.put(steps);out.put(sentinel);
   QsaAttnPools pools; pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
   auto shape=qsa_real_shapes();shape.page_size=Page;
@@ -154,13 +157,45 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
                      const QsaPromptBf16Bounds &b,void *stream) {
     return prefix_attention(qin,p,ii,ss,c,sh,o,nq,b,live_cells,scratch,stream);
   };
-  auto packed_guards=[&] {
-    auto a=packed_k.get(),b=packed_v.get();auto bad=packed_bad.get();
+  auto check_packed_guards=[&](const auto &a, const auto &b, const auto &bad) {
     for (size_t i=0;i<PackedGuard;++i)
       require(a[i]==guard && a[a.size()-PackedGuard+i]==guard && b[i]==guard && b[b.size()-PackedGuard+i]==guard &&
               bad[i]==bad_guard && bad[bad.size()-PackedGuard+i]==bad_guard,"packed output guards");
   };
-  auto invoke=[&] {
+  auto guarded=[&] {
+    check_packed_guards(packed_k.get(), packed_v.get(), packed_bad.get());
+    auto y=out.get();
+    for (size_t i=0;i<16;++i) require(y[i]==guard && y[y.size()-16+i]==guard,"output guard");
+    return y;
+  };
+  auto immutable=[&] {
+    require(dq.get()==q && dks.get()==ks && dvs.get()==vs && dk.get()==k && dv.get()==v &&
+            dt.get()==table && di.get()==ids && ds.get()==steps,"all input bytes immutable");
+  };
+  auto row_of=[&](int cell,int head) -> int64_t {
+    if (cell<0 || cell>=live_cells) return -1;
+    const int physical=table[cell/Page]; if (physical<0 || physical>=pages) return -1;
+    return (int64_t(physical)*KV+head/(Heads/KV))*Page+cell%Page;
+  };
+  auto check_finite_scratch = [&] {
+    auto pk=packed_k.get(),pv=packed_v.get();auto pb=packed_bad.get();
+    check_packed_guards(pk, pv, pb);
+    for (int64_t row=0;row<active_rows;++row) {
+      const int page=int(row/(KV*Page)),head=int(row/Page%KV),offset=int(row%Page);
+      const int64_t source=row_of(page*Page+offset,head*(Heads/KV));
+      require(pb[PackedGuard+row]==0,"finite or masked prefix diagnostic row");
+      for (int d=0;d<Dim;++d) {
+        const uint16_t key=source>=0 ? round_bf16(float(k[source*Dim+d])*load_half(ks[source*4+d/64])) : 0;
+        const uint16_t val=source>=0 ? round_bf16(float(v[source*Dim+d])*load_half(vs[source*4+d/64])) : 0;
+        require(pk[PackedGuard+row*Dim+d]==key,"complete logical K prefix including zero padding/missing pages");
+        require(pv[PackedGuard+row*Dim+d]==val,"complete logical V prefix including zero padding/missing pages");
+      }
+    }
+  };
+  auto invoke=[&](bool initial_scratch = false) {
+#if !defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+    (void)initial_scratch;
+#endif
 #if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
     out.put(sentinel);
 #endif
@@ -174,12 +209,29 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     rt->wait();require(out.get()==subgroup_candidate,"complete uncached subgroup bit identity");
 #endif
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+    if (initial_scratch) {
+      // A later pack overwrites the complete logical prefix. Check the
+      // candidate and poison it again before running the reference.
+      check_finite_scratch();
+      immutable();
+      poison_scratch();
+    }
+#endif
     // Compare every output bit, including NaN diagnostics, masks and guards.
     // Both calls use the same inputs; the second refreshes identical scratch.
     const auto candidate=out.get();out.put(sentinel);
     require(reference_attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"prefix reference unavailable");
     rt->wait();require(out.get()==candidate,"complete reference bit identity");
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+    if (initial_scratch) {
+      check_finite_scratch();
+      immutable();
+    }
+    require(std::find(candidate.begin()+16, candidate.end()-16, guard) == candidate.end()-16,
+            "ordered-exp left a normal output unwritten");
+#endif
 #if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
     // Capture real heads (or representative real/padded rows) as selected below.
     // The diagnostic specialization must
@@ -221,36 +273,10 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
 #endif
 #endif
   };
-  auto guarded=[&] {
-    packed_guards();
-    auto y=out.get();
-    for (size_t i=0;i<16;++i) require(y[i]==guard && y[y.size()-16+i]==guard,"output guard");
-    return y;
-  };
-  auto immutable=[&] {
-    require(dq.get()==q && dks.get()==ks && dvs.get()==vs && dk.get()==k && dv.get()==v &&
-            dt.get()==table && di.get()==ids && ds.get()==steps,"all input bytes immutable");
-  };
-  auto row_of=[&](int cell,int head) -> int64_t {
-    if (cell<0 || cell>=live_cells) return -1;
-    const int physical=table[cell/Page]; if (physical<0 || physical>=pages) return -1;
-    return (int64_t(physical)*KV+head/(Heads/KV))*Page+cell%Page;
-  };
-  invoke();const auto y=guarded();immutable();
-  { // Check EVERY logical scratch element, including masked/padding rows.
-    auto pk=packed_k.get(),pv=packed_v.get();auto pb=packed_bad.get();
-    for (int64_t row=0;row<active_rows;++row) {
-      const int page=int(row/(KV*Page)),head=int(row/Page%KV),offset=int(row%Page);
-      const int64_t source=row_of(page*Page+offset,head*(Heads/KV));
-      require(pb[PackedGuard+row]==0,"finite or masked prefix diagnostic row");
-      for (int d=0;d<Dim;++d) {
-        const uint16_t key=source>=0 ? round_bf16(float(k[source*Dim+d])*load_half(ks[source*4+d/64])) : 0;
-        const uint16_t val=source>=0 ? round_bf16(float(v[source*Dim+d])*load_half(vs[source*4+d/64])) : 0;
-        require(pk[PackedGuard+row*Dim+d]==key,"complete logical K prefix including zero padding/missing pages");
-        require(pv[PackedGuard+row*Dim+d]==val,"complete logical V prefix including zero padding/missing pages");
-      }
-    }
-  }
+  invoke(true);const auto y=guarded();immutable();
+#if !defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+  check_finite_scratch();
+#endif
 
   double max_error=0,max_budget_ratio=0;size_t compared=0;
   for (int b=0;b<queries;++b) for (int h=0;h<Heads;++h) {
@@ -451,7 +477,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
 #endif
 #endif
 #if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
-  std::cout<<"case exact_ordered_exp_bits=PASS all16_head_states=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';
+  std::cout<<"case exact_ordered_exp_bits=PASS all16_head_states=PASS fresh_pack_both=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';
 #elif defined(STRATA_QSA_COMPARE_PREFIX33)
   std::cout<<"case exact_prefix33_bits=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';
 #endif
