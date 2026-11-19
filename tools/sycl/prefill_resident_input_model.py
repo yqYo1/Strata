@@ -42,17 +42,21 @@ def inputs():
     return native, speed, signature, build.signature(fixture)
 
 
-def environment(row, case):
-    root = case['root']
+def ordinary_environment(row, root, prior):
     env = basis.reference.context().environment(row, dict(index=0, root=root, heads=1))
     # Match the completed ordinary control before introducing the two selectors and diagnostics.
-    prior = row['ordinary_control']
     base_env = {k: v.replace(root, prior['root']) for k, v in env.items()}
     base_env[OUTPUT] = '0'
     require(basis.comparison.fingerprint(base_env) == prior['environment_sha256']
             and env['STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS'] == '384'
             and env['STRATA_SYCL_CACHE_SCRATCH_LEASE'] == env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1',
             'ordinary 384-slot server placement changed')
+    return env
+
+
+def environment(row, case):
+    root = case['root']
+    env = ordinary_environment(row, root, row['ordinary_control'])
     probe = row['native_validation_probe']
     env.update(TMPDIR=root + '/tmp', XDG_CACHE_HOME=root + '/cache', STRATA_TRACE='1',
                STRATA_STATE_HASH='1', STRATA_SNAPSHOT_VERIFY='1', STRATA_DECODE_TIMING='1',
@@ -128,7 +132,7 @@ def current(row):
             and row['plans'] == [plan(row, name) for name in ORDER], 'frozen model inputs differ')
 
 
-def input_receipt(frame, rows, store, borrow):
+def input_receipt(frame, rows, store, borrow, *, trace_layers=True):
     label = 'strata prefill attention input: '
     traced = re.findall(r'^strata trace: prefill attention input after layer (\d+): '
                         r'eligible=(\d+) borrowed=(\d+) borrowed_bytes=(\d+) requested_D2D_bytes=(\d+)$',
@@ -149,14 +153,14 @@ def input_receipt(frame, rows, store, borrow):
     require(eligible > 0 and (requested, actual, used, borrowed_bytes, copied_bytes) ==
             (int(borrow), eligible, eligible if borrow else 0, nbytes if borrow else 0, 0 if borrow else nbytes),
             'wrong resident input selection, piece count or D2D byte count')
-    require(len(traced) == layers, 'missing or duplicate layer boundary')
+    require(len(traced) == (layers if trace_layers else 0), 'unexpected layer trace count')
     for layer, counts in enumerate(traced):
         completed = max(0, layer - 1)
         count, size = (pieces // layers) * completed, (volume // layers) * completed
         require(tuple(map(int, counts)) == (layer, count, count if borrow else 0,
                 size if borrow else 0, 0 if borrow else size), f'wrong input execution at layer {layer}')
     return dict(eligible=actual, borrowed=used, borrowed_bytes=borrowed_bytes, copy_bytes=copied_bytes,
-                checked_layers=layers)
+                checked_layers=len(traced))
 
 
 def check_reader():
