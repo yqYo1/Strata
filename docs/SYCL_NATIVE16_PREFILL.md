@@ -159,6 +159,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   V2 starts a fresh three-pair comparison with the same ELF and suite.
   The new reader reports work counts alongside timing ratios so different
   generated lengths or MTP work remain visible in the interpretation.
+  The 65537-token requests in the historical 1006.8 tok/s cohort and the
+  984.1 tok/s cohort have identical body hashes. Across all three inputs,
+  the GU/Down jobs and requested expert H2D bytes also match. The bank
+  requests 37.215, 37.173 and 37.137 GB respectively. The historical
+  path uses 384 expert slots. The current 512-slot path stages experts from
+  the first chunk and overlaps their upload with the remaining attention.
+  A same-period comparison will run the retained reference and current
+  copy/direct stores on the historical 384-slot configuration. Compare
+  the two current arms to isolate the store and use the old binary to check
+  whether its 1000 tok/s result reproduces. Keep first-request TTFT and
+  subsequent-request throughput separate.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
