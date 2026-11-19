@@ -38116,7 +38116,13 @@
     "report_sha256": "2b4a36f4de45b7d8914dc0dc07d01709ac8b883cb5e4c633586c32be8f7dc573",
     "review_sha256": "62d8f95050c3d0318ab9b9fa393dc139cb02676646b53c7651f1f89f0020b127",
     "finding": "The 0.2.16+4 quick benchmark and engine launcher now resolve from terminal/. The current Niko server may pass a health check while pointing to a different executable or profile. The reviewed launcher choices and actual minimum long-test context are recorded in upstream-status.json.",
-    "consumer": "First unmodified default/tuned 58ee32277 long and agent comparison. Retain report and corrections until then."
+    "consumer": "First unmodified default/tuned 58ee32277 long and agent comparison. Retain report and corrections until then.",
+    "retention": {
+      "retired_files": 30,
+      "retired_bytes": 4791288,
+      "manifest_sha256": "c97c8f117bd93695e9f4d75372c3bf47d499299d6109dbd58ca25ed8495a2b3b",
+      "retained": "reviewed report and corrective digest"
+    }
   },
   "prefill-mixed-host-expert-demand-20261120": {
     "topic": "Assess whether mixed-residency long prefill can avoid loading all experts before host-backed rows have consumed them.",
@@ -38130,6 +38136,12 @@
     "report_sha256": "145dad5c7ba96fc13c555f2c688baa1a72065927c3d24838d283a76f21e34e85",
     "review_sha256": "f81c8ee64b246b57cce2239ef30a1030f11d8279919e149fa93e1f3250d0cf58",
     "finding": "On the 253919-input probe, 253918 batched rows include 114688 GPU and 139230 host-backed rows (16 full 8192 chunks plus 8158). Top-k is 10. The ordinary path publishes the full residency map after its checked upload drain and resets the whole map. Each resident GPU window and each host-tail chunk have distinct times at which the host can see expert IDs. Actual regional demand unions are missing.",
-    "consumer": "Retain corrected report and review through one decision on measuring the regional expert union/first-use and late host-tail demand. Compare its measured bytes and ordering before selecting a smaller bank or speculating on speed."
+    "consumer": "Retain corrected report and review through one decision on measuring the regional expert union/first-use and late host-tail demand. Compare its measured bytes and ordering before selecting a smaller bank or speculating on speed.",
+    "retention": {
+      "retired_files": 27,
+      "retired_bytes": 3873533,
+      "manifest_sha256": "532ff84af253c18768319a3000ee0718d099a20994814f95d703a508ce58f7cc",
+      "retained": "reviewed report and corrective digest"
+    }
   }
 }
