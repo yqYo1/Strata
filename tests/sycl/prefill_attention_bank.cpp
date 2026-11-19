@@ -165,18 +165,32 @@ void check_prefill_attention_bank_input(size_t rows) {
     for (bool direct_store : {false, true}) {
         f.queue.memcpy(f.bank(), f.input.data(), f.cells * sizeof(uint16_t));
         f.queue.fill(scratch, Sentinel, f.cells);
+        std::vector<uint16_t> original;
+        if (rows == 1 && !direct_store) original = f.result();
         native::write_prefill_attention_from_bank(direct_store ? f.bank() : scratch, f.bank(),
                                                   bo, inj, rows, &f.queue);
-        if (!direct_store)
+        if (!direct_store) {
+            if (rows == 1) require(f.result() == original, "scratch output modified the borrowed bank");
             f.queue.memcpy(f.bank(), scratch, f.cells * sizeof(uint16_t));
+        } else if (rows == 1) {
+            std::vector<uint16_t> staging(f.cells);
+            checked_cleanup([&] {
+                f.queue.memcpy(staging.data(), scratch, staging.size() * sizeof(uint16_t));
+                f.drain();
+            }, [] {}, "borrowed input scratch witness");
+            require(std::all_of(staging.begin(), staging.end(), [](auto value) { return value == Sentinel; }),
+                    "in-place attention modified scratch");
+        }
         f.drain();
         require(f.result() == reference, "borrowed attention input changed BF16 output or guards");
     }
     if (rows == 1) {
-        bool rejected = false;
-        try { native::write_prefill_attention_from_bank(f.bank() + 2, f.bank(), bo, inj, 1, &f.queue); }
-        catch (const std::invalid_argument&) { rejected = true; }
-        require(rejected && f.result() == reference, "partially overlapping bank input was accepted");
+        int rejected = 0;
+        for (const auto& invalid : {std::pair{f.bank() + 2, 1}, std::pair{f.bank(), 0}, std::pair{f.bank(), 2}}) {
+            try { native::write_prefill_attention_from_bank(invalid.first, f.bank(), bo, inj, invalid.second, &f.queue); }
+            catch (const std::invalid_argument&) { ++rejected; }
+        }
+        require(rejected == 3 && f.result() == reference, "borrowed attention overlap or extent check failed");
     }
     std::cout << "attention input rows=" << rows << " copy_and_direct=1 bits=" << f.cells << " guards=1\n";
 }
