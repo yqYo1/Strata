@@ -322,17 +322,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   plane calculation reproduces the measured 888,410,624-byte tail offset
   at 64K. The largest proposed individual allocation (the residual)
   is below the reported 10,132,807,680-byte single-allocation limit.
-  Actual free memory and leases at admission still need verification.
+  The four traced requests at `5c760036d` admitted this layout with
+  4,245,643,264–4,262,002,688 bytes free at the planner check. Each
+  completed 48 GPU windows, including the split tail guard and queue drain.
+  Their request hashes, expert jobs, fused Down jobs, requested expert
+  and row-map bytes, and draft offers/accepts matched all three historical
+  processes body for body. The ordinary route restored zero draft-head
+  bytes. The traced native process exited normally without a fresh Xe fault.
+  Increasing the batched rows from 65,536 to 117,488 multiplies them by
+  1.793. The ordered QSA loop grows from 100,638,720 to 181,683,840
+  tiles (1.805 times): each of 12 layers and two KV heads processes
+  `ceil(min(position + 1, 2051) / 32)` tiles per fresh query. Counting
+  padded QK and PV matrix work gives 52.76 and 95.25 TFLOP respectively.
+  In contrast the median warmed expert-bank payload increases only from
+  37.17 to 38.54 GB (1.037 times). These different scaling rates motivate
+  measuring both lengths. Kernel time and physical traffic at 117K remain
+  open; the tile count is derived from the executed geometry.
   The 253919-token mixed-host path follows a different planner branch.
-  After the current bank comparison, use the same ordinary copy route,
-  executable, decoder placement and 262144 configuration. Trace one fresh
-  117489-token process before timing. The first request must pass its route
-  check before the next starts. Trace the same four distinct bodies to
-  establish per-request expert and MTP work for the clean comparison. Check
-  117488 GPU rows, zero host rows, the effective 128-slot bank, 48 completed
-  windows and the tail guard. If
-  placement differs, retain the actual admission and address the cause before
-  comparing rates. For clean speed use the historical four thinking-on
+  Keep the ordinary copy route, executable, decoder placement and 262144
+  configuration in the clean comparison. Use the historical four thinking-on
   request hashes in three independent processes. Keep first use separate;
   report each median of the last three prompt times, their PP and client
   TTFT. Reproduction of the 1000 PP milestone requires all three warmed
