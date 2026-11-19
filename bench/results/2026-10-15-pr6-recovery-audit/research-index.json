@@ -37995,7 +37995,13 @@
     "report_sha256": "39f62feaf929259ad5a3f3ec0540e5ddf4a95862d413dd8db612a240c7760c74",
     "review_sha256": "acab78d04aabd21572005f7ec650c28cf6827730ab81e773d0875081aa6e3030",
     "finding": "At WG128/SIMD16, subgroups 4–7 have a second padded row. A subgroup-uniform branch can skip that row’s softmax collectives if every tile publishes all 32 zero probabilities and a defined alpha and all outer barriers remain unconditional. The 14.38 s historical service is a whole-kernel observation. It does not bound the saving to a quarter of service.",
-    "consumer": "Next isolated padding comparison after the independent PV experiment. Check real-head state bits, define padded diagnostics and expose padded P in a test hook; output-only checks miss those rows. Compare actual loaded code and clean timing."
+    "consumer": "Next isolated padding comparison after the independent PV experiment. Check real-head state bits, define padded diagnostics and expose padded P in a test hook; output-only checks miss those rows. Compare actual loaded code and clean timing.",
+    "retention": {
+      "retired_files": 28,
+      "retired_bytes": 4591091,
+      "manifest_sha256": "bffd9a35c7d45674a0e9658cdccbdf10fce103175cce3a246790f07672616a36",
+      "retained": "reviewed report and corrective digest"
+    }
   },
   "decode-official-round-cost-bound-20261120": {
     "topic": "Bound decode per-round cost for the completed ordinary384 strong- and weak-MTP workloads.",
@@ -38009,7 +38015,13 @@
     "report_sha256": "a513de1a14ff29942fcbeb076d383cc1b9ad40c16aaa8e2c26e13b11063e1ed1",
     "review_sha256": "f034289add620864273176154503e28824396ac43775d897ac4e407d87b83d9c",
     "finding": "Scope mismatch. Both report and review used the historical resource-only code run (3157 output, 900 windows) for their numerical bounds. Its verifier/draft split cannot be applied to ordinary384 code or prose. The correct official samples are at prefill_attention_bank_generation_v3 with 2815/6823 output. No matched upper bound for a free draft or per-window hardware attribution follows.",
-    "consumer": "Use the ordinary384 per-workload engine decode time, accepted/offered counts and explicit scoped windows/terminal emissions in future diagnostics. The independent pre-task IPC status receipt matches the dispatch runtime; the filesystem-only check intentionally does not certify Orca. The report is excluded as a numeric reference for this cohort."
+    "consumer": "Superseded by ordinary384-mtp-final-window-accounting-20261120. Refer to its fixed-cohort count and reviewed aggregate timing design.",
+    "retention": {
+      "retired_files": 30,
+      "retired_bytes": 4603233,
+      "manifest_sha256": "dabb4e16edf4fa12c9a803bcb76239fdf7ad071be07ad6f30254cbbc341a5100",
+      "retained": "superseded by the ordinary384 final-window result; short correction in this index only"
+    }
   },
   "arc-host-copy-size-routing-20261120": {
     "topic": "Identify whether the qualified Intel UR/Level Zero stack changes its host-memory copy path across the actual canonical copy sizes.",
@@ -38023,7 +38035,13 @@
     "report_sha256": "ecf6f18f10ed33c40d69f17af8d3ddb1fd3f35de9676d4c6986da6588a12f395",
     "review_sha256": "674b68422133b701ef0e7de58719330b21e54f577ee91ce8913954497b433f32",
     "finding": "The 672 individual and 217 joined copies request the same 1,455,214,080 bytes. All three matched untraced sweeps favor individual copies. The timer includes overlay work, submission and both queue drains. The measured path suppresses UR copy offload. Physical routing, host staging and a runtime size threshold remain unmeasured.",
-    "consumer": "Keep the joined-copy model route closed. If investigating the slower activation, trace one representative size on the pinned runtime and separate host staging, submission and GPU completion. The original report and reviewed size distribution remain available for that comparison."
+    "consumer": "Keep the joined-copy model route closed. If investigating the slower activation, trace one representative size on the pinned runtime and separate host staging, submission and GPU completion. The original report and reviewed size distribution remain available for that comparison.",
+    "retention": {
+      "retired_files": 23,
+      "retired_bytes": 3666565,
+      "manifest_sha256": "d1a034b34359c882a5dbbe797cad05b814370c8642f69da24baa10d51f3ae872",
+      "retained": "reviewed report and corrective digest"
+    }
   },
   "ordinary384-mtp-final-window-accounting-20261120": {
     "topic": "Trace the MTP verifier window and final-token accounting of the six ordinary384 code/prose official runs only.",
@@ -38037,7 +38055,13 @@
     "report_sha256": "6a38931cbf010566b1635fe549cfce96774dd35dc60e59a2a6aed11d10c16a53",
     "review_sha256": "ec120839a780d223994b1c0ab3ba5fcd616749173ad7dd0da19bf1a737fb1d17",
     "finding": "For these six official processes only, the first window has T=1 and later windows T=4. With 2340/10143 offered drafts, code/prose used 781/3382 verifier windows. Accepted drafts plus windows exceed emitted output by two/one positions in the final EOS window. A generic upper bound of 1 + offered does not apply to variable T; the fixed-width counts here agree with the pinned source and outputs.",
-    "consumer": "Use existing aggregate verify/commit/draft time and window count on matched code and prose as the first resource measurement. Per-window phase times, accepted prefix and EOS position require a separate instrumented build; isolate polling and nested service intervals. A counterfactual run without drafting is needed before using a zero-draft ceiling."
+    "consumer": "Use existing aggregate verify/commit/draft time and window count on matched code and prose as the first resource measurement. Per-window phase times, accepted prefix and EOS position require a separate instrumented build; isolate polling and nested service intervals. A counterfactual run without drafting is needed before using a zero-draft ceiling.",
+    "retention": {
+      "retired_files": 24,
+      "retired_bytes": 4483252,
+      "manifest_sha256": "967c2a177a6c0adb3443fd32c154443ec1a46832e2ff03038be58811b4e84630",
+      "retained": "reviewed report and corrective digest"
+    }
   },
   "niko-0216-arc-window-ownership-20261120": {
     "topic": "Audit Niko 0.2.16 Arc wait failures, expert ID snapshot and queue ownership against the active fork paths.",
@@ -38051,7 +38075,13 @@
     "report_sha256": "ce7d623201181b037bdad07bd04aa26b0adb583dd37ad5a2d6037396e77bbb63",
     "review_sha256": "e0d0cdce1a706cdd5b008f5511073c68a20e10bf7b271b4bed92496128c4d7e8",
     "finding": "The measured fork borrows the caller stream, aliases its SYCL copy queue to it, drains it, and destroys only a distinct owned copy queue. Niko f59c0da97 has no new ownership fix for this path. Host-event errors withhold normal output; release or failed copy submission separately causes persistent refusal. No concurrent rewrite of the expert IDs in the synchronous callback has been demonstrated.",
-    "consumer": "Recheck queue destruction if the fork introduces a separate queue. Distinguish ordinary synchronization errors from explicit release in focused host tests. Audit device-side bounded waits against actual dispatch before proposing another change. No prior GPU fault cause follows."
+    "consumer": "Recheck queue destruction if the fork introduces a separate queue. Distinguish ordinary synchronization errors from explicit release in focused host tests. Audit device-side bounded waits against actual dispatch before proposing another change. No prior GPU fault cause follows.",
+    "retention": {
+      "retired_files": 28,
+      "retired_bytes": 4392674,
+      "manifest_sha256": "413f275852c69e152139f3bd21fc51467ac0df2f1d738231628966a0813a3f66",
+      "retained": "reviewed report and corrective digest"
+    }
   },
   "niko-0216-cpu-quant-experts-20261120": {
     "topic": "Trace Niko 0.2.16 own-quant CPU expert dispatch and compare the actual IQ3_S paths with the B570 fork.",
@@ -38065,6 +38095,12 @@
     "report_sha256": "8554c44810348bc2d39acd681380a1d03a65f7eed36ebb7646df8a7eb1a4512f",
     "review_sha256": "3af92a45eb46fdaede5b0d99c89338f1bc9b53cc5210e8fd2aeb8d22e51e1314",
     "finding": "The upstream-owned CPU quant provider and AVX2 IQ3_S gathered gate/up decoder are distinct changes. The local Ryzen 5 5600X has AVX2 and lacks AVX-VNNI; Niko’s automatic gather choice explicitly rejects non-Intel CPUs. At the qualified settings the automatic gathered variant cannot explain a default speed gain on this PC. Actual CPU IQ3_S miss counts remain unknown.",
-    "consumer": "Identify timed CPU cache-miss jobs by format, token count and phase. For a forced-gather comparison, gate/up and down are separate, and the generic provider fallback needs its own original license and dispatch check. Preserve decode-only selection where appropriate."
+    "consumer": "Identify timed CPU cache-miss jobs by format, token count and phase. For a forced-gather comparison, gate/up and down are separate, and the generic provider fallback needs its own original license and dispatch check. Preserve decode-only selection where appropriate.",
+    "retention": {
+      "retired_files": 30,
+      "retired_bytes": 3491708,
+      "manifest_sha256": "18dfe362613ce214d12942c60cc546f5f58c433e1ce4cf95bfcc2c0db25f7df1",
+      "retained": "reviewed report and corrective digest"
+    }
   }
 }
