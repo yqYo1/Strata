@@ -197,7 +197,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the faulted early native-copy configuration stays out of subsequent runs.
   The historical ELF previously reached 1006.8 tok/s. Its three new
   processes used identical request hashes, expert work, requested H2D
-  volume and MTP counts. The period difference remains unattributed.
+  volume and MTP counts. Replacing the old measurement root in the five
+  path-valued settings of the original environment template reproduces the
+  new template hash. The period difference remains unattributed.
   The ordinary official suite now checks the identical 16098-token request
   body from both original journals, six-turn agent sessions and repeated
   thinking-enabled high/low-acceptance generation. Keep both decode and
@@ -2785,7 +2787,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   A separate candidate retains the two BF16 probability fragments used in
   the probability-times-V product across its four output tiles. In the
   retained 14508 reference ELF (`dcb8efd4`), the selected ordered-exp
-  compute kernel is in the generic SPIR-V image, SHA-256
+  compute kernel is in the generic SPIR-V image. The current ordinary384
+  ELF (`a3dddff2`) contains the identical 170752-byte module, SHA-256
   `e9144cf11a608a279c94d7588e7fec7787e19fcca8f5ddcdf3381c742edbadd7`.
   The probability matrix load remains inside both loops in that image.
   Its address depends on the cell offset, while the V address also depends
