@@ -36860,5 +36860,61 @@
       ],
       "reason": "Owner and review closed. Keep the actionable comparison and collector lessons in the committed index."
     }
+  },
+  "prefill_partial_copy_bank_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "13bd8e0fce73d4cdf01fd897fe9e8da52432a156",
+    "reviewed_report_sha256": "0b2a89cac0193459caf9308a6d95af56b2907cb73e0cc8a77f609f43bce8fb28",
+    "source_manifest_sha256": "b9018c7cbd95ee2d478ba4d6629aaca68930c75aeafb0224e7a4f6a8eca03626",
+    "reviewer_sha256": "385d2769713403b70da3a475168d7a028724d7ba7020383e328c291758f8f8f8",
+    "run": "run_7693426f50e9",
+    "task": "task_7604c9cd1bc5",
+    "dispatch": "ctx_1cce76cc880d",
+    "terminal": "term_098a5801-0e1b-4a7d-8c1f-5a2c0397b468",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 23,
+    "worker_side_orca_status": {
+      "call": "call_a2d21d6b3f0542da849a4683f8770322",
+      "sha256": "c54e6c4437aef888c91aa7775e2ac6e0998a169dfb22307f0054b2ee003bb230"
+    },
+    "ownership_closed": true,
+    "findings": "Keep one unmapped in-order scratch slot below full-fit capacity. Prefix IDs may fit even when the whole layer demand needs scratch. Add checked partial admission with the same 512 backing first, then compare 512/384 backing with identical admission limit, scheduling and placement. Last-reader retirement and over-cap fallback need small fixtures. 340.8 MB less budget does not establish a speed gain.",
+    "observed_32K": {
+      "evidence_commit": "dc84c173eb3ebd06e559477b1e94df03d116cca3",
+      "evidence_key": "prefill_prefix_expert_net_numerical_v1",
+      "matched_arms": true,
+      "actual_read": 32769,
+      "first_rows": 8192,
+      "layers": 48,
+      "scope": "Both traces; per-layer first-row sets recompute all selected-ID hashes and conserve accepted uploads/bytes. 383 is the permanent capacity with one scratch slot.",
+      "samples": [
+        {
+          "request": 0,
+          "max_prefix_experts_per_layer": 362,
+          "max_demand_experts_per_layer": 415,
+          "layers_under_384_prefix": 48,
+          "layers_under_384_all_demand": 33,
+          "post_prefix_first_misses": 2236,
+          "post_prefix_requested_bytes": 4545996800
+        },
+        {
+          "request": 1,
+          "max_prefix_experts_per_layer": 366,
+          "max_demand_experts_per_layer": 414,
+          "layers_under_384_prefix": 48,
+          "layers_under_384_all_demand": 33,
+          "post_prefix_first_misses": 2228,
+          "post_prefix_requested_bytes": 4523161600
+        }
+      ]
+    },
+    "consumer": "Before planning a partial bank experiment: inspect 64K selected maxima. Preserve numerical and timing source keys; do not infer full demand, transfer throughput or speed from the prefix census.",
+    "retirement": {
+      "complete": false,
+      "review_point": "Retire closed worker/control/source and numerical scratch after the 64K matched cohort; retain compact verified findings."
+    }
   }
 }
