@@ -38173,11 +38173,17 @@
   "qsa-prefill-four-cell-k-layout-20261120": {
     "topic": "Compare a four-cell by four-dimension prepared-K layout with changing only the K loader's lane mapping in the current ordered-exp QSA prefill kernel.",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "7c76b7855 binds 14.376–14.383 seconds of QSA service to 100638720 tiles at 64K. Ordered-exp takes 224.05–224.21 ms spread and 139.68–139.78 ms clustered. The older 6491-query selected-cell capture reports page4, 45.3% median adjacent overlap; raw capture retired. Earlier reuse studies do not establish physical address footprints or repacking cost for this kernel.",
     "source_commit": "6c535c0c46549070485746eadc451f063e2e3782",
     "worker": "Orca gpt-6-luna medium",
     "reviewer": "native gpt-6-luna max",
-    "report_budget_bytes": 12288
+    "report_budget_bytes": 12288,
+    "report_sha256": "a782e84f139e0929b9c16096111624162f8fc0b8ee2781e17a70acbab081ae3a",
+    "review_sha256": "e4d68bae09f750be81edc22e776120b307b173ab8b6c22009940968a6a5f9ce1",
+    "finding": "The active vec4 loader maps 16 SIMD lanes to 16 distinct selected rows at one four-word offset. Four lanes are only a slice of the subgroup. Four rows times four BF16 values occupy 32 bytes. A sector count assumes a stated alignment. The pack reads physical KV pages; the consumer addresses prepared logical rows. Compiled SLM residency, conflicts and physical traffic remain unmeasured.",
+    "consumer": "Compare the lane-only candidate at c11c99275 first. It preserves prepared K bytes and transposed SLM destinations. A separate global K reorder needs pack-cost and total measurements.",
+    "retention": "Keep report and source view through the K loader versus prepared-layout decision, then retire duplicates.",
+    "worker_completion": "Task task_3c9633498b84 and dispatch ctx_88bd3f9e14b7 completed. The native review verified separate worker-side Orca status in the report header. Filesystem proof passed 15/15. The exact manually created terminal was closed after settlement."
   }
 }
