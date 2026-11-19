@@ -2969,8 +2969,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controller at `0ed10ef1d` requires the complete ordered compiler command
   for both kernels, including the device target and translator arguments,
   to match the checked original recipe apart from the two artifact paths.
-  Three independent clean timing processes follow the exact BF16 output
-  and FP32-state checks. Compilation and device measurement are pending.
+  Both fixture executables built from the pinned compiler commands. The
+  traced smoke and eleven numerical cases passed, including the packed
+  inputs, BF16 output, all sixteen FP32 head states and 262144-cell
+  addressing. Each of three untraced timing processes alternated six pairs
+  on each shape, including pack, compute and drain. At cap 2051, reuse divided
+  by original median time was 1.00198/1.00194/1.00065 for gather and
+  1.00364/1.00317/1.00253 for clustered cells. At cap 33 the ratios were
+  0.99878/1.01122/0.99390. All five GPU processes closed normally without
+  a fresh Xe fault. Retain the original ordered-exp kernel for all three
+  shapes. The reuse candidate did not qualify for a model trial.
   To identify the loaded machine code, join the PV launch site to its
   specific Level Zero kernel handle. The normal call also launches a pack
   kernel.

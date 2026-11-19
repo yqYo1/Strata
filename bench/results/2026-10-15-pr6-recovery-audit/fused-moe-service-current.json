@@ -518575,7 +518575,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "qsa_prefill_probability_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "a31f3bbfec095fc7f3fa1047113b417a02414676",
     "fixture_commit": "45a1b7b773d41e0de532d779ce7e48428ca76154",
     "build_sha256": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
@@ -518971,11 +518971,123 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "2",
+        "passed": true,
+        "ownership_closed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "--component",
+          "2"
+        ],
+        "environment_sha256": "523b946a178c685663d37ff82cda2bc2e8c2cdcfc7d67799ef5086c12149e3bc",
+        "validation": {
+          "pid": 1709271,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "clock_median_ns": 30.0,
+        "clock_p99_ns": 31,
+        "points": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                8.533159,
+                8.434242,
+                8.417821,
+                8.87755,
+                8.864025,
+                8.462065
+              ],
+              "reuse_probability": [
+                8.425274,
+                8.44394,
+                8.447597,
+                8.476432,
+                8.899803,
+                8.425966
+              ]
+            },
+            "median_time_ratio": 0.9938990506980078
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                224.1713,
+                223.579006,
+                224.361536,
+                223.650277,
+                224.140092,
+                223.955358
+              ],
+              "reuse_probability": [
+                223.636768,
+                224.467078,
+                224.740582,
+                224.173066,
+                223.783224,
+                224.215402
+              ]
+            },
+            "median_time_ratio": 1.0006539187130776
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "samples_ms": {
+              "ordered_exp": [
+                139.755224,
+                139.692934,
+                139.885949,
+                139.847694,
+                139.807899,
+                139.657302
+              ],
+              "reuse_probability": [
+                140.106659,
+                140.075337,
+                140.163354,
+                140.191235,
+                140.006414,
+                140.165354
+              ]
+            },
+            "median_time_ratio": 1.0025285523799217
+          }
+        ],
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
+    "passed": true,
     "active": false,
-    "complete": false,
+    "complete": true,
     "ownership_closed": true,
     "stages": [
       "build",
@@ -519041,6 +519153,34 @@
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
         "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
       }
+    },
+    "decision": {
+      "per_shape": [
+        false,
+        false,
+        false
+      ],
+      "process_ratios": [
+        [
+          0.9987831957979778,
+          1.0112189986315847,
+          0.9938990506980078
+        ],
+        [
+          1.0019818665030313,
+          1.001940077621391,
+          1.0006539187130776
+        ],
+        [
+          1.0036408279995757,
+          1.0031672242576513,
+          1.0025285523799217
+        ]
+      ],
+      "cap2051_model_plan_eligible": false,
+      "cap33_gather_plan_eligible": false,
+      "other_caps_timed": false,
+      "model_tested": false
     },
     "actual_input_groups": {
       "compiled": {
