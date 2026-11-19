@@ -51,14 +51,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   4.68 ms. These are nested calling-thread times.
   The wrapper may wait for earlier GPU work. The CPU profile does not measure
   the wire service or show that reducing CPU cycles will reduce prompt latency.
-  Next isolate only the MoE status destination. Compare current ordinary RAM
-  with same-context host USM kept alive through all readers, errors and
-  cancellation. Keep copy size, queue order, readiness branch, decode and
-  fault checks fixed. Time enqueue and the explicit drain together, including
-  setup in model speed, so moving a wait between wrappers cannot count as a
-  gain. Test exact status values and guarded retirement before repeated
-  matched 64K prefill and unchanged decode checks. Keep the current exact ELF
-  as the named 64K baseline while preparing this comparison.
+- Status readback placement closes at `d99bacc3f`
+  (`prefill_status_destination_v5`). The component invokes the exact
+  compatibility memcpy and stream drain from the retained runtime archive.
+  Both ordinary and host-USM destinations pass status values, bounds and
+  checked cancellation. Six counterbalanced timing processes close 60
+  eligible batches and two smoke processes close normally with no new fault.
+  Same-context host USM stays alive through retirement.
+  [SYCL USM allocation rules](https://github.khronos.org/SYCL_Reference/iface/usm_allocations.html).
+  With a drained producer, the three paired full-time ratios are
+  0.778/0.888/0.855 (geometric mean 0.839).
+  With queued synthetic producers, they are 0.652/2.086/1.268
+  (geometric mean 1.199). The comparison charges one USM allocation per
+  48 queued copies and includes both enqueue and explicit drain. Host USM
+  shifts substantial time to the explicit drain. Queued results miss the
+  repeated-gain gate. Keep ordinary placement on the model route.
+  The V4 clock-floor failure is retained, including the original 4.06–9.97 ms
+  queued batches. V5 increases queued repetitions from 48 to 384 while keeping
+  the 10 ms floor. V1–V3 are separate pre-GPU dependency/launch refusals.
+  Next measure the compatibility queue wait by actual callsite in the isolated
+  long-prefill path. Shortlist the wrapper after successful run_impl, which
+  can drain the same in-order queue twice. Preserve native prefix-list
+  retirement, score-status readiness, callback-borrow retirement and failure
+  cleanup. Compare prefill only after measuring an eligible wait and keep
+  decode separate. The 982.1 tok/s 64K stage-all ELF remains the reference.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective

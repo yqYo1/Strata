@@ -37215,5 +37215,105 @@
       "The CPU-only cohort attributes compat-queue waits. It measures ordinary SYCL per-event waits separately. Keep the earlier resident-event/later-barrier hold."
     ],
     "consumer": "Use only after locating a concrete compatibility-queue or native-list wait on a production dependency path. Test a single proposed wait change with matched model work, lifetime and error checks."
+  },
+  "prefill_compat_drain_callsite_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "a8af814c4be8014e184a7dbf2045f48be35d2fb9",
+    "reviewed_report_sha256": "846368df45c607608b5162d5886582f07ed4c4044eca926cdf22b8e128cddbe1",
+    "source_manifest_sha256": "cfa8daf0d755356126b60f0a743eca54298dd3d224e114380b27d9f354653add",
+    "reviewer_sha256": "42a3f899b86890379274b630f3fc7fafb90ec96d3c1f16d98c3055af60969dce",
+    "run": "run_7693426f50e9",
+    "task": "task_23f49875cba9",
+    "dispatch": "ctx_d982910af3ce",
+    "terminal": "term_d7b8082c-9b37-4b09-b0ca-28bafb695986",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 13,
+    "worker_side_orca_status": {
+      "call": "call_2f09c3e0f76441e3aab5e2ecab760349",
+      "sha256": "73d59bcbf62020cc91f7f03aabc438332ae9258b0caebfed674ad82f50ae6f55"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "Long-prefill admits copy==compute for this mode. One wrapper compatibility drain after a successful run_impl has no intervening same-queue submission on the cited path.",
+      "The outer drain also owns an independent native prefix-copy list. Preserve that retirement, the score-status guard, callback-specific drains and failure cleanup.",
+      "The aggregate 1069 compatibility waits do not establish this callsite cost. Measure its time before deciding whether a removal can materially change prefill."
+    ],
+    "consumer": "Pin the actual long-route callsite and repeated owner/callback behavior. Change one compatible queue wait only if its time supports advancement.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_compat_drain_callsite_20261119",
+          "files": 2,
+          "bytes": 15823,
+          "tree_sha256": "e7a5344117c2840a8dac338c6e1b096e7b0836adb06d27d6d345168c4cc35a0a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_compat_drain_callsite_20261119-control",
+          "files": 9,
+          "bytes": 19453,
+          "tree_sha256": "62101d07a84f98b78e1baabe7bdfeed3d643ad79b945beb981fd6253d086a705"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill_compat_drain_callsite_20261119",
+          "files": 10,
+          "bytes": 3773218,
+          "tree_sha256": "bbe505308a9d18bf994b412a5a5d2d8ca73484fa9d29866fa3a67e116e95fefd"
+        }
+      ]
+    }
+  },
+  "decode_acceptance_host_barriers_20261119": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed",
+    "source_commit": "a8af814c4be8014e184a7dbf2045f48be35d2fb9",
+    "reviewed_report_sha256": "4805ca75c10f93a688c26597092bed1f5620a6d92e491d01beda7dfce1111553",
+    "source_manifest_sha256": "5e980317c3f8e449143f005d1123b9a5cd0beec9238c2d7f180aa1b2dccc680b",
+    "reviewer_sha256": "539c80d414bab57320f964db2e670c3a47b236778d600d168cb149c20bc8411c",
+    "run": "run_7693426f50e9",
+    "task": "task_ccc00c486d22",
+    "dispatch": "ctx_1677a1b52ba7",
+    "terminal": "term_ff0a3f44-c39e-49ba-a5ce-f85387f9da12",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 10,
+    "worker_side_orca_status": {
+      "call": "call_1305a066946442c59ec3ebf7732f0d8e",
+      "sha256": "4f108c595095644392ff60b8ca087e781fba0a7cf866c7da7fd91a3863a992b2"
+    },
+    "ownership_closed": true,
+    "findings": [
+      "vLLM v0.11.2 rejection sampler returns fixed-width IDs with placeholders and parse_output filters on host after .cpu().numpy(). This is no evidence of barrier-free commit.",
+      "SGLang v0.5.22 Apache-2.0, TensorRT-LLM 1.1.0rc1 tagged license/Executor fields. Revalidate the exact source and license before implementation.",
+      "Preserve the selected ancestor path and its KV owners, reject unaccepted positions, and prevent streaming before acceptance is known."
+    ],
+    "consumer": "Retrieve after an actual low-batch decode trace shows verifier completion through host acceptance blocks a subsequent useful enqueue.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode_acceptance_host_barriers_20261119",
+          "files": 2,
+          "bytes": 16466,
+          "tree_sha256": "fe77214ec15085752a6e8f5a4754253ac360c2803205cd79fa02716899ffef0c"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode_acceptance_host_barriers_20261119-control",
+          "files": 9,
+          "bytes": 18580,
+          "tree_sha256": "cebe8e530f3b4e5ccb517b756a74d109616ffb65c7021f511b9ea12426abe3bc"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/decode_acceptance_host_barriers_20261119",
+          "files": 7,
+          "bytes": 3336334,
+          "tree_sha256": "98412da588c528a7e4350d7d26de56aacb2f9b836c162c9208e68a16bdce369d"
+        }
+      ]
+    }
   }
 }
