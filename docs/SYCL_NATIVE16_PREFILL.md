@@ -2843,6 +2843,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and bytes, yet allow all 24 layers to fit. Both examples use the observed
   2,176,000 / 2,329,600 / 2,662,400 bytes per expert. Measure per-layer
   demand before estimating scheduling gains from these aggregate counters.
+  The checked bank footer adds one direct observation. The slot owner is
+  recreated for each layer. At layer 47 the 384-slot layout reserves one
+  scratch slot and each first use publishes a permanent entry until 383
+  entries are used. Below that limit the final occupancy equals the exact
+  distinct expert demand. In all four `4775de3b0` bank variants the restored
+  8208-row suffix used 215 experts after the 32K prefix, and 174 after the
+  near-capacity prefix. At 2,662,400 bytes per expert, layer 47 alone could
+  issue 572,416,000 and 463,257,600 bytes early, respectively. The fresh
+  32K footer reached 383 and cannot distinguish an exact fit from overflow.
+  These counts qualify workloads for a scheduling comparison; they do
+  not measure overlap or a time saving.
 
   The opt-in `STRATA_SYCL_PREFILL_FULLFIT_UPLOAD=eager-demand-fit`
   candidate retains the ordinary full-bank policy and tries to issue all

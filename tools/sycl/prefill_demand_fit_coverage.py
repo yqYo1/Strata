@@ -72,7 +72,10 @@ def check_dispatch(text, rows, policy, layers):
     end = workspace.one(text, 'strata MoE expert bank complete: ')
     counts = sum(n for _, _, n in layers)
     size = sum(stride * n for _, stride, n in layers)
+    final_slots, _, final_demand = layers[-1]
+    final_permanent = min(final_demand, final_slots - int(final_slots < 512))
     require(end['final_drain'] == 'checked' and int(end['permanent_hits']) == 0
+            and (int(end['permanent_slots']), int(end['total_slots'])) == (final_permanent, final_slots)
             and int(end['uploads']) == counts and int(end['requested_H2D_bytes']) == size,
             'checked bank totals differ from the single-window routed work')
     return dict(policy=policy, uploads=counts, requested_bytes=size, eligible_layers=[i for i, _, _ in eligible],
@@ -127,7 +130,7 @@ def check_reader():
     layers = [(512, 1510400, 32)] * 24 + [(469, 2176000, 468)] * 12 + [(438, 2329600, 438)] * 12
     rows = 65536
     footer = ('strata MoE expert bank complete: uploads=11640 requested_H2D_bytes='
-              + str(sum(stride * n for _, stride, n in layers)) + ' permanent_hits=0 final_drain=checked')
+              + str(sum(stride * n for _, stride, n in layers)) + ' permanent_hits=0 permanent_slots=437 total_slots=438 final_drain=checked')
     full = [f'strata prefill fullfit upload: policy=eager layer={i} first_row=0 logical_experts=32 '
             f'accepted_copy_commands=32 requested_H2D_bytes={32 * 1510400} '
             'publication=accepted_same_queue native_completion=unchecked_until_outer_drain' for i in range(24)]
