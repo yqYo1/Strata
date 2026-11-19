@@ -2875,6 +2875,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   exactly 3,013 commands and 11,164,427,264 bytes in each request.
   This is a cross-check on aggregate demand. The trace does not associate
   each copy with a call site or measure physical PCIe traffic.
+  The first clean four-way BF16 block at `03a379bba` also establishes
+  expert demand for layer 47 on the three 65537-token bodies. Its checked
+  final bank occupancy was 260, 256 and 261 in all four processes. These
+  counts are below the 383 permanent slots in the 384-slot bank, so none
+  of this layer's experts needed its scratch slot. At 2,662,400 bytes per
+  expert, this layer alone could issue 692,224,000, 681,574,400 and
+  694,886,400 bytes before its first reader. Earlier issue keeps the same
+  transfer volume. The model comparison still needs to measure its timing.
   The retained request summaries have no per-copy submission IDs or
   pointer classes to join to individual tensor uploads. The split
   accumulator submits both source and inverse int32 row maps. The two
