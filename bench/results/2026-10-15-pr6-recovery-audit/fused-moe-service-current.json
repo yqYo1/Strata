@@ -516958,5 +516958,72 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "prefill_resident_input_device_v1": {
+    "source": "1bf54ec3277f60c77417dac68642966f3782652d",
+    "build_source": "a31f3bbfec095fc7f3fa1047113b417a02414676",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_prefill_attention_bank_test",
+      "sha256": "c37d721a946e5b513f010f8295b74a4a21eee11276ee46afd26a66a4cefb08e9",
+      "bytes": 2814656
+    },
+    "native_build_sha256": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_prefill_attention_bank_test",
+      "input-correctness"
+    ],
+    "environment_sha256": "a4228f57451d8f2bb61e5f4c1d2e4b8755b6357c8a2ea1c83e1069f19d3c0117",
+    "budgets": {
+      "wall": 180,
+      "cpu": 360,
+      "rss_cap": 4294967296,
+      "text_cap": 33554432,
+      "file_cap": 67108864,
+      "total_cap": 83886080
+    },
+    "native_exit_code": 0,
+    "rows": [
+      1,
+      63,
+      7905,
+      8191,
+      8192
+    ],
+    "resident_window": [
+      8,
+      3
+    ],
+    "arms": 4,
+    "validation": {
+      "pid": 1630250,
+      "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+      "threads_before": 1,
+      "preinit": 37,
+      "config_enabled": true,
+      "first_init": true,
+      "dispatch_result": 46,
+      "output_untouched": true,
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "providers": {
+      "initialized_ELFs": 37,
+      "sha256": "6a7434323eb08cd14d77b43fc469d69e56f19655b51b9e450d41e0d4adc42424",
+      "required_providers_verified": true,
+      "source": "glibc constructors;not speed or hardware utilization"
+    },
+    "host_probe_accepted": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "passed": true
   }
 }
