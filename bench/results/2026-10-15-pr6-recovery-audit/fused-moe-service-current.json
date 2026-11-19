@@ -499384,6 +499384,128 @@
       "sha256": "bdf0806cfb81e02ec970d97f5817c7ea6a98c6096df997a3d956297345ee3e85"
     },
     "environment_template_sha256": "a2b46309dbc52228704ecfa64c06a9aa6aeca726f961b149847b89f2ec9e3b5d",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "failed_scope_diagnostic": {
+      "qualified": false,
+      "proof": "First audited request only. Coverage gate failed. All selected records resolve to the exact ELF direct calls.",
+      "failure": "RuntimeError('sampled call and clock coverage insufficient for attribution')",
+      "scope_samples": 1034,
+      "scope_expect": 1069,
+      "covered_cpu_s": 18.502205701,
+      "scope_cpu_s": 18.524359779,
+      "covered_wall_s": 18.555131134,
+      "scope_wall_s": 18.586412807,
+      "top_site": {
+        "pc": "4b400a",
+        "symbol": "_ZN6strata7prefill7Prefill8run_implEPKlllRNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE",
+        "error_literal": "prefill MoE window: attention store/drain",
+        "source": "src/prefill/prefill.cpp",
+        "logical_rows": 32768,
+        "logical_copies": 192,
+        "count": 192,
+        "cpu_ns": 17134611010,
+        "wall_ns": 17181611372
+      },
+      "caller_counts": {
+        "4b6bcd": {
+          "count": 210,
+          "cpu_ns": 7113276,
+          "wall_ns": 7264206
+        },
+        "448e73": {
+          "count": 48,
+          "cpu_ns": 100316,
+          "wall_ns": 130336
+        },
+        "580507": {
+          "count": 48,
+          "cpu_ns": 148852,
+          "wall_ns": 179060
+        },
+        "55d826": {
+          "count": 48,
+          "cpu_ns": 117069,
+          "wall_ns": 148097
+        },
+        "55d90b": {
+          "count": 48,
+          "cpu_ns": 231725713,
+          "wall_ns": 233998621
+        },
+        "4494ef": {
+          "count": 48,
+          "cpu_ns": 203731,
+          "wall_ns": 236216
+        },
+        "4495b7": {
+          "count": 48,
+          "cpu_ns": 151069156,
+          "wall_ns": 151521031
+        },
+        "4b400a": {
+          "count": 192,
+          "cpu_ns": 17134611010,
+          "wall_ns": 17181611372
+        },
+        "497db3": {
+          "count": 48,
+          "cpu_ns": 435659,
+          "wall_ns": 468569
+        },
+        "4c5975": {
+          "count": 48,
+          "cpu_ns": 143206,
+          "wall_ns": 174530
+        },
+        "499839": {
+          "count": 48,
+          "cpu_ns": 1025282,
+          "wall_ns": 1060286
+        },
+        "49b787": {
+          "count": 48,
+          "cpu_ns": 14028181,
+          "wall_ns": 14065278
+        },
+        "49bc7d": {
+          "count": 48,
+          "cpu_ns": 689840395,
+          "wall_ns": 692093821
+        },
+        "4b4908": {
+          "count": 48,
+          "cpu_ns": 283979,
+          "wall_ns": 321205
+        },
+        "4b49e4": {
+          "count": 48,
+          "cpu_ns": 109694,
+          "wall_ns": 140033
+        },
+        "4c325a": {
+          "count": 4,
+          "cpu_ns": 14777,
+          "wall_ns": 17272
+        },
+        "49607f": {
+          "count": 4,
+          "cpu_ns": 271235405,
+          "wall_ns": 271701201
+        }
+      },
+      "trace_sha256": "14bf1f1795bff2798b3ad95159019d39e6b272b11031abcc19a9f7f7ee187836",
+      "first_use_prompt_ms": 56204,
+      "first_use_pp_tps": 583.0,
+      "missing": "35 entries outside the measured direct-compatibility scope remain unclassified. Cannot qualify warm timing."
+    },
+    "physical_owner_reconciliation": {
+      "captured_identities": 4,
+      "physical_executors_gone": true,
+      "original_ownership_closed": false,
+      "original_observation_complete": false,
+      "limits": "Physical absence permits named-session cleanup only;original validation/outcome stays unchanged."
+    },
+    "original_outcome_retained": true,
+    "current_sink": "Native fd 2 verified as the owned regular engine.stderr file during execution."
   }
 }
