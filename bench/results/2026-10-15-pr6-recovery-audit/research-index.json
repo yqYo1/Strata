@@ -38152,6 +38152,14 @@
     "source_commit": "698f9d7bfdf1aff796144ab0b6ae32a789eb0065",
     "worker": "Orca gpt-6-luna medium",
     "reviewer": "native gpt-6-luna max",
-    "report_budget_bytes": 12288
+    "report_budget_bytes": 12288,
+    "first_attempt": {
+      "status": "failed_before_report",
+      "dispatch": "ctx_51b528243b91",
+      "task": "task_f3907738e8fe",
+      "reason": "Terminal exited on SIGXFSZ after passing its read-only filesystem check. The launch applied an 8 MiB per-file limit to the whole Codex process. The affected file is unknown.",
+      "proof_sha256": "5638661898fdeaa04098aa4e8ca66f7dcbb95801b6c2586b1257c84bc1b6a927",
+      "retry": "Keep isolated report scope, the 12 KiB report budget, 180 CPU seconds and 600 s wall limit; remove the whole-process file-size limit for the retry."
+    }
   }
 }
