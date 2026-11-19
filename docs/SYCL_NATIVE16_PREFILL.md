@@ -2884,6 +2884,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
   each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
   requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  For these 65,536 fresh batched rows, row `t` selects up to
+  `min(t + 1, 2051)` cells. The 12 attention layers and two KV heads
+  execute 100,638,720 tiles of 32 cells. The QK and PV matrix products
+  each operate on 16 padded head rows and 256 dimensions. Counting a
+  multiply-add as two operations gives 52.76 TFLOP, or 3.67 TFLOP/s
+  over the measured compute-kernel service. Reading 256 BF16 values
+  each for K and V per valid cell gives at most 3.252 TB of logical
+  reads before cache reuse. Physical traffic and XMX utilization remain
+  unmeasured. In `qsa_prefill_probability_v1`, the ordered-exp reference
+  with 8,192 queries and width 2,051 took 224.05–224.21 ms on spread
+  cell IDs and 139.68–139.78 ms on clustered IDs (three process medians
+  per pattern). The generator changes the selected IDs, so the two inputs
+  can encounter different missing pages and reuse. To isolate layout,
+  measure the model's selected-row locality and compare equivalent physical
+  layouts with the same logical IDs, values and reduction order. Include
+  repacking in that comparison.
   In each trace, 9717 D2D commands requested 128,861,904,128 bytes in
   0.7884 and 0.7880 s of GPU service. Removing BF16 input/output copies
   can also change submission or scheduling costs, but the measured D2D
