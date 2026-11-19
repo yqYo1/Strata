@@ -197,6 +197,7 @@ struct NativeDensePhase {
     bool enabled=false, supported=false, no_token_graph=false;
     strata::core::NativeDense* dense=nullptr;
     strata::core::CanonicalDenseBank* canonical=nullptr;
+    bool prefill_canonical_contiguous_copies=false;
     strata::core::WeightTable* table=nullptr;
     strata::core::SessionState* session=nullptr;
     strata::core::SessionGraphs* graphs=nullptr;
@@ -528,7 +529,8 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
                 if(!phase.dense->activate_layer(int(layer),stream,{true},e)) return false;
                 ++activated_layers;
                 if(phase.canonical) {
-                    if(!phase.canonical->activate(int(layer),stream,phase.dense->layer_view(),e)) return false;
+                    if(!phase.canonical->activate_prefill_layer(int(layer),stream,phase.dense->layer_view(),e,
+                            phase.prefill_canonical_contiguous_copies)) return false;
                     overlay=&phase.canonical->view();
                 } else overlay=&phase.dense->layer_view();
                 return true;
@@ -2726,6 +2728,14 @@ int main(int argc, char** argv) {
 #endif
     const char* canonical_bank_switch=std::getenv("STRATA_PREFILL_CANONICAL_DENSE_BANK");
     const bool canonical_dense_bank_enabled=canonical_bank_switch && !std::strcmp(canonical_bank_switch,"1");
+    const char* canonical_copies=std::getenv("STRATA_SYCL_PREFILL_CANONICAL_CONTIGUOUS_COPIES");
+    const bool prefill_canonical_contiguous=canonical_copies && !std::strcmp(canonical_copies,"1");
+    if(canonical_copies && !prefill_canonical_contiguous && std::strcmp(canonical_copies,"0")) {
+        std::fprintf(stderr,"prefill canonical contiguous copies requires 0 or 1\n");return 2;
+    }
+    if(prefill_canonical_contiguous && !canonical_dense_bank_enabled) {
+        std::fprintf(stderr,"prefill canonical contiguous copies requires the canonical dense bank\n");return 2;
+    }
 #ifndef STRATA_ENABLE_SYCL
     if(canonical_dense_bank_enabled) {std::fprintf(stderr,"canonical dense bank requires SYCL\n");return 2;}
 #endif
@@ -4800,6 +4810,7 @@ int main(int argc, char** argv) {
     dense_phase.no_token_graph=o.no_token_graph;
     dense_phase.dense=&native_dense;dense_phase.table=&wt;dense_phase.session=&ss;
     dense_phase.canonical=canonical_dense_bank_enabled ? &canonical_dense : nullptr;
+    dense_phase.prefill_canonical_contiguous_copies=prefill_canonical_contiguous;
     dense_phase.graphs=&gr;dense_phase.token=&tgraph;
     dense_phase.recapture=[&](std::string& e) {
         return strata::core::session_capture(wt,g,ss,d_parts,gr,e,false,0,-1,captured_post);
