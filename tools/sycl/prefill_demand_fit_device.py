@@ -35,6 +35,10 @@ def git(*args):
     return subprocess.check_output(['git', *args], cwd=P, timeout=30)
 
 
+def fixture_path(value):
+    return value.replace(str(bank.ROOT), str(ROOT))
+
+
 def commands(root):
     return subprocess.check_output(['/usr/bin/ninja', '-t', 'commands', TARGET], cwd=root / 'build',
                                    timeout=30, text=True).replace(str(root), '<root>').splitlines()
@@ -80,9 +84,9 @@ def compile_inputs(parent, source_hashes):
         objects[obj] = sha(ROOT / 'build' / obj)
         prior = object_inputs(bank.ROOT, obj)
         actual = object_inputs(ROOT, obj)
-        require(actual == {Path(move(str(p))) for p in prior}, 'compiled headers differ: ' + obj)
+        require(actual == {Path(fixture_path(str(p))) for p in prior}, 'compiled headers differ: ' + obj)
         for path in prior:
-            new = Path(str(path).replace(str(bank.ROOT), str(ROOT)))
+            new = Path(fixture_path(str(path)))
             want = source_hashes[str(path.relative_to(bank.ROOT/'source'))] if path.is_relative_to(bank.ROOT/'source') else parent['actual_inputs']['compiled'][str(path)]
             require(sha(new) == want, 'unverified compilation input: ' + str(new))
             compiled[str(new)] = want
@@ -103,9 +107,8 @@ def build(row, parent, child):
             source_hashes[name] = sha(dest)
         require(sha(dest) == source_hashes[name], 'incorrect materialized source ' + name)
     row['source_files_sha256'] = signature(source_hashes)
-    move = lambda s: s.replace(str(bank.ROOT), str(ROOT))
-    env = {k: move(v) for k, v in parent['recipe']['environment'].items()}
-    configure = list(map(move, parent['recipe']['configure']))
+    env = {k: fixture_path(v) for k, v in parent['recipe']['environment'].items()}
+    configure = list(map(fixture_path, parent['recipe']['configure']))
     launch(child, 'configure', configure, env, P, BUILD_LIMIT)
     planned = commands(ROOT)
     require(planned == commands(bank.ROOT), 'actual fixture compile, archive or link commands differ')
