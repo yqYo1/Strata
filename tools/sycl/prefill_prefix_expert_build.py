@@ -12,12 +12,12 @@ import coherent_model_basis as basis
 import prefill_window_build as builder
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'prefill-prefix-expert-transport-native-v1'
-KEY = 'prefill_prefix_expert_transport_native_v1'
+ROOT = B / 'prefill-prefix-expert-transport-native-v2'
+KEY = 'prefill_prefix_expert_transport_native_v2'
 HOST = 'prefill_fullfit_upload_plan_test'
-TARGETS = [*builder.TARGETS, 'sycl_moe_upload_census_host_test', HOST, 'sycl_fullfit_arena_source_bench']
+TARGETS = [*builder.TARGETS, 'sycl_moe_upload_census_host_test', HOST]
 OVERLAYS = (
-    'bench/sycl/fullfit_attention_overlap.hpp', 'cmake/sycl_backend.cmake',
+    'cmake/sycl_vllm_xe2_native16.cmake',
     'include/strata/prefill/expert_bank_upload.hpp',
     'include/strata/prefill/fullfit_upload_plan.hpp', 'include/strata/sycl/native_copy_list.hpp',
     'src/prefill/prefill.cpp', 'src/prefill/layer_major.inc', 'src/prefill/moe_window.inc',
@@ -25,9 +25,10 @@ OVERLAYS = (
 )
 SOURCE_BUILD = 'prefill_prefix_expert_host_usm_native_v1'
 SOURCE_RESULT = 'prefill_prefix_expert_host_usm_timing_v1'
+CONFIGURE_FAILURE = 'prefill_prefix_expert_transport_native_v1'
 BUILD_HISTORY = ('prefill_window_native_v2', 'prefill_first_demand_native_v1',
                  'prefill_prefix_router_native_v1', 'prefill_prefix_expert_native_v1', SOURCE_BUILD)
-HISTORY = (*BUILD_HISTORY, SOURCE_RESULT)
+HISTORY = (*BUILD_HISTORY, SOURCE_RESULT, CONFIGURE_FAILURE)
 source, write = builder.source, builder.write
 require, sha, signature = basis.require, basis.sha, basis.signature
 save_build = builder.save
@@ -60,6 +61,10 @@ def recover(native, prior, revision):
             and timing['artifact_retirement']['build']['source_sha256'] == signature(hashed(payload))
             and timing['disposition']['selected_source'] == 'arena',
             'exact closed source comparison and recovered retired build required')
+    failure = prior[CONFIGURE_FAILURE]
+    require(failure['stage'] == 'failed' and failure['ownership_closed'] and not failure['active']
+            and failure['failure']['stage'] == 'cmake' and not failure['failure']['gpu_executed'],
+            'preserve the closed original configure failure')
     changes = dict(source.blobs(P, revision, OVERLAYS))
     require(set(changes) == set(OVERLAYS)
             and all((P / path).read_bytes() == raw for path, raw in changes.items()),

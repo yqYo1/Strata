@@ -71,9 +71,18 @@ add_custom_target(strata_vllm_xe2_image DEPENDS "${_strata_native_image}" "${_st
 target_compile_definitions(strata_prefill PRIVATE STRATA_SYCL_VLLM_XE2_NATIVE16=1)
 add_dependencies(strata_prefill strata_vllm_xe2_image)
 target_link_libraries(strata_prefill INTERFACE "${_strata_native_image}" "${_strata_native_host}")
+option(STRATA_SYCL_PREFILL_NATIVE_COPY "Build the experimental Level Zero prefill copy transport" OFF)
+if(STRATA_SYCL_PREFILL_NATIVE_COPY)
+  target_compile_definitions(strata_prefill PRIVATE STRATA_SYCL_PREFILL_NATIVE_COPY=1)
+  target_link_libraries(strata_prefill PRIVATE ze_loader)
+endif()
 message(STATUS "Strata: opt-in vLLM Xe2 native16; isolated BMG G21 AOT object; existing engine JIT; external TLA pinned; UNQUALIFIED")
 
 function(strata_add_vllm_native16_tests)
+  if(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    target_compile_definitions(sycl_expert_bank_test PRIVATE STRATA_SYCL_PREFILL_NATIVE_COPY=1)
+    target_link_libraries(sycl_expert_bank_test PRIVATE ze_loader)
+  endif()
   # Pure CPU proofs for the opt-in long window; manual targets, no GPU loader.
   add_executable(prefill_moe_routes_test EXCLUDE_FROM_ALL tests/moe_accum_routes.cpp)
   add_executable(prefill_moe_workspace_test EXCLUDE_FROM_ALL tests/prefill_moe_workspace.cpp)
