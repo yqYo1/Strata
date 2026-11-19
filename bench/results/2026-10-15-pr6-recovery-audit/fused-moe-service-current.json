@@ -499276,7 +499276,7 @@
     "compile_commands": 2
   },
   "prefill_status_destination_v5": {
-    "stage": "built",
+    "stage": "running",
     "source_commit": "95a863dbe1e58df801f0e05bfad046cafeb5c38a",
     "source_sha256": "e953eed269d57d3fd7b297f262a499eec965dc2fd595508597f979c3e4600403",
     "dependencies_sha256": "6aec49f7a9abb71888fed4dd9496a2557173b076b7379709c2bb6548d6ce0f78",
@@ -500115,7 +500115,45 @@
       "file_cap": 16777216,
       "total_cap": 33554432
     },
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "operation": "smoke",
+        "placement": "ordinary",
+        "host_probe_accepted": true,
+        "setup_ms": 0.008255,
+        "clock_triplet_median_ms": 4e-05,
+        "samples": {
+          "ready": [],
+          "queued": []
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 75208,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "complete": false,
