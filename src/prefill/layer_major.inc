@@ -670,6 +670,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             err = "STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE must be 0 or 1"; return false;
         }
         window_context->direct_attention_bank = direct && !std::strcmp(direct, "1");
+        const char* read_bank = std::getenv("STRATA_SYCL_PREFILL_READ_ATTENTION_BANK");
+        if (read_bank && std::strcmp(read_bank, "0") && std::strcmp(read_bank, "1")) {
+            err = "STRATA_SYCL_PREFILL_READ_ATTENTION_BANK must be 0 or 1"; return false;
+        }
+        window_context->read_attention_bank = read_bank && !std::strcmp(read_bank, "1");
     }
     if (command_profile_on)
         window_context->command_trace.reset(new sycl_backend::command_profile::Trace(m.cs));
@@ -1256,6 +1261,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (std::getenv("STRATA_TRACE")) {
             std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: completed %lld chunks\n",
                          (long long)layer, (long long)g.n_layers, (long long)cursor.calls);
+            if (window_context) {
+                std::fprintf(stderr, "strata trace: prefill attention input after layer %lld: "
+                    "eligible=%llu borrowed=%llu borrowed_bytes=%llu requested_D2D_bytes=%llu\n",
+                    (long long)layer, (unsigned long long)window_context->attention_input_pieces,
+                    (unsigned long long)window_context->attention_borrowed_pieces,
+                    (unsigned long long)window_context->attention_borrowed_bytes,
+                    (unsigned long long)window_context->attention_input_copy_bytes);
+            }
             std::fflush(stderr);
         }
         // No callback retains the per-pass cursor/layer references past this
@@ -1384,6 +1397,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             int(window_context->direct_attention_bank), (unsigned long long)window_context->attention_bank_pieces,
             (unsigned long long)window_context->attention_direct_pieces,
             (unsigned long long)window_context->attention_copy_bytes);
+    if (window_context)
+        std::fprintf(stderr, "strata prefill attention input: requested=%d eligible=%llu borrowed=%llu "
+            "borrowed_bytes=%llu requested_D2D_bytes=%llu\n", int(window_context->read_attention_bank),
+            (unsigned long long)window_context->attention_input_pieces,
+            (unsigned long long)window_context->attention_borrowed_pieces,
+            (unsigned long long)window_context->attention_borrowed_bytes,
+            (unsigned long long)window_context->attention_input_copy_bytes);
     return true;
 #endif
 } catch (const std::exception& exc) {

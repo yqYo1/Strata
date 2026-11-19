@@ -210,8 +210,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All three comparisons passed the predeclared decode-preservation gate with
   matched work counts. The separate ordinary384 long-prefill speed gate
   above still selects copy. The CSV retains each configuration and workload.
-  On `perf/prefill-bank-input`, the resident-input native source is
-  `1bf54ec32`. It lets eligible prefill layers read the preceding layer's
+  In the copy arm the median engine decode time per output token was 84.75 ms
+  for code (2036 of 2340 offered drafts accepted) and 142.33 ms for prose
+  (3442 of 10143). The 70 tok/s target allows 14.29 ms per output. These
+  samples do not split the time spent verifying and drafting. The historical
+  resource run with 3157 outputs and 900 windows used a different executable
+  and cannot supply that split. Measure it on the same ordinary workloads
+  and account for the final EOS window before estimating a draft-cost ceiling.
+  The resident-input candidate at `1bf54ec32` is integrated into
+  `feature/sycl` for validation. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after
   the existing layer drain. Decode is outside this change. The model
   controller at `6e6a37930` checks the expected 46 of 48 layers in each
@@ -224,9 +231,68 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   use ordinary SYCL copies. The standalone controller at `b89af0bff` checks
   all four input/output choices at 16385 and exactly 262144 tokens, including
   the engine's checked final-slot marker and zero output at capacity.
-  Build, device and model checks are pending. If they pass, `4d9b176e5` compares
+  The coherent engine build at `bea6f8199` produced 11 executables from 133
+  translation units. The host upload plan passed. The Level Zero traced
+  BF16 fixture at `b92d822d7` passed for 1, 63, 7905, 8191 and 8192 rows
+  on the B570. A two-piece window (8 + 3 rows) also passed for all four
+  input/output combinations, including the final callback. Validation was
+  quiet and the process exited normally without a fresh Xe fault.
+  Model state, physical capacity and clean speed remain open. After the
+  required model state checks, `4d9b176e5` compares
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
+
+- The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
+  the previous layer's resident BF16 rows directly in the native attention
+  norm, mix and residual write. Layer zero, the PLE bridge at layer one when
+  active, host-backed rows and non-window pieces keep their existing
+  inputs. Native16 admission rejects the legacy float boundary and phase
+  audits before window execution. Decode uses its existing route. The window's
+  checked queue drain still precedes bank reuse and callbacks. A window
+  can end with a partial second device span. After the attention stores
+  drain, the window FFN updates the bank in place and drains before
+  `complete_piece` advances the layer cursor. The final layer restores
+  each completed BF16 span into the float callback buffer.
+  For 65536 batched rows, each eligible layer avoids 1.25 GiB of requested
+  D2D input copies. With PLE active, 46 eligible layers would avoid 57.5 GiB.
+  Verify actual bytes and placement before using this estimate. This
+  candidate has no measured speed or model qualification yet.
+  Use the retained ordinary 384-slot configuration after the existing
+  comparison closes. First verify BF16 results and guards at 1, 63, 7905,
+  8191 and 8192 rows, including partial overlap refusal and both output
+  destinations. The same-build fixture also exercises two resident pieces
+  of 8 and 3 rows, prior FFN publication, norm/mix, both attention stores,
+  final FFN update and callback restoration in all four arms. It uses
+  synthetic projections. Actual model dispatch, cancellation and fallback
+  still need separate evidence. In the numerical runs verify the unborrowed
+  PLE layer, mixed host tail and disabled selector against their copied-input
+  controls. Check the existing audit admission refusal separately. Use the
+  cache-enabled native verification route for active state hashes: the
+  clean benchmark disables the prompt cache and cannot emit that evidence.
+  The model controller takes the traced 48-layer input counters from
+  `1bf54ec32` at the checked layer drains. It requires zero eligible
+  reads through the PLE layer and the expected bytes at every later
+  layer. Equal final totals can hide an erroneous earlier read.
+  Exercise the four combinations on independent native servers at
+  32769 and 253919 initial tokens. After switching to 33 unrelated
+  tokens, restore the original and process 8209 fresh tokens, including
+  a 16-row tail in the batched suffix. Match active state, publications
+  and restored decode-cache payload for every arm. These cases leave
+  output room; the physical final slot has its own test.
+  Then compare the four combinations of copied/borrowed input
+  and copied/direct output on the same coherently rebuilt engine. Check
+  per-request routes, numerical fingerprints and both copy counters before
+  measuring clean 65537-token requests. Use four fresh-process blocks with
+  orders ABCD, BDAC, CADB, DCBA, with A=copied input/copied output,
+  B=borrowed input/copied output, C=copied input/direct output and
+  D=borrowed input/direct output. Each process makes three exact requests.
+  Evaluate input-only (B/A), output-only (C/A), combined (D/A) and
+  incremental input (D/C) using paired warmed prompt times. A repeatable
+  gain requires all four block ratios below one for the stated contrast.
+  Keep first-use timings, client TTFT and target attainment separate.
+  Stop on a safety, route, workload, validation or ownership failure.
+  Adoption also requires a physical 262144 fill, mixed GPU/host tails,
+  RESTORE and repeated matched agent and sustained-decode evidence.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
@@ -2741,36 +2807,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   accumulator submits both source and inverse int32 row maps. The two
   together request 251,658,240 bytes, about 2.25% of the difference if
   both were classified as M2D.
-  The actual IQ3_S pack index (`b2a01487`) also identifies a smaller,
-  directly testable transfer change. Across 48 layers, 672 canonical
-  tensor payloads total 1,455,214,080 bytes. Joining adjacent ranges only
-  when both source and destination touch gives 217 copies of the exact
-  same bytes. The 105 persistent tensors and the full decode restore
-  are outside this change. Child `f40b91b14` implements it behind
-  `STRATA_SYCL_PREFILL_CANONICAL_CONTIGUOUS_COPIES=1`. The original
-  prepare, retirement, completion and publication still bracket each layer.
-  First verify the actual 672/217 submissions and identical bytes between
-  the 48 fixture markers, all tensor values, PLE bindings and full restore.
-  Child `fa2191d38` checks each successful UR copy against the IQ3_S pack
-  offset, the published device bank address and the exact tensor extent.
-  It checks the final timed layer before overwriting it, then replays and
-  reads back all layers outside the timer. These checks await execution.
-  In the recorded ordinary build (`a3dddff2`), the fixture links seven
-  archived libraries with 106 direct object members. Their archive order,
-  file hashes and Ninja dependency lists were inspected. No member includes
-  the canonical-bank class definition. Only the model and full-context
-  generator objects included it in that build, and neither enters the
-  fixture link. A separate fixture can therefore compile the candidate
-  header against these exact archives without changing the model executable.
-  Recheck that closure at build time. A model trial still requires a fresh
-  coherent generator build. The source tree's SYCL CMake file differs from
-  the recorded one, so retain the original configured compile/link recipes.
-  Then compare six fresh processes in rows/runs, runs/rows, rows/runs
-  order. Each accumulates full activation call time across 48 layers in
-  four sweeps, with a 10 ms floor. Record the first separately; all three
-  paired subsequent-sweep medians must improve before a model trial.
-  This source-based count neither assigns those copies to PTI M2D nor
-  qualifies a speed change. Keep the native packed projections independent.
+  The canonical weight upload comparison closed at `94a0649c8`. Both
+  paths submitted exactly 1,455,214,080 bytes across the same 48 layers.
+  Joining contiguous source and destination intervals reduced nonblocking
+  UR copies from 672 to 217. Both traces verified addresses and ranges
+  against the IQ3_S pack. Tensor readback, PLE bindings and full restore
+  passed. All eight fixture processes exited normally without a new Xe fault.
+  Clean per-process medians for the original tensor copies were 360.992,
+  377.327 and 369.957 ms. Joined copies took 386.536, 393.459 and
+  382.082 ms in the matched pairs. The three paired time ratios were
+  1.07076, 1.04275 and 1.03277. Keep per-tensor activation and close the
+  joined-copy candidate without a model trial. These component intervals
+  measure layer activation calls. The transfer volumes are requested bytes.
+  The original controller admission at `a931adbe7` stopped before any
+  GPU trial. The corrected linker check matched the actual compiler-produced
+  host and device inputs in the measured fixture.
   The two original IQ3_S shard directories, filtered by the native dense
   loader's matrix criteria, give 300 GPU weight owners across 48 layers,
   totaling 2,116,951,040 bytes. Per-layer packed payload ranges from

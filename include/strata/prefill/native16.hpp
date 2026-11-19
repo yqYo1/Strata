@@ -25,6 +25,10 @@ void write(uint16_t* residual, const uint16_t* output, const float* inject,
 void write_prefill_attention_bank(uint16_t* bank, const uint16_t* residual,
                                   const uint16_t* output, const float* inject,
                                   int64_t rows, void* stream);
+// A checked bank input can be updated in place, or written into disjoint scratch.
+void write_prefill_attention_from_bank(uint16_t* destination, const uint16_t* bank,
+                                       const uint16_t* output, const float* inject,
+                                       int64_t rows, void* stream);
 void swiglu(const uint16_t* gate_up, uint16_t* hidden_fp16, int64_t rows, void* stream);
 void swiglu_pair(const uint16_t* gate, const uint16_t* up, uint16_t* hidden_fp16,
                  int64_t rows, void* stream);
@@ -42,6 +46,10 @@ void moe_job_weights(const detail::MoeWindowRoutes& plan, const float* weights,
 // write zero and set sticky status bit4 before any operand load. No early bank
 // reuse: all routed and shared consumers must retire before either owner moves.
 void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
+                      const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
+                      const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream);
+// Long-prefill component arm: eight raw FP16 values per work item.
+void prefill_moe_gather_mixed_vec8(const detail::MoeWindowRoutes& plan, size_t job_index,
                       const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
                       const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream);
 void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,

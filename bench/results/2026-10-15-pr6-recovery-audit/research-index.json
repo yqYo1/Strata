@@ -37982,5 +37982,39 @@
     "finding": "Retaining S exact packed weight bytes can avoid at most 2S requested bytes. Prior 117489-token/1256-slot full NativeDense restore was about 384–385 ms; the enclosing 650–817 ms includes canonical restore. Current 64K/384 free samples give no full-tail admission.",
     "consumer": "Retain current rebuild. Reopen on current keyed transfer costs or 262144-tail admission with graph/owner preservation, measured free bytes and largest single allocation.",
     "schedulable_now": false
+  },
+  "qsa-ordered-exp-padded-heads-20261120": {
+    "topic": "Audit skipping only the ordered-softmax work of the four padded QSA head rows on Xe2.",
+    "classification": "decision support",
+    "schedulable_now": false,
+    "prerequisite": "The measured ordinary64K ordered-prefix kernel takes 14.376/14.383 s. The actual WG128/SIMD16 image operates on 16 rows for 12 output heads per KV head, and each subgroup processes two rows. The existing WG64/WG256 and probability-load results isolate different mechanisms.",
+    "source_commit": "51f5f8a05d8261650a8c5605350737413a088872",
+    "capture_commit": "f6bb38a61ac317822d5b21315ae30bfe412d64f7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_sha256": "39f62feaf929259ad5a3f3ec0540e5ddf4a95862d413dd8db612a240c7760c74",
+    "review_sha256": "acab78d04aabd21572005f7ec650c28cf6827730ab81e773d0875081aa6e3030",
+    "finding": "At WG128/SIMD16, subgroups 4–7 have a second padded row. A subgroup-uniform branch can skip that row’s softmax collectives if every tile publishes all 32 zero probabilities and a defined alpha and all outer barriers remain unconditional. The 14.38 s historical service is a whole-kernel observation. It does not bound the saving to a quarter of service.",
+    "consumer": "Next isolated padding comparison after the independent PV experiment. Check real-head state bits, define padded diagnostics and expose padded P in a test hook; output-only checks miss those rows. Compare actual loaded code and clean timing."
+  },
+  "decode-official-round-cost-bound-20261120": {
+    "topic": "Bound decode per-round cost for the completed ordinary384 strong- and weak-MTP workloads.",
+    "classification": "decision support",
+    "schedulable_now": false,
+    "prerequisite": "f6bb38a61 closes six matched-work thinking runs at 33211/33281 input, 2815/6823 output, 87.01%/33.93% draft acceptance. Prior resource receipts measure a different route. Determine what the actual native counters and work definitions let Main infer about the 70 tok/s target.",
+    "source_commit": "51f5f8a05d8261650a8c5605350737413a088872",
+    "capture_commit": "f6bb38a61ac317822d5b21315ae30bfe412d64f7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_sha256": "a513de1a14ff29942fcbeb076d383cc1b9ad40c16aaa8e2c26e13b11063e1ed1",
+    "review_sha256": "f034289add620864273176154503e28824396ac43775d897ac4e407d87b83d9c",
+    "finding": "Scope mismatch. Both report and review used the historical resource-only code run (3157 output, 900 windows) for their numerical bounds. Its verifier/draft split cannot be applied to ordinary384 code or prose. The correct official samples are at prefill_attention_bank_generation_v3 with 2815/6823 output. No matched upper bound for a free draft or per-window hardware attribution follows.",
+    "consumer": "Use the ordinary384 per-workload engine decode time, accepted/offered counts and explicit scoped windows/terminal emissions in future diagnostics. The independent pre-task IPC status receipt matches the dispatch runtime; the filesystem-only check intentionally does not certify Orca. The report is excluded as a numeric reference for this cohort."
+  },
+  "arc-host-copy-size-routing-20261120": {
+    "topic": "Identify whether the qualified Intel UR/Level Zero stack changes its host-memory copy path across the actual canonical copy sizes.",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "94a0649c8 verified the same bytes/addresses but every matched combined-copy sweep was slower. The ordinary 64K trace has 48.3 GB of M2D requests. Scope this audit to reusable distinctions between source-side work, copy execution and the host timer. Keep the joined-copy model route closed."
   }
 }
