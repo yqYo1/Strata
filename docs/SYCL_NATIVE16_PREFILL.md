@@ -2751,6 +2751,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   paired subsequent-sweep medians must improve before a model trial.
   This source-based count neither assigns those copies to PTI M2D nor
   qualifies a speed change. Keep the native packed projections independent.
+  The two original IQ3_S shard directories, filtered by the native dense
+  loader's matrix criteria, give 300 GPU weight owners across 48 layers,
+  totaling 2,116,951,040 bytes. Per-layer packed payload ranges from
+  30,423,040 to 50,918,400 bytes. Keeping layers 3 and 7 would occupy
+  64,471,040 bytes during prefill and avoid 128,942,080 requested bytes
+  if it eliminated both their activation copies and post-prefill reloads.
+  Actual admission, graph ownership and duration for partial retention
+  remain open. The layer-copy candidate above retains no extra weight owner.
   Clean 64K needs 6.896 s less prefill time to reach 1000 PP. QSA prefix
   is the largest observed kernel family. Its service and the competing copy
   cost both warrant independent work. The next QSA component comparison
