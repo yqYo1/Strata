@@ -31,10 +31,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.089 s. The original
   V1 cleanup failure remains at `b9117a05c`; physical ownership and session
   cleanup were verified at `4053aaa12`. Physical saturation and the per-layer
-  critical path remain unmeasured. The next named diagnostic reuses
-  this exact validated ELF and selects only the CPU wait scopes, with the same
-  clean matched controls, to separate host wait accounting from collector
-  disturbance. Keep other work and qualification requirements fixed.
+  critical path remain unmeasured.
+- The CPU-wait-only bracket at `002f1105d`, `prefill_prefix_expert_cpu_wait_v2`,
+  closes three processes and six 32769-input thinking-on requests. The ELF,
+  routing, payload and draft counts match. Prompt and TTFT observer ratios
+  are 0.992–1.010 against both clean controls, within the 1.20 limit.
+  Clean warm PP is 879.4/879.6 tok/s and
+  client TTFT is 37.447/37.512 s. All processes exit
+  normally with unchanged driver and no fresh fault. V1 preparation refused
+  a changed decision-document pin at `2566f8ac5`. V2 verified all historical
+  build controls from Git, the committed document delta and the exact live
+  compiler, dependency, fixture and executable files.
+  The warm calling thread accrued 34.55 CPU s.
+  Compatibility-queue waits account for 18.78 CPU s
+  across 1069 calls. Row grouping took
+  0.090 CPU s.
+  Inside 48 MoE status scopes, the four-byte D2H enqueue wrapper took
+  3.702 s wall and the subsequent explicit drain took
+  4.68 ms. These are nested calling-thread times.
+  The wrapper may wait for earlier GPU work. The CPU profile does not measure
+  the wire service or show that reducing CPU cycles will reduce prompt latency.
+  Next isolate only the MoE status destination. Compare current ordinary RAM
+  with same-context host USM kept alive through all readers, errors and
+  cancellation. Keep copy size, queue order, readiness branch, decode and
+  fault checks fixed. Time enqueue and the explicit drain together, including
+  setup in model speed, so moving a wait between wrappers cannot count as a
+  gain. Test exact status values and guarded retirement before repeated
+  matched 64K prefill and unchanged decode checks. Keep the current exact ELF
+  as the named 64K baseline while preparing this comparison.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective

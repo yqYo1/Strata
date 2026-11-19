@@ -12238,7 +12238,53 @@
     "operational_digest": "Distinct static/grouped/dynamic execution assignment,job splitting,ownership/synchronization tradeoffs. Census establishes shape only,no bottleneck/tail/speed/adoption. Intel guide edition ambiguous(URL2023.0 vs text2023.1);other source/license claims not independently verified/pinned. No code reuse proposed. Body remains retrieval-only pending source-pinned material expert-tail attribution and concrete candidate.",
     "next_scope_schedulable_now": false,
     "dispatch_and_scope_archive_commit": "c71df9ddd",
-    "transaction_retirement_ref": "prefill-runtime-comparison-current.json:historical_regression_audit.validation_cost_control_v1.artifact_retirement"
+    "transaction_retirement_ref": "prefill-runtime-comparison-current.json:historical_regression_audit.validation_cost_control_v1.artifact_retirement",
+    "reference_refresh_20261119": {
+      "source_commit": "b95acbc46f7181711ea4e02878fd3ec896023422",
+      "reviewed_report_sha256": "c6a2dd6606affc0d742b21c8147415b9c0f761e500d7626784e615615715bf24",
+      "source_manifest_sha256": "cdacaffaa40106124186458b0fce8a8ba08bfc85d259664eadae5c01ce330b16",
+      "reviewer_sha256": "c95d6f828bc137837211641be70b22998b0cb352ede6d7353557a38811e7f20a",
+      "run": "run_7693426f50e9",
+      "task": "task_c53497b92f6c",
+      "dispatch": "ctx_005dc2fc2ed7",
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "reviewer": "native Codex gpt-6-luna max",
+      "filesystem_inputs_passed": 11,
+      "worker_side_orca_status": {
+        "call": "call_3c6878b955c14a59ae1fd48040c9a39a",
+        "sha256": "73d59bcbf62020cc91f7f03aabc438332ae9258b0caebfed674ad82f50ae6f55"
+      },
+      "ownership_closed": true,
+      "retirement": {
+        "complete": false,
+        "captures": [
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu_skewed_tile_scheduling_20261119",
+            "files": 2,
+            "bytes": 16645,
+            "tree_sha256": "cdbe58bbd17a51bd3456ede98d91564457cd1ec53f154da404ed36b0653da16a"
+          },
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu_skewed_tile_scheduling_20261119-control",
+            "files": 9,
+            "bytes": 18931,
+            "tree_sha256": "e1599eccf17722fb2e49ea48061a9ab0ed950fc0aa8869a670b8009dbbe5e59a"
+          },
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/gpu_skewed_tile_scheduling_20261119",
+            "files": 8,
+            "bytes": 3385331,
+            "tree_sha256": "9e79fdd9c55e676a1113815e50bca0828b70c19ee46a48ca0618dcd2915d2931"
+          }
+        ]
+      },
+      "findings": [
+        "Source references: Intel XeTLA v0.3.5 Stream-K; Triton persistent-matmul tutorial; CUTLASS Blackwell Cluster Launch Control. Pin exact versions/licenses before using them as implementation references.",
+        "The production loop reuses one decoded GU/Down pair. Cross-expert interleaving needs separate residency, lifetime and output ownership. Investigate same-expert tiles first if measured tails justify it."
+      ],
+      "consumer": "Retrieve only for source-pinned device-side expert tile tail imbalance with a bounded comparison."
+    }
   },
   "low_overhead_owned_process_supervision_20261027": {
     "classification": "decision_support",
@@ -37119,5 +37165,55 @@
         }
       ]
     }
+  },
+  "prefill_host_event_wait_elimination_20261119": {
+    "source_commit": "b95acbc46f7181711ea4e02878fd3ec896023422",
+    "reviewed_report_sha256": "e19319510b9378c04f1b292788a7a1c486bbb5ce230465fe19cda5414863ef9b",
+    "source_manifest_sha256": "d836524634ef14d69f91e9f32fbb809791ca087cef06408459721d5f4bd0c242",
+    "reviewer_sha256": "7f272e156500ebd229675eb7a37f129f9dce95b34a991e1e7f3b275ddc3befa7",
+    "run": "run_7693426f50e9",
+    "task": "task_c194c03f5eaa",
+    "dispatch": "ctx_6665b8839a99",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "filesystem_inputs_passed": 14,
+    "worker_side_orca_status": {
+      "call": "call_87759c76c99e4fa298a42277bfeffef2",
+      "sha256": "816765ab31be52dabf166188ff5304ddcbbbac804b1cb62c8f9a76963c742c74"
+    },
+    "ownership_closed": true,
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_host_event_wait_elimination_20261119",
+          "files": 2,
+          "bytes": 18663,
+          "tree_sha256": "f637b1336443a7486ed0e1cc2daeed824cc0a77e398de3aa4d4006702676b408"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill_host_event_wait_elimination_20261119-control",
+          "files": 9,
+          "bytes": 19669,
+          "tree_sha256": "108258350f23a69c83e7db6dcd94dd0efd07e3b8dcce9358208fc4f09a5683a1"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill_host_event_wait_elimination_20261119",
+          "files": 11,
+          "bytes": 3441438,
+          "tree_sha256": "e1993537b35cd01be060a718bf2a45a4ae875e6f910d3ab3f523edf30e4994f7"
+        }
+      ]
+    },
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "worker_path_delivery": "Verified from the exact assigned path and report hash after completion. Structured message left the optional report path field empty.",
+    "findings": [
+      "SYCL dependencies apply only to proven same-context SYCL event edges with correctly retained owners. The native immediate copy list exposes no SYCL event.",
+      "Do not move or weaken native copy publication, failure checks or residency guards. Use a proven interval of independent ready work for any wait-placement candidate.",
+      "The CPU-only cohort attributes compat-queue waits. It measures ordinary SYCL per-event waits separately. Keep the earlier resident-event/later-barrier hold."
+    ],
+    "consumer": "Use only after locating a concrete compatibility-queue or native-list wait on a production dependency path. Test a single proposed wait change with matched model work, lifetime and error checks."
   }
 }
