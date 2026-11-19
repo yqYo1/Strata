@@ -37986,8 +37986,16 @@
   "qsa-ordered-exp-padded-heads-20261120": {
     "topic": "Audit skipping only the ordered-softmax work of the four padded QSA head rows on Xe2.",
     "classification": "decision support",
-    "schedulable_now": true,
-    "prerequisite": "The measured ordinary64K ordered-prefix kernel takes 14.376/14.383 s. The actual WG128/SIMD16 image operates on 16 rows for 12 output heads per KV head, and each subgroup processes two rows. The existing WG64/WG256 and probability-load results isolate different mechanisms."
+    "schedulable_now": false,
+    "prerequisite": "The measured ordinary64K ordered-prefix kernel takes 14.376/14.383 s. The actual WG128/SIMD16 image operates on 16 rows for 12 output heads per KV head, and each subgroup processes two rows. The existing WG64/WG256 and probability-load results isolate different mechanisms.",
+    "source_commit": "51f5f8a05d8261650a8c5605350737413a088872",
+    "capture_commit": "f6bb38a61ac317822d5b21315ae30bfe412d64f7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_sha256": "39f62feaf929259ad5a3f3ec0540e5ddf4a95862d413dd8db612a240c7760c74",
+    "review_sha256": "acab78d04aabd21572005f7ec650c28cf6827730ab81e773d0875081aa6e3030",
+    "finding": "At WG128/SIMD16, subgroups 4–7 have a second padded row. A subgroup-uniform branch can skip that row’s softmax collectives if every tile publishes all 32 zero probabilities and a defined alpha and all outer barriers remain unconditional. The 14.38 s historical service is a whole-kernel observation. It does not bound the saving to a quarter of service.",
+    "consumer": "Next isolated padding comparison after the independent PV experiment. Check real-head state bits, define padded diagnostics and expose padded P in a test hook; output-only checks miss those rows. Compare actual loaded code and clean timing."
   },
   "decode-official-round-cost-bound-20261120": {
     "topic": "Bound decode per-round cost for the completed ordinary384 strong- and weak-MTP workloads.",
