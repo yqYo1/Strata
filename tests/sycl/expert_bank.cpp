@@ -689,8 +689,13 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
 }
 
 int main(int argc, char** argv) try {
+    if (argc == 2 && std::string(argv[1]) == "--prefill-upload-policy") {
+        std::cout << "prefill_upload_policy full=" << pd::prefill_fullfit_eager_requested()
+                  << " partial=" << pd::prefill_partial_eager_requested() << '\n';
+        return 0;
+    }
     if (argc == 2 && std::string(argv[1]) == "--demand-fit-smoke") {
-        need(pd::prefill_eager_upload_policy() == pd::PrefillEagerUpload::demand_fit,
+        need(pd::prefill_partial_eager_requested(),
              "demand-fit fixture needs the immutable candidate selector");
         // Five permanent slots plus the scratch slot at stride 512, eleven
         // plus scratch at stride 256. Include an exact fit and an overflow.

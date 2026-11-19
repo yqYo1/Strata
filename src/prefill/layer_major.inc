@@ -498,7 +498,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const bool prefix_expert_upload_admitted = prefix_expert_upload_requested != PrefillPrefixExpertUpload::off &&
         prefix_router_admitted && prefix_router_requested == PrefillMoePrefixRouter::early &&
-        source_view_on && !expert_upload_staging_requested() && !detail::prefill_fullfit_eager_requested();
+        source_view_on && !expert_upload_staging_requested() &&
+        detail::prefill_eager_upload_policy() == detail::PrefillEagerUpload::jit;
     const bool prefix_host_usm_requested = prefill_prefix_expert_host_usm_requested();
     const auto prefix_copy_requested = prefill_prefix_copy_requested();
     const bool prefix_host_usm_admitted = prefix_host_usm_requested && prefix_expert_upload_admitted &&

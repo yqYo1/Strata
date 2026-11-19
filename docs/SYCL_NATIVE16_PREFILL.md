@@ -2840,13 +2840,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   actual weights before the first expert in a single resident window on
   an empty partial bank. Overflow keeps ordinary first-use copies and the
   last scratch slot. No extra backing, host staging or copy queue is used.
-  The next comparison is `eager` versus `eager-demand-fit` in the same
-  binary. Run the host planner and traced device boundary fixture first.
+  The current 64K speed control leaves the selector unset (JIT), while the
+  resource profile enables earlier issue on full banks. Compare four policies
+  in the same executable: `jit`, `eager` (full banks), `demand-fit-only`
+  (partial banks), and `eager-demand-fit` (both). Prefix issue remains exclusive
+  with all three eager policies. Check all four pre-exec selections and both
+  partial-bank selections on the traced device fixture.
   Check the actual layers, selected bytes, equal total uploads and jobs,
   restored state, greedy fixture and MTP handoff at 32K before clean 64K.
-  Compare three independent pairs (AB, BA, AB), three identical fresh
-  prompts per process. Use the second and third prompts for each warmed
-  process result; require gains in all three pairs and keep first-use
+  Compare four independent order-balanced blocks (ABCD, BDAC, CADB, DCBA)
+  with policies A–D in the order above and three matched fresh prompts per
+  process. Use the second and third prompts for each warmed process result.
+  Compare B/A, C/A, D/A, D/B and D/C separately; require lower prompt time
+  in every block for each claimed advantage and keep first-use
   and client TTFT separately. A numerical or ownership failure, quiet
   fallback on every partial layer, changed work, or a fresh Xe fault stops
   advancement. A passing speed result still needs independent decode,
@@ -2864,8 +2870,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   runtime and test translation units. The ordinary SYCL queue passed exact
   fit, overflow and cancellation with unchanged source data, intact guards
   and checked retirement. Driver and validation checks were quiet.
-  Next, build the model candidate and compare dispatch, total uploaded bytes,
-  state and decode handoff at 32K before the paired clean 64K timing.
+  That build used the combined selector. Rebuild for the added partial-only
+  mode and run its independent device and policy checks. Read the traced
+  per-layer job histograms to predict actual expert demand and requested
+  bytes before comparing dispatch. The 32K control includes RESTORE and
+  decode handoff. Keep numerical and clean 64K timing results separate.
 
   The retained request summaries have no per-copy submission IDs or
   pointer classes to join to individual tensor uploads. The split

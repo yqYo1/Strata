@@ -396,7 +396,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             "publication=accepted_same_queue native_completion=unchecked_until_outer_drain\n",
             (long long)layer,(long long)first_row,(unsigned long long)eager_upload.experts,
             (unsigned long long)eager_upload.copy_commands,(unsigned long long)eager_upload.payload_bytes);
-    } else if (detail::prefill_eager_upload_policy() == detail::PrefillEagerUpload::demand_fit &&
+    } else if (detail::prefill_partial_eager_requested() &&
                owner.private_expert_bank && owner.expert_slots && !owner.expert_slots->full_fit() &&
                !owner.expert_slots->permanent_used() && !owner.expert_upload_staging &&
                first_row == 0 && rows == m.layer_major_residual.rows) {
