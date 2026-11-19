@@ -495473,6 +495473,666 @@
         },
         "passed": true,
         "role": "clean-before"
+      },
+      {
+        "index": 1,
+        "read": 32769,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/build/strata",
+          "sha256": "2d6c4021902ca20ce3b05d09593899ee07c53e09a7528fb9df2b759e1e62e09f",
+          "bytes": 26501944
+        },
+        "native_source_commit": "7537fb7bc02cc035ac2d395a383a7b5eaa95564a",
+        "native_identity": {
+          "pid": 4186558,
+          "start_ticks": 342635849,
+          "sid": 4186491
+        },
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 4186558,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1363148800,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 546968064,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 167772160,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 512,
+              "window_rows": 32768,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4245643264,
+              "fixed_including_headroom_bytes": 2638479616,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2084,
+                "fused_rows": 12920342,
+                "separate_jobs": 16144
+              },
+              "down": {
+                "fused_jobs": 2084,
+                "fused_rows": 12920342,
+                "separate_jobs": 16144
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 18228,
+              "windows": 48,
+              "dequants": 17318,
+              "maximum_physical_window_rows": 32768,
+              "requested_source_map_bytes": 62914560,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 17318,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 35386649600,
+            "requested_source_map_H2D_bytes": 62914560,
+            "fullfit_upload": {
+              "policy": "jit",
+              "fullfit_layers": 0,
+              "accepted_copy_commands": 0,
+              "requested_fullfit_H2D_bytes": 0,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            },
+            "prefix_upload": {
+              "experts": 15082,
+              "bytes": 30840652800,
+              "selected": "33b0edc97ae5a3a22b779b55e5578fe6d8112283962fdd40119d6d8b4e5adc1b"
+            },
+            "copy_transport": {
+              "mode": "native1",
+              "allocation": 1363148800,
+              "staged_bytes": 30840652800,
+              "issue": "prefix",
+              "deferred": true
+            },
+            "stage_order": "all",
+            "cpu_partition": {
+              "thread": {
+                "wall_s": 45.890325748,
+                "main_cpu_s": 40.144444799,
+                "wait_wall_s": 18.806196954,
+                "wait_cpu_s": 18.760062198,
+                "outside_wait_cpu_s": 21.384382601
+              },
+              "waits": {
+                "compute": {
+                  "calls": 14,
+                  "cpu_s": 1.3466e-05,
+                  "wall_s": 1.3504e-05
+                },
+                "transfer": {
+                  "calls": 14,
+                  "cpu_s": 1.2735e-05,
+                  "wall_s": 1.2559e-05
+                },
+                "event": {
+                  "calls": 2,
+                  "cpu_s": 1.8945e-05,
+                  "wall_s": 2.0829e-05
+                },
+                "compat": {
+                  "calls": 1069,
+                  "cpu_s": 18.760017052,
+                  "wall_s": 18.806150062
+                },
+                "direct": {
+                  "calls": 0,
+                  "cpu_s": 0.0,
+                  "wall_s": 0.0
+                }
+              },
+              "unclassified": {
+                "wall": 13.674644968,
+                "cpu": 8.265999421
+              },
+              "host_outside_known_waits": {
+                "source_copy": {
+                  "wall": 4.2147e-05,
+                  "cpu": 4.0052e-05
+                },
+                "host_group": {
+                  "wall": 0.088005466,
+                  "cpu": 0.087949375
+                },
+                "gemm_submit": {
+                  "wall": 2.431684607,
+                  "cpu": 2.341390624
+                },
+                "route_exchange": {
+                  "wall": 0.0,
+                  "cpu": 0.0
+                },
+                "upload_submit": {
+                  "wall": 2.677761843,
+                  "cpu": 2.64164652
+                },
+                "residual_input_host": {
+                  "wall": 0.0,
+                  "cpu": 0.0
+                },
+                "residual_input_device": {
+                  "wall": 0.029062431,
+                  "cpu": 0.028487278
+                },
+                "residual_store_host": {
+                  "wall": 0.0,
+                  "cpu": 0.0
+                },
+                "residual_store_device": {
+                  "wall": 0.0,
+                  "cpu": 0.0
+                },
+                "moe_map_upload": {
+                  "wall": 0.0287412,
+                  "cpu": 0.028476665
+                },
+                "moe_job_weights": {
+                  "wall": 0.008362125,
+                  "cpu": 0.008268186
+                },
+                "moe_dequant_gu": {
+                  "wall": 0.91966841,
+                  "cpu": 0.886346979
+                },
+                "moe_dequant_down": {
+                  "wall": 0.897472132,
+                  "cpu": 0.866166556
+                },
+                "moe_gather": {
+                  "wall": 0.957806708,
+                  "cpu": 0.923783508
+                },
+                "moe_swiglu": {
+                  "wall": 0.846057476,
+                  "cpu": 0.816316729
+                },
+                "moe_accumulate": {
+                  "wall": 0.849766491,
+                  "cpu": 0.820835341
+                },
+                "moe_status": {
+                  "wall": 3.675052789,
+                  "cpu": 3.668675367
+                }
+              },
+              "nested_status": {
+                "scopes": 48,
+                "complete": true,
+                "cpu_s": 3.672780353,
+                "wall_s": 3.679150972,
+                "unclassified_cpu_s": 0.000655814,
+                "unclassified_wall_s": 0.000694156,
+                "parts": [
+                  {
+                    "name": "tag",
+                    "calls": 48,
+                    "cpu_s": 2.8703e-05,
+                    "wall_s": 2.8854e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 2.8703e-05,
+                    "outside_known_wait_wall_s": 2.8854e-05
+                  },
+                  {
+                    "name": "precheck",
+                    "calls": 96,
+                    "cpu_s": 0.0001149,
+                    "wall_s": 0.000116094,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 0.0001149,
+                    "outside_known_wait_wall_s": 0.000116094
+                  },
+                  {
+                    "name": "queue_context",
+                    "calls": 96,
+                    "cpu_s": 0.000128602,
+                    "wall_s": 0.000127981,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 0.000128602,
+                    "outside_known_wait_wall_s": 0.000127981
+                  },
+                  {
+                    "name": "enqueue",
+                    "calls": 48,
+                    "cpu_s": 3.667731161,
+                    "wall_s": 3.674059999,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.667731161,
+                    "outside_known_wait_wall_s": 3.674059999
+                  },
+                  {
+                    "name": "observer",
+                    "calls": 48,
+                    "cpu_s": 3.5398e-05,
+                    "wall_s": 3.8345e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.5398e-05,
+                    "outside_known_wait_wall_s": 3.8345e-05
+                  },
+                  {
+                    "name": "drain",
+                    "calls": 48,
+                    "cpu_s": 0.003986452,
+                    "wall_s": 0.003986096,
+                    "known_wait_cpu_s": 0.003916532,
+                    "known_wait_wall_s": 0.003911349,
+                    "outside_known_wait_cpu_s": 6.991999999999936e-05,
+                    "outside_known_wait_wall_s": 7.474700000000001e-05
+                  },
+                  {
+                    "name": "postcheck",
+                    "calls": 48,
+                    "cpu_s": 3.5077e-05,
+                    "wall_s": 3.5248e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.5077e-05,
+                    "outside_known_wait_wall_s": 3.5248e-05
+                  },
+                  {
+                    "name": "after_drain",
+                    "calls": 48,
+                    "cpu_s": 3.4332e-05,
+                    "wall_s": 3.4683e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.4332e-05,
+                    "outside_known_wait_wall_s": 3.4683e-05
+                  },
+                  {
+                    "name": "branch",
+                    "calls": 48,
+                    "cpu_s": 2.9914e-05,
+                    "wall_s": 2.9515e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 2.9914e-05,
+                    "outside_known_wait_wall_s": 2.9515e-05
+                  }
+                ],
+                "limits": "Enqueue includes the called wrapper/runtime and possible internal waits;outside known waits does not prove CPU arithmetic. This partition is nested within the main CPU partition."
+              }
+            }
+          },
+          {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1363148800,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "layout": {
+              "region": 546968064,
+              "tail_payload": 0,
+              "extra": 0,
+              "mixed_primary": 167772160,
+              "mixed_tail": 0,
+              "shared_arena_bytes": 1180698624,
+              "requested_bank": 512,
+              "window_rows": 32768,
+              "windows": 48,
+              "split": false,
+              "relocated": false,
+              "free_gpu_bytes": 4251840512,
+              "fixed_including_headroom_bytes": 2638479616,
+              "allocation_limit_bytes": 10132807680,
+              "actual_admission": true
+            },
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 2083,
+                "fused_rows": 12918705,
+                "separate_jobs": 16192
+              },
+              "down": {
+                "fused_jobs": 2083,
+                "fused_rows": 12918705,
+                "separate_jobs": 16192
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 18275,
+              "windows": 48,
+              "dequants": 17365,
+              "maximum_physical_window_rows": 32768,
+              "requested_source_map_bytes": 62914560,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "uploads": 17365,
+            "permanent_hits": 0,
+            "requested_bank_H2D_bytes": 35492889600,
+            "requested_source_map_H2D_bytes": 62914560,
+            "fullfit_upload": {
+              "policy": "jit",
+              "fullfit_layers": 0,
+              "accepted_copy_commands": 0,
+              "requested_fullfit_H2D_bytes": 0,
+              "native_completion": "outer checked bank drain",
+              "physical_bus_traffic_or_overlap_measured": false
+            },
+            "prefix_upload": {
+              "experts": 15137,
+              "bytes": 30969728000,
+              "selected": "e516ae9d2e646bbff37e883793751a5cf3b10ab4899ed4a68ec21e2c1f36b681"
+            },
+            "copy_transport": {
+              "mode": "native1",
+              "allocation": 1363148800,
+              "staged_bytes": 30969728000,
+              "issue": "prefix",
+              "deferred": true
+            },
+            "stage_order": "all",
+            "cpu_partition": {
+              "thread": {
+                "wall_s": 35.048529691,
+                "main_cpu_s": 34.547510323,
+                "wait_wall_s": 18.88357302,
+                "wait_cpu_s": 18.778213412,
+                "outside_wait_cpu_s": 15.769296911
+              },
+              "waits": {
+                "compute": {
+                  "calls": 14,
+                  "cpu_s": 1.3713e-05,
+                  "wall_s": 1.3866e-05
+                },
+                "transfer": {
+                  "calls": 14,
+                  "cpu_s": 1.3646e-05,
+                  "wall_s": 1.353e-05
+                },
+                "event": {
+                  "calls": 3,
+                  "cpu_s": 2.0829e-05,
+                  "wall_s": 2.1841e-05
+                },
+                "compat": {
+                  "calls": 1069,
+                  "cpu_s": 18.778165224,
+                  "wall_s": 18.883523784
+                },
+                "direct": {
+                  "calls": 0,
+                  "cpu_s": 0.0,
+                  "wall_s": 0.0
+                }
+              },
+              "unclassified": {
+                "wall": 2.772416344,
+                "cpu": 2.680904384
+              },
+              "host_outside_known_waits": {
+                "source_copy": {
+                  "wall": 4.4169e-05,
+                  "cpu": 4.2471e-05
+                },
+                "host_group": {
+                  "wall": 0.089712884,
+                  "cpu": 0.089548495
+                },
+                "gemm_submit": {
+                  "wall": 2.324823428,
+                  "cpu": 2.246034615
+                },
+                "route_exchange": {
+                  "wall": 0.0,
+                  "cpu": 0.0
+                },
+                "upload_submit": {
+                  "wall": 2.641488196,
+                  "cpu": 2.599165215
+                },
+                "residual_input_host": {
+                  "wall": 0.0,
+                  "cpu": 0.0
+                },
+                "residual_input_device": {
+                  "wall": 0.027451068,
+                  "cpu": 0.026858225
+                },
+                "residual_store_host": {
+                  "wall": 0.0,
+                  "cpu": 0.0
+                },
+                "residual_store_device": {
+                  "wall": 0.0,
+                  "cpu": 0.0
+                },
+                "moe_map_upload": {
+                  "wall": 0.025335103,
+                  "cpu": 0.025055806
+                },
+                "moe_job_weights": {
+                  "wall": 0.007740755,
+                  "cpu": 0.007643815
+                },
+                "moe_dequant_gu": {
+                  "wall": 0.930224907,
+                  "cpu": 0.898079743
+                },
+                "moe_dequant_down": {
+                  "wall": 0.923860201,
+                  "cpu": 0.888938317
+                },
+                "moe_gather": {
+                  "wall": 0.968328191,
+                  "cpu": 0.930283792
+                },
+                "moe_swiglu": {
+                  "wall": 0.869726719,
+                  "cpu": 0.837625009
+                },
+                "moe_accumulate": {
+                  "wall": 0.881063538,
+                  "cpu": 0.847277542
+                },
+                "moe_status": {
+                  "wall": 3.702741167,
+                  "cpu": 3.691839482
+                }
+              },
+              "nested_status": {
+                "scopes": 48,
+                "complete": true,
+                "cpu_s": 3.696637618,
+                "wall_s": 3.707536465,
+                "unclassified_cpu_s": 0.000658229,
+                "unclassified_wall_s": 0.000700723,
+                "parts": [
+                  {
+                    "name": "tag",
+                    "calls": 48,
+                    "cpu_s": 3.0927e-05,
+                    "wall_s": 2.9353e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.0927e-05,
+                    "outside_known_wait_wall_s": 2.9353e-05
+                  },
+                  {
+                    "name": "precheck",
+                    "calls": 96,
+                    "cpu_s": 0.000113332,
+                    "wall_s": 0.000115886,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 0.000113332,
+                    "outside_known_wait_wall_s": 0.000115886
+                  },
+                  {
+                    "name": "queue_context",
+                    "calls": 96,
+                    "cpu_s": 0.000120659,
+                    "wall_s": 0.00012076,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 0.000120659,
+                    "outside_known_wait_wall_s": 0.00012076
+                  },
+                  {
+                    "name": "enqueue",
+                    "calls": 48,
+                    "cpu_s": 3.690900394,
+                    "wall_s": 3.70175432,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.690900394,
+                    "outside_known_wait_wall_s": 3.70175432
+                  },
+                  {
+                    "name": "observer",
+                    "calls": 48,
+                    "cpu_s": 3.4828e-05,
+                    "wall_s": 3.6965e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.4828e-05,
+                    "outside_known_wait_wall_s": 3.6965e-05
+                  },
+                  {
+                    "name": "drain",
+                    "calls": 48,
+                    "cpu_s": 0.004679466,
+                    "wall_s": 0.004679287,
+                    "known_wait_cpu_s": 0.00461263,
+                    "known_wait_wall_s": 0.004608144,
+                    "outside_known_wait_cpu_s": 6.68359999999998e-05,
+                    "outside_known_wait_wall_s": 7.114300000000007e-05
+                  },
+                  {
+                    "name": "postcheck",
+                    "calls": 48,
+                    "cpu_s": 3.4052e-05,
+                    "wall_s": 3.6153e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.4052e-05,
+                    "outside_known_wait_wall_s": 3.6153e-05
+                  },
+                  {
+                    "name": "after_drain",
+                    "calls": 48,
+                    "cpu_s": 3.5275e-05,
+                    "wall_s": 3.3875e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.5275e-05,
+                    "outside_known_wait_wall_s": 3.3875e-05
+                  },
+                  {
+                    "name": "branch",
+                    "calls": 48,
+                    "cpu_s": 3.0456e-05,
+                    "wall_s": 2.9142e-05,
+                    "known_wait_cpu_s": 0.0,
+                    "known_wait_wall_s": 0.0,
+                    "outside_known_wait_cpu_s": 3.0456e-05,
+                    "outside_known_wait_wall_s": 2.9142e-05
+                  }
+                ],
+                "limits": "Enqueue includes the called wrapper/runtime and possible internal waits;outside known waits does not prove CPU arithmetic. This partition is nested within the main CPU partition."
+              }
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 48327.3,
+            "prompt_tps": 678.1,
+            "ttft_s": 48.479,
+            "total_s": 50.423,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 37630.2,
+            "prompt_tps": 870.8,
+            "ttft_s": 37.802,
+            "total_s": 39.609,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 37630.2,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "role": "cpu-wait-scopes"
       }
     ],
     "request_hashes": {
