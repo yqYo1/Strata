@@ -249,24 +249,19 @@ def run(ctx, index):
 
     def finish(value):
         outcome = value['processes'][-1]
+        cleanup = None
         try:
             require(outcome['ownership_closed'], 'model ownership must close before collector cleanup')
-            if session.exists():
-                ctx.profile_executor_closure(read(root / 'execution.json'))
-                owner = build.supervision.Owner(root / 'collector-cleanup')
-                try:
-                    command, _, _ = owner.run('stop', [prof['launcher']['path'], '--stop', prof['session']],
-                        ctx.environment(row, plan), build.P, wall=15, cpu=15, rss_cap=2 << 30,
-                        text_cap=1 << 20, file_cap=2 << 20, total_cap=8 << 20)
-                    require(build.supervision.closed(command) and command['exit_code'] == 0, 'collector stop failed')
-                finally:
-                    outcome['collector_cleanup'] = owner.commands
-                    value['active'] |= bool(owner.active)
-            require(not session.exists(), 'collector session still present')
+            cleanup = ctx.close_profile_session(value, plan)
+            outcome['collector_cleanup'] = cleanup
+            require(cleanup['control_closed'] and cleanup['session_removed'] and not cleanup.get('error'),
+                    'collector session cleanup failed')
         except Exception as error:
             outcome.update(passed=False, complete=False, ownership_closed=False)
             outcome.setdefault('error', repr(error))
             value.update(stage='failed', passed=False, complete=False, ownership_closed=False)
+        finally:
+            value['active'] |= bool(cleanup and cleanup['active'])
         outcome.update(resource_observation=capture, collector_session_removed=not session.exists())
         original_save(value)
 
