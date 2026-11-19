@@ -157,7 +157,7 @@ void run(bool use_usm, bool timing) {
     if (!timing) return;
 
     for (bool busy : {false, true}) {
-        const unsigned count = busy ? 48 : 512;
+        const unsigned count = busy ? 384 : 512;
         for (unsigned batch = 0; batch < 5; ++batch) {
             Times total;
             for (unsigned i = 0; i < count; ++i) {

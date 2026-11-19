@@ -17,18 +17,19 @@ import prefill_prefix_expert_build as stage
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'prefill-status-destination-v4'
-KEY = 'prefill_status_destination_v4'
+ROOT = B / 'prefill-status-destination-v5'
+KEY = 'prefill_status_destination_v5'
 FIRST = 'prefill_status_destination_v1'
 SECOND = 'prefill_status_destination_v2'
 THIRD = 'prefill_status_destination_v3'
+SHORT_BATCH = 'prefill_status_destination_v4'
 SOURCE = 'tests/sycl/prefill_status_destination.cpp'
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
 BOOT = Path('/proc/sys/kernel/random/boot_id')
 ELF = ROOT / 'sycl_prefill_status_destination'
 REFERENCE = 'prefill_prefix_expert_cpu_wait_v2'
 ORDER = ('ordinary', 'host-usm', 'host-usm', 'ordinary', 'ordinary', 'host-usm')
-SHAPES = {'ready': (512, 1.0), 'queued': (48, 10.0)}
+SHAPES = {'ready': (512, 1.0), 'queued': (384, 10.0)}
 FLAGS = ['-std=c++20', '-O3', '-DNDEBUG', '-fsycl', '-fsycl-id-queries-range=size_t',
          '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13']
 BUDGET = dict(wall=180, cpu=120, rss_cap=4 << 30, text_cap=2 << 20,
@@ -134,6 +135,7 @@ def prepare():
     previous = validation.committed(RESULT, (FIRST,))
     compiled = validation.committed(RESULT, (SECOND,))
     linked = validation.committed(RESULT, (THIRD,))
+    short = validation.committed(RESULT, (SHORT_BATCH,))
     require(previous['stage'] == 'blocked-prepare' and previous['ownership_closed'] and not previous['GPU_executed'],
             'keep the original pre-GPU dependency census refusal')
     require(compiled['stage'] == 'failed' and compiled['ownership_closed'] and not compiled['active']
@@ -143,6 +145,12 @@ def prepare():
     require(linked['stage'] == 'blocked-before-gpu' and linked['ownership_closed'] and not linked['active']
             and not linked['processes'] and not linked['GPU_executed'] and linked['compile_commands'] == 2,
             'keep the original prelaunch failure after verified linkage')
+    require(short['stage'] == 'failed' and short['ownership_closed'] and not short['active']
+            and len(short['processes']) == 3 and all(p['passed'] for p in short['processes'][:2])
+            and short['processes'][-1]['native_exit_code'] == 0
+            and not short['processes'][-1]['fresh_faults']
+            and any(v['total_ms'] < 10 for v in short['processes'][-1]['samples']['queued']),
+            'preserve the original failed timing floor and both successful placement smokes')
     admitted, providers, env = platform()
     revision = stage.source.git(P, 'rev-parse', 'HEAD').decode().strip()
     sources = basis.comparison.build.controls(revision, controller=Path(__file__))
@@ -172,15 +180,17 @@ def prepare():
               dependencies_sha256=signature(pinned_dependencies),
               headers=sorted(headers), provider_sha256=signature(providers), providers=providers, environment=env,
               environment_sha256=signature(env), admitted=admitted, build=[compile_command, link_command],
-              earlier_refusals={FIRST: signature(previous), SECOND: signature(compiled), THIRD: signature(linked)},
+              earlier_refusals={FIRST: signature(previous), SECOND: signature(compiled), THIRD: signature(linked),
+                                SHORT_BATCH: signature(short)},
               header_eligibility='Pin the union from -M before compilation. Require the same source and necessary '
                                  'project headers in -MD and refuse any file outside that conservative union.',
               steps=[['smoke', 'ordinary'], ['smoke', 'host-usm'], *[['timing', x] for x in ORDER]],
               plan=dict(window='Each request uses the engine compatibility stream and the real memcpy+drain wrappers. '
                                'Ordinary and host USM use identical 4-byte extents, source, order and checks.',
                         scopes='Three adjacent counterbalanced pairs of independent processes. Each measures five '
-                               '512-copy batches with a drained producer and five 48-copy batches with two queued '
-                               'synthetic producer kernels. Keep all subintervals and compare their total.',
+                               '512-copy batches with a drained producer and five 384-copy batches with two queued '
+                               'synthetic producer kernels. The eightfold repeat count preserves the 10 ms floor. '
+                               'Keep all subintervals and compare the total. Charge one allocation per 48 queued copies.',
                         gate='At least 1 ms per ready batch and 10 ms per queued batch. Estimated clock overhead '
                              'from the same three clock stamps at most 5% per batch. Advance toward clean model '
                              'comparison only if all queued paired medians improve after one USM allocation and '
@@ -290,7 +300,8 @@ def decision(processes):
         item = {}
         for shape in SHAPES:
             def median_total(p):
-                return p['setup_ms'] + statistics.median(v['total_ms'] for v in p['samples'][shape])
+                batch_ms = statistics.median(v['total_ms'] for v in p['samples'][shape])
+                return p['setup_ms'] + batch_ms / (8 if shape == 'queued' else 1)
             item[shape] = dict(ref_ms=median_total(ref), candidate_ms=median_total(cand))
             item[shape]['ratio'] = item[shape]['candidate_ms'] / item[shape]['ref_ms']
         pairs.append(item)
