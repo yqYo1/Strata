@@ -468279,6 +468279,52 @@
       "sha256": "42b73d015261c882285d06b7365394ab5fe0fd5970ddcac007d20603d1c5db86"
     },
     "environment_template_sha256": "386f60baa2b8825c5de6b2af71cc128206cd3279a2757c56a1f1971fdf90b659",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "disposition": {
+      "evidence_commit": "9d845d7ddc4305349192989411d3f97f44bc01a9",
+      "repeated_warm_loss": true,
+      "selected_source": "arena",
+      "time_ratios": {
+        "first_prompt_ms": 1.0495669718878058,
+        "warm_prompt_ms": 1.037086600561653,
+        "first_ttft_s": 1.0496381922146105,
+        "warm_ttft_s": 1.0368956984659776
+      },
+      "next_unit": {
+        "change": "Use the existing checked immediate-copy owner on the selected FFN batch with explicit completion before mapping publication.",
+        "rationale": "The source placement failed as a standalone speed change. Fixed host-USM in both native ordinal arms allows testing the prior copy-only mechanism without adopting this source for the arena reference.",
+        "component_evidence": [
+          "fullfit_attention_copy_api_v1",
+          "fullfit_attention_copy_ordinal_v1"
+        ],
+        "next_comparisons": "Hold FFN issue, source, mapping, payload and completion position fixed to compare ordinal 0 and ordinal 1. Isolate the SYCL completion fence and API replacement with their own controls. Advance early deferred wait separately and compare the final net route with ordinary arena FFN.",
+        "target_warm_saving_from_arena_median": 8.927549999999997,
+        "target_warm_saving_from_host_usm_median": 10.097299999999976
+      },
+      "inference_adopted": false
+    },
+    "artifact_retirement": {
+      "complete": false,
+      "evidence_commit": "9d845d7ddc4305349192989411d3f97f44bc01a9",
+      "raw": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-usm-timing-v1",
+        "files": 426,
+        "bytes": 63435541,
+        "tree_sha256": "ab6eede5010c3980163522107681fd50ff901b1c08064c248ca2e534bc3eed81"
+      },
+      "build": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-usm-native-v1",
+        "files": 1368,
+        "bytes": 190412785,
+        "tree_sha256": "505e432875b738254c6bc11a5f92cdecc546fbb57b2acba07e07252860c7ea11",
+        "source": "de4aa9422644158370012af252927061c475d944",
+        "inputs": 1167,
+        "source_sha256": "51e2603c4100a536c731b9a9c620653ad2ce8863d34af61c82ae5b4aabfae1ce",
+        "build_controls": 379,
+        "recipe_sha256": "d05bbecf5bd300fdb5fbec6f806761ece15d3467f1067ef403fe61d04558ea47",
+        "binary": "92f7cdf39832343d7e2420387e4ce123f29f9f676017ae3234c53cb945d0ae29"
+      },
+      "reason": "Closed equal-work source comparison. A new transport prototype needs a new coherent image."
+    }
   }
 }
