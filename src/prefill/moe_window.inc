@@ -423,12 +423,12 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         owner.staged_uploads += eager_upload.experts;
         stats_.experts_streamed += eager_upload.experts;
         owner.staged_upload_bytes += eager_upload.payload_bytes;
-        if (m.layer_major_profile || census_requested || std::getenv("STRATA_TRACE"))
-            std::fprintf(stderr, "strata prefill demand-fit: layer=%lld rows=%lld slots=%d "
-                         "accepted_copies=%llu requested_H2D_bytes=%llu\n",
-                         (long long)layer, (long long)rows, owner.expert_slots->slots(),
-                         (unsigned long long)eager_upload.copy_commands,
-                         (unsigned long long)eager_upload.payload_bytes);
+        // Keep actual dispatch visible in clean processes as in the full-bank arm.
+        std::fprintf(stderr, "strata prefill demand-fit: layer=%lld rows=%lld slots=%d "
+                     "accepted_copies=%llu requested_H2D_bytes=%llu\n",
+                     (long long)layer, (long long)rows, owner.expert_slots->slots(),
+                     (unsigned long long)eager_upload.copy_commands,
+                     (unsigned long long)eager_upload.payload_bytes);
     }
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
     if (owner.defer_prefix_completion) {
