@@ -498221,7 +498221,7 @@
     }
   },
   "prefill_compat_wait_audit_host_v1": {
-    "stage": "prepared",
+    "stage": "built",
     "active": false,
     "ownership_closed": true,
     "passed": false,
@@ -498318,6 +498318,23 @@
       ],
       "result": "Access to performance monitoring limited for this account"
     },
-    "plan": "Build only a diagnostic shared library and a CPU canary. Verify 2 known caller return addresses, 3 entries including one propagated C++ exception and 2 recorded returns. Compare exactly the same control without LD_AUDIT. No GPU, model or system changes."
+    "plan": "Build only a diagnostic shared library and a CPU canary. Verify 2 known caller return addresses, 3 entries including one propagated C++ exception and 2 recorded returns. Compare exactly the same control without LD_AUDIT. No GPU, model or system changes.",
+    "artifacts": {
+      "wait_audit.so": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1/wait_audit.so",
+        "sha256": "9aec221ce87e8acd3e0f14cbad5d999eb2948dc48f7072ccd8c27062dfc8902d",
+        "bytes": 16696
+      },
+      "libstrata_wait_canary.so": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1/libstrata_wait_canary.so",
+        "sha256": "797292f18a6ea0f895ae6592aca9b8690b8743d7f6de34f3aeb5a1a8acd81945",
+        "bytes": 16296
+      },
+      "strata_wait_canary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1/strata_wait_canary",
+        "sha256": "d2e4604d05035718fc3a72ea1eb213ed12fa0778b1cc206254e5b529593f5de2",
+        "bytes": 16928
+      }
+    }
   }
 }
