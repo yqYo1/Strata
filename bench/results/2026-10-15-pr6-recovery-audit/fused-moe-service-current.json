@@ -498221,11 +498221,11 @@
     }
   },
   "prefill_compat_wait_audit_host_v1": {
-    "stage": "built",
+    "stage": "closed",
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "source_commit": "8c4564df617284f9400687265c3755679bea01a8",
     "source_sha": "e305f8c2fb6f058ffdd7ba2dc4127b4a9c85ccffb89f395699e9a15fbb17f997",
     "dependency_sha": "d561770a61476e12b528b9cb32768f9245c2a74875592a79452689202e77fe9c",
@@ -498334,6 +498334,23 @@
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1/strata_wait_canary",
         "sha256": "d2e4604d05035718fc3a72ea1eb213ed12fa0778b1cc206254e5b529593f5de2",
         "bytes": 16928
+      }
+    },
+    "symbols": {
+      "strata_wait_canary_return": 4199295,
+      "strata_wait_canary_parent_a": 4199309,
+      "strata_wait_canary_parent_b": 4199323
+    },
+    "host_control": {
+      "clean": {
+        "exit": 0,
+        "output": "compat_wait_canary PASS value=42 exception=passed",
+        "stderr": ""
+      },
+      "audit": {
+        "exit": 0,
+        "output": "compat_wait_canary PASS value=42 exception=passed",
+        "stderr": "strata wait audit: ready=1 return_pc=40137f parent_offset=16\nstrata wait site: ordinal=1 caller=40138d wall_ns=3656 cpu_ns=2224\nstrata wait site: ordinal=3 caller=40139b wall_ns=3176 cpu_ns=2064\nstrata wait audit: entered=3 exited=2 rejected=0"
       }
     }
   }
