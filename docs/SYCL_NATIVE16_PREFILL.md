@@ -248,14 +248,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   of requested GPU-local copies on the fresh prompt and direct output
   eliminated another 32,212,254,720 bytes. The combined arm eliminated both.
   All four owners closed with zero native exit and no fresh Xe fault.
-  At 253919 tokens, ordinary copy and direct input also passed their
-  matched server and RESTORE checks. Each used 114688 GPU rows and 139230
-  host rows in the batched prefix. Direct input avoided 108,045,271,040
-  requested D2D bytes there and another 7,732,592,640 on the 8209-token
-  suffix. Active state, output hashes, publications, decode-cache loan
-  and restored payload matched through 262128 tokens. Both native owners
-  exited normally without a fresh Xe fault. The output-only and combined
-  near-capacity cases, physical final slot and clean speed remain open.
+  At 253919 tokens all four arms passed at `4775de3b0`. Each placed 114688
+  batched rows on the GPU and 139230 in RAM. On the fresh prompt, direct
+  input avoided 108,045,271,040 requested D2D bytes and direct output
+  avoided 112,742,891,520. On the 8209-token restored suffix those values
+  were 7,732,592,640 and 8,068,792,320 bytes. The combined arm eliminated
+  both copies in each request. Active state, output hashes, publications,
+  decode-cache loan and restored payload matched through 262128 tokens.
+  All eight server processes closed normally with no fresh Xe fault, and
+  the final 15 model asset hashes matched. Physical slot 262144 and clean
+  speed remain separate checks.
   After the required model state checks, `4d9b176e5` compares
   copy, direct input, direct output and both over 16 independent clean
   processes with three 65537-token prompts apiece.
