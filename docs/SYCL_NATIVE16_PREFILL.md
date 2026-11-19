@@ -132,11 +132,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   four greedy fixture IDs. All four native cases close normally with quiet
   validation, no fresh GPU fault, and all 15 final asset hashes matched.
   The original setup failure at `eb11bc3db` precedes any child launch.
-  These are standalone correctness runs. Keep the direct path opt-in while
-  checking server cache state and RESTORE against the same copy control,
-  then qualify the independent thinking-enabled long-generation and agent
-  cases. The validated 64K timing and physical-capacity native build remain
-  the reference for that comparison.
+  The same-ELF native server RESTORE comparison (`f2a044c7f`) passes all
+  four independent processes and twelve requests. After switching to an
+  unrelated 33-token conversation, both arms restore 32769 or 253919 saved
+  tokens and read 8209 fresh tokens. The largest completed prompt is 262128.
+  The snapshot byte verifier passes main KV for 12 layers, draft KV, and
+  running state. Each paired request matches active fingerprints, prompt
+  publications and its single greedy fixture token. The unrelated request
+  uses the decode-cache window without lending expert slots. Both longer
+  requests use layer-major prefill and recover the checked 1256-slot decode
+  cache before generation. All native owners close normally without a
+  fresh fault. The original host peer refusal (`1a2115365`) and the
+  obsolete reader assumption about the unrelated request (`3f3687175`)
+  remain recorded.
+  Keep the direct path opt-in for the agent-session and repeated clean
+  thinking-enabled long-generation comparisons. Exercise the observed
+  high/low MTP-acceptance cases, keep decode settings fixed in both arms,
+  and separate clean speed from the native RESTORE diagnostics.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective

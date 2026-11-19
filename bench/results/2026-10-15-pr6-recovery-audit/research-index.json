@@ -37628,5 +37628,122 @@
         }
       ]
     }
+  },
+  "attention-bank-restore-research-20261119": {
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "attempts": [
+      {
+        "topic": "attention-restore-state-domains-20261119",
+        "source_commit": "8cbbf6f0268965a88793b1c5a7f7480c4e2049e5",
+        "task": "task_35b32c73f246",
+        "dispatch": "ctx_243ea93f9ee9",
+        "terminal": "term_61005257-7834-46e1-912e-8fcfe7e4c45f",
+        "outcome": "failed",
+        "ownership_closed": true,
+        "failure": "Mis-copied manifest directory. Fresh handoff invokes an exact prepared shell proof."
+      },
+      {
+        "topic": "restore-state-v2-20261119",
+        "source_commit": "1a2115365164a48d197f3cac0a5ebe40ca04547e",
+        "task": "task_7dcbc0408ff8",
+        "dispatch": "ctx_7d6b69ff5989",
+        "terminal": "term_8c49d1d4-5333-40c5-ade9-340c0a0ebe1a",
+        "outcome": "succeeded",
+        "ownership_closed": true,
+        "report_sha256": "134c592282c00b8c23a7347496889944f61f1a9e421038b02ad10c9128923e62",
+        "review_sha256": "60c43a4a7895ebff3fc3a42f1bc4dd3d9f9ee4bf797fd44f6492ace69f2459f3",
+        "proved_filesystem_inputs": 13,
+        "worker_status": {
+          "call": "call_e27aa31ac5ba4fe29e4498bec20359e9",
+          "sha256": "5a1047b988092c50d1c08c537b7e7e46b00a402d8c5c1426de67978a0b4efb26"
+        },
+        "classification": "decision support"
+      },
+      {
+        "topic": "gpu-payload-restore-validation-methods-20261119",
+        "source_commit": "8cbbf6f0268965a88793b1c5a7f7480c4e2049e5",
+        "task": "task_bd241cb4891e",
+        "dispatch": "ctx_cba81712dfc0",
+        "terminal": "term_5fb745f6-eef1-4f2c-bd6b-5e087a7c3ab6",
+        "outcome": "succeeded",
+        "ownership_closed": true,
+        "report_sha256": "7e680bbc9c36632e83ad3a57a79390a1811f3b48ece81a6825f871290c094939",
+        "review_sha256": "d927891aa459e1b85b46cf620d7d4bd7b91a0911ccf1ab37e0c453664b6d50d7",
+        "proved_filesystem_inputs": 13,
+        "worker_status": {
+          "call": "call_e58d6a80309e493180b53265d3d72e9c",
+          "sha256": "642d55492f299da18a85c9ee2fcb07fea5126021f17b9640f18c7b5c8a9d6e07"
+        },
+        "classification": "knowledge collection",
+        "reference_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-payload-restore-validation-methods-20261119/report.md"
+      }
+    ],
+    "schedulable_now": false,
+    "findings": [
+      "Compare logical running/KV state after each request. Stale/dead parts and the spare pooled row are recorded separately. SNAPSHOT_VERIFY independently checks main and draft K/V, scales, packed spans, running state and the mode-2 resident ring against the saved plan.",
+      "For the restore timing question, perform sanitizer or state-hash checks outside clean timing. CUDA Racecheck does not generally establish inter-stream ordering for global-memory restore, so use a workload-specific event/ownership negative control."
+    ],
+    "consumer": "Exact state-restore audit and future timed transfer study only if a measured restore interval warrants it.",
+    "retirement": {
+      "complete": false,
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-restore-state-domains-20261119",
+          "files": 0,
+          "bytes": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/attention-restore-state-domains-20261119-control",
+          "files": 7,
+          "bytes": 15586,
+          "sha256": "29ed7f4d434ad001501154ff6870965ed11ae70c4660c5dc8ea21eb9eb6dfb6e"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/attention-restore-state-domains-20261119",
+          "files": 12,
+          "bytes": 3750277,
+          "sha256": "d8721a1d4fbd2d376d0fd665888125e8a225782d8471eb991f27da454c6d6345"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/restore-state-v2-20261119",
+          "files": 2,
+          "bytes": 18713,
+          "sha256": "8239978a08f162a06c4a48833490c72723d7fc60063a6989e4c50479828ee058"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/restore-state-v2-20261119-control",
+          "files": 10,
+          "bytes": 17651,
+          "sha256": "23c81dc9a166d40a3f0767ed542779d2aa6aaac7acddf9e9ac22dd8523c92649"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/restore-state-v2-20261119",
+          "files": 12,
+          "bytes": 3750277,
+          "sha256": "d8721a1d4fbd2d376d0fd665888125e8a225782d8471eb991f27da454c6d6345"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-payload-restore-validation-methods-20261119",
+          "files": 1,
+          "bytes": 7725,
+          "sha256": "399336cc9a2cad4d87516184c1db3195ff0af887f9b799f4be132c6c8ea7fa62"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/gpu-payload-restore-validation-methods-20261119-control",
+          "files": 9,
+          "bytes": 18462,
+          "sha256": "c799bc2f8557a83b8a6c32fb0e8712afad26772966b841309c18abaaa0702330"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/gpu-payload-restore-validation-methods-20261119",
+          "files": 12,
+          "bytes": 3750277,
+          "sha256": "d8721a1d4fbd2d376d0fd665888125e8a225782d8471eb991f27da454c6d6345"
+        }
+      ]
+    }
   }
 }
