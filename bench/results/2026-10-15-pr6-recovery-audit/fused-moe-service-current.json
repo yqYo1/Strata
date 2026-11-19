@@ -500439,89 +500439,6 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "runtime_manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-numerical-v1/runtime-inputs.json",
-      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
-      "files": 84
-    },
-    "plans": [
-      {
-        "index": 0,
-        "read": 32769,
-        "heads": 1,
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-numerical-v1/0",
-        "generated": {
-          "config.json": "394af428cc3223b16c974b9de06cb17d384b6dfd829b98855535c55eba175e92",
-          "plan.json": "e3e9abad6a078df2f2ca54f7a39a13007d9baadbbb67b7acc3be1ed167c0efb4"
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-numerical-v1/0/config.json",
-          "--port",
-          "40927",
-          "--prefill-exact-tokens",
-          "32769",
-          "--think",
-          "--runs",
-          "2",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-numerical-v1/0/bench"
-        ],
-        "environment_sha256": "dce5d2bb39ec55cccb47e9f4164de3fab4dd955631e3a0f0f03a26037136ec84",
-        "variant": "copy",
-        "bank": 512,
-        "window": 10,
-        "relocate": 0,
-        "trace_progress": true,
-        "upload": "jit"
-      },
-      {
-        "index": 1,
-        "read": 32769,
-        "heads": 1,
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-numerical-v1/1",
-        "generated": {
-          "config.json": "20d0e08bb687343950d08f80ba01d6feeb9cad00ef4c3ebc88c90cf815228975",
-          "plan.json": "e3e9abad6a078df2f2ca54f7a39a13007d9baadbbb67b7acc3be1ed167c0efb4"
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-numerical-v1/1/config.json",
-          "--port",
-          "41985",
-          "--prefill-exact-tokens",
-          "32769",
-          "--think",
-          "--runs",
-          "2",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-numerical-v1/1/bench"
-        ],
-        "environment_sha256": "3c664114ea160f2fe9bd6787e347466d4d7b4fed947e7a91bee022df31ad7c06",
-        "variant": "direct",
-        "bank": 512,
-        "window": 10,
-        "relocate": 0,
-        "trace_progress": true,
-        "upload": "jit"
-      }
-    ],
     "processes": [
       {
         "index": 0,
@@ -501070,16 +500987,6 @@
       "model_speed_task_full_context_inherited": false,
       "final15full_hashes_reused_only_after_current_identity_check": true
     },
-    "host_results": [
-      {
-        "role": "benchmark",
-        "passed": true
-      },
-      {
-        "role": "server",
-        "passed": true
-      }
-    ],
     "decision": {
       "matched_work": true,
       "independent_processes": 2,
@@ -501100,7 +501007,7 @@
     "environment_template_sha256": "c5c3c1d16a3572e12de4f88a5d0ef27b809515367f0333659913b97ba0807bf2",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
     "artifact_retirement": {
-      "complete": false,
+      "complete": true,
       "evidence_commit": "b973b13dd1408aeae56ef17e7ff5536d57bf6654",
       "tested_ELF": "a3dddff2a848a73d2f1c0986bdb2c76e80badd77b843673b4f9bb440ac121990",
       "build_retained_for": "physical262144 and RESTORE qualification",
@@ -501113,7 +501020,8 @@
         "sha256": "5103c49a0f7bac6e2dcd82a35cdd93fe3e42eca132105a73a28476bcc4f0407b"
       },
       "reason": "Both cohorts are closed. The remaining qualification consumes the retained exact compiled ELF and committed outcome. All individual measurements, routed work and fault/closure outcomes remain in Git."
-    }
+    },
+    "exact_inputs_and_original_plan": "b973b13dd1408aeae56ef17e7ff5536d57bf6654"
   },
   "prefill_attention_bank_timing_v1": {
     "stage": "closed",
@@ -501246,241 +501154,6 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "runtime_manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/runtime-inputs.json",
-      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
-      "files": 84
-    },
-    "plans": [
-      {
-        "index": 0,
-        "read": 65537,
-        "heads": 1,
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/0",
-        "generated": {
-          "config.json": "280141d008aaf69f3ba00fe8f04931ea8e522b802aab0dbf4f21d3ff437894ff",
-          "plan.json": "e3e9abad6a078df2f2ca54f7a39a13007d9baadbbb67b7acc3be1ed167c0efb4"
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/0/config.json",
-          "--port",
-          "32999",
-          "--prefill-exact-tokens",
-          "65537",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/0/bench"
-        ],
-        "environment_sha256": "5e7e78673993ea70e0d667a6e3e672c666510337c6d7dd79ada52bc93c956801",
-        "variant": "copy",
-        "bank": 512,
-        "window": 10,
-        "relocate": 0,
-        "trace_progress": false,
-        "upload": "jit"
-      },
-      {
-        "index": 1,
-        "read": 65537,
-        "heads": 1,
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/1",
-        "generated": {
-          "config.json": "18e9e4b942ebf1eb50bfc7a903de04c523d7e7487538cfedc4731479e32aea82",
-          "plan.json": "e3e9abad6a078df2f2ca54f7a39a13007d9baadbbb67b7acc3be1ed167c0efb4"
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/1/config.json",
-          "--port",
-          "60515",
-          "--prefill-exact-tokens",
-          "65537",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/1/bench"
-        ],
-        "environment_sha256": "e879ae8a68f891ed3e922a3625bd467793f68aeda78f5fb3afad58473e3f53ac",
-        "variant": "direct",
-        "bank": 512,
-        "window": 10,
-        "relocate": 0,
-        "trace_progress": false,
-        "upload": "jit"
-      },
-      {
-        "index": 2,
-        "read": 65537,
-        "heads": 1,
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/2",
-        "generated": {
-          "config.json": "25b279cf5a1327a5d4ca8d501016245b80213fe6b07966d98b88c2ca8be2ed0c",
-          "plan.json": "e3e9abad6a078df2f2ca54f7a39a13007d9baadbbb67b7acc3be1ed167c0efb4"
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/2/config.json",
-          "--port",
-          "33215",
-          "--prefill-exact-tokens",
-          "65537",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/2/bench"
-        ],
-        "environment_sha256": "8b3de7831b379c4d6543088a84bbed45d98353a090650e386639ee3942aee25b",
-        "variant": "direct",
-        "bank": 512,
-        "window": 10,
-        "relocate": 0,
-        "trace_progress": false,
-        "upload": "jit"
-      },
-      {
-        "index": 3,
-        "read": 65537,
-        "heads": 1,
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/3",
-        "generated": {
-          "config.json": "c1851ec8ebec5c1fa1fb00f17364a14c12353ceb1c6a4c41b87a966cb1609108",
-          "plan.json": "e3e9abad6a078df2f2ca54f7a39a13007d9baadbbb67b7acc3be1ed167c0efb4"
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/3/config.json",
-          "--port",
-          "42937",
-          "--prefill-exact-tokens",
-          "65537",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/3/bench"
-        ],
-        "environment_sha256": "7c81472424ccb89f0167399638cea8abcdc423f16544a0a77cdf65db8b276a38",
-        "variant": "copy",
-        "bank": 512,
-        "window": 10,
-        "relocate": 0,
-        "trace_progress": false,
-        "upload": "jit"
-      },
-      {
-        "index": 4,
-        "read": 65537,
-        "heads": 1,
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/4",
-        "generated": {
-          "config.json": "6f295b6ee62f51ec27faf9ca92a25e06cddd02fe6e74b7348e27ea3589c8fc39",
-          "plan.json": "e3e9abad6a078df2f2ca54f7a39a13007d9baadbbb67b7acc3be1ed167c0efb4"
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/4/config.json",
-          "--port",
-          "38707",
-          "--prefill-exact-tokens",
-          "65537",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/4/bench"
-        ],
-        "environment_sha256": "179c745a5bf0531ffa9a6ab5ae5cfb4f3419965764dcdd9df55f9340c82026ee",
-        "variant": "copy",
-        "bank": 512,
-        "window": 10,
-        "relocate": 0,
-        "trace_progress": false,
-        "upload": "jit"
-      },
-      {
-        "index": 5,
-        "read": 65537,
-        "heads": 1,
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/5",
-        "generated": {
-          "config.json": "bf6756f736546cc6724786eda94c86542732cb15b92302ff24f2f23fec06ff94",
-          "plan.json": "e3e9abad6a078df2f2ca54f7a39a13007d9baadbbb67b7acc3be1ed167c0efb4"
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/5/config.json",
-          "--port",
-          "50809",
-          "--prefill-exact-tokens",
-          "65537",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-timing-v1/5/bench"
-        ],
-        "environment_sha256": "b1456ba096ddf3184c7ba738052a0ac6f571ba031c72ce47f8415ed01d50b5fe",
-        "variant": "direct",
-        "bank": 512,
-        "window": 10,
-        "relocate": 0,
-        "trace_progress": false,
-        "upload": "jit"
-      }
-    ],
     "processes": [
       {
         "index": 0,
@@ -503620,16 +503293,6 @@
       "model_speed_task_full_context_inherited": false,
       "final15full_hashes_reused_only_after_current_identity_check": true
     },
-    "host_results": [
-      {
-        "role": "benchmark",
-        "passed": true
-      },
-      {
-        "role": "server",
-        "passed": true
-      }
-    ],
     "decision": {
       "matched_work": true,
       "independent_processes": 6,
@@ -503749,7 +503412,7 @@
     "environment_template_sha256": "be3993f94a7df655bcb5eabb66f83025c1978cd304b04c317a9f26e70552b471",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
     "artifact_retirement": {
-      "complete": false,
+      "complete": true,
       "evidence_commit": "b973b13dd1408aeae56ef17e7ff5536d57bf6654",
       "tested_ELF": "a3dddff2a848a73d2f1c0986bdb2c76e80badd77b843673b4f9bb440ac121990",
       "build_retained_for": "physical262144 and RESTORE qualification",
@@ -503762,6 +503425,7 @@
         "sha256": "eb9dd03c483624d7863955125bf5c375b55a43393b7e352dc3a33816d747c214"
       },
       "reason": "Both cohorts are closed. The remaining qualification consumes the retained exact compiled ELF and committed outcome. All individual measurements, routed work and fault/closure outcomes remain in Git."
-    }
+    },
+    "exact_inputs_and_original_plan": "b973b13dd1408aeae56ef17e7ff5536d57bf6654"
   }
 }
