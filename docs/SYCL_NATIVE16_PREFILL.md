@@ -2833,7 +2833,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   requests must have at least five such layers: even the 20 smallest
   overflow thresholds (384, nine times 438, ten times 469) sum to
   9,016, and the remaining four layers need at least ten experts each.
-  The aggregate counters do not give the fit layers' identities or bytes.
+  The counters alone leave a wide range of movable bytes. For example, the
+  first warmed request's 9,025 partial-bank uploads and 20,281,932,800
+  bytes permit group totals of (5,871, 2,676, 478) experts across the
+  469-, 438- and 384-slot layers, respectively. Two 469-slot layers and
+  three 438-slot layers could each demand only ten experts, with every
+  other layer overflowing: just 113,408,000 bytes would move earlier.
+  Group totals of (5,013, 3,930, 82) also match the same measured counts
+  and bytes, yet allow all 24 layers to fit. Both examples use the observed
+  2,176,000 / 2,329,600 / 2,662,400 bytes per expert. Measure per-layer
+  demand before estimating scheduling gains from these aggregate counters.
 
   The opt-in `STRATA_SYCL_PREFILL_FULLFIT_UPLOAD=eager-demand-fit`
   candidate retains the ordinary full-bank policy and tries to issue all
