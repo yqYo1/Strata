@@ -494943,5 +494943,29 @@
       "evidence_commit": "bcacbe0209f1579a2b92cdf87eb0985de99f9d20",
       "reason": "Original outcome, individual samples, compact overlapping service intervals, route and ownership evidence are retained. No raw-capture consumer remains."
     }
+  },
+  "prefill_prefix_expert_cpu_wait_v1": {
+    "stage": "blocked-at-prepare",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "source_commit": "b95acbc46f7181711ea4e02878fd3ec896023422",
+    "native_source_commit": "7537fb7bc02cc035ac2d395a383a7b5eaa95564a",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/build/strata",
+      "sha256": "2d6c4021902ca20ce3b05d09593899ee07c53e09a7528fb9df2b759e1e62e09f",
+      "bytes": 26501944
+    },
+    "error": "RuntimeError: pinned phase references, platform or controller changed",
+    "changed_pinned_inputs": {
+      "docs/SYCL_NATIVE16_PREFILL.md": {
+        "original": "456ad378dfc0a42be458986133119daeb7fdf83601804d7c71de765c590681ce",
+        "current": "4a2f460880e2ef325bd4802bc4593ab2b63b4ab7259044ce798bf29d02ae81c6"
+      }
+    },
+    "decision": "Original admission refused before preparation or GPU. Preserve historical document bytes and keep all runtime/compiled inputs exact in a newly committed comparison.",
+    "raw_capture_created": false
   }
 }
