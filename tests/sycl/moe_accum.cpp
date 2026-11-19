@@ -39,15 +39,17 @@ struct Pending {
 };
 template<class T> struct Buffer {
     sb::Allocation allocation;
-    size_t count;
-    Buffer(size_t n):allocation(runtime,n*sizeof(T)+2*G,sb::MemoryKind::Device),count(n) {}
-    T* data() const { return reinterpret_cast<T*>(allocation.as<unsigned char>()+G); }
+    size_t count, prefix;
+    explicit Buffer(size_t n, size_t shift = 0)
+        : allocation(runtime, n*sizeof(T)+2*G+shift, sb::MemoryKind::Device), count(n), prefix(G+shift) {}
+    T* data() const { return reinterpret_cast<T*>(allocation.as<unsigned char>()+prefix); }
     void poison(sycl::queue& q) { q.memset(allocation.data(),0xa5,allocation.size()); }
     void guards() const {
-        std::array<unsigned char,2*G> observed{};
+        std::vector<unsigned char> observed(prefix+G);
         try {
-            auto& q=runtime->compute();q.memcpy(observed.data(),allocation.data(),G);
-            q.memcpy(observed.data()+G,data()+count,G);runtime->wait();
+            auto& q=runtime->compute();
+            q.memcpy(observed.data(),allocation.data(),prefix);
+            q.memcpy(observed.data()+prefix,data()+count,G);runtime->wait();
         } catch (...) { sb::cleanup_fail_stop("accumulator guard destination did not retire"); }
         for (auto x:observed) need(x==0xa5,"guard overwritten");
     }
@@ -170,23 +172,31 @@ void refused(const std::string& mode) {
 }
 // Isolated copy contract: arbitrary logical rows intentionally test both banks
 // within one expert job. This is not an accumulator route/slot validity oracle.
-void mixed_gather(int rows, int primary_rows) {
+void mixed_gather(int rows, int primary_rows, bool vec8 = false, size_t job_index = 0) {
     const size_t cells=size_t(rows)*N, routes=size_t(rows)*K;
-    std::vector<uint16_t> input(cells),observed(J*N),reference(J*N),capture;
+    std::vector<uint16_t> input(cells),capture;
     std::vector<int32_t> ids(routes),map(routes),observed_map(routes);
     for (size_t r=0;r<size_t(rows);++r) {
         for(size_t col=0;col<N;++col)input[r*N+col]=uint16_t((r*31337+col*97+(r>>3))&65535);
         for(size_t slot=0;slot<K;++slot)ids[r*K+slot]=int32_t(slot);
     }
     const auto plan=pd::MoeWindowRoutes::build_accum(rows,ids.data(),ids.size());
-    const auto& job=plan->jobs().front();need(job.rows==int(J),"full gather job required");
+    const auto& job=plan->jobs().at(job_index);
+    if (job_index == 0) need(job.rows == int(J), "full gather job required");
+    else need(job.rows == 8191 && job.global_row == int(J), "expected ragged nonzero route offset");
+    const size_t values = size_t(job.rows) * N;
+    std::vector<uint16_t> observed(values), reference(values);
     map=plan->source_rows();
-    for(size_t i=0;i<J;++i) {
+    for(size_t i=0;i<size_t(job.rows);++i) {
         const int edge[4]={0,primary_rows-1,std::min(primary_rows,rows-1),rows-1};
         map[size_t(job.global_row)+i]=i%5?edge[i%4]:int((i*193+17)%size_t(rows));
     }
     auto& q=runtime->compute();
-    Buffer<uint16_t> contiguous(cells),primary(size_t(primary_rows)*N),tail(size_t(rows-primary_rows)*N),out(J*N),old(J*N);
+    Buffer<uint16_t> contiguous(cells), primary(size_t(primary_rows)*N, vec8 ? 4 : 0),
+        tail(size_t(rows-primary_rows)*N, vec8 ? 8 : 0), out(values, vec8 ? 12 : 0), old(values);
+    if (vec8) need(reinterpret_cast<uintptr_t>(primary.data()) % 16 == 4
+                      && reinterpret_cast<uintptr_t>(tail.data()) % 16 == 8
+                      && reinterpret_cast<uintptr_t>(out.data()) % 16 == 12, "four-byte slice coverage");
     Buffer<int32_t> source(routes);Buffer<uint32_t> status(1);Pending pending;
     contiguous.poison(q);primary.poison(q);tail.poison(q);out.poison(q);old.poison(q);source.poison(q);status.poison(q);
     q.memcpy(contiguous.data(),input.data(),cells*2);
@@ -194,7 +204,8 @@ void mixed_gather(int rows, int primary_rows) {
     if(rows>primary_rows)q.memcpy(tail.data(),input.data()+size_t(primary_rows)*N,size_t(rows-primary_rows)*N*2);
     q.memcpy(source.data(),map.data(),routes*4);q.memset(status.data(),0,4);runtime->wait();
     auto launch=[&](const uint16_t* p,const uint16_t* t,int split,const int32_t* s,uint16_t* dst) {
-        pn::moe_gather_mixed(*plan,0,p,t,split,s,dst,status.data(),&q);
+        const auto gather = vec8 ? pn::prefill_moe_gather_mixed_vec8 : pn::moe_gather_mixed;
+        gather(*plan,job_index,p,t,split,s,dst,status.data(),&q);
     };
     const auto* second=rows>primary_rows?tail.data():nullptr;
     launch(primary.data(),second,primary_rows,source.data(),out.data());
@@ -219,10 +230,11 @@ void mixed_gather(int rows, int primary_rows) {
     else reject([&]{launch(primary.data(),tail.data(),primary_rows,source.data(),out.data());});
     const int bad[4]={-1,rows,INT32_MAX,INT32_MIN};
     for(size_t i=0;i<4;++i)map[size_t(job.global_row)+i]=bad[i];
-    q.memcpy(source.data(),map.data(),routes*4);q.memset(status.data(),0,4);
+    const uint32_t initial_status = vec8 ? 32u : 0u;
+    q.memcpy(source.data(),map.data(),routes*4);q.fill(status.data(),initial_status,1);
     launch(primary.data(),second,primary_rows,source.data(),out.data());
     q.memcpy(observed.data(),out.data(),observed.size()*2);q.memcpy(&observed_status,status.data(),4);runtime->wait();
-    need(observed_status==4,"invalid row sticky gather status");
+    need(observed_status==(initial_status | 4u),"invalid row sticky gather status");
     for(size_t i=0;i<observed.size();++i) {
         const int row=map[size_t(job.global_row)+i/N];
         need(observed[i]==(row<0 || row>=rows?0:input[size_t(row)*N+i%N]),"invalid row accessed source memory");
@@ -234,8 +246,10 @@ void mixed_gather(int rows, int primary_rows) {
     q.memcpy(observed_map.data(),source.data(),routes*4);runtime->wait();need(observed_map==map,"source map mutated");
     contiguous.guards();primary.guards();tail.guards();out.guards();old.guards();source.guards();status.guards();
     need(rejects==6,"mixed gather admission coverage");
+    if (vec8) std::cout << "vec8 words=8 job_rows=" << job.rows << " offset=" << job.global_row
+                        << " primary_mod16=4 tail_mod16=8 output_mod16=12 PASS\n";
     std::cout<<"mixed_gather rows="<<rows<<" primary_rows="<<primary_rows<<" compared_values="<<observed.size()
-             <<" admission_rejects="<<rejects<<" invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS\n";
+             <<" admission_rejects="<<rejects<<" invalid_rows=4 status="<<observed_status<<" inputs_immutable=1 guards=PASS PASS\n";
 }
 } // namespace
 int main(int argc,char** argv) {
@@ -245,7 +259,9 @@ int main(int argc,char** argv) {
         gate("before-runtime");runtime=sb::runtime_for();
         std::cout<<"device="<<runtime->device().get_info<sycl::info::device::name>()<<" driver="<<runtime->device().get_info<sycl::info::device::driver_version>()<<'\n';
         gate("runtime-ready");
-        if(mode=="mixed-gather-smoke")mixed_gather(8193,8192);
+        if(mode=="mixed-gather-vec8-contiguous")mixed_gather(16384,16384,true);
+        else if(mode=="mixed-gather-vec8-ragged")mixed_gather(16383,8192,true,1);
+        else if(mode=="mixed-gather-smoke")mixed_gather(8193,8192);
         else if(mode=="mixed-gather-contiguous")mixed_gather(16384,16384);
         else if(mode=="mixed-gather-65537")mixed_gather(65537,65536);
         else if(mode=="mixed-gather-partial")mixed_gather(78452,65536);

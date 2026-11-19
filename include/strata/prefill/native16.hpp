@@ -48,6 +48,10 @@ void moe_job_weights(const detail::MoeWindowRoutes& plan, const float* weights,
 void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
                       const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
                       const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream);
+// Long-prefill component arm: eight raw FP16 values per work item.
+void prefill_moe_gather_mixed_vec8(const detail::MoeWindowRoutes& plan, size_t job_index,
+                      const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
+                      const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream);
 void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
                     const uint16_t* down, const int32_t* source,
                     const int32_t* original_slots, const float* job_weights,

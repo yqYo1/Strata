@@ -224,7 +224,13 @@ void moe_job_weights(const detail::MoeWindowRoutes& plan, const float* weights,
     });
 }
 
-void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
+namespace {
+struct MoeGatherExtent {
+    size_t values, offset;
+    int64_t rows;
+};
+
+MoeGatherExtent prefill_moe_gather_extent(const detail::MoeWindowRoutes& plan, size_t job_index,
                       const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
                       const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream) {
     const size_t routes = accumulator_routes(plan, stream);
@@ -233,7 +239,7 @@ void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
     if (primary_rows <= 0 || primary_rows > rows || job.rows < 1 || job.rows > 8192 ||
         job.global_row < 0 || size_t(job.global_row) > routes - size_t(job.rows))
         throw std::invalid_argument("MoE mixed gather bank/job bounds");
-    const size_t n = count(job.rows, N), offset = size_t(job.global_row);
+    const size_t n = count(job.rows, N);
     // Always validate complete logical banks, not just the first input row.
     accumulator_spans(stream, {{gathered, n * 2}, {status, 4}},
         {{primary, count(primary_rows, N) * 2}, {source, routes * 4}});
@@ -243,6 +249,15 @@ void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
         validate_spans({{primary, count(primary_rows, N) * 2}},
                        {{tail, count(rows - primary_rows, N) * 2}});
     } else if (tail) throw std::invalid_argument("MoE mixed gather unexpected tail");
+    return {n, size_t(job.global_row), rows};
+}
+} // namespace
+
+void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
+                      const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
+                      const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream) {
+    const auto [n, offset, rows] = prefill_moe_gather_extent(plan, job_index, primary, tail, primary_rows,
+                                                            source, gathered, status, stream);
     for_each(n, stream, [=](size_t i) {
         const int32_t row = source[offset + i / N];
         const size_t col = i % N;
@@ -253,6 +268,33 @@ void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
         }
         gathered[i] = int64_t(row) < primary_rows ? primary[size_t(row) * N + col]
             : tail[size_t(int64_t(row) - primary_rows) * N + col];
+    });
+}
+
+void prefill_moe_gather_mixed_vec8(const detail::MoeWindowRoutes& plan, size_t job_index,
+                      const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
+                      const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream) {
+    constexpr size_t words = 8;
+    static_assert(N % words == 0);
+    const auto [n, offset, rows] = prefill_moe_gather_extent(plan, job_index, primary, tail, primary_rows,
+                                                            source, gathered, status, stream);
+    for_each(n / words, stream, [=](size_t group) {
+        const size_t first = group * words;
+        const size_t col = first % N;
+        const int32_t row = source[offset + first / N];
+        sycl::vec<uint16_t, words> values{uint16_t(0)};
+        if (row >= 0 && int64_t(row) < rows) {
+            const auto* input = int64_t(row) < primary_rows ? primary + size_t(row) * N
+                : tail + size_t(int64_t(row) - primary_rows) * N;
+            values.load(0, sycl::address_space_cast<sycl::access::address_space::global_space,
+                        sycl::access::decorated::no>(input + col));
+        } else if (!col) {
+            accumulator_error(status, 4);
+        }
+        // These scalar-typed loads and stores accept the original four-byte
+        // slice alignment even when the vector occupies sixteen bytes.
+        values.store(0, sycl::address_space_cast<sycl::access::address_space::global_space,
+                     sycl::access::decorated::no>(gathered + first));
     });
 }
 
