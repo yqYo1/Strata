@@ -21,6 +21,7 @@ KEY = 'prefill_qsa_k_lanes4_v1'
 REVISION = 'c11c99275e191c828a375148a52543885213280b'
 REFERENCE = 'src/kernels/sycl/qsa_bf16_prefix.cpp'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
+BENCH_SHA256 = '2ea5fb3b94ef593a832769bce0c16e4ba7abd72a701355b7bbcbd732dffa413b'
 GENERATED = 'qsa_prefill_k_lanes4.cpp'
 TARGET = 'sycl_qsa_prefill_k_lanes4_bench'
 ARCHIVES = ('libstrata_kernels.a', 'libstrata_core.a', 'libstrata_sycl_runtime.a')
@@ -39,8 +40,9 @@ def recipe(parent):
     isolated = lanes.candidate(original)
     require(hashlib.sha256(isolated).hexdigest() == '5d131f75ab26ad0e9366324e610127060da35bce198f3f87cbc72672ce83e3c2',
             'generated K reader changed')
-    overlay = {GENERATED: isolated, BENCH: fixture.git_file(REVISION, BENCH)}
-    require((P / BENCH).read_bytes() == overlay[BENCH], 'fixture body changed')
+    overlay = {GENERATED: isolated, BENCH: fixture.git_file('HEAD', BENCH)}
+    require((P / BENCH).read_bytes() == overlay[BENCH] and bank.sha(P / BENCH) == BENCH_SHA256,
+            'the committed page-four comparison fixture is required')
     ordered.kernel_arguments(BUILD)  # Both kernel targets have the actual production compile flags.
     units = bank.previous.read(BUILD / 'compile_commands.json')
     commands, replacements = [], {}
@@ -85,7 +87,7 @@ def checked_samples(text, process, smoke):
     points = []
     for i, (cap, pattern) in enumerate(cases):
         common = dict(cells=str(cells), queries=str(queries), cap=str(cap), pattern=pattern)
-        require(markers[i] == dict(common, samples='12', full_bits='PASS', guards='PASS', inputs='PASS',
+        require(markers[i] == dict(common, page_size='4', samples='12', full_bits='PASS', guards='PASS', inputs='PASS',
                                    status='PASS'), 'case extent or full bit checks differ')
         arms = {name: [] for name in ARMS}
         for j, sample in enumerate(samples[i * 12:(i + 1) * 12]):

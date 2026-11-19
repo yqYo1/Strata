@@ -2913,6 +2913,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Require three lower candidate medians on both wide spread and four-cell
   maps, valid timers, quiet validation and no fresh fault before a model
   trial. These synthetic maps do not measure real cache-line traffic.
+  Use the model's four-cell KV page for both arms and check its value
+  in every case. A selected four-cell group occupies one page at this
+  setting. The older probability fixture used 16-cell pages, including
+  its 224 ms and 140 ms references; its times cannot serve as the
+  four-cell baseline. Retrieve the reference interval from each pair.
   The lane comparison builds two isolated translation units against the
   measured engine's three static archives. Both arms use the original
   ordered-exp compiler flags. Run a traced three-query smoke first. For

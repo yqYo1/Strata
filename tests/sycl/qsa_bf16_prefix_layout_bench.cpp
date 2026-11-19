@@ -102,7 +102,13 @@ void gate(bool enabled,const char *phase) {
 }
 void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
   const char* pattern = blocks4 ? "blocks4" : clustered ? "clustered" : "gather";
-  constexpr int Dim=256,Heads=24,KV=2,Page=16;
+  constexpr int Dim=256,Heads=24,KV=2;
+#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+  const auto Page = static_cast<int>(qsa_real_shapes().page_size);
+  require(Page == 4, "expected production KV page size");
+#else
+  constexpr int Page=16;
+#endif
   const int pages=(cells+Page-1)/Page,rows=pages*KV*Page;
   std::vector<int32_t> table(pages),ids(size_t(queries)*cap),steps(size_t(queries)*kStepCount);
   for (int p=0;p<pages;++p) table[p]=p%13==5 ? -1 : pages-1-p;
@@ -233,6 +239,9 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
   require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
       dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
   std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap
+#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+      <<" page_size="<<Page
+#endif
       <<" pattern="<<pattern<<" samples="<<sample_count
       <<" full_bits=PASS guards=PASS inputs=PASS status=PASS\n";
 }
