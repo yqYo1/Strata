@@ -520874,5 +520874,761 @@
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_resident_input_timing_v1": {
+    "stage": "prepared",
+    "source_commit": "b550ab69b2816dfb2db6c83af7aa12f5c3320f79",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/strata",
+      "sha256": "b35d66a4f29737a47abcdd7180c80eaf838b8658ec49ca2586948198d6a7613f",
+      "bytes": 26522768
+    },
+    "native_source_commit": "1bf54ec3277f60c77417dac68642966f3782652d",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "observer_admission": {
+      "fast_configuration_diagnostic": {
+        "key": "coherent_prefill_model_v3",
+        "evidence_sha256": "096d6a778244c8e9606732a07c4fc707894cc1e97876ea8c12dab8e9470dd48e",
+        "original_controller_source": "bcc836fa28a2084fe61d95ad1948fdfadffc18ec",
+        "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "model_handoff_passed": true,
+        "model_speed_task_full_context_inherited": false,
+        "final15full_hashes_reused_only_after_current_identity_check": true
+      },
+      "model_state_sha256": "08f655afb286312634fd678affc0eb16617e75d9d82d16f18a6d1a91e054c5a7",
+      "build_sha256": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
+      "ordinary_control": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-ordinary-bank-comparison-v1/1",
+        "environment_sha256": "5990eab9654303568db3c00994aafcc93671f5e549f6420fdaa10aae86d3999b"
+      },
+      "historical_requests": [
+        "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+        "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+        "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d"
+      ]
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "plans": [
+      {
+        "index": 0,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/0",
+        "generated": {
+          "config.json": "e29d0d539832718d2c30bccb30df2aa1717e395d7d2106f6c4a2f85000623281",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/0/config.json",
+          "--port",
+          "45949",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/0/bench"
+        ],
+        "environment_sha256": "be020c436cb12caf1b1d5af36766de941f83a37cd07f227fbac8dd9ae499520f",
+        "variant": "copy"
+      },
+      {
+        "index": 1,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/1",
+        "generated": {
+          "config.json": "885fe913b73989aa104099f63ac58e0ab2a03f19b3da4ed23a63bf62b1f63d95",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/1/config.json",
+          "--port",
+          "48157",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/1/bench"
+        ],
+        "environment_sha256": "2c407a142aac0a1f1ebaf91fc40a1cc5c6b049670fd5d8bdc7bb09534bff72a1",
+        "variant": "input"
+      },
+      {
+        "index": 2,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/2",
+        "generated": {
+          "config.json": "318f9bb934fa8634619878fd453d78823d0859798c1fe8d751fbad575b397814",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/2/config.json",
+          "--port",
+          "37545",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/2/bench"
+        ],
+        "environment_sha256": "b8ad417cb859ff8cba3e3968645bea8fb5b649746f3a4eac9b7ea7eacfb9ec63",
+        "variant": "output"
+      },
+      {
+        "index": 3,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/3",
+        "generated": {
+          "config.json": "9f11e74bd36e27f0134e567732cff0a97522166cdc74d82f4432840b10ef743d",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/3/config.json",
+          "--port",
+          "43585",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/3/bench"
+        ],
+        "environment_sha256": "7fe62e0823eb3129ac0fcb3db6c05afa0015114b839a4e86e857b96bd9ea6f62",
+        "variant": "both"
+      },
+      {
+        "index": 4,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/4",
+        "generated": {
+          "config.json": "fb5d460e4311b154b58a4a1c6f4372cfb8e79341eba51b8fdce614ebd2054a59",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/4/config.json",
+          "--port",
+          "59027",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/4/bench"
+        ],
+        "environment_sha256": "ecf5104caba7bd4f1be66ebed163b7c2baba325a377cdcd18febdad7fe6bea78",
+        "variant": "input"
+      },
+      {
+        "index": 5,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/5",
+        "generated": {
+          "config.json": "1d8ed237012dd10c7ccdcfac9502e37edb908310a3cfd7413e8297c5d3141137",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/5/config.json",
+          "--port",
+          "60441",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/5/bench"
+        ],
+        "environment_sha256": "cd6fcdd98b01d6e8213d7c9de08de889670937e2a3caceacd863a6b4dbcd3939",
+        "variant": "both"
+      },
+      {
+        "index": 6,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/6",
+        "generated": {
+          "config.json": "8b7b532c3a4aa6a0f6ae43415c72a78449c7f824d87f306a4d082e89ea949912",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/6/config.json",
+          "--port",
+          "34271",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/6/bench"
+        ],
+        "environment_sha256": "690d321c4cf89ad9e87ff03cf7904861a76b1ee4fb3266fedd47408a2c120361",
+        "variant": "copy"
+      },
+      {
+        "index": 7,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/7",
+        "generated": {
+          "config.json": "6fcfb2a9d68f79dd5866f4f7d2dc90c5cfe85a5e931b635c52160444e38f0190",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/7/config.json",
+          "--port",
+          "34639",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/7/bench"
+        ],
+        "environment_sha256": "ef75baa20044ce36f97eb2d21efcbc4e84225f73609828555b054e3008e16c05",
+        "variant": "output"
+      },
+      {
+        "index": 8,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/8",
+        "generated": {
+          "config.json": "48cb9c7af37821181a26c5e1c5b70f9ad2293e2cd8f95bbf9035bd79c46d4e3d",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/8/config.json",
+          "--port",
+          "40617",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/8/bench"
+        ],
+        "environment_sha256": "031c14712993f9d16278fab45fae062bba7d735944440a7d9beac06452e16cc2",
+        "variant": "output"
+      },
+      {
+        "index": 9,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/9",
+        "generated": {
+          "config.json": "0607740409efb4b0a47ee1ab22c71210ce61fffd718facb4fabcf00d1e9d1e1a",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/9/config.json",
+          "--port",
+          "45289",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/9/bench"
+        ],
+        "environment_sha256": "388ae11ebb4ddc48016e8c2f230af9369fff464c5e59ea72d7b653eb42bccc2a",
+        "variant": "copy"
+      },
+      {
+        "index": 10,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/10",
+        "generated": {
+          "config.json": "090da792161ac0a787312be638aef1042382bc389734cc8c16aca029f3c9a2e0",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/10/config.json",
+          "--port",
+          "37383",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/10/bench"
+        ],
+        "environment_sha256": "808ffb0bcf71dfa9967b654de8c7b2bea6e6703353d1d78fb675250656605f20",
+        "variant": "both"
+      },
+      {
+        "index": 11,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/11",
+        "generated": {
+          "config.json": "77d966429b23d2842974e4f7c4e1e42168833694415ad27ebaa21a86dd576b30",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/11/config.json",
+          "--port",
+          "36133",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/11/bench"
+        ],
+        "environment_sha256": "2b07fb8a40b0b297a1394545892ab378cf7b4f15bfa0cd7fc432dce243b6f80c",
+        "variant": "input"
+      },
+      {
+        "index": 12,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/12",
+        "generated": {
+          "config.json": "d2f6a61d7a3d1c0ddb580effbe846d22cb0274a2c907bbdd2b391f8991820f4b",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/12/config.json",
+          "--port",
+          "37631",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/12/bench"
+        ],
+        "environment_sha256": "559bf84f9a3b6a0f11ac595e5c0a921d27b57a4960fa26c34831b31045906d53",
+        "variant": "both"
+      },
+      {
+        "index": 13,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/13",
+        "generated": {
+          "config.json": "80f7860b990bc1e9525054d42cdad0382e63663fd1780c2b8ac485a7f2a66235",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/13/config.json",
+          "--port",
+          "48365",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/13/bench"
+        ],
+        "environment_sha256": "b9820ebbd9a1c6d0a8138ab803d6b5e854c5728b838c53921f4fc84c6bede865",
+        "variant": "output"
+      },
+      {
+        "index": 14,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/14",
+        "generated": {
+          "config.json": "a0df767fa9c7ea1148d55e7dde1b3b58e3fa3c2084c59c7ac0e36e188a7e09d5",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/14/config.json",
+          "--port",
+          "40715",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/14/bench"
+        ],
+        "environment_sha256": "1ab91588458d45ffa9e130e8dfea603203ae78e640a887b66d23ff224911c45e",
+        "variant": "input"
+      },
+      {
+        "index": 15,
+        "read": 65537,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/15",
+        "generated": {
+          "config.json": "c254e689e8cf014cebf497b90af50d7d6ed570588430f6c2ac6a48026ac18d8f",
+          "plan.json": "749a68e226f721d4f1558d7fe0a6fc4c54202afa77abc7f12f4220c6ccb73f8e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/15/config.json",
+          "--port",
+          "35871",
+          "--prefill-exact-tokens",
+          "65537",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-timing-v1/15/bench"
+        ],
+        "environment_sha256": "ab5a920f4041d3b2708632754799c9a36b892bffc1a7270792e0d0f3b3d47033",
+        "variant": "copy"
+      }
+    ],
+    "processes": [],
+    "request_hashes": {},
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "budgets": {
+      "wall": 2400,
+      "cpu": 28800,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 134217728
+    },
+    "whole_bytes": 2155872256,
+    "plan": {
+      "blocks": [
+        [
+          "copy",
+          "input",
+          "output",
+          "both"
+        ],
+        [
+          "input",
+          "both",
+          "copy",
+          "output"
+        ],
+        [
+          "output",
+          "copy",
+          "both",
+          "input"
+        ],
+        [
+          "both",
+          "output",
+          "input",
+          "copy"
+        ]
+      ],
+      "read": 65537,
+      "runs": 3,
+      "unit": "Change BF16 bank read and write independently.",
+      "acceptance": "Compare second/third prompt-time medians in four complete blocks. Separate input-only, output-only, combined and both incremental contrasts. A contrast requires four ratios below one. Keep TTFT and 1000 PP separate.",
+      "fixed": "Same native binary and ordinary384; exact historical bodies, MoE work, draft counts, copy byte totals and placement; 24 tokens with thinking on.",
+      "stop": "First workload, route, validation, ownership, fault or budget failure. Retain every eligible time; no speed-based stopping or cohort replacement."
+    },
+    "previous_attempt": {
+      "key": "coherent_prefill_model_v3",
+      "evidence_sha256": "096d6a778244c8e9606732a07c4fc707894cc1e97876ea8c12dab8e9470dd48e",
+      "original_controller_source": "bcc836fa28a2084fe61d95ad1948fdfadffc18ec",
+      "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "model_handoff_passed": true,
+      "model_speed_task_full_context_inherited": false,
+      "final15full_hashes_reused_only_after_current_identity_check": true
+    },
+    "read_order": [
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537,
+      65537
+    ],
+    "source_inputs": {
+      "files": 795,
+      "sha256": "a08355e8aa829125ca5570c08b2a3dc15d0d362f804f9ee8ed48f08f97f77a33"
+    },
+    "environment_template_sha256": "45ddc7c5e7df507964580d1fd684c0bf38cd976f0eb8d45eab8ae15a7195c6be",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
