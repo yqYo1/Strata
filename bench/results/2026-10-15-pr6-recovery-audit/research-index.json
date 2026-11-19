@@ -36766,5 +36766,59 @@
         }
       ]
     }
+  },
+  "prefill_pti_list_fields_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "8901e3ef1fec5fb0d6c948c09ee0a691d9f9aaea",
+    "reviewed_report_sha256": "0540231a164141f089f12bfc4e7a3252fa450f7fa7a03a731e506a77ab22a109",
+    "source_manifest_sha256": "0cff46c42606c5e256fda8bfdb1bf9877075e45a3feac533646a01c58f84af5d",
+    "reviewer_sha256": "ce3995c6d3f3d895108be1beaffc8b6656267ea8c0d7ab385fbe8023d7a92541",
+    "run": "run_7693426f50e9",
+    "task": "task_cf601611527c",
+    "dispatch": "ctx_95b558901a7d",
+    "terminal": "term_fa8bd4da-d431-4e3b-81b5-b9dd0f14f820",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 29,
+    "worker_side_orca_status": {
+      "call": "call_2b1d7ae8c84b4146be142beedc26951f",
+      "sha256": "651fa35f96566e9810a25ffaf435f0a8c7182943edffaafe8709afddae34b867"
+    },
+    "ownership_closed": true,
+    "findings": "Intel PTI at 4b6d74294 exports matching device args.id and host H2D flow IDs when host API and device tracing are both enabled. Existing device-only CLI omits host API callbacks. Reuse the correlation logic and clock checks from 820cc84db, which already exercised this join on the component. Production still needs checked request/layer and copy-list identity, job conservation, clock and loss checks. A physical-engine or PCIe-utilization claim needs separate evidence.",
+    "consumer": "Decision support for a previously unqualified request/layer/list join. Qualify a bounded host reader for anchors, then use one independently measured serial case and a deferred case. The existing component H2D join need not be rebuilt from scratch.",
+    "retirement": {
+      "complete": false,
+      "review_point": "After the serialized scheduling cohort closes. Verify remote index and final inventories, then retire the reviewed report/control/source scratch."
+    }
+  },
+  "prefill_span_staging_20261119": {
+    "classification": "decision support",
+    "stage": "native_reviewed",
+    "source_commit": "8901e3ef1fec5fb0d6c948c09ee0a691d9f9aaea",
+    "reviewed_report_sha256": "da48649888777b31df8fff6f311695c89bddd98aec7e8ef04e796fab6385dbc2",
+    "source_manifest_sha256": "ab2817d82930f17bc8d8b64caa32710f168f4ef0027660e43483b76deb5de258",
+    "reviewer_sha256": "15564c9c3e8329524879dcb1176d9e09f67e2d46153b39ae519e97cfe58ead6b",
+    "run": "run_7693426f50e9",
+    "task": "task_08e855fc035a",
+    "dispatch": "ctx_797c300558ea",
+    "terminal": "term_0bfb1660-6e1e-4298-89e8-816311eb482c",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "reviewer": "gpt-6-luna max",
+    "filesystem_inputs_passed": 20,
+    "worker_side_orca_status": {
+      "call": "call_41618c40a6884a5b88ed636fb66a6655",
+      "sha256": "73d59bcbf62020cc91f7f03aabc438332ae9258b0caebfed674ad82f50ae6f55"
+    },
+    "ownership_closed": true,
+    "findings": "Current upload-plan extents and request lease support an isolated stage-all versus copy-after-each-span experiment. Ordinary Level Zero copy source may be modified until execution begins; simultaneous CPU writes require nonoverlapping, explicitly aligned admitted ranges. Keep exact source/list, IDs, bank and command count, with checked retirement and guards. Evaluate bounded batching as its own arm and make no estimate of model speed from the audit.",
+    "consumer": "If the scheduling cohort qualifies, pin source stride/base alignment and the safety fixture before changing this loop. Compare only stage/append ordering, then consider a 64K model pair; qualification and failure-path probes are separate from timing.",
+    "retirement": {
+      "complete": false,
+      "review_point": "After the serialized scheduling cohort closes. Verify remote index and final inventories, then retire the reviewed report/control/source scratch."
+    }
   }
 }
