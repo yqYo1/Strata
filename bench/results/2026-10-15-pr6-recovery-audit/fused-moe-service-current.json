@@ -498219,5 +498219,105 @@
       "checked_binary": "69667f20df43dea4fb4804eb7c377435fb40027a49576a224306b11cc5ccef84",
       "reason": "Component outcome and individual samples committed. No open fixture consumer."
     }
+  },
+  "prefill_compat_wait_audit_host_v1": {
+    "stage": "prepared",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "source_commit": "8c4564df617284f9400687265c3755679bea01a8",
+    "source_sha": "e305f8c2fb6f058ffdd7ba2dc4127b4a9c85ccffb89f395699e9a15fbb17f997",
+    "dependency_sha": "d561770a61476e12b528b9cb32768f9245c2a74875592a79452689202e77fe9c",
+    "native": {
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-host-stage-native-v1/build/strata",
+        "sha256": "2d6c4021902ca20ce3b05d09593899ee07c53e09a7528fb9df2b759e1e62e09f",
+        "bytes": 26501944
+      },
+      "reference": "f71211961a926157b61be0bd900eb12ac273e5e5c7ca7453ce7dc14fdc53e1ab",
+      "wait_symbol": "_ZN4sycl3_V15queue20wait_and_throw_proxyERKNS0_6detail13code_locationE",
+      "wrapper": "_Z21cudaStreamSynchronizePN4sycl3_V15queueE",
+      "native_call": "0x727626",
+      "native_return": "0x72762b",
+      "stack_offset": 272
+    },
+    "build": [
+      [
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-fPIC",
+        "-shared",
+        "-Wl,-z,defs",
+        "-Wl,-t",
+        "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/compat_wait_audit.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1/wait_audit.so"
+      ],
+      [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-fPIC",
+        "-shared",
+        "-DSTRATA_WAIT_CANARY_PROVIDER",
+        "-Wl,-t",
+        "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/compat_wait_canary.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1/libstrata_wait_canary.so"
+      ],
+      [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-fno-pie",
+        "-no-pie",
+        "-Wl,-z,lazy",
+        "-Wl,-t",
+        "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/compat_wait_canary.cpp",
+        "-L/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1",
+        "-Wl,-rpath,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1",
+        "-lstrata_wait_canary",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1/strata_wait_canary"
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-compat-wait-audit-v1/tmp"
+    },
+    "runtime": {
+      "wall": 45,
+      "cpu": 30,
+      "rss_cap": 1073741824,
+      "text_cap": 131072,
+      "file_cap": 8388608,
+      "total_cap": 16777216
+    },
+    "perf": {
+      "prctl": "4",
+      "command": [
+        "/usr/bin/perf",
+        "stat",
+        "-e",
+        "task-clock",
+        "--",
+        "/usr/bin/true"
+      ],
+      "result": "Access to performance monitoring limited for this account"
+    },
+    "plan": "Build only a diagnostic shared library and a CPU canary. Verify 2 known caller return addresses, 3 entries including one propagated C++ exception and 2 recorded returns. Compare exactly the same control without LD_AUDIT. No GPU, model or system changes."
   }
 }
