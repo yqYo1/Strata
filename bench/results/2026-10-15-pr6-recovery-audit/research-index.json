@@ -37930,5 +37930,41 @@
     "finding": "The fused GU+SwiGLU path covers 89% of routed rows. It currently accepts affine A only; arbitrary source rows need a new operand loader or staging. The existing mixed gather inherits four-byte alignment from validate_spans and the dense GU has a separate 64-byte base requirement. Correct the report source label to the manifest revision.",
     "consumer": "First compare scalar/vec8 gather independently on the ordinary single-bank shapes. For the higher-ceiling fused alternative, prove per-lane A mapping, tail masks and status behavior before a GPU trial. No achieved bandwidth or model gain.",
     "schedulable_now": false
+  },
+  "moe-gu-mapped-a-fragments-20261120": {
+    "topic": "Prefill fused gate/up input-fragment mapping",
+    "classification": "decision support",
+    "source_commit": "eedd9d3d55fcaf9349e2ec636dcb891fae93489d",
+    "report_sha256": "46142347de473b76b0c288116f84266090f7a3c3f346ad72998992dcbb8f66be",
+    "review_sha256": "0137123a809b2beeec99cccaaf8381f2334aec24137fe2a030bb5c3d5da13c3e",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "On TLA 87f68506, partition_A is lane-specific; atom_partition_A retains the subgroup thread dimension. Verify the actual block2D/reorder destination bits, all replicas and M tails before inserting indirect A into DPAS. The 4,217 fused jobs cover 28,001,231 of 31,457,280 routed rows in warm request 2; see eager_request_profile_v2 at ecac777fc.",
+    "consumer": "Child 19999c6c1 uses the actual wide/compact policies and a separate host layout witness. One-bank reader only. Hold model/performance trials for numerical and source qualification.",
+    "schedulable_now": false
+  },
+  "ordinary-m2d-residual-20261120": {
+    "topic": "Ordinary queue 64K copy residual and limits of attribution",
+    "classification": "decision support",
+    "source_commit": "11c455e4253a91597b63d77d6f8ee666d05a2c14",
+    "report_sha256": "d8aa400dc198efdab76880777f13fec393e90b987398543869db72a6f18b6653",
+    "review_sha256": "436146adcb9e771140c344320602415f2d71aeb2c871b53d6a02d31b17875f76",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The two warm requests each have 3,013 M2D commands and 11,164,427,264 B beyond the expert counters arithmetically. The compact PTI record has per-direction counts, bytes and times but no per-copy identity joining source or phase. Source-map H2D describes API direction, not PTI class. Its 125,829,120 B is for one map; the split accumulator also uploads the same-sized inverse map.",
+    "consumer": "Use the exact pack and activation path to bound plausible source work. Join request, phase, source key and transfer event before assigning M2D payload or physical bus latency. No duplicate generic collector survey.",
+    "schedulable_now": false
+  },
+  "canonical-prefill-exact-copy-runs-20261120": {
+    "topic": "Decision support: review the exact canonical-layer copy proposal and its device/time gates.",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "f40b91b14, matched pack index b2a01487, 672 original layer copies / 217 exact runs over 1,455,214,080 bytes and native/RESTORE phase separation."
+  },
+  "native-dense-partial-residency-20261120": {
+    "topic": "Decision support: assess selective preservation of original packed native weight owners through a long prefill at fixed expert/residual capacity.",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "eager_request_profile_v2 records 65,536 GPU-only BF16 rows and a 384-slot expert bank. The actual pack has 300 native projections and matching earlier dense phase records measure 2,116,951,040 packed bytes. Audit existing holds before estimating placement headroom."
   }
 }

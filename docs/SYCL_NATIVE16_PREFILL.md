@@ -2730,6 +2730,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   exactly 3,013 commands and 11,164,427,264 bytes in each request.
   This is a cross-check on aggregate demand. The trace does not associate
   each copy with a call site or measure physical PCIe traffic.
+  The retained request summaries have no per-copy submission IDs or
+  pointer classes to join to individual tensor uploads. The split
+  accumulator submits both source and inverse int32 row maps. The two
+  together request 251,658,240 bytes, about 2.25% of the difference if
+  both were classified as M2D.
+  The actual IQ3_S pack index (`b2a01487`) also identifies a smaller,
+  directly testable transfer change. Across 48 layers, 672 canonical
+  tensor payloads total 1,455,214,080 bytes. Joining adjacent ranges only
+  when both source and destination touch gives 217 copies of the exact
+  same bytes. The 105 persistent tensors and the full decode restore
+  are outside this change. Child `f40b91b14` implements it behind
+  `STRATA_SYCL_PREFILL_CANONICAL_CONTIGUOUS_COPIES=1`. The original
+  prepare, retirement, completion and publication still bracket each layer.
+  First verify the actual 672/217 submissions and identical bytes between
+  the 48 fixture markers, all tensor values, PLE bindings and full restore.
+  Then compare six fresh processes in rows/runs, runs/rows, rows/runs
+  order. Each accumulates full activation call time across 48 layers in
+  four sweeps, with a 10 ms floor. Record the first separately; all three
+  paired subsequent-sweep medians must improve before a model trial.
+  This source-based count neither assigns those copies to PTI M2D nor
+  qualifies a speed change. Keep the native packed projections independent.
   Clean 64K needs 6.896 s less prefill time to reach 1000 PP. QSA prefix
   is the largest observed kernel family. Its service and the competing copy
   cost both warrant independent work. The next QSA component comparison
@@ -2770,8 +2791,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   normal exits, no new fault and no timer-floor failures. Keep each
   shape's individual results. Test this candidate separately after the
   pending bank-input and QSA decisions on their already pinned images.
-  The mapped-input GU alternative would also need a lane-to-fragment
-  proof and an explicit policy for banks below the GU's 64-byte alignment.
+  The mapped-input alternative now has a diagnostic at child `19999c6c1`.
+  Its host mode checks the actual compact and wide TLA lane/atom
+  coordinates, replicas and valid/padded rows over three of 80 K tiles.
+  Its opt-in device mode compares the dense block2D load after reorder,
+  the indirect FP16 read and the host address oracle, slot by slot using
+  two bit tags. It exercises sorted and reversed maps, invalid rows,
+  sticky status and a four-byte-aligned single bank. Run the host witness
+  before the traced three-row smoke, then all shape/bit cases before
+  considering full DPAS. Device build and execution are pending.
   The source inputs (783 for the pair and 776 for the probe), all four
   generated inputs and the final comparison decision were verified from
   Git before cleanup. The 152 capture files (571,845,791 bytes), 42,745-byte
