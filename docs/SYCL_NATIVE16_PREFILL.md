@@ -3032,6 +3032,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   preserves state and RESTORE, then compare clean 64K PP and client TTFT.
   Keep decode placement and kernels fixed and check sustained generation
   separately. The original component results establish no model speedup.
+  The dispatch screen passed at `194e1df1f`. Across the three process
+  medians at 2,334 rows, vec8/scalar ratios were 0.6999–0.7003 (spread)
+  and 0.7905–0.8554 (clustered). At 8,192 rows they were 0.7589–0.7665
+  and 0.7250–0.7388. All four configurations are in the performance CSV.
+  The model projection at `c6bc02593` recovers all 1,171 source files
+  of the resident-input engine from Git and changes only six gather inputs.
+  The checked candidate image hash is `b5d2c3bc755bc6ae53062fd74679a1c0eaa7b19ec24496352206d6165fb0e599`.
+  Its 12-target build recipe hashes to `4eeb51b69215bc2d2e0bea04e1676e7007e69fb119367d8532b7717714a817dc`.
+  This verifies source composition; a coherent model build, actual
+  dispatch counts, state checks and paired clean model speeds are pending.
   The mapped-input alternative now has a diagnostic at child `19999c6c1`.
   Its host mode checks the actual compact and wide TLA lane/atom
   coordinates, replicas and valid/padded rows over three of 80 K tiles.
