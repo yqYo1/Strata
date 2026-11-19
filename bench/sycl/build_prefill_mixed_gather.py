@@ -13,7 +13,7 @@ PROJECT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / 'tools/sycl'))
 import prefill_resident_input_build as bank
 
-ROOT = bank.B / 'prefill-mixed-gather-fixture-v1'
+ROOT = bank.B / 'prefill-mixed-gather-fixture-v2'
 BUILD = bank.ROOT / 'build'
 SOURCE = bank.ROOT / 'source'
 BASE = '0ed10ef1d81428ce94e463494d8eb43a1c5fa33b'
@@ -72,8 +72,27 @@ def recipe(parent):
             'unexpected CMake fixture link inputs')
     replacements = {objects[FIXTURE]: str(ROOT / Path(objects[FIXTURE]).name), TARGET: str(ROOT / TARGET),
                     ARCHIVE: str(ROOT / ARCHIVE)}
-    commands.append([replacements.get(w, w) for w in words[2:-2]])
+    commands.append([words[2], '-v', *(replacements.get(w, w) for w in words[3:-2])])
     return overlay, commands
+
+
+def fixture_host_slices(log, fixture_object):
+    """Extract the host output of each actual icpx unbundle for this fat object."""
+    slices = set()
+    for line in log.splitlines():
+        if 'clang-offload-bundler' not in line or '-unbundle' not in line:
+            continue
+        words = shlex.split(line)
+        if '-input=' + str(fixture_object) not in words or '-unbundle' not in words:
+            continue
+        targets, = [w.split('=', 1)[1].split(',') for w in words if w.startswith('-targets=')]
+        outputs = [w.split('=', 1)[1] for w in words if w.startswith('-output=')]
+        require(len(outputs) == len(targets), 'unbundle target/output count differs')
+        host, = [Path(p) for target, p in zip(targets, outputs) if target.startswith('host-')]
+        require(host.is_relative_to(ROOT / 'tmp') and host.suffix == '.o', 'host slice escaped compiler scratch')
+        slices.add(str(host))
+    require(slices, 'missing icpx fixture host unbundle')
+    return slices
 
 
 def main(action):
@@ -116,6 +135,8 @@ def main(action):
     write(ROOT / 'record.json', receipt)
     try:
         for index, argv in enumerate(commands):
+            if index == len(commands) - 1:
+                driver_inputs = {name: sha(ROOT / name) for name in (Path(FIXTURE).name + '.o', ARCHIVE)}
             entry, out, err = child.run(f'command-{index}', argv, env, BUILD, **bank.builder.LIMITS)
             require(bank.builder.ownership.closed(entry) and entry['exit_code'] == 0,
                     'fixture build failed: ' + err.read_text()[-1200:])
@@ -130,7 +151,10 @@ def main(action):
         require(all(str(ROOT / p) in compiled for p in overlay) and len(compiled) > 100,
                 'incomplete gather compiler evidence')
         linked = {}
-        generated = {str(ROOT / n) for n in (ARCHIVE, Path(FIXTURE).name + '.o')}
+        require(all(sha(ROOT / name) == digest for name, digest in driver_inputs.items()),
+                'fixture compiler input changed during link')
+        host_slices = fixture_host_slices(err.read_text(), ROOT / (Path(FIXTURE).name + '.o'))
+        traced_slices = set()
         for line in out.read_text().splitlines():
             token = line.strip()
             if not token or any(c.isspace() for c in token) or len(token) > 4096:
@@ -140,12 +164,16 @@ def main(action):
                 if Path(token).is_absolute():
                     require(path.is_relative_to(ROOT / 'tmp') and path.suffix == '.o',
                             'unidentified linker input: ' + token)
+                    if str(path) in host_slices:
+                        traced_slices.add(str(path))
                 continue
             digest = sha(path)
-            require(str(path) in generated or allowed.get(str(path)) == digest, 'unverified link input: ' + str(path))
+            require(path == ROOT / ARCHIVE or allowed.get(str(path)) == digest, 'unverified link input: ' + str(path))
             linked[str(path)] = digest
-        require(generated.issubset(linked) and len(linked) > 10, 'incomplete fixture link trace')
-        receipt.update(compiled=compiled, linked=linked,
+        require(traced_slices == host_slices and linked.get(str(ROOT / ARCHIVE)) == driver_inputs[ARCHIVE]
+                and len(linked) > 10, 'incomplete fixture link trace')
+        receipt.update(compiled=compiled, linked=linked, driver_inputs=driver_inputs,
+                       fixture_host_slices=len(traced_slices),
                        binary=dict(path=str(ROOT / TARGET), sha256=sha(ROOT / TARGET)),
                        complete=True)
     except BaseException as error:
