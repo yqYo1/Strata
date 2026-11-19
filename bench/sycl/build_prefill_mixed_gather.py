@@ -91,7 +91,7 @@ def fixture_host_slices(log, fixture_object):
         outputs = [w.split('=', 1)[1] for w in words if w.startswith('-output=')]
         require(len(outputs) == len(targets), 'unbundle target/output count differs')
         host, = [Path(p) for target, p in zip(targets, outputs) if target.startswith('host-')]
-        require(host.is_relative_to(ROOT / 'tmp') and host.suffix == '.o', 'host slice escaped compiler scratch')
+        require(host.is_relative_to(fixture_object.parent / 'tmp') and host.suffix == '.o', 'host slice escaped compiler scratch')
         slices.add(str(host))
     require(slices, 'missing icpx fixture host unbundle')
     return slices
@@ -113,6 +113,15 @@ def main(action):
     name = str(Path(__file__).resolve().relative_to(PROJECT))
     require(git_file('HEAD', name) == Path(__file__).read_bytes(), 'commit the exact build driver first')
     overlay, commands = recipe(parent)
+    allowed = build_inputs(parent, ROOT, overlay, commands)
+    if action == 'check':
+        print(f'{len(overlay)} source files, two production compile recipes, one archive and one fixture link')
+        return
+    build_fixture(ROOT, TARGET, parent, overlay, commands, allowed,
+                  dict(driver=sha(__file__), candidate=CANDIDATE, base=BASE))
+
+
+def build_inputs(parent, root, overlay, commands):
     actual = parent['actual_inputs']
     allowed = {p: h for group in ('compiled', 'generated', 'links', 'objects', 'produced')
                for p, h in actual[group].items()}
@@ -120,49 +129,59 @@ def main(action):
     require(sha(external['path']) == external['sha256'], 'external input record changed')
     allowed.update(json.loads(Path(external['path']).read_bytes()))
     allowed.update({str(SOURCE / p): h for p, h in parent['source_files'].items()})
-    allowed.update({str(ROOT / p): hashlib.sha256(raw).hexdigest() for p, raw in overlay.items()})
+    allowed.update({str(root / p): hashlib.sha256(raw).hexdigest() for p, raw in overlay.items()})
     for argv in commands:
         tool = Path(argv[0]).resolve()
         require(allowed.get(str(tool), allowed.get(argv[0])) == sha(tool), 'compiler or archiver differs')
-    if action == 'check':
-        print(f'{len(overlay)} source files, two production compile recipes, one archive and one fixture link')
-        return
+    return allowed
 
-    ROOT.mkdir(mode=0o700)
+
+def build_fixture(root, target, parent, overlay, commands, allowed, identity):
+    """Compile isolated units and check each consumed header, host slice and archive."""
+    linker_args = commands[-1]
+    archives = [(BUILD / arg).resolve() for arg in linker_args if arg.endswith('.a')]
+    link_artifacts = [Path(arg) for arg in linker_args if Path(arg).parent == root and arg.endswith(('.o', '.a'))]
+    fat_objects = [obj for obj in link_artifacts if obj.suffix == '.o']
+    require(fat_objects and archives and linker_args[linker_args.index('-o') + 1] == str(root / target),
+            'component link inputs or destination differ')
+    root.mkdir(mode=0o700)
     for folder in ('tmp', 'cache'):
-        (ROOT / folder).mkdir(mode=0o700)
+        (root / folder).mkdir(mode=0o700)
     for path, raw in overlay.items():
-        dest = ROOT / path
+        dest = root / path
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(raw)
-    env = dict(parent['recipe']['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
-    receipt = dict(driver=sha(__file__), candidate=CANDIDATE, base=BASE,
+    env = dict(parent['recipe']['environment'], TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'))
+    receipt = dict(**identity,
                    driver_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=PROJECT, text=True).strip(),
                    parent=bank.signature(bank.builder.compact(parent)), commands=commands, environment=env,
                    complete=False, ownership_closed=False)
-    child = bank.builder.ownership.Owner(ROOT / 'owned', lambda: write(ROOT / 'execution.json', child.commands))
-    write(ROOT / 'record.json', receipt)
+    child = bank.builder.ownership.Owner(root / 'owned', lambda: write(root / 'execution.json', child.commands))
+    write(root / 'record.json', receipt)
     try:
         for index, argv in enumerate(commands):
             if index == len(commands) - 1:
-                driver_inputs = {name: sha(ROOT / name) for name in (Path(FIXTURE).name + '.o', ARCHIVE)}
+                driver_inputs = {path.name: sha(path) for path in link_artifacts}
             entry, out, err = child.run(f'command-{index}', argv, env, BUILD, **bank.builder.LIMITS)
             require(bank.builder.ownership.closed(entry) and entry['exit_code'] == 0,
                     'fixture build failed: ' + err.read_text()[-1200:])
         compiled = {}
-        for unit in (KERNEL, FIXTURE):
-            depfile = ROOT / (Path(unit).name + '.o.d')
+        for argv in commands:
+            if '-c' not in argv:
+                continue
+            depfile = Path(argv[argv.index('-MF') + 1])
+            require(depfile.parent == root, 'compiler dependency file outside component build')
             deps = shlex.split(depfile.read_text().replace('\\\n', ' ').split(':', 1)[1])
             for dep in deps:
                 path = (BUILD / dep).resolve()
                 require(allowed.get(str(path)) == sha(path), 'unverified compiler input: ' + str(path))
                 compiled[str(path)] = allowed[str(path)]
-        require(all(str(ROOT / p) in compiled for p in overlay) and len(compiled) > 100,
-                'incomplete gather compiler evidence')
+        require(all(str(root / p) in compiled for p in overlay) and len(compiled) > 100,
+                'incomplete component compiler evidence')
         linked = {}
-        require(all(sha(ROOT / name) == digest for name, digest in driver_inputs.items()),
+        require(all(sha(root / name) == digest for name, digest in driver_inputs.items()),
                 'fixture compiler input changed during link')
-        host_slices = fixture_host_slices(err.read_text(), ROOT / (Path(FIXTURE).name + '.o'))
+        host_slices = set().union(*(fixture_host_slices(err.read_text(), obj) for obj in fat_objects))
         traced_slices = set()
         for line in out.read_text().splitlines():
             token = line.strip()
@@ -171,26 +190,27 @@ def main(action):
             path = (BUILD / token).resolve()
             if not path.is_file():
                 if Path(token).is_absolute():
-                    require(path.is_relative_to(ROOT / 'tmp') and path.suffix == '.o',
+                    require(path.is_relative_to(root / 'tmp') and path.suffix == '.o',
                             'unidentified linker input: ' + token)
                     if str(path) in host_slices:
                         traced_slices.add(str(path))
                 continue
             digest = sha(path)
-            require(path == ROOT / ARCHIVE or allowed.get(str(path)) == digest, 'unverified link input: ' + str(path))
+            expected = driver_inputs.get(path.name) if path.parent == root else allowed.get(str(path))
+            require(expected == digest, 'unverified link input: ' + str(path))
             linked[str(path)] = digest
-        require(traced_slices == host_slices and linked.get(str(ROOT / ARCHIVE)) == driver_inputs[ARCHIVE]
+        require(traced_slices == host_slices and all(str(path) in linked for path in archives)
                 and len(linked) > 10, 'incomplete fixture link trace')
         receipt.update(compiled=compiled, linked=linked, driver_inputs=driver_inputs,
                        fixture_host_slices=len(traced_slices),
-                       binary=dict(path=str(ROOT / TARGET), sha256=sha(ROOT / TARGET)),
+                       binary=dict(path=str(root / target), sha256=sha(root / target)),
                        complete=True)
     except BaseException as error:
         receipt['error'] = repr(error)
         raise
     finally:
         receipt['ownership_closed'] = child.active is None and all(bank.builder.ownership.closed(c) for c in child.commands)
-        write(ROOT / 'record.json', receipt)
+        write(root / 'record.json', receipt)
 
 
 if __name__ == '__main__':

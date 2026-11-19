@@ -2913,6 +2913,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Require three lower candidate medians on both wide spread and four-cell
   maps, valid timers, quiet validation and no fresh fault before a model
   trial. These synthetic maps do not measure real cache-line traffic.
+  The lane comparison builds two isolated translation units against the
+  measured engine's three static archives. Both arms use the original
+  ordered-exp compiler flags. Run a traced three-query smoke first. For
+  each timed process require all 48 samples with at least 0.5 ms per
+  narrow call and 10 ms per wide call. The steady-clock median must be
+  below 1 microsecond and its 99th percentile below 5 microseconds.
+  Keep packing and the checked queue drain in each sample, with the full
+  output comparison outside the clock. Retire the standalone fixture
+  once its model-trial decision and source recovery are recorded.
   In each trace, 9717 D2D commands requested 128,861,904,128 bytes in
   0.7884 and 0.7880 s of GPU service. Removing BF16 input/output copies
   can also change submission or scheduling costs, but the measured D2D
