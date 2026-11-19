@@ -37982,5 +37982,17 @@
     "finding": "Retaining S exact packed weight bytes can avoid at most 2S requested bytes. Prior 117489-token/1256-slot full NativeDense restore was about 384–385 ms; the enclosing 650–817 ms includes canonical restore. Current 64K/384 free samples give no full-tail admission.",
     "consumer": "Retain current rebuild. Reopen on current keyed transfer costs or 262144-tail admission with graph/owner preservation, measured free bytes and largest single allocation.",
     "schedulable_now": false
+  },
+  "qsa-ordered-exp-padded-heads-20261120": {
+    "topic": "Audit skipping only the ordered-softmax work of the four padded QSA head rows on Xe2.",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "The measured ordinary64K ordered-prefix kernel takes 14.376/14.383 s. The actual WG128/SIMD16 image operates on 16 rows for 12 output heads per KV head, and each subgroup processes two rows. The existing WG64/WG256 and probability-load results isolate different mechanisms."
+  },
+  "decode-official-round-cost-bound-20261120": {
+    "topic": "Bound decode per-round cost for the completed ordinary384 strong- and weak-MTP workloads.",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "f6bb38a61 closes six matched-work thinking runs at 33211/33281 input, 2815/6823 output, 87.01%/33.93% draft acceptance. Prior resource receipts measure a different route. Determine what the actual native counters and work definitions let Main infer about the 70 tok/s target."
   }
 }
