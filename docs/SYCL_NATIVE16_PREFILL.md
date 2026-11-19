@@ -2879,11 +2879,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   runtime and test translation units. The ordinary SYCL queue passed exact
   fit, overflow and cancellation with unchanged source data, intact guards
   and checked retirement. Driver and validation checks were quiet.
-  That build used the combined selector. Rebuild for the added partial-only
-  mode and run its independent device and policy checks. Read the traced
-  per-layer job histograms to predict actual expert demand and requested
-  bytes before comparing dispatch. The 32K control includes RESTORE and
-  decode handoff. Keep numerical and clean 64K timing results separate.
+  The four-selector build at `0b77f38cf` passed the B570 component trial
+  at `f5cdc12cd`. Partial-only and combined issue each matched the original
+  three device cases, including cancellation. The 32K model trial is pending.
+  Enable the existing MoE census for its traced requests. Compare full router
+  ID and first-chunk weight hashes, the 48 planned job histograms and the
+  completed work counts across policies. Use each layer’s routed demand
+  and measured bank stride to check actual early issue and overflow fallback.
+  Report the fresh request and restored suffix separately. Remove the census
+  for clean 64K timing; its extra weight readback is part of tracing.
 
   The retained request summaries have no per-copy submission IDs or
   pointer classes to join to individual tensor uploads. The split

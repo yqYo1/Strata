@@ -42,7 +42,7 @@ def routed_layers(text, rows):
         layers.append((slots, stride, demand))
     require(work['nonempty_experts_across_layers'] == sum(demand for _, _, demand in layers),
             'planned expert demand does not add up')
-    return layers
+    return layers, work
 
 
 def check_dispatch(text, rows, policy, layers):
@@ -81,6 +81,26 @@ def check_dispatch(text, rows, policy, layers):
                 routed_layout_sha256=hashlib.sha256(json.dumps(layers, separators=(',', ':')).encode()).hexdigest())
 
 
+def verify_routed_work(text, rows, work):
+    routers = workspace.records(text, 'strata MoE router census: ')
+    require(len(routers) == 48, 'need one audited router window per layer')
+    hashes = []
+    for layer, router in enumerate(routers):
+        require((int(router['layer']), int(router['first']), int(router['rows'])) == (layer, 0, rows)
+                and all(re.fullmatch('[0-9a-f]{16}', router[k]) for k in ('ids', 'prefix_weights')),
+                'incomplete router ID or prefix-weight audit')
+        hashes.append((router['ids'], router['prefix_weights']))
+    window = workspace.one(text, 'strata MoE accumulator window: ')
+    require(int(window['windows']) == 48 and int(window['maximum_rows']) == rows
+            and int(window['operator_max']) == 8192 and int(window['GPU_resident_windows_only']) == 1
+            and int(window['dequants']) == work['nonempty_experts_across_layers']
+            and int(window['jobs']) == work['planned_jobs']
+            and int(window['source_H2D_bytes']) == rows * 10 * 4 * 48,
+            'completed accumulator work differs from planned routing')
+    return dict(jobs=work['planned_jobs'], census_sha256=work['original_census_sha256'],
+                router_sha256=hashlib.sha256(json.dumps(hashes, separators=(',', ':')).encode()).hexdigest())
+
+
 def server_requests(path, policy):
     """Read the traced 32769 / unrelated 33 / RESTORE +8209 native sequence."""
     require(0 < path.stat().st_size <= 64 << 20, 'missing or oversized native server capture')
@@ -89,11 +109,15 @@ def server_requests(path, policy):
     require(len(frames) == 4, 'expected three state publications')
     for frame in (frames[1], frames[3]):
         require(all(tag not in frame for tag in ('strata MoE planned job census:', 'strata packed expert bank:',
-                'strata prefill demand-fit:', 'strata prefill fullfit upload:', 'strata MoE expert bank complete:')),
+                'strata prefill demand-fit:', 'strata prefill fullfit upload:', 'strata MoE expert bank complete:',
+                'strata MoE router census:', 'strata MoE accumulator window:')),
                 'expert work outside long-prefill requests')
     results = []
     for frame, rows in ((frames[0], 32768), (frames[2], 8208)):
-        results.append(check_dispatch(frame, rows, policy, routed_layers(frame, rows)))
+        layers, work = routed_layers(frame, rows)
+        result = check_dispatch(frame, rows, policy, layers)
+        result['routed_work'] = verify_routed_work(frame, rows, work)
+        results.append(result)
     return results
 
 
@@ -123,7 +147,23 @@ def check_reader():
         except RuntimeError:
             continue
         raise RuntimeError('invalid partial-bank dispatch receipt passed')
-    return dict(policies=len(POLICIES), rejected=len(invalid), exact_fit=468, overflow=438)
+    work = dict(planned_jobs=11640, nonempty_experts_across_layers=11640, original_census_sha256='fixture')
+    routers = [f'strata MoE router census: layer={i} first=0 rows={rows} ids={i:016x} prefix_weights={i:016x}'
+               for i in range(48)]
+    complete = (f'strata MoE accumulator window: windows=48 dequants=11640 jobs=11640 '
+                f'source_H2D_bytes={rows * 10 * 4 * 48} GPU_resident_windows_only=1 operator_max=8192 maximum_rows={rows}')
+    trace = '\n'.join([*routers, complete])
+    reference = verify_routed_work(trace, rows, work)
+    changed = verify_routed_work(trace.replace('ids=0000000000000000', 'ids=0000000000000001'), rows, work)
+    require(changed['router_sha256'] != reference['router_sha256'], 'changed router IDs must change the comparison')
+    for bad in (trace.removeprefix(routers[0]), trace.replace('jobs=11640', 'jobs=11639')):
+        try:
+            verify_routed_work(bad, rows, work)
+        except RuntimeError:
+            continue
+        raise RuntimeError('incomplete router work accepted')
+    return dict(policies=len(POLICIES), rejected=len(invalid), exact_fit=468, overflow=438,
+                routed_work_controls=4)
 
 
 if __name__ == '__main__':
@@ -132,7 +172,13 @@ if __name__ == '__main__':
         parser.add_argument(policy_name.replace('-', '_'), metavar=policy_name.upper(), type=Path)
     args = parser.parse_args()
     results = {p: server_requests(getattr(args, p.replace('-', '_')), p) for p in POLICIES}
-    for n in range(2):
-        for key in ('uploads', 'requested_bytes', 'routed_layout_sha256'):
-            require(len({results[p][n][key] for p in POLICIES}) == 1, 'changed routed work across arms')
+    for index in range(2):
+        control = results['jit'][index]
+        for policy in POLICIES[1:]:
+            candidate = results[policy][index]
+            require(all(candidate[key] == control[key] for key in
+                        ('uploads', 'requested_bytes', 'routed_layout_sha256', 'routed_work')),
+                    f'{policy} changed routed work on request {index}')
+    require(any(request['partial_issued_copies'] for request in results['demand-fit-only']),
+            'no partial bank used the candidate on either traced request')
     print(json.dumps(results, indent=2))
