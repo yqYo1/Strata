@@ -518575,7 +518575,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "qsa_prefill_probability_v1": {
-    "stage": "prepared",
+    "stage": "running",
     "source_commit": "a31f3bbfec095fc7f3fa1047113b417a02414676",
     "fixture_commit": "45a1b7b773d41e0de532d779ce7e48428ca76154",
     "build_sha256": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
@@ -518589,7 +518589,14 @@
       "src/kernels/sycl/qsa_bf16_prefix.cpp": "01b6d1f1ae33854db8439fc146ff9f7bc1ab1e85f6a2931684d9761322aaf2d7",
       "bench/sycl/qsa_prefill_probability_generated.cpp": "faa19f24d8db5cad80d9fe4c337d22973cdf4b27c042287f1ea66bf0797977b7"
     },
-    "processes": [],
+    "processes": [
+      {
+        "stage": "build",
+        "passed": true,
+        "ownership_closed": true,
+        "host_probe_accepted": true
+      }
+    ],
     "passed": false,
     "active": false,
     "complete": false,
@@ -518647,6 +518654,38 @@
         "text_cap": 4194304,
         "file_cap": 67108864,
         "total_cap": 134217728
+      }
+    },
+    "binaries": {
+      "sycl_qsa_prefill_pv_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_test",
+        "sha256": "e08a973903c783bf92fdca36daa2f95ecedf7fa4f20de2997d6f86ec0827af90"
+      },
+      "sycl_qsa_prefill_pv_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+        "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+      }
+    },
+    "actual_input_groups": {
+      "compiled": {
+        "files": 4,
+        "sha256": "d78bc1ba696e698dd557eceaa1a23aa4ffd00f33780a7e43cb635259417fb63d"
+      },
+      "generated": {
+        "files": 0,
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "links": {
+        "files": 0,
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "objects": {
+        "files": 3,
+        "sha256": "b28d9becc5e33d70517a8a362a27f3dc37de1bf92080b6d0a768e061872162c7"
+      },
+      "produced": {
+        "files": 3,
+        "sha256": "b28d9becc5e33d70517a8a362a27f3dc37de1bf92080b6d0a768e061872162c7"
       }
     }
   }
