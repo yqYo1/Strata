@@ -506107,7 +506107,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "a8dca91e9c615beee12d8a0040db06dc36f5eded",
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -506419,7 +506419,56 @@
         "environment_sha256": "7f9ca5bb0cd52e6e6ebe9d2823490e793ac6d3b85f5650a129121ca35c2d42ec"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "original",
+        "complete": false,
+        "host_probe_accepted": false,
+        "native_identity": {
+          "pid": 686944,
+          "start_ticks": 344408544,
+          "sid": 686884
+        },
+        "error": "RuntimeError('official bench exit/ownership failed: output or return code')",
+        "ownership_closed": true,
+        "fresh_faults": [
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -ENOENT",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Engine reset: engine_class=ccs, logical_mask: 0x1, guc_id=2, state=0x289",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -ENOENT",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL",
+          "Nov 19 22:47:03 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -EINVAL"
+        ],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
