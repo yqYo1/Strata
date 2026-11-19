@@ -468328,7 +468328,7 @@
     }
   },
   "prefill_prefix_expert_transport_native_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "a7a218af560a693a18bb28d3648cb765a522917d",
     "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "archive": {
@@ -468474,6 +468474,7 @@
       ],
       "retention": "Third build only for this comparison after preserving both independent phase references. Review at closure or first failed gate."
     },
+    "error": "RuntimeError('configurefailed;inspect existing receipt')",
     "controller_sources": {
       "files": 382,
       "sha256": "4fd954f8405af0db1e8062e5177aecf20b97c580d3aca031940c13b2874ec049"
@@ -468482,6 +468483,13 @@
       "files": 1169,
       "sha256": "64f23a32d5bc80f55f98d4ce9a0210a7308009c73e47ee169ce910138b47dee1"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "failure": {
+      "stage": "cmake",
+      "cause": "The whole current SYCL backend CMake overlay references decode_kv_stream.cpp and expert_dispatch_bounds.cpp absent from the historical native composition. Stop at configure.",
+      "stderr_sha256": "e656d9ee6ddcc47112e58b29fe5059f7886e0e61b6b10a86db8d5710371a3613",
+      "gpu_executed": false,
+      "correction": "Move only the experimental copy compile/link wiring into the coherent native16 CMake overlay. Use a new root and frozen plan."
+    }
   }
 }
