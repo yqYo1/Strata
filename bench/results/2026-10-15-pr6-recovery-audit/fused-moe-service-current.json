@@ -468500,5 +468500,161 @@
       "tree_sha256": "d83774e79baaf768d1e9cfaa9421d254deff9e0c6f900a7715062ab62c4f77d2",
       "reason": "Failed during CMake generation. Original source recipe and error retained in Git."
     }
+  },
+  "prefill_prefix_expert_transport_native_v2": {
+    "stage": "prepared",
+    "source_commit": "03dc58398d556e35c4842859758a88197a0bbc45",
+    "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "archive": {
+      "prefill_window_native_v2": "40155ade5e8787b6c67b1150a2d2f71d89ce113638da8153fe36a197e0cb7c0a",
+      "prefill_first_demand_native_v1": "032c44658909e088d9110109985e608160bc22234e41960df0cfeae53affe241",
+      "prefill_prefix_router_native_v1": "d5e7850a9b380c9ff887cd9c83993bf4e9812d9bff6bf468c18b6644ab90c93b",
+      "prefill_prefix_expert_native_v1": "4ae6a3bce52108399666f0fb6aece29e753e0678c6e1d1e172128232c87d176f",
+      "prefill_prefix_expert_host_usm_native_v1": "aab38922f6b11c1220f60389f4279fa31824612408b346ff29939d71ed8d06a4",
+      "prefill_prefix_expert_host_usm_timing_v1": "0ecec4c0f07eba010576db5d5fee1a9c8e32d47dce40740bd20a7a33fa6bd4a6",
+      "prefill_prefix_expert_transport_native_v1": "b3eab2593116036124735685bce599848996202d69a9d1bfa0aeb06fdbddb8c5"
+    },
+    "overlays": {
+      "cmake/sycl_vllm_xe2_native16.cmake": "c40f26301cb26fde042d57e6f38ccea5f0d4c52e2d8c0622df5ffc95bd95eefe",
+      "include/strata/prefill/expert_bank_upload.hpp": "0715075aaf92c27a1733240fcb505bb2b1b54be33cf6c5102827843982c11f30",
+      "include/strata/prefill/fullfit_upload_plan.hpp": "dd89bbcec5be765f5f7faca9b47117230b7557bce3d5cf0cf35d041284e5595d",
+      "include/strata/sycl/native_copy_list.hpp": "229a0f03e08ea3ffc9fb1f4ab5a6b3ef29f5e24f78f92992bbcc57928222a27a",
+      "src/prefill/prefill.cpp": "e6539eda3549356cbdfd4e3db564e2e17e4f176758791f01c2f8a49f17ba54db",
+      "src/prefill/layer_major.inc": "805b62090c225c630bbcb603ed5d44ec07ce189e442ed296076749701da4c93a",
+      "src/prefill/moe_window.inc": "fdcda0fe7647966be5a11d91156a502ee9100885467bbae8e2a4b85ba94ee45c",
+      "tests/sycl/expert_bank.cpp": "70d6788196eb742e4e12703f369ba7c34360eefc6bcbd28e8518c10f0d60ff8f"
+    },
+    "recipe": {
+      "configure": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/source",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+        "-DSTRATA_CPU_ARCH:STRING=znver3",
+        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+        "-DSTRATA_PORTABLE:BOOL=OFF",
+        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+        "-DSTRATA_SYCL_TESTS:BOOL=ON",
+        "-DSTRATA_WERROR:BOOL=ON",
+        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+        "-DSTRATA_SYCL_DEVICE_ARCH=",
+        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+        "-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON",
+        "-DSTRATA_SYCL_PREFILL_NATIVE_COPY=ON"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-transport-native-v2/cache",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_IQ3_PAIR": "1",
+        "STRATA_IQ3_PAIR_AUDIT": "1",
+        "STRATA_CPU_SERVICE": "0",
+        "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+        "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+        "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+        "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+        "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+        "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+        "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+      },
+      "targets": [
+        "strata",
+        "prefill_moe_routes_test",
+        "prefill_moe_workspace_test",
+        "sycl_expert_bank_test",
+        "sycl_moe_down_scatter_bench",
+        "sycl_native16_paired_gemm_bench",
+        "strata_full_context_diagnostic",
+        "full_context_diagnostic_host_test",
+        "sycl_moe_upload_census_host_test",
+        "prefill_fullfit_upload_plan_test"
+      ]
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "retained_decode_reference": {
+      "source": "9849e35803f011aaafb2753c1e0f31411e40308e",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+        "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+        "bytes": 26476232,
+        "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+      },
+      "record_sha256": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c",
+      "project_inputs": "776f972a3694682ace45aa4f262ec0cfd6e975004c78a55a0291d373919023bb",
+      "recipe_sha256": "1c14fb531398338c49a4aa3ee0612e1fdad81f46ee9ce2a50ac01805b00b5fdd",
+      "scope": "Artifact continuity and original Git/recipe preservation only;new prefill build inherits no decode/model qualification."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "plan": {
+      "unit": "Fixed FFN issue, private bank and request-owned host USM. Isolate explicit completion, native API and ordinal with matched controls.",
+      "host": [
+        "prefill_fullfit_upload_plan_test"
+      ],
+      "retention": "Third build only for this comparison after preserving both independent phase references. Review at closure or first failed gate."
+    },
+    "controller_sources": {
+      "files": 380,
+      "sha256": "0abdb67c074a95e02f096a1a90ee1e5e115800fd07dd95760c7e0de3def81f8e"
+    },
+    "source_files": {
+      "files": 1168,
+      "sha256": "8cb9e807eda6f9f2f077443075259a680d16e48924692eca4fe0b895b256e927"
+    },
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
   }
 }
