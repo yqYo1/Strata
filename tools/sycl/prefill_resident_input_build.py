@@ -8,6 +8,7 @@ import sys
 sys.dont_write_bytecode = True
 import prefill_attention_bank_build as previous
 import prefill_window_device as device
+import qsa_prefill_probability_source as probability
 
 basis, stage, builder = previous.basis, previous.stage, previous.builder
 require, sha, signature = previous.require, previous.sha, previous.signature
@@ -22,6 +23,11 @@ CMAKE = 'cmake/sycl_vllm_xe2_native16.cmake'
 TARGET = 'sycl_prefill_attention_bank_test'
 TARGETS = [*stage.TARGETS, TARGET]
 COMPARISON = 'prefill_ordinary_bank_comparison_v1'
+PV_SOURCE = '1b11f33f864692c6633434b030af5fba1942ad55'
+PV_GENERATOR = 'tools/sycl/qsa_prefill_probability_source.py'
+PV_KERNEL = 'bench/sycl/qsa_prefill_probability_generated.cpp'
+PV_FIXTURES = ('tests/sycl/qsa_bf16_prefix.cpp', 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp',
+               'bench/sycl/qsa_prefill_probability.hpp')
 
 
 def image(native):
@@ -40,6 +46,11 @@ def image(native):
             'resident-input patch base differs from the original compiled inputs')
     changes = dict(stage.source.blobs(P, INPUT_SOURCE, (*paths, FIXTURE)))
     payload.update(changes)
+    fixtures = dict(stage.source.blobs(P, PV_SOURCE, (CMAKE, PV_GENERATOR, *PV_FIXTURES)))
+    require(fixtures.pop(PV_GENERATOR) == (P / PV_GENERATOR).read_bytes() and PV_KERNEL not in payload,
+            'QSA component generator or destination differs')
+    payload.update(fixtures)
+    payload[PV_KERNEL] = probability.candidate(payload['src/kernels/sycl/qsa_bf16_prefix.cpp'])
     origin, target = str(previous.ROOT), str(ROOT)
     original = old['recipe']
     require(original['targets'] == stage.TARGETS and original['configure'][2] == origin + '/source'
@@ -47,6 +58,7 @@ def image(native):
     recipe = dict(configure=[v.replace(origin, target) for v in original['configure']],
                   environment={k: v.replace(origin, target) for k, v in original['environment'].items()},
                   targets=TARGETS)
+    recipe['configure'].append('-DSTRATA_QSA_PREFILL_PV_SOURCE:FILEPATH=' + str(ROOT / 'source' / PV_KERNEL))
     return payload, recipe
 
 
@@ -75,12 +87,14 @@ def prepare():
     pins = stage.source.pin(P, ['tools/sycl', *basis.POLICIES])
     decode = builder.decode_reference(recover=True)
     row = dict(stage='prepared', source_commit=pins['revision'], native_source_commit=INPUT_SOURCE,
+               qsa_fixture_commit=PV_SOURCE,
                native_base_commit=basis.original.SOURCE, parent_evidence=BASE_EVIDENCE,
                comparison_sha256=cohort, foundation=foundation, controller_sources=pins['source_sha256'],
                source_files=stage.hashed(payload), recipe=recipe, external_inputs=native['external_inputs'],
                driver=builder.guards.driver_guard(), retained_decode_reference=decode, commands=[],
                active=False, ownership_closed=True, passed=False, complete=False,
-               plan=dict(unit='Only the four input-borrow engine overlays and the same-build test target.',
+               plan=dict(unit='Only the input-borrow engine overlays enter the model. The separate QSA '
+                              'component targets reuse its reference libraries and are built on demand.',
                          build='New directory, no object reuse, dependencies and all actual link inputs checked.',
                          validation='Host control, traced input-correctness device fixture, model numerical and '
                                     'route cases before timing the four independent input/output combinations.',
@@ -103,6 +117,7 @@ def check(row, committed=True):
     native, foundation, _ = basis.basis(expected=row['foundation'])
     payload, recipe = image(native)
     require(row['native_source_commit'] == INPUT_SOURCE and row['parent_evidence'] == BASE_EVIDENCE
+            and row['qsa_fixture_commit'] == PV_SOURCE
             and row['comparison_sha256'] == comparison_closed() and row['foundation'] == foundation
             and row['controller_sources'] == stage.source.pin(P, list(row['controller_sources']))['source_sha256']
             and row['source_files'] == stage.hashed(payload) and row['recipe'] == recipe
