@@ -498223,7 +498223,7 @@
     "GPU_executed": false
   },
   "prefill_status_destination_v4": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "ad05ca9d26a983d2dce0b06efa6e6a57012812cd",
     "source_sha256": "815ac8720930903dc15d81a9f273b915d423334a9b5ddc7d367ffa318ff50990",
     "dependencies_sha256": "732bc58c0fd234b49b950a2f2db0f10afb46e5c777b8a70fec66cea0aceff728",
@@ -499135,6 +499135,96 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 2,
+        "operation": "timing",
+        "placement": "ordinary",
+        "host_probe_accepted": false,
+        "setup_ms": 5e-05,
+        "clock_triplet_median_ms": 4e-05,
+        "samples": {
+          "ready": [
+            {
+              "enqueue_ms": 50.685642,
+              "drain_ms": 0.343566,
+              "total_ms": 51.029208
+            },
+            {
+              "enqueue_ms": 50.714812,
+              "drain_ms": 0.359019,
+              "total_ms": 51.073831
+            },
+            {
+              "enqueue_ms": 53.304789,
+              "drain_ms": 0.383578,
+              "total_ms": 53.688367
+            },
+            {
+              "enqueue_ms": 51.118294,
+              "drain_ms": 0.431154,
+              "total_ms": 51.549448
+            },
+            {
+              "enqueue_ms": 51.461,
+              "drain_ms": 0.370462,
+              "total_ms": 51.831462
+            }
+          ],
+          "queued": [
+            {
+              "enqueue_ms": 9.916937,
+              "drain_ms": 0.055372,
+              "total_ms": 9.972309
+            },
+            {
+              "enqueue_ms": 7.152909,
+              "drain_ms": 0.046267,
+              "total_ms": 7.199176
+            },
+            {
+              "enqueue_ms": 6.77104,
+              "drain_ms": 0.049529,
+              "total_ms": 6.820569
+            },
+            {
+              "enqueue_ms": 6.08644,
+              "drain_ms": 0.060547,
+              "total_ms": 6.146987
+            },
+            {
+              "enqueue_ms": 4.004458,
+              "drain_ms": 0.056983,
+              "total_ms": 4.061441
+            }
+          ]
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 68619,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "error": "RuntimeError('batch failed the prospectively declared duration or clock-overhead gate')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     ],
     "active": false,
