@@ -503517,7 +503517,7 @@
       "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
       "files": 84
     },
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "6fe25d0aa436ab2e0907329c0e17630bdc120b88",
     "native_source_commit": "21cd3721fa7c5d9d78a23237c5aa19026df47932",
     "binary": {
@@ -503820,6 +503820,24 @@
       "scope": "Standalone capacities only. Server RESTORE, sustained decode and adoption remain separate."
     },
     "previous_standalone_evidence_sha256": "8f106de1f02456b35468ac0db3f5776e97cdb36e15667af8ce13ee194aca89a9",
+    "GPU_executed": false,
+    "prepare_failure": {
+      "action": "host",
+      "exit_code": 1,
+      "exception": "FileNotFoundError at Owner mkdir host/owned before any child was launched",
+      "owners_started": 0,
+      "correction": "Materialize host control directory in the separately committed V2 plan.",
+      "retirement": {
+        "complete": false,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-capacity-v1",
+        "files": {
+          "record.json": "9f982bc13150db97c2b7c4d5c550c03dcc80f94cf4d094e2c65044d0af21fa7f",
+          "tokens-full.txt": "14d396a5c68f5f0791759fb567442530a6b46c45f29d3dd38ae7517557c12c7b",
+          "tokens-short.txt": "310e063cfec63ceff6a2d4e1fe7e622c91198867849779275304ad7a72bbe7e5"
+        },
+        "reason": "No model/device output; token fixtures reproduce from the committed generator."
+      }
+    },
     "source_inputs": {
       "files": 152,
       "sha256": "28259db71cb0d1ef410e5e193608b89a96b15388e84bf0157665719d7c33c891"
