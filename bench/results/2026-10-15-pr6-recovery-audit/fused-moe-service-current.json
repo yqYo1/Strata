@@ -518859,6 +518859,118 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "1",
+        "passed": true,
+        "ownership_closed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "sha256": "eeb1a47d6fd5be69a788526098bc39afeabe27f38d2e93653d73710433e961e7"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/sycl_qsa_prefill_pv_bench",
+          "--component",
+          "1"
+        ],
+        "environment_sha256": "a1dffa0271e6faa2efbf060b9c99074a1bc0caa25ef23ad8793dc6a5674bbbd3",
+        "validation": {
+          "pid": 1705665,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "clock_median_ns": 20.0,
+        "clock_p99_ns": 30,
+        "points": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                8.464831,
+                8.402554,
+                8.48498,
+                8.429385,
+                8.380552,
+                8.414186
+              ],
+              "reuse_probability": [
+                8.549673,
+                8.482866,
+                8.588756,
+                8.828311,
+                8.442389,
+                8.425327
+              ]
+            },
+            "median_time_ratio": 1.0112189986315847
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                224.293018,
+                224.228375,
+                224.385107,
+                224.192262,
+                223.863155,
+                224.201621
+              ],
+              "reuse_probability": [
+                224.860066,
+                224.117114,
+                224.858684,
+                224.099122,
+                224.724115,
+                224.57587
+              ]
+            },
+            "median_time_ratio": 1.001940077621391
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "samples_ms": {
+              "ordered_exp": [
+                139.78217,
+                139.963884,
+                139.462302,
+                139.472951,
+                139.824555,
+                139.623053
+              ],
+              "reuse_probability": [
+                140.09382,
+                140.144676,
+                140.145486,
+                140.333201,
+                140.194816,
+                140.069098
+              ]
+            },
+            "median_time_ratio": 1.0031672242576513
+          }
+        ],
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "passed": false,
