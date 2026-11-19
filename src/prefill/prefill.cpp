@@ -665,6 +665,8 @@ struct MoeWindowContext {
     bool scratch_mixed = false;
     int64_t maximum_rows = 16384;
     bool accumulation = false;
+    bool direct_attention_bank = false;
+    uint64_t attention_bank_pieces = 0, attention_direct_pieces = 0, attention_copy_bytes = 0;
     uint32_t status_observed = 0;
     std::vector<int32_t> ids;
     std::vector<float> prefix_weight_audit;
@@ -2414,6 +2416,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         const int64_t T = std::min(m.T, n - c0), p0 = pos0 + c0;
         bool window_piece = false;
 #if defined(STRATA_ENABLE_SYCL)
+        detail::LayerMajorSpan attention_bank_span{};
+        uint16_t* attention_bank = nullptr;
+        bool direct_attention_bank = false;
+        bool attention_bank_written = false;
         if (m.moe_window) {
             if (window_first >= 0) {
                 if (c0 != window_next || c0 >= window_end) { err = "prefill MoE window: piece order"; return false; }
@@ -2424,6 +2430,21 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 window_piece = first.device && second.device;
                 if (window_piece) window_end = std::min({n, m.layer_major_residual.gpu_rows,
                                                          c0 + m.moe_window->maximum_rows});
+            }
+            if (window_piece) {
+                if (!m.native16_active || LE != LB + 1 || !m.moe_window->bank) {
+                    err = "prefill MoE window: invalid topology"; return false;
+                }
+                attention_bank_span = m.layer_major_residual.span(c0, T);
+                const auto& span = attention_bank_span;
+                if (!span.device || span.offset_bytes > m.moe_window->bank_bytes ||
+                    span.bytes > m.moe_window->bank_bytes - span.offset_bytes) {
+                    err = "prefill MoE window: attention bank span"; return false;
+                }
+                attention_bank = reinterpret_cast<uint16_t*>(
+                    reinterpret_cast<uint8_t*>(m.moe_window->bank) + span.offset_bytes);
+                direct_attention_bank = m.moe_window->direct_attention_bank && !m.layer26_phase_audit &&
+                    !m.layer_major_audit && m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::bf16;
             }
         }
 #endif
@@ -4129,7 +4150,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 }
 #if defined(STRATA_ENABLE_SYCL)
                 if (m.native16_active) {
-                    native16::write(m.R16, m.bo_b16, m.inj, T, m.cs);
+                    if (direct_attention_bank) {
+                        if (stream_all || issuer.joinable()) {
+                            err = "prefill MoE window: invalid direct attention topology"; return false;
+                        }
+                        native16::write_prefill_attention_bank(attention_bank, m.R16, m.bo_b16, m.inj, T, m.cs);
+                        attention_bank_written = true;
+                    } else {
+                        native16::write(m.R16, m.bo_b16, m.inj, T, m.cs);
+                    }
                     normed = false;
                 } else
 #endif
@@ -4158,19 +4187,23 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         }
 #if defined(STRATA_ENABLE_SYCL)
         if (window_piece) {
-            if (!m.native16_active || LE != LB + 1 || !m.moe_window || !m.moe_window->bank ||
-                stream_all || issuer.joinable()) { err = "prefill MoE window: invalid topology"; return false; }
-            const auto span = m.layer_major_residual.span(c0, T);
-            if (!span.device || span.offset_bytes > m.moe_window->bank_bytes ||
-                span.bytes > m.moe_window->bank_bytes - span.offset_bytes) {
-                err = "prefill MoE window: attention bank span"; return false;
+            if (stream_all || issuer.joinable()) { err = "prefill MoE window: invalid topology"; return false; }
+            if (attention_bank_written != direct_attention_bank) {
+                err = "prefill MoE window: missing direct attention store"; return false;
             }
-            auto* destination = reinterpret_cast<uint8_t*>(m.moe_window->bank) + span.offset_bytes;
-            sycl_backend::validate_device_span(destination, size_t(span.bytes), sycl_backend::queue_for(m.cs));
-            if (cudaMemcpyAsync(destination, m.R16, size_t(span.bytes), cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess ||
-                cudaStreamSynchronize(m.cs) != cudaSuccess) {
+            if (!attention_bank_written) {
+                const auto bytes = size_t(attention_bank_span.bytes);
+                sycl_backend::validate_device_span(attention_bank, bytes, sycl_backend::queue_for(m.cs));
+                if (cudaMemcpyAsync(attention_bank, m.R16, bytes, cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess) {
+                    err = "prefill MoE window: attention store/drain"; return false;
+                }
+            }
+            if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
                 err = "prefill MoE window: attention store/drain"; return false;
             }
+            ++m.moe_window->attention_bank_pieces;
+            if (attention_bank_written) ++m.moe_window->attention_direct_pieces;
+            else m.moe_window->attention_copy_bytes += attention_bank_span.bytes;
             // Retire host token/step/PLE inputs before the next piece reuses them.
             // Keep existing event pairs reusable and never report FFN completion.
             if (m.layer_major_profile) m.layer_major_profile->chunk_retired();

@@ -663,7 +663,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     detail::LayerMajorChunkCursor cursor{n, m.T};
 
     std::unique_ptr<MoeWindowContext> window_context;
-    if (window_on) window_context.reset(new MoeWindowContext);
+    if (window_on) {
+        window_context.reset(new MoeWindowContext);
+        const char* direct = std::getenv("STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE");
+        if (direct && std::strcmp(direct, "0") && std::strcmp(direct, "1")) {
+            err = "STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE must be 0 or 1"; return false;
+        }
+        window_context->direct_attention_bank = direct && !std::strcmp(direct, "1");
+    }
     if (command_profile_on)
         window_context->command_trace.reset(new sycl_backend::command_profile::Trace(m.cs));
     struct PrefixBorrow {
@@ -1372,6 +1379,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         qsa_profile->emit();
     }
     if (census) census->complete();
+    if (window_context)
+        std::fprintf(stderr, "strata prefill attention bank: requested=%d pieces=%llu direct=%llu requested_D2D_bytes=%llu\n",
+            int(window_context->direct_attention_bank), (unsigned long long)window_context->attention_bank_pieces,
+            (unsigned long long)window_context->attention_direct_pieces,
+            (unsigned long long)window_context->attention_copy_bytes);
     return true;
 #endif
 } catch (const std::exception& exc) {
