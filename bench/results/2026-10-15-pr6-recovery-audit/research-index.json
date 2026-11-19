@@ -37826,5 +37826,29 @@
     "finding": "Worker repeated the exclusive filesystem preflight after its first success and closed failed. No source finding or device-cause attribution.",
     "consumer": "Keep the observed stall and reset chronology in the original v2 result. Reopen only if the ordinary-queue workaround stops being sufficient.",
     "schedulable_now": false
+  },
+  "prefill-hyperconnection-projection-sharing-20261119": {
+    "topic": "Mixed activation and projection sharing",
+    "classification": "decision support",
+    "source_commit": "037684cfb42f32190fc5aba9f45c13e4bd1d4d01",
+    "report_sha256": "094574bdc3ec65802fcf63590af02a80c3f8b419b04f3e9ee47b112417f423a1",
+    "review_sha256": "055289307345ba945b715198731c66b88e0f0f9fd7118ad53f3cffbd682c5c2a",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "Both FP16/BF16 mix outputs have actual readers. HC down/injection have unlike output types. GDN alpha and beta are a homogeneous BF16 K=2560, N=48 pair with FP32 outputs already strided into ab[T,96]. Verify the bounded substage cost before testing a packed weight and N=96 projection.",
+    "consumer": "Use when attributing GDN projection costs and comparing pack/setup, matched numerical state and clean prefill. No validated speed or model-quality gain.",
+    "schedulable_now": false
+  },
+  "xe-engine-clock-counters-cohort-20261119": {
+    "topic": "Xe client cycles and actual frequency",
+    "classification": "knowledge collection",
+    "source_commit": "037684cfb42f32190fc5aba9f45c13e4bd1d4d01",
+    "report_sha256": "c44cd48c4284cbb51a71a3e0fb52040beb9adc14fd5ed254b51fc0c7076c276a",
+    "review_sha256": "421b96ee8dfa8d2beaa7badf91b522b23eeb820dfee2534adc99bdce8f7c0561",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "finding": "The reviewed Xe fdinfo implementation exports client cycles and a shared timestamp per class; it cannot supply the proposed MHz proxy. act_freq is a GT actual-frequency point, cur_freq is requested, throttle reasons are instantaneous. Counter reads may synchronize or wake the device.",
+    "consumer": "First diagnostic of repeated unchanged-binary drift. Check actual installed ABI and GT identity; separate observer brackets from clean speed. No further generic survey.",
+    "schedulable_now": false
   }
 }
