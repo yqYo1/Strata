@@ -13,6 +13,7 @@ MAIN = Path('/home/yayoi/orca/workspaces/Strata/sycl')
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(MAIN / 'tools/sycl'))
 import prefill_resident_input_build as bank
+import prefill_demand_fit_coverage as coverage
 
 require, sha, signature = bank.require, bank.sha, bank.signature
 owner_module, validation = bank.builder.ownership, bank.basis.validation
@@ -54,8 +55,10 @@ def parents():
     for name in CHANGED:
         require(git('show', BASE + ':' + name) == (bank.ROOT / 'source' / name).read_bytes()
                 and git('show', SOURCE + ':' + name) == (P / name).read_bytes(), 'overlay mismatch: ' + name)
-    script = str(Path(__file__).resolve().relative_to(P))
-    require(git('show', 'HEAD:' + script) == (P / script).read_bytes(), 'commit the exact device controller')
+    for script in (Path(__file__).resolve(), Path(coverage.__file__).resolve()):
+        require(script.parent == P / 'tools/sycl' and
+                git('show', 'HEAD:' + str(script.relative_to(P))) == script.read_bytes(),
+                'commit the exact fixture and receipt controllers')
     return parent, original
 
 
@@ -96,6 +99,7 @@ def compile_inputs(parent, source_hashes):
 
 
 def build(row, parent, child):
+    row['receipt_checks'] = coverage.check_reader()
     for folder in ('tmp', 'cache', 'source'):
         (ROOT / folder).mkdir(mode=0o700)
     source_hashes = dict(parent['source_files'])
@@ -205,7 +209,7 @@ def device_cases(parent, original, child, policy):
 def main(action):
     parent, original = parents()
     reference = signature(bank.builder.compact(parent))
-    program = sha(__file__)
+    program = signature({Path(path).name: sha(path) for path in (__file__, coverage.__file__)})
     if action == 'build':
         require(not ROOT.exists() and KEY not in read(RESULT), 'inspect the existing build attempt')
         ROOT.mkdir(mode=0o700)

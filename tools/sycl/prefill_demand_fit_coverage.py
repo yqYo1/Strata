@@ -97,6 +97,35 @@ def server_requests(path, policy):
     return results
 
 
+def check_reader():
+    # Full banks; a partial bank exactly fills its permanent slots; the next
+    # one would consume its scratch slot, so all of its copies stay at first use.
+    layers = [(512, 1510400, 32)] * 24 + [(469, 2176000, 468)] * 12 + [(438, 2329600, 438)] * 12
+    rows = 65536
+    footer = ('strata MoE expert bank complete: uploads=11640 requested_H2D_bytes='
+              + str(sum(stride * n for _, stride, n in layers)) + ' permanent_hits=0 final_drain=checked')
+    full = [f'strata prefill fullfit upload: policy=eager layer={i} first_row=0 logical_experts=32 '
+            f'accepted_copy_commands=32 requested_H2D_bytes={32 * 1510400} '
+            'publication=accepted_same_queue native_completion=unchecked_until_outer_drain' for i in range(24)]
+    partial = [f'strata prefill demand-fit: layer={i} rows=65536 slots=469 accepted_copies=468 '
+               f'requested_H2D_bytes={468 * 2176000}' for i in range(24, 36)]
+    partial += [f'strata prefill demand-fit: layer={i} rows=65536 slots=438 accepted_copies=0 requested_H2D_bytes=0'
+                for i in range(36, 48)]
+    for policy, markers in zip(POLICIES, ([], full, partial, full + partial), strict=True):
+        result = check_dispatch('\n'.join([*markers, footer]), rows, policy, layers)
+        require(result['eligible_layers'] == list(range(24, 36)) and result['eligible_copies'] == 5616,
+                'wrong synthetic capacity boundary')
+    invalid = [partial[1:], [*partial, partial[0]], [line.replace('accepted_copies=0', 'accepted_copies=438')
+               for line in partial], full + partial, [line.replace('rows=65536', 'rows=32768') for line in partial]]
+    for markers in invalid:
+        try:
+            check_dispatch('\n'.join([*markers, footer]), rows, 'demand-fit-only', layers)
+        except RuntimeError:
+            continue
+        raise RuntimeError('invalid partial-bank dispatch receipt passed')
+    return dict(policies=len(POLICIES), rejected=len(invalid), exact_fit=468, overflow=438)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Compare expert upload coverage in matched native RESTORE logs.')
     for policy_name in POLICIES:
