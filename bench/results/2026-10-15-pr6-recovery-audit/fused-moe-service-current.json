@@ -524518,5 +524518,29 @@
     "parent": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
     "record_sha256": "242341bca0b7a3798058760d1fac01078c10ec1976b1277bb17dd9aa2de3c781",
     "outcome": "Two compiles, archive and link exited zero. Admission failed because ld receives icpx-generated temporary moe_accum host slices instead of the original fat fixture object. No device trial. Record actual driver inputs and bind its temporary host slices to those inputs in a fresh build."
+  },
+  "prefill_mixed_gather_fixture_build_v2": {
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "source_commit": "20f39e0dc1d609d53910a9c96bcbd54f1e878ec2",
+    "parent_sha256": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
+    "build_driver_commit": "655e0f7ae8f8814c20f7c030be71f17e6cee931c",
+    "build_sha256": "7cff8156da86b67c0fa3edb9db855bb366c111da551aa03794a8b5c57eae9774",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mixed-gather-fixture-v2/sycl_moe_accum_test",
+      "sha256": "1d210b83cffd338367426dd8974bcf63490658c9bc1e3c225c137612d0b830cf"
+    },
+    "compiler_inputs": 700,
+    "linked_files": 38,
+    "driver_inputs": {
+      "moe_accum.cpp.o": "f3a6f23b8d7eeef87830fbae692ce85d209a3597d18a535ce5259c0e243f5e75",
+      "libstrata_prefill.a": "2649f5cb28bde76c0a1e50ed18848f9fe941b72dd13c4922f438f3d09006bffc"
+    },
+    "host_slices": 2,
+    "parent_binaries_verified": 11,
+    "model_speed_measured": false,
+    "device_executed": false,
+    "consumer": "Traced vec8 contiguous and ragged production-shaped gather oracles, then scalar/vec8 four-shape timings. Retire the fixture at decision or failure."
   }
 }
