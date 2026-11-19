@@ -107,11 +107,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   (geometric mean time ratio 0.714). The copy arm requests 2.5 GiB per
   interval, and the direct arm requests zero. All seven processes retired
   without a fresh GPU fault. These intervals start with ready inputs.
-  Advance to an exact stage-all build with just the four attention-store
-  overlays. Use its same executable for both arms. Verify actual destination,
-  matched routing and handoff with 32769 input tokens, then run three
-  independent pairs at 65537 with the same store drain and settings.
-  The 982.1 tok/s stage-all result is the historical speed reference.
+  The coherent build adds only the four attention-store overlays to the
+  verified stage-all image. The 32769-input numerical comparison
+  (`7b134c044`) uses the same ELF in both arms. Four requests retain
+  identical routing digests, selected experts and draft counts. Direct
+  writes replace all 192 copy sites and remove 30 GiB of requested D2D
+  bytes per request.
+  At 65537 fresh input tokens, the clean same-ELF comparison
+  (`b973b13dd1408aeae56ef17e7ff5536d57bf6654`) retains six processes and
+  18 samples with thinking on. Direct writes remove 60 GiB of requested
+  D2D bytes per request. All three warmed pairs improve, with prompt-time
+  ratios 0.99301/0.99268/0.99358. The median of warmed process medians is
+  977.8→984.1 tok/s and client TTFT is 67.226→66.788 s. First-use TTFT
+  improves in two pairs and regresses in one. All processes exit normally
+  without a fresh GPU fault. The 982.1 tok/s old stage-all result remains
+  historical context. Keep the direct path opt-in for the remaining
+  physical 262144, RESTORE, agent-session and sustained decode gates.
 
 - The Main-authored exact selected-expert copy-run experiment is **closed and
   not adopted**. Correctness/byte/lifetime checks pass,but both prospective
