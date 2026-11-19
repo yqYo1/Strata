@@ -518573,5 +518573,81 @@
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "qsa_prefill_probability_v1": {
+    "stage": "prepared",
+    "source_commit": "a31f3bbfec095fc7f3fa1047113b417a02414676",
+    "fixture_commit": "45a1b7b773d41e0de532d779ce7e48428ca76154",
+    "build_sha256": "518c81172a2ee47d2170b29f85f32ac23741a630c3d13d1a3744f6f34c4c85ec",
+    "reference": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build/strata",
+      "sha256": "b35d66a4f29737a47abcdd7180c80eaf838b8658ec49ca2586948198d6a7613f",
+      "bytes": 26522768
+    },
+    "generated_sha256": "044a148dc902316783179bf056ee6c86c32b7d24a3c0f1e0fe619929473686e5",
+    "kernel_commands": {
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "01b6d1f1ae33854db8439fc146ff9f7bc1ab1e85f6a2931684d9761322aaf2d7",
+      "bench/sycl/qsa_prefill_probability_generated.cpp": "faa19f24d8db5cad80d9fe4c337d22973cdf4b27c042287f1ea66bf0797977b7"
+    },
+    "processes": [],
+    "passed": false,
+    "active": false,
+    "complete": false,
+    "ownership_closed": true,
+    "stages": [
+      "build",
+      "smoke",
+      "numeric",
+      "0",
+      "1",
+      "2"
+    ],
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "whole_bytes": 943718400,
+    "build_command": [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resident-input-native-v1/build",
+      "--target",
+      "sycl_qsa_prefill_pv_test",
+      "sycl_qsa_prefill_pv_bench",
+      "-j",
+      "2"
+    ],
+    "plan": {
+      "unit": "Hoist two BF16 P fragments across four ordered-exp PV output tiles. Keep V staging, FP32 alpha scaling, per-output MAD order and both barriers.",
+      "build": "Only the separate component targets. Preserve and recheck every parent binary.",
+      "smoke": "Traced cap33 gather on both actual exports. Parameter validation, checked closure, positional guards and exact output bits precede full numerical coverage.",
+      "numeric": "Eleven cases including cap1/17/31/32/33/63/65/2051, full 262144 addresses, padded heads, invalid scales and scratch refusal. Match complete BF16 output and FP32 state against the original ordered-exp kernel.",
+      "timing": "Three fresh processes, three shapes with 78453 live cells and 8192 queries. Six alternated pairs per shape, including admission, pack, compute and drain. Reset output outside timing. Floors 0.5 ms cap33 and 10 ms cap2051. Native steady_clock overhead median <1 us and p99 <5 us.",
+      "decision": "Require lower median time in all three processes per shape. Both cap2051 patterns must win to try that cap in a separate model plan. Retain the reference at cap33 unless that shape independently passes. Other caps, model speed, physical traffic and register spills remain unqualified.",
+      "retention": "Keep the two fixtures through the component decision and machine-code inspection, then retire them under the parent build policy."
+    },
+    "budgets": {
+      "build": {
+        "wall": 2400,
+        "cpu": 7200,
+        "rss_cap": 12884901888,
+        "text_cap": 33554432,
+        "file_cap": 536870912,
+        "total_cap": 4294967296
+      },
+      "smoke": {
+        "wall": 180,
+        "cpu": 360,
+        "rss_cap": 4294967296,
+        "text_cap": 33554432,
+        "file_cap": 67108864,
+        "total_cap": 83886080
+      },
+      "gpu": {
+        "wall": 900,
+        "cpu": 2400,
+        "rss_cap": 17179869184,
+        "text_cap": 4194304,
+        "file_cap": 67108864,
+        "total_cap": 134217728
+      }
+    }
   }
 }
