@@ -49,7 +49,10 @@ def ordinary_environment(row, root, prior):
     base_env[OUTPUT] = '0'
     require(basis.comparison.fingerprint(base_env) == prior['environment_sha256']
             and env['STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS'] == '384'
-            and env['STRATA_SYCL_CACHE_SCRATCH_LEASE'] == env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1',
+            and env['STRATA_SYCL_CACHE_SCRATCH_LEASE'] == env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1'
+            and env.get('STRATA_SYCL_PREFILL_PREFIX_EXPERT_COPY', 'sycl') == 'sycl'
+            and env.get('STRATA_SYCL_PREFILL_PREFIX_EXPERT_UPLOAD', 'off') == 'off'
+            and env.get('STRATA_SYCL_PREFILL_PREFIX_EXPERT_DEFER_COMPLETION', '0') == '0',
             'ordinary 384-slot server placement changed')
     return env
 
@@ -163,6 +166,18 @@ def input_receipt(frame, rows, store, borrow, *, trace_layers=True):
                 checked_layers=len(traced))
 
 
+def expert_bank_receipt(frame, store, mixed):
+    slots, effective, staged, gpu_rows = map(int, restore.capacity.one(frame,
+        r'^strata MoE expert bank: requested_slots=(\d+) effective_slots=(\d+) staged=(\d+) '
+        r'host_slab_bytes=\d+ device_bytes=\d+ residual_gpu_rows=(\d+) ', 'ordinary expert bank'))
+    # ExpertBankPlan only stages 384 slots for an all-device residual.
+    # A host-backed tail needs the full 512-slot cache on the same SYCL queue.
+    expected = (512, 0) if mixed else (384, 1)
+    require((slots, gpu_rows) == (384, store['gpu_rows']) and (effective, staged) == expected
+            and (store['host_rows'] > 0) == mixed, 'server expert bank or residual placement differs')
+    return dict(requested=slots, effective=effective, staged=bool(staged))
+
+
 def check_reader():
     """Catch totals that look correct even when PLE or the host tail borrowed the wrong input."""
     checked, rejected = 0, 0
@@ -195,13 +210,28 @@ def check_reader():
             else:
                 raise RuntimeError('incorrect PLE-layer execution was accepted')
     require(input_receipt('', 32, dict(pieces=0), False) is None, 'short control failed')
-    return dict(long_cases=checked, incorrect_layer_rejected=rejected, short_cache_case=True)
+    rejected_banks = 0
+    for mixed, gpu, host in ((False, 8208, 0), (True, 114688, 139230)):
+        for effective, staged in ((384, 1), (512, 0)):
+            frame = (f'strata MoE expert bank: requested_slots=384 effective_slots={effective} staged={staged} '
+                     f'host_slab_bytes=0 device_bytes=1022361600 residual_gpu_rows={gpu} allocation_limit_bytes=0')
+            try:
+                expert_bank_receipt(frame, dict(gpu_rows=gpu, host_rows=host), mixed)
+            except RuntimeError as error:
+                require(str(error) == 'server expert bank or residual placement differs' and (effective == 512) != mixed,
+                        'unexpected expert placement rejection')
+                rejected_banks += 1
+            else:
+                require((effective == 512) == mixed, 'incorrect expert bank admitted')
+    require(rejected_banks == 2, 'missing expert bank rejection')
+    return dict(long_cases=checked, incorrect_layer_rejected=rejected, short_cache_case=True,
+                incorrect_expert_bank_rejected=rejected_banks)
 
 
 def inspect(log, row, case, requests, pid):
     result = restore.inspect(log, row, case, requests, pid)
     require(len(re.findall(r'^strata generate: PLE on, table \d+ rows of ', log, re.M)) == 1
-            and 'strata MoE prefix expert upload layer:' not in log, 'unexpected PLE or upload route')
+            and 'strata MoE prefix expert upload' not in log, 'unexpected PLE or upload route')
     frames = re.split(r'^strata serve: STATE_HASH L=.*$', log, flags=re.M)
     require(len(frames) == 4 and 'strata prefill attention input: ' not in frames[-1],
             'unassigned input counters after final publication')
@@ -209,12 +239,8 @@ def inspect(log, row, case, requests, pid):
         store = request['attention_store']
         request['attention_input'] = input_receipt(frame, request['read'] - 1, store, case['borrow'])
         if request['prefill_route'] == 'layer-major':
-            slots, effective, staged, gpu_rows = map(int, restore.capacity.one(frame,
-                r'^strata MoE expert bank: requested_slots=(\d+) effective_slots=(\d+) staged=(\d+) '
-                r'host_slab_bytes=\d+ device_bytes=\d+ residual_gpu_rows=(\d+) ', 'ordinary expert bank'))
-            require((slots, effective, staged, gpu_rows) == (384, 384, 1, store['gpu_rows'])
-                    and (store['host_rows'] > 0) == (case['near'] and request is requests[0]),
-                    'expected mixed-tail initial extent or all-resident suffix')
+            mixed = case['near'] and request is requests[0]
+            request['expert_bank'] = expert_bank_receipt(frame, store, mixed)
     return result
 
 
