@@ -14,6 +14,15 @@ import prefill_window_build as builder
 P, B, RESULT = basis.P, basis.B, basis.RESULT
 ROOT = B / 'prefill-prefix-expert-schedule-native-v1'
 KEY = 'prefill_prefix_expert_schedule_native_v1'
+SCHEDULE_BUILD = KEY
+NET_SPEED = 'prefill_prefix_expert_net_timing_v1'
+STAGE_BUILD = 'prefill_prefix_expert_host_stage_native_v1'
+STAGE_ROOT = B / 'prefill-prefix-expert-host-stage-native-v1'
+STAGE_CHANGES = {
+    'include/strata/prefill/expert_bank_upload.hpp',
+    'src/prefill/prefill.cpp', 'src/prefill/layer_major.inc', 'src/prefill/moe_window.inc',
+    'tests/sycl/expert_bank.cpp',
+}
 HOST = 'prefill_fullfit_upload_plan_test'
 TARGETS = [*builder.TARGETS, 'sycl_moe_upload_census_host_test', HOST]
 OVERLAYS = (
@@ -48,6 +57,18 @@ def archive():
             and component['stage'] == 'closed' and component['ownership_closed']
             and component['decision']['eligible_native_ordinal_overlap'],
             'closed model ordinal control and independent component overlap required')
+    if KEY == STAGE_BUILD:
+        for key in (SCHEDULE_BUILD, NET_SPEED):
+            rows[key] = basis.validation.committed(RESULT, (key,))
+        schedule, net = rows[SCHEDULE_BUILD], rows[NET_SPEED]
+        retired = schedule['artifact_retirement']
+        require(retired['complete'] and retired['all_actual_inputs_checked']
+                and retired['checked_ELF'] == schedule['binaries']['strata']['sha256']
+                and not Path(retired['capture']['root']).exists()
+                and net['stage'] == 'closed' and net['ownership_closed'] and not net['active']
+                and net['binary'] == schedule['binaries']['strata']
+                and net['decision']['all_warmed_pairs_faster'],
+                'retired exact schedule and repeated net performance required')
     return rows
 
 
@@ -88,6 +109,13 @@ def recover(native, prior, revision):
     require(set(changes) == set(OVERLAYS)
             and all((P / path).read_bytes() == raw for path, raw in changes.items()),
             'commit exact transport and test overlays')
+    if KEY == STAGE_BUILD:
+        schedule = prior[SCHEDULE_BUILD]
+        previous = dict(source.blobs(P, schedule['source_commit'], schedule['overlays']))
+        require(hashed(previous) == schedule['overlays']
+                and signature(hashed({**payload, **previous})) == schedule['source_files']['sha256']
+                and set(p for p in OVERLAYS if previous[p] != changes[p]) == STAGE_CHANGES,
+                'stage-order experiment must change only its prefill producer, caller and fixture')
     payload.update(changes)
     return payload
 
@@ -159,8 +187,11 @@ def prepare():
                external_inputs=native['external_inputs'], driver=builder.guards.driver_guard(),
                retained_decode_reference=decode, commands=[], active=False, ownership_closed=True,
                passed=False, complete=False,
-               plan=dict(unit='Fixed copy-only list, private bank and request-owned host USM. Isolate '
-                         'earlier issue, first-reader completion and their interaction.',
+               plan=dict(unit=('Fixed copy-only list, private bank and request-owned host USM. Compare '
+                               'stage-all with staging immediately before each native append.'
+                               if KEY == STAGE_BUILD else
+                               'Fixed copy-only list, private bank and request-owned host USM. Isolate '
+                               'earlier issue, first-reader completion and their interaction.'),
                          host=[HOST], retention='Third build only for this comparison after preserving '
                          'both independent phase references. Review at closure or first failed gate.'))
     check(row, False)
@@ -189,18 +220,21 @@ def host():
     require(passed, 'prefix expert host check failed')
 
 
+def build_step(action):
+    builder.ROOT, builder.KEY, builder.TARGETS = ROOT, KEY, TARGETS
+    builder.check, builder.save = check, save
+    if action == 'prepare':
+        prepare()
+    elif action == 'host':
+        host()
+    else:
+        builder.execute(action)
+
+
 if __name__ == '__main__':
     require(sys.argv[1:] in [['prepare'], ['configure'], ['compile'], ['host']],
             'expected prepare, configure, compile or host')
-    builder.ROOT, builder.KEY, builder.TARGETS = ROOT, KEY, TARGETS
-    builder.check, builder.save = check, save
-    action = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         builder.guards.no_model_owners([])
-        if action == 'prepare':
-            prepare()
-        elif action == 'host':
-            host()
-        else:
-            builder.execute(action)
+        build_step(sys.argv[1])

@@ -57,6 +57,8 @@ inline bool prefill_fullfit_eager_requested() {
     return selected;
 }
 
+enum class PrefillHostStageOrder { all_before_copy, span_before_copy };
+
 struct PrefillFullfitUploadReceipt {
     std::array<bool,512> first_upload{};
     uint64_t experts=0,copy_commands=0,payload_bytes=0;
@@ -73,7 +75,11 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
         sycl_backend::Allocation* host_staging = nullptr,
         sycl_backend::native_copy::NativeCopyList* native_copy = nullptr,
         bool wait_for_copies = false,
-        std::optional<PrefillFullfitUploadPlan>* deferred_publication = nullptr) {
+        std::optional<PrefillFullfitUploadPlan>* deferred_publication = nullptr,
+        PrefillHostStageOrder stage_order = PrefillHostStageOrder::all_before_copy) {
+    const bool stage_per_span = stage_order == PrefillHostStageOrder::span_before_copy;
+    if (stage_per_span && (!native_copy || !host_staging))
+        throw std::invalid_argument("prefill per-span staging requires native copy and host USM");
     if (!stream || !slab || slab_bytes!=layer_major_mul(512,source_stride))
         throw std::invalid_argument("prefill eager upload source/queue extent");
     if (native_copy && (!host_staging || !wait_for_copies))
@@ -97,9 +103,14 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
     // Keep source offsets and individual DMA commands identical. The caller
     // drains the prior layer before rewriting these CPU-writable USM pages.
     const uint8_t* upload_source = slab;
+    uint8_t* staged = nullptr;
+    const auto stage = [&](const PrefillFullfitCopy& copy) {
+        std::memcpy(staged + size_t(copy.source_offset), slab + size_t(copy.source_offset),
+                    size_t(copy.bytes));
+    };
     if (host_staging) {
         require_empty_prefill_fullfit_bank(slots);
-        auto* staged = host_staging->as<uint8_t>();
+        staged = host_staging->as<uint8_t>();
         if (!staged || host_staging->size() < slab_bytes ||
             sycl::get_pointer_type(staged, queue.get_context()) != sycl::usm::alloc::host ||
             sycl::get_pointer_type(slab, queue.get_context()) == sycl::usm::alloc::device)
@@ -110,13 +121,19 @@ inline PrefillFullfitUploadReceipt stage_prefill_fullfit_eager(ExpertBankSlots& 
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
         if (native_copy) native_copy->validate_endpoints(queue, base, staged);
 #endif
-        for (const auto& copy : plan.copies())
-            std::memcpy(staged + size_t(copy.source_offset), slab + size_t(copy.source_offset),
-                        size_t(copy.bytes));
+        if (stage_per_span) {
+            // The sorted unique source offsets and padded strides in the
+            // plan keep CPU writes off the already submitted source lines.
+            if (reinterpret_cast<uintptr_t>(staged) % 256)
+                throw std::invalid_argument("prefill per-span staging requires a 256-byte-aligned host base");
+        } else {
+            for (const auto& copy : plan.copies()) stage(copy);
+        }
         upload_source = staged;
         result.host_staged_bytes = plan.payload_bytes();
     }
     auto submit = [&](const PrefillFullfitCopy& copy) {
+        if (stage_per_span) stage(copy);
         auto* destination = base + size_t(copy.destination_offset);
         const auto* source = upload_source + size_t(copy.source_offset);
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)

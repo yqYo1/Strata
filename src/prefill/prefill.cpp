@@ -561,6 +561,18 @@ bool prefill_prefix_expert_host_usm_requested() {
     return enabled;
 }
 
+detail::PrefillHostStageOrder prefill_prefix_expert_stage_order_requested() {
+    static const auto selected = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PREFIX_EXPERT_STAGE_ORDER");
+        if (!value || std::strcmp(value, "all") == 0)
+            return detail::PrefillHostStageOrder::all_before_copy;
+        if (std::strcmp(value, "per-span") == 0)
+            return detail::PrefillHostStageOrder::span_before_copy;
+        throw std::invalid_argument("prefill expert stage order requires all or per-span");
+    }();
+    return selected;
+}
+
 enum class PrefillPrefixCopy { sycl, sycl_wait, native0, native1 };
 
 bool prefill_prefix_expert_defer_completion_requested() {
@@ -666,6 +678,7 @@ struct MoeWindowContext {
     std::unique_ptr<sycl_backend::native_copy::NativeCopyList> prefix_native_copy;
 #endif
     PrefillPrefixCopy prefix_copy = PrefillPrefixCopy::sycl;
+    detail::PrefillHostStageOrder prefix_stage_order = detail::PrefillHostStageOrder::all_before_copy;
     bool defer_prefix_completion = false;
     std::optional<detail::PrefillFullfitUploadPlan> pending_prefix_upload;
     std::vector<int32_t> prefix_experts;

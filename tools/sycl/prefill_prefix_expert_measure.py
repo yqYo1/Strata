@@ -55,10 +55,12 @@ def native():
     return row, original
 
 
-def bank_smoke():
-    sources = build.source.pin(P, [THIS, 'docs/SYCL_NATIVE16_PREFILL.md'])
+def bank_smoke(*, controller=THIS, key=SMOKE, arg='--fullfit-eager-schedule-smoke',
+               marker='prefill_fullfit_schedule_fixture PASS first_reader_and_cancellation=checked',
+               expected=None):
+    sources = build.source.pin(P, [controller, THIS, 'docs/SYCL_NATIVE16_PREFILL.md'])
     binary, original = native()
-    require(SMOKE not in json.loads(RESULT.read_text()), 'one planned fixture run')
+    require(key not in json.loads(RESULT.read_text()), 'one planned fixture run')
     root = build.ROOT / 'bank-smoke'
     root.mkdir(mode=0o700)
     for part in ('tmp', 'cache'):
@@ -77,7 +79,7 @@ def bank_smoke():
         text=True, timeout=15).splitlines() if line.startswith('-- cursor: '))
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     candidate = binary['binaries']['sycl_expert_bank_test']
-    args = [candidate['path'], '--fullfit-eager-schedule-smoke']
+    args = [candidate['path'], arg]
     outcome = dict(source=sources['revision'], sources=sources['aggregate_sha256'],
                    binary=candidate, command=args, environment_sha256=signature(env),
                    native_build=signature(builder.compact(binary)))
@@ -95,12 +97,13 @@ def bank_smoke():
             environment=env, native_validation_probe=probe,
             runtime_manifest=binary['foundation']['runtime_manifest']))
         fixture_log = out.read_text()
-        require('prefill_fullfit_schedule_fixture PASS first_reader_and_cancellation=checked'
-                in fixture_log.splitlines(), 'transport, bytes or cancellation gate did not close')
+        require(marker in fixture_log.splitlines(), 'transport, bytes or cancellation gate did not close')
         cases = [tuple(map(int, row)) for row in re.findall(
             r'^prefill_fullfit_eager PASS experts=(\d+) source_stride=(\d+) layers=(\d+) cancellations=(\d+) rejects=(\d+)$',
             fixture_log, re.MULTILINE)]
-        require(cases == [(4, 256, 2, 0, 4), (4, 512, 2, 0, 4), (4, 512, 2, 2, 4)] * 2,
+        if expected is None:
+            expected = [(4, 256, 2, 0, 4), (4, 512, 2, 0, 4), (4, 512, 2, 2, 4)] * 2
+        require(cases == expected,
                 'all publication and cancellation smoke cases required')
         outcome.update(cases=cases, providers=providers,
                        selected_host_bytes_and_guards=True,
@@ -111,7 +114,7 @@ def bank_smoke():
         basis.validation.finish(outcome, owner, cursor, boot)
         outcome['passed'] &= outcome.get('driver_after') == binary['driver']
         data = json.loads(RESULT.read_text())
-        data[SMOKE] = outcome
+        data[key] = outcome
         write(RESULT, data)
     require(outcome['passed'], outcome.get('error', 'small expert bank fixture failed'))
 

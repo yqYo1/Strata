@@ -63,7 +63,7 @@ void enqueue_prefill_prefix_experts(Engine& m, MoeWindowContext& owner, int64_t 
          {m.R, size_t(m.T * D * 4)}, {m.emb, size_t(m.T * N * 4)},
          {m.dq_gu[0], size_t(2 * 640 * N * 2)}, {m.dq_d[0], size_t(N * 640 * 2)}},
         host_staging, native_copy, owner.prefix_copy != PrefillPrefixCopy::sycl,
-        owner.defer_prefix_completion ? &owner.pending_prefix_upload : nullptr);
+        owner.defer_prefix_completion ? &owner.pending_prefix_upload : nullptr, owner.prefix_stage_order);
 }
 }  // namespace
 

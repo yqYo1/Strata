@@ -537,7 +537,8 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
 enum class FullfitCopyMode { direct, staged, waited, native0, native1, native1_deferred };
 
 void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers,bool cancel,
-                               FullfitCopyMode mode=FullfitCopyMode::direct) {
+                               FullfitCopyMode mode=FullfitCopyMode::direct,
+                               pd::PrefillHostStageOrder stage_order=pd::PrefillHostStageOrder::all_before_copy) {
     need(pd::prefill_fullfit_eager_requested(),"eager fixture needs immutable pre-exec eager policy");
     auto runtime=sb::runtime_for();auto& q=runtime->compute();
     constexpr size_t stride=256;
@@ -593,7 +594,7 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);
             const auto receipt=pd::stage_prefill_fullfit_eager(slots,bank,slab,512*source_stride,
                 source_stride,ids,&q,{{scratch.data(),scratch.size()}},
-                host_usm ? &staging : nullptr, native, wait_for_copies, deferred ? &pending : nullptr);
+                host_usm ? &staging : nullptr, native, wait_for_copies, deferred ? &pending : nullptr, stage_order);
             need(receipt.experts==ids.size() && receipt.copy_commands==ids.size() &&
                 receipt.payload_bytes==ids.size()*stride &&
                 receipt.host_staged_bytes==(host_usm ? receipt.payload_bytes : 0),
@@ -670,6 +671,16 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
 
 int main(int argc, char** argv) try {
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
+    if (argc==2 && std::string(argv[1])=="--fullfit-host-stage-order-smoke") {
+        for (auto stage_order : {pd::PrefillHostStageOrder::all_before_copy, pd::PrefillHostStageOrder::span_before_copy}) {
+            const auto mode = FullfitCopyMode::native1_deferred;
+            prefill_fullfit_eager_case(512,256,2,false,mode,stage_order);
+            prefill_fullfit_eager_case(4,512,2,false,mode,stage_order);
+            prefill_fullfit_eager_case(4,512,2,true,mode,stage_order);
+        }
+        std::cout<<"prefill_fullfit_host_stage_order_fixture PASS waits_retained=1\n";
+        return 0;
+    }
     if (argc==2 && std::string(argv[1])=="--fullfit-eager-schedule-smoke") {
         for (auto mode : {FullfitCopyMode::native1, FullfitCopyMode::native1_deferred}) {
             prefill_fullfit_eager_case(4,256,2,false,mode);

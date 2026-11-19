@@ -506,6 +506,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
          prefix_copy_requested == PrefillPrefixCopy::native1);
     const auto prefix_copy = prefix_host_usm_admitted ? prefix_copy_requested : PrefillPrefixCopy::sycl;
     const bool prefix_copy_native = prefix_copy == PrefillPrefixCopy::native0 || prefix_copy == PrefillPrefixCopy::native1;
+    const auto prefix_stage_order = prefill_prefix_expert_stage_order_requested();
+    if (prefix_expert_upload_admitted && prefix_stage_order == detail::PrefillHostStageOrder::span_before_copy &&
+        prefix_copy != PrefillPrefixCopy::native1) {
+        err = "prefill per-span expert staging requires the dedicated native copy route";
+        return false;
+    }
     const bool defer_completion_requested = prefill_prefix_expert_defer_completion_requested();
     const bool defer_prefix_completion = defer_completion_requested && prefix_copy == PrefillPrefixCopy::native1;
     if (defer_completion_requested && prefix_expert_upload_admitted && !defer_prefix_completion) {
@@ -899,6 +905,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 sycl_backend::runtime_for_device_span(layer_cache.device_slot(0), size_t(layer_cache.bytes()), queue),
                 size_t(host_slab_bytes), sycl_backend::MemoryKind::Host);
             window_context->prefix_copy = prefix_copy;
+            window_context->prefix_stage_order = prefix_stage_order;
             window_context->defer_prefix_completion = defer_prefix_completion;
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
             if (prefix_copy_native)
@@ -907,6 +914,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                         queue, prefix_copy == PrefillPrefixCopy::native1 ? 1 : 0);
 #endif
         }
+        if (prefix_host_usm_admitted && prefix_copy == PrefillPrefixCopy::native1)
+            std::fprintf(stderr, "strata MoE prefix upload stage order: effective=%s\n",
+                prefix_stage_order == detail::PrefillHostStageOrder::span_before_copy ? "per-span" : "all");
         if (prefix_host_usm_requested)
             std::fprintf(stderr, "strata MoE prefix upload transport: requested=%s effective=%s ready=%s\n",
                 prefill_prefix_copy_name(prefix_copy_requested), prefill_prefix_copy_name(prefix_copy),

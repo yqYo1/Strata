@@ -83,11 +83,12 @@ def decision(processes, order, traced):
     outcome = dict(matched_work=True, independent_processes=len(processes),
                    measured_modes=list(order), overlap_measured=False, model_adopted=False)
     if not traced:
+        reference, candidate = order[:2]
         pairs = []
         for a in range(0, len(order), 2):
             times = {order[i]: schedule.timing(processes[i]) for i in (a, a + 1)}
-            ratios = {metric: times[CANDIDATE][metric] / times[REFERENCE][metric]
-                      for metric in times[REFERENCE]}
+            ratios = {metric: times[candidate][metric] / times[reference][metric]
+                      for metric in times[reference]}
             pairs.append(dict(indices=[a, a + 1], times=times, ratios=ratios))
         warm_ratios = [p['ratios']['warm_prompt_ms'] for p in pairs]
         outcome.update(pairs=pairs, all_warmed_pairs_faster=all(r < 1 for r in warm_ratios),
