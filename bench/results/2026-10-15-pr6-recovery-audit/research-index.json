@@ -38028,8 +38028,16 @@
   "ordinary384-mtp-final-window-accounting-20261120": {
     "topic": "Trace the MTP verifier window and final-token accounting of the six ordinary384 code/prose official runs only.",
     "classification": "decision support",
-    "schedulable_now": true,
-    "prerequisite": "The first review used an incompatible resource cohort. The corrected packet has only the f6bb38a61 ordinary384 cohort, its exact native caller, serving/benchmark accounting and verified 2815/6823-output samples. Determine the provable bounds and the minimum extra matched timing measurement."
+    "schedulable_now": false,
+    "prerequisite": "The first review used an incompatible resource cohort. The corrected packet has only the f6bb38a61 ordinary384 cohort, its exact native caller, serving/benchmark accounting and verified 2815/6823-output samples. Determine the provable bounds and the minimum extra matched timing measurement.",
+    "source_commit": "b0556ec09242fcee8bab7c6d8291875aeb6cf4ff",
+    "capture_commit": "f6bb38a61ac317822d5b21315ae30bfe412d64f7",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_sha256": "6a38931cbf010566b1635fe549cfce96774dd35dc60e59a2a6aed11d10c16a53",
+    "review_sha256": "ec120839a780d223994b1c0ab3ba5fcd616749173ad7dd0da19bf1a737fb1d17",
+    "finding": "For these six official processes only, the first window has T=1 and later windows T=4. With 2340/10143 offered drafts, code/prose used 781/3382 verifier windows. Accepted drafts plus windows exceed emitted output by two/one positions in the final EOS window. A generic upper bound of 1 + offered does not apply to variable T; the fixed-width counts here agree with the pinned source and outputs.",
+    "consumer": "Use existing aggregate verify/commit/draft time and window count on matched code and prose as the first resource measurement. Per-window phase times, accepted prefix and EOS position require a separate instrumented build; isolate polling and nested service intervals. A counterfactual run without drafting is needed before using a zero-draft ceiling."
   },
   "niko-0216-arc-window-ownership-20261120": {
     "topic": "Audit Niko 0.2.16 Arc wait failures, expert ID snapshot and queue ownership against the active fork paths.",

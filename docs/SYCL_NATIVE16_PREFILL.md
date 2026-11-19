@@ -212,11 +212,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   above still selects copy. The CSV retains each configuration and workload.
   In the copy arm the median engine decode time per output token was 84.75 ms
   for code (2036 of 2340 offered drafts accepted) and 142.33 ms for prose
-  (3442 of 10143). The 70 tok/s target allows 14.29 ms per output. These
-  samples do not split the time spent verifying and drafting. The historical
-  resource run with 3157 outputs and 900 windows used a different executable
-  and cannot supply that split. Measure it on the same ordinary workloads
-  and account for the final EOS window before estimating a draft-cost ceiling.
+  (3442 of 10143). In this fixed-width configuration the first verifier
+  window takes one token and each later window offers three drafts. The
+  counters imply 781 code windows and 3382 prose windows, producing 3.604
+  and 2.017 output tokens per window. Final EOS handling accounts for two
+  and one extra verified positions respectively. Total engine decode time
+  divided by windows was about 305.5 ms for code and 287.1 ms for prose.
+  The 70 tok/s target at these observed output yields allows 51.5 and
+  28.8 ms per window. Those totals include the work around verification.
+  Measure verify, commit and draft on these same workloads before assigning
+  the gap. The older 3157-output/900-window executable cannot supply that split.
   The resident-input candidate at `1bf54ec32` is integrated into
   `feature/sycl` for validation. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after
