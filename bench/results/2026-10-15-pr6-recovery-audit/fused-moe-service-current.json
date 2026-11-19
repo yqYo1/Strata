@@ -499973,7 +499973,7 @@
     "source_and_recipe_evidence": "fe515ce995169764eb19316abf987b4426ffa9b4"
   },
   "prefill_attention_bank_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "21cd3721fa7c5d9d78a23237c5aa19026df47932",
     "native_base_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
     "history": {
@@ -500102,8 +500102,8 @@
       "recipe_sha256": "1c14fb531398338c49a4aa3ee0612e1fdad81f46ee9ce2a50ac01805b00b5fdd",
       "scope": "Artifact continuity and original Git/recipe preservation only;new prefill build inherits no decode/model qualification."
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "plan": {
@@ -500118,6 +500118,58 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/compile_commands.json": "80e5edd595eac0b810a691fabf9adc0997bb504e6527235d197b98150fe703db",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/CMakeFiles/rules.ninja": "e0840fd6a93f1ec8292d97af09d3c645690688ece265190f43e9cced3fee49f7"
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/strata",
+        "sha256": "a3dddff2a848a73d2f1c0986bdb2c76e80badd77b843673b4f9bb440ac121990",
+        "bytes": 26518448
+      },
+      "prefill_moe_routes_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/prefill_moe_routes_test",
+        "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+        "bytes": 111336
+      },
+      "prefill_moe_workspace_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/prefill_moe_workspace_test",
+        "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+        "bytes": 67448
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/sycl_expert_bank_test",
+        "sha256": "04c92923c843fc9bab1fa558fb3a23c409b433135b7e414eecd26b569b2a1de7",
+        "bytes": 533912
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "077e0242b8aa19e0f93d19d84ca32eb37e3151167000b865af54baf0faff6e68",
+        "bytes": 14298288
+      },
+      "sycl_native16_paired_gemm_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/sycl_native16_paired_gemm_bench",
+        "sha256": "0b4a70f4692e18b6da460a0d48b134a1c0ad5986c8ae25e4b13e5e2e723f5216",
+        "bytes": 14238952
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/strata_full_context_diagnostic",
+        "sha256": "d66cb75ffa2fa2ead4b43a7703257497d49229a884aa213e3e694664187914f0",
+        "bytes": 26522696
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/sycl_moe_upload_census_host_test",
+        "sha256": "d88f84a73fa8b0d5d5094268bcd3526a8183f90d26f9468de41baf4d7c96906a",
+        "bytes": 107360
+      },
+      "prefill_fullfit_upload_plan_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-attention-bank-native-v1/build/prefill_fullfit_upload_plan_test",
+        "sha256": "2a60487e48d7b9c18a4e6021252fcf4b5b3438f6de2bec55964e32a83baf29c3",
+        "bytes": 109640
+      }
+    },
     "controller_sources": {
       "files": 385,
       "sha256": "a3e1a10526a52938cd721070031a7087be6ca3f7eca2433bb46f81858d803226"
@@ -500126,6 +500178,44 @@
       "files": 1168,
       "sha256": "2fa2c485033fd57dd54a00a6507427b41ed454294f6c8d6e166ad7a07eb6cc85"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1472,
+        "sha256": "8213c9ddf96ad0774be96ecdb45f0a62e4b87e0312cf9889aab5c197aac9c9c2"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "1d2c782a527ddb8653a824c1f27d542e140837401a9bf076a9cd568f582896ef"
+      },
+      "links": {
+        "files": 30,
+        "sha256": "aa037df9a9963d78817d68cec3c5e6921ddd9d32a5121362c1706acb194a9346"
+      },
+      "objects": {
+        "files": 135,
+        "sha256": "ba6157b376c3f71844acfe2ff3d6076c3fd2fa1d3606e84554986803ed67047c"
+      },
+      "produced": {
+        "files": 146,
+        "sha256": "bd247fb91c5923f2bc30385c2997f9208cab5202e6ebc6639846aa7af0fd36b3"
+      },
+      "Gemm_includers": {
+        "files": 6,
+        "sha256": "230d98f427a591f855366e16a44a25bf65deb0664486fe148bacf0524c82ad1e"
+      },
+      "class_definition_includers": {
+        "files": 3,
+        "sha256": "e7c94393a3dc3214d7adfdc9212857522239ac50604a4cd514ba3c1077902d49"
+      },
+      "AOT_finalization_recipe_sha256": "4a5c151605d90a9590d567f0d1fe682103e202eef761bc5e464fe92700c1f6c1",
+      "temporary_generated_link_objects": 37,
+      "temporary_generated_link_paths_sha256": "44c0d558ef120d1fb6adbf1e10e7836cd97881410a8529048520fad0e58894f9",
+      "temporary_link_scope": "Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.",
+      "translation_units": 132,
+      "fresh_objects": 135,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
