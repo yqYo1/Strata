@@ -36911,10 +36911,60 @@
         }
       ]
     },
-    "consumer": "Before planning a partial bank experiment: inspect 64K selected maxima. Preserve numerical and timing source keys; do not infer full demand, transfer throughput or speed from the prefix census.",
+    "consumer": "Observed 32K and 64K prefix admissions support a proposed 384-capacity safety fixture. Verify oversized-prefix fallback and scratch reuse first. Isolate partial admission at equal backing, then measure backing capacity separately.",
     "retirement": {
       "complete": false,
-      "review_point": "Retire closed worker/control/source and numerical scratch after the 64K matched cohort; retain compact verified findings."
+      "captures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-partial-copy-bank-20261119",
+          "files": 2,
+          "bytes": 22984,
+          "tree_sha256": "b0a047c031ac5d6bf845eb206b7aff68b0dfc664e3ca1f6831cad8617a0b02b6"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-partial-copy-bank-20261119-control",
+          "files": 9,
+          "bytes": 23062,
+          "tree_sha256": "bf02edd074a1d8c6faa07aa58c5bebc0c2a16556a0964f01753418d3a7fc7c01"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-partial-copy-bank-20261119",
+          "files": 20,
+          "bytes": 3872013,
+          "tree_sha256": "f357582779d76f1a9b5b1dd8d505a7a8d2f066dc5bd70c01d8885cbc4ffff783"
+        }
+      ],
+      "reason": "Reports and source views are closed. Keep the compact research finding and matched extent census."
+    },
+    "observed_64K": {
+      "evidence_commit": "bff8a578f246eb4e2f5e3fb0c28261549b208759",
+      "evidence_key": "prefill_prefix_expert_net_timing_v1",
+      "actual_read": 65537,
+      "within_process_samples": 3,
+      "matched_arms": 6,
+      "layers": 48,
+      "prefix_rows": 8192,
+      "samples": [
+        {
+          "min_prefix_experts_per_layer": 231,
+          "max_prefix_experts_per_layer": 364,
+          "layers_with_room_for_scratch": 48,
+          "requested_prefix_bytes": 30868864000
+        },
+        {
+          "min_prefix_experts_per_layer": 229,
+          "max_prefix_experts_per_layer": 362,
+          "layers_with_room_for_scratch": 48,
+          "requested_prefix_bytes": 30889676800
+        },
+        {
+          "min_prefix_experts_per_layer": 235,
+          "max_prefix_experts_per_layer": 363,
+          "layers_with_room_for_scratch": 48,
+          "requested_prefix_bytes": 30821811200
+        }
+      ],
+      "limit": "Clean records qualify prefix extents. The clean logs omit the per-layer first-miss census."
     }
   }
 }
