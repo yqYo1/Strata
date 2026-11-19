@@ -477055,5 +477055,85 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "prefill_prefix_expert_schedule_smoke_v1": {
+    "source": "6731d82562aebd0f62176b59e9671b24d0c460b5",
+    "sources": "c221900c6bf77008d899d037681a6c58a249c787195a049e0a585ae360e0cb18",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-schedule-native-v1/build/sycl_expert_bank_test",
+      "sha256": "6c9f3771411198b2dbbd7dd19200a62a5ca3cc56ef7e630138344123b60ef7d0",
+      "bytes": 532256
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-prefix-expert-schedule-native-v1/build/sycl_expert_bank_test",
+      "--fullfit-eager-schedule-smoke"
+    ],
+    "environment_sha256": "befd3506c8b5099fd928a59e22dcd8244a0b5aa1da6abec4e315f329c23fd250",
+    "native_build": "ba1941c50083e2a77035fb97d0b212f92acba5aa28785e890a8e1d795fad6fff",
+    "cases": [
+      [
+        4,
+        256,
+        2,
+        0,
+        4
+      ],
+      [
+        4,
+        512,
+        2,
+        0,
+        4
+      ],
+      [
+        4,
+        512,
+        2,
+        2,
+        4
+      ],
+      [
+        4,
+        256,
+        2,
+        0,
+        4
+      ],
+      [
+        4,
+        512,
+        2,
+        0,
+        4
+      ],
+      [
+        4,
+        512,
+        2,
+        2,
+        4
+      ]
+    ],
+    "providers": {
+      "initialized_ELFs": 33,
+      "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+      "required_providers_verified": true,
+      "source": "glibc constructors;not speed or hardware utilization"
+    },
+    "selected_host_bytes_and_guards": true,
+    "native_exit_code": 0,
+    "host_probe_accepted": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "passed": true
   }
 }
