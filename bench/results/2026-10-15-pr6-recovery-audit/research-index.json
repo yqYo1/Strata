@@ -38014,8 +38014,16 @@
   "arc-host-copy-size-routing-20261120": {
     "topic": "Identify whether the qualified Intel UR/Level Zero stack changes its host-memory copy path across the actual canonical copy sizes.",
     "classification": "decision support",
-    "schedulable_now": true,
-    "prerequisite": "94a0649c8 verified the same bytes/addresses but every matched combined-copy sweep was slower. The ordinary 64K trace has 48.3 GB of M2D requests. Scope this audit to reusable distinctions between source-side work, copy execution and the host timer. Keep the joined-copy model route closed."
+    "schedulable_now": false,
+    "prerequisite": "94a0649c8 verified the same bytes/addresses but every matched combined-copy sweep was slower. The ordinary 64K trace has 48.3 GB of M2D requests. Scope this audit to reusable distinctions between source-side work, copy execution and the host timer. Keep the joined-copy model route closed.",
+    "source_commit": "60516636e20b45353b0bebed23e8c37d40067c5d",
+    "capture_commit": "94a0649c8bfb48fc5c8c54e9089cb50a0338c67b",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native gpt-6-luna max",
+    "report_sha256": "ecf6f18f10ed33c40d69f17af8d3ddb1fd3f35de9676d4c6986da6588a12f395",
+    "review_sha256": "674b68422133b701ef0e7de58719330b21e54f577ee91ce8913954497b433f32",
+    "finding": "The 672 individual and 217 joined copies request the same 1,455,214,080 bytes. All three matched untraced sweeps favor individual copies. The timer includes overlay work, submission and both queue drains. The measured path suppresses UR copy offload. Physical routing, host staging and a runtime size threshold remain unmeasured.",
+    "consumer": "Keep the joined-copy model route closed. If investigating the slower activation, trace one representative size on the pinned runtime and separate host staging, submission and GPU completion. The original report and reviewed size distribution remain available for that comparison."
   },
   "ordinary384-mtp-final-window-accounting-20261120": {
     "topic": "Trace the MTP verifier window and final-token accounting of the six ordinary384 code/prose official runs only.",
