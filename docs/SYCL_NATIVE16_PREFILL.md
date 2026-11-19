@@ -222,6 +222,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   28.8 ms per window. Those totals include the work around verification.
   Measure verify, commit and draft on these same workloads before assigning
   the gap. The older 3157-output/900-window executable cannot supply that split.
+  Use `bench/sycl/ordinary_decode_round_cost.py` on the resident-input build
+  with both BF16 copy paths selected. Run the same official thinking-on suite
+  in clean, timing, timing, clean order. The timing arm enables only the
+  existing request-end decode footer. Bind its window count, verifier rows,
+  CPU expert entries and phase clocks to the native request and client result.
+  Compare the two pairs for each workload. Treat the clocks as representative
+  only with equal work and paired per-token times within a factor of 1.10.
+  GPU-reach wait and CPU-pool wall time are nested inside verification.
+  These counters cannot by themselves identify VRAM, RAM or CPU saturation.
   The resident-input candidate at `1bf54ec32` is integrated into
   `feature/sycl` for validation. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after
