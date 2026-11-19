@@ -505515,7 +505515,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "9662ad33841c02ee2f4b64f77491d6c0c2b418e0",
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -505826,7 +505826,32 @@
         "environment_sha256": "90473fa00408b0150c29fedb6f19a845ab0487c4ee66f82917ac933bdcfde991"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "original",
+        "complete": false,
+        "host_probe_accepted": false,
+        "native_identity": {
+          "pid": 608406,
+          "start_ticks": 344200659,
+          "sid": 608257
+        },
+        "error": "RuntimeError('unexpected long-generation workload or thinking/output budget')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
