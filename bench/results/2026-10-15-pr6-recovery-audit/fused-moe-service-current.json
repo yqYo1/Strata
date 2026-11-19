@@ -499531,7 +499531,7 @@
     }
   },
   "prefill_attention_bank_component_v1": {
-    "stage": "built",
+    "stage": "running",
     "source_commit": "d40ba6312fc64c9eb7bffa90889a9cea82488f54",
     "source_sha256": "943555f6fcc8a6b2dbe181563be217c90dd0e517fe8c55aea30b354a69ba8646",
     "admitted": {
@@ -501889,7 +501889,45 @@
       "copy",
       "direct"
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "correctness",
+        "host_probe_accepted": true,
+        "cases": 4,
+        "compared_BF16": 168417280,
+        "checked_rejection_types": [
+          "overlap",
+          "zero extent",
+          "outside registered range"
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 190685,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "plan": {
       "unit": "Only the GPU attention BF16 store changes. Separate production residual and bank owners, same old BF16 residual, projection, inject, stream and checked drain.",
       "correctness": "Actual production write/compat D2D pair compared bitwise with the direct operator, including broadcast initialization, 1/63/8191/8192 rows, independent zero-injection arithmetic, guards, alias/extent refusals and retirement.",
