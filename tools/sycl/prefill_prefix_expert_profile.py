@@ -18,14 +18,15 @@ import profile_split as profile
 from prefill_prefix_expert_host_stage import B, RESULT, basis, build, builder, require, signature
 
 THIS = 'tools/sycl/prefill_prefix_expert_profile.py'
-ROOT = B / 'prefill-prefix-expert-stage-profile-v1'
-KEY = 'prefill_prefix_expert_stage_profile_v1'
+ROOT = B / 'prefill-prefix-expert-stage-profile-v2'
+KEY = 'prefill_prefix_expert_stage_profile_v2'
+PREVIOUS = 'prefill_prefix_expert_stage_profile_v1'
 TIMING = 'prefill_prefix_expert_host_stage_timing_v1'
 ROLES = ('clean-before', 'profile', 'clean-after')
 READ, RUNS = 32769, 2
 OBSERVERS = dict(STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1',
     STRATA_SYCL_PREFILL_MOE_CENSUS='1', UNITRACE_ChromeKernelLogging='1',
-    UNITRACE_ChromeCallLogging='1', UNITRACE_ChromeEventBufferSize='128')
+    UNITRACE_ChromeEventBufferSize='128')
 
 
 def assets():
@@ -102,8 +103,14 @@ def campaign():
 
 def prepare(ctx):
     earlier = basis.validation.committed(RESULT, (TIMING,))
+    previous = basis.validation.committed(RESULT, (PREVIOUS,))
     require(earlier['stage'] == 'closed' and earlier['complete'] and earlier['ownership_closed'],
             'closed clean same-ELF timing reference required')
+    require(previous['stage'] == 'failed' and not previous['active']
+            and previous['binary'] == earlier['binary']
+            and previous['collector_cleanup_after_failure']['control_closed']
+            and previous['collector_cleanup_after_failure']['session_removed'],
+            'preserve the original failed and reconciled observer bracket')
     tools, proof = assets()
     ctx.prepare()
     row = read(ROOT / 'record.json')
@@ -127,6 +134,11 @@ def prepare(ctx):
     require(all(env == fixed_environments[0] for env in fixed_environments),
             'non-observer environment differs across arms')
     row.update(speed_reference=signature(earlier), collector_build_proof=proof,
+        previous_attempt=dict(key=PREVIOUS, original_failure_commit='b9117a05ccc5901db50782478e72f902c127752c',
+            reconciled_commit='4053aaa12355618f023a3ae0b17863f2a6f38f4e',
+            change='Disable only full host Level Zero API event logging. '
+            'Kernel/copy events, CPU scopes, census, warmup, model work and the 1.20x gate stay fixed. '
+            'The independently exercised session cleanup repair runs after measurement.'),
         clock_controls=ctx.profile_window_controls(), budgets=dict(row['budgets'], file_cap=1 << 30,
         total_cap=1536 << 20), whole_bytes=2 << 30,
         plan=dict(question='How do requested copies, kernel intervals and host waits overlap on the all-staging route?',
@@ -170,14 +182,12 @@ def window_summary(events, window, selected):
                   boundary_crossing=sum(not whole for _, whole in items)) for (pid, tid), items in sorted(copies.items())]
     matching = [lane for lane in lanes if (lane['count'], lane['bytes'], lane['boundary_crossing']) ==
                 (selected['experts'], selected['bytes'], 0)]
-    wait = [op for op in clipped if op['cat'] == 'cpu_op' and op['name'] == 'zeCommandListHostSynchronize']
     ku, hu, either = map(profile.union_us, (kernels, h2d, kernels + h2d))
     return dict(clock=window, services=profile.family_summary(clipped, window['begin_raw_ns'], window['end_raw_ns']),
         interval_s=dict(kernel_only=(either - hu) / 1e6, h2d_only=(either - ku) / 1e6,
             kernel_and_h2d=max(0., ku + hu - either) / 1e6, neither=max(0., end - begin - either) / 1e6),
-        command_list_host_synchronize=dict(calls=len(wait), window_union_s=profile.union_us(wait) / 1e6),
         h2d_lanes=lanes, prefix_count_byte_matching_lanes=matching,
-        limits='A same-count/bytes lane is a candidate correlation. API wall time may overlap CPU scopes.')
+        limits='A same-count/bytes lane is a candidate correlation. Full host API timing is disabled.')
 
 
 def compare_work(outcome, row, plan):
@@ -216,7 +226,7 @@ def run(ctx, index):
         profile.session_state(prof['session'], 0)
         expected = profile.expected_target_environment(ctx.native_context(row, selected),
                                                        ctx.environment(row, selected), prof)
-        for key in ('UNITRACE_StartPaused', 'UNITRACE_HostTiming'):
+        for key in ('UNITRACE_StartPaused', 'UNITRACE_HostTiming', 'UNITRACE_ChromeCallLogging'):
             expected.pop(key)
         expected['UNITRACE_Verbose'] = '1'
         profile.same_environment({k.decode(): v.decode() for k, v in observed.items()}, expected)
