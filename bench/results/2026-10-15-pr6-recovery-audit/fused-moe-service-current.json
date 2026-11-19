@@ -524860,5 +524860,37 @@
     "model_speed_measured": false,
     "device_executed": false,
     "consumer": "Traced vec8 contiguous and ragged production-shaped gather oracles, then scalar/vec8 four-shape timings. Retire the fixture at decision or failure."
+  },
+  "prefill_mixed_gather_component_v1": {
+    "build_sha256": "7cff8156da86b67c0fa3edb9db855bb366c111da551aa03794a8b5c57eae9774",
+    "controls": "a40e2652e0d7e2082ba82f193b9979cd63f86f98185fde20d4672f2c3faa23d9",
+    "stages": [
+      {
+        "stage": "contiguous",
+        "case": "mixed-gather-vec8-contiguous",
+        "environment_sha256": "50b087cb3eb7ffb2d3c2a4ffd984e7129aef175732bf95f894d9355998b39252",
+        "compared_values": 20971520,
+        "invalid_rows": 4,
+        "admission_rejects": 6,
+        "device": "Intel(R) Arc(TM) B570 Graphics",
+        "runtime_driver": "1.17.39758+17",
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
+    "source_commit": "7e83c5f62aea0dca58eb0de1dde6eff1074a8811",
+    "measured_model": false
   }
 }
