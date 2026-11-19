@@ -17,10 +17,11 @@ import prefill_prefix_expert_build as stage
 import ur_validation as validation
 
 P, B, RESULT = basis.P, basis.B, basis.RESULT
-ROOT = B / 'prefill-status-destination-v3'
-KEY = 'prefill_status_destination_v3'
+ROOT = B / 'prefill-status-destination-v4'
+KEY = 'prefill_status_destination_v4'
 FIRST = 'prefill_status_destination_v1'
 SECOND = 'prefill_status_destination_v2'
+THIRD = 'prefill_status_destination_v3'
 SOURCE = 'tests/sycl/prefill_status_destination.cpp'
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
 BOOT = Path('/proc/sys/kernel/random/boot_id')
@@ -132,12 +133,16 @@ def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'one fresh component plan required')
     previous = validation.committed(RESULT, (FIRST,))
     compiled = validation.committed(RESULT, (SECOND,))
+    linked = validation.committed(RESULT, (THIRD,))
     require(previous['stage'] == 'blocked-prepare' and previous['ownership_closed'] and not previous['GPU_executed'],
             'keep the original pre-GPU dependency census refusal')
     require(compiled['stage'] == 'failed' and compiled['ownership_closed'] and not compiled['active']
             and not compiled['processes'] and compiled['compile_commands'] == 1
             and 'binary' not in compiled and 'different header set' in compiled['error'],
             'keep the original compile census refusal')
+    require(linked['stage'] == 'blocked-before-gpu' and linked['ownership_closed'] and not linked['active']
+            and not linked['processes'] and not linked['GPU_executed'] and linked['compile_commands'] == 2,
+            'keep the original prelaunch failure after verified linkage')
     admitted, providers, env = platform()
     revision = stage.source.git(P, 'rev-parse', 'HEAD').decode().strip()
     sources = basis.comparison.build.controls(revision, controller=Path(__file__))
@@ -167,7 +172,7 @@ def prepare():
               dependencies_sha256=signature(pinned_dependencies),
               headers=sorted(headers), provider_sha256=signature(providers), providers=providers, environment=env,
               environment_sha256=signature(env), admitted=admitted, build=[compile_command, link_command],
-              earlier_refusals={FIRST: signature(previous), SECOND: signature(compiled)},
+              earlier_refusals={FIRST: signature(previous), SECOND: signature(compiled), THIRD: signature(linked)},
               header_eligibility='Pin the union from -M before compilation. Require the same source and necessary '
                                  'project headers in -MD and refuse any file outside that conservative union.',
               steps=[['smoke', 'ordinary'], ['smoke', 'host-usm'], *[['timing', x] for x in ORDER]],
@@ -311,6 +316,7 @@ def execute(row, index):
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=10)
         .splitlines() if s.startswith('-- cursor: '))
     outcome = dict(index=index, operation=operation, placement=placement, host_probe_accepted=False)
+    root.mkdir(mode=0o700)
     owner = ownership.Owner(root / 'owned')
     try:
         command, out, err = owner.run('fixture', [str(ELF), placement, operation], env, P, **BUDGET)
