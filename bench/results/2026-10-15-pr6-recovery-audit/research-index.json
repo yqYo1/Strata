@@ -38210,5 +38210,31 @@
     "decision": "Keep the host mirror current. Test skipping repeated host-to-stage prefix reloads only with an owned stage, single-layer lifetime and an exact contiguous predecessor. Reference and candidate need independent state and boundary checks.",
     "consumer": "First same-build reload/reuse comparison and cancellation/RESTORE review; report /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-117k-kv-publication-20261120/report.md and review /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-117k-kv-publication-20261120-control/review.md.",
     "worker_completion": "Main verified task_4c9b6814b09a and ctx_fed4d7f1624b completed, succeeded; worker_done msg_42043fe75ff0. Named terminal closed after idle and scope inactive. Filesystem proof confirms 29 protected inputs; worker self-reported its status query, and worker_done separately confirms live Orca IPC."
+  },
+  "qsa-packed-prefix-suffix-20261120": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "source_commit": "d82ff6e3f6aefc368c2990fff9f2c722365129cf",
+    "report_budget_bytes": 12288,
+    "report_sha256": "66a9222cef06de14da9eaad841cc0206589d1a2ee8c037ec2acaed75795e9587",
+    "review_sha256": "5d847b1ff96651c5a47cc70ff061d7fbdb19948c5f64523127ca9e83a916976e",
+    "finding": "An adjacent chunk in one layer currently repacks prior rows. The review corrects the unique INT8 K/V and scale input payload to 528 bytes per head-row; packed BF16 and flags require 1028 bytes per row. The 14.376–14.383 s measure the consumer. The producer has no separate time.",
+    "consumer": "Consider a suffix-only refresh after the QSA scheduling comparison. Require the same lease and prefix generation, valid tail/page behavior, independent output/state checks, and separately timed pack and request costs.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa-packed-prefix-suffix-20261120/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa-packed-prefix-suffix-20261120-control/review.md",
+    "worker_completion": "Orca task_6d57458f4849, ctx_773be146123e; worker_done received, 15 protected inputs checked, named terminal closed. Worker-side status query self-reported. Both reviews complete; one reviewer disclosed a read-only git status outside the review assignment. No project edits by reviewers."
+  },
+  "sparse-kv-head-prefetch-designs-20261120": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "source_commit": "d82ff6e3f6aefc368c2990fff9f2c722365129cf",
+    "report_budget_bytes": 12288,
+    "report_sha256": "21f824afa5d9ccb554f486eea7f8e2bf957af6244ceab72093e359630d5d1dc2",
+    "review_sha256": "07588b79d174e6477c2171ef44f6727b5fff4ff9bd3bc883a2c18a09c283cc1d",
+    "finding": "The reviewed references compare direct indexed reads, packing selected rows for reuse, and splitting work across heads. FlashMLA has a different head width; the SGLang reference lacks a pinned source revision. B570 physical traffic is unknown.",
+    "consumer": "Retrieve for a matched indexed-read versus packed-row B570 experiment only after K layout or validity work identifies that decision. Pin source and license before any implementation use.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sparse-kv-head-prefetch-designs-20261120/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sparse-kv-head-prefetch-designs-20261120-control/review.md",
+    "worker_completion": "Orca task_2fcca254acb5, ctx_138fd08ac48f; worker_done received, 15 protected inputs checked, named terminal closed. Worker-side status query self-reported. Both reviews complete; one reviewer disclosed a read-only git status outside the review assignment. No project edits by reviewers."
   }
 }
