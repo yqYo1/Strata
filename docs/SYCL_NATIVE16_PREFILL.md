@@ -3262,6 +3262,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   6,539,157,504 prefix bytes respectively. Both suffixes start inside a
   four-token page, so the aligned candidate keeps these reloads. This
   provides a negative dispatch control and a separate optimization case.
+  A separate opt-in prefill candidate, `STRATA_SYCL_PREFILL_KEEP_KV_STAGE=partial-page`,
+  reuses complete pages only after the preceding typed Q8 append in the
+  same layer invocation. At a nonaligned successor it refreshes the one
+  boundary page from the canonical host mirror using the existing four-plane
+  range copy. Entry to a restored request still reloads the full prefix.
+  With scalar gather fixed, compare `1` against `partial-page` in separate
+  processes. In the second batched chunk of each restored suffix, the
+  11 eligible layers should retain 10240 or 65527 complete pages per layer,
+  saving 475,791,360 or 3,044,646,528 requested H2D bytes respectively.
+  Both arms still issue four plane copies per eligible layer in that chunk.
+  Check each layer's counts, all four boundary planes, active state, output and
+  decode handoff. Require equal counts on aligned fresh prompts and full
+  reload on layer entry, after cancellation and with an external tap. Verify
+  the physical final slot separately. This candidate has no native timing
+  or device qualification and is outside the pinned four-way build below.
   For scalar/reload (A), scalar/reuse (B), vec8/reload (C), and vec8/reuse
   (D), use the same ordinary expert copies, output-copy policy, ordered-exp
   attention, 8192 chunk, K8V8, model and decode placement. At each of

@@ -2295,15 +2295,17 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     const auto t_start = Clock::now();
     const int64_t LB = stage_lb_, LE = stage_le_;
 #if defined(STRATA_ENABLE_SYCL)
-    static const bool prefill_keep_kv_stage_requested = [] {
+    enum class PrefillKvReuse { reload, aligned, partial_page };
+    static const PrefillKvReuse prefill_kv_reuse = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_KEEP_KV_STAGE");
-        if (!value || std::strcmp(value, "0") == 0) return false;
-        if (std::strcmp(value, "1") == 0) return true;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_KEEP_KV_STAGE requires 0 or 1");
+        if (!value || std::strcmp(value, "0") == 0) return PrefillKvReuse::reload;
+        if (std::strcmp(value, "1") == 0) return PrefillKvReuse::aligned;
+        if (std::strcmp(value, "partial-page") == 0) return PrefillKvReuse::partial_page;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_KEEP_KV_STAGE requires 0, 1 or partial-page");
     }();
     // A single layer-major pass owns its staging pool until run_impl returns.
     // External layer taps and the final output callback keep the original reloads.
-    const bool keep_kv_stage = prefill_keep_kv_stage_requested && m.layer_major_active && m.native16_active &&
+    const bool keep_kv_stage = prefill_kv_reuse != PrefillKvReuse::reload && m.layer_major_active && m.native16_active &&
         LE == LB + 1 && LE < g.n_layers && !on_layer && !m.pp && !next_ &&
         same_queue && m.copy == m.cs && stage_own();
     // No prefix is trusted on entry, including a resumed or cancelled request.
@@ -3123,12 +3125,23 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (staged) {
                         pt.mark(kPfKvStage, cs);
                         const int64_t pages = (p0 + s.page_size - 1) / s.page_size;
-                        bool reload = true;
+                        int64_t reused_pages = 0;
 #if defined(STRATA_ENABLE_SYCL)
-                        reload = !(keep_kv_stage && typed_qsa && p0 == kv_stage_end && p0 % s.page_size == 0);
-                        if (report_kv_stage) (reload ? kv_reloaded_pages : kv_reused_pages) += pages;
+                        if (keep_kv_stage && typed_qsa && p0 == kv_stage_end &&
+                            (prefill_kv_reuse == PrefillKvReuse::partial_page || p0 % s.page_size == 0))
+                            reused_pages = p0 / s.page_size;
+                        if (report_kv_stage) {
+                            kv_reused_pages += reused_pages;
+                            kv_reloaded_pages += pages - reused_pages;
+                        }
+                        if (reused_pages > 0 && reused_pages < pages) {
+                            // Refresh the boundary page from the host mirror. Every block in
+                            // [reused_pages, pages) maps to itself in a ring of size pages.
+                            strata::kernels::kv_ring_restore(pools_of(m.stage, m.ident_table), st.host,
+                                core::qsa_kv_format(st), reused_pages, pages, pages, s, m.cs);
+                        }
 #endif
-                        if (reload)
+                        if (reused_pages == 0)
                             strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
                                                                 core::qsa_kv_format(st), pages, s, m.cs);
                         pt.mark(kPfQsa, cs);
