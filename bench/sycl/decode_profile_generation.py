@@ -78,7 +78,7 @@ def configuration(row, plan):
 def environment(row, plan):
     env = clock.environment(row, dict(plan, arm='clean'))
     require(env[clock.model.INPUT] == env[clock.model.OUTPUT] == '0'
-            and 'STRATA_CPU_WORK_CENSUS' not in env and 'STRATA_SYCL_CACHE_LOAN_AUDIT' not in env,
+            and all(env.get(key, '0') == '0' for key in ('STRATA_CPU_WORK_CENSUS', 'STRATA_SYCL_CACHE_LOAN_AUDIT')),
             'clean ordinary copy placement required')
     return dict(env, **{state.KV: '0', state.GATHER: '0'})
 
@@ -94,6 +94,7 @@ def check_profile_startup(log, arm):
 
 def routes(log, samples, arm):
     check_profile_startup(log, arm)
+    require(profile.census.PREFIX not in log and 'strata loan audit:' not in log, 'unexpected native observer')
     result = clock.routes(log, samples, 'clean')
     heads = list(re.finditer(clock.footer.HEADER, log, re.M))
     result['prefill_dispatch'] = {}
@@ -104,6 +105,10 @@ def routes(log, samples, arm):
             require(sample['reused_tokens'] == 0 and rows >= 32767, 'fixed long prompt must be fresh')
             result['prefill_dispatch'][sample['workload']] = dict(
                 gather=state.gather_counts(frame, False), kv=state.kv.check_clean_request(frame, 0, rows, 8192, reuse=False))
+    previous = clock.build.previous.read(ROOT / 'record.json')['processes']
+    if previous:
+        require(result['prefill_dispatch'] == previous[0]['routes']['prefill_dispatch'],
+                'fixed-input prefill dispatch differs from the ordinary ranking')
     return result
 
 
