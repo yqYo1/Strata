@@ -385,6 +385,44 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   normal closure and no new Xe faults. Inspect each transition's graph and host time
   separately. A failed overhead screen leaves the clocks diagnostic only.
   This observer has no model timing or speed claim yet.
+  The decode MoE combine candidate changes the post-router path for ordinary
+  unsplit, batched T4 verification at width 2560 with ten routed experts.
+  The previous short device capture at `current_decode_device_service_v1`
+  observed 133–177 ms of mapped-row copy service in two 2.46–2.82 s windows.
+  Its decode observer overhead failed the predeclared screen. Use those
+  observations to select this experiment. Keep the clean verifier clocks
+  above as the request-level reference.
+  With `STRATA_SYCL_DECODE_MOE_COMBINE_MAPPED=1`, the reduction reads each
+  expert result from the existing mapped CPU output or from the GPU output
+  according to the published route. It keeps the original FP32 expert order
+  and shared-expert addition. The fused reduction needs the row selection to
+  remove the assembled tensor. Test this as one replacement for copy, add
+  and reduction while expert placement, PCIe scheduling, target verification
+  width and MTP all stay fixed. This removes two recorded kernel nodes per
+  eligible layer and the logical write and read of the assembled tensor.
+  That tensor traffic is 39,321,600 bytes per 48-layer T4 window. The same
+  mapped CPU result values must still reach the GPU.
+  Build `sycl_decode_moe_combine_test` and the native engine against the
+  same kernel objects and production flags. Preserve the retained measured
+  engine and its fixtures through the comparison. First run the component's
+  `validate` arm with bounded runtime tracing and parameter validation.
+  Both captured graphs must match the ordered FP32 CPU reference and guards
+  for 0, 4, 10, 20, 39 and 40 routed GPU rows using alternating input maps.
+  Poison unused rows so that selection failures show up in the output.
+  Run three separate fresh clean component processes in time-forward,
+  time-reverse, time-forward order with the qualified GPU runtime settings.
+  Compare four counterbalanced pairs of 512 completed graph replays at each
+  of 4, 10 and 20 GPU rows. Require each batch to reach 10 ms. Advance the T4
+  path only if the candidate median is faster at all three hit counts in
+  all three processes, with normal teardown and no fresh fault. Use these
+  local intervals to decide whether to test the native server.
+  Before clean model timing, verify traced T4 dispatch, CPU callback and
+  graph completion at the normal handoff, near the end of context and after
+  RESTORE. Production performance requires
+  three independent matched pairs of the official long, agent, and both
+  sustained thinking workloads with placement and width fixed. Preserve
+  prefill PP and client TTFT and screen controlled decode separately.
+  The mapped-row fusion has no speed or device correctness result yet.
   Before training another ranking, compare the shipped Niko Intel profile
   to the current ordinary profile (source `8cb26e609`, data already in
   this fork at `97e9c9847`). On the actual 1256-slot layout, layers

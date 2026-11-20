@@ -948,6 +948,15 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     auto Rt = [&](int t) { return R_ + (size_t) t * HC * N; };
     const int G = (split_ && T >= 2) ? 2 : 1;
     static const bool dec_batch = [] { const char* v = std::getenv("STRATA_DEC_BATCH"); return v == nullptr || std::atoi(v) != 0; }();
+#ifdef STRATA_ENABLE_SYCL
+    static const bool decode_combine_mapped_rows = [] {
+        const char* value = std::getenv("STRATA_SYCL_DECODE_MOE_COMBINE_MAPPED");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    const bool decode_combine = decode_combine_mapped_rows && input == VerifyInput::decode &&
+        T == 4 && G == 1 && N == 2560 && K == 10 && dec_batch &&
+        native_moe_combine_enabled() && !device_plan_;
+#endif
     auto stamp = [&](int64_t l, int i, int grp) { if (prof_on_ && grp == 0) gpu_stamp(prof_, (int) (l * kProfPer + i), cs); };
     const int tb_[2] = {0, (T + 1) / 2}, te_[2] = {G == 2 ? (T + 1) / 2 : T, T};
     groups_[T] = G;
@@ -1377,31 +1386,46 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
 #ifdef STRATA_ENABLE_SYCL
         }
 #endif
-        if (device_plan_) {   // no CPU share when the device planned the group: its rows are zeros
-            wait_flag_ge_or(m_flag_, ring, skip_ + grp, cs);
-            copy_or_zero_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (long long) n * K * N,
-                                     skip_ + grp, ring, cs);
-        } else {
-#ifndef STRATA_ENABLE_SYCL
-            wait_flag_ge(m_flag_, ring, cs);               // the CPU's share is in the mapped rows
-#endif
-            stamp(l, 23, grp);
-            if (dec_batch)   // only the CPU rows cross PCIe (p_dst[0, counts[1]) = the GPU's own rows)
-                copy_rows_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K, N,
-                                      p_dst, p_counts + 1, cs);
-            else
-                copy_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K * N, cs);
-        }
-        moe_hit_add(parts_ + (size_t) tb * K * N, hit_out, p_dst, p_counts + 1, cap, N, cs);
-        if (dec_batch && n > 1 && native_moe_combine_enabled()) {   // one launch for the window's rows
+#ifdef STRATA_ENABLE_SYCL
+        if (decode_combine) {
+            // The original layer boundary has already joined the CPU callback,
+            // staged copies and resident expert projections before this post.
             try {
-                native_moe_combine_multi(parts_ + (size_t) tb * K * N, w_ + tb * K, shared_ + tb * N, bo_ + tb * N, N, K, n, cs);
-            } catch (const std::exception& e) { err = "verify combine: " + std::string(e.what()); return false; }
+                decode_moe_combine_mapped_rows(m_ymiss_ + (size_t) tb * K * N, hit_out,
+                    p_dst, p_counts + 1, w_ + tb * K, shared_ + tb * N, bo_ + tb * N, cs);
+            } catch (const std::exception& e) {
+                err = "verify decode mapped MoE combine: " + std::string(e.what());
+                return false;
+            }
         } else
-        for (int t = tb; t < te; ++t) {
-            MoEBuffers mb = ss.moe;
-            mb.weights = w_ + t * K; mb.shared = shared_ + t * N;
-            if (!moe_combine_parts(g, l, K, mb, parts_ + (size_t) t * K * N, bo_ + t * N, cs, err)) return false;
+#endif
+        {
+            if (device_plan_) {   // no CPU share when the device planned the group: its rows are zeros
+                wait_flag_ge_or(m_flag_, ring, skip_ + grp, cs);
+                copy_or_zero_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (long long) n * K * N,
+                                         skip_ + grp, ring, cs);
+            } else {
+#ifndef STRATA_ENABLE_SYCL
+                wait_flag_ge(m_flag_, ring, cs);               // the CPU's share is in the mapped rows
+#endif
+                stamp(l, 23, grp);
+                if (dec_batch)   // only the CPU rows cross PCIe (p_dst[0, counts[1]) = the GPU's own rows)
+                    copy_rows_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K, N,
+                                          p_dst, p_counts + 1, cs);
+                else
+                    copy_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K * N, cs);
+            }
+            moe_hit_add(parts_ + (size_t) tb * K * N, hit_out, p_dst, p_counts + 1, cap, N, cs);
+            if (dec_batch && n > 1 && native_moe_combine_enabled()) {   // one launch for the window's rows
+                try {
+                    native_moe_combine_multi(parts_ + (size_t) tb * K * N, w_ + tb * K, shared_ + tb * N, bo_ + tb * N, N, K, n, cs);
+                } catch (const std::exception& e) { err = "verify combine: " + std::string(e.what()); return false; }
+            } else
+            for (int t = tb; t < te; ++t) {
+                MoEBuffers mb = ss.moe;
+                mb.weights = w_ + t * K; mb.shared = shared_ + t * N;
+                if (!moe_combine_parts(g, l, K, mb, parts_ + (size_t) t * K * N, bo_ + t * N, cs, err)) return false;
+            }
         }
         stamp(l, 24, grp);
         if (l == g.n_layers - 1) {
@@ -1517,6 +1541,12 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
         sample_tokens(head_logits_, T, (int) n_vocab_, nullptr, 0, sp, m_out_, cs);
     }
     stamp(g.n_layers, 1, 0);
+#ifdef STRATA_ENABLE_SYCL
+    if (input == VerifyInput::decode && T == 4 && std::getenv("STRATA_TRACE"))
+        std::fprintf(stderr, "strata verify decode MoE combine: T=4 fused=%lld layers=%lld\n",
+                     static_cast<long long>(decode_combine ? le_ - lb_ : 0),
+                     static_cast<long long>(le_ - lb_));
+#endif
     return true;
 }
 
