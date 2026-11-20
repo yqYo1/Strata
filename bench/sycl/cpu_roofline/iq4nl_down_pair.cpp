@@ -7,6 +7,7 @@
 #define GGML_COMMON_IMPL_CPP
 #include "ggml-common.h"
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <charconv>
@@ -18,6 +19,7 @@
 #include <iomanip>
 #include <immintrin.h>
 #include <iostream>
+#include <sched.h>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -141,8 +143,25 @@ uint64_t offset_from(std::string_view text) {
     return value;
 }
 
+uint64_t fingerprint(const void* data, size_t bytes) {
+    const auto* p = static_cast<const unsigned char*>(data);
+    uint64_t digest = 14695981039346656037ull;
+    for (size_t i = 0; i < bytes; ++i) digest = (digest ^ p[i]) * 1099511628211ull;
+    return digest;
+}
+
+int pinned_cpu() {
+    cpu_set_t affinity;
+    const int cpu = sched_getcpu();
+    require(cpu >= 0 && cpu < CPU_SETSIZE && sched_getaffinity(0, sizeof affinity, &affinity) == 0 &&
+        CPU_COUNT(&affinity) == 1 && CPU_ISSET(cpu, &affinity), "one pinned physical-core worker");
+    return cpu;
+}
+
 void time_rows(Dot dot, const char* model_path, uint64_t offset, bool rotating, bool reverse) {
+    using Clock = std::chrono::steady_clock;
     constexpr int kIterations = 48 * kExperts;
+    const int cpu = pinned_cpu();
     const int experts = rotating ? kExperts : 1;
     std::vector<block_iq4_nl> weights(experts * kExpertBlocks);
     std::ifstream tensor(model_path, std::ios::binary | std::ios::ate);
@@ -174,10 +193,20 @@ void time_rows(Dot dot, const char* model_path, uint64_t offset, bool rotating, 
             for (const auto& input : inputs)
                 check_rows(dot, weights.data() + expert * kExpertBlocks, input, 0, kRows);
     };
+    const auto weight_digest = fingerprint(weights.data(), bytes);
+    const auto activation_digest = fingerprint(inputs.data(), sizeof inputs);
     check_all();
+    Clock::duration bracket{};
+    for (int i = 0; i < 128; ++i) {
+        const auto start = Clock::now();
+        bracket = std::max(bracket, Clock::now() - start);
+    }
+    const double timer_s = std::chrono::duration<double>(bracket).count();
+    require(timer_s > 0, "steady clock bracket");
+    std::cout << std::setprecision(12) << "INPUT " << cpu << ' ' << experts << ' ' << bytes << ' '
+        << weight_digest << ' ' << activation_digest << ' ' << timer_s << '\n';
 
     auto run = [&](bool candidate) {
-        using Clock = std::chrono::steady_clock;
         Output out;
         out.fill(kCanary);
         uint64_t fingerprint = 0;
@@ -203,6 +232,9 @@ void time_rows(Dot dot, const char* model_path, uint64_t offset, bool rotating, 
             << (candidate_first ? first.first : second.first) << ' ' << first.second << '\n';
     }
     check_all();
+    require(pinned_cpu() == cpu && fingerprint(weights.data(), bytes) == weight_digest &&
+        fingerprint(inputs.data(), sizeof inputs) == activation_digest, "input bytes or CPU changed");
+    std::cout << "VALIDATED " << experts * inputs.size() << " cases before and after\n";
 }
 
 }  // namespace

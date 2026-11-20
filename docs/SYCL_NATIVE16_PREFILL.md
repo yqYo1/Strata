@@ -286,17 +286,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   layout and row work stay fixed. The reference is the linked GGML dot
   selected by `native_down_rows` for a single IQ4_NL token, from pinned
   llama.cpp `3cf03257f219afbe7334045ff7c6a06ac68c627d` (MIT).
-  Before a serialized build, pin the CPU-only recipe, compiler/dependencies,
-  physical core and actual GGUF Down tensor type, offset and range hashes.
+  `bench/sycl/cpu_roofline/iq4nl_down_pair.py` pins the CPU-only recipe,
+  compiler, dependencies, physical core and actual layer-0 GGUF Down ranges
+  before a serialized build. Require the actual generated version header,
+  compiler dependencies, link inputs and executable bytes to match the
+  committed build evidence before executing the fixture.
   Check all 60 synthetic cases for bitwise parity and guards. For each of
   cached one-expert reuse and rotation through 128 experts (112.5 MiB of
   weights), use three independent processes with initial orders AB, BA, AB.
   Each takes five alternating pairs of 6144 full-expert intervals per arm
   with identical activation sequences and full output checks outside timing.
-  Each timed batch must reach 100 ms. Advance only if all three process
-  medians improve in the rotation case and the paired median for reuse also
-  improves. Close on any correctness, ownership or identity failure. The
-  component comparison isolates the row loop. A later decode-only dispatch
+  Each timed batch must reach 100 ms, with the measured timer bracket at
+  most 0.1% of that time. Advance only if all three per-process median
+  paired ratios favor the candidate in rotation and the median of the
+  three reuse ratios also favors it. Close on any correctness, ownership or
+  identity failure. The comparison isolates the row loop. A decode-only dispatch
   trial needs actual selection, repeated TG and prefill preservation.
   Test the existing request's MTP confidence floor independently of expert
   placement. The older six-process width comparison at `dcb8ba8cf` found
