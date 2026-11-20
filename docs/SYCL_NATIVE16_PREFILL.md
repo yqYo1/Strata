@@ -442,8 +442,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fixed at KV reuse and vector gather for 65537, and KV reuse with scalar
   gather for 117489. Require the original bodies, read counts, expert work,
   draft counts, and actual decode capture route. Keep first and warmed
-  prefill and client TTFT ratios separate. Compare the official agent and
-  both thinking-enabled long-generation workloads separately.
+  prefill and client TTFT ratios separate. After both length gates pass,
+  `bench/sycl/decode_kv_fast_prefill_generation.py` compares the decode
+  selector off/on in three independent pairs on the same new executable.
+  Keep the stock 1256-slot decode placement and the 65K KV reuse/vec8
+  choices fixed. Run official long, six-turn agent and both thinking-enabled
+  long-generation workloads in each process. Verify the captured width-four
+  selection and the actual prefill dispatch. Retain TG both with and without
+  matching generated and draft counts, and assess agent preservation only
+  for matching histories and work. Measuring the new and retained binaries
+  on the sustained suite is still a separate preservation check.
   Require prefill and TTFT preservation in both comparisons and higher TG in
   at least two off/on pairs with a geometric mean ratio above one for each
   sustained workload. Close on a state, identity, ownership or fault failure.
@@ -592,9 +600,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prose response reduces total jobs and raises logical bytes per output.
   The Intel arm's lower bound implies 52.36 GB/s for code and 73.45 GB/s for
   prose at 70 tok/s, assuming each job reads its packed blob once. Physical
-  traffic needs separate evidence. Finish all three pairs for the ranking
-  decision. Measure verifier wall time and emitted tokens per window together
-  when changing draft width or host-expert work.
+  traffic needs separate evidence. All three long/agent/generation pairs
+  closed at `3e432e20f`. Intel won zero TG pairs on either sustained workload.
+  Its paired geometric mean TG was 0.98758 times stock for code and 0.93350
+  for prose. Both observed MTP classes qualified. Agent histories differed
+  in all three pairs, so the follow-up rate does not qualify preservation.
+  Keep stock placement for the next isolated comparison. Measure verifier
+  wall time and emitted tokens per window together when changing draft width
+  or host-expert work.
   A later comparison can keep the winning profile fixed and vary its
   per-layer quotas. Removing `--expert-cache-per-layer` also changes the
   meaning of `--expert-cache` for this native pack. In the measured SYCL
