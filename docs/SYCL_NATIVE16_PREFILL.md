@@ -337,6 +337,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   unknown last acceptance using its two and one unemitted positions.
   Elapsed savings need measurement because narrower matvecs can reread the same
   weights, and the first occurrence of each width can capture another graph.
+  The reviewed `decode-mtp-selected-row-kv-20261121` source audit supports
+  rewriting the selected cell in the full forward after omitting its earlier
+  K/V write. A separate change would have to retain the selected residual and
+  token staging or remap the selected row explicitly. Shrinking those inputs
+  along with the K/V pass leaves index `a=3` outside the staged rows. Measure
+  the existing `a+1` route first, then test the selected-row change separately.
   Compare off/on at fixed width and identical placement, separately from the
   confidence-floor experiment and the proposed graph-drain change. First trace all four actual
   catch-up widths against verified and accepted counts. Check live draft KV,
@@ -981,6 +987,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prefill and TTFT separately. A clock favors a seed when at least two of three
   paired times improve and their median ratio is below one. For readiness use
   the candidate's upper and reference's lower observation bounds.
+  The three diagnostic processes at `42466f2ee` pass the cache-hit gate.
+  Before and during the first long prompt, the empty cache misses 41 and
+  12 images. The short seed hits the first 41 and misses the next 12. The
+  full seed hits all 53. First client TTFT in these three processes is
+  130.091, 127.958 and 126.286 s. The repeated clean timing blocks still
+  determine the size and reproducibility of the effect.
   After the 117489-token four-arm comparison closes, use `bench/sycl/prefill_split_length_curve.py` on its
   fastest eligible arm with the same executable and actual 128-slot placement.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
@@ -8436,8 +8448,13 @@ normal exits and no fresh fault. Reference/candidate process medians
 are 220.077/320.724, 217.753/310.100 and 234.613/300.157 ms for the
 timing batch. Candidate time ratios are 1.457, 1.424 and 1.279.
 The component misses the performance gate in all three processes. Keep
-the existing projection and gather. The private fixture awaits exact
-source, object and link-input recovery before retirement.
+the existing projection and gather. Its private `decode-q6-draft-indexed-v1`
+build and captures were retired (52 files, 61,262,282 bytes, tree SHA256
+`80925e94c2ab6f5da1759bf0be2e2a6761f415184ce439136eaec107fda71f79`).
+Before retirement, Git recovered the three source overlays and 472 controller
+inputs. The four recorded commands, 797 actual input and executable hashes,
+and all 48 archive members matched. The source and controller remain
+reachable through `1a2f2ab37`.
 
 The source-only implementation/controller audits at `f7a96d864` and their
 native Luna-max reviews are closed. They confirm the valid-domain centering
