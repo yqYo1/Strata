@@ -181,7 +181,7 @@ inline float stored_value(uint16_t bits) {
   return strata::prefill::detail::gdn_half_load(bits);
 }
 
-template <int Partitions, bool SplitReductions = false, class Input = float>
+template <int Partitions, bool SplitReductions = false, class Input = float, bool StoredDecay = false>
 void recurrence_columns(float *state, const Input *h, const float *gate,
                         const float *beta, float *raw, int T, void *stream) {
   constexpr int Columns = 128 / Partitions, WG = 4 * Columns, HV = 48, C = 10240;
@@ -211,7 +211,8 @@ void recurrence_columns(float *state, const Input *h, const float *gate,
               sk[d] = stored_value(h[size_t(t) * C + 16 * 128 + (head % 16) * 128 + d]);
             }
             it.barrier(sycl::access::fence_space::local_space);
-            const float decay = sycl::exp(gate[size_t(t) * HV + head]);
+            const float gate_value = gate[size_t(t) * HV + head];
+            const float decay = StoredDecay ? gate_value : sycl::exp(gate_value);
             float kv = 0;
             for (int r = 0; r < 32; ++r)
               kv = sycl::fma(s[r], sk[rg * 32 + r], kv);
@@ -430,7 +431,7 @@ void gdn_recurrence(float *state, const float *h, const float *gate,
 }
 
 namespace {
-template <class Input>
+template <bool StoredDecay = false, class Input>
 void gdn_recurrence_separate(float *state, const Input *h, const float *gate,
                             const float *beta, const Input *z, const float *gamma,
                             float eps, float *y, uint16_t *y16, int64_t T,
@@ -468,7 +469,11 @@ void gdn_recurrence_separate(float *state, const Input *h, const float *gate,
   if constexpr (!std::is_same_v<Input, float>) {
     strata::kernels::dims(device.has(sycl::aspect::fp16));
     strata::kernels::dims(partitions == 4 && split_reductions);
-    strata::kernels::recurrence_columns<4, true>(state, h, gate, beta, y, int(T), stream);
+    if constexpr (StoredDecay) {
+      if (std::getenv("STRATA_TRACE"))
+        std::fprintf(stderr, "strata GDN prefill: precomputed_decay=1 tokens=%lld\n", (long long)T);
+    }
+    strata::kernels::recurrence_columns<4, true, Input, StoredDecay>(state, h, gate, beta, y, int(T), stream);
   } else if (split_reductions) {
     strata::kernels::dims(partitions == 4);
     strata::kernels::recurrence_columns<4, true>(state, h, gate, beta, y, int(T), stream);
@@ -525,5 +530,10 @@ void gdn_recurrence_barriers3_f16(float *state, const uint16_t *h, const float *
                                 float eps, float *raw, uint16_t *y16, int64_t T,
                                 void *stream) {
   gdn_recurrence_separate(state, h, gate, beta, z, gamma, eps, raw, y16, T, 4, true, stream);
+}
+void prefill_gdn_recurrence_from_decay_f16(float *state, const uint16_t *h, const float *decay,
+                                          const float *beta, const uint16_t *z, const float *gamma,
+                                          float eps, float *raw, uint16_t *y16, int64_t T, void *stream) {
+  gdn_recurrence_separate<true>(state, h, decay, beta, z, gamma, eps, raw, y16, T, 4, true, stream);
 }
 } // namespace strata::prefill

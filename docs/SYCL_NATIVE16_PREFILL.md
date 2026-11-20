@@ -3387,6 +3387,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   dispatch counters on every timed request, with full tracing disabled.
   Match its body hash, placement, expert and draft work to the original
   control. Report each contrast, its four ratios and the absolute rates.
+  The same two warmed 64K profiles spent 4.400 s each across 288
+  three-barrier FP16-storage GDN recurrence calls. Four work-groups for
+  one token and value head evaluate the same FP32 decay. The opt-in
+  `STRATA_SYCL_PREFILL_GDN_PRECOMPUTE_DECAY=1` candidate computes it in the
+  existing GPU gate producer and consumes it from the existing gate buffer.
+  Only the long native FP16-storage prefill path selects this coupled pair.
+  This service time includes the whole recurrence. The share attributable to
+  duplicate exponentials, and its effect on prompt latency, are unmeasured.
+  Compare both arms in the same fixture executable. Start with traced
+  `--decay-smoke` (1 and 17 rows), then `--decay-check` (8192 rows).
+  Require bitwise agreement on FP32 decay, beta, state and raw outputs,
+  FP16 outputs and convolution carry, intact guards and read-only inputs.
+  Run clean `--decay-bench` with ordinals 0, 1, 2 in separate processes
+  only after these checks. Each process alternates the arm order over
+  five paired rounds of sixteen calls. Time gate, convolution, recurrence
+  and output together, including the final queue wait. Keep projections
+  and state resets outside both clocks. Require every batch to reach
+  100 ms, empty-queue timing overhead at most 1% and a lower median paired
+  time ratio in all three processes. Stop on mismatch, ownership failure
+  or new device fault. A component pass permits a separate clean 64K/117K
+  comparison, followed by decode preservation and physical 262144 handoff.
   In the two warmed 64K requests of `eager_request_profile_v2`, all
   scalar mixed gathers took 2.001 and 2.002 seconds of GPU service
   (20,591 and 20,568 calls). The count includes the small jobs that keep

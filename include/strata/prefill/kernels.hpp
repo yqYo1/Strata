@@ -75,6 +75,12 @@ void gdn_conv_f16(float* history, const uint16_t* qkv, const float* conv_w,
 void gdn_recurrence_barriers3_f16(float* state, const uint16_t* h, const float* gate,
                                 const float* beta, const uint16_t* z, const float* gamma,
                                 float eps, float* raw, uint16_t* y16, int64_t T, void* stream);
+/// Long FP16-storage prefill may publish exp(log_decay) once per token and value head.
+void prefill_gdn_decay_beta(const float* ab, const float* dt, const float* ssm_a, float* decay,
+                           float* beta, int64_t T, void* stream);
+void prefill_gdn_recurrence_from_decay_f16(float* state, const uint16_t* h, const float* decay,
+                                          const float* beta, const uint16_t* z, const float* gamma,
+                                          float eps, float* raw, uint16_t* y16, int64_t T, void* stream);
 #endif
 
 // ---- MoE

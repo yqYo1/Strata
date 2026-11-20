@@ -133,6 +133,15 @@ bool gdn_fp16_storage_requested() {
     }();
     return enabled;
 }
+bool prefill_gdn_precompute_decay() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_PRECOMPUTE_DECAY");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_GDN_PRECOMPUTE_DECAY must be 0 or 1");
+    }();
+    return enabled;
+}
 bool gdn_three_barriers() {
     static const bool enabled = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_BARRIERS3");
@@ -3007,12 +3016,16 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                            !bf16_proj(m.gemm,wb,m.mixed_bf,b.ab+HV,T,v.name("ssm_beta.weight"),err,2*HV,m.mixed_bf_lo))return false;
                         if (gp) { gp->end(GdnProfile::gdn_projections, m.cs); gp->begin(GdnProfile::gdn_conv_gates, m.cs); }
                         pt.mark(kPfGdnConv,m.cs);
-                        gdn_gates(b.ab,static_cast<const float*>(wdt->data),static_cast<const float*>(wsa->data),
-                                  b.gate,b.beta,T,m.cs);
+                        const bool precompute_decay = prefill_gdn_precompute_decay();
+                        const auto gates = precompute_decay ? prefill_gdn_decay_beta : gdn_gates;
+                        const auto recurrence = precompute_decay ? prefill_gdn_recurrence_from_decay_f16
+                                                                 : gdn_recurrence_barriers3_f16;
+                        gates(b.ab,static_cast<const float*>(wdt->data),static_cast<const float*>(wsa->data),
+                              b.gate,b.beta,T,m.cs);
                         gdn_conv_f16(conv,b.qkv,static_cast<const float*>(wc->data),b.h,T,EPS,m.cs);
                         if (gp) { gp->end(GdnProfile::gdn_conv_gates, m.cs); gp->begin(GdnProfile::gdn_recurrence, m.cs); }
                         pt.mark(kPfGdnRec,m.cs);
-                        gdn_recurrence_barriers3_f16(state,b.h,b.gate,b.beta,b.z,
+                        recurrence(state,b.h,b.gate,b.beta,b.z,
                             static_cast<const float*>(wnm->data),EPS,b.raw,b.output,T,m.cs);
                         if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }
                         pt.mark(kPfGdnOut,m.cs);

@@ -341,6 +341,79 @@ void timing(Case &c,int arm,int count,const char *phase,int round,bool empty=fal
   std::cout<<"{\"kind\":\"timing\",\"T\":"<<c.t<<",\"arm\":\""<<(empty?"empty":arm?"FP16":"FP32")
     <<"\",\"phase\":\""<<phase<<"\",\"round\":"<<round<<",\"calls\":"<<count<<",\"host_ms\":"<<ms<<",\"passed\":true}\n"<<std::flush;
 }
+// Feed both gate representations through the production convolution, recurrence and output epilogue.
+// Projections and state resets stay outside the timed interval.
+void compare_prefill_decay(const std::shared_ptr<s::Runtime>& rt, int rows, int ordinal) {
+  Case c(rt, rows, "general");
+  Buffer<float> ab(rt, size_t(rows)*2*HV), dt(rt, HV), scale(rt, HV);
+  Buffer<float> gate(rt, size_t(rows)*HV), beta(rt, size_t(rows)*HV);
+  CheckedDrain drain{*rt};
+  std::vector<float> projected(ab.n), bias(HV), factor(HV);
+  for (size_t i = 0; i < projected.size(); ++i) projected[i] = dyadic(i, 7231, 2);
+  for (size_t h = 0; h < HV; ++h) {
+    bias[h] = dyadic(h, 563, 32);
+    factor[h] = -float(h + 1)/HV;
+  }
+  ab.set(projected); dt.set(bias); scale.set(factor);
+  c.upload(); c.project(true); rt->wait();
+  auto pipeline = [&](bool use_decay, Trial& trial) {
+    auto produce = use_decay ? p::prefill_gdn_decay_beta : p::gdn_gates;
+    auto consume = use_decay ? p::prefill_gdn_recurrence_from_decay_f16 : p::gdn_recurrence_barriers3_f16;
+    auto* stream = &rt->compute();
+    produce(ab.data(), dt.data(), scale.data(), gate.data(), beta.data(), rows, stream);
+    p::gdn_conv_f16(trial.history.data(), c.Q16.data(), c.W.data(), c.H16.data(), rows, Eps, stream);
+    consume(trial.state.data(), c.H16.data(), gate.data(), beta.data(), c.Z16.data(), c.N.data(),
+            Eps, trial.raw.data(), trial.out.data(), rows, stream);
+  };
+  auto compare = [&]() {
+    const auto ref_state = c.reference.state.get(), ref_raw = c.reference.raw.get();
+    need(std::all_of(ref_state.begin(),ref_state.end(),[](float v){return std::isfinite(v);})
+         && std::all_of(ref_raw.begin(),ref_raw.end(),[](float v){return std::isfinite(v);}), "nonfinite reference");
+    exact(ref_state, c.candidate.state.get(), "changed recurrent state");
+    exact(ref_raw, c.candidate.raw.get(), "changed FP32 recurrent output");
+    exact(c.reference.out.get(), c.candidate.out.get(), "changed FP16 output");
+    exact(c.reference.history.get(), c.candidate.history.get(), "changed convolution history");
+  };
+  c.reset(c.reference); c.reset(c.candidate);
+  pipeline(false, c.reference); rt->wait();
+  const auto reference_beta = beta.get();
+  auto* value = gate.data();
+  rt->wait(rt->compute().parallel_for(sycl::range<1>(gate.n), [=](sycl::id<1> i) {
+    value[i] = sycl::exp(value[i]);
+  }));
+  const auto reference_decay = gate.get();
+  pipeline(true, c.candidate); rt->wait();
+  exact(reference_decay, gate.get(), "changed FP32 decay");
+  exact(reference_beta, beta.get(), "changed FP32 beta");
+  compare();
+  if (ordinal >= 0) {
+    constexpr int calls = 16;
+    const auto control_start = std::chrono::steady_clock::now();
+    rt->wait();
+    const auto control_ms = std::chrono::duration<double, std::milli>(
+        std::chrono::steady_clock::now() - control_start).count();
+    std::cout << "prefill_decay timer_control_ms=" << control_ms << '\n';
+    for (int round = 0; round < Rounds; ++round) {
+      for (int arm = 0; arm < 2; ++arm) {
+        const bool use_decay = ((arm + round + ordinal) % 2) != 0;
+        auto& trial = use_decay ? c.candidate : c.reference;
+        c.reset(trial); rt->wait();
+        const auto start = std::chrono::steady_clock::now();
+        for (int j = 0; j < calls; ++j) pipeline(use_decay, trial);
+        rt->wait();
+        const double ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
+        need(std::isfinite(ms) && ms >= 100.0, "sub-100ms decay timing batch");
+        need(control_ms <= 0.01 * ms, "timer control exceeds 1% of decay batch");
+        std::cout << "prefill_decay T=" << rows << " round=" << round << " early=" << use_decay
+                  << " calls=" << calls << " ms=" << ms << '\n' << std::flush;
+      }
+    }
+    compare();
+  }
+  ab.immutable(projected); dt.immutable(bias); scale.immutable(factor);
+  c.immutable(); drain.finish();
+  std::cout << "prefill_decay_exact T=" << rows << " passed=1\n" << std::flush;
+}
 void run(const std::shared_ptr<s::Runtime> &rt,int t,const std::string &kind,int order=-1) {
   std::cerr<<"case-start T="<<t<<" pattern="<<kind<<std::endl;
   Case c(rt,t,kind);CheckedDrain drain{*rt};c.upload();
@@ -362,13 +435,23 @@ void run(const std::shared_ptr<s::Runtime> &rt,int t,const std::string &kind,int
 int main(int argc,char **argv) {
   try {
     std::cout<<std::setprecision(17);
-    need(argc==2||(argc==3&&std::string(argv[1])=="--bench"),"use --smoke|--validate|--bench 0|1|2");
+    need(argc >= 2, "missing GDN fixture mode");
     const std::string mode=argv[1];
-    need(mode=="--smoke"||mode=="--validate"||mode=="--bench","invalid mode");
-    if(mode=="--bench")need(argc==3&&(std::string(argv[2])=="0"||std::string(argv[2])=="1"||std::string(argv[2])=="2"),"invalid process ordinal");
+    const bool timed=mode=="--bench" || mode=="--decay-bench";
+    need(timed || mode=="--smoke" || mode=="--validate" || mode=="--decay-check" || mode=="--decay-smoke", "invalid mode");
+    need(argc==(timed?3:2), "invalid GDN fixture argument count");
+    if(timed)need(std::string(argv[2])=="0" || std::string(argv[2])=="1" || std::string(argv[2])=="2",
+                 "invalid process ordinal");
     auto rt=std::make_shared<s::Runtime>(0);
     need(rt->device().is_gpu()&&rt->device().has(sycl::aspect::fp16),"GPU FP16 required");
     need(rt->compute().has_property<sycl::property::queue::in_order>(),"in-order compute required");
+    if (mode=="--decay-smoke" || mode=="--decay-check" || mode=="--decay-bench") {
+      if (timed) compare_prefill_decay(rt,8192,argv[2][0]-'0');
+      else if (mode=="--decay-check") compare_prefill_decay(rt,8192,-1);
+      else for (int rows : {1,17}) compare_prefill_decay(rt,rows,-1);
+      std::cout << "fixture_status=PASS;prefill decay only\n";
+      return 0;
+    }
     conversion_corpus(rt);
     if(mode=="--smoke") { run(rt,1,"general");run(rt,17,"general"); }
     else if(mode=="--validate") {

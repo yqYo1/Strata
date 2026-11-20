@@ -201,17 +201,28 @@ void gr_broadcast(const float *x, float *y, int64_t T, void *s) {
   validate_spans({{y, n * 4}}, {{x, size_t(T) * N * 4}});
   for_each(n, s, [=](size_t i) { y[i] = x[(i / D) * N + i % N]; });
 }
-void gdn_gates(const float *ab, const float *dt, const float *a, float *gate,
-               float *beta, int64_t T, void *s) {
+template <bool StoreDecay>
+static void prefill_gdn_gate_outputs(const float *ab, const float *dt, const float *a,
+                                    float *gate, float *beta, int64_t T, void *s) {
   size_t n = count(T, 48);
   validate_spans({{gate, n * 4}, {beta, n * 4}},
                  {{ab, n * 8}, {dt, 48 * 4}, {a, 48 * 4}});
   for_each(n, s, [=](size_t i) {
     size_t t = i / 48, h = i % 48;
     float v = ab[t * 96 + h] + dt[h];
-    gate[i] = (v > 20.f ? v : sycl::log1p(sycl::exp(v))) * a[h];
+    const float log_decay = (v > 20.f ? v : sycl::log1p(sycl::exp(v))) * a[h];
+    if constexpr (StoreDecay) gate[i] = sycl::exp(log_decay);
+    else gate[i] = log_decay;
     beta[i] = sigmoid(ab[t * 96 + 48 + h]);
   });
+}
+void gdn_gates(const float *ab, const float *dt, const float *a, float *gate,
+               float *beta, int64_t T, void *s) {
+  prefill_gdn_gate_outputs<false>(ab, dt, a, gate, beta, T, s);
+}
+void prefill_gdn_decay_beta(const float *ab, const float *dt, const float *a, float *decay,
+                           float *beta, int64_t T, void *s) {
+  prefill_gdn_gate_outputs<true>(ab, dt, a, decay, beta, T, s);
 }
 void swiglu_pair(const float *g, const float *u, uint16_t *y, int64_t T,
                  void *s) {
