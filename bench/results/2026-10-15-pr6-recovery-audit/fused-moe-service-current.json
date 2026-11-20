@@ -535461,7 +535461,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_large_gather_kv_model_v1": {
-    "stage": "prepared",
+    "stage": "configured",
     "source_commit": "8122e08b6a6f5a30174e59ced6783ded9de8e4bb",
     "native_source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
     "parent_evidence": "2b4cbdf245221275bec51f70902793a6fe280a20",
@@ -535612,6 +535612,12 @@
       "unit": "Same ELF for scalar/vec8 large-job gather and reload/reuse of the owned KV stage. Keep the ordered-exp attention kernel and ordinary expert-copy schedule.",
       "validation": "First check both selectors off against the original. With gather fixed scalar, compare KV reload/reuse, including nonzero RESTORE, cancellation and final-slot state. With reload fixed, compare scalar/vec8 and count actual jobs. Then compare both enabled against each individual change. Hold decode settings fixed.",
       "retention": "Keep the original prefill and decode references. Retire this comparison generation after verifying its source and closing its model consumers."
+    },
+    "configured_files": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/CMakeCache.txt": "eea5a377651f67008d1618b135b7afacd373075b100b05bc0a6614f27312ed91",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/build.ninja": "5638a4324540d5e2a51e71560192db7fa161746a6e7d5ee0651cba01f5b706c0",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/compile_commands.json": "33e15e8f3d8bb17bc6a7faca0ddcc5feb179a58f6cd3dd89d0456dc1f25bd367",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/CMakeFiles/rules.ninja": "5bae6352fb93b12364923e45b02d059bff22aa8329e3858b47bbaac26f8e8473"
     },
     "controller_sources": {
       "files": 383,
