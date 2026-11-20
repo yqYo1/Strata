@@ -5,13 +5,20 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
-#if defined(STRATA_QSA_PREFILL_PV_COMPONENT) || defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT) || defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
+#define STRATA_QSA_PREFILL_PAGE4_FIXTURE
+#endif
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT) || defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)
 #define STRATA_QSA_COMPARE_EXACT_BITS
 #endif
 #if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
 #include "qsa_prefill_probability.hpp"
 #elif defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
 namespace strata::kernels::prefill_k_lanes4 {
+decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ordered_exp_batch;
+}
+#elif defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
+namespace strata::kernels::prefill_head_major {
 decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ordered_exp_batch;
 }
 #endif
@@ -42,6 +49,10 @@ constexpr const char *baseline_name = "ordered_exp", *candidate_name = "reuse_pr
 constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention = prefill_k_lanes4::qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name = "ordered_exp", *candidate_name = "k_lanes4";
+#elif defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
+constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
+constexpr auto candidate_attention = prefill_head_major::qsa_bf16_prefix_ordered_exp_batch;
+constexpr const char *baseline_name = "ordered_exp", *candidate_name = "head_major";
 #elif defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
 constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
@@ -103,7 +114,7 @@ void gate(bool enabled,const char *phase) {
 void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
   const char* pattern = blocks4 ? "blocks4" : clustered ? "clustered" : "gather";
   constexpr int Dim=256,Heads=24,KV=2;
-#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+#if defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)
   const auto Page = static_cast<int>(qsa_real_shapes().page_size);
   require(Page == 4, "expected production KV page size");
 #else
@@ -134,13 +145,36 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
         // Distinct ascending groups of four, shifted by query. Both arms use the same IDs.
         const int groups = (cap + 3) / 4, available = cells / 4;
         require(available >= groups, "four-cell fixture capacity");
-        cell = int32_t(4 * ((int64_t(c / 4) * available + (int64_t(b) * 73) % available) / groups) + c % 4);
+#if defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
+        constexpr int group_shift = 281;
+#else
+        constexpr int group_shift = 73;
+#endif
+        cell = int32_t(4 * ((int64_t(c / 4) * available + (int64_t(b) * group_shift) % available) / groups) + c % 4);
       }
       if (c%97==13) cell=-1;
       if (c%103==7) cell=cells+13;
       ids[size_t(b)*cap+c]=cell;
     }
   }
+#if defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
+  // Measure shared, valid logical IDs of adjacent queries before either timed arm.
+  std::vector<int> last_seen(cells, -2);
+  uint64_t shared_ids = 0, valid_ids = 0;
+  for (int b = 0; b < queries; ++b) {
+    for (int c = 0; c < cap; ++c) {
+      const int cell = ids[size_t(b) * cap + c];
+      if (cell < 0 || cell >= cells || table[cell / Page] < 0 || last_seen[cell] == b) continue;
+      if (b > 0) {
+        ++valid_ids;
+        shared_ids += last_seen[cell] == b - 1;
+      }
+      last_seen[cell] = b;
+    }
+  }
+  std::cout << "adjacent_queries cells=" << cells << " queries=" << queries << " cap=" << cap
+            << " pattern=" << pattern << " shared_ids=" << shared_ids << " valid_ids=" << valid_ids << '\n';
+#endif
   const uint16_t marker=bf16(1234.f);const int32_t bad_marker=0x12345678;
   Buffer<uint16_t> dq(q.size()),dks(ks.size()),dvs(vs.size()),out(q.size()+32);
   Buffer<int8_t> dk(k.size()),dv(v.size());
@@ -239,7 +273,7 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
   require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
       dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
   std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap
-#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+#if defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)
       <<" page_size="<<Page
 #endif
       <<" pattern="<<pattern<<" samples="<<sample_count
@@ -273,7 +307,7 @@ int main(int argc,char **argv) {
     if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else {
       run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true);
-#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
+#if defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)
       run(78453,8192,2051,false,true);
 #endif
     }
