@@ -39,7 +39,7 @@ void native_quant_act(const NativeFmt& f, const float* x, void* dst);
 /// h (n_ff floats) -> the down activation (h_bytes).
 void native_quant_h(const NativeFmt& f, const float* h, void* dst);
 
-// Explicit host-owned phase, copied into each synchronous pool batch. Never
+// Explicit host-owned phase for native expert selection, copied into each synchronous pool batch. Never
 // change the process environment when moving between prompt and generation.
 enum class NativeGuPhase { Prefill, Decode };
 class NativeGuPhaseScope {
@@ -70,7 +70,8 @@ struct Iq3GuAudit {
 Iq3GuAudit iq3_gu_audit_snapshot() noexcept;
 
 /// out[t][r] = down_r . hq[t] for rows r in [r0, r1).
+/// Only decode batches may select the experimental single-token Down kernel.
 void native_down_rows(const NativeFmt& f, const uint8_t* blob, const void* const* hq, int nt, float* const* out,
-                      int r0, int r1);
+                      int r0, int r1, NativeGuPhase phase = NativeGuPhase::Prefill);
 
 }  // namespace strata::kernels::cpu

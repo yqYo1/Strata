@@ -1,10 +1,10 @@
 // Strata component benchmark for the Zen 3 decode IQ4_NL Down path.
 // The reference is the linked GGML CPU dot used by native_down_rows.
+#include "strata/kernels/cpu/iq_avx2.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
 #include "ggml.h"
 #include "ggml-cpu.h"
 #define GGML_COMMON_DECL_CPP
-#define GGML_COMMON_IMPL_CPP
 #include "ggml-common.h"
 
 #include <algorithm>
@@ -17,7 +17,6 @@
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
-#include <immintrin.h>
 #include <iostream>
 #include <sched.h>
 #include <stdexcept>
@@ -43,56 +42,6 @@ void require(bool condition, const char* message) {
     if (!condition) throw std::runtime_error(message);
 }
 
-float half_to_float(uint16_t bits) {
-    return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(bits)));
-}
-
-// One activation load and scale conversion serve both adjacent rows. Each
-// row keeps GGML's even/odd block accumulators and its horizontal sum tree.
-template<int Rows>
-void accumulate_rows(const block_iq4_nl* weights, int block, const block_q8_0& x,
-                     const __m128i lookup, __m256 (&sums)[Rows]) {
-    const auto input = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(x.qs));
-    const float input_scale = half_to_float(x.d);
-    const auto mask = _mm_set1_epi8(15);
-    const auto ones = _mm256_set1_epi16(1);
-    for (int row = 0; row < Rows; ++row) {
-        const auto& w = weights[row * kBlocks + block];
-        const auto nibbles = _mm_loadu_si128(reinterpret_cast<const __m128i*>(w.qs));
-        const auto lo = _mm_shuffle_epi8(lookup, _mm_and_si128(nibbles, mask));
-        const auto hi = _mm_shuffle_epi8(lookup, _mm_and_si128(_mm_srli_epi16(nibbles, 4), mask));
-        const auto q = _mm256_inserti128_si256(_mm256_castsi128_si256(lo), hi, 1);
-        const auto products = _mm256_maddubs_epi16(_mm256_sign_epi8(q, q), _mm256_sign_epi8(input, q));
-        const auto lanes = _mm256_cvtepi32_ps(_mm256_madd_epi16(products, ones));
-        sums[row] = _mm256_fmadd_ps(_mm256_set1_ps(input_scale * half_to_float(w.d)), lanes, sums[row]);
-    }
-}
-
-float finish_row(__m256 even, __m256 odd) {
-    const auto v = _mm256_add_ps(even, odd);
-    auto sum = _mm_add_ps(_mm256_extractf128_ps(v, 1), _mm256_castps256_ps128(v));
-    sum = _mm_add_ps(sum, _mm_movehl_ps(sum, sum));
-    return _mm_cvtss_f32(_mm_add_ss(sum, _mm_movehdup_ps(sum)));
-}
-
-template<int Rows>
-void pair_rows(const block_iq4_nl* weights, const Activation& input, float* result) {
-    const auto lookup = _mm_loadu_si128(reinterpret_cast<const __m128i*>(kvalues_iq4nl));
-    __m256 even[Rows]{}, odd[Rows]{};
-    for (int block = 0; block < kBlocks; block += 2) {
-        accumulate_rows(weights, block, input[block], lookup, even);
-        accumulate_rows(weights, block + 1, input[block + 1], lookup, odd);
-    }
-    for (int row = 0; row < Rows; ++row) result[row] = finish_row(even[row], odd[row]);
-}
-
-void decode_iq4nl_down_pair(const block_iq4_nl* weights, const Activation& input,
-                            float* output, int first, int last) {
-    for (; first + 1 < last; first += 2)
-        pair_rows<2>(weights + first * kBlocks, input, output + first);
-    if (first < last) pair_rows<1>(weights + first * kBlocks, input, output + first);
-}
-
 void reference(Dot dot, const block_iq4_nl* weights, const Activation& input,
                float* output, int first, int last) {
     for (int row = first; row < last; ++row)
@@ -104,7 +53,8 @@ void check_rows(Dot dot, const block_iq4_nl* weights, const Activation& input, i
     want.fill(kCanary);
     got.fill(kCanary);
     reference(dot, weights, input, want.data() + 1, first, last);
-    decode_iq4nl_down_pair(weights, input, got.data() + 1, first, last);
+    strata::kernels::cpu::decode_iq4nl_down_pair_rows(reinterpret_cast<const uint8_t*>(weights),
+        input.data(), got.data() + 1, first, last);
     for (size_t i = 0; i < want.size(); ++i) {
         if (!std::isfinite(want[i]) || std::bit_cast<uint32_t>(want[i]) != std::bit_cast<uint32_t>(got[i])) {
             std::cerr << "IQ4_NL mismatch in " << first << ".." << last << " at guarded index " << i << '\n';
@@ -214,7 +164,8 @@ void time_rows(Dot dot, const char* model_path, uint64_t offset, bool rotating, 
         for (int i = 0; i < kIterations; ++i) {
             const auto* w = weights.data() + (i % experts) * kExpertBlocks;
             const auto& x = inputs[(i + i / kExperts) % inputs.size()];
-            if (candidate) decode_iq4nl_down_pair(w, x, out.data() + 1, 0, kRows);
+            if (candidate) strata::kernels::cpu::decode_iq4nl_down_pair_rows(
+                reinterpret_cast<const uint8_t*>(w), x.data(), out.data() + 1, 0, kRows);
             else reference(dot, w, x, out.data() + 1, 0, kRows);
             fingerprint = fingerprint * 1099511628211ull + std::bit_cast<uint32_t>(out[1 + (53 * i) % kRows]);
         }

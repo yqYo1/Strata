@@ -286,6 +286,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   layout and row work stay fixed. The reference is the linked GGML dot
   selected by `native_down_rows` for a single IQ4_NL token, from pinned
   llama.cpp `3cf03257f219afbe7334045ff7c6a06ac68c627d` (MIT).
+  The fixture and engine now link the same implementation from the owned
+  `fcb2f1125` component. `STRATA_CPU_DECODE_IQ4NL_PAIR=1` selects it only
+  for a decode pool batch with one Q8_0 activation, 640 input values and
+  2560 output rows. Require AVX2, FMA and F16C and an AVX2 GGML reference.
+  The existing multi-token route keeps precedence when configured for one
+  token. Prefill batches continue through the original row dispatch.
+  Treat this as an opt-in candidate until its linked component, actual
+  model selection and matched performance checks close.
   `bench/sycl/cpu_roofline/iq4nl_down_pair.py` pins the CPU-only recipe,
   compiler, dependencies, physical core and actual layer-0 GGUF Down ranges
   before a serialized build. Require the actual generated version header,

@@ -21,8 +21,9 @@ KEY = 'iq4nl_down_pair_v1'
 BUILD = ROOT / 'build'
 VERSION_HEADER = BUILD / 'ggml/src/ggml-version.h'
 EXE = BUILD / 'cpu_iq4nl_down_pair'
-DEPS = ('bench/sycl/cpu_roofline/iq4nl_down_pair.cpp', 'src/kernels/cpu/native_expert.cpp',
-        'ggml/src/ggml-cpu/arch/x86/quants.c')
+KERNEL = 'src/kernels/cpu/iq_avx2.cpp'
+HOST_UNITS = ('bench/sycl/cpu_roofline/iq4nl_down_pair.cpp', 'src/kernels/cpu/native_expert.cpp', KERNEL)
+ORACLE = 'ggml/src/ggml-cpu/arch/x86/quants.c'
 PROJECT = (*shared.PROJECT, 'tools/sycl/cpu_roofline.py')
 ORDER = (('reuse', 'AB'), ('rotate', 'AB'), ('rotate', 'BA'), ('reuse', 'BA'),
          ('reuse', 'AB'), ('rotate', 'AB'))
@@ -119,6 +120,8 @@ def prepare():
                build=['/usr/bin/cmake', '--build', str(BUILD), '--target', EXE.name, '--parallel', '4'],
                check=run + ['check'], plans=plans, limits=LIMITS,
                comparison=dict(calls_per_batch=CALLS, minimum_seconds=FLOOR, maximum_bracket_fraction=MAX_BRACKET_SHARE,
+                   scope='The linked candidate is the production AVX2 row loop. The reference calls the linked GGML dot. '
+                         'Time row computation and check results outside timing. Pool dispatch is a separate trial.',
                    gate='Five order-alternated ratios per process. All three rotation process medians and the '
                         'median of the three reuse process medians must be less than one.'),
                consumer='Single CPU-only IQ4_NL Down comparison with measured generation evidence at c74d1539c.',
@@ -177,12 +180,16 @@ def verify_build(row, run):
          'compiler dependency list contains unpinned inputs')
     database = BUILD / 'compile_commands.json'
     units = json.loads(database.read_text())
-    for name, prefix, compiler, arch in zip(DEPS, (P, P, shared.GGML), (shared.CXX, shared.CXX, shared.CC),
-                                           ('-march=znver3', '-march=znver3', '-march=native'), strict=True):
+    planned_units = [(name, P, shared.CXX, {'-march=znver3'}) for name in HOST_UNITS]
+    planned_units.append((ORACLE, shared.GGML, shared.CC, {'-march=native'}))
+    for name, prefix, compiler, flags in planned_units:
         path = str((prefix / name).resolve())
         unit, = [entry for entry in units if str(Path(entry['file']).resolve()) == path]
         argv = shlex.split(unit['command'])
-        need(path in paths and Path(argv[0]).resolve() == Path(compiler).resolve() and {'-O3', arch} <= set(argv)
+        required = flags | {'-O3'}
+        if name == KERNEL:
+            required.update(('-mavx2', '-mfma', '-mf16c'))
+        need(path in paths and Path(argv[0]).resolve() == Path(compiler).resolve() and required <= set(argv)
              and not {'-ffast-math', '-Ofast', '-fsycl'} & set(argv), 'CPU comparison flags: ' + name)
     cache = BUILD / 'CMakeCache.txt'
     configuration = cache.read_text()
