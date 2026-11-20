@@ -131,7 +131,7 @@ def exchange(io, arm, expected_plan, vocab):
                 else:
                     require(produced == limit and offered == 0, 'unexpected draft or output')
                 results[label] = dict(prompt=n, reused=reuse, generated=produced, output_sha256=restore.signature(tokens),
-                                      offered=offered, accepted=accepted,
+                                      offered=offered, accepted=accepted, publications=progress,
                                       finish=words[5], generation=generation)
                 break
             else:
@@ -156,7 +156,16 @@ def inspect(log, arm, responses, previous, pid, probe):
         fields = dict(re.findall(r'(\w+)=([0-9a-f,-]+)', marker[0]))
         res['state'] = {k: fields[k] for k in restore.ACTIVE_STATE}
         require(set(fields) == set((*restore.ACTIVE_STATE, *restore.STALE_STATE)), 'unexpected fingerprint schema')
+        draft_batches = list(map(int, re.findall(
+            r'^strata serve: DRAFT_PREFILL path=(?:batched|token) mode=[012] cells=(\d+)$', frame, re.M)))
         if label in ('prefix', 'fill'):
+            upto = res['reused']
+            published = []
+            for count in draft_batches:
+                require(0 < count <= restore.capacity.CHUNK, 'invalid draft publication size')
+                upto += count
+                published.append(upto)
+            require(published == res['publications'], 'draft callback extents differ from prompt publications')
             if label == 'prefix':
                 original = state.original()['outcomes']['near-base']['requests'][0]
                 require(res['state'] == original['active_state'] and res['output_sha256'] == original['output_hash'],
@@ -187,6 +196,10 @@ def inspect(log, arm, responses, previous, pid, probe):
             if label == 'fill':
                 require(res['generation'] == gen, 'terminal verifier observed another loan')
         else:
+            rows = int(restore.capacity.one(frame, r'^strata prefill policy: requested=throughput route=cache-window '
+                                            r'tokens=(\d+) chunk=8192$', 'short verify-window route'))
+            require(rows == res['prompt'] - res['reused'] - 1 and not draft_batches
+                    and res['publications'] == [res['prompt'] - 1], 'short prompt used an unexpected MTP path')
             require('strata cache loan: phase=masked' not in frame and 'strata prefill score packs:' not in frame
                     and 'strata prefill GDN decay:' not in frame and 'strata MoE prefill gather:' not in frame,
                     'short-cache branch unexpectedly ran long prefill')

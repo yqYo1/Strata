@@ -38511,9 +38511,21 @@
   "prefill-partial-expert-bank-overlap-20261120": {
     "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "The clean 117489-token control at 9c03b44d0 and 16 official dispatch checks at c6eda71cb identify actual 128-slot placement, a single in-order producer/consumer route and the actual expert traffic. Traced 117K requests at 25f6ea230 spend more than 99% of prompt time inside the batched read. The separate 512-slot early native-copy stall and 64K schedule data are already documented.",
     "question": "On the measured 128-slot 117489-token split accumulator, can the existing partial expert groups overlap their next source transfer or CPU staging with the current group using the qualified SYCL backend? Trace actual slot/group ownership, first/last readers, source and scratch lifetimes, queue dependencies, physical memory-class uncertainty and budget. Compare no-extra-bank and bounded disjoint-slot alternatives, estimate possible exposed time, and propose one component test or a concrete reason to discard. Do not re-enable the stalled native-copy route.",
-    "consumer": "Main prioritizes an independent long-prefill scheduling candidate after the current KV/gather timing. A safe candidate must show overlapping useful work and a matched whole-request benefit."
+    "consumer": "Main prioritizes an independent long-prefill scheduling candidate after the current KV/gather timing. A safe candidate must show overlapping useful work and a matched whole-request benefit.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-partial-expert-bank-overlap-20261120/report.md",
+    "report_sha256": "9e389b0f286765c5c958a8e07774c4b25a2b2ed6ab75bc10559de9fc82bbec57",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-partial-expert-bank-overlap-20261120-control/native-review.md",
+    "review_sha256": "4642bba83a41516c76e0eb7be6bf0452626b81c26fbb1901ec6e194e8bc3687c",
+    "finding": "Original eight per-process environment fingerprints at c6eda71cb reproduce with STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING=0, and none emitted the four-host-slot staging completion. The ordinary partial bank requested 38.54/38.59 GB of source bytes on its two 117K bodies; exposed transfer time is unknown. The last readers of a rotating packed slot are the dequant kernels. Later gather, GEMM and Down read separate storage. First isolate ordinary same-context SYCL copy to the same slot after an explicit last-reader dependency, and order the next dequant after copy. Check wrapped/repeated expert IDs, host-source lifetime and overlap before any full-model use. Another slot is necessary only to overlap with the previous slot dequant itself. The stalled full-fit native-copy route stays excluded.",
+    "worker_completion": {
+      "task": "task_83ce309bdfb5",
+      "dispatch": "ctx_652dd14815e5",
+      "message": "msg_338db1cc476b",
+      "terminal": "term_b293221e-52a2-4df5-ba3f-d6db3d00fe4d",
+      "exact_worker_exited": true
+    }
   }
 }
