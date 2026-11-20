@@ -8,6 +8,12 @@
 
 int main() {
     namespace d = strata::program::full_context_diagnostic;
+    const std::string terminal_line = "CONSUME_FULL 2,17";
+    const char* terminal_ids = d::server_prompt_ids(terminal_line);
+    if (!terminal_ids || std::string(terminal_ids) != "2,17" ||
+        d::server_prompt_ids("GEN 0 2,17") || d::server_prompt_ids("GENI 0 image 2,17") ||
+        d::server_prompt_ids("CONSUME_FULLX 2,17") ||
+        d::server_prompt_ids(terminal_line + '\0' + "99")) return 1;
     int cases = 0;
     auto check = [&](bool ok) { ++cases; return ok; };
     for (const auto context : {int64_t(-1), int64_t(0), int64_t(262143), int64_t(262144),

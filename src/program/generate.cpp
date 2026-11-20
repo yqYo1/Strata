@@ -6142,12 +6142,21 @@ int main(int argc, char** argv) {
             stop_req.store(false);   // a STOP that arrived between requests is stale
             err.clear();
             const bool geni = line.rfind("GENI ", 0) == 0;
-            if (!geni && line.rfind("GEN ", 0) != 0) {
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            const char* terminal_ids = strata::program::full_context_diagnostic::server_prompt_ids(line);
+            if (terminal_ids && (!cache_scratch_lease_enabled || !loan_audit || !trace || use_df2)) {
+                std::printf("ERR CONSUME_FULL requires the traced, audited MTP cache loan\n");
+                continue;
+            }
+#else
+            constexpr const char* terminal_ids = nullptr;
+#endif
+            if (!terminal_ids && !geni && line.rfind("GEN ", 0) != 0) {
                 std::printf("ERR expected: GEN <max_new> <id,id,...> or GENI <max_new> <file> <id,id,...>\n");
                 continue;
             }
             char* endp = nullptr;
-            const long long max_new = std::strtoll(line.c_str() + (geni ? 5 : 4), &endp, 10);
+            const long long max_new = terminal_ids ? 0 : std::strtoll(line.c_str() + (geni ? 5 : 4), &endp, 10);
             // optional sampling keys between max_new and the ids: temperature=F, top_p=F, top_k=N, min_p=F,
             // penalty_last_n=N, penalty_repeat=F, penalty_freq=F, penalty_present=F, seed=N (text requests
             // only).  Absent keys keep today's behavior: greedy, no penalties.
@@ -6195,11 +6204,18 @@ int main(int argc, char** argv) {
             }
             std::vector<int64_t> ids;
             std::string pe;
-            if (max_new < 1 || endp == nullptr || (geni && emb_path.empty()) || !parse_i64_list(endp, ids, pe)) {
+            const char* id_list = terminal_ids ? terminal_ids : endp;
+            if ((!terminal_ids && max_new < 1) || !id_list || (geni && emb_path.empty()) || !parse_i64_list(id_list, ids, pe)) {
                 std::printf("ERR bad request: %s\n", pe.empty() ? "max_new" : pe.c_str());
                 continue;
             }
             const int64_t n = (int64_t) ids.size();
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            if (terminal_ids && !strata::program::full_context_diagnostic::request(o.max_context, ids.size(), max_new)) {
+                std::printf("ERR CONSUME_FULL requires exactly 262144 input tokens and physical context\n");
+                continue;
+            }
+#endif
             req_imgs.clear();
             if (geni && !o.vision) { std::printf("ERR this engine was started without --vision\n"); continue; }
             if (geni || !mrope_identity) {
@@ -6292,7 +6308,7 @@ int main(int argc, char** argv) {
                 mrope_identity = !geni;
             }
             sp.embd_rows = geni ? row_ptr.data() : nullptr;
-            if (n + max_new + 8 > o.max_context) {
+            if (!terminal_ids && n + max_new + 8 > o.max_context) {
                 std::printf("ERR prompt (%lld tokens) + max_new (%lld) exceeds the context (%lld)\n", (long long) n,
                             (long long) max_new, (long long) o.max_context);
                 continue;
@@ -6869,10 +6885,27 @@ int main(int argc, char** argv) {
                     return 1;
                 }
             }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            // Observe the last segment's real loan before refill_one publishes
+            // it and clears the ticket. The segment trace identifies its kernels.
+            uint64_t terminal_generation = 0;
+            if (terminal_ids && !cancelled && at == n - 1 && pf_parts.size() == 1) {
+                const auto& part = pf_parts.front();
+                if (part.cache == &xcache && part.lease && !part.lent.empty() && !xcache.decode_ready())
+                    terminal_generation = part.lease.generation();
+            }
+#endif
             if (!refill(err)) {
                 std::printf("ERR refilling a lent slot failed: %s\n", err.c_str());
                 return 1;
             }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            if (terminal_ids && (!terminal_generation || !xcache.decode_ready() ||
+                                 pf_parts.front().lease || !pf_parts.front().lent.empty())) {
+                std::printf("ERR CONSUME_FULL final prefill segment did not return its checked loan\n");
+                return 1;
+            }
+#endif
             tr("prompt done (slots refilled)");
 #ifdef STRATA_ENABLE_SYCL
             if (use_df2) {
@@ -6973,7 +7006,7 @@ int main(int argc, char** argv) {
             const uint64_t file_bytes0 = src.file_read_bytes();
             const int64_t decode_look0 = drive.d.cache_hits + drive.d.cache_admitted + drive.d.cache_refused;
             if (cancelled) finish = "cancel";
-            while (!cancelled && produced_n < max_new) {
+            while (!cancelled && (produced_n < max_new || (terminal_ids && first_window))) {
                 int T = S_mtp;
                 if (req_spec_min_p > 0.0) {
                     T = 1;
@@ -7006,6 +7039,13 @@ int main(int argc, char** argv) {
                 const Clock::time_point round0 = Clock::now();
                 if (p + T > o.max_context) break;
                 window[0] = x;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+                if (terminal_ids && !strata::program::full_context_diagnostic::last_window(
+                        first_window, n, p, T, x, ids.back(), produced_n)) {
+                    std::printf("ERR CONSUME_FULL invalid terminal verifier window\n");
+                    return 1;
+                }
+#endif
                 for (int i = 1; i < T; ++i) window[(size_t) i] = from_sfx ? sbuf[(size_t) i - 1] : drafts[(size_t) i - 1];
                 drive.d.layers = 0;
                 drive.d.experts = 0;
@@ -7119,6 +7159,21 @@ int main(int argc, char** argv) {
             }
 #ifdef STRATA_ENABLE_SYCL
             decode_service.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
+#endif
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            if (terminal_ids) {
+                if (first_window || dec_windows != 1 || dec_T != 1 || produced_n || draft_offered ||
+                    consumed.size() != ids.size() || consumed.back() != ids.back() ||
+                    stop_req.load() || !apply_pending(true, err)) {
+                    std::printf("ERR CONSUME_FULL incomplete final commit or refill: %s\n", err.c_str());
+                    return 1;
+                }
+                if (cudaDeviceSynchronize() != cudaSuccess)
+                    strata::sycl_backend::cleanup_fail_stop("terminal server request device drain uncertain");
+                std::printf("FULL_CONTEXT_SERVER consumed_position=%zu output_tokens=0 window_width=1 "
+                            "commit_count=1 commit_wait=PASS refill_drain=PASS generation=%llu\n",
+                            consumed.size(), (unsigned long long)terminal_generation);
+            }
 #endif
 #ifdef STRATA_CPU_SERVICE_PROFILE
             if (!strata::kernels::cpu::service::write_delta(stderr,census_request,cpu_service_begin,pool.service_snapshot())) {
