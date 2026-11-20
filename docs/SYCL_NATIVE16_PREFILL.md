@@ -430,6 +430,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   sustained thinking workloads with placement and width fixed. Preserve
   prefill PP and client TTFT and screen controlled decode separately.
   The mapped-row fusion has no speed or device correctness result yet.
+  A separate same-ELF decode screen covers the empty PCIe expert projection.
+  The first 30 measured requests in the 65537-token comparison reported zero
+  expert-copy bytes and groups at `--pcie-frac 0`. For the same prompt body,
+  their CPU expert jobs and entries were identical in all ten processes.
+  The compiled verifier at `12ea4b002` still records the inline zero-count
+  projection. The grouped kernels return before loading weights, but their
+  graph also records a scratch clear, SwiGLU and activation quantization.
+  Its early scheduler records the same projection separately and launches it
+  only for a positive count. The controller at `d4c210196` holds Arena copy,
+  overlap, the input and expert work fixed in two opposite-order pairs.
+  Check the zero-copy route on the short startup request first. Retain graph
+  capture, prefill, client TTFT and native decode clocks per long request.
+  The early selector also affects prompt verification. A gain warrants a
+  decode-only capture and replay change, followed by sustained generation.
   Before training another ranking, compare the shipped Niko Intel profile
   to the current ordinary profile (source `8cb26e609`, data already in
   this fork at `97e9c9847`). On the actual 1256-slot layout, layers
