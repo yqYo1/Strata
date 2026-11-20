@@ -147,58 +147,64 @@ def environment(row, plan):
     return env
 
 
+CLOCK_COMPARISON = (
+    'Current ordinary copy/input and copy/output in all four processes. '
+    'Compare clean/clocks then clocks/clean on both official v5 thinking workloads. '
+    'Require exact paired input, output and MTP work, complete provider/owner/fault checks, '
+    'and a paired latency ratio within a factor of 1.10 in both directions before attributing. '
+    'Keep both pairs and the clean rates even if the clock overhead screen fails.')
+
+
+def inputs(ctx, row, plan):
+    return {'config.json': ctx.configuration(row, plan), 'plan.json': {
+        'binary': row['binary'], 'native_validation_probe': row['native_validation_probe']}}
+
+
 def prepare(ctx):
-    require(not ROOT.exists() and KEY not in model.basis.validation.committed(model.RESULT), 'fresh comparison required')
-    revision = suite.validation.git('rev-parse','HEAD').decode().strip()
-    row = dict(baseline(), stage='prepared', source_commit=revision, sources=ctx.pins(revision),
+    require(not ctx.ROOT.exists() and ctx.KEY not in model.basis.validation.committed(model.RESULT),
+            'fresh comparison required')
+    revision = suite.validation.git('rev-parse', 'HEAD').decode().strip()
+    row = dict(ctx.baseline(), stage='prepared', source_commit=revision, sources=ctx.pins(revision),
                host_passed=False, ownership_closed=True, active=False, passed=False, complete=False,
-               plans=[], processes=[], budgets=suite.LIMITS,
-               plan=dict(order=ORDER, compare='Current ordinary copy/input and copy/output in all four processes. '
-                         'Compare clean/clocks then clocks/clean on both official v5 thinking workloads. '
-                         'Require exact paired input, output and MTP work, complete provider/owner/fault checks, '
-                         'and a paired latency ratio within a factor of 1.10 in both directions before attributing. '
-                         'Keep both pairs and the clean rates even if the clock overhead screen fails.'))
-    ROOT.mkdir(mode=0o700)
-    for index, arm in enumerate(ORDER):
-        root = ROOT / str(index)
+               plans=[], processes=[], budgets=suite.LIMITS, plan=ctx.protocol)
+    ctx.ROOT.mkdir(mode=0o700)
+    for index, arm in enumerate(ctx.ORDER):
+        root = ctx.ROOT / str(index)
         for name in ('tmp', 'cache'):
             (root / name).mkdir(parents=True, mode=0o700)
         with socket.socket() as sock:
             sock.bind(('127.0.0.1', 0))
             port = sock.getsockname()[1]
         plan = dict(index=index, arm=arm, root=str(root), port=port, binary=row['binary'])
-        for name, data in inputs(row, plan).items():
+        files = inputs(ctx, row, plan)
+        for name, data in files.items():
             build.stage.write(root / name, data)
-        plan.update(command=ctx.command(plan), generated={n: build.sha(root / n) for n in inputs(row, plan)},
-                    environment_sha256=suite.signature(environment(row, plan)))
+        plan.update(command=ctx.command(plan), generated={n: build.sha(root / n) for n in files},
+                    environment_sha256=suite.signature(ctx.environment(row, plan)))
         row['plans'].append(plan)
     ctx.save(row)
-
-
-def inputs(row, plan):
-    return {'config.json': suite.configuration(row, plan), 'plan.json': {
-        'binary': row['binary'], 'native_validation_probe': row['native_validation_probe']}}
 
 
 def experiment():
     ctx = model.basis.core.source.device.load_module('ordinary_decode_cost_suite', suite.__file__)
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
-    ctx.environment, ctx.routes = environment, routes
+    ctx.environment, ctx.routes, ctx.baseline = environment, routes, baseline
+    ctx.protocol = dict(order=list(ORDER), compare=CLOCK_COMPARISON)
     ctx.evidence_reader = SimpleNamespace(read_complete_suite=suite.evidence_reader.read_complete_suite, decide=decision)
 
     def current(row):
-        base = baseline()
-        require(ctx.compact(row) == model.basis.validation.committed(model.RESULT, (KEY,))
-                and ctx.pins(row['source_commit']) == row['sources'] and THIS in row['sources']
+        base = ctx.baseline()
+        require(ctx.compact(row) == model.basis.validation.committed(model.RESULT, (ctx.KEY,))
+                and ctx.pins(row['source_commit']) == row['sources'] and ctx.THIS in row['sources']
                 and all(row[k] == v for k, v in base.items())
                 and build.sha(row['template']['path']) == row['template']['sha256']
-                and row['plan']['order'] == list(ORDER) and row['budgets'] == suite.LIMITS,
+                and row['plan'] == ctx.protocol and row['budgets'] == suite.LIMITS,
                 'frozen suite inputs or campaign state changed')
-        for i, (p, arm) in enumerate(zip(row['plans'], ORDER, strict=True)):
-            root = ROOT / str(i)
-            data = inputs(row, p)
+        for i, (p, arm) in enumerate(zip(row['plans'], ctx.ORDER, strict=True)):
+            root = ctx.ROOT / str(i)
+            data = inputs(ctx, row, p)
             require(p['index'] == i and p['root'] == str(root) and p['arm'] == arm and p['binary'] == row['binary']
-                    and p['command'] == ctx.command(p) and suite.signature(environment(row, p)) == p['environment_sha256']
+                    and p['command'] == ctx.command(p) and suite.signature(ctx.environment(row, p)) == p['environment_sha256']
                     and set(p['generated']) == set(data) and all(
                     build.previous.read(root/n) == value and build.sha(root/n) == p['generated'][n] for n,value in data.items()),
                     'actual command, generated files or environment changed')
@@ -211,17 +217,21 @@ def experiment():
     return ctx
 
 
-if __name__ == '__main__':
+def main(ctx):
     action, = sys.argv[1:]
-    require(sys.executable == model.basis.reference.model.PYTHON and action in ('prepare','host','0','1','2','3'),
+    require(sys.executable == model.basis.reference.model.PYTHON
+            and action in ('prepare', 'host', *map(str, range(len(ctx.ORDER)))),
             'use the pinned interpreter and one planned stage')
     with (model.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         build.builder.guards.no_model_owners([])
-        ctx = experiment()
         if action == 'prepare':
             prepare(ctx)
         elif action == 'host':
             model.basis.comparison.host(ctx)
         else:
             ctx.run(int(action))
+
+
+if __name__ == '__main__':
+    main(experiment())

@@ -284,6 +284,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep its observed CPU jobs and GPU hits separate from clean decode
   timing. Exact generated-token equality across different memberships
   is not a correctness criterion.
+  After both profiles pass those state checks, use
+  `bench/sycl/decode_profile_generation.py` with the same executable. Run the
+  official thinking-enabled long, agent and sustained-generation suite in three
+  independent stock/Intel pairs, reversing the second pair. Only the expert
+  ranking changes. Check the fixed fresh prompt bodies, prefill dispatch, prompt
+  times and client TTFT on both generation workloads. Compare sustained TG
+  and MTP yield on code and prose, and keep agent request-history identity
+  separate from its achieved follow-up rate. Require higher TG in at least two
+  pairs and a geometric mean ratio above one on each sustained workload.
+  Report prefill and agent preservation separately before selecting a ranking.
   The eight traced state/RESTORE processes at `4775de3b0` expose a separate
   first-token cost on the resident-input executable (`b35d66a4`). On the
   first one-token decode per process, the verifier's graph capture clock
