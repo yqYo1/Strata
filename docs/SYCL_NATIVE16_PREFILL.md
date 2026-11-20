@@ -392,6 +392,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   placement, predecessor tokens, KV and recurrent state, ordered callbacks,
   cancellation and the final slot before timing. Keep this experiment
   independent of the two-switch KV and MoE gather comparison.
+  The isolated candidate uses `STRATA_SYCL_PREFILL_SPLIT_HOST_RESIDUAL=1`.
+  It checks actual host spill after the ordinary placement decision and
+  before allocating the request workspace. It runs up to twelve original
+  8192-row chunks through all layers per sweep. A would-be final sweep of
+  at most one chunk receives two preceding chunks. At 262143 batched rows
+  the resulting range sizes are 98304, 98304 and 65535. Each is admitted
+  again against current VRAM, including the prefix through its absolute
+  end. Short inputs, explicitly set GPU row counts, tapped/checkpointed
+  requests and whole-pass command/layer profilers follow their original route.
+  Use an isolated coherent build for the comparison; both the gather and
+  KV-reload changes stay out of it. First check the host planner, SYCL
+  translation unit and actual unsplit dispatch. Trace fresh, restored and
+  cancelled requests across the cut, the final slot and the decode handoff.
+  Check actual residual placement, expert bank size, uploads, chunk order,
+  canonical KV/GDN/PLE and output/draft state. A completed sweep does not
+  authorize a retry on partially updated state. After those checks, run
+  thinking-on fresh 253919-token prompts in four independent process pairs,
+  ordered AB, BA, BA, AB (A ordinary, B split), with first use and subsequent
+  requests separate. Use the same bodies, allocation policy and decode setup.
+  Require a lower median paired warmed prefill time and improvement in at
+  least three pairs. Record TTFT and reconnect the sustained decode checks
+  before selecting the route. Stop on a state, placement, driver or ownership
+  error. Evaluate the 64K/117K KV and gather work independently.
   The clean comparison at `9c03b44d0` completed three independent
   processes with the same ordinary copy route, decoder placement, 262144
   context and four historical thinking-on requests. The last three prompt
