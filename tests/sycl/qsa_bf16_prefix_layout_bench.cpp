@@ -231,6 +231,9 @@ void run(int cells,int queries,int cap,bool clustered,bool identity=false) {
         <<" identity="<<identity<<" clustered="<<clustered<<" round="<<round<<" slot="<<slot
         <<" arm="<<arm<<" ms="<<std::setprecision(12)<<ms<<'\n';
   }
+  std::cout<<"q8_v_checked cells="<<cells<<" queries="<<queries<<" cap="<<cap
+      <<" page_size="<<Page<<" identity="<<identity<<" clustered="<<clustered
+      <<" expanded_untouched=1 finite_bits=1 invalid_scale_checked="<<(queries<100)<<'\n';
   const int sample_count=rounds*3;
 #elif defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
   auto submit_ordered = [&] {
