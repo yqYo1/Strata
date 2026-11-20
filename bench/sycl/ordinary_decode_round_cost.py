@@ -105,16 +105,28 @@ def decision(processes):
 
 
 def baseline():
-    native, _, identity, _ = model.inputs()
-    ctx = bank.experiment()
-    row = build.previous.read(ctx.ROOT / 'record.json')
-    require(ctx.compact(row) == model.basis.validation.committed(model.RESULT, (ctx.KEY,))
+    native, speed, identity, _ = model.inputs()
+    key = 'prefill_resident_input_timing_v1'
+    row = build.previous.historic('73d9394a9cb482a2dd091405ce42ca7343d708e3', key)
+    retained = model.basis.validation.committed(model.RESULT, (key,))
+    require({k: v for k, v in retained.items() if k != 'raw_retirement'} == row
             and row['stage'] == 'closed' and row['passed'] and row['complete'] and row['ownership_closed']
             and not row['active'] and len(row['processes']) == len(bank.ORDER)
+            and all(p['passed'] and p['complete'] and p['ownership_closed']
+                    and p['native_exit_code'] == 0 and not p['fresh_faults'] for p in row['processes'])
             and row['binary'] == native['binaries']['strata'] and row['native_source_commit'] == native['native_source_commit']
             and build.sha(row['binary']['path']) == row['binary']['sha256']
             and build.sha(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'],
             'completed 64K comparison and verified same native image required')
+    # The 64K raw captures have been retired. Recover the two omitted
+    # dictionaries from the qualified reference and check their ORIGINAL hashes.
+    source = speed['environment_template']
+    case_root = str(Path(row['plans'][0]['root']).parent)
+    env = {k: v.replace(source['STRATA_MEASUREMENT_ROOT'], case_root) for k, v in source.items()}
+    require(build.signature(env) == row['environment_template_sha256']
+            and build.signature(speed['model_assets']) == row['model_assets_sha256'],
+            'original 64K environment or model files do not match')
+    row.update(environment_template=env, model_assets=speed['model_assets'])
     return {**{k: row[k] for k in FIELDS}, 'native_build_sha256': identity,
             'ordinary_control': row['observer_admission']['ordinary_control']}
 
