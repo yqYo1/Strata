@@ -7,7 +7,7 @@ namespace strata::kernels {
 
 // Paired long-prefill component entrypoints. Both arms currently reserve nq*cap
 // int32 words, even though group rows use a shorter physical stride. The
-// selector writes ordered block IDs and a cut header. Only the grouped
+// active radix4 selector writes ordered block IDs and a cut header. Only the grouped
 // attention entrypoint consumes this representation. Use the same in-order
 // queue and unchanged steps. A rejected attention call requires explicit
 // selection again before an ordinary attention fallback can read IDs.

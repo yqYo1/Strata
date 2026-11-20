@@ -394,14 +394,14 @@ void qsa_block_topk_prefill(const float *scores, const int32_t *steps, int64_t n
 void qsa_prefill_select_groups(const float *scores, const int32_t *steps,
                              int64_t nq, int64_t blocks, int64_t cap, const QsaShapes &s,
                              int32_t *groups, void *stream, int64_t active) {
-  if (!strata::prefill::qsa_groups::supports_capacity(cap))
-    throw std::invalid_argument("unsupported prefill QSA group capacity");
+  if (!strata::prefill::qsa_groups::supports_capacity(cap) || prefill_selection_mapping() != 1)
+    throw std::invalid_argument("grouped prefill QSA requires supported capacity and the radix4 selector");
   const auto launched = validate_topk(scores, steps, nq, blocks, cap, s, groups, active);
   auto &queue = queue_for(stream);
   validate_device_span(groups, checked_count(nq, cap) * sizeof(*groups), queue);
   validate_device_span(scores, checked_count(nq, blocks) * sizeof(*scores), queue);
   validate_device_span(steps, checked_count(nq, kStepCount) * sizeof(*steps), queue);
-  finish(stream, submit_topk<0, true>(queue, scores, steps, nq, blocks, cap, groups, launched));
+  finish(stream, submit_topk<1, true>(queue, scores, steps, nq, blocks, cap, groups, launched));
 }
 void qsa_block_topk_ref(const float *scores, const int32_t *steps, int64_t nq,
                         int64_t blocks, int64_t cap, const QsaShapes &s,
