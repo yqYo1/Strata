@@ -43,9 +43,4 @@ void iq256_rows(int ggml_type, const uint8_t* w, size_t row_bytes, int n, const 
 void iq4nl256_down_rows(const uint8_t* w, size_t row_bytes, int n, const void* const* hq, int nt,
                         float* const* out, int r0, int r1);
 
-/// Decode IQ4_NL Down for one Q8_0 activation of 640 values. The caller
-/// checks the CPU features, compact row geometry and output extent.
-void decode_iq4nl_down_pair_rows(const uint8_t* weights, const void* activation,
-                                 float* output, int first, int last);
-
 }  // namespace strata::kernels::cpu

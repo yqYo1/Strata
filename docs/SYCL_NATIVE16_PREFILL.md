@@ -280,43 +280,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   time for code and 15.12–15.15% for prose. These concurrent worker clocks
   motivate a bounded component test on the measured Zen 3 host. The
   denominator is CPU time within the instrumented pool's leaves.
-  `bench/sycl/cpu_roofline/iq4nl_down_pair.cpp` processes two adjacent output
-  rows at once. It shares the Q8_0 input load and scale conversion and keeps
-  each row's two ordered FMA chains and GGML's horizontal sum. The weight
-  layout and row work stay fixed. The reference is the linked GGML dot
-  selected by `native_down_rows` for a single IQ4_NL token, from pinned
-  llama.cpp `3cf03257f219afbe7334045ff7c6a06ac68c627d` (MIT).
-  The fixture and engine now link the same implementation from the owned
-  `fcb2f1125` component. `STRATA_CPU_DECODE_IQ4NL_PAIR=1` selects it only
-  for a decode pool batch with one Q8_0 activation, 640 input values and
-  2560 output rows. Require AVX2, FMA and F16C and an AVX2 GGML reference.
-  The existing multi-token route keeps precedence when configured for one
-  token. Prefill batches continue through the original row dispatch.
-  Treat this as an opt-in candidate until its linked component, actual
-  model selection and matched performance checks close.
-  `bench/sycl/cpu_roofline/iq4nl_down_pair.py` pins the CPU-only recipe,
-  compiler, dependencies, physical core and actual layer-0 GGUF Down ranges
-  before a serialized build. Require the actual generated version header,
-  compiler dependencies, link inputs and executable bytes to match the
-  committed build evidence before executing the fixture.
-  Check all 60 synthetic cases for bitwise parity and guards. For each of
-  cached one-expert reuse and rotation through 128 experts (112.5 MiB of
-  weights), use three independent processes with initial orders AB, BA, AB.
-  Each takes five alternating pairs of 6144 full-expert intervals per arm
-  with identical activation sequences and full output checks outside timing.
-  Each timed batch must reach 100 ms, with the measured timer bracket at
-  most 0.1% of that time. Advance only if all three per-process median
-  paired ratios favor the candidate in rotation and the median of the
-  three reuse ratios also favors it. Close on any correctness, ownership or
-  identity failure. The comparison isolates the row loop. A decode-only dispatch
-  trial needs actual selection, repeated TG and prefill preservation.
-  The CPU-only build verified 618 compiler inputs. All 60 exact-output and
-  guard cases passed. The six processes at `34506f209` closed with 30 eligible
-  pairs. Their median candidate/reference times are 0.9874/0.9817/0.9980 for
-  reuse and 0.9869/1.0191/0.9726 for rotation. The rotation arm misses the
-  three-gain gate. Close at the component stage. Retire the rejected selector,
-  fixture and private build after verifying the original Git inputs and checking
-  the cache comparison's pins at the next serialized boundary.
+  The decode-only paired-row candidate at `5c1052eb8` reused Q8_0 input loads
+  for two adjacent IQ4_NL Down output rows. The CPU build verified 618 inputs,
+  and all 60 bitwise-output and guard cases passed. The six processes at
+  `34506f209` closed with 30 eligible pairs. Median candidate/reference times
+  were 0.9874/0.9817/0.9980 for one-expert reuse and 0.9869/1.0191/0.9726
+  for rotation through 128 experts. The rotation arm missed the three-gain
+  gate. The original plan and linked build evidence remain at `e4a9cc023`
+  and `a0ec64a8e`. The rejected selector and fixture were removed from the
+  active tree. After recovering the exact inputs and checking the archives and
+  ELF, the private build and output were removed (103 files, 16,085,717 bytes).
   Test the existing request's MTP confidence floor independently of expert
   placement. The older six-process width comparison at `dcb8ba8cf` found
   that fixed width two beat four on prose in every pair and lost on code in

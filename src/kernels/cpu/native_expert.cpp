@@ -252,7 +252,7 @@ void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* 
 }
 
 void native_down_rows(const NativeFmt& f, const uint8_t* blob, const void* const* hq, int nt, float* const* out,
-                      int r0, int r1, NativeGuPhase phase) {
+                      int r0, int r1) {
     // IQ4_NL down rows: the AVX-2 multi-token kernel decodes the nibbles and absolutises the weights once per
     // block instead of once per token; ggml-cpu's dot is single-token.  STRATA_NO_IQ4NL falls back to it.
     static const bool iq4nl_mt = std::getenv("STRATA_NO_IQ4NL") == nullptr;
@@ -265,18 +265,6 @@ void native_down_rows(const NativeFmt& f, const uint8_t* blob, const void* const
     if (nt >= mt_min && f.d_type == 20 && iq4nl_mt) {   // #152: the same rule as the gate/up rows
         iq4nl256_down_rows(blob + f.down_off, f.d_row, (int) f.n_ff, hq, nt, out, r0, r1);
         return;
-    }
-    if (phase == NativeGuPhase::Decode && iq4nl_mt && nt == 1 && f.d_type == GGML_TYPE_IQ4_NL
-        && f.d_act == GGML_TYPE_Q8_0 && f.n_ff == 640 && f.n_embd == 2560
-        && f.d_row == 360 && f.h_bytes == 680) {
-        static const bool decode_pair = [] {
-            const char* value = std::getenv("STRATA_CPU_DECODE_IQ4NL_PAIR");
-            return value && value[0] == '1' && value[1] == '\0' && cpu_avx2_ok() && ggml_cpu_has_avx2();
-        }();
-        if (decode_pair) {
-            decode_iq4nl_down_pair_rows(blob + f.down_off, hq[0], out[0], r0, r1);
-            return;
-        }
     }
     const ggml_vec_dot_t dot = traits(f.d_type)->vec_dot;
     const int n = (int) f.n_ff;
