@@ -516,7 +516,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   [NEO cache format](https://github.com/intel/compute-runtime/blob/c9fe9ecbe5c137657c34f2ae0bea35123afe35ac/programmers-guide/COMPILER_CACHE.md),
   [SYCL cache design](https://github.com/intel/llvm/blob/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/doc/design/KernelProgramCache.md),
   [earlier Strata cache experiments](SYCL_IMPLEMENTATION.md).
-  After it closes, use `bench/sycl/prefill_split_length_curve.py` on its
+  On the selected 117489-token arm, `bench/sycl/prefill_driver_cache.py`
+  takes a whole short-warm-up cache from the producer before the first long
+  request, and its full cache after exit. Three separate diagnostic processes
+  compare driver hits and misses with empty, short and full seeds. If both
+  effects are observed, time the three seeds in three balanced blocks, with
+  a fresh process and two fresh long prompts per case. Compare seed preparation,
+  server readiness, short warm-up, first long prefill and TTFT, and subsequent
+  prefill and TTFT separately. A clock favors a seed when at least two of three
+  paired times improve and their median ratio is below one. For readiness use
+  the candidate's upper and reference's lower observation bounds.
+  After the 117489-token four-arm comparison closes, use `bench/sycl/prefill_split_length_curve.py` on its
   fastest eligible arm with the same executable and actual 128-slot placement.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
   98304 batched rows fill twelve chunks. One more input row opens a thirteenth.
