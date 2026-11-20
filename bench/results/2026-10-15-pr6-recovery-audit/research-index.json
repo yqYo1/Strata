@@ -38380,9 +38380,24 @@
   "prefill-qsa-group-fallback-20261120": {
     "source_commit": "ce7e64c4d53e0dbb7b8cd09570ae0b0b7af30bfa",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "The host representation passed 3,240 cases. Paired GPU endpoints now exist in ce7e64c4d; no model dispatch selects them yet.",
     "question": "Which actual prefill paths can consume an overwritten explicit-ID span after compact selection, including runtime admission failure, diagnostic observers and shared staging reuse? Map the caller and fallback contract on the measured source. Compare allocating a second span, pre-admission and recomputing explicit selection, including relative work and ownership. Give a minimal safe future model boundary and tests.",
-    "consumer": "Before connecting the paired QSA component to a model request, after its own component speed gate. Earlier four-cell report covered numeric representation, not the new endpoints or the model fallback transaction."
+    "consumer": "Before connecting the paired QSA component to a model request, after its own component speed gate. Earlier four-cell report covered numeric representation, not the new endpoints or the model fallback transaction.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-qsa-group-fallback-20261120/report.md",
+    "report_sha256": "46b23415f81c4224d7992b464cb2d9e7b94bd75681580d20e4d7d04d44208b74",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-qsa-group-fallback-20261120-control/native-review.md",
+    "review_sha256": "99bfada85c1c13d456ffe9a0beff33f260bc528a6d36a09d5232c8573687b8f3",
+    "finding": "Overlap, FP16 comparison and dump paths read the explicit IDs before attention; select ordinary representation up front when required. The existing typed path throws on declined admission. An intentional future recovery after the selection loop needs rescoring and selecting every earlier 256-query subbatch, since the score slab was reused.",
+    "worker_completion": {
+      "task": "task_aeab0c9eb7fd",
+      "dispatch": "ctx_fbb9b25a2bde",
+      "message": "msg_f67c770fc855",
+      "accepted": true,
+      "terminal_closed": true,
+      "filesystem_proof": "15/15",
+      "worker_status": "self-reported",
+      "native_review": "gpt-6-luna max; reviewer reported two out-of-scope read-only Git identity/status checks, no product changes"
+    }
   }
 }
