@@ -38399,5 +38399,13 @@
       "worker_status": "self-reported",
       "native_review": "gpt-6-luna max; reviewer reported two out-of-scope read-only Git identity/status checks, no product changes"
     }
+  },
+  "prefill-retained-score-keys-20261120": {
+    "source_commit": "be537f42bc0adffd4ccc01535dc99606dcc46af4",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "The committed long-prefill caller and new consecutive-subbatch fixture exist. A fresh 117489-token request can skip 60.019 GB of logical read/write traffic across 12 layers. The measured parent runs FP16 score GEMM with 256-query slices.",
+    "question": "Audit the exact alias, ordering and initialization contract for keeping pooled FP16 index keys between QSA score calls. Trace the index append, scratch borrowers, sticky fault, previous zero padding, disabled/observer paths and reset across a restored prefix. Find an actual counterexample or the smallest additional test that would distinguish a silent stale prefix in a production chunk. Compare applicable SYCL/oneMKL in-order and library completion contracts with primary references. Exclude the separately studied attention-page packing and selected-ID format.",
+    "consumer": "Before model integration, compare the proposed lifetime and guard coverage with this audit. No implementation or GPU use."
   }
 }
