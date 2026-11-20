@@ -434,11 +434,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Treat this bounded state and route check separately from exact 262144-token
   fill and from both-phase performance.
   Keep expert placement, logical context, resident KV and copy geometry fixed.
-  Use matched independent AB, BA, AB pairs. Compare the retained ELF against
-  the new ELF with the selector off to screen the build's prompt effects.
-  Separately compare off/on on the new ELF with the same 65K and 117K prefill
-  controls and the official agent and both thinking-enabled long-generation
-  workloads. Keep first-use, warmed timing and actual route counters separate.
+  `bench/sycl/decode_kv_fast_prefill_preservation.py` uses nine independent
+  processes per length in retained/off/on, on/off/retained, retained/off/on
+  blocks. The middle process supplies the same off arm to both contrasts.
+  Retained/off measures the executable change. Off/on measures the decode
+  selection within the new executable. Hold the measured prefill selection
+  fixed at KV reuse and vector gather for 65537, and KV reuse with scalar
+  gather for 117489. Require the original bodies, read counts, expert work,
+  draft counts, and actual decode capture route. Keep first and warmed
+  prefill and client TTFT ratios separate. Compare the official agent and
+  both thinking-enabled long-generation workloads separately.
   Require prefill and TTFT preservation in both comparisons and higher TG in
   at least two off/on pairs with a geometric mean ratio above one for each
   sustained workload. Close on a state, identity, ownership or fault failure.
