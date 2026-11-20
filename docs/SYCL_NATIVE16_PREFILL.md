@@ -252,6 +252,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   for prose (5.65%). For a placement comparison, measure held-out hits and
   unique CPU jobs per layer and verifier window. Several entries can share
   a job. An increase in hits alone supplies no elapsed-time estimate.
+  Before training another ranking, compare the shipped Niko Intel profile
+  to the current ordinary profile (source `8cb26e609`, data already in
+  this fork at `97e9c9847`). On the actual 1256-slot layout, layers
+  0–46 have 26 slots each and layer 47 has 34. Of the occupied
+  (layer, expert) pairs, 400 are common and 856 change. This comparison
+  holds capacity fixed. Niko's reported gain used a B70 at a different
+  capacity. The earlier local code-trained ranking reduced code latency
+  by 11.18% but increased prose latency by 1.24% in the one-pair
+  diagnostic (`cache-window-rank-current.json`). Compare the Intel
+  profile on both workloads and check the prefill loan and restored map.
   The eight traced state/RESTORE processes at `4775de3b0` expose a separate
   first-token cost on the resident-input executable (`b35d66a4`). On the
   first one-token decode per process, the verifier's graph capture clock

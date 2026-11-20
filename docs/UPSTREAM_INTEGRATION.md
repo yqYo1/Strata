@@ -33,6 +33,13 @@ own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
+The weighted expert-profile builder and its 45-prompt collector come from
+the checked `58ee32277` tree. The collector uses this fork's routing
+callback and thinking-enabled prompt by default. Its original closed-thinking
+template and device-usage mode remain selectable. Host verification is pending.
+The bundled Intel profile already matches Niko's original `8cb26e609` blob.
+Its inference effect on this B570 is a separate comparison.
+
 The November 18 JST check fetched 45 additional commits affecting 121 paths
 from `baf16363` to `c7757280`. At that point the pending interval from
 `146df3c4` covered 1166 commits and 2849 changed paths. That interval changes serving,App,
