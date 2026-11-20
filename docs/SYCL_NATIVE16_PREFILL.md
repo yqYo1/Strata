@@ -3155,8 +3155,31 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   of the resident-input engine from Git and changes only six gather inputs.
   The checked candidate image hash is `b5d2c3bc755bc6ae53062fd74679a1c0eaa7b19ec24496352206d6165fb0e599`.
   Its 12-target build recipe hashes to `4eeb51b69215bc2d2e0bea04e1676e7007e69fb119367d8532b7717714a817dc`.
-  This verifies source composition; a coherent model build, actual
-  dispatch counts, state checks and paired clean model speeds are pending.
+  The next coherent model build includes two switches in the same binary.
+  Applying `fea0f3c79` to that exact gather image changes only
+  `src/prefill/prefill.cpp`. Its source image hashes to
+  `466b03d720fa5dbff5a3855c154a6f8e45820d6c6b71a636570a2006789d1838`
+  and the relocated 12-target recipe to
+  `ee8be44d38b2badea4621a4e04259662ccc38fcc88ada6702dd9c72f79aa0fad`.
+  The measured parent retains its active consumers until they close. Build in
+  a fresh directory after its retirement. Check both switches off against
+  the parent's recorded route, expert and draft counts, KV state and output.
+  Exercise the gather fixture and KV lifecycle checks before collecting speed.
+  For scalar/reload (A), scalar/reuse (B), vec8/reload (C), and vec8/reuse
+  (D), use the same ordinary expert copies, output-copy policy, ordered-exp
+  attention, 8192 chunk, K8V8, model and decode placement. At each of
+  65537 and 117489 actual tokens run independent processes in blocks
+  A-B-D-C, B-C-A-D, C-D-B-A, D-A-C-B. Each arm receives the same thinking-on
+  fresh prompt bodies. Separate first-use measurements from the median of
+  subsequent requests. Compare B/A and C/A to isolate the two changes, then
+  D/C and D/B to measure how each behaves with the other enabled. Report
+  block-wise prompt-time ratios and client TTFT. Advance a throughput
+  choice at a measured length if at least three of four paired prompt times
+  improve and the median paired ratio is below one. Keep an inconsistent
+  result open. Verify traced work and state outside the speed samples;
+  stop on a changed input, ownership, fault, numerical or dispatch failure.
+  Recheck sustained decode, agent sessions and full physical capacity before
+  adoption. No model speed sample from the two-switch build exists yet.
   In the two warmed 64K requests of `eager_request_profile_v2`, all
   scalar mixed gathers took 2.001 and 2.002 seconds of GPU service
   (20,591 and 20,568 calls). The count includes the small jobs that keep

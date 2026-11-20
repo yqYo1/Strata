@@ -1,4 +1,4 @@
-"""Compose the large-job prefill gather with the measured resident-input engine."""
+"""Build the measured prefill engine with independently selectable gather and KV reuse."""
 
 import fcntl
 import json
@@ -7,10 +7,11 @@ import sys
 
 sys.dont_write_bytecode = True
 import build_prefill_mixed_gather as fixture
+import prefill_kv_stage_source as kv
 
 bank = fixture.bank
-MODEL_ROOT = bank.B / 'prefill-large-gather-model-v1'
-KEY = 'prefill_large_gather_model_v1'
+MODEL_ROOT = bank.B / 'prefill-large-gather-kv-model-v1'
+KEY = 'prefill_large_gather_kv_model_v1'
 EVIDENCE = '2b4cbdf245221275bec51f70902793a6fe280a20'
 CHANGED = (fixture.HEADER, fixture.KERNEL, fixture.FIXTURE, 'src/prefill/prefill.cpp',
            'src/prefill/moe_window.inc', 'src/prefill/layer_major.inc')
@@ -64,6 +65,11 @@ def project(foundation_native=None):
         bank.require(source[path] == fixture.git_file(fixture.BASE, path),
                      'gather would replace unrelated compiled changes in ' + path)
         source[path] = fixture.git_file(fixture.CANDIDATE, path)
+    gather_hash = bank.signature(bank.stage.hashed(source))
+    bank.require(gather_hash == 'b5d2c3bc755bc6ae53062fd74679a1c0eaa7b19ec24496352206d6165fb0e599'
+                 and source[kv.FILE] == fixture.git_file(kv.CHANGE + '^', kv.FILE),
+                 'the KV change must apply directly to the verified gather image')
+    source[kv.FILE] = fixture.git_file(kv.CHANGE, kv.FILE)
     hashes = bank.stage.hashed(source)
     bank.require(set(hashes) == set(original_hashes)
                  and {p for p, digest in hashes.items() if digest != original_hashes[p]} == set(CHANGED),
@@ -75,7 +81,8 @@ def project(foundation_native=None):
     child_recipe = dict(configure=[s.replace(before, after) for s in recipe['configure']],
                         environment={k: v.replace(before, after) for k, v in recipe['environment'].items()},
                         targets=[*recipe['targets'], fixture.TARGET])
-    return source, child_recipe, dict(native_source=fixture.CANDIDATE, parent_binary=parent['binaries']['strata'],
+    return source, child_recipe, dict(native_source=kv.CHANGE, gather_source=fixture.CANDIDATE,
+        gather_image_sha256=gather_hash, parent_binary=parent['binaries']['strata'],
         parent_source_sha256=parent['source_files']['sha256'], source_sha256=bank.signature(hashes),
         files=len(hashes), changed={p: hashes[p] for p in CHANGED}, recipe_sha256=bank.signature(child_recipe),
         component_sha256=bank.signature(gate))
@@ -85,10 +92,14 @@ def build_inputs(expected=None):
     bank.require(not bank.ROOT.exists(), 'finish the resident-input consumers and verify its retirement first')
     native, foundation, _ = bank.basis.basis(expected=expected)
     source, recipe, projection = project(native)
-    bank.require(projection['source_sha256'] == 'b5d2c3bc755bc6ae53062fd74679a1c0eaa7b19ec24496352206d6165fb0e599'
-                 and projection['recipe_sha256'] == '4eeb51b69215bc2d2e0bea04e1676e7007e69fb119367d8532b7717714a817dc',
-                 'the selected component and original model build recipe are required')
+    verify_projection(projection)
     return native, foundation, source, recipe, projection
+
+
+def verify_projection(projection):
+    bank.require(projection['source_sha256'] == '466b03d720fa5dbff5a3855c154a6f8e45820d6c6b71a636570a2006789d1838'
+                 and projection['recipe_sha256'] == 'ee8be44d38b2badea4621a4e04259662ccc38fcc88ada6702dd9c72f79aa0fad',
+                 'the two independent prefill selectors and the original model recipe are required')
 
 
 def check_build(row, committed=True):
@@ -98,7 +109,7 @@ def check_build(row, committed=True):
     native, foundation, source, recipe, projection = build_inputs(row['foundation'])
     pins = bank.stage.source.pin(bank.P, list(row['controller_sources']))
     bank.require(row['controller_sources'] == pins['source_sha256'] and row['projection'] == projection
-                 and row['native_source_commit'] == fixture.CANDIDATE and row['parent_evidence'] == EVIDENCE
+                 and row['native_source_commit'] == kv.CHANGE and row['parent_evidence'] == EVIDENCE
                  and row['foundation'] == foundation and row['external_inputs'] == native['external_inputs']
                  and row['driver'] == bank.builder.guards.driver_guard() and row['recipe'] == recipe
                  and row['retained_decode_reference'] == bank.builder.decode_reference()
@@ -125,19 +136,21 @@ def prepare():
     bank.require(not MODEL_ROOT.exists() and KEY not in bank.basis.validation.committed(bank.RESULT),
                  'fresh coherent candidate required')
     native, foundation, source, recipe, projection = build_inputs()
-    controllers = [str(Path(p).resolve().relative_to(bank.P)) for p in (__file__, fixture.__file__)]
+    controllers = [str(Path(p).resolve().relative_to(bank.P)) for p in (__file__, fixture.__file__, kv.__file__)]
     pins = bank.stage.source.pin(bank.P, [*controllers, 'tools/sycl', *bank.basis.POLICIES])
-    bank.require(all(p in pins['source_sha256'] for p in controllers), 'commit both gather build controllers')
+    bank.require(all(p in pins['source_sha256'] for p in controllers), 'commit the build and projection controllers')
     row = dict(stage='prepared', source_commit=pins['revision'], controller_sources=pins['source_sha256'],
-               native_source_commit=fixture.CANDIDATE, parent_evidence=EVIDENCE, projection=projection,
+               native_source_commit=kv.CHANGE, parent_evidence=EVIDENCE, projection=projection,
                source_files=bank.stage.hashed(source), recipe=recipe, foundation=foundation,
                external_inputs=native['external_inputs'], driver=bank.builder.guards.driver_guard(),
                retained_decode_reference=bank.builder.decode_reference(recover=True),
                active=False, passed=False, complete=False, ownership_closed=True, commands=[],
-               plan=dict(unit='Only the prefill gather selector changes. Its scalar and vec8 arms share this ELF.',
-                         validation='Same-build host and traced gather fixtures before model state, RESTORE, '
-                                    'actual large-job dispatch counts and repeated clean 64K PP/TTFT. '
-                                    'Independent sustained decode and physical capacity remain open.',
+               plan=dict(unit='Same ELF for scalar/vec8 large-job gather and reload/reuse of the owned KV stage. '
+                              'Keep the ordered-exp attention kernel and ordinary expert-copy schedule.',
+                         validation='First check both selectors off against the original. With gather fixed scalar, '
+                                    'compare KV reload/reuse, including nonzero RESTORE, cancellation and final-slot '
+                                    'state. With reload fixed, compare scalar/vec8 and count actual jobs. Then compare '
+                                    'both enabled against each individual change. Hold decode settings fixed.',
                          retention='Keep the original prefill and decode references. Retire this comparison '
                                    'generation after verifying its source and closing its model consumers.'))
     MODEL_ROOT.mkdir(mode=0o700)
@@ -168,7 +181,8 @@ if __name__ == '__main__':
         bank.builder.guards.no_model_owners([])
         if action == 'check':
             _, recipe, proof = project()
-            print(f"{proof['files']} source files, {len(proof['changed'])} gather inputs, "
+            verify_projection(proof)
+            print(f"{proof['files']} source files, {len(proof['changed'])} changed paths, "
                   f"{len(recipe['targets'])} targets, image {proof['source_sha256']}, recipe {proof['recipe_sha256']}")
         else:
             bank.builder.ROOT, bank.builder.KEY = MODEL_ROOT, KEY
