@@ -737,12 +737,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   free 338,124,800 bytes of the 340,787,200-byte bank. The comparison uses
   the ordinary source view and the same in-order queue.
   Mode 10 now accepts an explicitly smaller bank through the existing
-  slot setting. Build the one-file change against the measured 117K image
-  at a serialized boundary. Compare actual 128-slot and one-slot admission
-  with aligned KV reuse and scalar gather fixed, in three pairs of fresh
-  processes. Require invariant blobs, requested bytes, expert jobs,
-  guarded outputs and decode handoff. Report prefill and TTFT for the first
-  and subsequent requests separately before reusing any of the headroom.
+  slot setting. `bench/sycl/prefill_split_bank_build.py` projects the one-file
+  change onto the measured 117K source and recipe. At a serialized boundary,
+  `bench/sycl/prefill_split_bank_compare.py` compares actual 128-slot and
+  one-slot admission with aligned KV reuse and scalar gather fixed. The first
+  two processes check the route, guards, response digests and decode cache
+  restoration. Three fresh process pairs then compare first and subsequent
+  prefill and TTFT separately, with identical blobs, requested bytes, expert
+  jobs and draft counts. Check full-context and sustained decode before use.
   The earlier ordinary-RAM lane lost its component comparison with one
   dependency marker per expert. Evaluate batching, queue and timing changes
   separately from this capacity change.
