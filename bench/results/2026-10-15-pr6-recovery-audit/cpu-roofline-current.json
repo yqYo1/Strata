@@ -28165,7 +28165,7 @@
     "deletion_decision_commit": "cb5a6b934be4fd70ddf9c81ce12a146f4b2890c7"
   },
   "iq4nl_down_pair_v1": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "c684f9d5d55563e47518d78cc983a7c7c7a0e832",
     "dependency_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
     "host_packages": [
@@ -28615,7 +28615,76 @@
           "cleanup": [],
           "peak_session_rss_bytes": 1695744
         }
+      ],
+      "check": [
+        {
+          "pid": 642283,
+          "direct_identity": {
+            "pid": 642283,
+            "state": "R",
+            "ppid": 642157,
+            "pgid": 642283,
+            "sid": 642283,
+            "start_ticks": 353948658,
+            "rss_bytes": 442368
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.11459883395582438,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 642295,
+          "direct_identity": {
+            "pid": 642295,
+            "state": "D",
+            "ppid": 642157,
+            "pgid": 642295,
+            "sid": 642295,
+            "start_ticks": 353948670,
+            "rss_bytes": 135168
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.11467945668846369,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        }
       ]
+    },
+    "correctness": {
+      "cases": 60,
+      "passed": true,
+      "receipt": {
+        "pid": 642295,
+        "direct_identity": {
+          "pid": 642295,
+          "state": "D",
+          "ppid": 642157,
+          "pgid": 642295,
+          "sid": 642295,
+          "start_ticks": 353948670,
+          "rss_bytes": 135168
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.11467945668846369,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 0
+      }
     },
     "project": {
       "files": 209,
