@@ -444,6 +444,36 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   three request states and the cache restoration payload matched; both
   processes closed with no fresh fault. The clean request-time effect
   remains unmeasured.
+  A separate QSA score-stage experiment reuses the FP16 pooled index keys
+  within one SELECT loop. The append for the complete chunk precedes selection
+  on the same queue. The ordinary scorer reconverts the growing pooled key
+  prefix for each batch of up to 256 queries. With 8192-row chunks, let
+  `a=(last_position+1)/4+1` using integer division. Skipping a previous
+  batch's `a` live key rows avoids `a*128*(4+2)` logical read/write bytes,
+  excluding cache and compression effects. Summed within each chunk over 12
+  QSA layers this gives 18,725,658,624 bytes at 65537 fresh tokens and
+  60,019,273,728 bytes at 117489. Neither number measures DRAM traffic.
+  Each new chunk, layer or restored request starts at zero; the existing
+  workspace and sticky validation word remain owned by the in-order queue.
+  All original scores, explicit IDs, query conversion, dead-key handling,
+  selection mapping, attention, residual and decode placement are preserved.
+
+  Compare the separately pinned source `a29048486` with its cold pack on
+  the measured ordinary image via `bench/sycl/prefill_retained_score_keys.py`.
+  The fixture uses the parent radix4, score GEMM, query8 and head1 settings.
+  Check two source epochs, ragged/equal active extents, zero padding, stale
+  keys, guards, invalid extents and sticky status on a small traced sequence
+  and a late 256/256/91/1/1-query sequence. Compare every score and selected
+  ID across arms. Then time the 2800-row final chunk of the 117489 request
+  with eleven score+selection calls, a 65538-word score stride and one final
+  drain. Each of three clean processes runs five alternating pairs of twelve
+  chunks per arm. Require every interval to exceed 100 ms, timer control at
+  most 1%, exact control IDs and lower median paired wall time in all three
+  processes before model integration. Stop on a fault, mismatch or owner
+  failure. A component pass leaves actual model PP, TTFT, state, final-slot
+  and decode preservation pending. Retire the component executable after the
+  decision and source/recipe recovery; the running model comparison keeps
+  its original build and independent KV/gather configuration.
   There is a second prefix operation entirely on the GPU. Before ordered-exp
   attention, the pack kernel dequantizes K and V for all live pages and writes
   BF16 operands and bad-scale flags into request scratch. The opt-in
