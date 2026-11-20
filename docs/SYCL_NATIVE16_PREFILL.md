@@ -275,6 +275,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the draft yield. Measure both after a ranking change. Reaching 70 at the
   observed yields also requires reducing the remaining verification/draft
   time or producing more accepted tokens per window.
+  In the three completed CPU-service observer processes at `c74d1539c`,
+  the single-token IQ4_NL Down bins are 20.61–20.64% of summed leaf CPU
+  time for code and 15.12–15.15% for prose. These concurrent worker clocks
+  motivate a bounded component test on the measured Zen 3 host. The
+  denominator is CPU time within the instrumented pool's leaves.
+  `bench/sycl/cpu_roofline/iq4nl_down_pair.cpp` processes two adjacent output
+  rows at once. It shares the Q8_0 input load and scale conversion and keeps
+  each row's two ordered FMA chains and GGML's horizontal sum. The weight
+  layout and row work stay fixed. The reference is the linked GGML dot
+  selected by `native_down_rows` for a single IQ4_NL token, from pinned
+  llama.cpp `3cf03257f219afbe7334045ff7c6a06ac68c627d` (MIT).
+  Before a serialized build, pin the CPU-only recipe, compiler/dependencies,
+  physical core and actual GGUF Down tensor type, offset and range hashes.
+  Check all 60 synthetic cases for bitwise parity and guards. For each of
+  cached one-expert reuse and rotation through 128 experts (112.5 MiB of
+  weights), use three independent processes with initial orders AB, BA, AB.
+  Each takes five alternating pairs of 6144 full-expert intervals per arm
+  with identical activation sequences and full output checks outside timing.
+  Each timed batch must reach 100 ms. Advance only if all three process
+  medians improve in the rotation case and the paired median for reuse also
+  improves. Close on any correctness, ownership or identity failure. The
+  component comparison isolates the row loop. A later decode-only dispatch
+  trial needs actual selection, repeated TG and prefill preservation.
   Test the existing request's MTP confidence floor independently of expert
   placement. The older six-process width comparison at `dcb8ba8cf` found
   that fixed width two beat four on prose in every pair and lost on code in
