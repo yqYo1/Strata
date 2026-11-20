@@ -218,7 +218,7 @@ class OfflineAndReuse(unittest.TestCase):
         self.blobs = {"config.json": (self.dir / "c.json").read_bytes(), "model.safetensors": (self.dir / "m.safetensors").read_bytes()}
         self.files = tuple((n, len(b), hashlib.sha256(b).hexdigest()) for n, b in self.blobs.items())
         self.data = self.dir / "data"
-        patcher = mock.patch.object(drafting, "pack_ready", lambda d: bool(d) and drafting.pack_path(d).is_file())
+        patcher = mock.patch.object(drafting, "pack_ready", lambda d, engine=None: bool(d) and drafting.pack_path(d, engine).is_file())
         patcher.start()
         self.addCleanup(patcher.stop)
 
