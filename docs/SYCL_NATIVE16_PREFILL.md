@@ -3400,6 +3400,28 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   about 29% of the 6.896-second gap from the paired clean 64K prompt to
   1000 PP if every saved second shortened the request. The model comparison
   must measure how much of this time the large jobs actually save.
+  The current QSA selector emits the first one to four cells of each
+  contributing block in ascending order. Only one threshold-tied block may
+  be cut before the physical tail. The diagnostic 39,260-token request
+  validated 6,491 rows per layer with a width of 2,051 across all 12 layers.
+  One block ID per emitted group plus a row header suffices to represent
+  these rows. The header gives the first rank after the threshold cut and
+  the one to three skipped positions within that block. After this rank,
+  adding the skipped positions before dividing by four gives the descriptor
+  index directly. A last partial physical page needs no internal cut.
+  The proposed 515-word row reserves 16.09 MiB at chunk size 8192;
+  explicit 2051-word rows reserve 64.09 MiB. Neither this difference nor
+  the smaller index reads is a measurement of free VRAM or saved K/V bytes.
+  First check `bench/sycl/qsa_prefill_groups/host.cpp` against explicit IDs,
+  including every internal cut position at width 2051, tails, guard and
+  padding words, and ranks reaching the final physical page. Compile with
+  `/usr/bin/g++-13 -std=c++17 -O2 -Wall -Wextra -Werror` (GCC 13.3.0,
+  compiler SHA256 `1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769`),
+  `LC_ALL=C`, the committed fixture, and a fresh private output path.
+  The host format check cannot qualify the selector or attention. A device
+  comparison must include the real threshold emission, the same typed
+  attention, exact selected-cell order, all four tail residues and measured
+  producer-plus-consumer time before any model comparison.
   The 117489-token ordinary control at `9c03b44d0` routed 56,394,240 rows
   on each fresh prompt (48 layers, ten experts per token). Across the four
   original bodies, jobs of at least 2334 rows carried 52,160,499–52,231,136

@@ -38348,5 +38348,33 @@
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-kv-gather-clean-dispatch-20261120/report.md",
     "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-kv-gather-clean-dispatch-20261120-control/review.md",
     "worker_completion": "Main verified completed task_cda9a8c7695d, dispatch ctx_a4d3a4ed6131 and worker_done msg_87faf9d506a5. Closed the idle Orca terminal and confirmed its scope inactive. Filesystem proof covers 20 protected inputs; worker-side Orca status is self-reported. Native Luna max reviewed the report."
+  },
+  "prefill-qsa-four-cell-descriptor-20261120": {
+    "source_commit": "827b4be344cf91c7420b22955b33308eba3b81ab",
+    "question": "Can the actual two QSA selection producers publish group descriptors for the selected four-cell blocks that the prefill attention consumer can visit directly in exactly the previous order, including threshold ties, prefixes, padding and causal partial tails? Identify representable versus fallback shapes, distinguish fewer index loads from KV loads, and decide whether a bounded implementation comparison is worth running.",
+    "prerequisite": "The closed 39260-token production selection census reports actual causal ordering, uniqueness and cross-query overlap. Execution source and two failed/split layout trials decide a representation question that their workgroup/layout comparisons did not cover.",
+    "classification": "decision support",
+    "schedulable_now": false,
+    "report_sha256": "d2ed37513d9338136b40420944cc9438f6de844d28b037df81a7e414801f9113",
+    "review_sha256": "6a83a5451e5545fb66cb6017eaa3157fd79696d9bc38001d1770126e4cd1b48b",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-qsa-four-cell-descriptor-20261120/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-qsa-four-cell-descriptor-20261120-control/native-review.md",
+    "finding": "Per active row, the 2051 chosen cells occupy 513 or 514 four-cell blocks. The threshold can shorten one block before the final physical tail. Main derived a fixed-stride encoding using one block ID per contributing block plus one cut word for constant time rank lookup. No K/V payload savings follow from this.",
+    "consumer": "Check the Main-authored rank mapping for every cut position and tail shape, then compare the real default selector with a typed consumer before any new model route.",
+    "worker_completion": "Main verified settled Task, Dispatch and worker_done task_f2cefdb66533 / ctx_96d7831744b2 / msg_a9e9276f1db3 and closed the idle terminal. Verified 12/12 filesystem inputs. Worker IPC status in the report is self-reported."
+  },
+  "prefill-gdn-published-decay-20261120": {
+    "source_commit": "65b55a41cd55fbab82ca5d53ecae4715bb283aed",
+    "question": "Audit the new long-prefill FP32 decay publication pair across the actual two translation units and its fixture. Identify exact-equivalence and synchronization assumptions, compilation/rounding and bitwise-corpus limitations, and what its paired measurement can identify. Scope findings to concrete defects or a focused additional measurement, without repeating the GDN chunk64 or barriers research.",
+    "prerequisite": "The actual 64K profile has 288 GDN recurrence calls and 4.400 seconds in each warmed request. A committed new opt-in producer/consumer and production-wrapper comparison now exist at 65b55a41c. Their numerical and timing gates have not yet been executed.",
+    "classification": "decision support",
+    "schedulable_now": false,
+    "report_sha256": "669cf3a410931f1b5a624e66c7cf0adcc683f4bacd2340b0b615d472c5cf89fd",
+    "review_sha256": "b9317452d771bd3ca7d2aba93776a717d91d10dd57e2758ee126f125dab3bbe7",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-gdn-published-decay-20261120/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-gdn-published-decay-20261120-control/native-review.md",
+    "finding": "Producer and recurrence must select the same FP32 gate representation. Deterministic fixture inputs alone cannot establish production gate equivalence; the separate device exponential oracle also has different compilation context. Commit 18d0b137e added cutoff, subnormal, FP16 finite and input checks after the original report. The report mislabeled the filesystem-proof digest as the manifest digest.",
+    "consumer": "Use the predeclared component comparison; if it passes, check production decay on the 64K route in both compiled translation units before treating it as a model configuration.",
+    "worker_completion": "Main verified settled Task, Dispatch and worker_done task_228a24257b14 / ctx_78eb83d9b526 / msg_ed965d7900c1 and closed the idle terminal. Verified 13/13 filesystem inputs. Worker IPC status in the report is self-reported."
   }
 }
