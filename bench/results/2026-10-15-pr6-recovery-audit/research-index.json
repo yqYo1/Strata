@@ -38407,5 +38407,13 @@
     "prerequisite": "The committed long-prefill caller and new consecutive-subbatch fixture exist. A fresh 117489-token request can skip 60.019 GB of logical read/write traffic across 12 layers. The measured parent runs FP16 score GEMM with 256-query slices.",
     "question": "Audit the exact alias, ordering and initialization contract for keeping pooled FP16 index keys between QSA score calls. Trace the index append, scratch borrowers, sticky fault, previous zero padding, disabled/observer paths and reset across a restored prefix. Find an actual counterexample or the smallest additional test that would distinguish a silent stale prefix in a production chunk. Compare applicable SYCL/oneMKL in-order and library completion contracts with primary references. Exclude the separately studied attention-page packing and selected-ID format.",
     "consumer": "Before model integration, compare the proposed lifetime and guard coverage with this audit. No implementation or GPU use."
+  },
+  "prefill-qsa-value-rematerialization-20261120": {
+    "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "Current measured BF16 prefix consumer has 14.376/14.383 s of 65537-token GPU service and up to 3.252 TB of logical K+V reads. Earlier direct Q8 gathering changes both operands and the surrounding attention schedule. The measured consumer has a separately identifiable V load after softmax.",
+    "question": "Compare rematerializing only V from Q8+FP16 scales within the existing BF16 sparse prefiller to reading its expanded BF16 V. Trace physical/logical page address, ordered softmax and BF16 rounding, scale validation, allocation and ownership under streamed KV. Compare published production patterns from vLLM/SGLang or other primary kernel sources, clearly identifying model/engine/version/license and differences. Describe an isolated producer/consumer comparison that keeps the K operand and score/order unchanged, and what would falsify a wall-time or DRAM-traffic claim. Avoid repeating page prefetch/ID compaction.",
+    "consumer": "Select a high-traffic comparison in the observed attention consumer after current components. This is not a proposal to port external code."
   }
 }
