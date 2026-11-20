@@ -538713,8 +538713,69 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "2",
+        "passed": true,
+        "environment_sha256": "1d51d70254cc9e107edac792bd3d450adb3fd213b152aeb4469ceeb70a1e4629",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-groups-v3/sycl_qsa_bf16_prefix_ordered_exp_bench",
+          "--component",
+          "2"
+        ],
+        "shapes": [
+          [
+            39260,
+            6491,
+            2051
+          ]
+        ],
+        "timer_p99_ns": 30,
+        "pairs_ms": [
+          {
+            "explicit": 137.033178,
+            "groups": 132.84108
+          },
+          {
+            "groups": 133.020989,
+            "explicit": 137.148966
+          },
+          {
+            "explicit": 136.725958,
+            "groups": 132.130599
+          },
+          {
+            "groups": 132.038054,
+            "explicit": 137.067902
+          },
+          {
+            "explicit": 137.180394,
+            "groups": 133.067755
+          },
+          {
+            "groups": 132.771927,
+            "explicit": 135.93276
+          }
+        ],
+        "median_paired_ratio": 0.969654830759834,
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "device": "Intel(R) Arc(TM) B570 Graphics",
+        "driver": "1.17.39758+17",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
-    ]
+    ],
+    "component_performance_gate": true
   },
   "prefill_retained_score_keys_v1": {
     "source": "a2904848647fc6f79b11570b98059a030be06c76",
