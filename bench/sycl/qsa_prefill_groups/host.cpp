@@ -1,5 +1,5 @@
 // Cross-check the compact representation against explicit ordered cell IDs.
-#include "group_ids.hpp"
+#include "strata/prefill/qsa_group_ids.hpp"
 #include <algorithm>
 #include <array>
 #include <cstdint>

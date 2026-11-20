@@ -5,8 +5,11 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#if defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+#include "qsa_prefill_groups/selection_fixture.hpp"
+#endif
 #if defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT) || \
-    defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
+    defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT) || defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
 #define STRATA_QSA_PREFILL_PAGE4_FIXTURE
 #endif
 #if defined(STRATA_QSA_PREFILL_PV_COMPONENT) || defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)
@@ -54,6 +57,10 @@ constexpr const char *baseline_name = "ordered_exp", *candidate_name = "head_maj
 #elif defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
 constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name = "ordered_exp", *candidate_name = "stage_identity";
+#elif defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
+constexpr auto candidate_attention = qsa_prefill_attend_groups;
+constexpr const char *baseline_name = "explicit", *candidate_name = "groups";
 #elif defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
 constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
@@ -141,6 +148,9 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
     vs[i]=half(std::ldexp(i%3 ? 1.f : -1.f,-9-int(i%4)));
   }
   for (size_t i=0;i<q.size();++i) q[i]=bf16(float(int((uint64_t(i)*17+13)%127)-63)*.03125f);
+#if defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+  bench::GroupSelectionFixture<Buffer> selection(cells, queries, cap, steps, ids);
+#else
   for (int b=0;b<queries;++b) {
     steps[size_t(b)*kStepCount+kStepPos]=cells-1;
     steps[size_t(b)*kStepCount+kStepNKv]=cells;
@@ -168,6 +178,7 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
       ids[size_t(b)*cap+c]=cell;
     }
   }
+#endif
 #if defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
   // Measure shared, valid logical IDs of adjacent queries before either timed arm.
   std::vector<int> last_seen(cells, -2);
@@ -216,6 +227,15 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
 #if defined(STRATA_QSA_COMPARE_EXACT_BITS)
   const std::vector<uint16_t> unwritten(out.memory.size()/sizeof(uint16_t), marker);
 #endif
+#if defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+  if (queries <= 16) {
+    // Still inside the allocation, but one word short of the declared full span.
+    bool rejected = false;
+    try { selection.submit(true, di.data() + 33, ds.data(), shape, &rt->compute()); }
+    catch (const std::invalid_argument &) { rejected = true; }
+    require(rejected, "short selector output span must be rejected before enqueue");
+  }
+#endif
   auto invoke=[&](int variant) {
 #if !defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
     auto attention=variant ? candidate_attention : baseline_attention;
@@ -226,13 +246,26 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
 #if defined(STRATA_QSA_COMPARE_EXACT_BITS)
     out.put(unwritten);
 #endif
+    int32_t *selected = di.data();
+#if defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+    di.put(ids);
+    selected = selection.data(di);
+#endif
     rt->wait();const auto start=std::chrono::steady_clock::now();
+#if defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+    selection.submit(variant != 0, selected, ds.data(), shape, &rt->compute());
+#endif
 #if defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
     auto attention=variant ? select(pools, full_stage, owned_identity_table) : baseline_attention;
 #endif
-    require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
+    require(attention(dq.data(),pools,selected,ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
-    rt->wait();return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
+    rt->wait();
+    const double ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
+#if defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+    selection.check(variant != 0, di.get(), steps);
+#endif
+    return ms;
   };
 #endif
   auto guards=[&] {
@@ -297,8 +330,13 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
   }
   constexpr int sample_count=12;
 #endif
+#if defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+  selection.check_scores();
+#else
+  require(di.get()==ids, "explicit input IDs changed");
+#endif
   require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
-      dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
+      dt.get()==table && ds.get()==steps,"all inputs immutable");
   std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap
 #if defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)
       <<" page_size="<<Page
@@ -330,6 +368,9 @@ int main(int argc,char **argv) {
     if (source_admission) bench::fullfit_overlap::source_admission(rt);
     else if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else run(65536,8192,2051,false);
+#elif defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
+    if (std::string(argv[1]) == "--smoke") run(97, 16, 33, false);
+    else run(39260, 6491, 2051, false);
 #else
     if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else {

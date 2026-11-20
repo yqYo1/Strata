@@ -10,6 +10,12 @@ constexpr uint32_t row_words(uint32_t cap) {
     return 1 + (cap == 0 ? 0 : (cap + 6) / 4);
 }
 
+// This component reserves the explicit-ID span in both arms. At cap >= 3
+// the grouped rows fit in that span. The upper limit is this engine's context.
+constexpr bool supports_capacity(int64_t cap) {
+    return cap >= 3 && cap <= 262144;
+}
+
 // A work-item already knows its starting cell offset from the production
 // ordered emission scan. Rounding up gives its descriptor offset even after a cut.
 inline uint32_t emit(uint32_t* row, uint32_t offset, uint32_t block, uint32_t take, bool physical_tail) {

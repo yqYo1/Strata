@@ -1,4 +1,6 @@
 #include "strata/kernels/qsa_select.hpp"
+#include "strata/prefill/qsa_group_ids.hpp"
+#include "strata/kernels/qsa_prefill_groups.hpp"
 #include "strata/sycl/launch.hpp"
 #include <climits>
 #include <cstdio>
@@ -153,7 +155,7 @@ bool prefill_score_head_parallel() {
   return enabled;
 }
 
-template <int Mapping>
+template <int Mapping, bool GroupIds = false>
 sycl::event submit_topk(sycl::queue &queue, const float *scores,
                         const int32_t *steps, int64_t nq, int64_t blocks,
                         int64_t cap, int32_t *ids, int64_t launched) {
@@ -167,10 +169,18 @@ sycl::event submit_topk(sycl::queue &queue, const float *scores,
             width > cap || width > n)
           return;
         const int t = it.get_local_linear_id();
-        auto out = ids + qi * cap;
+        namespace groups = strata::prefill::qsa_groups;
+        const int64_t stride = GroupIds ? groups::row_words(uint32_t(cap)) : cap;
+        auto out = ids + qi * stride;
         if (n == width) {
-          for (int64_t j = t; j < n; j += 256)
-            out[j] = int32_t(j);
+          if constexpr (GroupIds) {
+            if (n > 0 && t == 0) out[0] = 0;
+            for (int64_t b = t; 4 * b < n; b += 256)
+              out[1 + b] = int32_t(b);
+          } else {
+            for (int64_t j = t; j < n; j += 256)
+              out[j] = int32_t(j);
+          }
           return;
         }
         if (!width)
@@ -236,6 +246,7 @@ sycl::event submit_topk(sycl::queue &queue, const float *scores,
         int offset = sycl::exclusive_scan_over_group(it.get_group(), chosen,
                                                      sycl::plus<int>());
         int eqrank = eqstart;
+        uint32_t cut = 0;
         for (int64_t b = lo; b < hi; ++b) {
           const auto k = order(sc[b]);
           int take = k > threshold ? weight(b) : 0;
@@ -243,8 +254,20 @@ sycl::event submit_topk(sycl::queue &queue, const float *scores,
             take = sycl::min(weight(b), sycl::max(0, budget - eqrank));
             eqrank += weight(b);
           }
-          for (int j = 0; j < take; ++j)
-            out[offset++] = int32_t(b * 4 + j);
+          if constexpr (GroupIds) {
+            if (take > 0) {
+              cut |= groups::emit(reinterpret_cast<uint32_t*>(out), uint32_t(offset),
+                                  uint32_t(b), uint32_t(take), b == nb);
+              offset += take;
+            }
+          } else {
+            for (int j = 0; j < take; ++j)
+              out[offset++] = int32_t(b * 4 + j);
+          }
+        }
+        if constexpr (GroupIds) {
+          const uint32_t header = sycl::reduce_over_group(it.get_group(), cut, sycl::bit_or<uint32_t>());
+          if (t == 0) out[0] = int32_t(header);
         }
       });
 }
@@ -367,6 +390,18 @@ void qsa_block_topk_prefill(const float *scores, const int32_t *steps, int64_t n
       : mapping == 1 ? submit_topk<1>(queue, scores, steps, nq, blocks, cap, ids, launched)
                      : submit_topk<0>(queue, scores, steps, nq, blocks, cap, ids, launched);
   finish(stream, event);
+}
+void qsa_prefill_select_groups(const float *scores, const int32_t *steps,
+                             int64_t nq, int64_t blocks, int64_t cap, const QsaShapes &s,
+                             int32_t *groups, void *stream, int64_t active) {
+  if (!strata::prefill::qsa_groups::supports_capacity(cap))
+    throw std::invalid_argument("unsupported prefill QSA group capacity");
+  const auto launched = validate_topk(scores, steps, nq, blocks, cap, s, groups, active);
+  auto &queue = queue_for(stream);
+  validate_device_span(groups, checked_count(nq, cap) * sizeof(*groups), queue);
+  validate_device_span(scores, checked_count(nq, blocks) * sizeof(*scores), queue);
+  validate_device_span(steps, checked_count(nq, kStepCount) * sizeof(*steps), queue);
+  finish(stream, submit_topk<0, true>(queue, scores, steps, nq, blocks, cap, groups, launched));
 }
 void qsa_block_topk_ref(const float *scores, const int32_t *steps, int64_t nq,
                         int64_t blocks, int64_t cap, const QsaShapes &s,

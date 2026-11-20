@@ -5,7 +5,8 @@
 // No FP32 Q/O tensor or high/low matrix decomposition. Opt-in Mode0 long-prefill caller.
 // Diagnostic-only bits are local through the tile loop and reduced once at end.
 // Matrix operand arrays explicitly satisfy the extension's 4-byte base alignment.
-#include "strata/kernels/qsa_bf16_prefix.hpp"
+#include "strata/kernels/qsa_prefill_groups.hpp"
+#include "strata/prefill/qsa_group_ids.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
@@ -70,7 +71,7 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 
 template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false,
          bool CacheQueries = false, bool VectorK4 = false, bool VectorV4 = false,
-         bool OrderedExp = false, bool CaptureState = false>
+         bool OrderedExp = false, bool CaptureState = false, bool GroupIds = false>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
@@ -248,7 +249,17 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
         if (tid < Cells) {
           int64_t row = -1;
           if (first + tid < count) {
-            const int64_t cell = ids[batch * cap + first + tid];
+            const int64_t rank = first + tid;
+            const int64_t cell = [&]() -> int64_t {
+              if constexpr (GroupIds) {
+                namespace groups = strata::prefill::qsa_groups;
+                const auto *row = reinterpret_cast<const uint32_t*>(ids) +
+                                  batch * groups::row_words(uint32_t(cap));
+                return groups::cell(row, uint32_t(rank));
+              } else {
+                return ids[batch * cap + rank];
+              }
+            }();
             const int64_t logical = cell >= 0 ? cell / shape.page_size : -1;
             const int page = logical >= 0 && logical < bounds.logical_pages
                 ? pools.page_table[logical] : -1;
@@ -487,6 +498,14 @@ bool qsa_bf16_prefix_kvvec4_batch(const uint16_t *query, const QsaAttnPools &poo
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1, false, false, true, true, true>(query,
       pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
+}
+bool qsa_prefill_attend_groups(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *groups, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  if (!strata::prefill::qsa_groups::supports_capacity(cap)) return false;
+  return prefix_batch_impl<Cells + 1, false, false, true, true, true, true, false, true>(
+      query, pools, groups, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
 }
 // Parallel exponentials with an order-preserving scalar FP32 gather-sum.
 bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *query, const QsaAttnPools &pools,
