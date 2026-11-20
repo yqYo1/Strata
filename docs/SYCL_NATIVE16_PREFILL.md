@@ -859,6 +859,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The 12 device images have 91 distinct kernel names in their ELF
   `.ze_info`; 90 include Strata, among them GDN recurrence, MoE row gather
   and QSA score GEMM. Image membership establishes no per-kernel duration.
+  A read-only comparison of the closed `84c883393` and `568d015ba`
+  cohorts found the same 53 names and sizes in all 32 private caches. The
+  base and selected process in each cohort also matched the full SHA256
+  above and the `config.file` size of 10,461,608. The selected 65537
+  and 117489 cases wrote the same 12 image names during their first long
+  requests, using the journal alignment and its ±0.5 s check. Across the
+  16 processes at each length, median first-minus-own-subsequent prompt
+  time was 10.768 and 10.522 s, with ranges of 8.721–13.408 and
+  8.896–13.942 s. This makes the shorter measured workload a candidate
+  for producing a complete seed on this exact engine and provider.
+  The retained `fde0cdd11` executable embeds the three native ELF images
+  from its linked Xe2 object (recorded SHA256 prefix `f89830ee88`). Its 39
+  named kernel text sections have zero exact name overlap with the 91
+  in the 12 first-long cache images. The present AOT object therefore
+  provides no exact named coverage for this cache set. Module selection
+  and compile time still require runtime evidence.
   The timed provider manifest identifies Level Zero GPU 1.17.39758 (native
   library SHA256 prefix `52e29a60`) and IGC 2.41.5 (`40badd8f`).
   The installed NEO package is 26.35.39758.17-1~24.04~ppa1. Its matching
