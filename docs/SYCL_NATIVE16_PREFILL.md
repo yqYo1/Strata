@@ -279,6 +279,31 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the strong/weak class from the reference and report the candidate's
   changed draft denominator, generation length, time to answer and TG.
   Preserve fixed-input prefill placement, PP and client TTFT independently.
+  The decode-only committed-prefix candidate changes one other piece of work.
+  After the target commits `a+1` rows of a window of width `T`, the MTP round
+  ordinarily computes K/V for all `T` and then recomputes the selected row in
+  its full forward. With `STRATA_SYCL_MTP_DECODE_COMMITTED_PREFIX=1`, ordinary
+  uncoupled MTP4 selects the existing round graph for `a+1` rows. The
+  full forward, subsequent draft chain and host synchronization stay the same.
+  From the two clocked processes in `ordinary_decode_round_cost_v1` at
+  `bf5f94144`, code offered 2340 and accepted 2036 drafts. Prose offered
+  10143 and accepted 3442. Exclude the last verifier window, which generates
+  no further drafts. Of the original 3117 and 13521 K/V catch-up rows, this
+  can skip 303–304 (code) and 6699–6701 (prose). The ranges allow for the
+  unknown last acceptance using its two and one unemitted positions.
+  Elapsed savings need measurement because narrower matvecs can reread the same
+  weights, and the first occurrence of each width can capture another graph.
+  Compare off/on at fixed width and identical placement, separately from the
+  confidence-floor experiment and the proposed graph-drain change. First trace all four actual
+  catch-up widths against verified and accepted counts. Check live draft KV,
+  next-token probabilities, ordinary prefill dispatch, handoff and RESTORE
+  across a page boundary and near capacity. Include the initial single-row
+  and final truncated window. On the same qualified binary take three ordered
+  stock/candidate pairs (AB, BA, AB) of the thinking-enabled long, agent,
+  code and prose suite. Compare subsequent TG and full-answer time per
+  workload, report first-use capture separately. Require faster TG in two
+  pairs and a geometric mean ratio above one per workload to select that
+  workload's route. A failed safety or live-prefix comparison stops timing.
   At the fixed 1256-slot decode placement, resident experts handled 143,358
   of 1,498,080 routed entries for code (9.57%) and 366,480 of 6,492,000
   for prose (5.65%). For a placement comparison, measure held-out hits and
