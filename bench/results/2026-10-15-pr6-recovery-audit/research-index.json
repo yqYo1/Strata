@@ -38507,5 +38507,13 @@
         "result": "Input check used an incorrect control path; no report. Fresh task used the verified relative path."
       }
     }
+  },
+  "prefill-partial-expert-bank-overlap-20261120": {
+    "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "The clean 117489-token control at 9c03b44d0 and 16 official dispatch checks at c6eda71cb identify actual 128-slot placement, a single in-order producer/consumer route and the actual expert traffic. Traced 117K requests at 25f6ea230 spend more than 99% of prompt time inside the batched read. The separate 512-slot early native-copy stall and 64K schedule data are already documented.",
+    "question": "On the measured 128-slot 117489-token split accumulator, can the existing partial expert groups overlap their next source transfer or CPU staging with the current group using the qualified SYCL backend? Trace actual slot/group ownership, first/last readers, source and scratch lifetimes, queue dependencies, physical memory-class uncertainty and budget. Compare no-extra-bank and bounded disjoint-slot alternatives, estimate possible exposed time, and propose one component test or a concrete reason to discard. Do not re-enable the stalled native-copy route.",
+    "consumer": "Main prioritizes an independent long-prefill scheduling candidate after the current KV/gather timing. A safe candidate must show overlapping useful work and a matched whole-request benefit."
   }
 }
