@@ -400,8 +400,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   it does not lower the attention consumer's reads. The 14.38-second 64K
   kernel interval measured the consumer. Time the producer and clean request
   separately before assigning a gain to this change.
-  First run `sycl_qsa_bf16_prefix_test --packed-suffix` with the measured
-  compiler and runtime. Compare all K/V words, flags, padding, output and
+  Use `bench/sycl/prefill_packed_suffix.py` to compile the caller and run
+  `sycl_qsa_bf16_prefix_test --packed-suffix` with the coherent model's
+  compiler and runtime. Its fixture replaces one kernel archive member and
+  checks both full and suffix work against the same executable. Compare all K/V words, flags, padding, output and
   guards against a full pack at page size four, with invalid scales and
   aligned and nonaligned starts. Check source refusal on invalid retained
   extents. Then compare full/suffix with scalar gather and KV reload fixed,
