@@ -2294,6 +2294,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #endif
     const auto t_start = Clock::now();
     const int64_t LB = stage_lb_, LE = stage_le_;
+#ifdef STRATA_ENABLE_SYCL
+    const bool report_score_rows = m.layer_major_active && std::getenv("STRATA_SYCL_PREFILL_RETAIN_SCORE_KEYS");
+    uint64_t score_slices = 0, score_packed_rows = 0, score_reused_rows = 0;
+#endif
 #if defined(STRATA_ENABLE_SYCL)
     enum class PrefillKvReuse { reload, aligned, partial_page };
     static const PrefillKvReuse prefill_kv_reuse = [] {
@@ -3261,6 +3265,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                 m.gemm, st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512,
                                 steps0, nb, m.max_blocks, s, m.sel_scores, m.score_gemm,
                                 m.cs, active, retained_score_rows);
+                            if (report_score_rows) {
+                                ++score_slices;
+                                score_packed_rows += active - retained_score_rows;
+                                score_reused_rows += retained_score_rows;
+                            }
                             if (retain_score_keys) {
                                 if (trace_score_keys) skipped_score_rows += retained_score_rows;
                                 retained_score_rows = active;
@@ -4543,6 +4552,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                      (unsigned long long) fallback_queries, (unsigned long long) fallback_batches);
         std::fflush(stderr);
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (score_slices)
+        std::fprintf(stderr, "strata prefill score packs: layer=%lld slices=%llu packed_live_rows=%llu reused_live_rows=%llu\n",
+                     (long long)LB, (unsigned long long)score_slices, (unsigned long long)score_packed_rows,
+                     (unsigned long long)score_reused_rows);
+#endif
     return true;
 }
 
