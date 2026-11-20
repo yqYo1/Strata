@@ -38320,5 +38320,19 @@
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-round-clock-dependencies-20261120/report.md",
     "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-round-clock-dependencies-20261120-control/review.md",
     "worker_completion": "Main verified task_f91901ce0cb9, ctx_42f6a7b405f1 and worker_done msg_12a23e5416f0, closed the idle worker terminal and checked the inactive scope. Filesystem proof checks 12 protected inputs. Worker-side status was self-reported. Native Luna max reviewed the report."
+  },
+  "xe-trained-profile-phase-isolation-20261120": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "source_commit": "f81d8ced397fbdf71f8cd88b427673f15801d899",
+    "question": "Trace how the two ranked STRP lists influence the measured B570 single-GPU configuration, including resident/native CPU blobs, slot/byte allocation, prefill scratch loans with restoration, and the actual verifier hit map. Identify what can differ with the same 1256 per-layer slots, what must be observed before calling this a decode-only placement selection, and one bounded test of that distinction. Compare the original host ranking pilot, and use both ordinary code and prose.",
+    "prerequisite": "Niko supplied a real mixed-domain profile with separate provenance at 8cb26e609, already present in the fork. Of 1256 effective entries, 400 agree. The new two clock runs give the actual cost on strong-code and weak-prose. Prior work evaluated our single-domain ranking and adaptive placements; this question is about changing membership on the current fixed ordinary engine."
+  },
+  "prefill-kv-gather-clean-dispatch-20261120": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "source_commit": "f81d8ced397fbdf71f8cd88b427673f15801d899",
+    "question": "Audit the new two-length clean benchmark from committed setup through native launch and request end. Compare 16 independent processes per length against the earlier original benchmark and traced/standalone gates. Look for an observable false acceptance or false refusal in configuration, request identity, mode/geometry, exact work, counters or time aggregation. Trace the actual selectors and distinguish GPU traffic from inferred logical bytes. Identify only remaining actionable defects before measurement.",
+    "prerequisite": "f81d8ced3 introduced the actual clean controller for the independent KV, large gather and combined arms. Both measured original lengths and traced plans exist. Earlier owner and mapped-A reports did not cover this clean controller."
   }
 }
