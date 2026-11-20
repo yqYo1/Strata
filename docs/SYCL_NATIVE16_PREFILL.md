@@ -3440,6 +3440,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   comparison must include the real threshold emission, the same typed
   attention, exact selected-cell order, all four tail residues and measured
   producer-plus-consumer time before any model comparison.
+  Source `ce7e64c4d` pairs the ordinary prefill threshold selector with
+  the ordered-exp attention kernel. The candidate emits block IDs during
+  the final selection scan and resolves each rank when attention reads
+  it. Both arms allocate the original explicit-ID capacity. This first
+  comparison isolates the representation and its indexing costs; a
+  smaller allocation needs separate extent, alias and lifetime checks.
+  Run the B570 component with `bench/sycl/prefill_qsa_groups.py`.
+  Use the same in-order queue, four-cell pages and remapped/missing pages.
+  Start with 16 queries at 97 cells and capacity 33. Check empty and dense
+  rows, partial ties, all tail residues, a one-word-short output and a
+  stable CPU cell sort. At the diagnostic geometry, use 6,491 synthetic
+  score rows ending at cell count 39,260, with capacity 2,051, and compare
+  every selected ID, output bit and guard. The measured interval includes
+  selection, packing, attention and completion. Run three fresh processes,
+  six alternating pairs each, reversing first arm by process and round.
+  Each interval must be at least 10 ms; timer p99 must be below 1% of it.
+  Advance only with a lower median paired time in all three processes.
+  This fixture cannot qualify a model fallback: if grouped attention
+  declines after selection, rerun the explicit selector before any
+  consumer of explicit IDs, including diagnostics. Model routing is still open.
   The 117489-token ordinary control at `9c03b44d0` routed 56,394,240 rows
   on each fresh prompt (48 layers, ten experts per token). Across the four
   original bodies, jobs of at least 2334 rows carried 52,160,499–52,231,136
