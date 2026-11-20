@@ -513,6 +513,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `027b2f5b32e267aed193f942f1d7b7e6249340a4c99258f8fd735820875d9b78`
   using the original `a29048486` and `18d0b137e` fixtures. This source
   check leaves compilation, four-way state/dispatch and model speed open.
+  `bench/sycl/prefill_score_decay_model.py` prepares the complete model
+  from that same measured KV/gather parent. Its ten changed compile inputs
+  include the two production changes and the physical-context diagnostic
+  at `1919720d9`. The component timing fixtures stay at their independently
+  measured commits. The model image hash is
+  `5f4aa020ac81f0f49d17680a2d8d738c9a5095fc2c47d617b6eaebbe4f36af73`.
+  Build admission requires both three-process component gains and the real
+  indexer append/restore/overwrite check. Compare the four score/decay
+  combinations with KV reload and scalar gather fixed. The baseline on
+  the new binary must reproduce the old dispatch, state and decoder
+  handoff. Check actual score packing and GDN gate/recurrence dispatch
+  independently before taking clean timings.
   There is a second prefix operation entirely on the GPU. Before ordered-exp
   attention, the pack kernel dequantizes K and V for all live pages and writes
   BF16 operands and bad-scale flags into request scratch. The opt-in
@@ -3463,6 +3475,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reuse. Check the actual per-layer pages, host publication and final-slot
   marker. Standalone completion covers this fallback; the server workloads
   separately exercise the vector gather and the decode state handoff.
+  For the leased server route the diagnostic sibling accepts
+  `CONSUME_FULL <comma-separated token ids>` on stdin with MTP, the checked
+  cache loan, payload audit and stage trace enabled. It requires exactly
+  262144 tokens. The normal server keeps its output reserve. Park the same
+  253919-token prefix with the short divergent request used below, then
+  restore it with an 8225-token suffix. This leaves 8224 actual batched
+  rows and one terminal verifier row. Check RESUME/RESTORE and the mixed
+  bank, GU and scalar/vec8 counts in this last segment in each of the four
+  KV/gather arms. Match its loan generation from mask through publication,
+  audited expert payload and residency table. Require one checked terminal
+  commit and drain, zero emitted or drafted tokens, a full state hash and
+  DONE with zero outputs, followed by an ordinary short request to exercise
+  reset. An effective fallback or an earlier loan does not qualify mixed
+  dispatch. Also reject ordinary GEN with zero output, ordinary GEN with a
+  full prompt and positive output, and a short CONSUME_FULL. The source
+  check at `1919720d9` leaves these protocol and physical-slot runs open.
   Run `bench/sycl/prefill_kv_gather_restore.py` against the coherent build
   after its contiguous and ragged gather checks. All four combinations
   replay the original fresh 32769- and 253919-token prompts, switch to a
