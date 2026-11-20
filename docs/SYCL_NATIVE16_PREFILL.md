@@ -335,7 +335,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Both patch orders on the measured `fde0cdd11` image produce the same two
   source files. The fixed generator hash starts `81fe4b074a`. The MTP hashes
   start `243078ea8c` with the fix alone and `33f2e63708` with both changes.
-  This projection leaves the compiled and live boundary checks pending.
+  With both changes, the pinned `e69d184fc` syntax check passes for the MTP
+  engine unit, normal generator and exact-fill diagnostic, with 754, 804 and
+  805 matched includes respectively. Linking and live boundary checks remain.
+  The reviewed `decode-mtp-committed-width-numerics-20261121` audit finds a
+  distinct Q8_0 matvec dispatch for one row. Row strides and per-row fused
+  GR stay fixed across widths. Compare the earlier accepted K/V cells and
+  scales separately from the selected cell overwritten by the full one-row
+  forward. Check the draft ID and probability with the same staged inputs.
   The reviewed `decode-mtp-selected-row-kv-20261121` source audit supports
   rewriting the selected cell in the full forward after omitting its earlier
   K/V write. A separate change would have to retain the selected residual and
