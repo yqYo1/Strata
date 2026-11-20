@@ -3225,6 +3225,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `466b03d720fa5dbff5a3855c154a6f8e45820d6c6b71a636570a2006789d1838`
   and the relocated 12-target recipe to
   `ee8be44d38b2badea4621a4e04259662ccc38fcc88ada6702dd9c72f79aa0fad`.
+  Clean comparisons explicitly set the KV selector in every arm. At
+  `fde0cdd11` each staged attention layer then reports its reload and
+  reuse counts without the full stage trace. The measured prefix lengths
+  and the retained GU fusion counts can therefore check both dispatches
+  during timing. The four-way build adds this reporting to the pinned
+  image above. Its 1171-file input digest is
+  `f35b6b1a3f0c4f6317bb132caf43d01d19bc06acb26eb50ea4a8f2234e570ca2`.
   The measured parent retains its active consumers until they close. Build in
   a fresh directory after its retirement. Check both switches off against
   the parent's recorded route, expert and draft counts, KV state and output.
@@ -3240,6 +3247,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   counts, including the scalar route. Match state, decode-cache payload
   and output with the original engine and same-build control. The
   cancellation, external tap and physical-final-slot checks remain separate.
+  On the original copy server (`4775de3b0`), replay of the traced
+  32769- and 253919-token inputs found 1647/23317 and 6942/47991
+  gather jobs eligible for the 2334-row threshold. Their restored
+  suffixes had 115/18114 and 120/18039 eligible jobs. In those
+  suffixes the original reload path requested 934,382,592 and
+  6,539,157,504 prefix bytes respectively. Both suffixes start inside a
+  four-token page, so the aligned candidate keeps these reloads. This
+  provides a negative dispatch control and a separate optimization case.
   For scalar/reload (A), scalar/reuse (B), vec8/reload (C), and vec8/reuse
   (D), use the same ordinary expert copies, output-copy policy, ordered-exp
   attention, 8192 chunk, K8V8, model and decode placement. At each of

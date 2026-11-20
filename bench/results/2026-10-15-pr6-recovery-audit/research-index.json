@@ -38264,5 +38264,19 @@
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sweep-bus-model-20261120/report.md",
     "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sweep-bus-model-20261120-control/review.md",
     "worker_completion": "Orca Luna medium task_03c5bb65be0d, ctx_1546dd3778e9, worker_done msg_00771a70a68e. Main checked closure and the idle terminal exited. All 17 protected inputs checked. Worker status query self-reported. Native Luna max reviewed the report."
+  },
+  "prefill-restored-partial-page-20261120": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "question": "The 8209-token restored suffix requested 934382592 prefix bytes at position 32769 and 6539157504 at 253919. Compare full reload, only reloading the final partial page, and reuse of all previously written cells. Audit canonical page bytes and lifetime, including padding and missing entries.",
+    "prerequisite": "Actual restored suffix traces from the four-way state evidence, typed streamed writer and committed aligned-reuse selector."
+  },
+  "prefill-stop-recovery-protocol-20261120": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "question": "Design a deterministic native STOP/restart test for the actual ARC serving protocol. Identify a real synchronization point before final publication, the recoverable checkpoints and state, and which comparison can distinguish a late decode STOP.",
+    "prerequisite": "Full physical fill and fresh/switch/RESTORE controls have closed; the new four-arm model reader names cancellation as its next independent gate."
   }
 }

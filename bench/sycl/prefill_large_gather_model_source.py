@@ -13,6 +13,7 @@ bank = fixture.bank
 MODEL_ROOT = bank.B / 'prefill-large-gather-kv-model-v1'
 KEY = 'prefill_large_gather_kv_model_v1'
 EVIDENCE = '2b4cbdf245221275bec51f70902793a6fe280a20'
+DISPATCH_COUNTS = 'fde0cdd11a72a50aaa0e2105de24996589aef52c'
 CHANGED = (fixture.HEADER, fixture.KERNEL, fixture.FIXTURE, 'src/prefill/prefill.cpp',
            'src/prefill/moe_window.inc', 'src/prefill/layer_major.inc')
 
@@ -70,6 +71,11 @@ def project(foundation_native=None):
                  and source[kv.FILE] == fixture.git_file(kv.CHANGE + '^', kv.FILE),
                  'the KV change must apply directly to the verified gather image')
     source[kv.FILE] = fixture.git_file(kv.CHANGE, kv.FILE)
+    bank.require(bank.signature(bank.stage.hashed(source)) ==
+                 '466b03d720fa5dbff5a3855c154a6f8e45820d6c6b71a636570a2006789d1838'
+                 and source[kv.FILE] == fixture.git_file(DISPATCH_COUNTS + '^', kv.FILE),
+                 'clean dispatch reporting must start from the original two-switch image')
+    source[kv.FILE] = fixture.git_file(DISPATCH_COUNTS, kv.FILE)
     hashes = bank.stage.hashed(source)
     bank.require(set(hashes) == set(original_hashes)
                  and {p for p, digest in hashes.items() if digest != original_hashes[p]} == set(CHANGED),
@@ -81,7 +87,7 @@ def project(foundation_native=None):
     child_recipe = dict(configure=[s.replace(before, after) for s in recipe['configure']],
                         environment={k: v.replace(before, after) for k, v in recipe['environment'].items()},
                         targets=[*recipe['targets'], fixture.TARGET])
-    return source, child_recipe, dict(native_source=kv.CHANGE, gather_source=fixture.CANDIDATE,
+    return source, child_recipe, dict(native_source=DISPATCH_COUNTS, kv_source=kv.CHANGE, gather_source=fixture.CANDIDATE,
         gather_image_sha256=gather_hash, parent_binary=parent['binaries']['strata'],
         parent_source_sha256=parent['source_files']['sha256'], source_sha256=bank.signature(hashes),
         files=len(hashes), changed={p: hashes[p] for p in CHANGED}, recipe_sha256=bank.signature(child_recipe),
@@ -97,7 +103,7 @@ def build_inputs(expected=None):
 
 
 def verify_projection(projection):
-    bank.require(projection['source_sha256'] == '466b03d720fa5dbff5a3855c154a6f8e45820d6c6b71a636570a2006789d1838'
+    bank.require(projection['source_sha256'] == 'f35b6b1a3f0c4f6317bb132caf43d01d19bc06acb26eb50ea4a8f2234e570ca2'
                  and projection['recipe_sha256'] == 'ee8be44d38b2badea4621a4e04259662ccc38fcc88ada6702dd9c72f79aa0fad',
                  'the two independent prefill selectors and the original model recipe are required')
 
@@ -109,7 +115,7 @@ def check_build(row, committed=True):
     native, foundation, source, recipe, projection = build_inputs(row['foundation'])
     pins = bank.stage.source.pin(bank.P, list(row['controller_sources']))
     bank.require(row['controller_sources'] == pins['source_sha256'] and row['projection'] == projection
-                 and row['native_source_commit'] == kv.CHANGE and row['parent_evidence'] == EVIDENCE
+                 and row['native_source_commit'] == DISPATCH_COUNTS and row['parent_evidence'] == EVIDENCE
                  and row['foundation'] == foundation and row['external_inputs'] == native['external_inputs']
                  and row['driver'] == bank.builder.guards.driver_guard() and row['recipe'] == recipe
                  and row['retained_decode_reference'] == bank.builder.decode_reference()
@@ -140,7 +146,7 @@ def prepare():
     pins = bank.stage.source.pin(bank.P, [*controllers, 'tools/sycl', *bank.basis.POLICIES])
     bank.require(all(p in pins['source_sha256'] for p in controllers), 'commit the build and projection controllers')
     row = dict(stage='prepared', source_commit=pins['revision'], controller_sources=pins['source_sha256'],
-               native_source_commit=kv.CHANGE, parent_evidence=EVIDENCE, projection=projection,
+               native_source_commit=DISPATCH_COUNTS, parent_evidence=EVIDENCE, projection=projection,
                source_files=bank.stage.hashed(source), recipe=recipe, foundation=foundation,
                external_inputs=native['external_inputs'], driver=bank.builder.guards.driver_guard(),
                retained_decode_reference=bank.builder.decode_reference(recover=True),
