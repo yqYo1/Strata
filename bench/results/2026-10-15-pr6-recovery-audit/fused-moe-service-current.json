@@ -535739,5 +535739,49 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "prefill_large_gather_device_v1": {
+    "build_sha256": "913e9012c3f98898f9f8597639f2ebec384edc04df43a7cca33cedd7ff317a9f",
+    "controls": "d1a63f7335732c797f1f66c7b8f4522602ddcbba84055d0a85a6bb7295655d6c",
+    "stages": [
+      {
+        "stage": "contiguous",
+        "case": "mixed-gather-vec8-contiguous",
+        "environment_sha256": "e2357291a970dc296dee30b1a279e2de580a7c72b086b3abb95bbdd0b5515920",
+        "providers": {
+          "initialized_ELFs": 37,
+          "sha256": "6a7434323eb08cd14d77b43fc469d69e56f19655b51b9e450d41e0d4adc42424",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "compared_values": 20971520,
+        "invalid_rows": 4,
+        "admission_rejects": 6,
+        "device": "Intel(R) Arc(TM) B570 Graphics",
+        "runtime_driver": "1.17.39758+17",
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
+    "source_commit": "83ae2717d51f5ab54f50787cbcae5acf1a945cff",
+    "measured_model": false,
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/sycl_moe_accum_test",
+      "sha256": "dd6907816387f6fd3372adda34a22f489c9c7ea202f6ab7d78ab996de9dda269",
+      "bytes": 3123824
+    },
+    "native_source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c"
   }
 }
