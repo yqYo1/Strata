@@ -447,6 +447,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   totals. For the two 117489-token workloads, 7441 and 7434 jobs met the
   gather threshold in every arm. The observed dispatch matches the volume
   model at both lengths. Compare untraced request wall times separately.
+  In these 16 traced requests, compare the native batched read, expert
+  loan and checked refill intervals with the committed per-request prompt
+  time. At 65537 tokens the batch occupied 98.87–99.50% of prompt time.
+  Refilling 1124 slots took 388.1–877.9 ms. At 117489 tokens the batch
+  occupied 99.03–99.69% and refill took 386.6–1125.8 ms. Lending took
+  at most 0.6 ms. At 117489 the three intervals together left 3.9–4.2 ms
+  of prompt time unassigned. The batch includes
+  PCIe transfers, CPU waits and GPU kernels. Clean A/B timing and hardware attribution remain separate.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
@@ -547,6 +555,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   padding and repeated GEMM reads. Each of the 36 GDN layers must account
   for all 117488 recurrence rows in 15 chunks. These are predictions for
   the upcoming model run; the component evidence remains separate.
+  Use `bench/sycl/prefill_score_decay_restore.py` to compare all four
+  arms on the measured KV-reload/scalar-gather route. Each process
+  starts with 32769 or 253919 fresh tokens, issues the independent
+  33-token decode-layout request, then restores the original conversation
+  with 8209 new tokens. Check the original state and decoder handoff at
+  `b633f7d69`, then compare each candidate with the new binary's control.
+  On the 8208 batched rows of the near-capacity continuation, the 33 score
+  slices process 2,130,684 live key rows per layer when repacked in full.
+  Retaining keys still packs 131,060 because scratch expires at the chunk
+  boundary. The short cache-window request must produce no dedicated
+  score or decay dispatch. These checks precede the clean timing runs.
   There is a second prefix operation entirely on the GPU. Before ordered-exp
   attention, the pack kernel dequantizes K and V for all live pages and writes
   BF16 operands and bad-scale flags into request scratch. The opt-in
