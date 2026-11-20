@@ -47,6 +47,14 @@ bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *q, const QsaAttnPools &po
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 
+// Long-prefill ordered attention with expanded K and physical Q8 V. Both
+// modes keep the same scratch bounds and invalid-scale flags. Writing the
+// expanded V copy isolates the consumer change in a matched comparison.
+bool prefill_qsa_ordered_exp_q8_value(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, bool write_expanded_copy, void *stream);
+
 // Diagnostic-only online state for one query, KV group and head row. Includes
 // padded head rows12..15; they follow the original state update too. Each
 // ceil(cap/32) row stores FP32 [maximum, alpha, normalizer, tile_sum]. Caller

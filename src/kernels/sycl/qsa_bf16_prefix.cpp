@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <cstddef>
+#include <limits>
 #include <sycl/ext/oneapi/bfloat16.hpp>
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
 
@@ -68,9 +69,12 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 }
 } // namespace
 
+enum class PrefillValueSource { PackedBF16, Q8WithExpandedCopy, Q8 };
+
 template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false,
          bool CacheQueries = false, bool VectorK4 = false, bool VectorV4 = false,
-         bool OrderedExp = false, bool CaptureState = false>
+         bool OrderedExp = false, bool CaptureState = false,
+         PrefillValueSource ValueSource = PrefillValueSource::PackedBF16>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
@@ -82,6 +86,9 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
   static_assert(!VectorK4 || (CacheQueries && !TilePacked));
   static_assert(!VectorV4 || (VectorK4 && !TilePacked));
   static_assert(!OrderedExp || (VectorV4 && !SubgroupSoftmax && !TilePacked));
+  constexpr bool direct_value = ValueSource != PrefillValueSource::PackedBF16;
+  constexpr bool write_expanded_value = ValueSource != PrefillValueSource::Q8;
+  static_assert(!direct_value || (OrderedExp && !CaptureState && VectorV4));
   static_assert(Dim % 4 == 0);
   // Reuse the qualified admission contract; it never enqueues or waits.
   if (!qsa_prompt_attn_bf16_validate(query, pools, ids, steps, cap, shape,
@@ -98,6 +105,12 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
   const size_t rows_count = checked_count(checked_count(bounds.physical_pages, 2), shape.page_size);
   const size_t active_pages = (uint64_t(live_cells) + shape.page_size - 1) / shape.page_size;
   const size_t active_rows = checked_count(checked_count(active_pages, 2), shape.page_size);
+  // Reuse the ordinary row tile's 256 bytes as two 32-bit row tables.
+  // Reject an unsupported geometry before submitting either kernel.
+  if constexpr (direct_value) {
+    constexpr size_t limit = std::numeric_limits<int32_t>::max();
+    if (rows_count > limit || active_rows > limit) return false;
+  }
   const size_t packed_bytes = checked_count(checked_count(active_rows, Dim), 2);
   const size_t query_bytes = checked_count(checked_count(checked_count(queries, 24), Dim), 2);
   const Span pk{scratch.k, packed_bytes}, pv{scratch.v, packed_bytes},
@@ -152,10 +165,12 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
       float k = 0.f, v = 0.f;
       if (valid) {
         k = float(pools.k_q[source_row * Dim + d]) * f32_from_f16(pools.k_scale[source_row * 4 + d / 64]);
-        v = float(pools.v_q[source_row * Dim + d]) * f32_from_f16(pools.v_scale[source_row * 4 + d / 64]);
+        if constexpr (write_expanded_value)
+          v = float(pools.v_q[source_row * Dim + d]) * f32_from_f16(pools.v_scale[source_row * 4 + d / 64]);
       }
       packed.k[row * Dim + d] = sycl::bit_cast<uint16_t>(BFloat(k));
-      packed.v[row * Dim + d] = sycl::bit_cast<uint16_t>(BFloat(v));
+      if constexpr (write_expanded_value)
+        packed.v[row * Dim + d] = sycl::bit_cast<uint16_t>(BFloat(v));
     }
   });
   // queue_for requires in_order; no host tensor work or wait is introduced for
@@ -171,7 +186,8 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
     sycl::local_accessor<MatrixTile<16 * Cells>, 1> pstorage(1, handler);
     sycl::local_accessor<float, 1> scores(16 * ScoreStride, handler), maximum(16, handler),
                                   normalizer(16, handler), alpha(16, handler);
-    sycl::local_accessor<int64_t, 1> rows(Cells, handler);
+    using RowIndex = std::conditional_t<direct_value, int32_t, int64_t>;
+    sycl::local_accessor<RowIndex, 1> rows(direct_value ? 2 * Cells : Cells, handler);
     sycl::local_accessor<int, 1> bad_head(16, handler);
     handler.parallel_for(sycl::nd_range<1>(size_t(queries) * 2 * Workgroup, Workgroup),
         [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
@@ -231,16 +247,21 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
       }
       auto publish_rows = [&](int64_t first) {
         if (tid < Cells) {
-          int64_t row = -1;
+          int64_t row = -1, physical = -1;
           if (first + tid < count) {
             const int64_t cell = ids[batch * cap + first + tid];
             const int64_t logical = cell >= 0 ? cell / shape.page_size : -1;
             const int page = logical >= 0 && logical < bounds.logical_pages
                 ? pools.page_table[logical] : -1;
-            if (cell < live_cells && page >= 0 && page < bounds.physical_pages)
-              row = (logical * 2 + kv_head) * shape.page_size + cell % shape.page_size;
+            if (cell < live_cells && page >= 0 && page < bounds.physical_pages) {
+              const int64_t offset = cell % shape.page_size;
+              row = (logical * 2 + kv_head) * shape.page_size + offset;
+              if constexpr (direct_value)
+                physical = (int64_t(page) * 2 + kv_head) * shape.page_size + offset;
+            }
           }
-          rows[tid] = row;
+          rows[tid] = static_cast<RowIndex>(row);
+          if constexpr (direct_value) rows[Cells + tid] = static_cast<RowIndex>(physical);
           if (row >= 0) local_bad |= packed.bad_rows[row];
         }
       };
@@ -374,7 +395,21 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
             }
           }
         }
-        if constexpr (VectorV4) {
+        if constexpr (direct_value) {
+          for (int i = tid; i < Cells * (Dim / 4); i += Workgroup) {
+            const int cell = i / (Dim / 4), d = (i % (Dim / 4)) * 4;
+            const int64_t physical = rows[Cells + cell];
+            sycl::vec<int8_t, 4> codes{int8_t(0)};
+            float scale = 0.f;
+            if (physical >= 0) {
+              codes.load(0, sycl::address_space_cast<sycl::access::address_space::global_space,
+                         sycl::access::decorated::no>(pools.v_q + physical * Dim + d));
+              scale = f32_from_f16(pools.v_scale[physical * 4 + d / 64]);
+            }
+            for (int j = 0; j < 4; ++j)
+              kv[cell * Dim + d + j] = BFloat(float(int8_t(codes[j])) * scale);
+          }
+        } else if constexpr (VectorV4) {
           for (int i = tid; i < Cells * (Dim / 4); i += Workgroup) {
             const int cell = i / (Dim / 4), d = (i % (Dim / 4)) * 4;
             const int64_t row = rows[cell];
@@ -480,6 +515,18 @@ bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *query, const QsaAttnPools
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1, false, false, true, true, true, true>(query,
       pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
+}
+bool prefill_qsa_ordered_exp_q8_value(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, bool write_expanded_copy, void *stream) {
+  if (write_expanded_copy)
+    return prefix_batch_impl<Cells + 1, false, false, true, true, true, true, false,
+        PrefillValueSource::Q8WithExpandedCopy>(query, pools, ids, steps, cap, shape,
+        output, queries, bounds, live_cells, scratch, stream);
+  return prefix_batch_impl<Cells + 1, false, false, true, true, true, true, false,
+      PrefillValueSource::Q8>(query, pools, ids, steps, cap, shape, output, queries,
+      bounds, live_cells, scratch, stream);
 }
 bool qsa_bf16_prefix_state_probe_batch(const uint16_t *query, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,

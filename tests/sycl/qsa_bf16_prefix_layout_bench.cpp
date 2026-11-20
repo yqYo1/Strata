@@ -48,7 +48,7 @@ constexpr const char *baseline_name="kvec4", *candidate_name="kvvec4";
 std::shared_ptr<sycl_backend::Runtime> rt;
 int process_id=0;
 void require(bool x,const char *s) { if (!x) throw std::runtime_error(s); }
-#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT) || defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
 void check_timer() {
   std::array<int64_t, 10000> intervals{};
   for (auto &ns : intervals) {
@@ -89,11 +89,25 @@ void gate(bool enabled,const char *phase) {
   if (!enabled) return;
   std::cout<<"QSA_BF16_READY "<<phase<<'\n';require(std::cin.get()=='X',"Main gate token");
 }
-void run(int cells,int queries,int cap,bool clustered) {
-  constexpr int Dim=256,Heads=24,KV=2,Page=16;
+void run(int cells,int queries,int cap,bool clustered,bool identity=false) {
+  constexpr int Dim=256,Heads=24,KV=2;
+#if defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
+  constexpr int Page=4;
+#else
+  constexpr int Page=16;
+#endif
   const int pages=(cells+Page-1)/Page,rows=pages*KV*Page;
   std::vector<int32_t> table(pages),ids(size_t(queries)*cap),steps(size_t(queries)*kStepCount);
   for (int p=0;p<pages;++p) table[p]=p%13==5 ? -1 : pages-1-p;
+#if defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
+  require(pages>=6 && cap>=6,"Q8 V fixture needs distinct page cases and selected cells");
+  if (identity) {
+    for (int p=0;p<pages;++p) table[p]=p;
+  } else {
+    table[1]=table[0]; // Deliberate physical alias between two logical pages.
+    table[2]=pages;    // Also exercise a positive out-of-range physical page.
+  }
+#endif
   std::vector<int8_t> k(size_t(rows)*Dim),v(k.size());
   for (size_t i=0;i<k.size();++i) {
     k[i]=int8_t(int((uint64_t(i)*1664525+1013904223)%255)-127);
@@ -117,6 +131,12 @@ void run(int cells,int queries,int cap,bool clustered) {
       ids[size_t(b)*cap+c]=cell;
     }
   }
+#if defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
+  for (int b=0;b<queries;++b) {
+    auto *row=ids.data()+size_t(b)*cap;
+    row[0]=row[1]=0; row[2]=Page; row[3]=2*Page; row[4]=5*Page; row[5]=cells-1;
+  }
+#endif
   const uint16_t marker=bf16(1234.f);const int32_t bad_marker=0x12345678;
   Buffer<uint16_t> dq(q.size()),dks(ks.size()),dvs(vs.size()),out(q.size()+32);
   Buffer<int8_t> dk(k.size()),dv(v.size());
@@ -156,7 +176,63 @@ void run(int cells,int queries,int cap,bool clustered) {
         b[i]==marker && b[b.size()-16+i]==marker && c[i]==bad_marker &&
         c[c.size()-16+i]==bad_marker && y[i]==marker && y[y.size()-16+i]==marker,"output/scratch guards");
   };
-#if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+#if defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
+  const std::vector<uint16_t> blank(q.size()+32,marker);
+  const auto submit_value = [&](int arm) {
+    out.put(blank);
+    const auto start=std::chrono::steady_clock::now();
+    bool admitted;
+    if (arm==0) {
+      admitted=qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+          out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute());
+    } else {
+      admitted=prefill_qsa_ordered_exp_q8_value(dq.data(),pools,di.data(),ds.data(),cap,shape,
+          out.data()+16,queries,{pages,pages},cells,scratch,arm==1,&rt->compute());
+    }
+    require(admitted,"ordered Q8 V admission");
+    rt->wait();
+    return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
+  };
+  submit_value(0);
+  const auto reference=out.get();
+  require(std::all_of(reference.begin()+16,reference.end()-16,[=](uint16_t x) {
+    return x!=marker && std::isfinite(std::bit_cast<float>(uint32_t(x)<<16));
+  }),"incomplete finite baseline");
+  submit_value(1); guards(); require(out.get()==reference,"direct V with original producer");
+  const std::vector<uint16_t> untouched(size_t(rows)*Dim+32,marker);
+  pv.put(untouched);
+  submit_value(2); guards();
+  require(out.get()==reference && pv.get()==untouched,"direct V read or wrote the expanded value buffer");
+  if (queries<100) {
+    const auto saved=vs;
+    // Inject a nonfinite scale into just head zero of a guaranteed selected
+    // physical row. Only that head group should publish the canonical NaN.
+    const size_t physical=size_t(table[0])*KV*Page;
+    vs[physical*4+1]=0x7c00; dvs.put(vs);
+    submit_value(0);
+    const auto invalid=out.get();
+    for (size_t i=0;i<q.size();++i)
+      require(invalid[i+16]==(i/Dim%Heads<12 ? uint16_t(0x7fc0) : reference[i+16]),
+              "selected V-scale diagnostic changed the wrong head");
+    for (int arm=1;arm<3;++arm) {
+      submit_value(arm); guards(); require(out.get()==invalid,"Q8 V diagnostic bit mismatch");
+    }
+    vs=saved; dvs.put(vs);
+  }
+  // All six permutations balance earlier arms as well as positions.
+  constexpr std::array<std::array<int,3>,6> order{{
+      {0,1,2},{1,2,0},{2,0,1},{2,1,0},{0,2,1},{1,0,2}}};
+  const int rounds = queries<100 ? 0 : 6;
+  for (int round=0;round<rounds;++round) for (int slot=0;slot<3;++slot) {
+    const int arm=order[(round+process_id)%6][slot];
+    const double ms=submit_value(arm);
+    guards(); require(out.get()==reference,"complete timed V output bits");
+    std::cout<<"q8_v_sample cells="<<cells<<" queries="<<queries<<" cap="<<cap
+        <<" identity="<<identity<<" clustered="<<clustered<<" round="<<round<<" slot="<<slot
+        <<" arm="<<arm<<" ms="<<std::setprecision(12)<<ms<<'\n';
+  }
+  const int sample_count=rounds*3;
+#elif defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
   auto submit_ordered = [&] {
     require(qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
@@ -235,10 +311,16 @@ int main(int argc,char **argv) {
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
         <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gated,"runtime-ready");
-#if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
+#if defined(STRATA_QSA_PREFILL_PV_COMPONENT) || defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
     check_timer();
 #endif
-#if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
+#if defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
+    if (std::string(argv[1])=="--smoke") {
+      run(97,3,33,false); run(97,3,33,false,true);
+    } else {
+      run(39260,6491,2051,false); run(39260,6491,2051,false,true); run(39260,6491,2051,true,true);
+    }
+#elif defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
     if (source_admission) bench::fullfit_overlap::source_admission(rt);
     else if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else run(65536,8192,2051,false);
