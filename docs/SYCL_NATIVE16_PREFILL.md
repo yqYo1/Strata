@@ -353,6 +353,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   For the placement and confidence experiments record the new verifier
   duration and yield together. Faster draft generation alone cannot close
   this gap at the measured target-verifier cost.
+  To distinguish layer-graph execution from the host's wait on the same
+  event, sample the ordinary, unsplit 48-layer target verifier at width four.
+  Set `STRATA_SYCL_DECODE_SEGMENT_CLOCK_REQUEST` before engine startup to
+  the native request ID of one sustained workload. The SYCL server instantiates
+  profiled layer graphs for eligible decode shapes. Only eligible windows
+  9–12 of the selected request query clocks. The first graph includes input
+  staging and the first layer's pre-router work. Interior segments span the
+  preceding layer's post-router work and the next layer's pre-router work.
+  Segment 48 contains the final layer's post-router work and output head.
+  Shared/resident and PCIe expert graphs retain their original instantiation.
+  The host reads the reusable event after its existing completion wait and
+  before the next launch replaces it. Report the device execution envelope,
+  submit-to-start delay, host wait and CPU expert callback wall time separately.
+  Their sum would double-count overlapping time.
+  First check the two compiled translation units against the retained build's
+  production SYCL recipe and exercise the reader on ordered and damaged rows.
+  For model evidence use a coherent reference and candidate build, then
+  separate same-binary clean/profiled/profiled/clean processes for each
+  thinking-enabled code and prose workload. Keep the current ordinary capture,
+  stock expert placement and T4 decode settings. Check native request IDs,
+  accepted/offered drafts, emitted tokens and expert work between each pair.
+  Require all 196 consecutive valid event samples per profiled process,
+  normal closure, no new Xe faults and within 1.10× in both directions on
+  sustained per-token time. Inspect each transition's graph and host time
+  separately. A failed overhead screen leaves the clocks diagnostic only.
+  This observer has no model timing or speed claim yet.
   Before training another ranking, compare the shipped Niko Intel profile
   to the current ordinary profile (source `8cb26e609`, data already in
   this fork at `97e9c9847`). On the actual 1256-slot layout, layers
@@ -614,6 +640,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the 256 MiB calibration rate. The larger observed time differences
   leave copy issue, synchronization, actual copy size, overlap and
   run variation to distinguish before assigning the gain to PCIe bandwidth.
+  The Q8 prefix helper issues four direct SYCL queue copies per prefix in
+  `src/kernels/sycl/kv_stream.cpp`. The compatibility memcpy counters miss
+  this call path. Use request-scoped direct call and event observations for
+  the 8192–114688-cell prefixes, keeping scalar gather and clean timing fixed.
   The first six independent processes through `6b5e834e1` took 9.93–12.84 s
   longer on their first long prompt than on their subsequent median. All six
   used private cache directories with `SYCL_CACHE_PERSISTENT=0`, and all wrote
