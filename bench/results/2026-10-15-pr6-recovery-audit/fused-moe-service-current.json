@@ -531659,6 +531659,145 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "1",
+        "passed": true,
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-stage-identity-v1/sycl_qsa_prefill_stage_identity_bench",
+          "--component",
+          "1"
+        ],
+        "environment_sha256": "0ea420d9b0f96857d530494b897d8fedc747510d13239e2a273dd83a59b678cb",
+        "clock": {
+          "calls": "10000",
+          "median_ns": "20",
+          "p99_ns": "30"
+        },
+        "points": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                8.731246,
+                8.82429,
+                9.140214,
+                8.769056,
+                9.05838,
+                8.767253
+              ],
+              "stage_identity": [
+                8.825653,
+                8.901295,
+                8.857282,
+                8.778123,
+                9.284856,
+                8.784065
+              ]
+            },
+            "median_time_ratio": 1.005092209293218
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                232.812686,
+                232.972436,
+                232.538161,
+                233.4099,
+                233.923918,
+                232.128063
+              ],
+              "stage_identity": [
+                237.746945,
+                237.854519,
+                237.586978,
+                237.279281,
+                237.557865,
+                237.045073
+              ]
+            },
+            "median_time_ratio": 1.0200945040060767
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "samples_ms": {
+              "ordered_exp": [
+                139.988218,
+                139.896376,
+                140.04201,
+                139.994131,
+                139.990244,
+                139.875279
+              ],
+              "stage_identity": [
+                143.77383,
+                143.930085,
+                144.095186,
+                143.913315,
+                144.008073,
+                143.677122
+              ]
+            },
+            "median_time_ratio": 1.0280912251028795
+          },
+          {
+            "cap": 2051,
+            "pattern": "blocks4",
+            "samples_ms": {
+              "ordered_exp": [
+                169.41142,
+                168.407344,
+                169.861477,
+                168.680669,
+                172.646783,
+                170.019927
+              ],
+              "stage_identity": [
+                169.271207,
+                169.792548,
+                168.940237,
+                169.632237,
+                168.763866,
+                169.584859
+              ]
+            },
+            "median_time_ratio": 0.9987713990605032
+          }
+        ],
+        "validated_cases": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2621042,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "device": [
+          "Intel(R) Arc(TM) B570 Graphics",
+          "1.17.39758+17"
+        ],
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "model_tested": false
