@@ -3357,6 +3357,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   6,539,157,504 prefix bytes respectively. Both suffixes start inside a
   four-token page, so the aligned candidate keeps these reloads. This
   provides a negative dispatch control and a separate optimization case.
+  On the two-switch build, the fresh 32769-token request with scalar
+  gather requested 622,854,144 prefix H2D bytes in 144 copies on the
+  control and 51,904,512 bytes in 12 copies with aligned reuse. Both
+  wrote 415,236,096 bytes to the host mirror. On the restored 8209-token
+  suffix both requested 934,382,592 prefix bytes. The vec8-only arm
+  matched the control's copies and used the vector gather on 1,647 jobs
+  (7,937,266 rows) on the fresh prompt. All three arms passed the same
+  state and handoff checks with no new fault through `28e991b28`.
+  The counters measure requested copies. Clean prompt timing follows
+  separately.
   A separate opt-in prefill candidate, `STRATA_SYCL_PREFILL_KEEP_KV_STAGE=partial-page`,
   reuses complete pages only after the preceding typed Q8 append in the
   same layer invocation. At a nonaligned successor it refreshes the one
@@ -3421,6 +3431,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The first GCC invocation at `1839471c1` rejected the nested padding
   lambda's reference to the locally captured sentinel. The corrected fixture
   uses the same sentinel value at file scope and keeps the original checks.
+  At `e39aca1e0` the host check passed all 3,240 cases and reproduced
+  3,231,810 explicit cell IDs in order. Full-width rows used 513 or 514
+  group IDs within the 515-word row including its header.
+  The executable SHA256 was
+  `5a0a13ffbd16a5d717be7698bc023e1d740169be971364dcc84c264de8e5a357`.
   The host format check cannot qualify the selector or attention. A device
   comparison must include the real threshold emission, the same typed
   attention, exact selected-cell order, all four tail residues and measured
