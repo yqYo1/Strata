@@ -2340,6 +2340,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     // Observe the route only when an explicit layout comparison is requested.
     // These are host call/row counts; no device timers, waits or kernel changes.
     const bool observe_attn_dispatch = std::getenv("STRATA_PREFILL_ATTN_LAYOUT") != nullptr;
+#ifdef STRATA_ENABLE_SYCL
+    const bool report_gdn_decay = m.layer_major_active && std::getenv("STRATA_SYCL_PREFILL_GDN_PRECOMPUTE_DECAY");
+    uint64_t gdn_reference_rows = 0, gdn_stored_rows = 0, gdn_decay_chunks = 0;
+#endif
     uint64_t matrix_chunks = 0, matrix_queries = 0, fallback_chunks = 0,
              fallback_queries = 0, fallback_batches = 0;
     // the next stage reads chunk c on a thread while this one reads chunk c + 1 (declared first: an early return
@@ -3027,6 +3031,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         pt.mark(kPfGdnRec,m.cs);
                         recurrence(state,b.h,b.gate,b.beta,b.z,
                             static_cast<const float*>(wnm->data),EPS,b.raw,b.output,T,m.cs);
+                        if (report_gdn_decay) {
+                            ++gdn_decay_chunks;
+                            if (precompute_decay) gdn_stored_rows += T;
+                            else gdn_reference_rows += T;
+                        }
                         if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }
                         pt.mark(kPfGdnOut,m.cs);
                         if(!native_proj16(m.gemm,wo,b.output,m.bo_b16,T,v.name("ssm_out.weight"),err))return false;
@@ -4524,6 +4533,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         }
         std::fprintf(stderr, "strata prefill: GDN_HASH %s\n", line.c_str());
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (gdn_decay_chunks)
+        std::fprintf(stderr, "strata prefill GDN decay: layer=%lld chunks=%llu reference_rows=%llu stored_rows=%llu\n",
+                     (long long)LB, (unsigned long long)gdn_decay_chunks, (unsigned long long)gdn_reference_rows,
+                     (unsigned long long)gdn_stored_rows);
+#endif
     if (ro.requested)
         ro.emit(m.compact_moe_fp16, pt.on, pt.ms, ms_since(t_start), stats_.experts_streamed,
                 stats_.experts_dma, stats_.experts_resident, stats_.ms_experts_host);
