@@ -8220,6 +8220,11 @@ int main(int argc, char** argv) {
                     if (pk.lookup) { T = pk.t; from_sfx = true; }
                 }
             }
+#ifdef STRATA_ENABLE_SYCL
+            // Limit the final width after suffix lookup can replace the MTP proposal.
+            if (use_mtp && p < o.max_context)
+                T = static_cast<int>(std::min<int64_t>(T, o.max_context - p));
+#endif
             const bool timed_round = !first_window;
             ++window_hist[(size_t) T];
             if (p + T > o.max_context) {

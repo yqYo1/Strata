@@ -320,6 +320,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The `4d2efd356` translation unit passes the retained production SYCL
   syntax check with all 754 included files matching the recorded compiler
   inputs. Linking, live state checks and timing remain pending.
+  Qualify the context-boundary fix independently. The CLI admits `n + max_new`
+  equal to the physical capacity. With a native pack, `n = capacity - 2`,
+  width four and two requested outputs, the initial one-row verification fits.
+  The next width-four window can fail the CLI range check before emitting the
+  second output. Clip the final width after suffix lookup. Bound MTP catch-up,
+  the standalone first draft and every subsequent draft step by the drafter's
+  own `max_cells`, before staging or capture. The reference CLI has enough room
+  for this width-four case's draft steps, so reproduce its refusal on a small
+  exact-fit request. On the fixed image require both outputs, an actual
+  truncated verifier window, and quiet validation. Then check width eight,
+  the first-draft path, a 262142-input/2-output request and the separate
+  exact-262144 no-output fill. Keep the safety fix in both width-trial arms.
+  Both patch orders on the measured `fde0cdd11` image produce the same two
+  source files. The fixed generator hash starts `81fe4b074a`. The MTP hashes
+  start `243078ea8c` with the fix alone and `33f2e63708` with both changes.
+  This projection leaves the compiled and live boundary checks pending.
   The reviewed `decode-mtp-selected-row-kv-20261121` source audit supports
   rewriting the selected cell in the full forward after omitting its earlier
   K/V write. A separate change would have to retain the selected residual and
