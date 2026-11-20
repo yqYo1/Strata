@@ -2,6 +2,7 @@
 // Quantized-input numerical correctness and FP32 selection changes are distinct.
 // Uses this repository's Runtime/Allocation and existing public kernel APIs.
 // This is synthetic component evidence, not model throughput or task quality.
+#include "strata/kernels/native_qsa_indexer.hpp"
 #include "strata/kernels/qsa_select.hpp"
 #include "strata/prefill/qsa_score_gemm.hpp"
 #include "strata/prefill/gemm.hpp"
@@ -13,6 +14,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -639,6 +641,141 @@ void check_prefill_score_keys(bool large, int timing_process) {
   std::cout << "prefill_score_keys batches=" << compared << " capacity_blocks=" << blocks
             << " scores_ids_exact=1 packed_pad_guards=1 reset=1 bounds=1 sticky=1" << std::endl;
 }
+// Use the model's indexer, scorer and radix4 selector in queue order. The
+// host snapshot models restoring an incomplete four-cell block. The two
+// score arenas stand in for attention storage borrowed during each SELECT.
+void check_indexer_score_boundary() {
+  constexpr int capacity = 2560, prefix = 2299, count = 14;
+  constexpr int score_stride = capacity / 4 + 2, id_stride = 2051;
+  constexpr std::array<int, 4> slices{1, 1, 4, 8};
+  constexpr int max_queries = 8;
+  const auto shape = qsa_real_shapes();
+  const size_t workspace = prefill::qsa_score_gemm::workspace_bytes(max_queries, score_stride);
+  const size_t arena_bytes = workspace + 512;
+  const std::vector<uint8_t> initial_arena(arena_bytes, 0xa5);
+  const std::vector<float> initial_scores(size_t(count) * score_stride + 2 * guard, score_canary);
+  const std::vector<int32_t> initial_ids(size_t(count) * id_stride + 2 * guard, id_canary);
+  Buffer<float> raw_prefix(size_t(prefix)*128), raw_suffix(size_t(count)*128), gamma(128);
+  Buffer<float> index_tail(3*128), dead(128), pooled(size_t(score_stride)*128);
+  Buffer<int32_t> block_position(1), meta(size_t(count)*kStepCount);
+  Buffer<float> queries(size_t(count)*512);
+  Buffer<uint8_t> arenas[2]{Buffer<uint8_t>(arena_bytes), Buffer<uint8_t>(arena_bytes)};
+  Buffer<float> scores[2]{Buffer<float>(initial_scores.size()), Buffer<float>(initial_scores.size())};
+  Buffer<int32_t> ids[2]{Buffer<int32_t>(initial_ids.size()), Buffer<int32_t>(initial_ids.size())};
+  Buffer<uint32_t> status[2]{Buffer<uint32_t>(1), Buffer<uint32_t>(1)};
+  prefill::qsa_score_gemm::Scratch scratch[2];
+  prefill::Gemm gemm;
+  Drain drain;
+  std::string error;
+  auto &queue = rt->compute();
+  require(queue.has_property<sycl::property::queue::in_order>() && workspace % 2 == 0,
+          "score boundary requires ordered access to the borrowed workspace");
+  require(gemm.init_external(&queue, nullptr, 0, nullptr, 0, error), "score boundary GEMM init");
+  uint32_t seed = 0x346bcfd9u;
+  const auto values = [&](size_t n) {
+    std::vector<float> result(n);
+    for (auto &x : result) x = value(seed);
+    return result;
+  };
+  raw_prefix.put(values(raw_prefix.count));
+  gamma.put(std::vector<float>(128, 1.f));
+  auto zero = [](Buffer<float> &b) { b.put(std::vector<float>(b.count, 0.f)); };
+  zero(index_tail); zero(dead); zero(pooled); block_position.put({-1});
+  const QsaIndexerBuffers state{index_tail.data(), dead.data(), pooled.data(), block_position.data()};
+  const auto append = [&](Buffer<float> &raw, int n, int start) {
+    native_qsa_indexer_append_batch(raw.data(), n, start, 0, gamma.data(), 1e-6f,
+                                    state, shape, capacity, rope_scaling(), &queue);
+  };
+  append(raw_prefix, prefix, 0);
+  const auto saved_tail = index_tail.get(), saved_dead = dead.get(), saved_pooled = pooled.get();
+  const auto saved_position = block_position.get();
+  require(saved_position[0] == (prefix/4-1)*4, "incomplete block snapshot position");
+  std::vector<int32_t> steps(meta.count);
+  for (int i = 0; i < count; ++i) qsa_step_fill(steps.data()+size_t(i)*kStepCount, prefix+i, shape);
+  meta.put(steps);
+  queries.put(values(queries.count));
+  for (int arm = 0; arm < 2; ++arm) {
+    arenas[arm].put(initial_arena);
+    status[arm].put({0});
+    scratch[arm] = prefill::qsa_score_gemm::carve(arenas[arm].data()+256, workspace,
+                                                   status[arm].data(), max_queries, score_stride);
+  }
+  const auto overwrite = [&](int arm) {
+    queue.fill(reinterpret_cast<uint16_t*>(arenas[arm].data()+256), uint16_t{0x3800}, workspace/2);
+  };
+  const auto score = [&](int arm, int offset, int rows, int retained) {
+    const int active = steps[size_t(offset+rows-1)*kStepCount+kStepNBid] + 1;
+    auto *st = meta.data()+size_t(offset)*kStepCount;
+    auto *out = scores[arm].data()+guard+size_t(offset)*score_stride;
+    prefill::qsa_score_gemm::prefill_scores_with_retained_keys(gemm, state.pooled, state.dead,
+        queries.data()+size_t(offset)*512, st, rows, score_stride, shape, out, scratch[arm],
+        &queue, active, retained);
+    qsa_block_topk_prefill(out, st, rows, score_stride, id_stride, shape,
+                           ids[arm].data()+guard+size_t(offset)*id_stride, &queue, active);
+    return active;
+  };
+  std::vector<float> first_pooled;
+  for (int epoch = 0; epoch < 2; ++epoch) {
+    if (epoch) {
+      index_tail.put(saved_tail); dead.put(saved_dead); pooled.put(saved_pooled);
+      block_position.put(saved_position);
+    }
+    raw_suffix.put(values(raw_suffix.count));
+    for (int arm = 0; arm < 2; ++arm) { scores[arm].put(initial_scores); ids[arm].put(initial_ids); }
+    overwrite(0); overwrite(1);
+    append(raw_suffix, count, prefix);
+    int offset = 0, retained = 0;
+    for (int rows : slices) {
+      score(0, offset, rows, 0);
+      retained = score(1, offset, rows, retained);
+      offset += rows;
+    }
+    require(offset == count, "wrong score boundary query count");
+    const auto reference = scores[0].get();
+    const auto chosen = ids[0].get();
+    require(bit_equal(reference, scores[1].get()) && chosen == ids[1].get(),
+            "restored indexer changed live scores, selected IDs or guards");
+    for (int i = 0; i < count; ++i) {
+      const auto *st = steps.data()+size_t(i)*kStepCount;
+      auto first = reference.begin()+guard+size_t(i)*score_stride;
+      require(std::all_of(first, first+st[kStepNBid]+1, [](float f){ return std::isfinite(f) && f != score_canary; })
+              && std::all_of(first+st[kStepNBid]+1, first+score_stride, [](float f){ return f == score_canary; }),
+              "retained score boundary or padding");
+      auto selected = chosen.begin()+guard+size_t(i)*id_stride;
+      require(st[kStepWidth] == id_stride && selected[0] >= 0 && selected[id_stride-1] < st[kStepNKv]
+              && std::adjacent_find(selected, selected+id_stride, std::greater_equal<int32_t>()) == selected+id_stride,
+              "invalid causal selection or selected ID order");
+    }
+    const auto tail_end = (prefix/4)*128;
+    const auto updated = pooled.get();
+    require(std::equal(saved_pooled.begin(), saved_pooled.begin()+tail_end, updated.begin()),
+            "indexer changed a completed prefix block");
+    if (epoch) require(!std::equal(updated.begin()+tail_end, updated.begin()+tail_end+128,
+                                    first_pooled.begin()+tail_end), "restored suffix did not change its first block");
+    else first_pooled = updated;
+    for (int arm = 0; arm < 2; ++arm) {
+      const auto image = arenas[arm].get();
+      require(std::all_of(image.begin(), image.begin()+256, [](uint8_t x){return x==0xa5;}) &&
+              std::all_of(image.end()-256, image.end(), [](uint8_t x){return x==0xa5;}) &&
+              status[arm].get()[0] == 0, "borrowed arena guard or status");
+    }
+    for (int i=0; i<guard; ++i)
+      require(reference[i]==score_canary && reference[reference.size()-1-i]==score_canary &&
+              chosen[i]==id_canary && chosen[chosen.size()-1-i]==id_canary, "score boundary output guard");
+    // Legal extents and finite initialized memory. A wrongly persistent
+    // counter must give observable wrong scores after an attention overwrite.
+    overwrite(1);
+    score(1, 0, 1, steps[kStepNBid]);
+    const auto stale = scores[1].get();
+    const auto stale_begin = stale.begin() + guard;
+    require(status[1].get()[0] == 0 &&
+            std::all_of(stale_begin, stale_begin + steps[kStepNBid], [](float f){ return std::isfinite(f); }) &&
+            !std::equal(reference.begin()+guard, reference.begin()+guard+steps[kStepNBid], stale_begin),
+            "score comparison failed to detect stale ownership");
+  }
+  std::cout << "indexer_score_boundary prefix=" << prefix << " suffix=" << count
+            << " epochs=2 slices=4 output_bits=PASS stale_control=PASS" << std::endl;
+}
 } // namespace
 int main(int argc, char **argv) {
   std::cout << std::setprecision(12);
@@ -648,6 +785,7 @@ int main(int argc, char **argv) {
     int context = 2113, capacity = 32768, queries = 3, repetitions = 1;
     bool suite = false;
     int key_sequence = 0, key_timing_process = -1;
+    bool indexer_boundary = false;
     for (int i = 1; i < argc; i += 2) {
       require(i + 1 < argc, "missing argument value");
       const std::string key(argv[i]); const int v = std::stoi(argv[i + 1]);
@@ -662,6 +800,10 @@ int main(int argc, char **argv) {
       }
       else if (key == "--pattern") {
         require(v == 0 || v == 1, "pattern"); test_pattern = v;
+      }
+      else if (key == "--indexer-boundary") {
+        require(v == 1, "expected indexer boundary case");
+        indexer_boundary = true;
       }
       else if (key == "--key-benchmark") {
         require(v >= 0 && v < 3, "invalid score key timing process");
@@ -689,7 +831,12 @@ int main(int argc, char **argv) {
     const char *head_env = std::getenv("STRATA_SYCL_SCORE_HEAD_PARALLEL");
     require(std::string(head_env ? head_env : "0") == std::to_string(test_head_parallel),
             "immutable environment must match expected head mapping");
-    const bool key_test = key_sequence || key_timing_process >= 0;
+    const bool key_test = indexer_boundary || key_sequence || key_timing_process >= 0;
+    if (indexer_boundary)
+      require(!key_sequence && key_timing_process < 0 &&
+              std::string(std::getenv("STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH") ?
+                std::getenv("STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH") : "") == "1" &&
+              !std::getenv("STRATA_INDEXER_PER_TOKEN"), "expected the production batch indexer");
     if (key_test) {
       require(test_gemm && !suite && !test_active_all && (!key_sequence || key_timing_process < 0) &&
               test_tile == 8 && test_head_parallel == 1 &&
@@ -706,7 +853,9 @@ int main(int argc, char **argv) {
     std::cout << "device=" << rt->device().get_info<sycl::info::device::name>()
               << " driver=" << rt->device().get_info<sycl::info::device::driver_version>() << std::endl;
     gate(gates, "runtime-ready");
-    if (key_test) {
+    if (indexer_boundary) {
+      check_indexer_score_boundary();
+    } else if (key_test) {
       check_prefill_score_keys(key_sequence == 2 || key_timing_process >= 0, key_timing_process);
     } else if (suite) {
       for (int count = 1; count <= 9; ++count) run(2113, 32768, count, 1);
