@@ -411,6 +411,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   eligible layer and the logical write and read of the assembled tensor.
   That tensor traffic is 39,321,600 bytes per 48-layer T4 window. The same
   mapped CPU result values must still reach the GPU.
+  The retained SYCL build compiles `src/program/generate.cpp` into the
+  actual `strata` target. Its `--native` initialization enables the existing
+  native reduction before graph capture. The mapped projection keeps that
+  initializer and selects its new reduction for ordinary, unsplit decode
+  windows with four rows. Compare the selector on and off with the same
+  `--native` arguments. Confirm eligible capture and replay in the model test.
   Build `sycl_decode_moe_combine_test` and the native engine against the
   same kernel objects and production flags. Preserve the retained measured
   engine and its fixtures through the comparison. First run the component's
@@ -463,6 +469,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by 11.18% but increased prose latency by 1.24% in the one-pair
   diagnostic (`cache-window-rank-current.json`). Compare the Intel
   profile on both workloads and check the prefill loan and restored map.
+  The stock and Intel layouts both pass the 32769-token and 253919-token
+  RESTORE controls at `f67440687`. The near-capacity suffix reads 8209 new
+  tokens, reaches 262128 input tokens and generates one token. All four native
+  processes exit normally with no fresh Xe faults. In that restored T1
+  window Intel uses 416 CPU expert jobs versus 426 with stock. With the short
+  restored prefix it uses 425 versus 414. Use the three independent matched
+  full-suite pairs for the sustained generation decision.
   A later comparison can keep the winning profile fixed and vary its
   per-layer quotas. Removing `--expert-cache-per-layer` also changes the
   meaning of `--expert-cache` for this native pack. In the measured SYCL
