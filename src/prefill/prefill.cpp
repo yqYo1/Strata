@@ -2294,6 +2294,23 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #endif
     const auto t_start = Clock::now();
     const int64_t LB = stage_lb_, LE = stage_le_;
+#if defined(STRATA_ENABLE_SYCL)
+    static const bool prefill_keep_kv_stage_requested = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_KEEP_KV_STAGE");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_KEEP_KV_STAGE requires 0 or 1");
+    }();
+    // A single layer-major pass owns its staging pool until run_impl returns.
+    // External layer taps and the final output callback keep the original reloads.
+    const bool keep_kv_stage = prefill_keep_kv_stage_requested && m.layer_major_active && m.native16_active &&
+        LE == LB + 1 && LE < g.n_layers && !on_layer && !m.pp && !next_ &&
+        same_queue && m.copy == m.cs && stage_own();
+    // No prefix is trusted on entry, including a resumed or cancelled request.
+    int64_t kv_stage_end = -1;
+    const bool trace_kv_stage = m.layer_major_active && std::getenv("STRATA_TRACE");
+    uint64_t kv_reloaded_pages = 0, kv_reused_pages = 0;
+#endif
     // Observe the route only when an explicit layout comparison is requested.
     // These are host call/row counts; no device timers, waits or kernel changes.
     const bool observe_attn_dispatch = std::getenv("STRATA_PREFILL_ATTN_LAYOUT") != nullptr;
@@ -3102,9 +3119,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     const bool staged = st.kv_mode == 1;
                     if (staged) {
                         pt.mark(kPfKvStage, cs);
-                        strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
-                                                            core::qsa_kv_format(st),
-                                                            (p0 + s.page_size - 1) / s.page_size, s, m.cs);
+                        const int64_t pages = (p0 + s.page_size - 1) / s.page_size;
+                        bool reload = true;
+#if defined(STRATA_ENABLE_SYCL)
+                        reload = !(keep_kv_stage && typed_qsa && p0 == kv_stage_end && p0 % s.page_size == 0);
+                        if (trace_kv_stage) (reload ? kv_reloaded_pages : kv_reused_pages) += pages;
+#endif
+                        if (reload)
+                            strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
+                                                                core::qsa_kv_format(st), pages, s, m.cs);
                         pt.mark(kPfQsa, cs);
                     }
                     if (qp) qp->end(QsaProfile::kv_stage, m.cs);
@@ -3113,12 +3136,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (typed_qsa) {
                         const native16::qsa::Q8WritePools resident{
                             st.k_q,st.v_q,st.k_scale,st.v_scale,st.page_table};
-                        if (staged)
+                        if (staged) {
                             native16::qsa::append_q8_streamed(m.qsa_Krope16,m.qsa_V16,T,512,p0,
                                 resident,{st.host.k_q,st.host.v_q,st.host.k_scale,st.host.v_scale},
                                 {m.stage.k_q,m.stage.v_q,m.stage.k_scale,m.stage.v_scale},
                                 s,{st.n_pages,st.n_slots},m.cs);
-                        else
+                            if (keep_kv_stage) kv_stage_end = p0 + T;
+                        } else
                             native16::qsa::append_q8(m.qsa_Krope16,m.qsa_V16,T,512,p0,
                                 resident,s,{st.n_pages,st.n_slots},m.cs);
                     } else {
@@ -4361,6 +4385,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         }
     }
     if (next_run.valid() && !next_run.get()) { err = next_err; return false; }
+#if defined(STRATA_ENABLE_SYCL)
+    if (trace_kv_stage && (kv_reloaded_pages || kv_reused_pages))
+        std::fprintf(stderr, "strata prefill KV stage: layer=%lld reloaded_pages=%llu reused_pages=%llu\n",
+                     (long long) LB, (unsigned long long) kv_reloaded_pages, (unsigned long long) kv_reused_pages);
+#endif
     ss.ple_prev[0] = prev[0];
     ss.ple_prev[1] = prev[1];
     if (std::getenv("STRATA_DBG_NAN") != nullptr) {   // debug: the state the prompt leaves for the token path

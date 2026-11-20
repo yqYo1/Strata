@@ -351,6 +351,28 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   direction; it supplies no per-producer timing or 117K queue-wait time.
   A change to host publication would need to explain a larger scheduling
   or synchronization cost to recover several seconds from this route.
+  There is a separate transfer in the other direction. Before each
+  streamed QSA chunk, `kv_stage_from_host` reloads every page before
+  its starting position into the shared stage. For a fresh position-zero
+  request, chunks of 8192, 12 layers and 1056 bytes per cell, the code
+  requests 2,906,652,672 bytes at 64K and 10,899,947,520 at 117K.
+  This follows from the executed positions and copy lengths. The full
+  64K PTI window labeled 344 copies / 3,577,741,312 bytes as H2D;
+  source arithmetic alone cannot assign individual events to this caller.
+  The opt-in `STRATA_SYCL_PREFILL_KEEP_KV_STAGE=1` skips that reload
+  for contiguous, page-aligned chunks of the same nonfinal layer when its
+  typed Q8 writer has already populated the private stage on the same
+  queue. Each new layer or request starts without a reusable prefix.
+  Host publication continues after each chunk, including the partial tail.
+  External layer taps and the final output-callback layer keep ordinary
+  reloads. On this MTP route the 11 eligible layers could save 308 copy
+  commands / 2,664,431,616 bytes at 64K and 616 / 9,991,618,560 bytes
+  at 117K. Check the actual per-layer reload/reuse counts in both arms.
+  Before timing, compare device and host state on a fresh prompt, a nonzero
+  restored prefix, interrupted/restarted prefill, the tail and a physical
+  262144 fill. Check the external-tap fallback and decode handoff. Time
+  this change with the original attention kernel and MoE gather in both
+  arms. Neither traffic savings nor a component pass qualifies model PP.
   The 253919-token mixed-host path follows a different planner branch.
   The clean comparison at `9c03b44d0` completed three independent
   processes with the same ordinary copy route, decoder placement, 262144

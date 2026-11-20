@@ -38199,5 +38199,16 @@
     "consumer": "Use the corrected count and the review when deciding whether to measure the cost of private validity metadata after the independent four-lane reader comparison.",
     "retention": "Keep the digest with the report through that decision. The source-level undercount in the original report is superseded by the digest.",
     "worker_completion": "Orca Luna medium task task_e1555a0b6074 and dispatch ctx_b4fff13e29bf completed. The exact terminal was closed. Filesystem proof passed 16/16. Worker-side Orca status was self-reported without an independent receipt. Native Luna max reviewed the report."
+  },
+  "prefill-117k-kv-publication-20261120": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "source_commit": "0f34a1a5740ace11b3b2587903a55682a0ce6989",
+    "report_sha256": "25605f904ff8c059dabca2cd9c1d45790f0916b97eb80fba341d3c77ee0eed00",
+    "review_sha256": "bb67235efabf46a0c2c2d5b9d957bfae09eaec6e1222086e5a00a4f737e0f81f",
+    "finding": "At 117489 input tokens 180 streamed append calls publish 1,488,807,936 bytes via 720 D2H commands. The next chunk of the same layer reads the host prefix again. Moving publication to layer end alone would consume stale host data. Actual 117K service and synchronization time are unknown.",
+    "decision": "Keep the host mirror current. Test skipping repeated host-to-stage prefix reloads only with an owned stage, single-layer lifetime and an exact contiguous predecessor. Reference and candidate need independent state and boundary checks.",
+    "consumer": "First same-build reload/reuse comparison and cancellation/RESTORE review; report /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-117k-kv-publication-20261120/report.md and review /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-117k-kv-publication-20261120-control/review.md.",
+    "worker_completion": "Main verified task_4c9b6814b09a and ctx_fed4d7f1624b completed, succeeded; worker_done msg_42043fe75ff0. Named terminal closed after idle and scope inactive. Filesystem proof confirms 29 protected inputs; worker self-reported its status query, and worker_done separately confirms live Orca IPC."
   }
 }
