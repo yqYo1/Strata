@@ -11,18 +11,21 @@
 
 namespace strata::sycl_backend::decode_segment_clocks {
 
-inline std::uint64_t selected_request() {
-    static const auto id = []() -> std::uint64_t {
+struct Config { std::uint64_t request; bool device; };
+inline Config configuration() {
+    static const auto config = []() -> Config {
         const char* text = std::getenv("STRATA_SYCL_DECODE_SEGMENT_CLOCK_REQUEST");
-        if (!text) return 0;
+        if (!text) return {};
+        const bool wall_only = std::strncmp(text, "wall:", 5) == 0;
+        if (wall_only) text += 5;
         std::uint64_t value = 0;
         const char* end = text + std::strlen(text);
         auto parsed = std::from_chars(text, end, value);
-        if (parsed.ec == std::errc{} && parsed.ptr == end) return value;
+        if (parsed.ec == std::errc{} && parsed.ptr == end) return {value, value != 0 && !wall_only};
         std::fprintf(stderr, "strata decode segment clocks: invalid request id\n");
-        return 0;
+        return {};
     }();
-    return id;
+    return config;
 }
 
 // The 48-layer, unsplit T4 verifier has 49 sequential layer segments.
@@ -45,7 +48,7 @@ class Request {
     std::unique_ptr<std::array<Sample, layers + 1>> samples_;
 public:
     explicit Request(std::uint64_t id) : previous_(active), id_(id) {
-        active = id != 0 && selected_request() == id ? this : nullptr;
+        active = id != 0 && configuration().request == id ? this : nullptr;
     }
     ~Request() { active = previous_; }
     Request(const Request&) = delete;
@@ -53,7 +56,7 @@ public:
 
     bool sample_next_window() {
         if (windows_ >= 12 || ++windows_ <= 8) return false;
-        if (!samples_) samples_ = std::make_unique<std::array<Sample, layers + 1>>();
+        if (configuration().device && !samples_) samples_ = std::make_unique<std::array<Sample, layers + 1>>();
         return true;
     }
 
@@ -66,6 +69,11 @@ public:
 
     void record_pool(unsigned segment, std::int64_t elapsed_ns) {
         samples_->at(segment).pool_callback_ns = elapsed_ns;
+    }
+
+    void emit_window(std::int64_t position, std::int64_t elapsed_ns) const {
+        std::fprintf(stderr, "strata decode sample: request=%" PRIu64 " window=%u pos=%" PRId64
+            " device=%d wall_ns=%" PRId64 "\n", id_, windows_, position, int(configuration().device), elapsed_ns);
     }
 
     // Called after the sampled window's existing compute and copy drains.

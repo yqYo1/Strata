@@ -370,13 +370,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   First check the two compiled translation units against the retained build's
   production SYCL recipe and exercise the reader on ordered and damaged rows.
   For model evidence use a coherent reference and candidate build, then
-  separate same-binary clean/profiled/profiled/clean processes for each
+  separate same-binary wall/profiled/profiled/wall processes for each
   thinking-enabled code and prose workload. Keep the current ordinary capture,
   stock expert placement and T4 decode settings. Check native request IDs,
   accepted/offered drafts, emitted tokens and expert work between each pair.
+  Set the same request selector to `wall:<id>` in the wall controls. They
+  retain ordinary graphs and time just the four matching verifier windows
+  from before capture lookup through successful completion. Compare each
+  window by absolute position and width, charging timestamp queries and raw
+  formatting to the profiled arm. Require each matched window and the whole
+  sustained per-token time within 1.10× in both directions. The aggregate
+  request rate alone can conceal an expensive observer on four windows.
   Require all 196 consecutive valid event samples per profiled process,
-  normal closure, no new Xe faults and within 1.10× in both directions on
-  sustained per-token time. Inspect each transition's graph and host time
+  normal closure and no new Xe faults. Inspect each transition's graph and host time
   separately. A failed overhead screen leaves the clocks diagnostic only.
   This observer has no model timing or speed claim yet.
   Before training another ranking, compare the shipped Niko Intel profile

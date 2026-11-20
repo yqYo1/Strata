@@ -1557,7 +1557,7 @@ bool Verifier::end_segment(int T, std::string& err, VerifyInput input, SegmentKi
     }
     cudaGraphExec_t exec = nullptr;
     const bool profile = kind == SegmentKind::layer &&
-        decode_clock_geometry(input, T, split_, lb_, le_, g_->n_layers) && segment_clocks::selected_request();
+        decode_clock_geometry(input, T, split_, lb_, le_, g_->n_layers) && segment_clocks::configuration().device;
     const cudaError_t ie = profile ? strata::sycl_backend::compat::graph_instantiate_profiled(&exec, graph)
                                    : cudaGraphInstantiate(&exec, graph, 0);
     if(head_recapture_checked_ && ie!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify head segment instantiate");
@@ -1832,8 +1832,10 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifdef STRATA_ENABLE_SYCL
     namespace service = strata::sycl_backend::decode_service_profile;
     auto* segment_request = segment_clocks::active;
-    const bool sample_segments = segment_request &&
+    const bool sample_window = segment_request &&
         decode_clock_geometry(input, T, split_, lb_, le_, g.n_layers) && segment_request->sample_next_window();
+    const bool sample_segments = sample_window && segment_clocks::configuration().device;
+    const auto window_start = sample_window ? Clock::now() : Clock::time_point{};
     if (!service::measure(service::capture_setup, [&] {
             return capture(T, err, input) && capture_commit(err);
         })) return false;
@@ -2186,6 +2188,12 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     ++windows;
     progress_at("decode");
     progress_beat();
+#ifdef STRATA_ENABLE_SYCL
+    if (sample_window) {
+        segment_request->emit_window(pos0,
+            std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now() - window_start).count());
+    }
+#endif
     return true;
 }
 
