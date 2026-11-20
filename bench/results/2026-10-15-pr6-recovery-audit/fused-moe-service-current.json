@@ -530331,8 +530331,154 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "2",
+        "passed": true,
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-k-lanes4-v1/sycl_qsa_prefill_k_lanes4_bench",
+          "--component",
+          "2"
+        ],
+        "environment_sha256": "2fbce6dd690497168147ad7300ba10a12d2a878077509c18c7552709392c0b27",
+        "clock": {
+          "calls": "10000",
+          "median_ns": "20",
+          "p99_ns": "31"
+        },
+        "points": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                8.527049,
+                8.495791,
+                8.441309,
+                8.392837,
+                8.458531,
+                8.436519
+              ],
+              "k_lanes4": [
+                8.378921,
+                8.385393,
+                8.390042,
+                8.401173,
+                8.341029,
+                8.403898
+              ]
+            },
+            "median_time_ratio": 0.9926386877035522
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                223.772674,
+                223.733591,
+                224.329472,
+                223.619916,
+                224.363255,
+                223.489621
+              ],
+              "k_lanes4": [
+                199.363772,
+                199.434865,
+                199.614283,
+                199.27302,
+                199.768764,
+                199.667433
+              ]
+            },
+            "median_time_ratio": 0.8917174556204258
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "samples_ms": {
+              "ordered_exp": [
+                137.773577,
+                137.938476,
+                137.646667,
+                137.733872,
+                137.826816,
+                137.917767
+              ],
+              "k_lanes4": [
+                141.667395,
+                141.72282,
+                141.878804,
+                142.733081,
+                142.290809,
+                142.504862
+              ]
+            },
+            "median_time_ratio": 1.0310929164749052
+          },
+          {
+            "cap": 2051,
+            "pattern": "blocks4",
+            "samples_ms": {
+              "ordered_exp": [
+                163.510929,
+                163.036997,
+                163.061093,
+                164.284616,
+                162.65055,
+                162.20418
+              ],
+              "k_lanes4": [
+                174.961391,
+                175.065096,
+                175.188338,
+                174.958536,
+                175.12002,
+                175.111554
+              ]
+            },
+            "median_time_ratio": 1.0738383962935814
+          }
+        ],
+        "validated_cases": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2424377,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "device": [
+          "Intel(R) Arc(TM) B570 Graphics",
+          "1.17.39758+17"
+        ],
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "model_tested": false
+    "model_tested": false,
+    "faster_each_process": [
+      true,
+      true,
+      false,
+      false
+    ],
+    "wide_model_trial_eligible": false
   }
 }
