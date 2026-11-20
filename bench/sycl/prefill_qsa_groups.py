@@ -16,9 +16,9 @@ from official_model_sources import merge_delta
 bank, require = device.bank, device.require
 BASE = '43cac31ede2a7482689ff9d60a0fadf2c08e1b4e'
 FIRST_BUILD = 'ce7e64c4d53e0dbb7b8cd09570ae0b0b7af30bfa'
-SOURCE = '5c02d5b0a16eb7b86871e40a4fbd3eb17486d5bb'
-ROOT = bank.B / 'prefill-qsa-groups-v2'
-KEY = 'prefill_qsa_groups_v2'
+SOURCE = '9639531fddd1a43bd3aba38e2940b518f291a7ef'
+ROOT = bank.B / 'prefill-qsa-groups-v3'
+KEY = 'prefill_qsa_groups_v3'
 TARGET = 'sycl_qsa_bf16_prefix_ordered_exp_bench'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
 SELECT = 'src/kernels/sycl/qsa_select.cpp'
@@ -34,7 +34,9 @@ def recipe(helper, native):
         require(native['source_files'][path] == bank.sha(src / path), 'changed build input: ' + path)
     require((src / SELECT).read_bytes() == helper.git_file(BASE, SELECT), 'selector differs from measured parent')
     require(all(helper.git_file(SOURCE, name) == helper.git_file(FIRST_BUILD, name)
-                for name in (SELECT, ATTEND, *HEADERS[:2])), 'only the fixture may change for the sliced comparison')
+                for name in (ATTEND, HEADERS[0])), 'group format or attention math changed')
+    require(b'submit_topk<1, true>' in helper.git_file(SOURCE, SELECT),
+            'expected the compact emitter in the production radix4 instantiation')
     caller = (src/'src/prefill/prefill.cpp').read_text()
     planner = (src/'include/strata/prefill/scratch_allocation.hpp').read_text()
     require('int64_t sel_batch = 256, max_blocks = 0;' in caller and
@@ -134,7 +136,7 @@ def measure(action, binary, native, speed, stage):
     for k in ('STRATA_TRACE', 'LD_PRELOAD', 'LD_DEBUG', 'STRATA_UR_PROBE_EXPECTED_LOADER',
               'UR_ENABLE_LAYERS', 'UR_LOG_TRACING', 'UR_LOG_VALIDATION'):
         env.pop(k, None)
-    env.update(STRATA_TEST_MAIN_GATES='0', STRATA_SYCL_SELECT_RADIX4='0', STRATA_SYCL_SELECT_CYCLIC='0')
+    env['STRATA_TEST_MAIN_GATES'] = '0'
     smoke = action == 'smoke'
     if smoke:
         env.update(LD_DEBUG='libs', LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
@@ -170,6 +172,18 @@ def measure(action, binary, native, speed, stage):
 
 def execute(action):
     native, speed, parent, build = device.coherent_inputs()
+    switches = ('STRATA_SYCL_SELECT_RADIX4', 'STRATA_SYCL_SELECT_CYCLIC', 'STRATA_SYCL_PREFILL_TOPK_EARLY',
+                'STRATA_SELECT_OLD', 'STRATA_SYCL_PREFILL_QSA_MATH', 'STRATA_SYCL_PREFILL_NATIVE16_QSA')
+    selection_env = {k: speed['environment_template'].get(k) for k in switches}
+    require(tuple(selection_env.values()) == ('1', '0', '0', None, 'bf16-prefix-ordered-exp', '1'),
+            'unexpected model selector or attention')
+    traced = device.validation.committed(bank.RESULT, ('prefill_kv_gather_restore_v1', 'outcomes', 'near-base'))
+    plans = device.validation.committed(bank.RESULT, ('prefill_kv_gather_restore_v1', 'plans'))
+    near, = [p for p in plans if p['name'] == 'near-base']
+    require(traced['passed'] and traced['ownership_closed'] and not traced['fresh_faults']
+            and traced['requests'][0]['prefill_route'] == 'layer-major'
+            and near['environment_sha256'] == '0fa3ee921ad520ad9bd300e932c7750613536a488138646d7dc58cf9a4435066',
+            'missing matched model dispatch evidence')
     helper = bank.basis.core.source.device.load_module('qsa_groups_build', device.fixture.__file__)
     helper.SOURCE, helper.BUILD = parent/'source', parent/'build'
     overlay, commands = recipe(helper, native)
@@ -177,7 +191,7 @@ def execute(action):
     controls = [str(Path(m).resolve().relative_to(bank.P)) for m in
                 (__file__, device.__file__, device.fixture.__file__, device.coherent_model.__file__, device.coherent_model.kv.__file__)]
     pins = bank.stage.source.pin(bank.P, [*controls, 'tools/sycl'])
-    identity = dict(source=SOURCE, parent_build=build['build_sha256'], overlay=bank.stage.hashed(overlay),
+    identity = dict(source=SOURCE, selector_environment=selection_env, parent_build=build['build_sha256'], overlay=bank.stage.hashed(overlay),
                     recipe=bank.signature(commands), controls=pins['aggregate_sha256'],
                     benchmark_environment_sha256=bank.signature(speed['environment_template']), runtime=speed['runtime_manifest']['sha256'])
     if action == 'recipe':

@@ -3465,8 +3465,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   score-row stride and a separate active-block bound per slice. The last
   91 rows of the 6,491-row case follow 25 full slices. Both arms reuse
   the same synthetic score slab; timing begins after scoring.
-  Keep the first component build through comparison of the two builds'
-  kernel inputs. Then recover the first recipe from Git and retire its
+  The closed 253919-token model process at `116a0e295` used
+  `STRATA_SYCL_SELECT_RADIX4=1`, cyclic and early exit both zero, and
+  no `STRATA_SELECT_OLD`. Its recorded child environment matches the
+  planned SHA256 `0fa3ee921ad520ad9bd300e932c7750613536a488138646d7dc58cf9a4435066`.
+  Both earlier component plans used Mapping0. The single-call variant
+  compiled; neither variant supplied a device speed sample. Source
+  `9639531fd` retains the model's radix4 threshold search in both arms.
+  Recheck the model environment in the controller before each stage.
+  Keep the first component build through comparison of the builds'
+  kernel inputs, including the intentional selector change. Then recover the first recipe from Git and retire its
   executable and temporary build root.
   Run the revised B570 component with `bench/sycl/prefill_qsa_groups.py`.
   Use the same in-order queue, four-cell pages and remapped/missing pages.
