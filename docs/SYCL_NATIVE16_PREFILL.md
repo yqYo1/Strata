@@ -350,6 +350,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by 11.18% but increased prose latency by 1.24% in the one-pair
   diagnostic (`cache-window-rank-current.json`). Compare the Intel
   profile on both workloads and check the prefill loan and restored map.
+  A later comparison can keep the winning profile fixed and vary its
+  per-layer quotas. Removing `--expert-cache-per-layer` also changes the
+  meaning of `--expert-cache` for this native pack. In the measured SYCL
+  source the global allocator admits ranked slots up to the lesser of free
+  VRAM after the reserve and the requested count times the largest blob.
+  The per-layer 1256-slot layout uses 2,575,206,400 bytes. With sufficient
+  free VRAM, global 1256 would use about 768 MB more with either shipped
+  ranking, changing prefill headroom at the same time. Requesting global
+  967 instead caps it at 2,574,540,800 bytes. With the stock ranking this
+  funds 1241 slots (2,573,849,600 bytes, 1021 common pairs with per-layer
+  stock). With the Intel ranking it funds 1244 slots (2,573,772,800 bytes,
+  1097 common pairs with per-layer Intel). These counts use the pack's
+  256-byte-aligned sizes and the complete STRP order. Before timing, verify
+  actual admission, occupied slot identities, scratch loan/refill range and
+  both near-full RESTORE and short decode-cache handoff. Measure the change
+  in unique CPU jobs and actual throughput on both workloads.
   The 8192-token scratch loan in both original RESTORE fixtures begins
   at slot 132 and covers 1124 slots (2,321,664,000 bytes). On this
   per-layer path, both the slot ranges and the slot widths depend only
