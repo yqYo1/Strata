@@ -373,6 +373,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   262144 fill. Check the external-tap fallback and decode handoff. Time
   this change with the original attention kernel and MoE gather in both
   arms. Neither traffic savings nor a component pass qualifies model PP.
+  The isolated change at `fea0f3c79` passed the SYCL compiler's syntax
+  check against the measured 117K translation unit using all 798 original
+  includes (`15c02eabc`). This check generated no model binary.
   The 253919-token mixed-host path follows a different planner branch.
   The clean comparison at `9c03b44d0` completed three independent
   processes with the same ordinary copy route, decoder placement, 262144
@@ -3002,6 +3005,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep packing and the checked queue drain in each sample, with the full
   output comparison outside the clock. Retire the standalone fixture
   once its model-trial decision and source recovery are recorded.
+  At `f7244dded` the four-lane K reader passed the traced smoke, output,
+  input and guard checks. In three independent processes it shortened
+  wide spread-cell time by 10.83–10.99%, but lengthened wide four-cell
+  group time by 7.29–7.88% and clustered time by 2.93–3.11%. The planned
+  wide spread and four-cell group gate failed. Keep the original K loader
+  in the model and in the independent workgroup and KV stage trials.
   A separate QSA candidate at `f0b231aec` changes only how workgroups
   map to (query, KV head). The current launch alternates the two KV
   heads for each query. The candidate assigns the first `queries` groups
