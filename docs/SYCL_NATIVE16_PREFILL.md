@@ -303,6 +303,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the strong/weak class from the reference and report the candidate's
   changed draft denominator, generation length, time to answer and TG.
   Preserve fixed-input prefill placement, PP and client TTFT independently.
+  The reviewed `mtp-confidence-work-contract-20261121` audit confirms that
+  draft-0 runs before the confidence check. Assess later draft work and
+  target verifier width separately. Define `A_i` as the event that draft `i`
+  is offered and accepted, and `s_i` as its probability given acceptance of
+  the preceding draft prefix. Before EOS or output clipping, expected yield
+  is `1 + sum_i product_{j=1..i} s_j`. Use the measured emitted count after
+  clipping. The pilot records widths and acceptance by depth. Request-mean
+  observer phase clocks and clean speed remain separate measurements.
   The decode-only committed-prefix candidate changes one other piece of work.
   After the target commits `a+1` rows of a window of width `T`, the MTP round
   ordinarily computes K/V for all `T` and then recomputes the selected row in
@@ -337,12 +345,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   start `243078ea8c` with the fix alone and `33f2e63708` with both changes.
   With both changes, the pinned `e69d184fc` syntax check passes for the MTP
   engine unit, normal generator and exact-fill diagnostic, with 754, 804 and
-  805 matched includes respectively. Linking and live boundary checks remain.
+  805 matched includes respectively.
   The original CLI at `4ac41d827` completes 16384 batched rows on the
   16385-input, 16387-capacity request and exits at the expected refusal at
   position 16385. Validation and ownership close without a fresh driver fault.
   `bench/sycl/decode_mtp_prefix_build.py` projects only the two changed units
-  and rebuilds all targets from the original pinned recipe. The independent
+  onto the measured prefill source. The build at `59914a469` closes with 137
+  fresh objects, 1474 verified compiler inputs, zero uncovered inputs and all
+  twelve linked targets. The normal CLI ELF begins `cdc551c029` and the
+  exact-fill diagnostic begins `5fe3a8a5f6`. The independent
   decode fallback and the measured prefill reference stay available through
   this comparison. `bench/sycl/decode_mtp_context_fixed.py` reuses the same
   body for widths four and eight. It also checks 262142 input with two outputs
