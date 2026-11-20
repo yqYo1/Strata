@@ -310,6 +310,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   three reuse ratios also favors it. Close on any correctness, ownership or
   identity failure. The comparison isolates the row loop. A decode-only dispatch
   trial needs actual selection, repeated TG and prefill preservation.
+  The CPU-only build verified 618 compiler inputs. All 60 exact-output and
+  guard cases passed. The six processes at `34506f209` closed with 30 eligible
+  pairs. Their median candidate/reference times are 0.9874/0.9817/0.9980 for
+  reuse and 0.9869/1.0191/0.9726 for rotation. The rotation arm misses the
+  three-gain gate. Close at the component stage. Retire the rejected selector,
+  fixture and private build after verifying the original Git inputs and checking
+  the cache comparison's pins at the next serialized boundary.
   Test the existing request's MTP confidence floor independently of expert
   placement. The older six-process width comparison at `dcb8ba8cf` found
   that fixed width two beat four on prose in every pair and lost on code in
