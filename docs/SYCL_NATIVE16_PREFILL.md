@@ -362,7 +362,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   funds 1241 slots (2,573,849,600 bytes, 1021 common pairs with per-layer
   stock). With the Intel ranking it funds 1244 slots (2,573,772,800 bytes,
   1097 common pairs with per-layer Intel). These counts use the pack's
-  256-byte-aligned sizes and the complete STRP order. Before timing, verify
+  256-byte-aligned sizes and the complete STRP order.
+  An unmodified global ranking at 967 fails the 8192-token scratch budget.
+  The observed per-layer loan starts at slot 132; dropping one slot leaves
+  2,319,692,800 bytes, below the required workspace. Keeping the first 128
+  global slots leaves only 2,308,224,000 (stock) or 2,301,670,400 (Intel).
+  Use `bench/sycl/decode_profile_tail.py` to permute the admitted set before
+  GPU qualification. It preserves every decode member and the first excluded
+  pair. With 26 (stock) or 32 (Intel) replacements among the first 132 members,
+  the tail from 132 has exactly the reference 2,321,664,000 bytes and its
+  first slot is exactly 1,971,200 bytes. The planner therefore selects the
+  same 8192-token workspace whenever the full computed cache is admitted.
+  The unborrowed experts and the bytes that must be refilled per layer can
+  differ. At smaller admissions, recompute both budgets. Before timing, verify
   actual admission, occupied slot identities, scratch loan/refill range and
   both near-full RESTORE and short decode-cache handoff. Measure the change
   in unique CPU jobs and actual throughput on both workloads.
