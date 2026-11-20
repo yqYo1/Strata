@@ -719,9 +719,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   scalar gather won all four pairs against reload (2.409–6.581 s less).
   Median paired prompt time fell 3.77%; median client TTFT fell from
   117.636 to 113.214 s. All four warmed KV rates exceeded 1000; the first
-  long prompts were 931.66–957.54 tok/s. Vector gather alone also beat
-  reload in four pairs. Adding it to reuse won only two pairs, and adding
-  reuse to vector gather also won only two. Select KV reuse alone for
+  long prompts were 931.66–957.54 tok/s. At 117489 tokens, 1000 tok/s
+  allows 117.489 s of prompt time. Across the four KV-reuse processes,
+  reaching that rate on the first long request would require saving
+  5.209–8.618 s, or 50–73% of the observed first-to-subsequent prompt-time
+  gap in each process. Use this budget to interpret the driver-cache results
+  alongside the separately measured startup and client TTFT.
+  Vector gather alone also beat reload in four pairs. Combining it with reuse
+  won two pairs against each individual change. Select KV reuse alone for
   the split-route length curve and decode-preservation suite.
   The 65537-token comparison closed at `84c883393` with 16 independent
   processes and 48 fresh requests. The subsequent-request rates were
