@@ -121,14 +121,15 @@ def main(action):
                   dict(driver=sha(__file__), candidate=CANDIDATE, base=BASE))
 
 
-def build_inputs(parent, root, overlay, commands):
+def build_inputs(parent, root, overlay, commands, *, source_directory=None):
+    source_directory = SOURCE if source_directory is None else source_directory
     actual = parent['actual_inputs']
     allowed = {p: h for group in ('compiled', 'generated', 'links', 'objects', 'produced')
                for p, h in actual[group].items()}
     external = parent['external_inputs']
     require(sha(external['path']) == external['sha256'], 'external input record changed')
     allowed.update(json.loads(Path(external['path']).read_bytes()))
-    allowed.update({str(SOURCE / p): h for p, h in parent['source_files'].items()})
+    allowed.update({str(source_directory / p): h for p, h in parent['source_files'].items()})
     allowed.update({str(root / p): hashlib.sha256(raw).hexdigest() for p, raw in overlay.items()})
     for argv in commands:
         tool = Path(argv[0]).resolve()
@@ -136,10 +137,11 @@ def build_inputs(parent, root, overlay, commands):
     return allowed
 
 
-def build_fixture(root, target, parent, overlay, commands, allowed, identity):
+def build_fixture(root, target, parent, overlay, commands, allowed, identity, *, build_directory=None):
     """Compile isolated units and check each consumed header, host slice and archive."""
+    build_directory = BUILD if build_directory is None else build_directory
     linker_args = commands[-1]
-    archives = [(BUILD / arg).resolve() for arg in linker_args if arg.endswith('.a')]
+    archives = [(build_directory / arg).resolve() for arg in linker_args if arg.endswith('.a')]
     link_artifacts = [Path(arg) for arg in linker_args if Path(arg).parent == root and arg.endswith(('.o', '.a'))]
     fat_objects = [obj for obj in link_artifacts if obj.suffix == '.o']
     require(fat_objects and archives and linker_args[linker_args.index('-o') + 1] == str(root / target),
@@ -162,7 +164,7 @@ def build_fixture(root, target, parent, overlay, commands, allowed, identity):
         for index, argv in enumerate(commands):
             if index == len(commands) - 1:
                 driver_inputs = {path.name: sha(path) for path in link_artifacts}
-            entry, out, err = child.run(f'command-{index}', argv, env, BUILD, **bank.builder.LIMITS)
+            entry, out, err = child.run(f'command-{index}', argv, env, build_directory, **bank.builder.LIMITS)
             require(bank.builder.ownership.closed(entry) and entry['exit_code'] == 0,
                     'fixture build failed: ' + err.read_text()[-1200:])
         compiled = {}
@@ -173,7 +175,7 @@ def build_fixture(root, target, parent, overlay, commands, allowed, identity):
             require(depfile.parent == root, 'compiler dependency file outside component build')
             deps = shlex.split(depfile.read_text().replace('\\\n', ' ').split(':', 1)[1])
             for dep in deps:
-                path = (BUILD / dep).resolve()
+                path = (build_directory / dep).resolve()
                 require(allowed.get(str(path)) == sha(path), 'unverified compiler input: ' + str(path))
                 compiled[str(path)] = allowed[str(path)]
         require(all(str(root / p) in compiled for p in overlay) and len(compiled) > 100,
@@ -187,7 +189,7 @@ def build_fixture(root, target, parent, overlay, commands, allowed, identity):
             token = line.strip()
             if not token or any(c.isspace() for c in token) or len(token) > 4096:
                 continue
-            path = (BUILD / token).resolve()
+            path = (build_directory / token).resolve()
             if not path.is_file():
                 if Path(token).is_absolute():
                     require(path.is_relative_to(root / 'tmp') and path.suffix == '.o',

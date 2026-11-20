@@ -57,13 +57,30 @@ def run_gpu(row,scope,mode,outcome,order=None,label=None):
     packed={'reference':0,'canonical':1,'sole-packed':2}[mode]
     label=label or mode
     require(order is None or mode=='sole-packed' and order in ('rc','cr'),'explicit timing order/format')
-    require(model_assets()==row['assets'],'full pre-exec real-shard identities')
     env=dict(row['environment'],STRATA_SYCL_DECODE_Q6_DPAS_HEAD=str(packed),STRATA_Q6_HEAD_OWNER_GATE='1',
         LD_PRELOAD=row['native_validation_probe']['library']['path'],
         STRATA_UR_PROBE_EXPECTED_LOADER=row['native_validation_probe']['loader']['path'],
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(ROOT/(label+'-validation.log')))
     if order is not None:
         env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
+
+    def check_assets():
+        require(model_assets()==row['assets'],'exact real-shard identities')
+
+    def read_output(text, diagnostic):
+        outcome['owner']=parse_native(text,packed)
+        if order is not None:outcome['timing']=timing_samples(text,order)
+        elif packed:
+            require(('Q6DpasC4Canonical' if packed==1 else 'Q6DpasC4') in diagnostic and 'urEnqueueCommandBufferExp' in diagnostic,'traced selected head graph path')
+            if packed==2:require('Q6DpasColumns' in diagnostic,'traced exact-width packed head path')
+    args=['--check'] if order is None else ['--timing',order]
+    run_owner_fixture(row,scope,outcome,ROOT,label,env,[*args,*[v['path'] for v in row['assets']]],
+                      check_assets,read_output)
+
+
+def run_owner_fixture(row, scope, outcome, root, label, env, args, check_assets, read_output):
+    """Run one frozen owner fixture with the same two supervised runtime gates."""
+    check_assets()
     cursor=next(v.split(': ',1)[1] for v in subprocess.check_output(
         ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
         if v.startswith('-- cursor: '))
@@ -99,22 +116,17 @@ def run_gpu(row,scope,mode,outcome,order=None,label=None):
                 io.poll()
                 if select.select([io.proc.stdout],[],[],.02)[0]:io.read();io.pending.clear()
             io.exit(1)
-        args=['--check'] if order is None else ['--timing',order]
-        e,out,err=scope.run('native-'+label,[row['binary']['path'],*args,*[v['path'] for v in row['assets']]],
-            env,ROOT,interaction=interact,**row['native_budget'])
+        e,out,err=scope.run('native-'+label,[row['binary']['path'],*args],
+            env,root,interaction=interact,**row['native_budget'])
         require(owner.closed(e) and e['exit_code']==0,'owned NativeHead process failed')
         text,diagnostic=out.read_text(),err.read_text()
         outcome['native_exit_code']=e['exit_code']
         outcome['validation']=validation.preload_evidence(diagnostic,e['pid'])
         require(outcome['validation']['loader']==env['STRATA_UR_PROBE_EXPECTED_LOADER'],'actual validation loader')
-        log=ROOT/(label+'-validation.log')
+        log=root/(label+'-validation.log')
         require(not log.exists() or log.stat().st_size==0,'parameter validation error')
-        outcome['owner']=parse_native(text,packed)
-        if order is not None:outcome['timing']=timing_samples(text,order)
-        elif packed:
-            require(('Q6DpasC4Canonical' if packed==1 else 'Q6DpasC4') in diagnostic and 'urEnqueueCommandBufferExp' in diagnostic,'traced selected head graph path')
-            if packed==2:require('Q6DpasColumns' in diagnostic,'traced exact-width packed head path')
-        require(model_assets()==row['assets'],'full post-run real-shard identities')
+        read_output(text,diagnostic)
+        check_assets()
         outcome['assets_pre_post_match']=True
         outcome['passed']=True
     except BaseException as e:
