@@ -354,8 +354,22 @@ void compare_prefill_decay(const std::shared_ptr<s::Runtime>& rt, int rows, int 
     bias[h] = dyadic(h, 563, 32);
     factor[h] = -float(h + 1)/HV;
   }
+  // Exercise the softplus cutoff and gradual underflow of FP32 exp in both device TUs.
+  for (int t = 0; t < rows; ++t) {
+    const size_t base = size_t(t)*2*HV;
+    projected[base] = std::nextafter(20.f, 0.f);
+    projected[base+1] = 20.f;
+    projected[base+2] = std::nextafter(20.f, 21.f);
+    projected[base+3] = 90.f;
+    projected[base+4] = 104.f;
+    projected[base+5] = 0.f;
+  }
+  std::fill_n(bias.begin(), 6, 0.f);
+  factor[3] = factor[4] = -1.f;
+  factor[5] = -0.f;
   ab.set(projected); dt.set(bias); scale.set(factor);
   c.upload(); c.project(true); rt->wait();
+  const auto qkv = c.Q16.get(), z = c.Z16.get();
   auto pipeline = [&](bool use_decay, Trial& trial) {
     auto produce = use_decay ? p::prefill_gdn_decay_beta : p::gdn_gates;
     auto consume = use_decay ? p::prefill_gdn_recurrence_from_decay_f16 : p::gdn_recurrence_barriers3_f16;
@@ -367,13 +381,20 @@ void compare_prefill_decay(const std::shared_ptr<s::Runtime>& rt, int rows, int 
   };
   auto compare = [&]() {
     const auto ref_state = c.reference.state.get(), ref_raw = c.reference.raw.get();
-    need(std::all_of(ref_state.begin(),ref_state.end(),[](float v){return std::isfinite(v);})
-         && std::all_of(ref_raw.begin(),ref_raw.end(),[](float v){return std::isfinite(v);}), "nonfinite reference");
+    const auto ref_out = c.reference.out.get();
+    const auto finite_float = [](float v) { return std::isfinite(v); };
+    const auto finite_half = [](uint16_t bits) { return (bits & 0x7c00) != 0x7c00; };
+    need(std::all_of(ref_state.begin(), ref_state.end(), finite_float)
+         && std::all_of(ref_raw.begin(), ref_raw.end(), finite_float)
+         && std::all_of(ref_out.begin(), ref_out.end(), finite_half), "nonfinite reference");
     exact(ref_state, c.candidate.state.get(), "changed recurrent state");
     exact(ref_raw, c.candidate.raw.get(), "changed FP32 recurrent output");
-    exact(c.reference.out.get(), c.candidate.out.get(), "changed FP16 output");
+    exact(ref_out, c.candidate.out.get(), "changed FP16 output");
     exact(c.reference.history.get(), c.candidate.history.get(), "changed convolution history");
   };
+  // Distinct initial payloads expose any outputs skipped in both arms.
+  rt->wait(rt->compute().fill(c.candidate.raw.data(), -sentinel<float>(), c.candidate.raw.n));
+  rt->wait(rt->compute().fill(c.candidate.out.data(), uint16_t(0x4242), c.candidate.out.n));
   c.reset(c.reference); c.reset(c.candidate);
   pipeline(false, c.reference); rt->wait();
   const auto reference_beta = beta.get();
@@ -411,6 +432,7 @@ void compare_prefill_decay(const std::shared_ptr<s::Runtime>& rt, int rows, int 
     compare();
   }
   ab.immutable(projected); dt.immutable(bias); scale.immutable(factor);
+  c.Q16.immutable(qkv); c.Z16.immutable(z);
   c.immutable(); drain.finish();
   std::cout << "prefill_decay_exact T=" << rows << " passed=1\n" << std::flush;
 }
@@ -446,6 +468,8 @@ int main(int argc,char **argv) {
     need(rt->device().is_gpu()&&rt->device().has(sycl::aspect::fp16),"GPU FP16 required");
     need(rt->compute().has_property<sycl::property::queue::in_order>(),"in-order compute required");
     if (mode=="--decay-smoke" || mode=="--decay-check" || mode=="--decay-bench") {
+      std::cout << "device=" << rt->device().get_info<sycl::info::device::name>() << " driver="
+                << rt->device().get_info<sycl::info::device::driver_version>() << '\n';
       if (timed) compare_prefill_decay(rt,8192,argv[2][0]-'0');
       else if (mode=="--decay-check") compare_prefill_decay(rt,8192,-1);
       else for (int rows : {1,17}) compare_prefill_decay(rt,rows,-1);
