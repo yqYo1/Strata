@@ -7,10 +7,12 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <bit>
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -30,6 +32,7 @@ constexpr int tokens = 4, experts = 10, columns = 2560;
 constexpr int rows = tokens * experts, parts = rows * columns, outputs = tokens * columns;
 constexpr int guard = 16, batches = 4, replays = 512;
 constexpr float sentinel = -7103.0f;
+using Clock = std::chrono::steady_clock;
 
 void require(bool valid, const char* message) {
     if (!valid) throw std::runtime_error(message);
@@ -115,6 +118,7 @@ void run(std::string_view mode) {
     });
 
     std::vector<float> gpu_input(parts), shared_input(outputs), output(outputs + 2 * guard, sentinel);
+    std::array<std::vector<float>, 2> cpu_inputs{std::vector<float>(parts), std::vector<float>(parts)};
     std::array<int32_t, rows + 1> metadata{};
     std::array<float, rows> weight_input{};
     for (int row = 0; row < rows; ++row) weight_input[row] = weight_value(row);
@@ -139,12 +143,22 @@ void run(std::string_view mode) {
             const float poison = std::numeric_limits<float>::quiet_NaN();
             cpu[i] = resident[i / columns] ? poison : value;
             gpu_input[i] = resident[i / columns] ? value : poison;
+            cpu_inputs[0][i] = value;
+            cpu_inputs[1][i] = part_value(i, count + 71);
         }
         upload(meta.data(), metadata.data(), meta.size());
         upload(gpu.data(), gpu_input.data(), gpu.size());
         check(cudaStreamSynchronize(graphs.stream), "publish case");
 
-        for (int arm : {0, 1}) {
+        auto publish_cpu_rows = [&](int version) {
+            for (int row = 0; row < rows; ++row)
+                if (!resident[row])
+                    std::memcpy(cpu + row * columns, cpu_inputs[version].data() + row * columns,
+                                columns * sizeof(float));
+            std::atomic_thread_fence(std::memory_order_seq_cst);
+        };
+        auto verify = [&](int arm, int version) {
+            publish_cpu_rows(version);
             std::fill(output.begin(), output.end(), sentinel);
             upload(result.data(), output.data(), result.size());
             graphs.replay(arm);
@@ -157,7 +171,8 @@ void run(std::string_view mode) {
                 const int first = i / columns * experts;
                 const int column = i % columns;
                 auto part = [&](int row) {
-                    const float value = part_value(row * columns + column, count);
+                    const int seed = count + (resident[row] ? 0 : 71 * version);
+                    const float value = part_value(row * columns + column, seed);
                     return resident[row] ? 0.0f + value : value;
                 };
                 float sum = part(first) * weight_value(first);
@@ -167,21 +182,30 @@ void run(std::string_view mode) {
                 require(std::bit_cast<uint32_t>(expected) == std::bit_cast<uint32_t>(output[guard + i]),
                         "ordered FP32 combine or row source differs");
             }
-        }
+        };
+        for (int arm : {0, 1})
+            for (int version : {0, 1}) verify(arm, version);
 
         if (mode == "validate") continue;
         const int start = mode == "time-reverse" ? 1 : 0;
         for (int batch = 0; batch < batches; ++batch) {
             const int first = start ^ (batch % 2);
             for (int arm : {first, 1 - first}) {
-                const auto begin = std::chrono::steady_clock::now();
-                for (int i = 0; i < replays; ++i) graphs.replay(arm);
-                const double ms = std::chrono::duration<double, std::milli>(
-                    std::chrono::steady_clock::now() - begin).count();
-                require(ms >= 10.0, "ineligible timing batch");
+                Clock::duration elapsed{}, empty{};
+                for (int i = 0; i < replays; ++i) {
+                    publish_cpu_rows(i % 2);
+                    const auto begin = Clock::now();
+                    graphs.replay(arm);
+                    elapsed += Clock::now() - begin;
+                    const auto empty_begin = Clock::now();
+                    empty += Clock::now() - empty_begin;
+                }
+                const double ms = std::chrono::duration<double, std::milli>(elapsed).count();
+                const double empty_ms = std::chrono::duration<double, std::milli>(empty).count();
+                require(ms >= 10.0 && empty_ms <= ms * 0.01, "ineligible timing batch or timer overhead");
                 std::cout << "decode MoE combine hits=" << count << " batch=" << batch
                           << " arm=" << arm << " replays=" << replays << " ms="
-                          << std::fixed << std::setprecision(6) << ms << '\n';
+                          << std::fixed << std::setprecision(6) << ms << " empty_ms=" << empty_ms << '\n';
             }
         }
     }

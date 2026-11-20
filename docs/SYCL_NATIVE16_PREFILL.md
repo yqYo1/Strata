@@ -407,12 +407,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   engine and its fixtures through the comparison. First run the component's
   `validate` arm with bounded runtime tracing and parameter validation.
   Both captured graphs must match the ordered FP32 CPU reference and guards
-  for 0, 4, 10, 20, 39 and 40 routed GPU rows using alternating input maps.
-  Poison unused rows so that selection failures show up in the output.
+  for 0, 4, 10, 20, 39 and 40 routed GPU rows. Reuse each captured graph with
+  two different publications of the CPU rows. Poison unused rows so that
+  selection failures show up in the output.
   Run three separate fresh clean component processes in time-forward,
   time-reverse, time-forward order with the qualified GPU runtime settings.
   Compare four counterbalanced pairs of 512 completed graph replays at each
-  of 4, 10 and 20 GPU rows. Require each batch to reach 10 ms. Advance the T4
+  of 4, 10 and 20 GPU rows. Republish only the CPU miss rows between completed
+  replays. Time graph launch through completion and leave publication outside
+  the timed interval. Require each batch to reach 10 ms and charge at most
+  1% for the measured empty timing bracket. Advance the T4
   path only if the candidate median is faster at all three hit counts in
   all three processes, with normal teardown and no fresh fault. Use these
   local intervals to decide whether to test the native server.
