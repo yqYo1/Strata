@@ -5,7 +5,7 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
-#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT) || defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT) || \
+#if defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT) || \
     defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
 #define STRATA_QSA_PREFILL_PAGE4_FIXTURE
 #endif
@@ -14,10 +14,6 @@
 #endif
 #if defined(STRATA_QSA_PREFILL_PV_COMPONENT)
 #include "qsa_prefill_probability.hpp"
-#elif defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
-namespace strata::kernels::prefill_k_lanes4 {
-decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ordered_exp_batch;
-}
 #elif defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
 namespace strata::kernels::prefill_head_major {
 decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ordered_exp_batch;
@@ -51,10 +47,6 @@ namespace {
 constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention = prefill_probability_reuse::qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name = "ordered_exp", *candidate_name = "reuse_probability";
-#elif defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT)
-constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
-constexpr auto candidate_attention = prefill_k_lanes4::qsa_bf16_prefix_ordered_exp_batch;
-constexpr const char *baseline_name = "ordered_exp", *candidate_name = "k_lanes4";
 #elif defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
 constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention = prefill_head_major::qsa_bf16_prefix_ordered_exp_batch;

@@ -526935,7 +526935,8 @@
       "csv_rows": 4,
       "reason": "No remaining private-capture consumer. The 117K comparison reads the committed configuration and completed at 9c03b44d0. The model build is outside this root.",
       "raw_root_absent": true,
-      "inventory_bytes": 146111
+      "inventory_bytes": 146111,
+      "inventory_retired": true
     }
   },
   "prefill_mixed_gather_fixture_build_v1": {
@@ -530493,6 +530494,24 @@
       false,
       false
     ],
-    "wide_model_trial_eligible": false
+    "wide_model_trial_eligible": false,
+    "artifact_retirement": {
+      "original_execution": "f7244dded8e9359374cb699476c5b84c872ca8e2",
+      "build_driver_commit": "01f0a55bde6853f41bef6802934cd408e0b86e1a",
+      "build_driver_files": 381,
+      "generated_sources_checked": 2,
+      "commands_checked": 3,
+      "compile_inputs_checked": 698,
+      "link_inputs_checked": 27,
+      "checked_ELF": "b3a00995c1c6c5024130c0584a307c5eec8130fcc5314cc087c4406a24023bdb",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-k-lanes4-v1",
+      "files": 31,
+      "bytes": 2448294,
+      "inventory_sha256": "9b32f10a0209870ff9dbe63674c0ac107ef3698a8a65badbcc1c11e729d48d88",
+      "inventory_bytes": 3393,
+      "inventory_retired": true,
+      "complete": true,
+      "reason": "Wide four-cell condition failed in all 3 processes. The next QSA trials use the original parent archive and Git-pinned fixtures."
+    }
   }
 }

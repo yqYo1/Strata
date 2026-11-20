@@ -14,7 +14,6 @@ from types import ModuleType
 sys.dont_write_bytecode = True
 import build_prefill_mixed_gather as fixture
 import prefill_qsa_head_major_source as head_major
-import prefill_qsa_k_lanes_source as lanes
 import prefill_qsa_stage_identity_source as stage_identity
 import qsa_prefill_probability_trial as ordered
 
@@ -35,7 +34,6 @@ class Trial:
     bench_revision: str
     kernel_sha256: str
     bench_sha256: str
-    required_wide_patterns: tuple[str, ...]
 
     @property
     def root(self):
@@ -46,21 +44,14 @@ class Trial:
         return 'sycl_qsa_prefill_' + self.arm + '_bench'
 
 
-K_LANES = Trial('k_lanes4', lanes, 'c11c99275e191c828a375148a52543885213280b',
-                '5c58ff1758243725da00c8ec4c91137da7b77aeb',
-                '5d131f75ab26ad0e9366324e610127060da35bce198f3f87cbc72672ce83e3c2',
-                '2ea5fb3b94ef593a832769bce0c16e4ba7abd72a701355b7bbcbd732dffa413b',
-                ('gather', 'blocks4'))
 HEAD_MAJOR = Trial('head_major', head_major, 'f0b231aec0ec84149dd4bc7e5afbae1caa419335',
                    'f0b231aec0ec84149dd4bc7e5afbae1caa419335',
                    '0d46692e0b56e837ce611147284c27ced33a69ace2b7f5d203bd4287d323fc69',
-                   '2434dee9e5481f9b9e842b18fea31eaf15345de5efb985b7d6091b48201e84eb',
-                   ('gather', 'clustered', 'blocks4'))
+                   '2434dee9e5481f9b9e842b18fea31eaf15345de5efb985b7d6091b48201e84eb')
 STAGE_IDENTITY = Trial('stage_identity', stage_identity, '58eb8f3951d5c42e607e4daa4c9f8f7ebf501419',
                        '58eb8f3951d5c42e607e4daa4c9f8f7ebf501419',
                        '120669501455d4231cf27ee50c9d4d9a5177ebe17ea0076abf6aa8505fd20841',
-                       '2abde5a54c8829df7501512c4f8e54daa1f3387212b60269ef97b050f871da7f',
-                       ('gather', 'clustered', 'blocks4'))
+                       '2abde5a54c8829df7501512c4f8e54daa1f3387212b60269ef97b050f871da7f')
 
 
 def recipe(parent, trial):
@@ -254,8 +245,7 @@ def execute(action, trial):
         if action == STAGES[-1] and stage['passed']:
             wins = [all(s['points'][i]['median_time_ratio'] < 1 for s in row['stages'][2:]) for i in range(len(CASES))]
             row['faster_each_process'] = wins
-            wide = {pattern: win for (cap, pattern), win in zip(CASES, wins, strict=True) if cap == 2051}
-            row['wide_model_trial_eligible'] = all(wide[pattern] for pattern in trial.required_wide_patterns)
+            row['wide_model_trial_eligible'] = all(win for (cap, _), win in zip(CASES, wins, strict=True) if cap == 2051)
         previous = bank.previous.read(bank.RESULT)
         require(previous.get(key) == result.get(key), 'comparison changed while running')
         previous[key] = row
@@ -264,10 +254,9 @@ def execute(action, trial):
 
 if __name__ == '__main__':
     selectors = {'--head-major': HEAD_MAJOR, '--stage-identity': STAGE_IDENTITY}
-    require(len(sys.argv) >= 2, 'select a planned component stage')
-    trial = selectors.get(sys.argv[1], K_LANES)
-    action, = sys.argv[1:] if trial == K_LANES else sys.argv[2:]
-    require(action in ('check', *STAGES), 'select a planned component stage')
+    require(len(sys.argv) == 3 and sys.argv[1] in selectors and sys.argv[2] in ('check', *STAGES),
+            'select --head-major or --stage-identity and one planned stage')
+    trial, action = selectors[sys.argv[1]], sys.argv[2]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
