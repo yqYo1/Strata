@@ -38423,9 +38423,29 @@
   "prefill-qsa-value-rematerialization-20261120": {
     "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "Current measured BF16 prefix consumer has 14.376/14.383 s of 65537-token GPU service and up to 3.252 TB of logical K+V reads. Earlier direct Q8 gathering changes both operands and the surrounding attention schedule. The measured consumer has a separately identifiable V load after softmax.",
     "question": "Compare rematerializing only V from Q8+FP16 scales within the existing BF16 sparse prefiller to reading its expanded BF16 V. Trace physical/logical page address, ordered softmax and BF16 rounding, scale validation, allocation and ownership under streamed KV. Compare published production patterns from vLLM/SGLang or other primary kernel sources, clearly identifying model/engine/version/license and differences. Describe an isolated producer/consumer comparison that keeps the K operand and score/order unchanged, and what would falsify a wall-time or DRAM-traffic claim. Avoid repeating page prefetch/ID compaction.",
-    "consumer": "Select a high-traffic comparison in the observed attention consumer after current components. This is not a proposal to port external code."
+    "consumer": "Select a high-traffic comparison in the observed attention consumer after current components. This is not a proposal to port external code.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-qsa-value-rematerialization-20261120/report.md",
+    "report_sha256": "0cc8a73efa85a47beded4eb82b830c792228cf1e3cd4c74aca45593108a7af20",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-qsa-value-rematerialization-20261120-control/native-review.md",
+    "review_sha256": "63631735762b8ee12c6d29f396e82b3ef8253e9999091167008094e69be9ea00",
+    "finding": "A V-only producer/consumer comparison is feasible with unchanged K, finite-scale checks and ordered PV. The selected logical row still needs a correct physical Q8 row. Q8 reads shift from dense packing to selected gathers; actual DRAM traffic and speed are unmeasured. The external references are design context. Pin an exact kernel revision before relying on its implementation.",
+    "worker_completion": {
+      "task": "task_ce5775039769",
+      "dispatch": "ctx_31c40fad7241",
+      "message": "msg_c45bfc9187d1",
+      "terminal": "term_5b1b205c-c70f-450f-a4c3-c4ac0bd2e84a",
+      "exact_worker_exited": true
+    }
+  },
+  "prefill-final-slot-mixed-ownership-20261120": {
+    "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisite": "All eight real mixed-scratch server states including near-both closed at b633f7d69, but the standalone physical fill explicitly disables mixed scratch and therefore cannot execute vec8. The original standalone and server lease code and exact capacity admission are available.",
+    "question": "Trace the one-shot terminal consume and server cache-scratch borrow from the measured generator through Prefill::init, mask/restore and last verifier commit. Compare using actually owned standalone allocations, bringing the existing checked cache loan to that diagnostic entry, or a tightly scoped terminal-consume server fixture. Which is the smallest way to exercise the real selected mixed/vec8 route through all 262144 slots without weakening the lease or server output reservation? Identify concrete memory/slot admission, handoff, error unwind and proof of actual dispatch; avoid a new UI or a broad architecture survey.",
+    "consumer": "Choose the production-equivalent final-slot qualification for a winning vec8 or combined candidate; keep the committed ordinary standalone control and the current clean timing plan intact."
   }
 }
