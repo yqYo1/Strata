@@ -38348,5 +38348,19 @@
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-kv-gather-clean-dispatch-20261120/report.md",
     "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-kv-gather-clean-dispatch-20261120-control/review.md",
     "worker_completion": "Main verified completed task_cda9a8c7695d, dispatch ctx_a4d3a4ed6131 and worker_done msg_87faf9d506a5. Closed the idle Orca terminal and confirmed its scope inactive. Filesystem proof covers 20 protected inputs; worker-side Orca status is self-reported. Native Luna max reviewed the report."
+  },
+  "prefill-qsa-four-cell-descriptor-20261120": {
+    "source_commit": "827b4be344cf91c7420b22955b33308eba3b81ab",
+    "question": "Can the actual two QSA selection producers publish group descriptors for the selected four-cell blocks that the prefill attention consumer can visit directly in exactly the previous order, including threshold ties, prefixes, padding and causal partial tails? Identify representable versus fallback shapes, distinguish fewer index loads from KV loads, and decide whether a bounded implementation comparison is worth running.",
+    "prerequisite": "The closed 39260-token production selection census reports actual causal ordering, uniqueness and cross-query overlap. Execution source and two failed/split layout trials decide a representation question that their workgroup/layout comparisons did not cover.",
+    "classification": "decision support",
+    "schedulable_now": true
+  },
+  "prefill-gdn-published-decay-20261120": {
+    "source_commit": "65b55a41cd55fbab82ca5d53ecae4715bb283aed",
+    "question": "Audit the new long-prefill FP32 decay publication pair across the actual two translation units and its fixture. Identify exact-equivalence and synchronization assumptions, compilation/rounding and bitwise-corpus limitations, and what its paired measurement can identify. Scope findings to concrete defects or a focused additional measurement, without repeating the GDN chunk64 or barriers research.",
+    "prerequisite": "The actual 64K profile has 288 GDN recurrence calls and 4.400 seconds in each warmed request. A committed new opt-in producer/consumer and production-wrapper comparison now exist at 65b55a41c. Their numerical and timing gates have not yet been executed.",
+    "classification": "decision support",
+    "schedulable_now": true
   }
 }
