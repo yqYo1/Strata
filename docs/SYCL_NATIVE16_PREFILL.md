@@ -253,6 +253,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   28.73/28.54 ms for drafting. Both workloads met the 1.10 observer gate
   with matched work in both pairs. All four native processes exited zero
   with no new fault. These observations qualify attribution on this route.
+  For each measured process and workload, let `t` be total engine decode ms
+  per window and `y` the actual emitted tokens divided by windows. Holding
+  work and every other interval fixed, halving the expert-pool interval `p`
+  gives `1000*y/(t-p/2)`: 14.34–14.37 tok/s for code and 8.51–8.52 for
+  prose. Removing that interval entirely gives about 19.5 and 11.1 tok/s.
+  The per-layer GPU-reach wait ends before the pool callback starts in
+  `src/core/verify.cpp` at the measured source `1bf54ec32`. Even setting both
+  wall intervals to zero in the same calculation gives 63.73–63.98 tok/s
+  for code and 35.21–35.28 for prose. These are fixed-work sensitivities.
+  Moving experts changes how much other work the wait hides and may change
+  the draft yield. Measure both after a ranking change. Reaching 70 at the
+  observed yields also requires reducing the remaining verification/draft
+  time or producing more accepted tokens per window.
   At the fixed 1256-slot decode placement, resident experts handled 143,358
   of 1,498,080 routed entries for code (9.57%) and 366,480 of 6,492,000
   for prose (5.65%). For a placement comparison, measure held-out hits and
