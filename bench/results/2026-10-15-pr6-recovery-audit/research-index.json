@@ -38463,9 +38463,21 @@
   "prefill-q8-v-physical-rows-20261120": {
     "source_commit": "0eabd0733b64d30df75225b51a34f543b6fcabb4",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "An owned source proposal and three-arm fixture now exist at 0eabd0733, after the V-only design review and independent grouped-select and score-key timing gates. No device result exists for this source.",
     "question": "Review the new concrete two-table SLM row representation, exact Q8 V decode at consumption, two-stage isolation and sparse test coverage against the measured ordered-exp path. Identify any precise defect, missing test or obstacle to real model staging. Use the earlier V-only report only to avoid repeating its theory.",
-    "consumer": "Main will use the digest before first B570 execution of the V-only kernel and before selecting model staging or changing its allocation."
+    "consumer": "Main will use the digest before first B570 execution of the V-only kernel and before selecting model staging or changing its allocation.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-q8-v-physical-rows-20261120/report.md",
+    "report_sha256": "ce7b0ff687fbc59b0b8ecd9fb543f429f3944382d16d1122ae523d50b4a73d32",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-q8-v-physical-rows-20261120-control/native-review.md",
+    "review_sha256": "dc723780ea50b5d966ef2d730b38efafc02063903a9159804e0c696d173c8cc5",
+    "finding": "No concrete wrong-row, ordering or rounding defect in the reviewed direct-V kernel. Before first execution, cover an unselected invalid V scale on present identity pages. Fixture 146f71321 now requires its row flag and exact finite output. Production model dispatch and any speedup remain open. The filesystem probe deliberately reports no IPC qualification; worker status was self-reported, and Main independently confirmed its exact terminal completion.",
+    "worker_completion": {
+      "task": "task_9f61e438f361",
+      "dispatch": "ctx_cfd5c7860053",
+      "message": "msg_3d033837e33f",
+      "terminal": "term_52d836a5-e73c-47ff-acba-c49721b07ce2",
+      "exact_worker_exited": true
+    }
   }
 }

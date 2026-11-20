@@ -21,7 +21,7 @@ ROOT = bank.B / 'prefill-qsa-groups-v3'
 KEY = 'prefill_qsa_groups_v3'
 VALUE_ROOT = bank.B / 'prefill-qsa-q8-value-v1'
 VALUE_KEY = 'prefill_qsa_q8_value_v1'
-VALUE_SOURCE = 'f564644cb96247d49e02d71a77af8cbe822001e0'
+VALUE_SOURCE = '146f71321c459176d9476c4bfc02895eedd6e487'
 VALUE_BASE = 'af9d017ff6a30910182bfc83c265de9f14b3e4a1'
 VALUE_HEADER = 'include/strata/kernels/qsa_bf16_prefix.hpp'
 TARGET = 'sycl_qsa_bf16_prefix_ordered_exp_bench'
@@ -172,7 +172,8 @@ def value_samples(stdout, action):
     for identity, clustered, selected_pages in layouts:
         shape = f'cells={cells} queries={queries} cap={cap}'
         mapping = f'identity={identity} clustered={clustered} selected_pages={selected_pages}'
-        marker = f'q8_v_checked {shape} page_size=4 {mapping} expanded_untouched=1 finite_bits=1 invalid_scale_checked={int(smoke)}'
+        marker = (f'q8_v_checked {shape} page_size=4 {mapping} expanded_untouched=1 finite_bits=1 '
+                  f'invalid_scale_checked={int(smoke)} unselected_invalid_checked={int(smoke and identity)}')
         require(lines.count(marker) == 1, 'missing explicit V ownership, scale or shape check')
         if smoke:
             continue

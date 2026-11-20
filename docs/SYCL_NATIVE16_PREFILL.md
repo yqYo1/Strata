@@ -505,6 +505,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The paired process ratios were 0.98615, 0.98642 and 0.98619. The numerical
   fixture and all three timing comparisons passed. Test this change on its
   own before combining it with QSA or KV reuse in a model comparison.
+  On the measured `fde0cdd11` source image, applying the score-key and
+  decay deltas in either order produces the same shared prefill caller
+  (`43d1dfbf35344028f517e0b8ac827941c0d130fdd0112434c4bd5930866422fd`).
+  Reversing either patch recovers the other component's measured caller.
+  The combined 1171-file source fingerprint is
+  `027b2f5b32e267aed193f942f1d7b7e6249340a4c99258f8fd735820875d9b78`
+  using the original `a29048486` and `18d0b137e` fixtures. This source
+  check leaves compilation, four-way state/dispatch and model speed open.
   There is a second prefix operation entirely on the GPU. Before ordered-exp
   attention, the pack kernel dequantizes K and V for all live pages and writes
   BF16 operands and bad-scale flags into request scratch. The opt-in
@@ -3194,7 +3202,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.406 TB. Actual DRAM bytes depend on cache reuse and coalescing.
   Keep K storage, ID order, softmax and matrix accumulation fixed in
   a comparison and include any V producer or addressing cost.
-  The candidate at `f564644cb` keeps the original K pack and BF16
+  The candidate at `146f71321` keeps the original K pack and BF16
   matrix operands. It records both the logical K row and the physical
   V row while looking up the page, using the same 256 bytes of local
   storage. Each four signed V codes share one FP16 scale; lanes convert
@@ -3206,8 +3214,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the original V pack still executed, and direct V with the pack omitted.
   The third arm must leave poisoned V scratch untouched. First test
   page size four, sparse/dead/tail rows, physical aliases, identity and
-  remapped tables, a selected invalid V scale and all output bits and
-  guards on the B570 with validation. Then run three clean processes
+  remapped tables and all output bits and guards on the B570 with
+  validation. A selected invalid V scale must poison exactly its head group.
+  An active but unselected invalid scale in the identity table must set its
+  row flag while preserving every finite result. Then run three clean processes
   with 6491 queries, 39260 live cells and selection width 2051. Use
   spread IDs on both layouts, clustered IDs on identity staging, and a
   causal identity case with 512 ascending four-cell pages and three tail
