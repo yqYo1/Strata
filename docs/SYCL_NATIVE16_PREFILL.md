@@ -234,7 +234,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The first instrumented process at `866182a40` closed with the same
   generated-token, draft and CPU expert counts as the preceding clean process. Code/prose
   verification took 287.77/262.44 ms per window, including GPU-reach
-  waits of 128.33/125.17 ms and CPU-pool runs of 131.73/108.66 ms.
+  waits of 128.33/125.17 ms. The host interval following GPU reach was
+  141.45/117.95 ms. Inside it, 131.73/108.66 ms elapsed around the expert
+  dispatcher's pool run. In source `1bf54ec32`, the serve footer prints
+  `drive.d.ms_run` for the latter field. The dispatcher times from just
+  before pool invocation through its return and any peer/remote completion.
+  These wall clocks do not measure worker CPU cycles or RAM bandwidth.
   Draft generation alone took 28.65/28.51 ms. At the observed acceptance,
   70 tok/s leaves only 22.84 ms (code) or 0.31 ms (prose) for all other
   work if draft time stays fixed. For this MTP-weak workload measure the
@@ -242,6 +247,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reducing CPU expert time alone cannot recover that budget at fixed yield.
   These are first-pair observations; finish both matched pairs before
   using their intervals as representative timings.
+  At the fixed 1256-slot decode placement, resident experts handled 143,358
+  of 1,498,080 routed entries for code (9.57%) and 366,480 of 6,492,000
+  for prose (5.65%). For a placement comparison, measure held-out hits and
+  unique CPU jobs per layer and verifier window. Several entries can share
+  a job. An increase in hits alone supplies no elapsed-time estimate.
   The eight traced state/RESTORE processes at `4775de3b0` expose a separate
   first-token cost on the resident-input executable (`b35d66a4`). On the
   first one-token decode per process, the verifier's graph capture clock
@@ -407,8 +417,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   guards against a full pack at page size four, with invalid scales and
   aligned and nonaligned starts. Check source refusal on invalid retained
   extents. Then compare full/suffix with scalar gather and KV reload fixed,
-  requiring actual per-layer written/retained counts, equal model work,
-  unchanged restored state, cancellation and the physical final slot.
+  using layer-major native16, owned staging (`STRATA_KV_STAGE_OWN=1`) and
+  the same copy/compute queue (`STRATA_SYCL_PREFILL_SAME_QUEUE=1`). Confirm
+  that the queue and stage actually selected meet the ownership check. With
+  the reload policy fixed, subsequent chunks reload the corresponding host
+  KV prefix. Packed reuse depends on those earlier host cells staying
+  unchanged during the same layer pass. Require nonzero retained pages on
+  eligible multi-chunk layers, the expected written/retained counts, equal
+  model work, unchanged restored state, cancellation and the physical final slot.
   Collect the clean 64K/117K first and warmed prompt times and TTFT in
   alternating order and recheck sustained decode before adoption.
   Before timing, compare device and host state on a fresh prompt, a nonzero
@@ -3346,6 +3362,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   about 29% of the 6.896-second gap from the paired clean 64K prompt to
   1000 PP if every saved second shortened the request. The model comparison
   must measure how much of this time the large jobs actually save.
+  The 117489-token ordinary control at `9c03b44d0` routed 56,394,240 rows
+  on each fresh prompt (48 layers, ten experts per token). Across the four
+  original bodies, jobs of at least 2334 rows carried 52,160,499–52,231,136
+  rows, or 92.49–92.62% of the total, in only 7423–7441 of 23816–23841
+  jobs. At 2560 FP16 values per row, the selected jobs account for
+  248.72–249.06 GiB of logical gather output per request. Vec8 still writes
+  that output. Only a gather-free reader could remove it.
   The mapped-input alternative now has a diagnostic at child `19999c6c1`.
   Its host mode checks the actual compact and wide TLA lane/atom
   coordinates, replicas and valid/padded rows over three of 80 K tiles.
