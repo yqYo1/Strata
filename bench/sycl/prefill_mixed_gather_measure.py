@@ -11,12 +11,14 @@ import sys
 
 sys.dont_write_bytecode = True
 import build_prefill_mixed_gather as fixture
+import prefill_large_gather_model_source as coherent_model
 import prefill_resident_input_model as model
 
 bank, require = fixture.bank, fixture.require
 owner, validation = bank.builder.ownership, bank.basis.validation
 BUILD_KEY = 'prefill_mixed_gather_dispatch_build_v1'
 KEY = 'prefill_mixed_gather_dispatch_v1'
+COHERENT_KEY = 'prefill_large_gather_device_v1'
 STAGES = ('contiguous', 'ragged', '0', '1', '2')
 SHAPES = tuple(itertools.product((2334, 8192), (1, 16)))
 
@@ -49,7 +51,7 @@ def check_samples(text, process):
             for (r, c), t in times.items()]
 
 
-def measure(action):
+def component_inputs():
     native, speed, parent_identity, _ = model.inputs()
     build = validation.committed(bank.RESULT, (BUILD_KEY,))
     root = fixture.ROOT
@@ -61,23 +63,45 @@ def measure(action):
             and all(bank.sha(p) == h for group in ('compiled', 'linked') for p, h in record[group].items())
             and all(bank.sha(root / p) == h for p, h in record['driver_inputs'].items()),
             'build or measured inputs changed')
-    scripts = [str(Path(f).resolve().relative_to(bank.P)) for f in (__file__, fixture.__file__)]
+    return native, speed, root, build
+
+
+def coherent_inputs():
+    root = coherent_model.MODEL_ROOT
+    native = bank.previous.read(root / 'record.json')
+    coherent_model.check_build(native)
+    require(native['stage'] == 'built' and native['passed'] and native['complete']
+            and native['ownership_closed'] and not native['active'] and native['host_control']['passed'],
+            'complete the coherent model build and its host control first')
+    speed = bank.previous.read(bank.basis.reference.ROOT / 'record.json')
+    build = dict(build_sha256=bank.signature(bank.builder.compact(native)), binary=native['binaries'][fixture.TARGET])
+    return native, speed, root, build
+
+
+def measure(action, coherent=False):
+    native, speed, root, build = coherent_inputs() if coherent else component_inputs()
+    key = COHERENT_KEY if coherent else KEY
+    stages = STAGES[:2] if coherent else STAGES
+    scripts = [str(Path(f).resolve().relative_to(bank.P))
+               for f in (__file__, fixture.__file__, coherent_model.__file__)]
     pins = bank.stage.source.pin(bank.P, [*scripts, 'tools/sycl'])['source_sha256']
-    require(all(p in pins for p in scripts), 'commit both fixture controllers')
+    require(all(p in pins for p in scripts), 'commit the fixture and its build controllers')
     pin_digest = bank.signature(pins)
     result = bank.previous.read(bank.RESULT)
-    i = STAGES.index(action)
-    prior_digest = bank.signature(result.get(KEY))
+    i = stages.index(action)
+    prior_digest = bank.signature(result.get(key))
     if i:
-        result[KEY] = validation.committed(bank.RESULT, (KEY,))
+        result[key] = validation.committed(bank.RESULT, (key,))
     else:
-        require(KEY not in result, 'inspect the previous gather attempt')
-        result[KEY] = dict(build_sha256=build['build_sha256'], controls=pin_digest, stages=[],
+        require(key not in result, 'inspect the previous gather attempt')
+        result[key] = dict(build_sha256=build['build_sha256'], controls=pin_digest, stages=[],
                            source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
                            measured_model=False)
-    row = result[KEY]
+        if coherent:
+            result[key].update(binary=build['binary'], native_source_commit=native['native_source_commit'])
+    row = result[key]
     require(row['controls'] == pin_digest and row['build_sha256'] == build['build_sha256']
-            and [s['stage'] for s in row['stages']] == list(STAGES[:i])
+            and [s['stage'] for s in row['stages']] == list(stages[:i])
             and all(s['passed'] for s in row['stages']), 'previous stage, plan or inputs changed')
     directory = root / ('measure-' + action)
     directory.mkdir(mode=0o700)
@@ -121,6 +145,9 @@ def measure(action):
                     and 'inputs_immutable=1 guards=PASS PASS' in text, 'incomplete numerical evidence')
             if i == 0:
                 require('urEnqueueKernelLaunch' in log, 'first-use launch trace missing')
+                if coherent:
+                    stage['providers'] = bank.device.loaded_providers(log, dict(environment=env,
+                        native_validation_probe=probe, runtime_manifest=native['foundation']['runtime_manifest']))
             stage.update(compared_values=n * 2560, invalid_rows=4, admission_rejects=6)
         else:
             stage['samples'] = check_samples(text, int(action))
@@ -132,20 +159,21 @@ def measure(action):
         validation.finish(stage, child, cursor, speed['boot'])
         stage['passed'] = stage['passed'] and stage['driver_after'] == native['driver']
         row['stages'].append(stage)
-        if stage['passed'] and action == STAGES[-1]:
+        if not coherent and stage['passed'] and action == STAGES[-1]:
             row['faster_each_process'] = [all(s['samples'][j]['median_time_ratio'] < 1 for s in row['stages'][2:])
                                           for j in range(len(SHAPES))]
         current = bank.previous.read(bank.RESULT)
-        require(bank.signature(current.get(KEY)) == prior_digest, 'gather record changed during the run')
-        current[KEY] = row
+        require(bank.signature(current.get(key)) == prior_digest, 'gather record changed during the run')
+        current[key] = row
         bank.stage.write(bank.RESULT, current)
     require(stage['passed'], 'post-run platform, ownership or fault check failed')
 
 
 if __name__ == '__main__':
-    action, = sys.argv[1:]
-    require(action in STAGES, 'select a planned gather stage')
+    coherent = sys.argv[1:2] == ['--coherent']
+    action, = sys.argv[2:] if coherent else sys.argv[1:]
+    require(action in (STAGES[:2] if coherent else STAGES), 'select a planned gather stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
-        measure(action)
+        measure(action, coherent)
