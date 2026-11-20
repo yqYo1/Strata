@@ -17,7 +17,7 @@ builder, require = bank.builder, bank.require
 ROOT = bank.B / 'decode-moe-combine-native-v1'
 KEY = 'decode_moe_combine_native_v1'
 BASE = 'c4c891c09aef7c105608e9b03e98d2b8a27b8bee'
-SOURCE = 'aabd037d6cf207d7c9e61b864523667ee259e227'
+SOURCE = '05c365ecce626913967de1e29e46f722e20339fa'
 PARENT_ELF = '85e3f202ef99661d52c03a17a8b609b8a8a44e9f584bfa8fc1a5c1c3d51aea7c'
 TARGET = 'sycl_decode_moe_combine_test'
 COMPONENT = 'decode_moe_combine_component_v1'
@@ -28,10 +28,10 @@ FIXTURE = 'tests/sycl/decode_moe_combine.cpp'
 UNITS = ('src/core/verify.cpp', 'src/kernels/sycl/shared_expert.cpp', FIXTURE)
 PROJECTED = {
     UNITS[0]: '5a79441b9ec90ef1b786eb584ffc36609221dd595b944d75c273a258732fac99',
-    UNITS[1]: '2381a065991f48954c9a52b6e8a26cf0f8db548763d92fd8983c3d6179896ba5',
-    'include/strata/kernels/native_moe.hpp': 'e2fd9120a1a97074473aab2c6a0cbc2230054c0bfe1d23e16182cf70e0d105ed',
+    UNITS[1]: 'affe9c97194f7a7a2d02f5dadfc21f54014332474baf7530b1cd2fbc5a66753f',
+    'include/strata/kernels/native_moe.hpp': 'ef2d80ade36e562dbe6a3607bc5ba4b8b48e1b9538e33296d3dddbc4c937f9bc',
     'cmake/sycl_backend.cmake': '666da4ce948432e60589910949ffa741fd9ecdf392b7463852f27d64cea83c13',
-    FIXTURE: '7ff0efd5cfb1206d645562301c38de36525c245d7e0c505f0e0fabca1c28b22c',
+    FIXTURE: '1e14b56a60391cfba5d18f848d6f6f041fede876964d67c2ed09948fc872c01c',
 }
 
 
@@ -125,7 +125,8 @@ def prepare():
                commands=[], active=False, passed=False, complete=False, ownership_closed=True,
                component_plan=dict(order=MODES, hits=[4, 10, 20], pairs_per_process=4, replays=512,
                    minimum_ms=10, max_empty_clock_ratio=0.01, cpu_publication='Rewrite only misses after each drain.',
-                   result='Candidate median faster at all three hit counts in every process. '
+                   result='Candidate median faster both from launch and from publication at all three '
+                   'hit counts in every process. '
                    'Independent capture and service comparison only.'),
                retention='Third build only during the same-kernel fixture and a gated coherent model comparison. '
                          'Keep the measured fast prefill and independent decode references. Retire this build '
@@ -146,17 +147,17 @@ def parse_pairs(text, reverse):
     lines = text.strip().splitlines()
     require(lines and lines[-1] == normal and lines.count(normal) == 1, 'fixture did not close normally')
     pattern = (r'decode MoE combine hits=(4|10|20) batch=([0-3]) arm=([01]) replays=512 '
-               r'ms=(\d+\.\d+) empty_ms=(\d+\.\d+)')
+               r'ms=(\d+\.\d+) full_ms=(\d+\.\d+) empty_ms=(\d+\.\d+)')
     samples = []
     for line in lines[:-1]:
         value = re.fullmatch(pattern, line)
         require(value is not None, 'unexpected timing row')
-        h, n, a, ms, empty = value.groups()
-        samples.append((int(h), int(n), int(a), float(ms), float(empty)))
+        h, n, a, ms, full, empty = value.groups()
+        samples.append((int(h), int(n), int(a), float(ms), float(full), float(empty)))
     expected = [(h, n, a) for h in (4, 10, 20) for n in range(4)
                 for a in (int(reverse) ^ (n % 2), 1 ^ int(reverse) ^ (n % 2))]
-    require([s[:3] for s in samples] == expected and all(ms >= 10 and empty <= ms * 0.01
-                for _, _, _, ms, empty in samples), 'incomplete timing pairs or empty-clock limit')
+    require([s[:3] for s in samples] == expected and all(full >= ms >= 10 and empty <= ms * 0.01
+                for _, _, _, ms, full, empty in samples), 'incomplete timing pairs or empty-clock limit')
     return samples
 
 
@@ -221,12 +222,18 @@ def component():
                 result['processes'].append(outcome)
             require(outcome['passed'], 'component execution or final device checks failed')
         by_hits = {}
+        require(len({(p['native_identity']['pid'], p['native_identity']['start_ticks'])
+                     for p in result['processes']}) == len(MODES), 'independent processes required')
         for hits in (4, 10, 20):
-            medians = [[statistics.median(t for h, _, arm, t, _ in p['samples'] if h == hits and arm == a)
-                        for a in (0, 1)] for p in result['processes'][1:]]
-            by_hits[str(hits)] = [b / a for a, b in medians]
+            intervals = {}
+            for i, name in enumerate(('graph', 'with_publication'), start=3):
+                medians = [[statistics.median(s[i] for s in p['samples'] if s[0] == hits and s[2] == a)
+                            for a in (0, 1)] for p in result['processes'][1:]]
+                intervals[name] = [candidate / reference for reference, candidate in medians]
+            by_hits[str(hits)] = intervals
         result.update(stage='closed', passed=True, complete=True, candidate_over_control=by_hits,
-                      advance_to_model=all(r < 1 for samples in by_hits.values() for r in samples))
+                      advance_to_model=all(r < 1 for intervals in by_hits.values()
+                                           for ratios in intervals.values() for r in ratios))
     except BaseException as error:
         result.update(stage='failed', error=repr(error))
         raise

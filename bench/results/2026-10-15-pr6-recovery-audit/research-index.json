@@ -38572,5 +38572,21 @@
       "terminal": "term_64c0fd05-5442-4151-acf5-d09199959280",
       "exact_worker_exited": true
     }
+  },
+  "decode-mapped-moe-fusion-20261120": {
+    "classification": "decision support",
+    "stage": "native_reviewed_with_main_corrections",
+    "schedulable_now": false,
+    "source_commit": "692f8f6fc57ddf5128519b8bc40a719c6a3c1bef",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-mapped-moe-fusion-20261120/report.md",
+    "report_sha256": "e2b4f2140807c11bb01088f8ba2dea74a539ad06bbce59b37461bef6c2628eaf",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-mapped-moe-fusion-20261120-control/native-review.md",
+    "review_sha256": "1250bddbffa1b919d247512a17b05156d38db3f7a7fd1602f9a43740d06494d1",
+    "worker": "Orca gpt-6-luna medium task_ac471b17c111, ctx_13b12ef11a10. Accepted worker_done and confirmed scope exit.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "findings": "The launch in Verifier::run and its completion carry the CPU publication and GPU output into the next layer. The convergence and ordered FP32 arithmetic audit found no issue with valid distinct destinations. The moved CPU rows need dynamic publication and paired clocks.",
+    "corrections": "The filesystem-only proof does not attest Orca IPC. Main verified the successful worker-side status from session 01a1f897-2432-7a11-92e5-398085a3f330, call_fb3ea66fa7364f5b91ebb5aeb6716794, with matching runtime and ready/connected status. The limited worker source set omitted the executable entrypoint. Main matched the measured ELF's compiled src/program/generate.cpp SHA256 f59cfe1d32016e2b46300a31fc10bad51a5d83b4dd53617e560fbd16b6071617 and its official --native argv. The native preset enables the combine and generate.cpp sets it before capture. Confirm actual capture and replay at model qualification.",
+    "consumer": "Candidate tests at 05c365ecc cover duplicate row rejection, alternate CPU publication and clocks with and without publication. Main authored the fusion using the existing Strata inputs and FP32 contract. Independent SYCL fixture and sustained model timing are pending.",
+    "next_review": "After the first component closure."
   }
 }
