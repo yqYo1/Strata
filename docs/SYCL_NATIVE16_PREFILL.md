@@ -2947,6 +2947,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep packing and the checked queue drain in each sample, with the full
   output comparison outside the clock. Retire the standalone fixture
   once its model-trial decision and source recovery are recorded.
+  A separate QSA candidate at `f0b231aec` changes only how workgroups
+  map to (query, KV head). The current launch alternates the two KV
+  heads for each query. The candidate assigns the first `queries` groups
+  to head 0 and the rest to head 1. Each head therefore has consecutive
+  group IDs for adjacent queries sharing selected cells. The runtime
+  chooses which workgroups actually execute together. Both variants use
+  the original K reader, QK/PV tiles, per-query softmax order and output
+  addresses. The three-query smoke exercises an odd group boundary.
+  Use the same pack-to-drain clock and bit/guard checks as the lane
+  trial in separate processes. On the four-cell page fixture measure the
+  valid logical IDs shared with the preceding query, excluding duplicates,
+  out-of-range cells and missing pages. Require at most 10% shared for
+  the wide spread map, 40–50% for the sorted four-cell groups and at least
+  90% for the clustered map. These are synthetic distributions. Advance
+  the wide scheduling change only if all three wide maps improve in each
+  of the three independent processes. Assess cap 33 separately. Keep the
+  earlier K-lane fixture at its original `5c58ff175` revision.
   In each trace, 9717 D2D commands requested 128,861,904,128 bytes in
   0.7884 and 0.7880 s of GPU service. Removing BF16 input/output copies
   can also change submission or scheduling costs, but the measured D2D
