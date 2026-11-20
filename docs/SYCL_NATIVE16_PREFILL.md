@@ -3194,7 +3194,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.406 TB. Actual DRAM bytes depend on cache reuse and coalescing.
   Keep K storage, ID order, softmax and matrix accumulation fixed in
   a comparison and include any V producer or addressing cost.
-  The candidate at `78cdb0742` keeps the original K pack and BF16
+  The candidate at `f564644cb` keeps the original K pack and BF16
   matrix operands. It records both the logical K row and the physical
   V row while looking up the page, using the same 256 bytes of local
   storage. Each four signed V codes share one FP16 scale; lanes convert
@@ -3209,13 +3209,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   remapped tables, a selected invalid V scale and all output bits and
   guards on the B570 with validation. Then run three clean processes
   with 6491 queries, 39260 live cells and selection width 2051. Use
-  spread IDs on both layouts and clustered IDs on identity staging.
+  spread IDs on both layouts, clustered IDs on identity staging, and a
+  causal identity case with 512 ascending four-cell pages and three tail
+  cells per query. These synthetic selections bracket locality.
   In each case collect all six permutations of the three arms, including
   admission, packing, attention and the final drain. Require every clean
   interval to reach 10 ms and timer p99 below one percent. Record paired
   median ratios for the consumer, eliminated pack and combined change.
   Advance the combined identity-stage path only if the combined change
-  lowers paired time in every process on both identity shapes. Record the
+  lowers paired time in every process on all three identity shapes. Record the
   remapped result separately. Stop on invalid output, provider, fault,
   budget or ownership. Keep model PP, TTFT and decode checks separate.
   A separate candidate specializes selected-row lookup for the full KV

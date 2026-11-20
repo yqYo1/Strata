@@ -21,7 +21,7 @@ ROOT = bank.B / 'prefill-qsa-groups-v3'
 KEY = 'prefill_qsa_groups_v3'
 VALUE_ROOT = bank.B / 'prefill-qsa-q8-value-v1'
 VALUE_KEY = 'prefill_qsa_q8_value_v1'
-VALUE_SOURCE = '78cdb0742339e536c57e06c89d511b903a25387f'
+VALUE_SOURCE = 'f564644cb96247d49e02d71a77af8cbe822001e0'
 VALUE_BASE = 'af9d017ff6a30910182bfc83c265de9f14b3e4a1'
 VALUE_HEADER = 'include/strata/kernels/qsa_bf16_prefix.hpp'
 TARGET = 'sycl_qsa_bf16_prefix_ordered_exp_bench'
@@ -161,7 +161,7 @@ def value_samples(stdout, action):
     require(match and 0 <= float(match[1]) <= int(match[2]) < 5000 and float(match[1]) < 1000, 'clock overhead')
     smoke = action == 'smoke'
     cells, queries, cap = (97, 3, 33) if smoke else (39260, 6491, 2051)
-    layouts = [(0, 0), (1, 0)] if smoke else [(0, 0), (1, 0), (1, 1)]
+    layouts = [(0, 0, 0), (1, 0, 0)] if smoke else [(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 0, 1)]
     require(sum(x.startswith('q8_v_checked ') for x in lines) == len(layouts)
             and sum(x.startswith('q8_v_sample ') for x in lines) == (0 if smoke else 18*len(layouts))
             and lines.count('fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED') == 1,
@@ -169,9 +169,9 @@ def value_samples(stdout, action):
     permutations = ((0,1,2), (1,2,0), (2,0,1), (2,1,0), (0,2,1), (1,0,2))
     arms = ('packed', 'q8_with_copy', 'q8')
     results = {}
-    for identity, clustered in layouts:
+    for identity, clustered, selected_pages in layouts:
         shape = f'cells={cells} queries={queries} cap={cap}'
-        mapping = f'identity={identity} clustered={clustered}'
+        mapping = f'identity={identity} clustered={clustered} selected_pages={selected_pages}'
         marker = f'q8_v_checked {shape} page_size=4 {mapping} expanded_untouched=1 finite_bits=1 invalid_scale_checked={int(smoke)}'
         require(lines.count(marker) == 1, 'missing explicit V ownership, scale or shape check')
         if smoke:
@@ -192,7 +192,8 @@ def value_samples(stdout, action):
             triples.append(block)
         ratios = {f'{a}_over_{b}': statistics.median(t[a]/t[b] for t in triples)
                   for a,b in ((arms[1],arms[0]), (arms[2],arms[1]), (arms[2],arms[0]))}
-        name = ('identity' if identity else 'remapped') + ('_clustered' if clustered else '_spread')
+        pattern = 'selected_pages' if selected_pages else ('clustered' if clustered else 'spread')
+        name = ('identity' if identity else 'remapped') + '_' + pattern
         results[name] = dict(intervals_ms=triples, paired_time_ratios=ratios)
     return dict(timer_p99_ns=int(match[2]), page_size=4, results=results)
 
@@ -320,7 +321,7 @@ def execute(action, values=False):
                              for contrast in first['paired_time_ratios']}
                     for layout, first in timings[0]['results'].items()}
                 row['component_performance_gate'] = all(
-                    row['layout_gates'][layout]['q8_over_packed'] for layout in ('identity_spread','identity_clustered'))
+                    row['layout_gates'][layout]['q8_over_packed'] for layout in ('identity_spread','identity_clustered','identity_selected_pages'))
             else:
                 row['component_performance_gate'] = all(t['median_paired_ratio'] < 1 for t in timings)
         current = bank.previous.read(bank.RESULT)
