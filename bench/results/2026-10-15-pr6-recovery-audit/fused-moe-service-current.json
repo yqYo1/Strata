@@ -537749,5 +537749,35 @@
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_qsa_groups_v1": {
+    "source": "ce7e64c4d53e0dbb7b8cd09570ae0b0b7af30bfa",
+    "parent_build": "913e9012c3f98898f9f8597639f2ebec384edc04df43a7cca33cedd7ff317a9f",
+    "overlay": {
+      "include/strata/prefill/qsa_group_ids.hpp": "e814621d6a61a3f3588be8ffcd07581b36d835de83a4e248c5e5ae3541a45cee",
+      "include/strata/kernels/qsa_prefill_groups.hpp": "a6141fae23538758c97d5d425465e45390e8f0a2e4f4298035e50e0188ac2d18",
+      "bench/sycl/qsa_prefill_groups/selection_fixture.hpp": "d0d17c664cc281fb33aabcaa345fa9af5f84b3f38f82bcedfaad33f4e8c3effc",
+      "tests/sycl/qsa_bf16_prefix_layout_bench.cpp": "2a9845057918b96e836ce1791b57ab1bde208fde7132b0793a834236820f6df0",
+      "src/kernels/sycl/qsa_select.cpp": "3f3d0b5180f40ed1002846b23e41ed78740f9fe0e32529a8a4e2cd330c56cf48",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "01cae070adf40fd88b4c89e559d949bd6a774d78b238511ff00755e50e770787"
+    },
+    "recipe": "c3facec081b5414e30378d00879f6d4382e3c5d06698c8f2407d5251ed14ac3f",
+    "controls": "714df8b402b564275f21ae977c9f6c09d684bbe68ed221ac6e5841534d0b462b",
+    "benchmark_environment_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
+    "runtime": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+    "controller_commit": "116a0e2952a24b96fb34db902e86ded2faa23cf5",
+    "model_tested": false,
+    "stages": [
+      {
+        "stage": "build",
+        "passed": true,
+        "build_sha256": "7713b0268ae247fec7886c4c9d3d4fcd2975b9baf8331c5f1745994589f5b44f",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-groups-v1/sycl_qsa_bf16_prefix_ordered_exp_bench",
+          "sha256": "7da4787cfaff809feb916fb1894b41bf707c824aef9185a2f655d14363356200"
+        },
+        "ownership_closed": true
+      }
+    ]
   }
 }
