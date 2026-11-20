@@ -3355,6 +3355,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stop on a changed input, ownership, fault, numerical or dispatch failure.
   Recheck sustained decode, agent sessions and full physical capacity before
   adoption. No model speed sample from the two-switch build exists yet.
+  Run `bench/sycl/prefill_kv_gather_speed.py` first at 117489 tokens
+  (four original bodies per process), then at 65537 (three bodies).
+  Each length has 16 independent processes. Validate the KV and gather
+  dispatch counters on every timed request, with full tracing disabled.
+  Match its body hash, placement, expert and draft work to the original
+  control. Report each contrast, its four ratios and the absolute rates.
   In the two warmed 64K requests of `eager_request_profile_v2`, all
   scalar mixed gathers took 2.001 and 2.002 seconds of GPU service
   (20,591 and 20,568 calls). The count includes the small jobs that keep
