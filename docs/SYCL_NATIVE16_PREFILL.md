@@ -8424,6 +8424,21 @@ verification. Physical PCIe/VRAM traffic and the limiting resource remain
 unqualified;this tests arithmetic sensitivity at unchanged logical data volume.
 Model speed,prefill/TTFT preservation,task quality,and physical262144/RESTORE
 qualification remain separate gates.
+
+The indexed MTP draft-head candidate at `a0ede5973` was tested against
+the packed-head projection followed by vocabulary gather. Controller
+`5c3e72146` binds the same retained `fde0cdd11` build, model shards and
+ordered draft vocabulary. The linked fixture has SHA256 prefix `9e9ac48d0a`
+and the compiled recipe has prefix `19ea3964f3`.
+The traced smoke and all three timing processes pass the 24 exact and
+three masked cases, input immutability and guards. All four retire with
+normal exits and no fresh fault. Reference/candidate process medians
+are 220.077/320.724, 217.753/310.100 and 234.613/300.157 ms for the
+timing batch. Candidate time ratios are 1.457, 1.424 and 1.279.
+The component misses the performance gate in all three processes. Keep
+the existing projection and gather. The private fixture awaits exact
+source, object and link-input recovery before retirement.
+
 The source-only implementation/controller audits at `f7a96d864` and their
 native Luna-max reviews are closed. They confirm the valid-domain centering
 seam and same-geometry arms;the 32smoke cases and retained paired samples are
