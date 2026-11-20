@@ -231,6 +231,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   only with equal work and paired per-token times within a factor of 1.10.
   GPU-reach wait and CPU-pool wall time are nested inside verification.
   These counters cannot by themselves identify VRAM, RAM or CPU saturation.
+  The first instrumented process at `866182a40` closed with the same
+  generated-token, draft and CPU expert counts as the preceding clean process. Code/prose
+  verification took 287.77/262.44 ms per window, including GPU-reach
+  waits of 128.33/125.17 ms and CPU-pool runs of 131.73/108.66 ms.
+  Draft generation alone took 28.65/28.51 ms. At the observed acceptance,
+  70 tok/s leaves only 22.84 ms (code) or 0.31 ms (prose) for all other
+  work if draft time stays fixed. For this MTP-weak workload measure the
+  cost of proposing drafts and the emitted tokens per verification together;
+  reducing CPU expert time alone cannot recover that budget at fixed yield.
+  These are first-pair observations; finish both matched pairs before
+  using their intervals as representative timings.
   The eight traced state/RESTORE processes at `4775de3b0` expose a separate
   first-token cost on the resident-input executable (`b35d66a4`). On the
   first one-token decode per process, the verifier's graph capture clock
