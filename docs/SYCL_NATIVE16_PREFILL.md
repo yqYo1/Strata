@@ -262,6 +262,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `src/core/verify.cpp` at the measured source `1bf54ec32`. Even setting both
   wall intervals to zero in the same calculation gives 63.73–63.98 tok/s
   for code and 35.21–35.28 for prose. These are fixed-work sensitivities.
+  Halving both intervals yields 19.26–19.32 and 11.55–11.58 tok/s on
+  the same samples. Halving draft generation as well yields 20.86–20.92
+  and 12.58–12.61 tok/s. These calculations keep the observed yields of
+  3.604 and 2.017 tokens per window. Planning, input quantization and job
+  preparation together account for 8.17–8.42 ms per window, at most 2.82%
+  of its measured time. Use the queued segment clocks to distinguish
+  execution of the verifier's layer graph from the delay in reaching it.
+  Keep reductions in routed work and changes in accepted tokens per window
+  in the same decode comparison.
   Moving experts changes how much other work the wait hides and may change
   the draft yield. Measure both after a ranking change. Reaching 70 at the
   observed yields also requires reducing the remaining verification/draft
@@ -712,8 +721,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   75.976 s. Three of the four warmed combined process rates reached 1000.
   Select the combination for validation on the ordinary 384-slot route at
   this length. The 117489-token split-route comparison selects KV reuse.
-  Sustained decode and agent-session preservation are separate acceptance
-  checks for the prefill choices.
+  Run `bench/sycl/prefill_ordinary_generation.py` for the 65K combination
+  on the measured executable with the stock decode placement fixed. Its three
+  matched pairs cover the official long case, agent-session and both
+  thinking-enabled sustained workloads. The 65K prefill-only speed comparison
+  and final-slot checks remain separate evidence.
   The 9,991,618,560 fewer requested H2D bytes would take 1.54–1.59 s at
   the 256 MiB calibration rate. The larger observed time differences
   leave copy issue, synchronization, actual copy size, overlap and
