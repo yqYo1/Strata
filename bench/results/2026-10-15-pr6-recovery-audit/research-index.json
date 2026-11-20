@@ -38323,16 +38323,30 @@
   },
   "xe-trained-profile-phase-isolation-20261120": {
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "source_commit": "f81d8ced397fbdf71f8cd88b427673f15801d899",
     "question": "Trace how the two ranked STRP lists influence the measured B570 single-GPU configuration, including resident/native CPU blobs, slot/byte allocation, prefill scratch loans with restoration, and the actual verifier hit map. Identify what can differ with the same 1256 per-layer slots, what must be observed before calling this a decode-only placement selection, and one bounded test of that distinction. Compare the original host ranking pilot, and use both ordinary code and prose.",
-    "prerequisite": "Niko supplied a real mixed-domain profile with separate provenance at 8cb26e609, already present in the fork. Of 1256 effective entries, 400 agree. The new two clock runs give the actual cost on strong-code and weak-prose. Prior work evaluated our single-domain ranking and adaptive placements; this question is about changing membership on the current fixed ordinary engine."
+    "prerequisite": "Niko supplied a real mixed-domain profile with separate provenance at 8cb26e609, already present in the fork. Of 1256 effective entries, 400 agree. The new two clock runs give the actual cost on strong-code and weak-prose. Prior work evaluated our single-domain ranking and adaptive placements; this question is about changing membership on the current fixed ordinary engine.",
+    "report_sha256": "8be03dbdade5d46574e168ccfb7a2921b860906f11f410ca7a1c6572fbfc2b94",
+    "review_sha256": "93d9710b43296ea62b31881de56231d83c569c7ece935567915819ecbb492c3d",
+    "finding": "Different profiles change expert identities. Main verified per_layer_slot_sizes, layer_slot_range and part_slots: fixed per-layer widths/quotas and fixed first slot also fix the loaned suffix byte extent. The review suggestion that reordering can change suffix layer composition does not apply here. Only 48/132 prefix experts are common. The native CPU-work census exposes all 48 restored membership masks.",
+    "consumer": "Run the same-ELF expert profile RESTORE and subsequent held-out code/prose placement comparison. Keep requested bytes, membership, useful CPU jobs and end-to-end times distinct.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/xe-trained-profile-phase-isolation-20261120/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/xe-trained-profile-phase-isolation-20261120-control/review.md",
+    "worker_completion": "Main verified completed task_d11ac428cc70, dispatch ctx_e71ee05d9d98 and worker_done msg_13ded8d02dfb. Closed the idle Orca terminal and confirmed its scope inactive. Filesystem proof covers 16 protected inputs; worker-side Orca status is self-reported. Native Luna max reviewed the report."
   },
   "prefill-kv-gather-clean-dispatch-20261120": {
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "source_commit": "f81d8ced397fbdf71f8cd88b427673f15801d899",
     "question": "Audit the new two-length clean benchmark from committed setup through native launch and request end. Compare 16 independent processes per length against the earlier original benchmark and traced/standalone gates. Look for an observable false acceptance or false refusal in configuration, request identity, mode/geometry, exact work, counters or time aggregation. Trace the actual selectors and distinguish GPU traffic from inferred logical bytes. Identify only remaining actionable defects before measurement.",
-    "prerequisite": "f81d8ced3 introduced the actual clean controller for the independent KV, large gather and combined arms. Both measured original lengths and traced plans exist. Earlier owner and mapped-A reports did not cover this clean controller."
+    "prerequisite": "f81d8ced3 introduced the actual clean controller for the independent KV, large gather and combined arms. Both measured original lengths and traced plans exist. Earlier owner and mapped-A reports did not cover this clean controller.",
+    "report_sha256": "20f60cf2581b5c0b0a251a06202bf2b400bfc52b2f19bd3cad65069be9575c73",
+    "review_sha256": "fe1daeebec06459128d169d4887d6d486722bf177fca787749719dc26ae35c99",
+    "finding": "The real launcher checks the frozen environment fingerprint and the native environment; the reported standalone decision-helper bypass does not admit a failed process. Timed requests also have independent gather and KV controls. The timing helper uses the initial request and medians of remaining request times.",
+    "consumer": "Use the committed clean four-arm timing plan after the same-build model, dispatch and final-slot gates. No speed result follows from review.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-kv-gather-clean-dispatch-20261120/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-kv-gather-clean-dispatch-20261120-control/review.md",
+    "worker_completion": "Main verified completed task_cda9a8c7695d, dispatch ctx_a4d3a4ed6131 and worker_done msg_87faf9d506a5. Closed the idle Orca terminal and confirmed its scope inactive. Filesystem proof covers 20 protected inputs; worker-side Orca status is self-reported. Native Luna max reviewed the report."
   }
 }

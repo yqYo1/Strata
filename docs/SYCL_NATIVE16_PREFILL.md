@@ -262,6 +262,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by 11.18% but increased prose latency by 1.24% in the one-pair
   diagnostic (`cache-window-rank-current.json`). Compare the Intel
   profile on both workloads and check the prefill loan and restored map.
+  The 8192-token scratch loan in both original RESTORE fixtures begins
+  at slot 132 and covers 1124 slots (2,321,664,000 bytes). On this
+  per-layer path, both the slot ranges and the slot widths depend only
+  on layer and quota. At the same split the loan therefore has the same
+  byte extent with either ranking. The expert identities do change.
+  Only 48 of the 132 unborrowed experts are in both prefixes, and only
+  three occupy the same slot. Across the full cache, 27 occupy the same
+  slot. These are predictions from the two committed ranking files.
+  `bench/sycl/decode_profile_restore.py` checks the actual 48-layer
+  decode membership against each selected file after a long prompt, a
+  33-token conversation switch and the 8209-token restored suffix.
+  The diagnostic reads back the borrowed and retained expert payloads
+  and checks the loan extent on both the 32769 and 253919 input cases.
+  Keep its observed CPU jobs and GPU hits separate from clean decode
+  timing. Exact generated-token equality across different memberships
+  is not a correctness criterion.
   The eight traced state/RESTORE processes at `4775de3b0` expose a separate
   first-token cost on the resident-input executable (`b35d66a4`). On the
   first one-token decode per process, the verifier's graph capture clock
