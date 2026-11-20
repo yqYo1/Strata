@@ -167,17 +167,24 @@ __attribute__((noinline)) void iq3xxs_pair_dot(const uint8_t* GGML_RESTRICT g,
         const auto* gb = g + b * sizeof(block_iq3_xxs);
         const auto* ub = u + b * sizeof(block_iq3_xxs);
         const auto* ab = activation + b * sizeof(block_q8_K);
-        __m256i gi = _mm256_setzero_si256(), ui = _mm256_setzero_si256();
+        __m256i gate_pairs[4], up_pairs[4];
         #pragma clang loop unroll(full)
-        for (int p = 0; p < 8; ++p) {
-            const auto a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
+        for (int p = 0; p < 8; p += 2) {
+            const auto first = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
                 ab + offsetof(block_q8_K, qs) + 32 * p));
-            gi = _mm256_add_epi32(gi, iq3xxs_pair_chunk(gb, p, a));
-            ui = _mm256_add_epi32(ui, iq3xxs_pair_chunk(ub, p, a));
+            const auto gate_first = iq3xxs_pair_chunk(gb, p, first);
+            const auto up_first = iq3xxs_pair_chunk(ub, p, first);
+            const auto second = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
+                ab + offsetof(block_q8_K, qs) + 32 * (p + 1)));
+            gate_pairs[p / 2] = _mm256_add_epi32(gate_first, iq3xxs_pair_chunk(gb, p + 1, second));
+            up_pairs[p / 2] = _mm256_add_epi32(up_first, iq3xxs_pair_chunk(ub, p + 1, second));
         }
-        // Combining the two integer streams is exact: even with |q8|=128,
-        // each lane is bounded by8*4*62*128*31=7872512, below INT32_MAX.
-        // Keep GGML's per-block FMA order and its final horizontal float tree.
+        // Reduce the eight chunks at depth three before the per-block FMA.
+        // Each merged lane is bounded by 8 * 4 * 62 * 128 * 31 < INT32_MAX.
+        const auto gi = _mm256_add_epi32(_mm256_add_epi32(gate_pairs[0], gate_pairs[1]),
+                                        _mm256_add_epi32(gate_pairs[2], gate_pairs[3]));
+        const auto ui = _mm256_add_epi32(_mm256_add_epi32(up_pairs[0], up_pairs[1]),
+                                        _mm256_add_epi32(up_pairs[2], up_pairs[3]));
         uint16_t gd, ud;
         float ad;
         std::memcpy(&gd, gb + offsetof(block_iq3_xxs, d), sizeof gd);
