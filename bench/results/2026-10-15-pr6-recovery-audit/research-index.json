@@ -38267,16 +38267,30 @@
   },
   "prefill-restored-partial-page-20261120": {
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
     "question": "The 8209-token restored suffix requested 934382592 prefix bytes at position 32769 and 6539157504 at 253919. Compare full reload, only reloading the final partial page, and reuse of all previously written cells. Audit canonical page bytes and lifetime, including padding and missing entries.",
-    "prerequisite": "Actual restored suffix traces from the four-way state evidence, typed streamed writer and committed aligned-reuse selector."
+    "prerequisite": "Actual restored suffix traces from the four-way state evidence, typed streamed writer and committed aligned-reuse selector.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-restored-partial-page-20261120/report.md",
+    "report_sha256": "4e9681a5d6b6dd451ff031da3d657d02a09fbf7179ca6bad2cdb717284c04763",
+    "worker_completion": "Orca Luna medium task_966d398cd531, ctx_95b26ec7b9f6, worker_done msg_241359e573da. Task and dispatch completed. Terminal closed after tui-idle and scope inactive. Verified 13 protected inputs. The worker reported its runtime ID; the filesystem proof covers filesystem access only.",
+    "consumer": "Compare full reload with a safe boundary-page repair and separately test reuse of prior complete pages. Verify the KV planes and restored state before timing. Retain through that decision.",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-restored-partial-page-20261120-control/review.md",
+    "review_sha256": "374ea289158da91b7fcfe612f50b288e10f5ff2ef690cbd916fc4bbb06eed4ce",
+    "finding": "The restored starts have offsets 1 and 3 in their four-cell pages. The present selector starts with no trusted prefix on every request. A cross-request reuse experiment needs explicit ownership and lifetime checks."
   },
   "prefill-stop-recovery-protocol-20261120": {
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
     "question": "Design a deterministic native STOP/restart test for the actual ARC serving protocol. Identify a real synchronization point before final publication, the recoverable checkpoints and state, and which comparison can distinguish a late decode STOP.",
-    "prerequisite": "Full physical fill and fresh/switch/RESTORE controls have closed; the new four-arm model reader names cancellation as its next independent gate."
+    "prerequisite": "Full physical fill and fresh/switch/RESTORE controls have closed; the new four-arm model reader names cancellation as its next independent gate.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-stop-recovery-protocol-20261120/report.md",
+    "report_sha256": "07e12f784d65a29d8fab18dc669384cd9672b9710f0b2011eba1b2027a1ab2db",
+    "worker_completion": "Orca Luna medium task_15417016222c, ctx_09f79ca83d26, worker_done msg_313404c59403. Task and dispatch completed. Terminal closed after tui-idle and scope inactive. Verified 15 protected inputs. The worker reported its runtime ID; the filesystem proof covers filesystem access only.",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-stop-recovery-protocol-20261120-control/review.md",
+    "review_sha256": "4f98040a2983c8b53a50345d7859a6be7aba4959ed4a37b24185aa1cbf5c681d",
+    "finding": "The native reader sets the STOP flag asynchronously. A write to its input pipe alone cannot distinguish a late decode STOP from a request that never observed it.",
+    "consumer": "In the interrupted-prefill and late-decode controls, acknowledge the actual flag store before releasing either barrier. Use bounded deadlines and a non-EOS control. Retain through the cancellation and recovery comparison."
   }
 }
