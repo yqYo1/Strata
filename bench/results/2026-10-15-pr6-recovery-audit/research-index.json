@@ -38403,10 +38403,22 @@
   "prefill-retained-score-keys-20261120": {
     "source_commit": "be537f42bc0adffd4ccc01535dc99606dcc46af4",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "The committed long-prefill caller and new consecutive-subbatch fixture exist. A fresh 117489-token request can skip 60.019 GB of logical read/write traffic across 12 layers. The measured parent runs FP16 score GEMM with 256-query slices.",
     "question": "Audit the exact alias, ordering and initialization contract for keeping pooled FP16 index keys between QSA score calls. Trace the index append, scratch borrowers, sticky fault, previous zero padding, disabled/observer paths and reset across a restored prefix. Find an actual counterexample or the smallest additional test that would distinguish a silent stale prefix in a production chunk. Compare applicable SYCL/oneMKL in-order and library completion contracts with primary references. Exclude the separately studied attention-page packing and selected-ID format.",
-    "consumer": "Before model integration, compare the proposed lifetime and guard coverage with this audit. No implementation or GPU use."
+    "consumer": "Before model integration, compare the proposed lifetime and guard coverage with this audit. No implementation or GPU use.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-retained-score-keys-20261120/report.md",
+    "report_sha256": "10fd726db777f938b52858c6700fb6e21ac5e5cba960dd3c4371fb6b64dba602",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-retained-score-keys-20261120-control/native-review.md",
+    "review_sha256": "790f7a7dd912c434b14d482fb77ea2608cc1f6a44e7cda99aed117fb9c6ad226",
+    "finding": "Append, packing, selection and GEMM use the same in-order queue. Loop-local extent resets, independent sticky status and suffix padding support the proposed lifetime. Timed/checked component has independent arenas; before model adoption, exercise an actual indexer append and clobbered shared arena across chunk and restored-prefix boundaries, including a deliberate stale-carry negative oracle. Runtime and linked definition checks remain independent.",
+    "worker_completion": {
+      "task": "task_205792d681df",
+      "dispatch": "ctx_6ad281f72e82",
+      "message": "msg_5f94360260df",
+      "terminal": "term_bfc94aff-25de-4288-b41f-4d101cc11c19",
+      "exact_worker_exited": true
+    }
   },
   "prefill-qsa-value-rematerialization-20261120": {
     "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
