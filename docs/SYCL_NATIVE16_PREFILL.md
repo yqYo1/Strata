@@ -481,10 +481,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   chunks per arm. Require every interval to exceed 100 ms, timer control at
   most 1%, exact control IDs and lower median paired wall time in all three
   processes before model integration. Stop on a fault, mismatch or owner
-  failure. A component pass leaves actual model PP, TTFT, state, final-slot
-  and decode preservation pending. Retire the component executable after the
-  decision and source/recipe recovery; the running model comparison keeps
-  its original build and independent KV/gather configuration.
+  failure. At `328b7589d` all three processes passed. The median of their
+  median intervals for twelve chunks fell from 473.720 to 462.839 ms.
+  The paired process ratios were 0.97703, 0.97703 and 0.97685. The
+  separate correctness sequences matched every score and selected ID.
+  Each timed arm matched all selected IDs. Before using this candidate
+  in the model, exercise an actual indexer append, overwrite of borrowed
+  attention scratch and a partially restored prefix. A deliberately stale
+  retained extent should produce a detectable mismatch in the test.
+  The model KV/gather comparison keeps its original executable. Model PP,
+  TTFT, final-slot state and sustained decode for score-key reuse remain open.
+  Retire the component executable after verifying its original source and
+  build recipe and closing its comparison consumers.
+
+  The independent prefill GDN experiment at `f4e47cd02` moved the decay
+  calculation into the gate producer. At 8192 rows the joint producer and
+  recurrence interval for sixteen repetitions fell from 291.187 to 287.166 ms.
+  The paired process ratios were 0.98615, 0.98642 and 0.98619. The numerical
+  fixture and all three timing comparisons passed. Test this change on its
+  own before combining it with QSA or KV reuse in a model comparison.
   There is a second prefix operation entirely on the GPU. Before ordered-exp
   attention, the pack kernel dequantizes K and V for all live pages and writes
   BF16 operands and bad-scale flags into request scratch. The opt-in
