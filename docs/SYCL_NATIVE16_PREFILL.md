@@ -435,11 +435,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   grows smoothly with input length. Multiply by twelve for ordinary
   reload and by one for aligned reuse on this MTP route. At 253919 tokens
   (31 chunks), `116a0e295` observed the control's 48,271,196,160 bytes
-  and 3,217,648,896 bytes of separate D2H publication. Aligned reuse
-  predicts 4,022,599,680 H2D bytes, a service difference equivalent
-  to 6.82–7.03 s at the calibration rates. Check this prediction on the
-  reuse arm. Neither the transfer formula nor the calibration gives
-  the total prefill time.
+  and 3,217,648,896 bytes of separate D2H publication. At `924f752c7`
+  aligned reuse matched the predicted 4,022,599,680 H2D bytes and
+  reduced the copy count from 1440 to 120. The same D2H publication
+  continued. The difference of 44,248,596,480 requested bytes corresponds
+  to 6.82–7.03 s at the calibration rates. On the restored 8209-token
+  suffix both arms requested 6,539,157,504 bytes in 96 copies. All
+  three request states and the cache restoration payload matched; both
+  processes closed with no fresh fault. The clean request-time effect
+  remains unmeasured.
   There is a second prefix operation entirely on the GPU. Before ordered-exp
   attention, the pack kernel dequantizes K and V for all live pages and writes
   BF16 operands and bad-scale flags into request scratch. The opt-in
@@ -3375,8 +3379,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   wrote 415,236,096 bytes to the host mirror. On the restored 8209-token
   suffix both requested 934,382,592 prefix bytes. The vec8-only arm
   matched the control's copies and used the vector gather on 1,647 jobs
-  (7,937,266 rows) on the fresh prompt. All three arms passed the same
-  state and handoff checks with no new fault through `28e991b28`.
+  (7,937,266 rows) on the fresh prompt. The combined arm at `274931d19`
+  preserved those gather counts and the KV-only arm's copy counts.
+  All four arms passed the same state and handoff checks with no new fault.
   The counters measure requested copies. Clean prompt timing follows
   separately.
   A separate opt-in prefill candidate, `STRATA_SYCL_PREFILL_KEEP_KV_STAGE=partial-page`,
@@ -3473,6 +3478,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   compiled; neither variant supplied a device speed sample. Source
   `9639531fd` retains the model's radix4 threshold search in both arms.
   Recheck the model environment in the controller before each stage.
+  At `9bab6f3c1` both revised native kernels and the sliced fixture
+  compiled and linked against the traced build. Device correctness and
+  the three independent timing processes are pending.
   Keep the first component build through comparison of the builds'
   kernel inputs, including the intentional selector change. Then recover the first recipe from Git and retire its
   executable and temporary build root.
