@@ -402,7 +402,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The host reads the reusable event after its existing completion wait and
   before the next launch replaces it. Report the device execution envelope,
   submit-to-start delay, host wait and CPU expert callback wall time separately.
-  Their sum would double-count overlapping time.
+  Their sum would double-count overlapping time. The B570 command service
+  profile at `6afcc0ddb` retains 17 submit-clock inversions. SYCL's
+  event contract orders submit before start. Treat such device returns as
+  evidence that queue-delay attribution is unavailable for those segments.
+  [B570 command samples](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json),
+  [SYCL event timing](https://github.khronos.org/SYCL_Reference/iface/event.html#sycl-info-event-profiling),
+  [DPC++ graph profiling](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties).
+
+  For a new model timing plan use `bench/sycl/decode_segment_envelopes.py`.
+  Retain all inverted or zero-valued submit readings and leave the whole-window
+  delay unknown unless all 49 submit comparisons qualify. Require complete
+  ordered start/end and checked native completion in every case. Sum the
+  49 layer-graph envelopes and the 48 gaps
+  between consecutive layer graphs. They must reconcile with the first
+  start to final end duration. The gaps can contain expert graphs and CPU
+  dependencies. The same-position wall controls keep their local overhead
+  gate. The queued source check retains its original pinned reader.
   First check the two compiled translation units against the retained build's
   production SYCL recipe and exercise the reader on ordered and damaged rows.
   For model evidence use a coherent reference and candidate build, then
@@ -417,7 +433,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   formatting to the profiled arm. Require each matched window and the whole
   sustained per-token time within 1.10× in both directions. The aggregate
   request rate alone can conceal an expensive observer on four windows.
-  Require all 196 consecutive valid event samples per profiled process,
+  Require all 196 consecutive valid start/end samples per profiled process,
   normal closure and no new Xe faults. Inspect each transition's graph and host time
   separately. A failed overhead screen leaves the clocks diagnostic only.
   This observer has no model timing or speed claim yet.
