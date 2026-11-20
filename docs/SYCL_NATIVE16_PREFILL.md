@@ -3026,8 +3026,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the wide spread map, 40–50% for the sorted four-cell groups and at least
   90% for the clustered map. These are synthetic distributions. Advance
   the wide scheduling change only if all three wide maps improve in each
-  of the three independent processes. Assess cap 33 separately. Keep the
-  earlier K-lane fixture at its original `5c58ff175` revision.
+  of the three independent processes. The comparison at `124ffb26d`
+  passed the output, overlap, guard and device checks. All three processes
+  agreed on direction for each distribution. Across their paired median
+  times, head-major/reference geometric means were 1.0040 for wide spread,
+  1.0340 for wide clustered, 0.9606 for wide four-cell groups and 1.0175
+  for width 33. The most shared IDs occurred in the clustered case, which
+  slowed down. Keep the existing workgroup order on the model route. The
+  four-cell gain is eligible evidence for a future locality-specific
+  experiment if measured production selections warrant it.
   In each trace, 9717 D2D commands requested 128,861,904,128 bytes in
   0.7884 and 0.7880 s of GPU service. Removing BF16 input/output copies
   can also change submission or scheduling costs, but the measured D2D
