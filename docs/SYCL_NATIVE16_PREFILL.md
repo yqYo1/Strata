@@ -337,6 +337,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   unknown last acceptance using its two and one unemitted positions.
   Elapsed savings need measurement because narrower matvecs can reread the same
   weights, and the first occurrence of each width can capture another graph.
+  The `4d2efd356` translation unit passes the retained production SYCL
+  syntax check with all 754 included files matching the recorded compiler
+  inputs. Linking, live state checks and timing remain pending.
   The reviewed `decode-mtp-selected-row-kv-20261121` source audit supports
   rewriting the selected cell in the full forward after omitting its earlier
   K/V write. A separate change would have to retain the selected residual and
