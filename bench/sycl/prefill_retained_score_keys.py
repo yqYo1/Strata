@@ -1,6 +1,7 @@
 """Compare cold and suffix-only FP16 index-key packing inside the long-prefill selector."""
 
 import fcntl
+import json
 import math
 from pathlib import Path
 import re
@@ -26,6 +27,9 @@ FIXTURE = 'tests/sycl/qsa_score_gemm.cpp'
 PACKER = 'src/prefill/sycl/qsa_score_gemm.cpp'
 UNITS = {CALLER: 'strata_prefill', PACKER: 'strata_prefill', FIXTURE: TARGET}
 STAGES = ('build', 'smoke', 'check', '0', '1', '2')
+BOUNDARY_SOURCE = '0cfa87d2d75e9bf90de5d468352e1d96bf8d076e'
+BOUNDARY_ROOT = bank.B / 'prefill-score-indexer-boundary-v1'
+BOUNDARY_KEY = 'prefill_score_indexer_boundary_v1'
 
 
 def recipe(helper, parent):
@@ -78,6 +82,34 @@ def recipe(helper, parent):
     return overlay, commands
 
 
+def boundary_recipe(helper, old_overlay, old_commands):
+    # Link the checked production archive again. The new translation unit
+    # changes only the diagnostic and consumes the same score interface.
+    evidence = json.loads(helper.git_file('328b7589daafb96cce31abd6beefb0abde1acdcd',
+                                          str(bank.RESULT.relative_to(bank.P))))[KEY]
+    record_file = ROOT / 'record.json'
+    require(evidence['component_performance_gate'] and evidence['source'] == SOURCE
+            and bank.sha(record_file) == evidence['stages'][0]['build_sha256'], 'unqualified score archive')
+    record = bank.previous.read(record_file)
+    require(record['complete'] and record['ownership_closed'] and record['commands'] == old_commands
+            and bank.stage.hashed(old_overlay) == record['overlay']
+            and record['binary'] == evidence['stages'][0]['binary']
+            and bank.sha(record['binary']['path']) == record['binary']['sha256'], 'wrong score generation')
+    archive = ROOT / 'libstrata_prefill.a'
+    archive_hash = record['driver_inputs'][archive.name]
+    require(bank.sha(archive) == record['linked'][str(archive)] == archive_hash, 'production archive changed')
+    fixture = merge_delta(old_overlay[FIXTURE], FIXTURE, SOURCE, BOUNDARY_SOURCE)
+    require(merge_delta(fixture, FIXTURE, BOUNDARY_SOURCE, SOURCE) == old_overlay[FIXTURE],
+            'boundary fixture delta is irreversible')
+    compile_fixture, = [args for args in old_commands if '-c' in args and args[-1] == str(ROOT/FIXTURE)]
+    redirects = {str(ROOT/name): str(BOUNDARY_ROOT/name) for name in (FIXTURE, 'fixture.o', 'fixture.o.d', TARGET)}
+    redirects['-I' + str(ROOT/'include')] = '-I' + str(BOUNDARY_ROOT/'include')
+    commands = [[redirects.get(arg, arg) for arg in args] for args in (compile_fixture, old_commands[-1])]
+    require(str(archive) in commands[-1] and str(BOUNDARY_ROOT/FIXTURE) == commands[0][-1],
+            'fixture is not linked to the measured archive')
+    return {FIXTURE: fixture, HEADER: old_overlay[HEADER]}, commands, {str(archive): archive_hash}
+
+
 def samples(output, ordinal):
     controls = re.findall(r'^score_keys_timer_ms=(\S+)$', output, re.M)
     require(len(controls) == 1, 'missing timer control')
@@ -99,9 +131,10 @@ def samples(output, ordinal):
                 median_paired_time_ratio=statistics.median(p['retained']/p['cold'] for p in pairs))
 
 
-def measure(action, binary, native, speed, stage):
-    smoke, timed = action == 'smoke', action.isdecimal()
-    directory = ROOT / ('run-' + action)
+def measure(action, binary, native, speed, stage, root):
+    boundary = action == 'boundary'
+    smoke, timed = action == 'smoke' or boundary, action.isdecimal()
+    directory = root / ('run-' + action)
     for name in ('tmp', 'cache'):
         (directory / name).mkdir(mode=0o700, parents=True)
     owner = device.owner.Owner(directory/'owned', lambda: bank.stage.write(directory/'execution.json', owner.commands))
@@ -126,7 +159,12 @@ def measure(action, binary, native, speed, stage):
     if smoke:
         env['STRATA_TRACE'] = '1'
     args = ['--gemm', '1', '--tile', '8', '--head-parallel', '1']
-    args += ['--key-benchmark', action] if timed else ['--key-sequence', '1' if smoke else '2']
+    if boundary:
+        require(env.get('STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH') == '1' and 'STRATA_INDEXER_PER_TOKEN' not in env,
+                'the boundary check must use the ordinary batch indexer')
+        args += ['--indexer-boundary', '1']
+    else:
+        args += ['--key-benchmark', action] if timed else ['--key-sequence', '1' if smoke else '2']
     cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
         ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
         if line.startswith('-- cursor: ')]
@@ -140,6 +178,8 @@ def measure(action, binary, native, speed, stage):
         batches, capacity = (8, 130) if smoke else (10, 65538)
         expected = (f'prefill_score_keys batches={batches} capacity_blocks={capacity} '
                     'scores_ids_exact=1 packed_pad_guards=1 reset=1 bounds=1 sticky=1')
+        if boundary:
+            expected = 'indexer_score_boundary prefix=2299 suffix=14 epochs=2 slices=4 output_bits=PASS stale_control=PASS'
         require('Intel' in gpu[0] and 'B570' in gpu[0] and output.splitlines().count(expected) == 1
                 and output.splitlines().count('fixture_status=PASS closed=1') == 1, 'incomplete B570 output')
         if not timed:
@@ -159,19 +199,33 @@ def measure(action, binary, native, speed, stage):
                     'unexpected diagnostic or observer in the clean timing process')
         else:
             bank.device.diagnostics.diagnostics(log, cmd['pid'])
-        stage.update(device=gpu[0], driver=gpu[1], native_pid=cmd['pid'], native_exit_code=0, compared_batches=batches, score_stride=capacity,
+        stage.update(device=gpu[0], driver=gpu[1], native_pid=cmd['pid'], native_exit_code=0,
                      host_probe_accepted=True, clean_timing=timed)
+        if boundary:
+            stage.update(prefix_cells=2299, restored_suffix_cells=14, score_stride=642, compared_epochs=2,
+                         compared_slices_per_epoch=4, stale_extent_control_detected=True)
+        else:
+            stage.update(compared_batches=batches, score_stride=capacity)
     finally:
         device.validation.finish(stage, owner, cursor, speed['boot'])
         stage['passed'] = stage['passed'] and stage.get('driver_after') == native['driver']
 
 
 def execute(action):
+    boundary = action.startswith('boundary-')
+    if boundary:
+        action = 'boundary' if action == 'boundary-check' else action.removeprefix('boundary-')
+    root, key, source, stages = ((BOUNDARY_ROOT, BOUNDARY_KEY, BOUNDARY_SOURCE, ('build', 'boundary')) if boundary
+                                  else (ROOT, KEY, SOURCE, STAGES))
     native, speed, parent, build = device.coherent_inputs()
     helper = bank.basis.core.source.device.load_module('score_keys_build', device.fixture.__file__)
     helper.SOURCE, helper.BUILD = parent/'source', parent/'build'
     overlay, commands = recipe(helper, native)
-    allowed = helper.build_inputs(native, ROOT, overlay, commands)
+    extra_inputs = {}
+    if boundary:
+        overlay, commands, extra_inputs = boundary_recipe(helper, overlay, commands)
+    allowed = helper.build_inputs(native, root, overlay, commands)
+    allowed.update(extra_inputs)
     controls = {str(Path(__file__).resolve().relative_to(bank.P))}
     for mod in tuple(sys.modules.values()):
         filename = getattr(mod, '__file__', None)
@@ -181,57 +235,57 @@ def execute(action):
                 controls.add(str(path.relative_to(bank.P)))
     pins = bank.stage.source.pin(bank.P, [*sorted(controls), 'tools/sycl'])
     require(controls <= pins['source_sha256'].keys(), 'uncommitted controller or helper')
-    identity = dict(source=SOURCE, parent_build=build['build_sha256'], overlay=bank.stage.hashed(overlay),
+    identity = dict(source=source, parent_build=build['build_sha256'], overlay=bank.stage.hashed(overlay),
                     recipe=bank.signature(commands), controls=pins['aggregate_sha256'],
                     benchmark_environment_sha256=bank.signature(speed['environment_template']), runtime=speed['runtime_manifest']['sha256'])
     if action == 'recipe':
-        print(f'{len(overlay)} pinned source files, {len(commands)} commands, reversible projection')
+        print(f'{len(overlay)} pinned sources, {len(commands)} commands, {len(extra_inputs)} reused archives')
         return
     result = device.validation.committed(bank.RESULT)
     if action == 'build':
-        require(KEY not in result and not ROOT.exists(), 'inspect the existing score-key generation')
+        require(key not in result and not root.exists(), 'inspect the existing score-key generation')
         row = dict(**identity, controller_commit=pins['revision'], stages=[], model_tested=False)
     else:
-        row = result[KEY]
+        row = result[key]
         require(all(row[k] == v for k,v in identity.items()) and
-                [s['stage'] for s in row['stages']] == list(STAGES[:STAGES.index(action)])
+                [s['stage'] for s in row['stages']] == list(stages[:stages.index(action)])
                 and all(s['passed'] and s['ownership_closed'] for s in row['stages']), 'previous gate or input changed')
-    previous = bank.signature(result.get(KEY))
+    previous = bank.signature(result.get(key))
     stage = dict(stage=action, passed=False)
     try:
         if action == 'build':
-            helper.build_fixture(ROOT, TARGET, native, overlay, commands, allowed, identity)
-            record = bank.previous.read(ROOT/'record.json')
+            helper.build_fixture(root, TARGET, native, overlay, commands, allowed, identity)
+            record = bank.previous.read(root/'record.json')
             require(record['complete'] and record['ownership_closed'], 'incomplete score-key build')
-            stage.update(passed=True, build_sha256=bank.sha(ROOT/'record.json'), binary=record['binary'])
+            stage.update(passed=True, build_sha256=bank.sha(root/'record.json'), binary=record['binary'])
         else:
-            record = bank.previous.read(ROOT/'record.json')
+            record = bank.previous.read(root/'record.json')
             built = row['stages'][0]
-            require(bank.sha(ROOT/'record.json') == built['build_sha256'] and record['binary'] == built['binary']
+            require(bank.sha(root/'record.json') == built['build_sha256'] and record['binary'] == built['binary']
                     and bank.sha(record['binary']['path']) == record['binary']['sha256']
                     and all(bank.sha(p) == h for group in ('compiled','linked') for p,h in record[group].items())
-                    and all(bank.sha(ROOT/p) == h for p,h in record['driver_inputs'].items()), 'score-key executable or inputs changed')
-            measure(action, record['binary'], native, speed, stage)
+                    and all(bank.sha(root/p) == h for p,h in record['driver_inputs'].items()), 'score-key executable or inputs changed')
+            measure(action, record['binary'], native, speed, stage, root)
             require(stage['passed'], 'post-run driver, fault or ownership failure')
     except BaseException as exc:
         stage['error'] = repr(exc)
         raise
     finally:
-        if action == 'build' and (ROOT/'record.json').is_file():
-            stage['ownership_closed'] = bank.previous.read(ROOT/'record.json')['ownership_closed']
+        if action == 'build' and (root/'record.json').is_file():
+            stage['ownership_closed'] = bank.previous.read(root/'record.json')['ownership_closed']
         row['stages'].append(stage)
         if action == '2' and stage['passed']:
             row['component_performance_gate'] = all(s['median_paired_time_ratio'] < 1 for s in row['stages'][-3:])
         current = bank.previous.read(bank.RESULT)
-        require(bank.signature(current.get(KEY)) == previous, 'score-key record changed during execution')
-        current[KEY] = row
+        require(bank.signature(current.get(key)) == previous, 'score-key record changed during execution')
+        current[key] = row
         bank.stage.write(bank.RESULT, current)
 
 
 if __name__ == '__main__':
     action, = sys.argv[1:]
-    require(action in (*STAGES, 'recipe') and sys.executable == bank.basis.reference.model.PYTHON, 'select a pinned score-key stage')
-    if action == 'recipe':
+    require(action in (*STAGES, 'recipe', 'boundary-recipe', 'boundary-build', 'boundary-check') and sys.executable == bank.basis.reference.model.PYTHON, 'select a pinned score-key stage')
+    if action in ('recipe', 'boundary-recipe'):
         execute(action)
         sys.exit(0)
     with (bank.B/'owned-v0141-measurement.lock').open('a+') as lock:

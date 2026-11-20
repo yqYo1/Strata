@@ -485,14 +485,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   median intervals for twelve chunks fell from 473.720 to 462.839 ms.
   The paired process ratios were 0.97703, 0.97703 and 0.97685. The
   separate correctness sequences matched every score and selected ID.
-  Each timed arm matched all selected IDs. Before using this candidate
-  in the model, exercise an actual indexer append, overwrite of borrowed
-  attention scratch and a partially restored prefix. A deliberately stale
-  retained extent should produce a detectable mismatch in the test.
-  The model KV/gather comparison keeps its original executable. Model PP,
-  TTFT, final-slot state and sustained decode for score-key reuse remain open.
-  Retire the component executable after verifying its original source and
-  build recipe and closing its comparison consumers.
+  Each timed arm matched all selected IDs. The next fixture at `0cfa87d2d`
+  appends 2299 cells with the production device batch indexer, snapshots
+  its incomplete four-cell block, and appends 14 more cells. After restoring
+  the snapshot it appends different keys. Each epoch overwrites the borrowed
+  score arena and runs four sliced score and sparse-selection calls on the
+  indexer's in-order queue. Require exact scores and IDs against a fresh
+  pack, valid guards, and a detectable finite score mismatch when a stale
+  extent is deliberately carried across the overwrite. The boundary build
+  reuses the measured archive and compiles only the new fixture. Retain
+  that archive through the check, then recover its build inputs before
+  retirement. This tests the indexer/SELECT boundary. The full server
+  transition, final slot, model PP, TTFT and sustained decode remain open.
+  The current KV/gather comparison keeps its original executable.
 
   The independent prefill GDN experiment at `f4e47cd02` moved the decay
   calculation into the gate producer. At 8192 rows the joint producer and
