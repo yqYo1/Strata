@@ -530536,6 +530536,57 @@
         "compiler_inputs": 698,
         "linker_inputs": 27,
         "ownership_closed": true
+      },
+      {
+        "stage": "smoke",
+        "passed": true,
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-head-major-v1/sycl_qsa_prefill_head_major_bench",
+          "--smoke"
+        ],
+        "environment_sha256": "9c4775d2e4b33c7f935c724fe7d3ae5807bfcb20a4c572f392f12533410b1390",
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "clock": {
+          "calls": "10000",
+          "median_ns": "30",
+          "p99_ns": "31"
+        },
+        "points": [],
+        "validated_cases": 1,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2447621,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "device": [
+          "Intel(R) Arc(TM) B570 Graphics",
+          "1.17.39758+17"
+        ],
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "model_tested": false
