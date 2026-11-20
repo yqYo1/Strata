@@ -343,17 +343,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   issued 14 calls for 8192 rows and one for 2800 rows, with four copies
   per call (720 copies in all). At the previously measured 6.56 GB/s
   device-to-host rate for queued 64 MiB transfers, the same payload
-  would take 0.227 s. The smaller individual copies, queue waits and
-  shared staging pool require separate timing. These bytes exclude
-  expert uploads and decode-state transfers.
+  would take 0.227 s. The two warmed 64K PTI windows at `c40c8c1bd`
+  recorded 384 D2H commands and 830,472,192 bytes each, exactly the
+  count and volume expected from eight chunks per layer. Their device
+  service was 147.960 and 147.956 ms (5.61 GB/s). At that rate the
+  117K payload would take 0.265 s. The PTI summary groups commands by
+  direction; it supplies no per-producer timing or 117K queue-wait time.
+  A change to host publication would need to explain a larger scheduling
+  or synchronization cost to recover several seconds from this route.
   The 253919-token mixed-host path follows a different planner branch.
-  Keep the ordinary copy route, executable, decoder placement and 262144
-  configuration in the clean comparison. Use the historical four thinking-on
-  request hashes in three independent processes. Keep first use separate;
-  report each median of the last three prompt times, their PP and client
-  TTFT. Reproduction of the 1000 PP milestone requires all three warmed
-  process rates at or above 1000. This comparison does not qualify decode
-  speed or filling the final physical context slot.
+  The clean comparison at `9c03b44d0` completed three independent
+  processes with the same ordinary copy route, decoder placement, 262144
+  context and four historical thinking-on requests. The last three prompt
+  times in each process gave median rates of 946.48, 945.88 and 929.10
+  tok/s. Across processes, the median was 945.88 tok/s, 124.211 s of
+  prefill and 124.485 s of client TTFT. First use had a median of
+  869.91 tok/s and 135.298 s TTFT. At the warmed median, reaching 1000
+  tok/s requires saving 6.722 s per request. The 64K copy control reached
+  888.26 tok/s with a different bank size. Treat these as two route-specific
+  observations when characterizing length dependence. Sustained decode
+  and the final physical context slot still have separate checks.
 
 - The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
   the previous layer's resident BF16 rows directly in the native attention
