@@ -463,6 +463,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fastest eligible arm with the same executable and actual 128-slot placement.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
   98304 batched rows fill twelve chunks. One more input row opens a thirteenth.
+  On this route the extra chunk requests 48 additional prefix copies totalling
+  1,245,708,288 bytes with ordinary KV reload, or four copies totalling
+  103,809,024 bytes with aligned reuse. These counts follow from the twelve
+  QSA layers reading 98304 preceding cells at 1056 bytes per cell, with only
+  the final layer reloading when reuse is enabled.
   Take each length in two independent processes in reverse orders, with the
   first request and the median of two subsequent fresh requests separate.
   Compare affine, quadratic and n log n fits to prefill time and client TTFT
