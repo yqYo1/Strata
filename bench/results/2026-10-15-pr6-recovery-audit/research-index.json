@@ -38604,5 +38604,37 @@
     "review_sha256": "798c0ac9572d9411c00c7c16721b11f7b91430d62b0394bb3495e7efb095a1c4",
     "finding": "Use an opt-in zero-only decode graph family if the inline/separate screen supports it. The existing early route separates replay but still captures the graph. Base the decode policy on the effective request fraction. Bind graph lookup to phase, width and whether PCIe work can be submitted.",
     "source_check": "The exact compiled verifier is 12ea4b002. Pool callback publishes its admitted fetch count in counts[2] and early fetch returns before submission when that count is zero. launch_pcie separately validates the published count and current graph before waiting on the copy event. Graph lookup is at(input,T); the window fixes last_input_ before callbacks. generate.cpp allows a positive per-request override of the startup zero fraction."
+  },
+  "prefill-gu-indirect-load-traffic-20261120": {
+    "stage": "native_reviewed",
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "source_commit": "79ee39cfda09e304ea01f4e9b90c4a2c811492ae",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-gu-indirect-load-traffic-20261120/report.md",
+    "report_sha256": "6c4399bd0b437da0106cc490d1bdacc4d527a960cc822b5c6e6b624a540b221c",
+    "worker": "Orca gpt-6-luna medium task_8c7498c7f1d4, ctx_d39713433d72. Initial read-only and worker-side Orca proofs verified. Report accepted, owned scope exited.",
+    "reviewer": "Native Codex gpt-6-luna max, two-scope bounded digest.",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-gu-indirect-load-traffic-20261120-control/native-wave-digest.md",
+    "review_sha256": "d3f79ef8345425767627f360152a13e7d5fd9b8dbb71992405873d44108c0bad",
+    "probe_source": "19999c6c1df5ce11f12478958904d602c5eff9ac",
+    "finding": "Large 65K expert jobs request about 133.5 GiB of logical FP16 gather output per prompt. Per-lane direct gather can repeat reads across N workgroups and subgroup replicas. Test materialized FP16, indexed A and tile-local repack on the production wide shape, with compact as a stress case. Load-demand estimates do not measure VRAM traffic.",
+    "consumer": "Once the A-fragment bit/guard fixture passes, select the bounded full gather-to-GU/SwiGLU comparison and keep the measured arithmetic contract.",
+    "next_review": "At the fragment-fixture decision. Retire the private source view and dispatch paperwork at a serialized cleanup."
+  },
+  "xe2-irregular-access-locality-20261120-v2": {
+    "stage": "native_reviewed",
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "source_commit": "79ee39cfda09e304ea01f4e9b90c4a2c811492ae",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/xe2-irregular-access-locality-20261120-v2/report.md",
+    "report_sha256": "e1e8a08bbd39b97b8c6666e0c8fe1ef51802f56511529fc830241b59b2335785",
+    "worker": "Orca gpt-6-luna medium task_75dda02baba7, ctx_2abed5686ddd. Initial read-only and worker-side Orca proofs verified. Report accepted, owned scope exited.",
+    "reviewer": "Native Codex gpt-6-luna max, two-scope bounded digest.",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-gu-indirect-load-traffic-20261120-control/native-wave-digest.md",
+    "review_sha256": "d3f79ef8345425767627f360152a13e7d5fd9b8dbb71992405873d44108c0bad",
+    "topic": "Irregular GPU load locality in Xe2/SYCL, with non-LLM examples.",
+    "retrieval": "Use for a concrete question about indirect device load cooperation, local-memory staging or prefetch under register-pressure and synchronization limits.",
+    "consumer": "Knowledge library for later indirect load design. Main read only the native digest.",
+    "next_review": "When selecting an irregular-load algorithm or pruning overlapping GPU-locality reports. Retire one-use source/dispatch artifacts at serialized cleanup."
   }
 }

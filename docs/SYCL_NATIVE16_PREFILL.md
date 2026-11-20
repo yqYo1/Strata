@@ -701,6 +701,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reload in four pairs. Adding it to reuse won only two pairs, and adding
   reuse to vector gather also won only two. Select KV reuse alone for
   the split-route length curve and decode-preservation suite.
+  The 65537-token comparison closed at `84c883393` with 16 independent
+  processes and 48 fresh requests. The subsequent-request rates were
+  984.54 tok/s with ordinary reload, 980.22 with KV reuse, 984.42 with
+  vector gather and 1009.33 with both. KV reuse alone won one paired block
+  and vector gather alone won two. The combination won all four blocks
+  against each single change and the reference. Median paired prompt time
+  fell 2.32% against the reference and warmed client TTFT went from
+  66.739 to 65.097 s. First long-request TTFT medians were 77.332 and
+  75.976 s. Three of the four warmed combined process rates reached 1000.
+  Select the combination for validation on the ordinary 384-slot route at
+  this length. The 117489-token split-route comparison selects KV reuse.
+  Sustained decode and agent-session preservation are separate acceptance
+  checks for the prefill choices.
   The 9,991,618,560 fewer requested H2D bytes would take 1.54–1.59 s at
   the 256 MiB calibration rate. The larger observed time differences
   leave copy issue, synchronization, actual copy size, overlap and
@@ -3941,7 +3954,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   result open. Verify traced work and state outside the speed samples;
   stop on a changed input, ownership, fault, numerical or dispatch failure.
   Recheck sustained decode, agent sessions and full physical capacity before
-  adoption. No model speed sample from the two-switch build exists yet.
+  adoption. The two-switch build's completed 65K and 117K timing decisions
+  are recorded above.
   Run `bench/sycl/prefill_kv_gather_speed.py` first at 117489 tokens
   (four original bodies per process), then at 65537 (three bodies).
   Each length has 16 independent processes. Validate the KV and gather
@@ -4045,6 +4059,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   sticky status and a four-byte-aligned single bank. Run the host witness
   before the traced three-row smoke, then all shape/bit cases before
   considering full DPAS. Device build and execution are pending.
+  The 65537-token workload gathers about 28 million eligible rows per
+  request. Their temporary matrix writes represent 133.5 GiB of logical
+  FP16 output. The reviewed `prefill-gu-indirect-load-traffic-20261120`
+  scope identifies repeated reads across N workgroups and subgroup replicas
+  as the main question for indexed A. After the bit test, compare dense
+  materialization, indexed A and tile-local repack on the production wide
+  shape. Time each arm from input availability through completed SwiGLU
+  output. Use compact tiles to test the effect of more read replicas.
   The source inputs (783 for the pair and 776 for the probe), all four
   generated inputs and the final comparison decision were verified from
   Git before cleanup. The 152 capture files (571,845,791 bytes), 42,745-byte
