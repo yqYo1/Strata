@@ -38591,15 +38591,18 @@
   },
   "decode-zero-pcie-phase-ownership-20261120": {
     "classification": "decision_support",
-    "stage": "orca_settled_native_review_running",
+    "stage": "native_reviewed",
     "schedulable_now": false,
     "source_commit": "d4c2101963c7139a49a95feb1a6b1002479f8554",
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-zero-pcie-phase-ownership-20261120/report.md",
     "report_sha256": "3f8a0b93c7fc740ed1def279e159d8e7cbb6ee8b5eaccc97848360bc6c2d9bb1",
     "worker": "Orca gpt-6-luna medium task_cd0e7b8619ed,ctx_1e71ec407a19. Verified initial worker-side status and read-only inputs. Accepted completion;owned terminal exited.",
     "reviewer": "Native Codex gpt-6-luna max on exact report and bounded source excerpts.",
-    "review_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-zero-pcie-phase-ownership-20261120-control/native-review-result.json",
-    "consumer": "Decide the phase-specific design if the same-ELF zero-PCIe expert graph comparison shows a gain.",
-    "next_review": "Read the short native digest after normal review closure; retire one-use input/launch artifacts after verified closure."
+    "consumer": "Use only after the existing matched same-ELF speed screen. A later production experiment needs zero/positive request transitions, unchanged prompt graphs, checked copy and expert-cache lifetime, and sustained generation.",
+    "next_review": "After the empty-PCIe speed decision. The research report and digest are the only continuing inputs; retire the private source view and one-use receipts at the next serialized cleanup.",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-zero-pcie-phase-ownership-20261120-control/native-review.md",
+    "review_sha256": "798c0ac9572d9411c00c7c16721b11f7b91430d62b0394bb3495e7efb095a1c4",
+    "finding": "Use an opt-in zero-only decode graph family if the inline/separate screen supports it. The existing early route separates replay but still captures the graph. Base the decode policy on the effective request fraction. Bind graph lookup to phase, width and whether PCIe work can be submitted.",
+    "source_check": "The exact compiled verifier is 12ea4b002. Pool callback publishes its admitted fetch count in counts[2] and early fetch returns before submission when that count is zero. launch_pcie separately validates the published count and current graph before waiting on the copy event. Graph lookup is at(input,T); the window fixes last_input_ before callbacks. generate.cpp allows a positive per-request override of the startup zero fraction."
   }
 }
