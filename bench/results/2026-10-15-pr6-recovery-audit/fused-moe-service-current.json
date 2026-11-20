@@ -538804,5 +538804,34 @@
     ],
     "model_tested": false,
     "component_performance_gate": true
+  },
+  "prefill_gdn_decay_v1": {
+    "source": "18d0b137e6068677dd222fafeebe9169c13b19b7",
+    "parent_build": "913e9012c3f98898f9f8597639f2ebec384edc04df43a7cca33cedd7ff317a9f",
+    "overlay": {
+      "include/strata/prefill/kernels.hpp": "4ae93f68c719d3786936d1dcb1dc5bf89bc0150a634e8f26c3caded1df07a7f7",
+      "src/kernels/sycl/fused_gdn.cpp": "a2c2ddc4b54985b0abc7ad55653b7e155089ead8ba777b7326e71627ef937fed",
+      "src/prefill/sycl/postops.cpp": "33eeb753fc86355497e4e56acca91ae62ff90f44f13533e209b165df2839b188",
+      "src/prefill/prefill.cpp": "d9ff7b1d93ff6b5fb9f702f28c72db4ba8004dc9f0c483a24f975db9bb73d749",
+      "bench/sycl/gdn_storage_pipeline.cpp": "0f6a66a4c58a80dda0f99fa2cbdf766043d7f245a762876660bbfd1a9d62361d"
+    },
+    "recipe": "b899a290a914bf7a761c3485dcba867ec1dcfba962b6088f575f38d44bb805ca",
+    "controls": "fd4b58525340924a05347503623a25ecbbbd2d28320f927661c2ec4c60ca0404",
+    "benchmark_environment_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
+    "runtime": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+    "controller_commit": "328b7589daafb96cce31abd6beefb0abde1acdcd",
+    "stages": [
+      {
+        "stage": "build",
+        "passed": true,
+        "build_sha256": "3d49bc8aca530b5af6e6b0952c092e0a63ec2b57b9d7d0a7d44f0c857f068756",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gdn-decay-v1/sycl_gdn_storage_pipeline_bench",
+          "sha256": "a985aa9c33abd748bac8d772f4ceceeef352e1e338bdb12873984381970a515e"
+        },
+        "ownership_closed": true
+      }
+    ],
+    "model_tested": false
   }
 }
