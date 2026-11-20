@@ -2305,11 +2305,23 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     }();
     // A single layer-major pass owns its staging pool until run_impl returns.
     // External layer taps and the final output callback keep the original reloads.
-    const bool keep_kv_stage = prefill_kv_reuse != PrefillKvReuse::reload && m.layer_major_active && m.native16_active &&
+    static const bool prefill_pack_suffix = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PACK_KV_SUFFIX");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PACK_KV_SUFFIX requires 0 or 1");
+    }();
+    const bool owns_layer_stage = (prefill_kv_reuse != PrefillKvReuse::reload || prefill_pack_suffix) &&
+        m.layer_major_active && m.native16_active &&
         LE == LB + 1 && LE < g.n_layers && !on_layer && !m.pp && !next_ &&
         same_queue && m.copy == m.cs && stage_own();
+    const bool keep_kv_stage = prefill_kv_reuse != PrefillKvReuse::reload && owns_layer_stage;
+    const bool keep_packed_kv = prefill_pack_suffix && owns_layer_stage;
     // No prefix is trusted on entry, including a resumed or cancelled request.
     int64_t kv_stage_end = -1;
+    int64_t packed_kv_end = -1;
+    const bool report_packed_kv = m.layer_major_active && std::getenv("STRATA_SYCL_PREFILL_PACK_KV_SUFFIX");
+    uint64_t packed_pages_written = 0, packed_pages_reused = 0;
     // Expose actual reload/reuse counts in both arms of a clean comparison.
     // Each attention layer publishes once, after all its chunks have finished.
     const bool report_kv_stage = m.layer_major_active &&
@@ -3389,10 +3401,24 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             matrix_used = strata::kernels::qsa_bf16_prefix_tilepack_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
                                 typed_bounds, p0 + T, m.qsa_prefix, m.cs);
-                        else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
-                            matrix_used = strata::kernels::qsa_bf16_prefix_ordered_exp_batch(
-                                m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
+                        else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_ordered_exp) {
+                            int64_t retained = 0;
+                            if (keep_packed_kv && staged) {
+                                if (p0 == packed_kv_end) retained = p0 / s.page_size;
+                                matrix_used = strata::kernels::prefill_qsa_bf16_ordered_exp_suffix(
+                                    m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                    typed_bounds, p0 + T, m.qsa_prefix, retained, m.cs);
+                                packed_kv_end = matrix_used ? p0 + T : -1;
+                            } else {
+                                matrix_used = strata::kernels::qsa_bf16_prefix_ordered_exp_batch(
+                                    m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                    typed_bounds, p0 + T, m.qsa_prefix, m.cs);
+                            }
+                            if (matrix_used && staged && report_packed_kv) {
+                                packed_pages_reused += retained;
+                                packed_pages_written += (p0 + T + s.page_size - 1) / s.page_size - retained;
+                            }
+                        }
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvvec4)
                             matrix_used = strata::kernels::qsa_bf16_prefix_kvvec4_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
@@ -4405,6 +4431,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     if (report_kv_stage && (kv_reloaded_pages || kv_reused_pages))
         std::fprintf(stderr, "strata prefill KV stage: layer=%lld reloaded_pages=%llu reused_pages=%llu\n",
                      (long long) LB, (unsigned long long) kv_reloaded_pages, (unsigned long long) kv_reused_pages);
+    if (packed_pages_written)
+        std::fprintf(stderr, "strata prefill packed KV: layer=%lld packed_pages=%llu reused_pages=%llu\n",
+                     (long long) LB, (unsigned long long) packed_pages_written, (unsigned long long) packed_pages_reused);
 #endif
     ss.ple_prev[0] = prev[0];
     ss.ple_prev[1] = prev[1];

@@ -375,6 +375,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   calibration used 256 MiB host-USM copies. Actual prefix copy sizes,
   submission costs and overlap can change the saving in either direction.
   Check the actual per-layer reload/reuse counts and matched wall times in both arms.
+  There is a second prefix operation entirely on the GPU. Before ordered-exp
+  attention, the pack kernel dequantizes K and V for all live pages and writes
+  BF16 operands and bad-scale flags into request scratch. The opt-in
+  `STRATA_SYCL_PREFILL_PACK_KV_SUFFIX=1` retains complete packed pages only
+  across consecutive chunks of the same owned layer. The first chunk after
+  entry or RESTORE packs the full extent. A partial page is always rewritten
+  with both heads and zero padding. The final callback and external taps use
+  the original full pack. This switch can be compared with KV H2D reuse off.
+  At 65537 and 117489 fresh input tokens, the 11 eligible layers could skip
+  5,046,272 and 18,923,520 head-rows. Each row writes 1028 bytes of packed
+  K/V and flags. This would remove 5.19 and 19.45 GB of logical device writes;
+  it does not lower the attention consumer's reads. The 14.38-second 64K
+  kernel interval measured the consumer. Time the producer and clean request
+  separately before assigning a gain to this change.
+  First run `sycl_qsa_bf16_prefix_test --packed-suffix` with the measured
+  compiler and runtime. Compare all K/V words, flags, padding, output and
+  guards against a full pack at page size four, with invalid scales and
+  aligned and nonaligned starts. Check source refusal on invalid retained
+  extents. Then compare full/suffix with scalar gather and KV reload fixed,
+  requiring actual per-layer written/retained counts, equal model work,
+  unchanged restored state, cancellation and the physical final slot.
+  Collect the clean 64K/117K first and warmed prompt times and TTFT in
+  alternating order and recheck sustained decode before adoption.
   Before timing, compare device and host state on a fresh prompt, a nonzero
   restored prefix, interrupted/restarted prefill, the tail and a physical
   262144 fill. Check the external-tap fallback and decode handoff. Time
