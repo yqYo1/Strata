@@ -3030,6 +3030,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   resident tables select the original function. Require matching output
   bits, guards and three independent lower warmed medians on all three
   wide locality patterns before testing this stage-specific model route.
+  The three independent processes at `3ec72cec2` passed the output and
+  guard checks. With width 2051, candidate/reference time ratios were
+  1.0196–1.0204 for spread IDs, 1.0275–1.0281 for clustered IDs and
+  0.9988–1.0073 for four-cell groups. The three-pattern speed criterion
+  failed. Keep the measured ordered-exp page lookup for the model.
   First test changing just the K loader's lane mapping with the existing
   packed layout. Four adjacent SIMD lanes read 32 contiguous bytes for
   one cell. This can reduce global address segments per subgroup but can
@@ -3224,6 +3229,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a fresh directory after its retirement. Check both switches off against
   the parent's recorded route, expert and draft counts, KV state and output.
   Exercise the gather fixture and KV lifecycle checks before collecting speed.
+  Run `bench/sycl/prefill_kv_gather_restore.py` against the coherent build
+  after its contiguous and ragged gather checks. All four combinations
+  replay the original fresh 32769- and 253919-token prompts, switch to a
+  33-token request, and restore the original state for an 8209-token
+  suffix. Its first batched token starts at a non-page-aligned position.
+  Check actual per-layer prefix reloads against the Q8 host mirror writes.
+  With the fixed large-only GU kernel, its row threshold is the same as
+  the vector gather's. Compare the independent GU and gather job and row
+  counts, including the scalar route. Match state, decode-cache payload
+  and output with the original engine and same-build control. The
+  cancellation, external tap and physical-final-slot checks remain separate.
   For scalar/reload (A), scalar/reuse (B), vec8/reload (C), and vec8/reuse
   (D), use the same ordinary expert copies, output-copy policy, ordered-exp
   attention, 8192 chunk, K8V8, model and decode placement. At each of
