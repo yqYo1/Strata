@@ -482,6 +482,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   (`911cdbe59`) took 114.794 s at the warmed median, against 117.204 s for
   ordinary reload (`040e8370b`). Both read every input token and used scalar
   gather. The four-block comparison determines repeatability.
+  The first six independent processes through `6b5e834e1` took 9.93–12.84 s
+  longer on their first long prompt than on their subsequent median. All six
+  used private cache directories with `SYCL_CACHE_PERSISTENT=0`, and all wrote
+  the same 53 `.l0_cache` files (10,461,608 bytes) in `neo_compiler_cache`.
+  SHA256 over sorted relative path, NUL and raw file SHA256 for each entry was
+  `12438bf9e0c669cb1a93c09e27fc82b83e51f10677ac7673e1c5e68d094e3414`.
+  This identifies a restart/first-use experiment. On the same build and
+  driver, compare empty private directories to private copies seeded from a
+  completed control. Measure server readiness, first long-prompt time and
+  client TTFT separately, with a subsequent fresh prompt in both arms.
+  Cache creation alone does not attribute the first-use penalty to compilation.
   After it closes, use `bench/sycl/prefill_split_length_curve.py` on its
   fastest eligible arm with the same executable and actual 128-slot placement.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
