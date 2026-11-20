@@ -5,6 +5,7 @@
 #include "strata/prefill/qsa_group_ids.hpp"
 #include <algorithm>
 #include <numeric>
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 
@@ -14,15 +15,26 @@ class GroupSelectionFixture {
     using Shape = kernels::QsaShapes;
     static constexpr int guard = 16;
     static constexpr int32_t poison = -1234567;
-    const int queries, cap, blocks;
+    static constexpr int batch_size = 256;
+    // Production scratch_qsa_plan uses physical_context / idx_block + 2.
+    static constexpr int blocks = 262144 / 4 + 2;
+    const int queries, cap;
+    std::vector<int> live_blocks;
     Buffer<float> scores;
     std::vector<int32_t> reference;
 public:
     GroupSelectionFixture(int cells, int queries, int cap, std::vector<int32_t>& steps,
                           std::vector<int32_t>& initial_ids)
-        : queries(queries), cap(cap), blocks(cells / 4 + 1), scores(size_t(queries) * blocks) {
+        : queries(queries), cap(cap), scores(size_t(std::min(queries, batch_size)) * blocks) {
         initial_ids.assign(size_t(queries) * cap + 2 * guard, poison);
-        std::vector<float> host(size_t(queries) * blocks);
+        // Both arms reuse the same 256 score rows. Scoring is outside the measured
+        // selector/attention interval. The per-slice active bound still changes.
+        std::vector<float> host(size_t(std::min(queries, batch_size)) * blocks, 0.f);
+        for (int q = 0; q < std::min(queries, batch_size); ++q) {
+            float *row = host.data() + size_t(q) * blocks;
+            for (int b = 0; b <= cells / 4; ++b)
+                row[b] = float((uint32_t(b) * 2654435761u + uint32_t(q) * 17u) >> 27);
+        }
         for (int q = 0; q < queries; ++q) {
             int n = cells - (queries - 1 - q);
             if (queries <= 16 && q < 3) n = q == 2 ? cap : q; // empty and dense rows
@@ -32,18 +44,22 @@ public:
             st[kernels::kStepWidth] = width;
             st[kernels::kStepNKv] = n;
             st[kernels::kStepNBid] = n / 4;
-            float *row = host.data() + size_t(q) * blocks;
-            // Repeated scores exercise partial ties. Vary tail priority as well.
-            for (int b = 0; b < blocks; ++b)
-                row[b] = float((uint32_t(b) * 2654435761u + uint32_t(q) * 17u) >> 27);
+            float *row = host.data() + size_t(q % batch_size) * blocks;
             row[n / 4] = q % 8 < 4 ? 40.f : -1.f;
+            if ((q + 1) % batch_size == 0 || q + 1 == queries)
+                live_blocks.push_back(n / 4 + 1);
         }
         scores.put(host);
     }
     int32_t* data(Buffer<int32_t>& ids) const { return ids.data() + guard; }
     void submit(bool grouped, int32_t *ids, const int32_t *steps, const Shape& shape, void *stream) {
         auto select = grouped ? kernels::qsa_prefill_select_groups : kernels::qsa_block_topk_prefill;
-        select(scores.data(), steps, queries, blocks, cap, shape, ids, stream, blocks);
+        const int stride = grouped ? prefill::qsa_groups::row_words(cap) : cap;
+        for (int first = 0; first < queries; first += batch_size) {
+            const int count = std::min(queries - first, batch_size);
+            select(scores.data(), steps + size_t(first) * kernels::kStepCount, count, blocks, cap,
+                   shape, ids + size_t(first) * stride, stream, live_blocks[first / batch_size]);
+        }
     }
     void check(bool grouped, const std::vector<int32_t>& result, const std::vector<int32_t>& steps) {
         namespace fmt = prefill::qsa_groups;
@@ -64,9 +80,9 @@ public:
             const size_t base = guard + size_t(q) * stride;
             const int32_t *row = result.data() + base;
             const int32_t *expected = reference.data() + guard + size_t(q) * cap;
-            if (first && queries <= 16) {
+            if (first && queries <= batch_size + 3) {
                 // Independent stable, descending cell ranking with ascending-ID ties.
-                const float *sc = scores.upload.data() + size_t(q) * blocks;
+                const float *sc = scores.upload.data() + size_t(q % batch_size) * blocks;
                 std::vector<int> oracle(n);
                 std::iota(oracle.begin(), oracle.end(), 0);
                 std::stable_sort(oracle.begin(), oracle.end(), [&](int a, int b){ return sc[a/4] > sc[b/4]; });
@@ -85,6 +101,11 @@ public:
             }
             padding(base + (grouped ? unique + (width != 0) : width), base + stride);
         }
+    }
+    void describe() const {
+        std::cout << "selector_geometry queries=" << queries << " subbatches=" << live_blocks.size()
+                  << " maximum_rows=" << std::min(queries, batch_size)
+                  << " last_rows=" << (queries - 1) % batch_size + 1 << " score_stride=" << blocks << '\n';
     }
     void check_scores() {
         if (scores.get() != scores.upload) throw std::runtime_error("selector scores changed");

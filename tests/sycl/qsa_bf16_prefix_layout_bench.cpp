@@ -332,6 +332,7 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
 #endif
 #if defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
   selection.check_scores();
+  selection.describe();
 #else
   require(di.get()==ids, "explicit input IDs changed");
 #endif
@@ -369,8 +370,10 @@ int main(int argc,char **argv) {
     else if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else run(65536,8192,2051,false);
 #elif defined(STRATA_QSA_PREFILL_GROUPS_COMPONENT)
-    if (std::string(argv[1]) == "--smoke") run(97, 16, 33, false);
-    else run(39260, 6491, 2051, false);
+    if (std::string(argv[1]) == "--smoke") {
+      run(97, 16, 33, false);
+      run(401, 259, 33, false);
+    } else run(39260, 6491, 2051, false);
 #else
     if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else {
