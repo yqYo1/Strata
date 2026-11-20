@@ -408,8 +408,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The projected delta is six files. The existing scalar KV translation unit
   retains SHA256 prefix `4473c66af0` and all other source bytes match.
   Rebuild the complete engine because the verifier headers change.
-  First verify the actual Q8 decode width 2 and 4 routes, prompt and single-row
-  fallback, exact KV payload, handoff and RESTORE near physical capacity.
+  Before timing, `bench/sycl/decode_kv_fast_prefill_restore.py` checks
+  both settings at each fixed MTP width 2 and 4 on the candidate binary.
+  It uses the established 32769- and 253919-token fresh prefixes, an
+  unrelated 33-token switch and 8209 fresh tokens after live RESTORE.
+  The first two requests emit one token. The restored request has an
+  eight-token output cap, leaving room for the last verifier window even
+  when it commits more rows than it emits. Bind each verifier position,
+  width and capture to the same native reply. Compare the actual committed
+  state, snapshot payload and expert-cache restoration against the off arm.
+  Treat this bounded state and route check separately from exact 262144-token
+  fill and from both-phase performance.
   Keep expert placement, logical context, resident KV and copy geometry fixed.
   Use matched independent AB, BA, AB pairs. Compare the retained ELF against
   the new ELF with the selector off to screen the build's prompt effects.
