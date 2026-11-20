@@ -340,6 +340,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   comparison. Recompute the bounds with the new job counts and draft yield
   after changing the expert ranking or speculative width. Physical DRAM
   traffic and the cost of GPU verification are separate measurements.
+  The fixed-width verifier imposes a second limit on either placement.
+  At width four a verifier window can emit at most four tokens. In the two
+  clocked `bf5f94144` runs, even perfect draft acceptance and zero time
+  outside verification would give only 13.84–13.90 tok/s for code and
+  15.19–15.24 for prose if verification retained its measured duration
+  (`4000 / verify_ms`). At 70 tok/s a four-token window allows 57.14 ms
+  in total. Verification alone therefore needs at least a 5.04–5.06×
+  reduction in time for code and 4.59–4.61× for prose under those favorable
+  assumptions. With the observed yields of 3.604 and 2.017 tokens per
+  window the required factors rise to 5.59–5.61× and 9.11–9.14×.
+  For the placement and confidence experiments record the new verifier
+  duration and yield together. Faster draft generation alone cannot close
+  this gap at the measured target-verifier cost.
   Before training another ranking, compare the shipped Niko Intel profile
   to the current ordinary profile (source `8cb26e609`, data already in
   this fork at `97e9c9847`). On the actual 1256-slot layout, layers
@@ -378,6 +391,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   actual admission, occupied slot identities, scratch loan/refill range and
   both near-full RESTORE and short decode-cache handoff. Measure the change
   in unique CPU jobs and actual throughput on both workloads.
+  Use `bench/sycl/decode_global_profile_restore.py` after both shipped
+  per-layer rankings pass their RESTORE comparison. Keep the same native ELF
+  and the 1500 MiB reserve. The predicted 1241/1244 global slots must be
+  reported by the server, including the primary-device slot count. Read back
+  every expert payload and check all 48 per-layer membership masks against the
+  original ranked prefix after the fresh prompt, the 33-token switch and the
+  resumed conversation (payload readback applies to the two loans).
+  Compare the fresh and restored prefill bank, row counts, KV copies and
+  expert jobs to the measured ordinary controls. Lower free VRAM at
+  startup can reduce the global admission even for an explicit count.
+  Keep that outcome separate from an 8192-token scratch shortage.
   The 8192-token scratch loan in both original RESTORE fixtures begins
   at slot 132 and covers 1124 slots (2,321,664,000 bytes). On this
   per-layer path, both the slot ranges and the slot widths depend only
@@ -575,10 +599,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   at most 0.6 ms. At 117489 the three intervals together left 3.9–4.2 ms
   of prompt time unassigned. The batch includes
   PCIe transfers, CPU waits and GPU kernels. Clean A/B timing and hardware attribution remain separate.
-  On the 117489-token split route, the first clean process for KV reuse alone
-  (`911cdbe59`) took 114.794 s at the warmed median, against 117.204 s for
-  ordinary reload (`040e8370b`). Both read every input token and used scalar
-  gather. The four-block comparison determines repeatability.
+  The 117489-token comparison closed at `568d015ba` with 16 clean native
+  processes and four fresh prompts per process. Across four process medians
+  the warmed rates were 1000.36 tok/s for ordinary reload, 1039.64 for KV
+  reuse, 1014.31 for vector gather and 1024.16 for both. KV reuse with
+  scalar gather won all four pairs against reload (2.409–6.581 s less).
+  Median paired prompt time fell 3.77%; median client TTFT fell from
+  117.636 to 113.214 s. All four warmed KV rates exceeded 1000; the first
+  long prompts were 931.66–957.54 tok/s. Vector gather alone also beat
+  reload in four pairs. Adding it to reuse won only two pairs, and adding
+  reuse to vector gather also won only two. Select KV reuse alone for
+  the split-route length curve and decode-preservation suite.
+  The 9,991,618,560 fewer requested H2D bytes would take 1.54–1.59 s at
+  the 256 MiB calibration rate. The larger observed time differences
+  leave copy issue, synchronization, actual copy size, overlap and
+  run variation to distinguish before assigning the gain to PCIe bandwidth.
   The first six independent processes through `6b5e834e1` took 9.93–12.84 s
   longer on their first long prompt than on their subsequent median. All six
   used private cache directories with `SYCL_CACHE_PERSISTENT=0`, and all wrote
@@ -638,6 +673,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by leaving out a whole length. Hold 98306 outside the smooth fits and
   report its change from 98305 with the actual expert jobs and transfer counts.
   A time difference across these two bodies alone cannot isolate chunk setup.
+  For the same selected long-prefill path, `bench/sycl/prefill_split_generation.py`
+  compares the baseline and candidate over three independent pairs (AB, BA,
+  AB). Keep the stock decode layout, thinking, MTP and native binary fixed.
+  Each process runs the official long, agent and two sustained generation
+  workloads. Bind fresh prompt identities, executed gather and KV work,
+  generation lengths and MTP counts before comparing sustained decode and
+  agent follow-up rates. Keep the original 117K speed decision separate
+  from this handoff and decode-preservation decision.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
