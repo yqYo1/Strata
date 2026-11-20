@@ -19,8 +19,8 @@ FIRST_BUILD = 'ce7e64c4d53e0dbb7b8cd09570ae0b0b7af30bfa'
 SOURCE = '9639531fddd1a43bd3aba38e2940b518f291a7ef'
 ROOT = bank.B / 'prefill-qsa-groups-v3'
 KEY = 'prefill_qsa_groups_v3'
-VALUE_ROOT = bank.B / 'prefill-qsa-q8-value-v1'
-VALUE_KEY = 'prefill_qsa_q8_value_v1'
+VALUE_ROOT = bank.B / 'prefill-qsa-q8-value-v2'
+VALUE_KEY = 'prefill_qsa_q8_value_v2'
 VALUE_SOURCE = '146f71321c459176d9476c4bfc02895eedd6e487'
 VALUE_BASE = 'af9d017ff6a30910182bfc83c265de9f14b3e4a1'
 VALUE_HEADER = 'include/strata/kernels/qsa_bf16_prefix.hpp'
@@ -68,6 +68,13 @@ def value_sources(helper, native):
     end = header.index(b'// Diagnostic-only online state', begin)
     require(header[:begin] + header[end:] == helper.git_file(VALUE_BASE, VALUE_HEADER),
             'existing QSA public interface changed')
+    # The Q8 fixture times submit_value. Other compile modes use invoke.
+    # Apply the declaration fix to the pinned fixture without importing a
+    # different kernel or changing any of the three Q8 comparison arms.
+    declaration = b'  auto invoke=[&](int variant) {\n'
+    fixture = overlay[BENCH]
+    require(fixture.count(declaration) == 1, 'unexpected historical fixture declaration')
+    overlay[BENCH] = fixture.replace(declaration, b'  [[maybe_unused]] auto invoke=[&](int variant) {\n')
     return overlay
 
 
@@ -280,7 +287,18 @@ def execute(action, values=False):
         print(f'{len(overlay)} pinned sources, {len(commands)} build commands, reversible attention projection')
         return
     result = device.validation.committed(bank.RESULT)
-    if action == 'build':
+    if values:
+        env = dict(native['recipe']['environment'], TMPDIR=str(root/'tmp'), XDG_CACHE_HOME=str(root/'cache'))
+        plan = dict(commands=commands, environment_sha256=bank.signature(env),
+                    stages=list(STAGES), previous_attempt='prefill_qsa_q8_value_v1')
+        if action == 'prepare':
+            require(key not in result and not root.exists(), 'inspect existing Q8 value plan')
+            result[key] = dict(**identity, controller_commit=pins['revision'], model_tested=False,
+                               stages=[], build_plan=plan)
+            bank.stage.write(bank.RESULT, result)
+            return
+        require(result[key]['build_plan'] == plan, 'commit exact Q8 value plan before building')
+    if action == 'build' and not values:
         require(key not in result and not root.exists(), 'inspect existing QSA generation')
         row = dict(**identity, controller_commit=pins['revision'], model_tested=False, stages=[])
     else:
@@ -335,7 +353,8 @@ if __name__ == '__main__':
     args = sys.argv[1:]
     values = args[:1] == ['--q8-value']
     action, = args[1:] if values else args
-    require(action in (*STAGES, 'recipe') and sys.executable == bank.basis.reference.model.PYTHON,
+    actions = (*STAGES, 'recipe', 'prepare') if values else (*STAGES, 'recipe')
+    require(action in actions and sys.executable == bank.basis.reference.model.PYTHON,
             'select one pinned QSA stage')
     if action == 'recipe':
         execute(action, values)

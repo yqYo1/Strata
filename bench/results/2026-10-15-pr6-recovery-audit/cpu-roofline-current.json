@@ -28163,5 +28163,1254 @@
     "compiler_temporaries": "47f59link objects under owned tmp/icpx were automatically removed by compiler,not missing source. Exact original source/SDK/generated/compiler/link inputs and final12ELFs are verified;no original hash is refreshed.",
     "next": "Ended comparison builds removed;prepare coherent opt-in candidate with14508baseline and3d7fCPUfixture. Review extra candidate at model comparison closure;legacy holds remain distinct.",
     "deletion_decision_commit": "cb5a6b934be4fd70ddf9c81ce12a146f4b2890c7"
+  },
+  "iq4nl_down_pair_v1": {
+    "stage": "closed",
+    "source_commit": "c684f9d5d55563e47518d78cc983a7c7c7a0e832",
+    "dependency_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+    "host_packages": [
+      "binutils-x86-64-linux-gnu 2.42-4ubuntu2.10",
+      "libc6-dev:amd64 2.39-0ubuntu8.9",
+      "libc6:amd64 2.39-0ubuntu8.9",
+      "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+      "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+      "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1"
+    ],
+    "executables": {
+      "/opt/intel/oneapi/compiler/2026.2/bin/icx": {
+        "resolved": "/opt/intel/oneapi/compiler/2026.2/bin/icx",
+        "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+      },
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx": {
+        "resolved": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+      },
+      "/usr/bin/cmake": {
+        "resolved": "/usr/bin/cmake",
+        "sha256": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638"
+      },
+      "/usr/bin/ninja": {
+        "resolved": "/usr/bin/ninja",
+        "sha256": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+      },
+      "/usr/bin/ldd": {
+        "resolved": "/usr/bin/ldd",
+        "sha256": "752803b8baa217b821bd4566c4fbdaec50c01cb32d2796ec056d22d190d4290f"
+      },
+      "/usr/bin/git": {
+        "resolved": "/usr/bin/git",
+        "sha256": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201"
+      },
+      "/usr/bin/taskset": {
+        "resolved": "/usr/bin/taskset",
+        "sha256": "a431738fadddc2e2326c8ab81843e72f4011658379381aef1502a6ddb1c1115b"
+      },
+      "/home/yayoi/.local/share/strata-sycl/venv/bin/python3": {
+        "resolved": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "interpreter": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/cache"
+    },
+    "machine": {
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "kernel": "7.0.0-38-generic",
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "topology": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          2
+        ],
+        [
+          3,
+          0,
+          3
+        ],
+        [
+          4,
+          0,
+          4
+        ],
+        [
+          5,
+          0,
+          5
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          1
+        ],
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          9,
+          0,
+          3
+        ],
+        [
+          10,
+          0,
+          4
+        ],
+        [
+          11,
+          0,
+          5
+        ]
+      ],
+      "physical_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "cpuinfo_sha256": "b76b714d9c601674e41e94536b65107b50ec8428fcf179057a3bb14a8b17cb87"
+    },
+    "cpu": 2,
+    "fixture": {
+      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "file_identity": {
+        "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "dev": 40,
+        "ino": 2640848,
+        "bytes": 54817524224,
+        "mtime_ns": 1791009083688077826,
+        "ctime_ns": 1791009083692077878
+      },
+      "layer": 0,
+      "down_type": 20,
+      "offset": 913711104,
+      "expert_bytes": 921600,
+      "reuse_sha256": "cd668ed0eb14c5e7173b36e134e82b206e51be782f3eeec4ce21b365b4c02d5f",
+      "rotate_sha256": "47a8940ddcf4dc17c154630a27dff20de3cd0a67eb63898a45a11f98a91abbe1",
+      "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+    },
+    "generated": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "configure": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_roofline",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icx",
+      "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+      "-DGGML_CCACHE=OFF",
+      "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011"
+    ],
+    "build": [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build",
+      "--target",
+      "cpu_iq4nl_down_pair",
+      "--parallel",
+      "4"
+    ],
+    "check": [
+      "/usr/bin/taskset",
+      "--cpu-list",
+      "2",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/cpu_iq4nl_down_pair",
+      "check"
+    ],
+    "plans": [
+      {
+        "pattern": "reuse",
+        "initial": "AB",
+        "argv": [
+          "/usr/bin/taskset",
+          "--cpu-list",
+          "2",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/cpu_iq4nl_down_pair",
+          "time",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "913711104",
+          "reuse",
+          "AB"
+        ]
+      },
+      {
+        "pattern": "rotate",
+        "initial": "AB",
+        "argv": [
+          "/usr/bin/taskset",
+          "--cpu-list",
+          "2",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/cpu_iq4nl_down_pair",
+          "time",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "913711104",
+          "rotate",
+          "AB"
+        ]
+      },
+      {
+        "pattern": "rotate",
+        "initial": "BA",
+        "argv": [
+          "/usr/bin/taskset",
+          "--cpu-list",
+          "2",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/cpu_iq4nl_down_pair",
+          "time",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "913711104",
+          "rotate",
+          "BA"
+        ]
+      },
+      {
+        "pattern": "reuse",
+        "initial": "BA",
+        "argv": [
+          "/usr/bin/taskset",
+          "--cpu-list",
+          "2",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/cpu_iq4nl_down_pair",
+          "time",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "913711104",
+          "reuse",
+          "BA"
+        ]
+      },
+      {
+        "pattern": "reuse",
+        "initial": "AB",
+        "argv": [
+          "/usr/bin/taskset",
+          "--cpu-list",
+          "2",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/cpu_iq4nl_down_pair",
+          "time",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "913711104",
+          "reuse",
+          "AB"
+        ]
+      },
+      {
+        "pattern": "rotate",
+        "initial": "AB",
+        "argv": [
+          "/usr/bin/taskset",
+          "--cpu-list",
+          "2",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/cpu_iq4nl_down_pair",
+          "time",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "913711104",
+          "rotate",
+          "AB"
+        ]
+      }
+    ],
+    "limits": {
+      "build_wall": 240,
+      "build_cpu": 1200,
+      "build_rss": 8589934592,
+      "check_wall": 35,
+      "measure_wall": 180,
+      "text_cap": 2097152,
+      "file_cap": 20971520,
+      "total_cap": 402653184
+    },
+    "comparison": {
+      "calls_per_batch": 6144,
+      "minimum_seconds": 0.1,
+      "maximum_bracket_fraction": 0.001,
+      "scope": "The linked candidate is the production AVX2 row loop. The reference calls the linked GGML dot. Time row computation and check results outside timing. Pool dispatch is a separate trial.",
+      "gate": "Five order-alternated ratios per process. All three rotation process medians and the median of the three reuse process medians must be less than one."
+    },
+    "consumer": "Single CPU-only IQ4_NL Down comparison with measured generation evidence at c74d1539c.",
+    "review": "When the component closes, retain compact samples and recover source/recipe before build retirement.",
+    "execution_gpu": false,
+    "adopted": false,
+    "active": false,
+    "ownership_closed": true,
+    "complete": true,
+    "passed": true,
+    "processes": [
+      {
+        "input": {
+          "cpu": 2,
+          "experts": 1,
+          "weights": 194375739068736996,
+          "activation": 11664715603182564158
+        },
+        "timer_s": 3e-08,
+        "pairs": [
+          {
+            "order": "AB",
+            "reference_s": 0.428886063,
+            "candidate_s": 0.42347778,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.441877012,
+            "candidate_s": 0.419990577,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.42857869,
+            "candidate_s": 0.427302895,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.444480986,
+            "candidate_s": 0.426484611,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.445895872,
+            "candidate_s": 0.442879827,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          }
+        ],
+        "pattern": "reuse",
+        "initial": "AB",
+        "receipt": {
+          "pid": 643531,
+          "direct_identity": {
+            "pid": 643531,
+            "state": "R",
+            "ppid": 643376,
+            "pgid": 643531,
+            "sid": 643531,
+            "start_ticks": 353951550,
+            "rss_bytes": 602112
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 4.430914422031492,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 4554752
+        }
+      },
+      {
+        "input": {
+          "cpu": 2,
+          "experts": 128,
+          "weights": 17229606291787211328,
+          "activation": 11664715603182564158
+        },
+        "timer_s": 4e-08,
+        "pairs": [
+          {
+            "order": "AB",
+            "reference_s": 0.442612273,
+            "candidate_s": 0.456164932,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.434654555,
+            "candidate_s": 0.428973591,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.438131687,
+            "candidate_s": 0.429865889,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.452359816,
+            "candidate_s": 0.447127087,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.437900027,
+            "candidate_s": 0.42938469,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          }
+        ],
+        "pattern": "rotate",
+        "initial": "AB",
+        "receipt": {
+          "pid": 644737,
+          "direct_identity": {
+            "pid": 644737,
+            "state": "R",
+            "ppid": 644584,
+            "pgid": 644737,
+            "sid": 644737,
+            "start_ticks": 353953858,
+            "rss_bytes": 294912
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 4.977633071132004,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 121618432
+        }
+      },
+      {
+        "input": {
+          "cpu": 2,
+          "experts": 128,
+          "weights": 17229606291787211328,
+          "activation": 11664715603182564158
+        },
+        "timer_s": 4e-08,
+        "pairs": [
+          {
+            "order": "BA",
+            "reference_s": 0.449556739,
+            "candidate_s": 0.428765151,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.438975279,
+            "candidate_s": 0.447363654,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.446567422,
+            "candidate_s": 0.478330718,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.439593591,
+            "candidate_s": 0.471939941,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.454099812,
+            "candidate_s": 0.430007315,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          }
+        ],
+        "pattern": "rotate",
+        "initial": "BA",
+        "receipt": {
+          "pid": 645647,
+          "direct_identity": {
+            "pid": 645647,
+            "state": "R",
+            "ppid": 645488,
+            "pgid": 645647,
+            "sid": 645647,
+            "start_ticks": 353955954,
+            "rss_bytes": 290816
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 5.085005228873342,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 121622528
+        }
+      },
+      {
+        "input": {
+          "cpu": 2,
+          "experts": 1,
+          "weights": 194375739068736996,
+          "activation": 11664715603182564158
+        },
+        "timer_s": 3.1e-08,
+        "pairs": [
+          {
+            "order": "BA",
+            "reference_s": 0.427435351,
+            "candidate_s": 0.422298052,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.417382128,
+            "candidate_s": 0.409727974,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.421208385,
+            "candidate_s": 0.410747776,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.425409281,
+            "candidate_s": 0.420351338,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.42513416,
+            "candidate_s": 0.410221391,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          }
+        ],
+        "pattern": "reuse",
+        "initial": "BA",
+        "receipt": {
+          "pid": 646816,
+          "direct_identity": {
+            "pid": 646816,
+            "state": "R",
+            "ppid": 646687,
+            "pgid": 646816,
+            "sid": 646816,
+            "start_ticks": 353958404,
+            "rss_bytes": 471040
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 4.2853850135579705,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 4677632
+        }
+      },
+      {
+        "input": {
+          "cpu": 2,
+          "experts": 1,
+          "weights": 194375739068736996,
+          "activation": 11664715603182564158
+        },
+        "timer_s": 3e-08,
+        "pairs": [
+          {
+            "order": "AB",
+            "reference_s": 0.425627902,
+            "candidate_s": 0.410334265,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.416003175,
+            "candidate_s": 0.415174025,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.417172939,
+            "candidate_s": 0.413008882,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.417504362,
+            "candidate_s": 0.425662675,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.415906931,
+            "candidate_s": 0.415187886,
+            "fingerprint": 2187629494901743973,
+            "eligible": true
+          }
+        ],
+        "pattern": "reuse",
+        "initial": "AB",
+        "receipt": {
+          "pid": 647316,
+          "direct_identity": {
+            "pid": 647316,
+            "state": "R",
+            "ppid": 647198,
+            "pgid": 647316,
+            "sid": 647316,
+            "start_ticks": 353959194,
+            "rss_bytes": 294912
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 4.275657520629466,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 4489216
+        }
+      },
+      {
+        "input": {
+          "cpu": 2,
+          "experts": 128,
+          "weights": 17229606291787211328,
+          "activation": 11664715603182564158
+        },
+        "timer_s": 5e-08,
+        "pairs": [
+          {
+            "order": "AB",
+            "reference_s": 0.441967185,
+            "candidate_s": 0.429836098,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.465570196,
+            "candidate_s": 0.42753492,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.483133578,
+            "candidate_s": 0.440583955,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.457966375,
+            "candidate_s": 0.445694614,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.449720297,
+            "candidate_s": 0.461735927,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          }
+        ],
+        "pattern": "rotate",
+        "initial": "AB",
+        "receipt": {
+          "pid": 647830,
+          "direct_identity": {
+            "pid": 647830,
+            "state": "R",
+            "ppid": 647702,
+            "pgid": 647830,
+            "sid": 647830,
+            "start_ticks": 353959996,
+            "rss_bytes": 294912
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 5.105825196951628,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 121311232
+        }
+      }
+    ],
+    "runtime_paths": [
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33"
+    ],
+    "built_inputs": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/CMakeCache.txt": "a115d5d17a10515aebca4859a931f00066fb64165892ea2684b62ccf0d9f56c7",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/compile_commands.json": "26772871f7cb5b1a33f0c9ceed078db53c55e691dad0f5753ba95cf9e8ff8b5f",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/cpu_iq4nl_down_pair": "93974cf3c21c910393c0da5fc873525a53d7d1944aa14af9d9ef087302ce86ed",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/ggml/src/libggml-base.a": "c5fccf0e93d5cc66b70a1e29dc4e9ae44a7f58cb3c7d12c08af23b8048ddbb83",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/ggml/src/libggml-cpu.a": "0ffc744b74c23a09a740296e71a6634176bb6ade555c9a23ffc81ea29ed55045",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1/build/libexpert_cpu.a": "89e9b169ee53c057d7b1748f878504856d96da96813ff1a688248253b562d8ad",
+      "/opt/intel/oneapi/compiler/2026.2/lib/libimf.a": "30ad5764c3a5158dd6aeeef0bf65071f6a7bdc938fe6211a788c08dcd1c7069d",
+      "/opt/intel/oneapi/compiler/2026.2/lib/libirc.a": "ae97435c0d22c761e0b88a3fb85c1a1e61c829e43aa13a336cb0fea72fd445cd",
+      "/opt/intel/oneapi/compiler/2026.2/lib/libirc_s.a": "83733db4362b8a11d7886d64bf7d5e85be63490afbe00d6911a4a8289345e3e1",
+      "/opt/intel/oneapi/compiler/2026.2/lib/libirng.a": "12e2b569987ffc7a4e06aa7c78b54e61d8cbdbbfd1a0da4ec27ba15973967302",
+      "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.a": "37843fd2b9c0208cb32982e6a7d379bba55f3155f63409b6441eba4b17ec2c09",
+      "/usr/bin/ldd": "752803b8baa217b821bd4566c4fbdaec50c01cb32d2796ec056d22d190d4290f",
+      "/usr/bin/python3.12": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "/usr/bin/taskset": "a431738fadddc2e2326c8ab81843e72f4011658379381aef1502a6ddb1c1115b",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+      "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+      "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+      "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+      "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+      "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+      "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+      "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+      "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+    },
+    "compiler_inputs": {
+      "files": 618,
+      "sha256": "426e16a1c9b2530ae8d51e4844e250a06f917b1632f7493670dc6acae221412d"
+    },
+    "receipts": {
+      "build": [
+        {
+          "pid": 640077,
+          "direct_identity": {
+            "pid": 640077,
+            "state": "R",
+            "ppid": 639752,
+            "pgid": 640077,
+            "sid": 640077,
+            "start_ticks": 353944831,
+            "rss_bytes": 442368
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.9865444982424378,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 17489920
+        },
+        {
+          "pid": 640194,
+          "direct_identity": {
+            "pid": 640194,
+            "state": "R",
+            "ppid": 639752,
+            "pgid": 640194,
+            "sid": 640194,
+            "start_ticks": 353944930,
+            "rss_bytes": 430080
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 21.36488369014114,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 588566528
+        },
+        {
+          "pid": 641281,
+          "direct_identity": {
+            "pid": 641281,
+            "state": "R",
+            "ppid": 639752,
+            "pgid": 641281,
+            "sid": 641281,
+            "start_ticks": 353947067,
+            "rss_bytes": 303104
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.1132412850856781,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 4026368
+        },
+        {
+          "pid": 641303,
+          "direct_identity": {
+            "pid": 641303,
+            "state": "D",
+            "ppid": 639752,
+            "pgid": 641303,
+            "sid": 641303,
+            "start_ticks": 353947132,
+            "rss_bytes": 135168
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.1685423250310123,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 1695744
+        }
+      ],
+      "check": [
+        {
+          "pid": 642283,
+          "direct_identity": {
+            "pid": 642283,
+            "state": "R",
+            "ppid": 642157,
+            "pgid": 642283,
+            "sid": 642283,
+            "start_ticks": 353948658,
+            "rss_bytes": 442368
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.11459883395582438,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 642295,
+          "direct_identity": {
+            "pid": 642295,
+            "state": "D",
+            "ppid": 642157,
+            "pgid": 642295,
+            "sid": 642295,
+            "start_ticks": 353948670,
+            "rss_bytes": 135168
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.11467945668846369,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        }
+      ],
+      "0": [
+        {
+          "pid": 643514,
+          "direct_identity": {
+            "pid": 643514,
+            "state": "R",
+            "ppid": 643376,
+            "pgid": 643514,
+            "sid": 643514,
+            "start_ticks": 353951518,
+            "rss_bytes": 409600
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.12667398480698466,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 643531,
+          "direct_identity": {
+            "pid": 643531,
+            "state": "R",
+            "ppid": 643376,
+            "pgid": 643531,
+            "sid": 643531,
+            "start_ticks": 353951550,
+            "rss_bytes": 602112
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 4.430914422031492,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 4554752
+        }
+      ],
+      "1": [
+        {
+          "pid": 644721,
+          "direct_identity": {
+            "pid": 644721,
+            "state": "R",
+            "ppid": 644584,
+            "pgid": 644721,
+            "sid": 644721,
+            "start_ticks": 353953835,
+            "rss_bytes": 454656
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.1123937419615686,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 644737,
+          "direct_identity": {
+            "pid": 644737,
+            "state": "R",
+            "ppid": 644584,
+            "pgid": 644737,
+            "sid": 644737,
+            "start_ticks": 353953858,
+            "rss_bytes": 294912
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 4.977633071132004,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 121618432
+        }
+      ],
+      "2": [
+        {
+          "pid": 645631,
+          "direct_identity": {
+            "pid": 645631,
+            "state": "R",
+            "ppid": 645488,
+            "pgid": 645631,
+            "sid": 645631,
+            "start_ticks": 353955929,
+            "rss_bytes": 638976
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.12273772293701768,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 645647,
+          "direct_identity": {
+            "pid": 645647,
+            "state": "R",
+            "ppid": 645488,
+            "pgid": 645647,
+            "sid": 645647,
+            "start_ticks": 353955954,
+            "rss_bytes": 290816
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 5.085005228873342,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 121622528
+        }
+      ],
+      "3": [
+        {
+          "pid": 646796,
+          "direct_identity": {
+            "pid": 646796,
+            "state": "R",
+            "ppid": 646687,
+            "pgid": 646796,
+            "sid": 646796,
+            "start_ticks": 353958380,
+            "rss_bytes": 598016
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.11408076900988817,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 646816,
+          "direct_identity": {
+            "pid": 646816,
+            "state": "R",
+            "ppid": 646687,
+            "pgid": 646816,
+            "sid": 646816,
+            "start_ticks": 353958404,
+            "rss_bytes": 471040
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 4.2853850135579705,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 4677632
+        }
+      ],
+      "4": [
+        {
+          "pid": 647297,
+          "direct_identity": {
+            "pid": 647297,
+            "state": "R",
+            "ppid": 647198,
+            "pgid": 647297,
+            "sid": 647297,
+            "start_ticks": 353959169,
+            "rss_bytes": 409600
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.11904152296483517,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 647316,
+          "direct_identity": {
+            "pid": 647316,
+            "state": "R",
+            "ppid": 647198,
+            "pgid": 647316,
+            "sid": 647316,
+            "start_ticks": 353959194,
+            "rss_bytes": 294912
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 4.275657520629466,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 4489216
+        }
+      ],
+      "5": [
+        {
+          "pid": 647811,
+          "direct_identity": {
+            "pid": 647811,
+            "state": "R",
+            "ppid": 647702,
+            "pgid": 647811,
+            "sid": 647811,
+            "start_ticks": 353959971,
+            "rss_bytes": 2412544
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.12034002458676696,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 647830,
+          "direct_identity": {
+            "pid": 647830,
+            "state": "R",
+            "ppid": 647702,
+            "pgid": 647830,
+            "sid": 647830,
+            "start_ticks": 353959996,
+            "rss_bytes": 294912
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 5.105825196951628,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 121311232
+        }
+      ]
+    },
+    "correctness": {
+      "cases": 60,
+      "passed": true,
+      "receipt": {
+        "pid": 642295,
+        "direct_identity": {
+          "pid": 642295,
+          "state": "D",
+          "ppid": 642157,
+          "pgid": 642295,
+          "sid": 642295,
+          "start_ticks": 353948670,
+          "rss_bytes": 135168
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.11467945668846369,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 0
+      }
+    },
+    "decision": {
+      "process_ratios": {
+        "reuse": [
+          0.9873899306445871,
+          0.9816615195368403,
+          0.9980068661735575
+        ],
+        "rotate": [
+          0.9869299333582274,
+          1.0191089917844782,
+          0.972552064018056
+        ]
+      },
+      "qualified": false,
+      "scope": "Single-core IQ4_NL Down row loop"
+    },
+    "project": {
+      "files": 209,
+      "sha256": "eddd2addcd3b9d0b7da2a372a8ba7a2e0317ee2274cc7018f357d8a1b8a5218b"
+    },
+    "ggml": {
+      "files": 1376,
+      "sha256": "42a9bbef65afb765d411387d418035051e24e5379daa12034fa116981b671a43"
+    },
+    "host_files": {
+      "files": 12178,
+      "sha256": "8bb6c7e9a15e3bb5b5a94368f6e4785a3ec584d920c1e3baa3426c75f3904209"
+    },
+    "retirement": {
+      "state": "retired",
+      "evidence_commit": "34506f209",
+      "plan_commit": "e4a9cc023",
+      "build_commit": "a0ec64a8e",
+      "source_commit": "c684f9d5d55563e47518d78cc983a7c7c7a0e832",
+      "compiler_inputs": {
+        "files": 618,
+        "sha256": "426e16a1c9b2530ae8d51e4844e250a06f917b1632f7493670dc6acae221412d"
+      },
+      "verified_archives": 3,
+      "compiled_elf_sha256": "93974cf3c21c910393c0da5fc873525a53d7d1944aa14af9d9ef087302ce86ed",
+      "planned_recipe_sha256": "c216ac13419919ca3a9affbff7bf499d75aa0a4b7643447c638d3945887d4317",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq4nl-down-pair-v1",
+      "files": 103,
+      "bytes": 16085717,
+      "tree_sha256": "78f0a8e254a8135eed7692c4ba02197d472903f58f46b5fb445f4c6d507fd6e7",
+      "rationale": "All six CPU trials closed and the rotation gate failed. Original source, recipe, dependencies, archives and ELF verified. No model trial or remaining fixture consumer."
+    }
   }
 }
