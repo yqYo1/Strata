@@ -382,6 +382,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and row-map bytes, and draft offers/accepts matched all three historical
   processes body for body. The ordinary route restored zero draft-head
   bytes. The traced native process exited normally without a fresh Xe fault.
+  At the same 262144 capacity, raising resident K8V8 from 20480 to
+  262144 cells adds `12*(262144-20480)*1056 = 3,062,366,208` pool
+  bytes across the main attention layers. The mode-1 residency-map
+  allowance from `kv_stream_map_bytes(5120)+6*16` is 1,230,720 bytes
+  across the twelve layers. Even crediting that entire allowance and
+  the measured 276,824,064-byte prefill stage leaves about 2.78 GB
+  extra, before other layout changes. The observed 117K prefill plan's
+  margin above its fixed requirement was only 188,286,592–204,646,016
+  bytes. Reproducing the historical all-resident layout at full capacity
+  requires changing another major allocation or its lifetime. Use the
+  one-layer KV reuse comparison to isolate transfer cost first.
   Increasing the batched rows from 65,536 to 117,488 multiplies them by
   1.793. The ordered QSA loop grows from 100,638,720 to 181,683,840
   tiles (1.805 times): each of 12 layers and two KV heads processes
@@ -3151,6 +3162,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   measure the model's selected-row locality and compare equivalent physical
   layouts with the same logical IDs, values and reduction order. Include
   repacking in that comparison.
+  To budget a V-only storage change, `H=24*sum(min(i,2051))` over
+  positions `i=1..n-1` counts selected rows across both KV heads and
+  twelve layers for a fresh prompt. At 117489 tokens, H is 5,732,774,712.
+  Expanded BF16 V reads 512 bytes per valid row. Q8 V with four FP16
+  scales would use 264 bytes if lanes share the scales, or 384 bytes
+  with one scale load per four values. If all rows are valid, these two
+  mappings avoid 1.422 TB or 0.734 TB of logical operand reads while
+  adding 256 integer-to-float conversions, scale products and BF16
+  roundings per row. At 65537 tokens the differences are 0.788 TB and
+  0.406 TB. Actual DRAM bytes depend on cache reuse and coalescing.
+  Keep K storage, ID order, softmax and matrix accumulation fixed in
+  a comparison and include any V producer or addressing cost.
   A separate candidate specializes selected-row lookup for the full KV
   staging pool. Its owner constructs an immutable identity page table
   and passes that table with the stage. The candidate selector requires
