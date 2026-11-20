@@ -389,6 +389,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   For the placement and confidence experiments record the new verifier
   duration and yield together. Faster draft generation alone cannot close
   this gap at the measured target-verifier cost.
+  The two completed on-mode caller profiles in `decode_service_overhead_v3`
+  put per-layer copy retirement plus the final copy wait at 0.232–0.239 ms
+  per verifier window across code and prose. This is about 0.09% of each
+  profiled request's caller interval. The campaign's final overhead gate
+  remains failed. Separately, the code request at `55265f9e3` spent 0.242%
+  of decode in the resident completion-query wrappers. Keep the checked
+  copy retirement and prioritize the larger layer-graph intervals.
+  [Caller profiles](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json),
+  [query profile](../bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-current.json).
   To distinguish layer-graph execution from the host's wait on the same
   event, sample the ordinary, unsplit 48-layer target verifier at width four.
   Set `STRATA_SYCL_DECODE_SEGMENT_CLOCK_REQUEST` before engine startup to
