@@ -3237,6 +3237,16 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (qp) qp->end(QsaProfile::indexer_append, m.cs);
                     if (qp) qp->begin(QsaProfile::selection, m.cs);
                     pt.mark(kPfQsaSel, cs);
+#if defined(STRATA_ENABLE_SYCL)
+                    // The complete indexer append precedes this loop on m.cs. The
+                    // selector writes only scores and IDs. Later users of attn_h
+                    // may overwrite the score scratch, so retain nothing on exit.
+                    const bool retain_score_keys = m.layer_major_active && m.score_gemm.status &&
+                        qsa_score_gemm::prefill_retain_score_keys_requested();
+                    int64_t retained_score_rows = 0;
+                    int64_t skipped_score_rows = 0;
+                    static const bool trace_score_keys = std::getenv("STRATA_TRACE") != nullptr;
+#endif
                     for (int64_t t0 = 0; t0 < T; t0 += m.sel_batch) {
                         const int64_t nb = std::min(m.sel_batch, T - t0);
                         const int32_t* steps0 = m.steps_dev + t0 * strata::kernels::kStepCount;
@@ -3246,11 +3256,16 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         // the scores on tensor cores (3xTF32: FP32-level, not bitwise); STRATA_SELECT_OLD=1: the warp kernel
                         static const bool old_sel = std::getenv("STRATA_SELECT_OLD") != nullptr;
 #if defined(STRATA_ENABLE_SYCL)
-                        if (m.layer_major_active && m.score_gemm.status)
-                            qsa_score_gemm::scores(m.gemm, st.idx_pooled, st.idx_dead,
-                                m.q_idx + t0 * 512, steps0, nb, m.max_blocks, s,
-                                m.sel_scores, m.score_gemm, m.cs, active);
-                        else
+                        if (m.layer_major_active && m.score_gemm.status) {
+                            qsa_score_gemm::prefill_scores_with_retained_keys(
+                                m.gemm, st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512,
+                                steps0, nb, m.max_blocks, s, m.sel_scores, m.score_gemm,
+                                m.cs, active, retained_score_rows);
+                            if (retain_score_keys) {
+                                if (trace_score_keys) skipped_score_rows += retained_score_rows;
+                                retained_score_rows = active;
+                            }
+                        } else
 #endif
                         if (old_sel || !strata::kernels::qsa_block_scores_tc(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512,
                                                                              steps0, nb, m.max_blocks, s, m.sel_scores,
@@ -3278,6 +3293,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
                                                         m.sel_ids + t0 * m.cap, m.cs, active);
                     }
+#if defined(STRATA_ENABLE_SYCL)
+                    if (trace_score_keys && m.layer_major_active && m.score_gemm.status)
+                        std::fprintf(stderr, "strata prefill score keys: start=%lld queries=%lld retained_rows=%lld\n",
+                                     (long long)p0, (long long)T, (long long)skipped_score_rows);
+#endif
                     // STRATA_SEL_OVERLAP (debug, D-1's question): how much do neighbouring queries' selections share?
                     // Per tile of 16 queries: the union of their selected cells against the sum of their widths.
                     if (static const bool ovl = std::getenv("STRATA_SEL_OVERLAP") != nullptr; ovl && qsa_index == 0) {

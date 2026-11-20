@@ -35,6 +35,15 @@ bool requested() {
   }();
   return value;
 }
+bool prefill_retain_score_keys_requested() {
+  static const bool value = [] {
+    const char *setting = std::getenv("STRATA_SYCL_PREFILL_RETAIN_SCORE_KEYS");
+    if (!setting || std::strcmp(setting, "0") == 0) return false;
+    if (std::strcmp(setting, "1") == 0) return true;
+    throw std::invalid_argument("STRATA_SYCL_PREFILL_RETAIN_SCORE_KEYS must be 0 or 1");
+  }();
+  return value;
+}
 void validate_device(void *stream) {
   if (!stream)
     throw std::invalid_argument("QSA score GEMM needs an explicit stream");
@@ -85,10 +94,20 @@ void scores(Gemm &gemm, const float *pooled, const float *dead,
             const float *query, const int32_t *steps, int64_t nq,
             int64_t blocks, const kernels::QsaShapes &shape, float *output,
             Scratch s, void *stream, int64_t active) {
+  prefill_scores_with_retained_keys(gemm, pooled, dead, query, steps, nq, blocks,
+                                   shape, output, s, stream, active, 0);
+}
+
+void prefill_scores_with_retained_keys(
+    Gemm &gemm, const float *pooled, const float *dead, const float *query,
+    const int32_t *steps, int64_t nq, int64_t blocks,
+    const kernels::QsaShapes &shape, float *output, Scratch s, void *stream,
+    int64_t active, int64_t retained_rows) {
   using namespace sycl_backend;
   using namespace kernels;
   if (!stream || gemm.stream() != stream || nq <= 0 || nq > 256 ||
       blocks <= 0 || blocks > 65538 || active <= 0 || active > blocks ||
+      retained_rows < 0 || retained_rows > active ||
       shape.idx_n_head != 4 || shape.idx_dim != 128 || shape.idx_block != 4 ||
       s.tile_blocks <= 0 || s.tile_blocks > 8192 || s.tile_blocks % 64)
     throw std::invalid_argument("invalid QSA score GEMM geometry/owner");
@@ -104,12 +123,18 @@ void scores(Gemm &gemm, const float *pooled, const float *dead,
                   {query, checked_count(nq, 512) * 4},
                   {steps, checked_count(nq, kStepCount) * 4}});
   // Scope owner initializes once. Never hide a previous call's status here.
-  finish(stream, queue.parallel_for(sycl::range<1>(size_t(padded * 128)),
-      [=](sycl::id<1> id) {
-        const size_t i = id[0];
-        s.pooled_fp16[i] = i / 128 < size_t(active)
-            ? half_bits(pooled[i], s.status) : uint16_t(0);
-      }));
+  // A growing prefix must replace the previous call's zero padding with
+  // actual keys. Equal extents already have the right keys and padding.
+  if (retained_rows < active) {
+    const float *new_keys = pooled + retained_rows * 128;
+    uint16_t *packed = s.pooled_fp16 + retained_rows * 128;
+    const size_t valid_elements = size_t(active - retained_rows) * 128;
+    finish(stream, queue.parallel_for(sycl::range<1>(size_t(padded - retained_rows) * 128),
+        [=](sycl::id<1> id) {
+          const size_t i = id[0];
+          packed[i] = i < valid_elements ? half_bits(new_keys[i], s.status) : uint16_t(0);
+        }));
+  }
   finish(stream, queue.parallel_for(sycl::range<1>(size_t(nq * 512)),
       [=](sycl::id<1> id) {
         const size_t i = id[0];

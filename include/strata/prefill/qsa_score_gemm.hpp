@@ -8,6 +8,7 @@ namespace strata::prefill {
 class Gemm;
 namespace qsa_score_gemm {
 
+bool prefill_retain_score_keys_requested();
 bool requested(); // Immutable preexec STRATA_SYCL_PREFILL_SCORE_GEMM=0|1; default0.
 // Allocation/submission-free capability check. The engine calls this at scope
 // admission, before any persistent KV/indexer state can be modified.
@@ -49,6 +50,15 @@ void scores(Gemm &gemm, const float *pooled, const float *dead,
             const float *query, const int32_t *steps, int64_t nq,
             int64_t blocks, const kernels::QsaShapes &shape, float *output,
             Scratch scratch, void *stream, int64_t active);
+
+// Inside one SELECT loop the pooled source is immutable and the scratch is
+// owned by this in-order stream. Pass the previous call's active row count
+// only while both conditions hold. Start each loop (including RESTORE) at 0.
+void prefill_scores_with_retained_keys(
+    Gemm &gemm, const float *pooled, const float *dead, const float *query,
+    const int32_t *steps, int64_t nq, int64_t blocks,
+    const kernels::QsaShapes &shape, float *output, Scratch scratch,
+    void *stream, int64_t active, int64_t retained_rows);
 
 } // namespace qsa_score_gemm
 } // namespace strata::prefill

@@ -102,6 +102,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill MoE window: old chunk census does not describe window GEMM jobs"; return false;
     }
     const bool score_gemm_on = qsa_score_gemm::requested();
+    if (qsa_score_gemm::prefill_retain_score_keys_requested() && !score_gemm_on) {
+        err = "prefill retained score keys require the FP16 score GEMM";
+        return false;
+    }
     // This explicit opt-in is fail-closed at admission. Do not discover an
     // unsupported device after projections/KV/indexer have updated state.
     if (score_gemm_on) qsa_score_gemm::validate_device(m.cs);

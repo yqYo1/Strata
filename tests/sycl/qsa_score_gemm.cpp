@@ -448,6 +448,197 @@ void run(int context, int capacity, int queries, int repetitions) {
             << " score_fnv=" << fingerprint(first_scores) << " ids_fnv=" << fingerprint(first_ids)
             << " status=PASS" << std::endl;
 }
+// Execute the same score and top-k calls in both arms. Only the live prefix
+// of previously packed keys differs. Two arenas keep the controls independent.
+void check_prefill_score_keys(bool large, int timing_process) {
+  const auto shape = qsa_real_shapes();
+  const int start = large ? 114688 : 251;
+  const std::vector<int> batches = large ? std::vector<int>{256, 256, 91, 1, 1} :
+                                          std::vector<int>{1, 1, 4, 8};
+  const int max_q = *std::max_element(batches.begin(), batches.end());
+  const int blocks = large ? 65538 : 130;
+  const int cap = 2051;
+  const size_t workspace = prefill::qsa_score_gemm::workspace_bytes(max_q, blocks);
+  const size_t packed_size = size_t((blocks + 63) / 64 * 64) * 128;
+  const std::vector<uint8_t> initial_arena(workspace + 512, 0xa5);
+  const std::vector<float> initial_scores(size_t(max_q) * blocks + 2 * guard, score_canary);
+  const std::vector<int32_t> initial_ids(size_t(max_q) * cap + 2 * guard, id_canary);
+  auto status_init = std::vector<uint32_t>(1 + 2 * guard, 0xbeda1234);
+  status_init[guard] = 0;
+  std::vector<float> pooled(size_t(blocks) * 128), dead(128), q(size_t(max_q) * 512);
+  std::vector<int32_t> steps(size_t(max_q) * kStepCount);
+  uint32_t seed = 0xa9501e13u;
+  for (auto &v : pooled) v = value(seed);
+  for (auto &v : dead) v = value(seed);
+  Buffer<float> keys(pooled.size()), tail(dead.size()), query(q.size());
+  Buffer<int32_t> device_steps(steps.size());
+  Buffer<uint8_t> arenas[2]{Buffer<uint8_t>(workspace + 512), Buffer<uint8_t>(workspace + 512)};
+  Buffer<uint32_t> status[2]{Buffer<uint32_t>(status_init.size()), Buffer<uint32_t>(status_init.size())};
+  Buffer<float> scores[2]{Buffer<float>(initial_scores.size()), Buffer<float>(initial_scores.size())};
+  Buffer<int32_t> ids[2]{Buffer<int32_t>(initial_ids.size()), Buffer<int32_t>(initial_ids.size())};
+  prefill::qsa_score_gemm::Scratch scratch[2];
+  prefill::Gemm gemm;
+  Drain drain;
+  std::string error;
+  require(gemm.init_external(&rt->compute(), nullptr, 0, nullptr, 0, error), "score keys GEMM init");
+  keys.put(pooled);
+  tail.put(dead);
+  for (int arm = 0; arm < 2; ++arm) {
+    arenas[arm].put(initial_arena);
+    status[arm].put(status_init);
+    scratch[arm] = prefill::qsa_score_gemm::carve(arenas[arm].data() + 256, workspace,
+                          status[arm].data() + guard, max_q, blocks);
+  }
+  const auto submit = [&](int arm, int rows, int active, int retained) {
+    prefill::qsa_score_gemm::prefill_scores_with_retained_keys(gemm, keys.data(), tail.data(),
+        query.data(), device_steps.data(), rows, blocks, shape, scores[arm].data() + guard,
+        scratch[arm], &rt->compute(), active, retained);
+  };
+  int compared = 0;
+  for (int epoch = 0; epoch < 2; ++epoch) {
+    // Changing the source between chunks must invalidate a same-sized prefix.
+    if (epoch == 1) {
+      pooled[0] += 2.f;
+      keys.put(pooled);
+    }
+    int position = start, retained = 0;
+    for (int rows : batches) {
+      for (auto &v : q) v = value(seed);
+      query.put(q);
+      for (int i = 0; i < rows; ++i)
+        qsa_step_fill(steps.data() + size_t(i) * kStepCount, position + i, shape);
+      device_steps.put(steps);
+      const int active = (position + rows) / 4 + 1;
+      for (int arm = 0; arm < 2; ++arm) {
+        scores[arm].put(initial_scores);
+        ids[arm].put(initial_ids);
+        submit(arm, rows, active, arm == 0 ? 0 : retained);
+        qsa_block_topk_prefill(scores[arm].data() + guard, device_steps.data(), rows,
+                               blocks, cap, shape, ids[arm].data() + guard,
+                               &rt->compute(), active);
+      }
+      const auto reference_scores = scores[0].get();
+      const auto reference_ids = ids[0].get();
+      require(bit_equal(reference_scores, scores[1].get()) && reference_ids == ids[1].get(),
+              "retained keys changed a score, selected ID or output guard");
+      for (int row = 0; row < rows; ++row) {
+        const int *step = steps.data() + row * kStepCount;
+        const int width = step[kStepWidth], n = step[kStepNKv];
+        const auto first_id = reference_ids.begin() + guard + size_t(row) * cap;
+        require(width > 0 && width <= cap &&
+                std::all_of(first_id, first_id + width, [n](int x) { return x >= 0 && x < n; }) &&
+                std::all_of(first_id + width, first_id + cap, [](int x) { return x == id_canary; }),
+                "selected IDs or unused lanes");
+        const auto first_score = reference_scores.begin() + guard + size_t(row) * blocks;
+        require(first_score[step[kStepNBid]] != score_canary &&
+                std::all_of(first_score + step[kStepNBid] + 1, first_score + blocks,
+                            [](float x) { return x == score_canary; }), "dead score or unused columns");
+      }
+      for (int i = 0; i < guard; ++i)
+        require(reference_ids[i] == id_canary && reference_ids[reference_ids.size()-1-i] == id_canary &&
+                reference_scores[i] == score_canary && reference_scores[reference_scores.size()-1-i] == score_canary,
+                "output outer guard");
+      for (int arm = 0; arm < 2; ++arm) {
+        require(status[arm].get() == status_init, "score keys status or status guard");
+        Buffer<uint16_t> packed(packed_size + 2 * guard, scratch[arm].pooled_fp16 - guard);
+        const auto words = packed.get();
+        const size_t valid = size_t(active) * 128;
+        const size_t padded = size_t((active + 63) / 64 * 64) * 128;
+        for (size_t i = 0; i < valid; ++i)
+          require(words[guard + i] == sycl::bit_cast<uint16_t>(sycl::half(pooled[i])),
+                  "stale or missing score key");
+        for (size_t i = valid; i < padded; ++i)
+          require(words[guard + i] == 0, "nonzero score key padding");
+        for (int i = 0; i < guard; ++i)
+          require(words[i] == 0xa5a5 && words[words.size() - i - 1] == 0xa5a5,
+                  "score key outer guard");
+      }
+      position += rows;
+      retained = active;
+      ++compared;
+    }
+  }
+  for (int invalid : {-1, 65}) {
+    bool refused = false;
+    try { submit(1, 1, 64, invalid); } catch (const std::invalid_argument &) { refused = true; }
+    require(refused, "invalid retained extent was admitted");
+  }
+  if (timing_process >= 0) {
+    // Fresh 117489-token prompt: final 2800 batched rows after 14 full
+    // chunks, 256-query score slab, distinct output IDs for each query.
+    constexpr int rows = 2800, sequences = 12;
+    std::vector<float> all_queries(size_t(rows) * 512);
+    std::vector<int32_t> all_steps(size_t(rows) * kStepCount);
+    for (auto &v : all_queries) v = value(seed);
+    for (int i = 0; i < rows; ++i)
+      qsa_step_fill(all_steps.data() + size_t(i) * kStepCount, start + i, shape);
+    Buffer<float> input(all_queries.size());
+    Buffer<int32_t> meta(all_steps.size()), selected(size_t(rows) * cap + 2 * guard);
+    Drain bench_drain;
+    input.put(all_queries);
+    meta.put(all_steps);
+    const std::vector<int32_t> blank(selected.count, id_canary);
+    const auto sequence = [&](bool reuse) {
+      int retained = 0;
+      for (int i = 0; i < rows; i += max_q) {
+        const int count = std::min(rows - i, max_q);
+        const int active = all_steps[size_t(i + count - 1) * kStepCount + kStepNBid] + 1;
+        auto *step = meta.data() + size_t(i) * kStepCount;
+        prefill::qsa_score_gemm::prefill_scores_with_retained_keys(
+            gemm, keys.data(), tail.data(), input.data() + size_t(i) * 512,
+            step, count, blocks, shape, scores[0].data() + guard, scratch[0],
+            &rt->compute(), active, retained);
+        qsa_block_topk_prefill(scores[0].data() + guard, step, count, blocks, cap,
+            shape, selected.data() + guard + size_t(i) * cap, &rt->compute(), active);
+        if (reuse) retained = active;
+      }
+    };
+    selected.put(blank);
+    sequence(false);
+    const auto expected = selected.get();
+    for (int i = 0; i < rows; ++i) {
+      const auto *st = all_steps.data() + size_t(i) * kStepCount;
+      const auto first = expected.begin() + guard + size_t(i) * cap;
+      require(st[kStepWidth] > 0 && st[kStepWidth] <= cap &&
+              std::all_of(first, first + st[kStepWidth], [st](int x) { return x >= 0 && x < st[kStepNKv]; }),
+              "invalid benchmark reference IDs");
+    }
+    selected.put(blank);
+    sequence(true);
+    require(expected == selected.get(), "benchmark warmup IDs");
+    const double t0 = clock_ms(CLOCK_MONOTONIC);
+    rt->wait();
+    std::cout << "score_keys_timer_ms=" << clock_ms(CLOCK_MONOTONIC)-t0 << std::endl;
+    for (int round = 0; round < 5; ++round) for (int slot = 0; slot < 2; ++slot) {
+      const int reuse = (round + slot + timing_process) % 2;
+      selected.put(blank);
+      const double begin = clock_ms(CLOCK_MONOTONIC);
+      for (int j = 0; j < sequences; ++j) sequence(reuse != 0);
+      rt->wait();
+      const double elapsed = clock_ms(CLOCK_MONOTONIC) - begin;
+      require(expected == selected.get() && status[0].get() == status_init, "timed score keys result");
+      std::cout << "score_keys_sample round=" << round << " slot=" << slot << " reuse=" << reuse
+                << " rows=" << rows << " chunks=" << sequences << " ms=" << elapsed << std::endl;
+    }
+  }
+  // A nonfinite key in the newly active suffix must set the sticky bit even
+  // if its word used to be valid zero padding. Reusing it cannot clear the bit.
+  qsa_step_fill(steps.data(), 251, shape);
+  device_steps.put(steps);
+  submit(1, 1, 64, 0);
+  const size_t new_word = 64 * 128;
+  pooled[new_word] = std::numeric_limits<float>::infinity();
+  keys.put(pooled);
+  qsa_step_fill(steps.data(), 255, shape);
+  device_steps.put(steps);
+  submit(1, 1, 65, 64);
+  submit(1, 1, 65, 65);
+  auto expected_invalid = status_init;
+  expected_invalid[guard] = 1;
+  require(status[1].get() == expected_invalid, "invalid new key or sticky status");
+  std::cout << "prefill_score_keys batches=" << compared << " capacity_blocks=" << blocks
+            << " scores_ids_exact=1 packed_pad_guards=1 reset=1 bounds=1 sticky=1" << std::endl;
+}
 } // namespace
 int main(int argc, char **argv) {
   std::cout << std::setprecision(12);
@@ -456,6 +647,7 @@ int main(int argc, char **argv) {
   try {
     int context = 2113, capacity = 32768, queries = 3, repetitions = 1;
     bool suite = false;
+    int key_sequence = 0, key_timing_process = -1;
     for (int i = 1; i < argc; i += 2) {
       require(i + 1 < argc, "missing argument value");
       const std::string key(argv[i]); const int v = std::stoi(argv[i + 1]);
@@ -470,6 +662,14 @@ int main(int argc, char **argv) {
       }
       else if (key == "--pattern") {
         require(v == 0 || v == 1, "pattern"); test_pattern = v;
+      }
+      else if (key == "--key-benchmark") {
+        require(v >= 0 && v < 3, "invalid score key timing process");
+        key_timing_process = v;
+      }
+      else if (key == "--key-sequence") {
+        require(v == 1 || v == 2, "score key sequence size");
+        key_sequence = v;
       }
       else if (key == "--suite") suite = v == 1;
       else if (key == "--context") context = v;
@@ -498,7 +698,11 @@ int main(int argc, char **argv) {
     std::cout << "device=" << rt->device().get_info<sycl::info::device::name>()
               << " driver=" << rt->device().get_info<sycl::info::device::driver_version>() << std::endl;
     gate(gates, "runtime-ready");
-    if (suite) {
+    if (key_sequence || key_timing_process >= 0) {
+      require(test_gemm && !suite && (!key_sequence || key_timing_process < 0),
+              "score key sequence requires standalone FP16 GEMM mode");
+      check_prefill_score_keys(key_sequence == 2 || key_timing_process >= 0, key_timing_process);
+    } else if (suite) {
       for (int count = 1; count <= 9; ++count) run(2113, 32768, count, 1);
       run(2051, 32768, 7, 1); // Selection identity through its last token.
       run(2052, 32768, 7, 1); // Cross from identity into sparse selection.
