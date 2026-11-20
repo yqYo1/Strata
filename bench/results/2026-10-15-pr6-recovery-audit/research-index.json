@@ -38222,7 +38222,19 @@
     "finding": "At 117489 input tokens 180 streamed append calls publish 1,488,807,936 bytes via 720 D2H commands. The next chunk of the same layer reads the host prefix again. Moving publication to layer end alone would consume stale host data. Actual 117K service and synchronization time are unknown.",
     "decision": "Keep the host mirror current. Test skipping repeated host-to-stage prefix reloads only with an owned stage, single-layer lifetime and an exact contiguous predecessor. Reference and candidate need independent state and boundary checks.",
     "consumer": "First same-build reload/reuse comparison and cancellation/RESTORE review; report /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-117k-kv-publication-20261120/report.md and review /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-117k-kv-publication-20261120-control/review.md.",
-    "worker_completion": "Main verified task_4c9b6814b09a and ctx_fed4d7f1624b completed, succeeded; worker_done msg_42043fe75ff0. Named terminal closed after idle and scope inactive. Filesystem proof confirms 29 protected inputs; worker self-reported its status query, and worker_done separately confirms live Orca IPC."
+    "worker_completion": "Main verified task_4c9b6814b09a and ctx_fed4d7f1624b completed, succeeded; worker_done msg_42043fe75ff0. Named terminal closed after idle and scope inactive. Filesystem proof confirms 29 protected inputs; worker self-reported its status query, and worker_done separately confirms live Orca IPC.",
+    "measured_copy_exposure": {
+      "source_commit": "e57f60b0e90e54e2f8a19a815aad4a93b69d7cfa",
+      "timing_commit": "568d015bae99e9aa0455ffedabe9a3f61a70f1f3",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/aligned-kv-copy-exposure-20261120/report.md",
+      "report_sha256": "4c42a46fd5d2836abf6905b84e204e3d5e5df4677296f0311a0084418d126686",
+      "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/aligned-kv-copy-exposure-20261120-control/native-review.md",
+      "review_sha256": "ab99beb10385f6ecac356f0b7bb9458f4e3b164c16603332c1a5f6cdd472e299",
+      "worker": "Orca gpt-6-luna medium, task_fd1b3eb8a1f5, ctx_a7e58edf0d4b. Completion received and the owned scope exited.",
+      "reviewer": "Native Codex gpt-6-luna max",
+      "finding": "Four matched pairs saved 2.409 to 6.581 seconds. Each whole Q8 prefix issues four direct SYCL queue memcpy calls in kv_stage_from_host. Compatibility memcpy CPU bins do not cover these calls. The skipped payload at isolated bandwidth would take 1.54 to 1.59 seconds.",
+      "consumer": "Trace the direct calls, payload sizes, queue order and exposed waits for reload and reuse with scalar gather fixed. Keep clean model timing separate. Reopen the scope only if this measurement leaves a specific competing explanation unresolved."
+    }
   },
   "qsa-packed-prefix-suffix-20261120": {
     "classification": "decision support",
