@@ -57,6 +57,13 @@ void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
 void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
                      int k, int n, int columns, void* stream);
 
+// Decode draft C1 on the same packed head. Output i uses the packed row named
+// by draft_ids[i], preserving map order. Invalid row IDs leave that output
+// untouched. The caller owns checked, immutable device spans on this queue.
+void q6_dpas_decode_draft_indexed(const uint16_t* packed, const void* q8,
+                                  const int32_t* draft_ids, float* output,
+                                  int k, int source_rows, int n, void* stream);
+
 // Prospective component: read the canonical row-major Q6_K blocks directly.
 // It owns no additional weight storage and does not alter C1 or prompt routes.
 // The source has exactly n*(k/256)*210 bytes; masked loads cover an unpadded

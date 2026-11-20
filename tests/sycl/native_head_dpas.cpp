@@ -5,6 +5,7 @@
 #include "strata/core/verify_window_policy.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/native_mmvq.hpp"
+#include "strata/kernels/verify_kernels.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "../../src/kernels/sycl/q6_dpas_component.hpp"
 #include <cuda_runtime.h>
@@ -14,6 +15,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -323,6 +325,154 @@ struct Fixture {
         immutable();std::cout<<"TIMING_DONE samples_per_arm=5 model_speed=unqualified\n";
     }
 };
+void draft_indexed(const std::shared_ptr<sb::Runtime>& runtime,
+                   const std::vector<std::string>& shards, const char* vocab,
+                   const std::string& order) {
+    constexpr int Rows = 106299;
+    static_assert(std::endian::native == std::endian::little);
+    std::vector<int32_t> ids(Rows);
+    std::ifstream map(vocab, std::ios::binary | std::ios::ate);
+    const auto map_bytes = std::streamoff(ids.size() * sizeof(int32_t));
+    need(map && map.tellg() == map_bytes &&
+         bool(map.seekg(0).read(reinterpret_cast<char*>(ids.data()), map_bytes)),
+         "exact production draft vocabulary extent");
+    need(std::all_of(ids.begin(), ids.end(), [](int id) { return 0 <= id && id < N; }),
+         "draft vocabulary ID outside the packed head");
+
+    NativeHead head;
+    std::string error;
+    if (!head.load(shards, K, N, error)) throw std::runtime_error(error);
+    need(head.primary_packed() && head.weight_bytes() == WeightBytes,
+         "sole packed production head required");
+    Guard<float> input(runtime, K), full(runtime, N), reference(runtime, Rows);
+    Guard<float> candidate(runtime, Rows);
+    Guard<uint8_t> q8(runtime, k::native_q8_1_bytes(K, 1));
+    Guard<int32_t> device_ids(runtime, Rows);
+    device_ids.put(ids);
+
+    cudaStream_t stream = nullptr;
+    std::array<cudaGraphExec_t, 2> graphs{};
+    check(cudaStreamCreate(&stream));
+    auto wait = [&] { check(cudaStreamSynchronize(stream)); };
+    auto close = [&]() noexcept {
+        try {
+            wait();
+            for (auto graph : graphs) if (graph) check(cudaGraphExecDestroy(graph));
+            check(cudaStreamDestroy(stream));
+        } catch (...) {
+            std::cerr << "draft-indexed fixture completion unknown\n" << std::flush;
+            std::_Exit(4);
+        }
+    };
+    auto project = [&](int n) {
+        k::component::q6_dpas_decode_draft_indexed(
+            static_cast<const uint16_t*>(head.packed_weights()), q8.data(), device_ids.data(),
+            candidate.data(), K, N, n, stream);
+    };
+    auto gather = [&](int n) {
+        k::gather_rows(reinterpret_cast<const uint8_t*>(full.data()), sizeof(float),
+                       device_ids.data(), n, reinterpret_cast<uint8_t*>(reference.data()), stream);
+    };
+    auto compare = [&](int n, bool invalid_ids = false) {
+        const auto expected = reference.get();
+        const auto actual = candidate.get();
+        for (int i = 0; i < Rows; ++i) {
+            const float want = i < n && (!invalid_ids || (i != 0 && i != 15))
+                ? expected[i] : Guard<float>::Mark;
+            need(std::isfinite(actual[i]) &&
+                 std::bit_cast<uint32_t>(actual[i]) == std::bit_cast<uint32_t>(want),
+                 "draft-indexed logits, inactive rows or invalid-ID mask differ");
+        }
+    };
+    try {
+        for (uint32_t seed : {11u, 41u, 73u}) {
+            std::vector<float> activation(K);
+            for (size_t i = 0; i < activation.size(); ++i)
+                activation[i] = float(int(mix(uint32_t(i) + seed) % 257) - 128) / 128.f;
+            input.put(activation);
+            k::native_quantize_q8_1(input.data(), q8.data(), K, 1, stream);
+            head.run_packed_columns(q8.data(), full.data(), 1, stream);
+            gather(Rows);
+            wait();
+            const auto original_q8 = q8.get();
+            for (int n : {1, 15, 16, 17, 31, 32, 33, Rows}) {
+                candidate.reset();
+                project(n);
+                wait();
+                compare(n);
+            }
+
+            const int32_t first_id = ids[0];
+            const int32_t last_id_in_tile = ids[15];
+            ids[0] = -1;
+            ids[15] = N;
+            device_ids.put(ids);
+            candidate.reset();
+            project(17);
+            wait();
+            compare(17, true);
+            need(device_ids.get() == ids && q8.get() == original_q8, "draft-indexed input mutation");
+            ids[0] = first_id;
+            ids[15] = last_id_in_tile;
+            device_ids.put(ids);
+        }
+        static constexpr int Replays = 128;
+        if (!order.empty()) {
+            for (int arm : {0, 1}) {
+                cudaGraph_t graph = nullptr;
+                check(cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal));
+                if (arm == 0) {
+                    head.run_packed_columns(q8.data(), full.data(), 1, stream);
+                    gather(Rows);
+                } else {
+                    project(Rows);
+                }
+                check(cudaStreamEndCapture(stream, &graph));
+                size_t nodes = 0;
+                check(cudaGraphGetNodes(graph, nullptr, &nodes));
+                need(nodes == (arm == 0 ? 2u : 1u), "draft-indexed graph node count");
+                check(cudaGraphInstantiate(&graphs[size_t(arm)], graph, 0ull));
+                check(cudaGraphDestroy(graph));
+                for (int i = 0; i < 3; ++i) {
+                    check(cudaGraphLaunch(graphs[size_t(arm)], stream));
+                    wait();
+                }
+            }
+            constexpr int64_t Floor = 100000000;
+            std::array<int64_t, 1001> timer{};
+            for (auto& t : timer) {
+                const auto start = now(CLOCK_MONOTONIC);
+                t = now(CLOCK_MONOTONIC) - start;
+            }
+            std::sort(timer.begin(), timer.end());
+            need(timer[timer.size() / 2] > 0 && timer[timer.size() / 2] <= Floor / 1000,
+                 "ineligible draft-indexed clock");
+            std::cout << "DRAFT_INDEX_TIMER overhead_ns=" << timer[timer.size() / 2] << '\n';
+            for (int sample = 0; sample < 5; ++sample) {
+                const int first = int(order == "cr") ^ (sample & 1);
+                for (int arm : {first, 1 - first}) {
+                    const auto start = now(CLOCK_MONOTONIC);
+                    for (int i = 0; i < Replays; ++i) {
+                        check(cudaGraphLaunch(graphs[size_t(arm)], stream));
+                        wait();
+                    }
+                    const auto elapsed = now(CLOCK_MONOTONIC) - start;
+                    need(elapsed >= Floor, "ineligible draft-indexed timing interval");
+                    std::cout << "DRAFT_INDEX_TIME sample=" << sample << " arm=" << arm
+                              << " rounds=" << Replays << " elapsed_ns=" << elapsed << '\n';
+                }
+            }
+            compare(Rows);
+        }
+        close();
+    } catch (...) {
+        close();
+        throw;
+    }
+    std::cout << "DRAFT_INDEX_CHECK rows=" << Rows
+              << " exact_cases=24 masked_cases=3 guards=PASS input_immutable=PASS\n";
+}
+
 void host() {
     NativeHead h;std::string e;
     need(!h.has_host_backing()&&h.host_backing_bytes()==0,"empty owner has host backing");
@@ -346,15 +496,27 @@ int main(int argc,char** argv) {
             std::cout<<"REJECT_SWITCH passed=1 GPU=0\n";std::_Exit(0);
         }
         const bool timing=argc>=4&&std::string(argv[1])=="--timing";
-        need((argc>=3&&std::string(argv[1])=="--check") ||
-            (timing&&(std::string(argv[2])=="rc"||std::string(argv[2])=="cr")),
-            "use --host|--reject-switch substring|--check shards...|--timing rc|cr shards...");
+        const bool draft_check=argc>=4&&std::string(argv[1])=="--draft-indexed";
+        const bool draft_timing=argc>=5&&std::string(argv[1])=="--draft-indexed-timing";
+        const bool valid_order=(timing||draft_timing) &&
+            (std::string(argv[2])=="rc"||std::string(argv[2])=="cr");
+        need((argc>=3&&std::string(argv[1])=="--check") || draft_check || valid_order,
+            "use --host|--reject-switch substring|--check shards...|--timing rc|cr shards...|"
+            "--draft-indexed map shards...|--draft-indexed-timing rc|cr map shards...");
         gate("STRATA_Q6_HEAD_OWNER_GATE");keep=sb::runtime_for();
         need(sb::Runtime::devices().size()==1&&keep->device().is_gpu()&&
             keep->device().get_info<sycl::info::device::name>().find("B570")!=std::string::npos,"actual B570");
         gate("STRATA_Q6_HEAD_OWNER_DEVICE_GATE");
-        const std::vector<std::string> shards(argv+(timing?3:2),argv+argc);
-        {Fixture fixture(keep,shards);fixture.run();if(timing)fixture.timing(std::string(argv[2])=="cr");}
+        if (draft_check || draft_timing) {
+            const int vocab = draft_timing ? 3 : 2;
+            const std::vector<std::string> shards(argv + vocab + 1, argv + argc);
+            draft_indexed(keep, shards, argv[vocab], draft_timing ? argv[2] : "");
+        } else {
+            const std::vector<std::string> shards(argv+(timing?3:2),argv+argc);
+            Fixture fixture(keep,shards);
+            fixture.run();
+            if(timing)fixture.timing(std::string(argv[2])=="cr");
+        }
         keep->wait();std::cout<<"HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified\n";
         std::cout.flush();std::cerr.flush();std::_Exit(0);
     }catch(const std::exception& e){std::cerr<<"head owner fixture failed: "<<e.what()<<'\n'<<std::flush;std::_Exit(2);}

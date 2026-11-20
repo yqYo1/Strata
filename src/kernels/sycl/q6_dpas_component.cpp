@@ -37,32 +37,42 @@ using namespace sycl_backend;
 
 // Offsets are bytes into a uint16_t interleave. Every halfword is naturally
 // aligned, including original Q6 blocks whose 210-byte stride is not aligned4.
-template <bool Canonical>
+template <bool Canonical, bool DraftIndexed = false>
 e::simd<uint16_t, 16> halfwords(const uint16_t* weights, U base, uint32_t byte,
                                 e::simd_mask<16> valid) SYCL_ESIMD_FUNCTION {
-    if constexpr (Canonical) {
-        // The installed ESIMD gather contract skips masked memory accesses
-        // and returns the explicit passthrough, including on unpadded tails.
-        return e::gather<uint16_t, 16>(weights, base + byte, valid, e::simd<uint16_t, 16>(0));
+    const U offsets = base + byte * (Canonical ? 1u : 16u);
+    if constexpr (Canonical || DraftIndexed) {
+        // Masked lanes have no memory access, including a partial output tile
+        // or a refused source row in the draft map.
+        return e::gather<uint16_t, 16>(weights, offsets, valid, e::simd<uint16_t, 16>(0));
     } else {
-        return e::gather<uint16_t, 16>(weights, base + byte * 16);
+        return e::gather<uint16_t, 16>(weights, offsets);
     }
 }
 
-template <bool Canonical>
+template <bool Canonical, bool DraftIndexed = false>
 U word(const uint16_t* weights, U base, uint32_t byte,
        e::simd_mask<16> valid) SYCL_ESIMD_FUNCTION {
-    return e::convert<uint32_t>(halfwords<Canonical>(weights, base, byte, valid)) |
-        (e::convert<uint32_t>(halfwords<Canonical>(weights, base, byte + 2, valid)) << 16);
+    return e::convert<uint32_t>(halfwords<Canonical, DraftIndexed>(weights, base, byte, valid)) |
+        (e::convert<uint32_t>(halfwords<Canonical, DraftIndexed>(weights, base, byte + 2, valid)) << 16);
 }
 
-template <bool Canonical, int Columns = 4>
+template <bool Canonical, int Columns = 4, bool DraftIndexed = false>
 void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activation,
-          float* output, int k, int n) SYCL_ESIMD_FUNCTION {
+          float* output, int k, int n, const int32_t* draft_ids = nullptr,
+          int source_rows = 0) SYCL_ESIMD_FUNCTION {
+        static_assert(!DraftIndexed || (!Canonical && Columns == 1));
         const uint32_t first = uint32_t(item.get_global_linear_id()) * 16;
         if (first >= uint32_t(n)) return; // no collective, barrier or shared memory
         const U rows(first, 1);
-        const e::simd_mask<16> valid = rows < uint32_t(n);
+        e::simd_mask<16> valid = rows < uint32_t(n);
+        [[maybe_unused]] U packed_rows = rows;
+        if constexpr (DraftIndexed) {
+            const auto ids = e::gather<int32_t, 16>(draft_ids, rows * 4u, valid,
+                                                    e::simd<int32_t, 16>(-1));
+            packed_rows = e::convert<uint32_t>(ids);
+            valid = valid & (packed_rows < uint32_t(source_rows));
+        }
         const U lane_bytes(0, 2);
         e::simd<float, 16 * Columns> sum = 0.f;
         const int blocks = k / 256;
@@ -71,10 +81,13 @@ void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activat
             U base;
             if constexpr (Canonical)
                 base = rows * uint32_t(blocks * 210) + uint32_t(block * 210);
+            else if constexpr (DraftIndexed)
+                base = ((packed_rows >> 4) * uint32_t(blocks) + uint32_t(block)) * (16u * 210u)
+                     + (packed_rows & 15u) * 2u;
             else
                 base = lane_bytes + uint32_t((size_t(first / 16) * blocks + block) * (16 * 210));
             const F super = esimd_half_decode<16>(e::convert<uint32_t>(
-                halfwords<Canonical>(weights, base, 208, valid)));
+                halfwords<Canonical, DraftIndexed>(weights, base, 208, valid)));
 #pragma unroll 1
             for (int unit = 0; unit < 8; ++unit) {
                 const int part = unit % 4;
@@ -83,13 +96,13 @@ void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activat
                 e::simd<uint32_t, 128> w;
 #pragma unroll
                 for (int j = 0; j < 8; ++j) {
-                    const U low = (word<Canonical>(weights, base, ql + uint32_t(4 * j), valid) >> (4 * (part / 2))) & 0x0f0f0f0fu;
-                    const U high = ((word<Canonical>(weights, base, qh + uint32_t(4 * j), valid) >> (2 * part)) & 0x03030303u) << 4;
+                    const U low = (word<Canonical, DraftIndexed>(weights, base, ql + uint32_t(4 * j), valid) >> (4 * (part / 2))) & 0x0f0f0f0fu;
+                    const U high = ((word<Canonical, DraftIndexed>(weights, base, qh + uint32_t(4 * j), valid) >> (2 * part)) & 0x03030303u) << 4;
                     // Each byte is0..63. This exact packed subtraction cannot
                     // borrow across byte lanes because of the high guard bit.
                     w.template select<16, 1>(16 * j) = (((low | high) | 0x80808080u) - 0x20202020u) ^ 0x80808080u;
                 }
-                const U sc = e::convert<uint32_t>(halfwords<Canonical>(weights, base, uint32_t(192 + 2 * unit), valid));
+                const U sc = e::convert<uint32_t>(halfwords<Canonical, DraftIndexed>(weights, base, uint32_t(192 + 2 * unit), valid));
                 auto lo8 = e::convert<uint8_t>(sc & 255u);
                 auto hi8 = e::convert<uint8_t>(sc >> 8);
                 const F s0 = e::convert<float>(e::simd<int8_t, 16>(lo8.template bit_cast_view<int8_t>())) * super;
@@ -166,6 +179,21 @@ struct Q6DpasColumns {
             sycl::ext::intel::experimental::grf_size<128>};
     }
 };
+
+struct Q6DpasDraftIndexed {
+    const uint16_t* weights;
+    const uint8_t* activation;
+    const int32_t* ids;
+    float* output;
+    int k, n, source_rows;
+    void operator()(sycl::nd_item<1> item) const SYCL_ESIMD_KERNEL {
+        tile<false, 1, true>(item, weights, activation, output, k, n, ids, source_rows);
+    }
+    constexpr auto get(sycl::ext::oneapi::experimental::properties_tag) const {
+        return sycl::ext::oneapi::experimental::properties{
+            sycl::ext::intel::experimental::grf_size<128>};
+    }
+};
 } // namespace
 
 template <bool Canonical>
@@ -234,5 +262,38 @@ void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
         case 3:packed_columns<3>(packed,q8,output,k,n,stream);break;
         case 4:q6_dpas_c4(packed,q8,output,k,n,4,stream);break;
     }
+}
+
+void q6_dpas_decode_draft_indexed(const uint16_t* packed, const void* q8,
+                                  const int32_t* draft_ids, float* output,
+                                  int k, int source_rows, int n, void* stream) {
+    if (!q6_dpas_c4_shape(k, source_rows, 4) || n <= 0 || n > source_rows || !stream ||
+        reinterpret_cast<uintptr_t>(packed) % alignof(uint16_t) ||
+        reinterpret_cast<uintptr_t>(q8) % alignof(int32_t) ||
+        reinterpret_cast<uintptr_t>(draft_ids) % alignof(int32_t) ||
+        reinterpret_cast<uintptr_t>(output) % alignof(float))
+        throw std::invalid_argument("invalid Q6 indexed draft projection geometry");
+
+    auto& q = queue_for(stream);
+    const size_t wb = q6_dpas_packed_bytes(k, source_rows);
+    const size_t xb = size_t(k / 32) * 36;
+    const size_t ib = size_t(n) * sizeof(int32_t);
+    const size_t yb = size_t(n) * sizeof(float);
+    validate_spans({{output, yb}}, {{packed, wb}, {q8, xb}, {draft_ids, ib}});
+    validate_device_span(packed, wb, q);
+    validate_device_span(q8, xb, q);
+    validate_device_span(draft_ids, ib, q);
+    validate_device_span(output, yb, q);
+    const auto device = q.get_device();
+    if (device.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
+        device.get_info<sycl::info::device::name>().find("B570") == std::string::npos ||
+        !device.has(sycl::aspect::fp16))
+        throw std::invalid_argument("Q6 indexed draft projection requires B570/fp16");
+
+    const size_t items = (size_t(n) + 15) / 16;
+    const auto event = q.parallel_for(sycl::nd_range<1>(((items + 3) / 4) * 4, 4),
+        Q6DpasDraftIndexed{packed, static_cast<const uint8_t*>(q8), draft_ids,
+                           output, k, n, source_rows});
+    finish(stream, event);
 }
 } // namespace strata::kernels::component
