@@ -36,7 +36,9 @@ under `current_sync.functional_import` in the status file.
 The weighted expert-profile builder and its 45-prompt collector come from
 the checked `58ee32277` tree. The collector uses this fork's routing
 callback and thinking-enabled prompt by default. Its original closed-thinking
-template and device-usage mode remain selectable. Host verification is pending.
+template and device-usage mode remain selectable. All ten profile builder
+and collector host tests passed at `d3f092fb9`, including both capture modes
+with a mock engine. Full live corpus collection is still open.
 The bundled Intel profile already matches Niko's original `8cb26e609` blob.
 Its inference effect on this B570 is a separate comparison.
 

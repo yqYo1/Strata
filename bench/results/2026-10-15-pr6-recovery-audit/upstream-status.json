@@ -1720,7 +1720,7 @@
         },
         "weighted_expert_profile_cli": {
           "required": true,
-          "state": "ported_host_validation_pending",
+          "state": "ported_host_tests_passed",
           "upstream_target": "58ee3227720629ff2e41d640165ebe89c880dfef",
           "source_commits": [
             "9e3ba42755a4e4df0dd36396d7e3e414fc0dc3d8",
@@ -1734,7 +1734,7 @@
           ],
           "scope": "Weight each trace by its own distribution and collect a selectable corpus. Mixer and 45 prompts match Niko Git blobs. Collector defaults to the fork host callback and thinking-on template, supports the upstream closed template and explicit device usage writer, and publishes a nonempty trace after successful child exit.",
           "profile": "Bundled data/expert-profile-sycl.bin already equals Niko blob 3e040a7c55070c654957a41f556fbc0f2eef0d23. Current ordinary 1256-slot decode uses data/expert-profile.bin. Changing profile placement needs its own B570 inference comparison.",
-          "validation": "Run tools.test_make_profile and tools.test_make_profile_mix at the next serialized host slot. Initial source audit found the called readers, serializer and original write_trace test helper AST-identical. Full live corpus collection is separate.",
+          "validation": "At 6236a586e all ten host unittests passed, with a ResourceWarning from unclosed JSON inputs. After closing both readers at d3f092fb95d420753d63ed4d9280b5a388b09480, the serialized python3 -B -W always::ResourceWarning -m unittest -v tools.test_make_profile tools.test_make_profile_mix run passed all ten again with no skips or ResourceWarning. Collector tests use a mock child. Full live corpus collection and inference performance remain separate.",
           "license": "Niko1221/Strata root MIT"
         }
       }

@@ -245,8 +245,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   work if draft time stays fixed. For this MTP-weak workload measure the
   cost of proposing drafts and the emitted tokens per verification together;
   reducing CPU expert time alone cannot recover that budget at fixed yield.
-  These are first-pair observations; finish both matched pairs before
-  using their intervals as representative timings.
+  Both matched pairs closed at `bf5f94144`. The two clean code results
+  were 11.312/11.368 tok/s for 2815 output tokens and prose 6.844/6.604
+  for 6823. Clocked/clean per-token ratios were 0.994/1.003 for code
+  and 0.988/0.956 for prose. The second clocked process gave 289.07/263.32
+  ms for verification, 133.35/109.80 ms within the expert pool and
+  28.73/28.54 ms for drafting. Both workloads met the 1.10 observer gate
+  with matched work in both pairs. All four native processes exited zero
+  with no new fault. These observations qualify attribution on this route.
   At the fixed 1256-slot decode placement, resident experts handled 143,358
   of 1,498,080 routed entries for code (9.57%) and 366,480 of 6,492,000
   for prose (5.65%). For a placement comparison, measure held-out hits and
