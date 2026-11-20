@@ -89,7 +89,7 @@ void gate(bool enabled,const char *phase) {
   if (!enabled) return;
   std::cout<<"QSA_BF16_READY "<<phase<<'\n';require(std::cin.get()=='X',"Main gate token");
 }
-void run(int cells,int queries,int cap,bool clustered,bool identity=false) {
+void run(int cells,int queries,int cap,bool clustered,bool identity=false,bool selected_pages=false) {
   constexpr int Dim=256,Heads=24,KV=2;
 #if defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
   constexpr int Page=4;
@@ -134,7 +134,25 @@ void run(int cells,int queries,int cap,bool clustered,bool identity=false) {
 #if defined(STRATA_QSA_PREFILL_Q8_V_COMPONENT)
   for (int b=0;b<queries;++b) {
     auto *row=ids.data()+size_t(b)*cap;
-    row[0]=row[1]=0; row[2]=Page; row[3]=2*Page; row[4]=5*Page; row[5]=cells-1;
+    if (selected_pages) {
+      // Sparse, ascending physical-page-sized groups, with a causal tail.
+      // This is a controlled locality shape, not captured model selections.
+      const int n=cells-queries+b+1;
+      qsa_step_fill(steps.data()+size_t(b)*kStepCount, n-1, qsa_real_shapes());
+      const int groups=(cap-3)/Page, earlier_pages=(n-3)/Page;
+      require(cap==2051 && groups==512 && earlier_pages>=groups,"sparse page geometry");
+      for (int g=0; g<groups; ++g) {
+        const int lo=g*earlier_pages/groups, hi=(g+1)*earlier_pages/groups;
+        const uint32_t seed=uint32_t(b)*2654435761u + uint32_t(g)*2246822519u;
+        const int page=lo + int((seed ^ (seed>>16)) % uint32_t(hi-lo));
+        for (int lane=0; lane<Page; ++lane) row[g*Page+lane]=page*Page+lane;
+      }
+      for (int lane=0; lane<3; ++lane) row[cap-3+lane]=n-3+lane;
+      require(std::adjacent_find(row,row+cap,[](int a,int c){return a>=c;})==row+cap
+              && row[0]>=0 && row[cap-1]==n-1,"invalid ordered sparse row");
+    } else {
+      row[0]=row[1]=0; row[2]=Page; row[3]=2*Page; row[4]=5*Page; row[5]=cells-1;
+    }
   }
 #endif
   const uint16_t marker=bf16(1234.f);const int32_t bad_marker=0x12345678;
@@ -228,11 +246,11 @@ void run(int cells,int queries,int cap,bool clustered,bool identity=false) {
     const double ms=submit_value(arm);
     guards(); require(out.get()==reference,"complete timed V output bits");
     std::cout<<"q8_v_sample cells="<<cells<<" queries="<<queries<<" cap="<<cap
-        <<" identity="<<identity<<" clustered="<<clustered<<" round="<<round<<" slot="<<slot
+        <<" identity="<<identity<<" clustered="<<clustered<<" selected_pages="<<selected_pages<<" round="<<round<<" slot="<<slot
         <<" arm="<<arm<<" ms="<<std::setprecision(12)<<ms<<'\n';
   }
   std::cout<<"q8_v_checked cells="<<cells<<" queries="<<queries<<" cap="<<cap
-      <<" page_size="<<Page<<" identity="<<identity<<" clustered="<<clustered
+      <<" page_size="<<Page<<" identity="<<identity<<" clustered="<<clustered<<" selected_pages="<<selected_pages
       <<" expanded_untouched=1 finite_bits=1 invalid_scale_checked="<<(queries<100)<<'\n';
   const int sample_count=rounds*3;
 #elif defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
@@ -322,6 +340,7 @@ int main(int argc,char **argv) {
       run(97,3,33,false); run(97,3,33,false,true);
     } else {
       run(39260,6491,2051,false); run(39260,6491,2051,false,true); run(39260,6491,2051,true,true);
+      run(39260,6491,2051,false,true,true);
     }
 #elif defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
     if (source_admission) bench::fullfit_overlap::source_admission(rt);
