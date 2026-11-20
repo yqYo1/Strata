@@ -476,6 +476,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   window Intel uses 416 CPU expert jobs versus 426 with stock. With the short
   restored prefix it uses 425 versus 414. Use the three independent matched
   full-suite pairs for the sustained generation decision.
+  In the first sustained pair at `5ed90bf00`, both arms use a one-row first
+  window followed by width four. The native counters start after cache
+  refill. The table uses the same pack-based traffic bound.
+
+  | Workload | Windows, stock → Intel | Unique CPU jobs, stock → Intel | Engine ms/window | Output/window | Logical GB/output |
+  | --- | ---: | ---: | ---: | ---: | ---: |
+  | Code | 781 → 816 | 1,074,995 → 1,124,557 | 270.318 → 269.042 | 3.604 → 3.577 | 0.741–0.828 → 0.748–0.835 |
+  | Prose | 3382 → 3199 | 3,718,375 → 3,506,954 | 254.990 → 255.045 | 2.017 → 1.965 | 1.026–1.209 → 1.049–1.238 |
+
+  Jobs per window move by +0.12% for code and −0.29% for prose. The shorter
+  prose response reduces total jobs and raises logical bytes per output.
+  The Intel arm's lower bound implies 52.36 GB/s for code and 73.45 GB/s for
+  prose at 70 tok/s, assuming each job reads its packed blob once. Physical
+  traffic needs separate evidence. Finish all three pairs for the ranking
+  decision. Measure verifier wall time and emitted tokens per window together
+  when changing draft width or host-expert work.
   A later comparison can keep the winning profile fixed and vary its
   per-layer quotas. Removing `--expert-cache-per-layer` also changes the
   meaning of `--expert-cache` for this native pack. In the measured SYCL
@@ -832,14 +848,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by leaving out a whole length. Hold 98306 outside the smooth fits and
   report its change from 98305 with the actual expert jobs and transfer counts.
   A time difference across these two bodies alone cannot isolate chunk setup.
-  For the same selected long-prefill path, `bench/sycl/prefill_split_generation.py`
-  compares the baseline and candidate over three independent pairs (AB, BA,
-  AB). Keep the stock decode layout, thinking, MTP and native binary fixed.
+  `bench/sycl/prefill_split_generation.py` compares the baseline and the selected
+  KV policy over three independent pairs (AB, BA, AB). Keep the stock decode
+  layout, thinking, MTP and native binary fixed.
   Each process runs the official long, agent and two sustained generation
   workloads. Bind fresh prompt identities, executed gather and KV work,
   generation lengths and MTP counts before comparing sustained decode and
-  agent follow-up rates. Keep the original 117K speed decision separate
-  from this handoff and decode-preservation decision.
+  agent follow-up rates. The standard sustained prompts have about 33K actual
+  input tokens and exercise the ordinary route. Check split handoff with a
+  separate matched `--long-generation-only --long-generation-input-case
+  split-v1-96k` comparison. Require the actual 128-slot allocation, split tail
+  guard/drain, prefill-to-decode state and both thinking workloads with observed
+  MTP classes. Keep the 117K prefill timing as its own measurement.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
