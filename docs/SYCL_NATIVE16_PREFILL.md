@@ -3418,6 +3418,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `/usr/bin/g++-13 -std=c++17 -O2 -Wall -Wextra -Werror` (GCC 13.3.0,
   compiler SHA256 `1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769`),
   `LC_ALL=C`, the committed fixture, and a fresh private output path.
+  The first GCC invocation at `1839471c1` rejected the nested padding
+  lambda's reference to the locally captured sentinel. The corrected fixture
+  uses the same sentinel value at file scope and keeps the original checks.
   The host format check cannot qualify the selector or attention. A device
   comparison must include the real threshold emission, the same typed
   attention, exact selected-cell order, all four tail residues and measured

@@ -8,9 +8,10 @@
 #include <vector>
 
 namespace groups = strata::prefill::qsa_groups;
+constexpr uint32_t sentinel = 0xfeedfaceu;
 
 int main() {
-    constexpr uint32_t cap = 2051, sentinel = 0xfeedfaceu;
+    constexpr uint32_t cap = 2051;
     uint64_t cases = 0, cells = 0;
     uint32_t min_wide = cap, max_wide = 0;
     auto check = [&](uint32_t blocks, uint32_t cut_index, uint32_t cut_take, uint32_t tail) {
