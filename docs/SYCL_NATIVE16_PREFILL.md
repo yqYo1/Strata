@@ -276,8 +276,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   both copies in each request. Active state, output hashes, publications,
   decode-cache loan and restored payload matched through 262128 tokens.
   All eight server processes closed normally with no fresh Xe fault, and
-  the final 15 model asset hashes matched. Physical slot 262144 and clean
-  speed remain separate checks.
+  the final 15 model asset hashes matched. The separate standalone
+  final-slot check is recorded below.
   The four-way comparison from `4d9b176e5` closed at `73d9394a9`.
   Each of 16 independent clean processes handled three fresh 65537-token
   prompts. Every request produced 24 tokens and accepted 16 of 21 drafts.
@@ -288,8 +288,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   direct output and 73.99 s for copy. Direct input and the combined change
   had mixed results. Keep direct output as a candidate on this executable.
   The earlier direct-output loss on a different executable remains recorded.
-  The short outputs leave sustained decode open, and full-capacity model
-  admission and final-slot execution still require their own checks.
+  The short outputs leave sustained decode open. The standalone capacity
+  run exercised the final slot independently of these timing samples.
   Also revalidate the historical 117489-token workload on this ordinary
   build with the configured context kept at 262144. At `792ec1ee5` the
   reference clocked 1045.73–1051.06 PP across three warmed process medians
@@ -376,6 +376,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The isolated change at `fea0f3c79` passed the SYCL compiler's syntax
   check against the measured 117K translation unit using all 798 original
   includes (`15c02eabc`). This check generated no model binary.
+  All four ordinary input/output-copy combinations passed the standalone
+  262144-token capacity check at `0f5e11521`. Each processed 262143
+  batched rows, consumed the physical final slot and returned zero output
+  tokens. All four native processes exited normally without a new Xe fault.
+  Positions in each 48-layer trace account for 1488 KV-prefix H2D copy
+  requests (51,489,275,904 bytes) and 1632 host-mirror D2H copies
+  (3,321,876,096 bytes). The prefix count uses the executed positions and
+  original reload path. Bus service and overlap were not measured.
   The 253919-token mixed-host path follows a different planner branch.
   The standalone ordinary copy control at `9c94b7206` filled all 262144
   physical slots. Of its 262143 batched rows, 114688 stayed on device
@@ -415,6 +423,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   least three pairs. Record TTFT and reconnect the sustained decode checks
   before selecting the route. Stop on a state, placement, driver or ownership
   error. Evaluate the 64K/117K KV and gather work independently.
+  Source `0e7cf8107` passed the isolated compiler and host check at
+  `cfe0ebd08`. The measured ordinary prefill translation unit compiled
+  in syntax-only mode against 799 verified inputs. The host planner
+  executable passed the existing lease/order tests and every input length
+  from 98305 through 262144 using 267 verified compiler inputs. This
+  leaves actual sweep dispatch, model state and timing open.
   The clean comparison at `9c03b44d0` completed three independent
   processes with the same ordinary copy route, decoder placement, 262144
   context and four historical thinking-on requests. The last three prompt
@@ -424,8 +438,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   869.91 tok/s and 135.298 s TTFT. At the warmed median, reaching 1000
   tok/s requires saving 6.722 s per request. The 64K copy control reached
   888.26 tok/s with a different bank size. Treat these as two route-specific
-  observations when characterizing length dependence. Sustained decode
-  and the final physical context slot still have separate checks.
+  observations when characterizing length dependence. The short outputs
+  in this cohort leave sustained decode to its own workload.
 
 - The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
   the previous layer's resident BF16 rows directly in the native attention

@@ -38240,15 +38240,29 @@
   "prefill-sweep-state-20261120": {
     "classification": "decision support",
     "question": "Audit KV/GDN/PLE/MTP state, callback order, cancellation and restart across a new full-layer sweep boundary, including nonzero positions.",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "Implemented per-range orchestration and two ordinary physical capacity controls are available.",
-    "source_commit": "0e7cf81078c69046199af125deef0b8c071a2a2a"
+    "source_commit": "0e7cf81078c69046199af125deef0b8c071a2a2a",
+    "report_sha256": "9e38038fb71d207324e2d77e089692058ce0d9f084eb1be75801ab5b69e1c6ec",
+    "review_sha256": "888db394d9eb066ea25e98825894617def3a453fe2d9e89c0dd4c9269ec49cf8",
+    "finding": "The audited path preserves absolute token positions in source. Each sweep decides residency again. Cancellation recovery requires restoring a checkpoint or resetting the request.",
+    "consumer": "Check dispatch and KV, recurrent, PLE, callback and decode state across each boundary before timing.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sweep-state-20261120/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sweep-state-20261120-control/review.md",
+    "worker_completion": "Orca Luna medium task_3ab61e2d535b, ctx_5ec2a46d0c7f, worker_done msg_dd3d946a24d6. Main checked closure and the idle terminal exited. All 17 protected inputs checked. Worker status query self-reported. Native Luna max reviewed the report."
   },
   "prefill-sweep-bus-model-20261120": {
     "classification": "decision support",
-    "question": "Derive break-even traffic and an empirical discriminator for a 253919/262144-token residual sweep across repeated expert and dense uploads, including shapes that trigger full-bank fallback.",
-    "schedulable_now": true,
+    "question": "Derive the conditional transfer balance for the 262143 batched rows of the 262144-token baseline. Identify actual counters needed for the prospective 253919-token comparison.",
+    "schedulable_now": false,
     "prerequisite": "Ordinary full physical-context control reports 147455 spilled BF16 rows; committed code fixes prospective chunk extents and measured 117K expert work supplies a comparator.",
-    "source_commit": "0e7cf81078c69046199af125deef0b8c071a2a2a"
+    "source_commit": "0e7cf81078c69046199af125deef0b8c071a2a2a",
+    "report_sha256": "db24b726bf1da3e9d81352750714ab6793c1cb2e98dec881c2c549a416af4de1",
+    "review_sha256": "4dc7b9e727512b19d7bcb857c9a6fd086aa73d1ac293d22684e3f569cb420cd3",
+    "finding": "The 262143-row baseline requests 141934284800 bytes per direction at residual boundaries. The weight-upload formula depends on actual per-range expert-bank admission. Candidate H2D service and overlap remain unmeasured.",
+    "consumer": "Check actual residual placement, weight uploads and elapsed time on the matched 253919-token run before selecting the split.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sweep-bus-model-20261120/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-sweep-bus-model-20261120-control/review.md",
+    "worker_completion": "Orca Luna medium task_03c5bb65be0d, ctx_1546dd3778e9, worker_done msg_00771a70a68e. Main checked closure and the idle terminal exited. All 17 protected inputs checked. Worker status query self-reported. Native Luna max reviewed the report."
   }
 }
