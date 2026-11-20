@@ -1451,6 +1451,26 @@
         "optional_SDK_clients_qualified": false
       },
       "incremental_function_ports": {
+        "offline_dflash2_pack_readiness": {
+          "upstream_commit": "3c36092124c23ef11561b0d9c0a53fd7e5218a28",
+          "source_commit": "c6facfbe35137d65e3abcfb52fafc098f9ba5759",
+          "parent_commit": "a8c628bc226809e72c1f2e546e1420fd9b4d8087",
+          "scope": "Standalone selector-Q4 readiness, fetch guidance and explicit engine selection in plan and launch. Native inference unchanged.",
+          "license": "Niko root MIT, identical root LICENSE blob",
+          "state": "ported_and_focused_host_tests_passed",
+          "tests": {
+            "target": "tests.terminal.test_fix2plat_d1",
+            "target_passed": 10,
+            "target_skipped": 0,
+            "comparison": "Unmodified git archives; same upstream-host-tests-146df3c4 CPython 3.12.3; unittest test_drafting*.py plus the focused module when present, PYTHONDONTWRITEBYTECODE=1 and PYTHONNOUSERSITE=1",
+            "parent": {"run": 266, "failures": 8, "errors": 11, "skipped": 0},
+            "port": {"run": 276, "failures": 8, "errors": 11, "skipped": 0},
+            "unchanged_failure_ids_classes_and_test_functions": 19,
+            "introduced_failure_ids": [],
+            "initial_attempt": "Model venv on worktree: 276 run, 8 failures and 11 errors; the pinned host environment comparison subsequently classified the common failures."
+          },
+          "remaining": "Previously failing App/Metal fixtures, missing rich or split test module, existing defaults/argv, download plan and notice assertions; native DFlash2 model speed is a separate decision."
+        },
         "plain_gpu_order": {
           "stage": "passed",
           "source_commit": "724a5bdae6fc46b8532060115e0976168e851303",

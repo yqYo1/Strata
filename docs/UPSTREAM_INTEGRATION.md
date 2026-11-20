@@ -19,7 +19,7 @@ records actual fetch and remote-ref observations, separately from integration.
 | Last actual check | 2026-11-19 20:12:25 UTC / November 20 05:12:25 JST. Fetched main and verified its remote ref. |
 | Observed upstream | `58ee3227720629ff2e41d640165ebe89c880dfef`, four commits after v0.2.16 |
 | Next check at the approximate 48-hour cadence | 2026-11-21 20:12 UTC / November 22 05:12 JST |
-| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4` plus individually tested ports, including GPU-list ordering and three server/Web fixes. The November 20 interval is fetched. Required ports include offline DFlash2 pack readiness and service and app changes. |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4` plus individually tested ports, including GPU-list ordering, three server/Web fixes and offline DFlash2 pack readiness. Service and app changes remain open. |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
 | New inference adoption from this check | None |
@@ -105,6 +105,15 @@ invoke the source builder while its component route is pending. The
 records B570 build/workload prerequisites; its helper dependency closure,
 target configuration, runtime qualification and actual measurement remain open.
 These source reviews did not perform another upstream fetch or import.
+
+At `c6facfbe3`, an offline installation can use the verified standalone
+340 MB DFlash2 pack when the selected executable supports its selector.
+Ten focused host tests passed, including explicit old/new executable selection
+and CLI error text in both human and JSON output. Clean Git snapshots of
+the parent and port ran 266 and 276 drafting tests with the same Python 3.12.3.
+Both had the same 8 failures and 11 errors, matched by test ID, exception
+class and source function. Remaining issues include absent App/Metal fixtures,
+terminal dependencies and existing launch/default/notice assertions.
 
 The current Unsloth v3.1 catalog/pinned metadata and stock DFlash2 pack are
 present. The focused v3.1 setup/pins/shard-discovery and DFlash2 packing tests
