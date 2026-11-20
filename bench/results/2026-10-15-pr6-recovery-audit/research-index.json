@@ -38443,9 +38443,21 @@
   "prefill-final-slot-mixed-ownership-20261120": {
     "source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "All eight real mixed-scratch server states including near-both closed at b633f7d69, but the standalone physical fill explicitly disables mixed scratch and therefore cannot execute vec8. The original standalone and server lease code and exact capacity admission are available.",
     "question": "Trace the one-shot terminal consume and server cache-scratch borrow from the measured generator through Prefill::init, mask/restore and last verifier commit. Compare using actually owned standalone allocations, bringing the existing checked cache loan to that diagnostic entry, or a tightly scoped terminal-consume server fixture. Which is the smallest way to exercise the real selected mixed/vec8 route through all 262144 slots without weakening the lease or server output reservation? Identify concrete memory/slot admission, handoff, error unwind and proof of actual dispatch; avoid a new UI or a broad architecture survey.",
-    "consumer": "Choose the production-equivalent final-slot qualification for a winning vec8 or combined candidate; keep the committed ordinary standalone control and the current clean timing plan intact."
+    "consumer": "Choose the production-equivalent final-slot qualification for a winning vec8 or combined candidate; keep the committed ordinary standalone control and the current clean timing plan intact.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-final-slot-mixed-ownership-20261120/report.md",
+    "report_sha256": "890aca0ffa9765c1c52fbe1bf32e1fd46ba396124d3117ef2f5266773e78b658",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-final-slot-mixed-ownership-20261120-control/native-review.md",
+    "review_sha256": "f9c12c53bf3fd8bd3a61b43125a32ffcf3edeab08d6ee6d2629c9fb8b1db72ef",
+    "finding": "For the lease-backed final slot, exercise the normal server loan transaction and its checked refill/publication, then consume the final verifier row with no emitted output in an isolated qualification entrypoint. Standalone private scratch only qualifies standalone vec8. Require actual ownership, vec8 jobs/rows and last-slot verification; diagnose further only on admission or an unresolved lifetime failure.",
+    "worker_completion": {
+      "task": "task_3b740a9e32da",
+      "dispatch": "ctx_805801bf0e4d",
+      "message": "msg_f1ba41eaac93",
+      "terminal": "term_2b760108-4479-44c2-ae96-4aab00985b1c",
+      "exact_worker_exited": true
+    }
   }
 }
