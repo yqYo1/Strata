@@ -16,6 +16,7 @@ ROOT = bank.B / 'prefill-score-decay-model-v1'
 KEY = 'prefill_score_decay_model_v1'
 PARENT_BUILD = '83ae2717d51f5ab54f50787cbcae5acf1a945cff'
 TERMINAL = '1919720d900ede6c9b55d25d09bb82b503777fd2'
+TERMINAL_PREFIX = 'fa4b9855a3f1706b4689a18473c20e69bd84dd1e'
 SCORE_COUNTS = 'e88604bca4535fac04d4f8f61a3dc4469634ddaf'
 DECAY_COUNTS = '063f2e392394b2d465ee82a76aabcd7aa2421958'
 SCORE_FILES = (keys.HEADER, keys.ADMISSION, keys.CALLER, keys.PACKER)
@@ -24,7 +25,7 @@ TERMINAL_FILES = ('src/program/generate.cpp', 'include/strata/program/full_conte
                   'tests/core/full_context_diagnostic_test.cpp')
 CHANGED = tuple(sorted(set((*SCORE_FILES, *DECAY_FILES, *TERMINAL_FILES))))
 BEFORE_COUNTS = '5f4aa020ac81f0f49d17680a2d8d738c9a5095fc2c47d617b6eaebbe4f36af73'
-IMAGE_HASH = '9d10b4918adef780b6890080e94aec7ee47d3c02b5464ad1e208917e857beef0'
+IMAGE_HASH = '481eff69cf893772d41ec4c9478af9f991da722df1468db01d287da68e66e71b'
 RECIPE_HASH = '1c5523147696377269762da5c25ec5b09e83fd75a8a3333b1c08eb2f632019e7'
 
 
@@ -44,6 +45,11 @@ def project(source, recipe):
         source[keys.CALLER] = merge_delta(previous, keys.CALLER, revision + '^', revision)
         require(merge_delta(source[keys.CALLER], keys.CALLER, revision, revision + '^') == previous,
                 'dispatch counters change the underlying implementation')
+    for name in TERMINAL_FILES:
+        previous = source[name]
+        source[name] = merge_delta(previous, name, TERMINAL, TERMINAL_PREFIX)
+        require(merge_delta(source[name], name, TERMINAL_PREFIX, TERMINAL) == previous,
+                'terminal admission change diverged: ' + name)
     hashes = bank.stage.hashed(source)
     require(len(hashes) == 1171 and bank.signature(hashes) == IMAGE_HASH
             and {p for p in hashes if original[p] != hashes[p]} == set(CHANGED), 'unexpected model source')
@@ -54,7 +60,7 @@ def project(source, recipe):
     require(bank.signature(relocated) == RECIPE_HASH, 'model tools, options or target set changed')
     return relocated, dict(source_sha256=IMAGE_HASH, recipe_sha256=RECIPE_HASH,
                            changed={p: hashes[p] for p in CHANGED}, parent_source=parent.DISPATCH_COUNTS,
-                           score_keys=keys.SOURCE, gdn_decay=decay.SOURCE, terminal_diagnostic=TERMINAL,
+                           score_keys=keys.SOURCE, gdn_decay=decay.SOURCE, terminal_diagnostic=TERMINAL_PREFIX,
                            score_counts=SCORE_COUNTS, decay_counts=DECAY_COUNTS)
 
 

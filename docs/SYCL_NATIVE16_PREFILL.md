@@ -528,8 +528,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   measured commits. The source-only projection at `def2dd8ee` precedes
   the layer counters. Applying the score and GDN counter changes at
   `e88604bca` and `063f2e392` in either order gives the same caller.
-  The resulting 1171-file model image hash is
-  `9d10b4918adef780b6890080e94aec7ee47d3c02b5464ad1e208917e857beef0`.
+  The lookahead at `fa4b9855a` rejects a diagnostic that cannot borrow before
+  removing a parked conversation. Including this check, the 1171-file
+  model image hash is
+  `481eff69cf893772d41ec4c9478af9f991da722df1468db01d287da68e66e71b`.
   Build admission requires both three-process component gains and the real
   indexer append/restore/overwrite check. Compare the four score/decay
   combinations with KV reload and scalar gather fixed. The baseline on
@@ -3506,11 +3508,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   KV/gather arms. Match its loan generation from mask through publication,
   audited expert payload and residency table. Require one checked terminal
   commit and drain, zero emitted or drafted tokens, a full state hash and
-  DONE with zero outputs, followed by an ordinary short request to exercise
-  reset. An effective fallback or an earlier loan does not qualify mixed
-  dispatch. Also reject ordinary GEN with zero output, ordinary GEN with a
-  full prompt and positive output, and a short CONSUME_FULL. The source
-  check at `1919720d9` leaves these protocol and physical-slot runs open.
+  DONE with zero outputs. Use different token IDs from the parking request
+  for the next short GEN (e.g. 512..544) and require RESUME 0. Compare its
+  QSA/GDN/PLE state and generation with that same short request in a fresh
+  server. Check MTP ring invalidation or overwrite before read; STATE_HASH
+  includes only the allocated draft extent. Exercise restore of the parked
+  full-capacity image via one of its shorter saved checkpoints, then send
+  a further independent short request and repeat the reset check. A full
+  prompt cannot reuse an exact full-length prefix. An effective fallback
+  or an earlier loan does not qualify mixed dispatch. Also reject ordinary
+  GEN with zero output, ordinary GEN with a full prompt and positive
+  output, and a short CONSUME_FULL. The diagnostic admission change at
+  `fa4b9855a` rejects a selected 262143-token parked prefix before taking
+  the entry: no rows remain between the prefix and the terminal verifier.
+  Exercise this rejection and reuse the still-parked entry afterwards.
+  The native model and protocol checks remain open.
   Run `bench/sycl/prefill_kv_gather_restore.py` against the coherent build
   after its contiguous and ragged gather checks. All four combinations
   replay the original fresh 32769- and 253919-token prompts, switch to a
