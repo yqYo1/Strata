@@ -3547,11 +3547,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `9639531fd` retains the model's radix4 threshold search in both arms.
   Recheck the model environment in the controller before each stage.
   At `9bab6f3c1` both revised native kernels and the sliced fixture
-  compiled and linked against the traced build. Device correctness and
-  the three independent timing processes are pending.
-  Keep the first component build through comparison of the builds'
-  kernel inputs, including the intentional selector change. Then recover the first recipe from Git and retire its
-  executable and temporary build root.
+  compiled and linked against the traced build. The original single-call
+  executable was retired after source and recipe recovery at `cc0fd8744`.
   Run the revised B570 component with `bench/sycl/prefill_qsa_groups.py`.
   Use the same in-order queue, four-cell pages and remapped/missing pages.
   Start with 16 queries at 97 cells and 259 queries at 401 cells,
@@ -3564,6 +3561,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   six alternating pairs each, reversing first arm by process and round.
   Each interval must be at least 10 ms; timer p99 must be below 1% of it.
   Advance only with a lower median paired time in all three processes.
+  At `4a8bc762e` every output check passed. The median of the three
+  process medians for explicit IDs was 136.445 ms and for grouped IDs
+  132.605 ms. The paired time ratios were 0.97083, 0.97182 and 0.96965.
+  The component gate passed using the original allocation in both arms.
   This fixture cannot qualify a model fallback: if grouped attention
   declines after selection, regenerate explicit IDs before any consumer,
   including diagnostics. Score storage is reused every 256 rows, so replay
