@@ -488,6 +488,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the same 53 `.l0_cache` files (10,461,608 bytes) in `neo_compiler_cache`.
   SHA256 over sorted relative path, NUL and raw file SHA256 for each entry was
   `12438bf9e0c669cb1a93c09e27fc82b83e51f10677ac7673e1c5e68d094e3414`.
+  In each process the same 12 entries (938,752 bytes) have last-write times
+  between the first long request's start and first output. The short chat
+  warm-up precedes this interval. Align filesystem and client clocks using
+  the last request's monotonic end and journal mtime. Moving that offset by
+  ±0.5 s or using the observed realtime-minus-monotonic offset retains all
+  12 identities. The 15.5–16.6 s span between first and last writes also
+  includes the intervening model work. A seed made by an actual short-only
+  process can isolate reuse of the remaining entries if its inventory first
+  matches the 41 entries seen before the long request.
   This identifies a restart/first-use experiment. On the same build and
   driver, compare empty private directories to private copies seeded from a
   completed control. Measure server readiness, first long-prompt time and
