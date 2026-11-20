@@ -5,7 +5,8 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
-#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT) || defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
+#if defined(STRATA_QSA_PREFILL_K_LANES4_COMPONENT) || defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT) || \
+    defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
 #define STRATA_QSA_PREFILL_PAGE4_FIXTURE
 #endif
 #if defined(STRATA_QSA_PREFILL_PV_COMPONENT) || defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)
@@ -20,6 +21,11 @@ decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ord
 #elif defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT)
 namespace strata::kernels::prefill_head_major {
 decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ordered_exp_batch;
+}
+#elif defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
+namespace strata::kernels::prefill_stage_identity {
+decltype(&strata::kernels::qsa_bf16_prefix_ordered_exp_batch) select(
+    const QsaAttnPools &, const QsaPromptBf16Bounds &, const int32_t *owned_identity_table);
 }
 #endif
 #if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
@@ -53,6 +59,9 @@ constexpr const char *baseline_name = "ordered_exp", *candidate_name = "k_lanes4
 constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention = prefill_head_major::qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name = "ordered_exp", *candidate_name = "head_major";
+#elif defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
+constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
+constexpr const char *baseline_name = "ordered_exp", *candidate_name = "stage_identity";
 #elif defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
 constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
@@ -122,7 +131,13 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
 #endif
   const int pages=(cells+Page-1)/Page,rows=pages*KV*Page;
   std::vector<int32_t> table(pages),ids(size_t(queries)*cap),steps(size_t(queries)*kStepCount);
-  for (int p=0;p<pages;++p) table[p]=p%13==5 ? -1 : pages-1-p;
+  for (int p=0;p<pages;++p) {
+#if defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
+    table[p]=p;
+#else
+    table[p]=p%13==5 ? -1 : pages-1-p;
+#endif
+  }
   std::vector<int8_t> k(size_t(rows)*Dim),v(k.size());
   for (size_t i=0;i<k.size();++i) {
     k[i]=int8_t(int((uint64_t(i)*1664525+1013904223)%255)-127);
@@ -154,6 +169,10 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
       }
       if (c%97==13) cell=-1;
       if (c%103==7) cell=cells+13;
+#if defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
+      if (c == 0) cell = cells - 1;
+      if (c == 1) cell = cells;
+#endif
       ids[size_t(b)*cap+c]=cell;
     }
   }
@@ -190,12 +209,25 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
   QsaAttnPools pools;pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
   auto shape=qsa_real_shapes();shape.page_size=Page;
   const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
+#if defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
+  const QsaPromptBf16Bounds full_stage{pages, pages};
+  const auto *owned_identity_table = dt.data();
+  using prefill_stage_identity::select;
+  const auto specialized = select(pools, full_stage, owned_identity_table);
+  require(specialized != baseline_attention &&
+          select(pools, full_stage, nullptr) == baseline_attention &&
+          select(pools, full_stage, di.data()) == baseline_attention &&
+          select(pools, {pages, pages - 1}, owned_identity_table) == baseline_attention,
+          "only the matching owned full identity stage may specialize");
+#endif
 #if !defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
 #if defined(STRATA_QSA_COMPARE_EXACT_BITS)
   const std::vector<uint16_t> unwritten(out.memory.size()/sizeof(uint16_t), marker);
 #endif
   auto invoke=[&](int variant) {
+#if !defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
     auto attention=variant ? candidate_attention : baseline_attention;
+#endif
 #if defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
     if (variant==2) attention=qsa_bf16_prefix_subgroup_batch;
 #endif
@@ -203,6 +235,9 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
     out.put(unwritten);
 #endif
     rt->wait();const auto start=std::chrono::steady_clock::now();
+#if defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
+    auto attention=variant ? select(pools, full_stage, owned_identity_table) : baseline_attention;
+#endif
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
     rt->wait();return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();

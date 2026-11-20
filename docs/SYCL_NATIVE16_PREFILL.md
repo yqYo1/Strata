@@ -338,6 +338,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   37.17 to 38.54 GB (1.037 times). These different scaling rates motivate
   measuring both lengths. Kernel time and physical traffic at 117K remain
   open; the tile count is derived from the executed geometry.
+  In each of the four traced 117K requests, the streamed KV quantizer
+  published 1,488,807,936 bytes to the host. Each of 12 attention layers
+  issued 14 calls for 8192 rows and one for 2800 rows, with four copies
+  per call (720 copies in all). At the previously measured 6.56 GB/s
+  device-to-host rate for queued 64 MiB transfers, the same payload
+  would take 0.227 s. The smaller individual copies, queue waits and
+  shared staging pool require separate timing. These bytes exclude
+  expert uploads and decode-state transfers.
   The 253919-token mixed-host path follows a different planner branch.
   Keep the ordinary copy route, executable, decoder placement and 262144
   configuration in the clean comparison. Use the historical four thinking-on
@@ -2920,6 +2928,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   measure the model's selected-row locality and compare equivalent physical
   layouts with the same logical IDs, values and reduction order. Include
   repacking in that comparison.
+  A separate candidate specializes selected-row lookup for the full KV
+  staging pool. Its owner constructs an immutable identity page table
+  and passes that table with the stage. The candidate selector requires
+  the owner's table pointer to match the pool and both page counts to
+  agree. All other calls use the original ordered-exp entry. The packer
+  and caller-visible diagnostics keep the original implementation.
+  Only the attention consumer skips its second page lookup for valid
+  selected cells. The 117K geometry permits up to 5,732,774,712
+  such lookups across both KV heads and 12 layers; invalid selections
+  reduce that count, and physical memory traffic depends on caching.
+  Compare the two loaders on the same initialized identity table and
+  original K lane/workgroup order, including invalid IDs, the last live
+  cell and a partial final page. Check null, unrelated and smaller
+  resident tables select the original function. Require matching output
+  bits, guards and three independent lower warmed medians on all three
+  wide locality patterns before testing this stage-specific model route.
   First test changing just the K loader's lane mapping with the existing
   packed layout. Four adjacent SIMD lanes read 32 contiguous bytes for
   one cell. This can reduce global address segments per subgroup but can
