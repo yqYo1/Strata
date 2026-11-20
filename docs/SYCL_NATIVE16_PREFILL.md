@@ -367,7 +367,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   External layer taps and the final output-callback layer keep ordinary
   reloads. On this MTP route the 11 eligible layers could save 308 copy
   commands / 2,664,431,616 bytes at 64K and 616 / 9,991,618,560 bytes
-  at 117K. Check the actual per-layer reload/reuse counts in both arms.
+  at 117K. At the three measured SYCL host-to-device process medians
+  (6.292–6.485 GB/s, `prefill_copy_engine_v6`), the removable payload
+  corresponds to 0.41–0.42 s at 64K and 1.54–1.59 s at 117K. If that
+  transfer time is fully exposed and other work is unchanged, the 117K
+  control would still need about 5.1–5.2 s to reach 1000 tok/s. The
+  calibration used 256 MiB host-USM copies. Actual prefix copy sizes,
+  submission costs and overlap can change the saving in either direction.
+  Check the actual per-layer reload/reuse counts and matched wall times in both arms.
   Before timing, compare device and host state on a fresh prompt, a nonzero
   restored prefix, interrupted/restarted prefill, the tail and a physical
   262144 fill. Check the external-tap fallback and decode handoff. Time
