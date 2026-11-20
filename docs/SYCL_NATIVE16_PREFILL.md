@@ -662,6 +662,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by leaving out a whole length. Hold 98306 outside the smooth fits and
   report its change from 98305 with the actual expert jobs and transfer counts.
   A time difference across these two bodies alone cannot isolate chunk setup.
+  For the same selected long-prefill path, `bench/sycl/prefill_split_generation.py`
+  compares the baseline and candidate over three independent pairs (AB, BA,
+  AB). Keep the stock decode layout, thinking, MTP and native binary fixed.
+  Each process runs the official long, agent and two sustained generation
+  workloads. Bind fresh prompt identities, executed gather and KV work,
+  generation lengths and MTP counts before comparing sustained decode and
+  agent follow-up rates. Keep the original 117K speed decision separate
+  from this handoff and decode-preservation decision.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
