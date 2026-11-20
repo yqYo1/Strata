@@ -349,11 +349,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         other_reserved, gpu_headroom, max_alloc, requested_gpu_rows,
         residual_dtype, requested_slots,
         window_on && scratch_window && native16_on && scratch_mixed_on);
-    // The initial candidate deliberately leaves the existing short-tail and
-    // full-context fallback untouched. The original split admits90113..117488
-    // rows at128slots. Explicit mode16 may admit up to131072rows using its
-    // separately requested bank capacity and relocated job buffers. Charge the
-    // complete extra allocation before R admission;decode1256 stays untouched.
+    // Mode 10 defaults to a 128-slot split and honors an explicitly smaller
+    // bank. Mode 16 may admit up to 131072 rows with its requested bank
+    // capacity and relocated job buffers. Charge the whole extra allocation
+    // against admission of the GPU residual.
     bool split_accumulator_on = false;
     bool relocated_job_buffers_on = false;
     uint64_t split_accumulator_bytes = 0;
@@ -370,10 +369,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                     detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
             const auto extra = relocate ? split.extra_bytes : split.accumulator_tail_allocation_bytes();
             if (extra <= max_alloc) {
+                int64_t split_slots = requested_slots;
+                if (!long_window_requested && (split_slots == 0 || split_slots > 128))
+                    split_slots = 128;
                 auto candidate = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
                     detail::layer_major_add(other_reserved, extra), gpu_headroom, max_alloc,
                     requested_gpu_rows,
-                    residual_dtype, long_window_requested ? requested_slots : 128, true);
+                    residual_dtype, split_slots, true);
                 if (candidate.staged() && candidate.residual.gpu_rows == n) {
                     bank_plan = std::move(candidate);
                     split_accumulator_on = true;

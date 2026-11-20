@@ -728,6 +728,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Vector gather alone also beat reload in four pairs. Combining it with reuse
   won two pairs against each individual change. Select KV reuse alone for
   the split-route length curve and decode-preservation suite.
+
+  The 64 native footer records in that same comparison each report 128
+  slots, 127 permanent slots and zero permanent hits. Each request uploads
+  18,860–18,900 blobs and requests 38.507–38.589 GB. The route plan groups
+  all jobs for an expert consecutively and the split caller uses the same
+  dequantized weights for those jobs. A single ordered scratch slot would
+  free 338,124,800 bytes of the 340,787,200-byte bank. The comparison uses
+  the ordinary source view and the same in-order queue.
+  Mode 10 now accepts an explicitly smaller bank through the existing
+  slot setting. Build the one-file change against the measured 117K image
+  at a serialized boundary. Compare actual 128-slot and one-slot admission
+  with aligned KV reuse and scalar gather fixed, in three pairs of fresh
+  processes. Require invariant blobs, requested bytes, expert jobs,
+  guarded outputs and decode handoff. Report prefill and TTFT for the first
+  and subsequent requests separately before reusing any of the headroom.
+  The earlier ordinary-RAM lane lost its component comparison with one
+  dependency marker per expert. Evaluate batching, queue and timing changes
+  separately from this capacity change.
+
   The 65537-token comparison closed at `84c883393` with 16 independent
   processes and 48 fresh requests. The subsequent-request rates were
   984.54 tok/s with ordinary reload, 980.22 with KV reuse, 984.42 with
