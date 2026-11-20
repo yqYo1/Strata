@@ -1,4 +1,4 @@
-"""Measure the actual long-prefill selector and ordered attention with two ID encodings."""
+"""Measure isolated ID encoding or Q8 value changes in long-prefill ordered attention."""
 
 import fcntl
 import math
@@ -19,6 +19,11 @@ FIRST_BUILD = 'ce7e64c4d53e0dbb7b8cd09570ae0b0b7af30bfa'
 SOURCE = '9639531fddd1a43bd3aba38e2940b518f291a7ef'
 ROOT = bank.B / 'prefill-qsa-groups-v3'
 KEY = 'prefill_qsa_groups_v3'
+VALUE_ROOT = bank.B / 'prefill-qsa-q8-value-v1'
+VALUE_KEY = 'prefill_qsa_q8_value_v1'
+VALUE_SOURCE = '78cdb0742339e536c57e06c89d511b903a25387f'
+VALUE_BASE = 'af9d017ff6a30910182bfc83c265de9f14b3e4a1'
+VALUE_HEADER = 'include/strata/kernels/qsa_bf16_prefix.hpp'
 TARGET = 'sycl_qsa_bf16_prefix_ordered_exp_bench'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
 SELECT = 'src/kernels/sycl/qsa_select.cpp'
@@ -28,8 +33,8 @@ HEADERS = ('include/strata/prefill/qsa_group_ids.hpp', 'include/strata/kernels/q
 STAGES = ('build', 'smoke', '0', '1', '2')
 
 
-def recipe(helper, native):
-    src, build = helper.SOURCE, helper.BUILD
+def group_sources(helper, native):
+    src = helper.SOURCE
     for path in (ATTEND, SELECT, BENCH):
         require(native['source_files'][path] == bank.sha(src / path), 'changed build input: ' + path)
     require((src / SELECT).read_bytes() == helper.git_file(BASE, SELECT), 'selector differs from measured parent')
@@ -47,9 +52,33 @@ def recipe(helper, native):
     require(merge_delta(projected, ATTEND, SOURCE, BASE) == original, 'unrelated attention source change')
     overlay = {name: helper.git_file(SOURCE, name) for name in (*HEADERS, BENCH, SELECT)}
     overlay[ATTEND] = projected
+    return overlay
+
+
+def value_sources(helper, native):
+    # The only production edits are in the measured kernel and a new free
+    # function declaration. Check the recorded baseline of the fixture too.
+    overlay = {path: helper.git_file(VALUE_SOURCE, path) for path in (VALUE_HEADER, ATTEND, BENCH)}
+    for path in (ATTEND, VALUE_HEADER, BENCH):
+        original = (helper.SOURCE/path).read_bytes()
+        require(native['source_files'][path] == bank.sha(helper.SOURCE/path)
+                and original == helper.git_file(VALUE_BASE, path), 'different ordinary QSA input: ' + path)
+    header = overlay[VALUE_HEADER]
+    begin = header.index(b'// Long-prefill ordered attention with expanded K')
+    end = header.index(b'// Diagnostic-only online state', begin)
+    require(header[:begin] + header[end:] == helper.git_file(VALUE_BASE, VALUE_HEADER),
+            'existing QSA public interface changed')
+    return overlay
+
+
+def recipe(helper, native, root, values):
+    src, build = helper.SOURCE, helper.BUILD
+    overlay = value_sources(helper, native) if values else group_sources(helper, native)
+    kernels = (ATTEND,) if values else (SELECT, ATTEND)
+    definition = ('-DSTRATA_QSA_PREFILL_Q8_V_COMPONENT=1' if values else '-DSTRATA_QSA_PREFILL_GROUPS_COMPONENT=1')
     db = bank.previous.read(build / 'compile_commands.json')
     commands, objects, old = [], {}, {}
-    for name in (SELECT, ATTEND, BENCH):
+    for name in (*kernels, BENCH):
         target = TARGET if name == BENCH else 'strata_kernels'
         unit, = [u for u in db if u['file'] == str(src / name) and
                  u['output'].startswith(f'CMakeFiles/{target}.dir/')]
@@ -57,11 +86,11 @@ def recipe(helper, native):
         require(unit['directory'] == str(build) and args[-4:] == ['-o', unit['output'], '-c', unit['file']]
                 and '-fsycl' in args and '-ffp-contract=off' in args, 'wrong native recipe: ' + name)
         if name == BENCH:
-            args[args.index('-DSTRATA_QSA_BENCH_ORDERED_EXP=1')] = '-DSTRATA_QSA_PREFILL_GROUPS_COMPONENT=1'
-        obj = ROOT / Path(unit['output']).name
+            args[args.index('-DSTRATA_QSA_BENCH_ORDERED_EXP=1')] = definition
+        obj = root / Path(unit['output']).name
         old[name], objects[name] = unit['output'], str(obj)
-        commands.append([args[0], '-I' + str(ROOT / 'include'), '-I' + str(ROOT / 'bench/sycl'),
-                         *args[1:-4], '-MD', '-MF', str(obj) + '.d', '-o', str(obj), '-c', str(ROOT / name)])
+        commands.append([args[0], '-I' + str(root / 'include'), '-I' + str(root / 'bench/sycl'),
+                         *args[1:-4], '-MD', '-MF', str(obj) + '.d', '-o', str(obj), '-c', str(root / name)])
 
     archive = 'libstrata_kernels.a'
     members = subprocess.check_output(['/usr/bin/ar', 't', archive], cwd=build, text=True, timeout=20).splitlines()
@@ -69,14 +98,14 @@ def recipe(helper, native):
     original_members = {p.name: str(p) for p in paths}
     require(len(paths) == len(original_members) == len(members) and set(members) == original_members.keys(),
             'unexpected kernel archive members')
-    for name in (SELECT, ATTEND):
+    for name in kernels:
         member = Path(old[name]).name
         require(original_members[member] == str(build/old[name]), 'wrong kernel archive input')
         original_members[member] = objects[name]
-    commands.append(['/usr/bin/ar', 'rcsD', str(ROOT/archive), *(original_members[m] for m in members)])
+    commands.append(['/usr/bin/ar', 'rcsD', str(root/archive), *(original_members[m] for m in members)])
     link = shlex.split(subprocess.check_output(['/usr/bin/ninja', '-t', 'commands', TARGET],
                        cwd=build, text=True, timeout=20).splitlines()[-1])
-    replacements = {old[BENCH]: objects[BENCH], archive: str(ROOT/archive), TARGET: str(ROOT/TARGET)}
+    replacements = {old[BENCH]: objects[BENCH], archive: str(root/archive), TARGET: str(root/TARGET)}
     require(link[:2] == [':', '&&'] and link[-2:] == ['&&', ':'] and '-Wl,-t' in link
             and link[link.index('-o') + 1] == TARGET and all(link.count(k) == 1 for k in replacements),
             'unexpected component link')
@@ -125,8 +154,51 @@ def samples(stdout, stage):
                     p['groups']/p['explicit'] for p in pairs))))
 
 
-def measure(action, binary, native, speed, stage):
-    directory = ROOT / ('measure-' + action)
+def value_samples(stdout, action):
+    lines = stdout.splitlines()
+    timer, = [s for s in lines if s.startswith('timer ')]
+    match = re.fullmatch(r'timer calls=10000 median_ns=([.\d]+) p99_ns=(\d+)', timer)
+    require(match and 0 <= float(match[1]) <= int(match[2]) < 5000 and float(match[1]) < 1000, 'clock overhead')
+    smoke = action == 'smoke'
+    cells, queries, cap = (97, 3, 33) if smoke else (39260, 6491, 2051)
+    layouts = [(0, 0), (1, 0)] if smoke else [(0, 0), (1, 0), (1, 1)]
+    require(sum(x.startswith('q8_v_checked ') for x in lines) == len(layouts)
+            and sum(x.startswith('q8_v_sample ') for x in lines) == (0 if smoke else 18*len(layouts))
+            and lines.count('fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED') == 1,
+            'incomplete Q8 value fixture')
+    permutations = ((0,1,2), (1,2,0), (2,0,1), (2,1,0), (0,2,1), (1,0,2))
+    arms = ('packed', 'q8_with_copy', 'q8')
+    results = {}
+    for identity, clustered in layouts:
+        shape = f'cells={cells} queries={queries} cap={cap}'
+        mapping = f'identity={identity} clustered={clustered}'
+        marker = f'q8_v_checked {shape} page_size=4 {mapping} expanded_untouched=1 finite_bits=1 invalid_scale_checked={int(smoke)}'
+        require(lines.count(marker) == 1, 'missing explicit V ownership, scale or shape check')
+        if smoke:
+            continue
+        prefix = f'q8_v_sample {shape} {mapping} '
+        observed = [s.removeprefix(prefix) for s in lines if s.startswith(prefix)]
+        require(len(observed) == 18, 'missing layout samples')
+        triples = []
+        for rnd in range(6):
+            block = {}
+            for slot, arm in enumerate(permutations[(rnd+int(action))%6]):
+                expected = f'round={rnd} slot={slot} arm={arm} ms='
+                sample = observed[rnd*3+slot]
+                require(sample.startswith(expected), 'unexpected arm order')
+                ms = float(sample.removeprefix(expected))
+                require(math.isfinite(ms) and 10 <= ms < 60000 and int(match[2]) < ms*10000, 'ineligible V interval')
+                block[arms[arm]] = ms
+            triples.append(block)
+        ratios = {f'{a}_over_{b}': statistics.median(t[a]/t[b] for t in triples)
+                  for a,b in ((arms[1],arms[0]), (arms[2],arms[1]), (arms[2],arms[0]))}
+        name = ('identity' if identity else 'remapped') + ('_clustered' if clustered else '_spread')
+        results[name] = dict(intervals_ms=triples, paired_time_ratios=ratios)
+    return dict(timer_p99_ns=int(match[2]), page_size=4, results=results)
+
+
+def measure(action, binary, native, speed, stage, root, values):
+    directory = root / ('measure-' + action)
     directory.mkdir(mode=0o700)
     for key in ('tmp', 'cache'):
         (directory/key).mkdir(mode=0o700)
@@ -164,13 +236,15 @@ def measure(action, binary, native, speed, stage):
         else:
             require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|cleanup failed|terminate called|strata UR validation:',log),
                     'unexpected observer or runtime error')
-        stage.update(**samples(stdout, action), native_exit_code=0, host_probe_accepted=True, device=gpu[0], driver=gpu[1])
+        measurements = value_samples(stdout, action) if values else samples(stdout, action)
+        stage.update(**measurements, native_exit_code=0, host_probe_accepted=True, device=gpu[0], driver=gpu[1])
     finally:
         device.validation.finish(stage, owner, cursor, speed['boot'])
         stage['passed'] = stage['passed'] and stage.get('driver_after') == native['driver']
 
 
-def execute(action):
+def execute(action, values=False):
+    root, key, source = (VALUE_ROOT, VALUE_KEY, VALUE_SOURCE) if values else (ROOT, KEY, SOURCE)
     native, speed, parent, build = device.coherent_inputs()
     switches = ('STRATA_SYCL_SELECT_RADIX4', 'STRATA_SYCL_SELECT_CYCLIC', 'STRATA_SYCL_PREFILL_TOPK_EARLY',
                 'STRATA_SELECT_OLD', 'STRATA_SYCL_PREFILL_QSA_MATH', 'STRATA_SYCL_PREFILL_NATIVE16_QSA')
@@ -186,12 +260,18 @@ def execute(action):
             'missing matched model dispatch evidence')
     helper = bank.basis.core.source.device.load_module('qsa_groups_build', device.fixture.__file__)
     helper.SOURCE, helper.BUILD = parent/'source', parent/'build'
-    overlay, commands = recipe(helper, native)
-    allowed = helper.build_inputs(native, ROOT, overlay, commands)
-    controls = [str(Path(m).resolve().relative_to(bank.P)) for m in
-                (__file__, device.__file__, device.fixture.__file__, device.coherent_model.__file__, device.coherent_model.kv.__file__)]
-    pins = bank.stage.source.pin(bank.P, [*controls, 'tools/sycl'])
-    identity = dict(source=SOURCE, selector_environment=selection_env, parent_build=build['build_sha256'], overlay=bank.stage.hashed(overlay),
+    overlay, commands = recipe(helper, native, root, values)
+    allowed = helper.build_inputs(native, root, overlay, commands)
+    controls = {str(Path(__file__).resolve().relative_to(bank.P))}
+    for module in tuple(sys.modules.values()):
+        filename = getattr(module, '__file__', None)
+        if filename:
+            path = Path(filename).resolve()
+            if path.is_relative_to(bank.P/'bench'/'sycl') and path.suffix == '.py':
+                controls.add(str(path.relative_to(bank.P)))
+    pins = bank.stage.source.pin(bank.P, [*sorted(controls), 'tools/sycl'])
+    require(controls <= pins['source_sha256'].keys(), 'uncommitted trial or helper')
+    identity = dict(source=source, selector_environment=selection_env, parent_build=build['build_sha256'], overlay=bank.stage.hashed(overlay),
                     recipe=bank.signature(commands), controls=pins['aggregate_sha256'],
                     benchmark_environment_sha256=bank.signature(speed['environment_template']), runtime=speed['runtime_manifest']['sha256'])
     if action == 'recipe':
@@ -199,53 +279,66 @@ def execute(action):
         return
     result = device.validation.committed(bank.RESULT)
     if action == 'build':
-        require(KEY not in result and not ROOT.exists(), 'inspect existing QSA generation')
+        require(key not in result and not root.exists(), 'inspect existing QSA generation')
         row = dict(**identity, controller_commit=pins['revision'], model_tested=False, stages=[])
     else:
-        row = result[KEY]
+        row = result[key]
         require(all(row[k] == v for k,v in identity.items()) and
                 [s['stage'] for s in row['stages']] == list(STAGES[:STAGES.index(action)])
                 and all(s['passed'] and s['ownership_closed'] for s in row['stages']), 'previous gate or input changed')
-    previous = bank.signature(result.get(KEY))
+    previous = bank.signature(result.get(key))
     stage = dict(stage=action, passed=False)
     try:
         if action == 'build':
-            helper.build_fixture(ROOT, TARGET, native, overlay, commands, allowed, identity)
-            record = bank.previous.read(ROOT/'record.json')
+            helper.build_fixture(root, TARGET, native, overlay, commands, allowed, identity)
+            record = bank.previous.read(root/'record.json')
             require(record['ownership_closed'] and record['complete'], 'incomplete QSA build')
-            stage.update(passed=True, build_sha256=bank.sha(ROOT/'record.json'), binary=record['binary'])
+            stage.update(passed=True, build_sha256=bank.sha(root/'record.json'), binary=record['binary'])
         else:
-            record = bank.previous.read(ROOT/'record.json')
+            record = bank.previous.read(root/'record.json')
             built = row['stages'][0]
-            require(record['binary'] == built['binary'] and bank.sha(ROOT/'record.json') == built['build_sha256']
+            require(record['binary'] == built['binary'] and bank.sha(root/'record.json') == built['build_sha256']
                     and bank.sha(record['binary']['path']) == record['binary']['sha256']
                     and all(bank.sha(p) == h for k in ('compiled','linked') for p,h in record[k].items())
-                    and all(bank.sha(ROOT/p) == h for p,h in record['driver_inputs'].items()), 'QSA build or executable changed')
-            measure(action, record['binary'], native, speed, stage)
+                    and all(bank.sha(root/p) == h for p,h in record['driver_inputs'].items()), 'QSA build or executable changed')
+            measure(action, record['binary'], native, speed, stage, root, values)
             require(stage['passed'], 'post-run fault, driver or ownership failure')
     except BaseException as exc:
         stage['error'] = repr(exc)
         raise
     finally:
-        if action == 'build' and (ROOT/'record.json').is_file():
-            stage['ownership_closed'] = bank.previous.read(ROOT/'record.json')['ownership_closed']
+        if action == 'build' and (root/'record.json').is_file():
+            stage['ownership_closed'] = bank.previous.read(root/'record.json')['ownership_closed']
         row['stages'].append(stage)
         if action == '2' and stage['passed']:
-            row['component_performance_gate'] = all(s['median_paired_ratio'] < 1 for s in row['stages'][-3:])
+            timings = row['stages'][-3:]
+            if values:
+                # Qualify each production placement separately. Keep all three
+                # contrasts, including a loss under just one layout or arm.
+                row['layout_gates'] = {
+                    layout: {contrast: all(t['results'][layout]['paired_time_ratios'][contrast] < 1 for t in timings)
+                             for contrast in first['paired_time_ratios']}
+                    for layout, first in timings[0]['results'].items()}
+                row['component_performance_gate'] = all(
+                    row['layout_gates'][layout]['q8_over_packed'] for layout in ('identity_spread','identity_clustered'))
+            else:
+                row['component_performance_gate'] = all(t['median_paired_ratio'] < 1 for t in timings)
         current = bank.previous.read(bank.RESULT)
-        require(bank.signature(current.get(KEY)) == previous, 'QSA result changed during execution')
-        current[KEY] = row
+        require(bank.signature(current.get(key)) == previous, 'QSA result changed during execution')
+        current[key] = row
         bank.stage.write(bank.RESULT, current)
 
 
 if __name__ == '__main__':
-    action, = sys.argv[1:]
+    args = sys.argv[1:]
+    values = args[:1] == ['--q8-value']
+    action, = args[1:] if values else args
     require(action in (*STAGES, 'recipe') and sys.executable == bank.basis.reference.model.PYTHON,
             'select one pinned QSA stage')
     if action == 'recipe':
-        execute(action)
+        execute(action, values)
     else:
         with (bank.B/'owned-v0141-measurement.lock').open('a+') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             bank.builder.guards.no_model_owners([])
-            execute(action)
+            execute(action, values)

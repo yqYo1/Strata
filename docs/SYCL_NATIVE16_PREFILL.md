@@ -3194,6 +3194,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.406 TB. Actual DRAM bytes depend on cache reuse and coalescing.
   Keep K storage, ID order, softmax and matrix accumulation fixed in
   a comparison and include any V producer or addressing cost.
+  The candidate at `78cdb0742` keeps the original K pack and BF16
+  matrix operands. It records both the logical K row and the physical
+  V row while looking up the page, using the same 256 bytes of local
+  storage. Each four signed V codes share one FP16 scale; lanes convert
+  the products to BF16 when populating the PV tile. Both scale checks
+  remain in the original producer. The scratch allocation is unchanged.
+
+  Run `bench/sycl/prefill_qsa_groups.py --q8-value` with the measured
+  ordered-exp configuration. Compare ordinary packing, direct Q8 V with
+  the original V pack still executed, and direct V with the pack omitted.
+  The third arm must leave poisoned V scratch untouched. First test
+  page size four, sparse/dead/tail rows, physical aliases, identity and
+  remapped tables, a selected invalid V scale and all output bits and
+  guards on the B570 with validation. Then run three clean processes
+  with 6491 queries, 39260 live cells and selection width 2051. Use
+  spread IDs on both layouts and clustered IDs on identity staging.
+  In each case collect all six permutations of the three arms, including
+  admission, packing, attention and the final drain. Require every clean
+  interval to reach 10 ms and timer p99 below one percent. Record paired
+  median ratios for the consumer, eliminated pack and combined change.
+  Advance the combined identity-stage path only if the combined change
+  lowers paired time in every process on both identity shapes. Record the
+  remapped result separately. Stop on invalid output, provider, fault,
+  budget or ownership. Keep model PP, TTFT and decode checks separate.
   A separate candidate specializes selected-row lookup for the full KV
   staging pool. Its owner constructs an immutable identity page table
   and passes that table with the stage. The candidate selector requires
