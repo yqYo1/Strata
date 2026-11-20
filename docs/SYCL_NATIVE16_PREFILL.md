@@ -3243,6 +3243,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a fresh directory after its retirement. Check both switches off against
   the parent's recorded route, expert and draft counts, KV state and output.
   Exercise the gather fixture and KV lifecycle checks before collecting speed.
+  For the standalone final-slot check, use `bench/sycl/prefill_kv_capacity.py`.
+  On the measured 16385-token copy control the window used separate mixed
+  storage (mode 10). At exactly 262144 tokens it switched to mode 2 with
+  147455 host-backed residual rows. Neither used the mixed-scratch gather.
+  Keep the vec8 request on in both arms and verify this fallback. Compare
+  only full KV reload against aligned reuse on the same executable. The
+  32 chunks in each of 12 attention layers at physical capacity would
+  request 51,489,275,904 prefix bytes with reload or 4,290,772,992 with
+  reuse. Check the actual per-layer pages, host publication and final-slot
+  marker. Standalone completion covers this fallback; the server workloads
+  separately exercise the vector gather and the decode state handoff.
   Run `bench/sycl/prefill_kv_gather_restore.py` against the coherent build
   after its contiguous and ragged gather checks. All four combinations
   replay the original fresh 32769- and 253919-token prompts, switch to a
