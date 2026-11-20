@@ -14,6 +14,10 @@ int main() {
         d::server_prompt_ids("GEN 0 2,17") || d::server_prompt_ids("GENI 0 image 2,17") ||
         d::server_prompt_ids("CONSUME_FULLX 2,17") ||
         d::server_prompt_ids(terminal_line + '\0' + "99")) return 1;
+    if (d::can_borrow_after_prefix(262143, 0, false) || d::can_borrow_after_prefix(262143, 64, true) ||
+        d::can_borrow_after_prefix(262079, 64, true) || !d::can_borrow_after_prefix(262078, 64, true) ||
+        !d::can_borrow_after_prefix(262079, 64, false) || !d::can_borrow_after_prefix(253919, 64, true))
+        return 1;
     int cases = 0;
     auto check = [&](bool ok) { ++cases; return ok; };
     for (const auto context : {int64_t(-1), int64_t(0), int64_t(262143), int64_t(262144),

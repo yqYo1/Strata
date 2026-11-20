@@ -6361,6 +6361,16 @@ int main(int argc, char** argv) {
                     }
             }
             const auto parked = conversations.best(ids, req_imgs, want_cvec);
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            // Leave parked entries and the live session available when the
+            // best prefix cannot possibly exercise the qualified loan route.
+            if (terminal_ids && !strata::program::full_context_diagnostic::can_borrow_after_prefix(
+                    std::max(resume, parked.tokens), o.short_read, std::getenv("STRATA_CKPT_REREAD") == nullptr)) {
+                std::printf("ERR CONSUME_FULL reused prefix leaves no batched loan before the verifier\n");
+                std::fflush(stdout);
+                continue;
+            }
+#endif
             std::optional<strata::core::SavedConversation> incoming;
             if (parked.tokens > resume) incoming.emplace(conversations.take(parked.index));
             // Reject the entire image before parking/overwriting the outgoing
