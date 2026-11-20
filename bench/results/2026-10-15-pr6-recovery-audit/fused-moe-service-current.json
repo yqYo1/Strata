@@ -530881,8 +530881,162 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "2",
+        "passed": true,
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-head-major-v1/sycl_qsa_prefill_head_major_bench",
+          "--component",
+          "2"
+        ],
+        "environment_sha256": "b9bd020cfc27b5ddc8b35e33737d9327c3c162a878d5bcbb3ab31469ede73dbc",
+        "clock": {
+          "calls": "10000",
+          "median_ns": "30",
+          "p99_ns": "31"
+        },
+        "points": [
+          {
+            "cap": 33,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                8.539445,
+                8.411754,
+                8.517664,
+                8.432131,
+                8.468311,
+                8.429386
+              ],
+              "head_major": [
+                8.598607,
+                8.604918,
+                9.009725,
+                8.607845,
+                8.585582,
+                8.580062
+              ]
+            },
+            "adjacent_shared_ids": 0,
+            "adjacent_valid_ids": 234385,
+            "median_time_ratio": 1.01793343629711
+          },
+          {
+            "cap": 2051,
+            "pattern": "gather",
+            "samples_ms": {
+              "ordered_exp": [
+                223.632019,
+                223.970837,
+                224.497442,
+                223.128219,
+                223.682678,
+                223.599597
+              ],
+              "head_major": [
+                224.386124,
+                224.66397,
+                224.409606,
+                224.479595,
+                224.560766,
+                224.471989
+              ]
+            },
+            "adjacent_shared_ids": 0,
+            "adjacent_valid_ids": 15197164,
+            "median_time_ratio": 1.0036593633318514
+          },
+          {
+            "cap": 2051,
+            "pattern": "clustered",
+            "samples_ms": {
+              "ordered_exp": [
+                138.42196,
+                137.810962,
+                137.765456,
+                137.852009,
+                137.787276,
+                137.854841
+              ],
+              "head_major": [
+                142.488452,
+                142.423818,
+                142.533956,
+                142.1302,
+                142.532151,
+                142.899785
+              ]
+            },
+            "adjacent_shared_ids": 14826766,
+            "adjacent_valid_ids": 15197246,
+            "median_time_ratio": 1.0339459157900466
+          },
+          {
+            "cap": 2051,
+            "pattern": "blocks4",
+            "samples_ms": {
+              "ordered_exp": [
+                184.146251,
+                181.950766,
+                183.240235,
+                181.987783,
+                182.447182,
+                183.174826
+              ],
+              "head_major": [
+                175.466843,
+                175.542266,
+                175.535831,
+                175.505344,
+                175.579912,
+                175.554422
+              ]
+            },
+            "adjacent_shared_ids": 6871008,
+            "adjacent_valid_ids": 15197527,
+            "median_time_ratio": 0.9602214563626598
+          }
+        ],
+        "validated_cases": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2454812,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "device": [
+          "Intel(R) Arc(TM) B570 Graphics",
+          "1.17.39758+17"
+        ],
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "model_tested": false
+    "model_tested": false,
+    "faster_each_process": [
+      false,
+      false,
+      false,
+      true
+    ],
+    "wide_model_trial_eligible": false
   }
 }
