@@ -689,18 +689,24 @@ int main(int argc, char **argv) {
     const char *head_env = std::getenv("STRATA_SYCL_SCORE_HEAD_PARALLEL");
     require(std::string(head_env ? head_env : "0") == std::to_string(test_head_parallel),
             "immutable environment must match expected head mapping");
-    require(!test_active_all && (test_gemm ? test_tile == 0 && test_head_parallel == 0 :
-                                           test_tile == 8 && test_head_parallel == 1),
-            "positive active only; GEMM has flags0, FP32 control requires query8/head1");
+    const bool key_test = key_sequence || key_timing_process >= 0;
+    if (key_test) {
+      require(test_gemm && !suite && !test_active_all && (!key_sequence || key_timing_process < 0) &&
+              test_tile == 8 && test_head_parallel == 1 &&
+              prefill::qsa_score_gemm::prefill_retain_score_keys_requested(),
+              "score key comparison requires the production GEMM and fallback settings");
+    } else {
+      require(!test_active_all && (test_gemm ? test_tile == 0 && test_head_parallel == 0 :
+                                             test_tile == 8 && test_head_parallel == 1),
+              "positive active only; GEMM has flags0, FP32 control requires query8/head1");
+    }
     require(prefill::qsa_score_gemm::requested() == bool(test_gemm),
             "immutable product score flag must match the actual API arm");
     gate(gates, "before-runtime"); rt = sycl_backend::runtime_for();
     std::cout << "device=" << rt->device().get_info<sycl::info::device::name>()
               << " driver=" << rt->device().get_info<sycl::info::device::driver_version>() << std::endl;
     gate(gates, "runtime-ready");
-    if (key_sequence || key_timing_process >= 0) {
-      require(test_gemm && !suite && (!key_sequence || key_timing_process < 0),
-              "score key sequence requires standalone FP16 GEMM mode");
+    if (key_test) {
       check_prefill_score_keys(key_sequence == 2 || key_timing_process >= 0, key_timing_process);
     } else if (suite) {
       for (int count = 1; count <= 9; ++count) run(2113, 32768, count, 1);
