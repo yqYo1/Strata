@@ -12,11 +12,12 @@ sys.dont_write_bytecode = True
 import decode_segment_clocks as reader
 import decode_mtp_prefix_source as source
 
-CHANGE = '1f5f034966ae1bc11a2f1339dd0c5b4d2fb6ca07'
+BASE = 'a41599ff3cace916dcdc6bb54a6db0e75d5b3855'
+CHANGE = '82f4ab777063f599a8a98ad20e471459f39dcc93'
 HEADER = 'include/strata/sycl/decode_segment_clocks.hpp'
 UNITS = {'src/core/verify.cpp': 'strata_engine', 'src/program/generate.cpp': 'strata'}
-PROJECTED = {HEADER: '7647f66cefce8daef6dfc0ff10b0f38ead93c3a2b2bbba20e7a5597a081a2257',
-    'src/core/verify.cpp': '0f7fcd44ee76e383af945aea5d9e57e5d7a5345aaef670925ab8a937790e6b88',
+PROJECTED = {HEADER: 'fd0b57f2d5dcc956a189a8018695004de3c736fbef764513aff7a46fe58b3056',
+    'src/core/verify.cpp': '849737cd2b8975659d97e86c15486f40221ba879fa599155f56d27e0d0a0a8f2',
     'src/program/generate.cpp': '248e20855234aceb369a4436ef568fb27484be83a81e8dc08d78a9af578a320c'}
 require = source.require
 
@@ -42,6 +43,18 @@ def check_reader():
         except ValueError:
             continue
         raise ValueError('reader accepted invalid segment evidence')
+    walls = [f'strata decode sample: request=5 window={9+i} pos={100+i} device=0 wall_ns=1000'
+             for i in range(4)]
+    control = reader.window_walls(walls, 5, False)
+    device = reader.window_walls([s.replace('device=0', 'device=1') for s in walls], 5, True)
+    require(reader.compare_windows(device, control)['within_ten_percent'], 'matched local clocks rejected')
+    device[101] = 1500
+    require(not reader.compare_windows(device, control)['within_ten_percent'], 'one distorted window went undetected')
+    try:
+        reader.window_walls([*walls, lines[0]], 5, False)
+    except ValueError:
+        return
+    raise ValueError('wall-only control accepted a device row')
 
 
 def check(directory):
@@ -64,7 +77,7 @@ def check(directory):
         dest = directory / unit
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(original.read_bytes())
-    patch = subprocess.check_output(['git', 'diff', CHANGE+'^', CHANGE, '--', *PROJECTED], cwd=source.PROJECT)
+    patch = subprocess.check_output(['git', 'diff', BASE, CHANGE, '--', *PROJECTED], cwd=source.PROJECT)
     subprocess.run(['git', 'apply', '--no-index', '--whitespace=error', '-'], cwd=directory, input=patch, check=True)
     require(all(source.digest(directory / p) == h for p, h in PROJECTED.items()), 'source projection differs')
     for unit, target in UNITS.items():
@@ -86,7 +99,7 @@ def check(directory):
                 'compiled source or a transitive include differs')
         print(f'{target} syntax passed, {len(deps-added)} original dependencies matched', flush=True)
     check_reader()
-    print('reader boundary sums and five damaged-input controls passed', flush=True)
+    print('reader boundary sums, five damaged rows and local overhead controls passed', flush=True)
 
 
 if __name__ == '__main__':
