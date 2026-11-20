@@ -338,6 +338,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   With both changes, the pinned `e69d184fc` syntax check passes for the MTP
   engine unit, normal generator and exact-fill diagnostic, with 754, 804 and
   805 matched includes respectively. Linking and live boundary checks remain.
+  The original CLI at `4ac41d827` completes 16384 batched rows on the
+  16385-input, 16387-capacity request and exits at the expected refusal at
+  position 16385. Validation and ownership close without a fresh driver fault.
+  `bench/sycl/decode_mtp_prefix_build.py` projects only the two changed units
+  and rebuilds all targets from the original pinned recipe. The independent
+  decode fallback and the measured prefill reference stay available through
+  this comparison. `bench/sycl/decode_mtp_context_fixed.py` reuses the same
+  body for widths four and eight. It also checks 262142 input with two outputs
+  and the separate exact-262144 diagnostic against its measured original.
   The reviewed `decode-mtp-committed-width-numerics-20261121` audit finds a
   distinct Q8_0 matvec dispatch for one row. Row strides and per-row fused
   GR stay fixed across widths. Compare the earlier accepted K/V cells and

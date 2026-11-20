@@ -1,0 +1,157 @@
+"""Check exact-fit generation and physical fill on the coherently fixed MTP CLI."""
+
+import fcntl
+from pathlib import Path
+import re
+import sys
+
+sys.dont_write_bytecode = True
+import decode_mtp_context_reference as reference
+import decode_mtp_prefix_build as build
+
+bank, basis, require = reference.bank, reference.basis, reference.require
+previous, capacity = reference.previous, reference.capacity
+ROOT = bank.B / 'decode-mtp-context-fixed-v1'
+KEY = 'decode_mtp_context_fixed_v1'
+THIS = str(Path(__file__).resolve().relative_to(bank.P))
+ORDER = ('small-four', 'small-eight', 'near-four', 'full')
+GEOMETRY = {
+    'small-four': (reference.CONTEXT, reference.TOKENS, 2, 4),
+    'small-eight': (reference.CONTEXT, reference.TOKENS, 2, 8),
+    'near-four': (capacity.CAPACITY, capacity.CAPACITY - 2, 2, 4),
+    'full': (capacity.CAPACITY, capacity.CAPACITY, 0, 4),
+}
+PLAN = dict(order=list(ORDER), geometry={k: list(v) for k, v in GEOMETRY.items()},
+    scope='The same fixed production CLI handles small width-four and width-eight requests and the '
+          '262142-token exact-fit request. The linked diagnostic consumes the physical final input '
+          'with zero output. Keep the independent MTP prefix selector off.',
+    acceptance='Two completed verifier windows with exactly one offered draft establish the short '
+               'tail width. Check the observed first catch-up, emitted count, admitted extent, '
+               'provider, ownership and faults. On the exact fill require the same physical work '
+               'and final marker as the original. Stop on the first mismatch.')
+SELECTOR = 'STRATA_SYCL_MTP_DECODE_COMMITTED_PREFIX'
+
+
+def inputs():
+    candidate = bank.previous.read(build.ROOT / 'record.json')
+    build.check(candidate)
+    require(candidate['stage'] == 'built' and candidate['passed'] and candidate['complete']
+            and not candidate['active'] and candidate['ownership_closed'], 'complete the exact build first')
+    old = bank.basis.validation.committed(bank.RESULT, (previous.KEY,))
+    prior = old['outcomes']['full-reuse']
+    require(old['stage'] == 'closed' and old['native_source_commit'] == reference.SOURCE
+            and prior['passed'] and prior['ownership_closed'] and prior['native_exit_code'] == 0
+            and prior['final_slot_consumed'] and not prior['fresh_faults'], 'require original exact-fill evidence')
+    values = reference.inputs()
+    require(values['binary'] == candidate['projection']['parent_binary'], 'original reference changed')
+    values.update(binary=candidate['binaries']['strata'],
+        diagnostic=candidate['binaries']['strata_full_context_diagnostic'],
+        host_binary=candidate['binaries']['full_context_diagnostic_host_test'],
+        native_source_commit=candidate['native_source_commit'], vocab_size=old['vocab_size'],
+        build_sha256=bank.signature(build.builder.compact(candidate)),
+        owner_reference_sha256=build.reference_gate(),
+        full_reference={key: prior[key] for key in (*previous.MATCH, 'kv')})
+    return values
+
+
+def environment(row, case):
+    name = 'full-reuse' if case['full'] else 'short-reuse'
+    env = previous.experiment().environment(row, dict(case, name=name))
+    require(SELECTOR not in env, 'inherit the original fixed-width environment')
+    return dict(env, **{SELECTOR: '0'})
+
+
+def make_case(row, name):
+    context, tokens, outputs, spec = GEOMETRY[name]
+    full = name == 'full'
+    fixture = ROOT / f'tokens-{tokens}.txt'
+    argv = reference.command(dict(row, binary=row['diagnostic'] if full else row['binary']))
+    for flag, value in (('--max-context', context), ('--spec', spec), ('--tokens-file', fixture),
+                        ('--max-new', outputs)):
+        argv[argv.index(flag)+1] = str(value)
+    if full:
+        argv.append('--consume-prompt')
+    case = dict(name=name, full=full, direct=False, tokens=tokens, outputs=outputs, spec=spec,
+                root=str(ROOT / name), fixture=dict(path=str(fixture), sha256=bank.sha(fixture)),
+                wall=2400 if context == capacity.CAPACITY else 480, command=argv)
+    case['environment_sha256'] = bank.signature(environment(row, case))
+    return case
+
+
+def evidence(stdout, stderr, row, case, pid):
+    if case['full']:
+        value = capacity.evidence(stdout, stderr, row, case, pid)
+        counts = value['store']
+        geometry = dict(pieces=counts['pieces'], gpu_rows=value['gpu_rows'], maximum_rows=value['window']['maximum_rows'])
+        value['attention_input'] = previous.model.input_receipt(stderr, value['batched_rows'], geometry, False)
+        value['kv'] = previous.state.kv.check_request(stderr, 0, value['batched_rows'], capacity.CHUNK, reuse=True)
+        require(all(value[k] == v for k, v in row['full_reference'].items()), 'the measured exact fill changed')
+        return value
+
+    proof = basis.validation.preload_evidence(stderr, pid)
+    count, timing = capacity.one(stdout, r'^prefill\s+(\d+) tokens in ([0-9.]+) ms', 'actual batched extent')
+    ids = [int(t) for t in capacity.one(stdout, r'^output\s*:(.*)$', 'output IDs').split()]
+    rounds, spec, accepted, offered = map(int, capacity.one(stdout,
+        r'^speculation\s+(\d+) rounds of (\d+), drafts accepted (\d+) of (\d+) ', 'actual verifier rounds'))
+    p, verified, accepted_first, rows, coupled = map(int, capacity.one(stderr,
+        r'^strata mtp: decode catchup p=(\d+) verified=(\d+) accepted=(\d+) rows=(\d+) coupled=(\d+)$',
+        'one completed MTP catch-up'))
+    require(proof['loader'] == row['native_validation_probe']['loader']['path']
+            and int(count) == case['tokens']-1 and float(timing) > 0 and len(ids) == case['outputs']
+            and all(0 <= t < row['vocab_size'] for t in ids) and 0 <= accepted <= offered
+            and (rounds, spec, offered) == (2, case['spec'], 1)
+            and (p, verified, accepted_first, rows, coupled) == (case['tokens']-1, 1, 0, 1, 0)
+            and not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|teardown uncertain|cleanup failed|ran out of context', stderr),
+            'actual two-output tail or provider evidence differs')
+    return dict(validation=proof, batched_rows=int(count), outputs=len(ids), output_ids_sha256=bank.signature(ids),
+                first_catchup_position=p, verifier_rounds=rounds, last_width=offered+1, accepted=accepted)
+
+
+def experiment():
+    ctx = basis.core.source.device.load_module('mtp_fixed_capacity', capacity.__file__)
+    ctx.ROOT, ctx.KEY, ctx.ORDER = ROOT, KEY, ORDER
+    ctx.environment, ctx.evidence = environment, evidence
+
+    def prepare():
+        require(not ROOT.exists() and KEY not in basis.validation.committed(bank.RESULT), 'fresh fixed-context plan')
+        row = inputs()
+        controllers = [THIS, build.THIS, reference.THIS, *previous.SOURCES]
+        pins = bank.stage.source.pin(bank.P, controllers)
+        ROOT.mkdir(mode=0o700)
+        (ROOT / 'host').mkdir()
+        for n in {item[1] for item in GEOMETRY.values()}:
+            (ROOT / f'tokens-{n}.txt').write_bytes(capacity.token_bytes(n))
+        require(bank.sha(ROOT / f'tokens-{reference.TOKENS}.txt') == bank.sha(reference.INPUT),
+                'small candidate must match the admitted reference body')
+        cases = [make_case(row, name) for name in ORDER]
+        for case in cases:
+            for name in ('cache', 'tmp'):
+                (Path(case['root']) / name).mkdir(parents=True, mode=0o700)
+        row.update(source_commit=pins['revision'], sources=pins['source_sha256'], cases=cases, outcomes={},
+                   plan=PLAN, budgets=ctx.BUDGET, stage='prepared', active=False, ownership_closed=True,
+                   passed=False, complete=False)
+        ctx.save(row)
+
+    def current(row):
+        require(basis.validation.committed(bank.RESULT, (KEY,)) == basis.compact(row)
+                and row['sources'] == bank.stage.source.pin(bank.P, list(row['sources']))['source_sha256']
+                and all(row[k] == v for k, v in inputs().items()) and row['plan'] == PLAN
+                and row['budgets'] == ctx.BUDGET and row['cases'] == [make_case(row, name) for name in ORDER],
+                'committed build, runtime or case differs')
+        for case in row['cases']:
+            require(Path(case['fixture']['path']).read_bytes() == capacity.token_bytes(case['tokens']),
+                    'fixed context body differs')
+
+    ctx.prepare, ctx.current = prepare, current
+    return ctx
+
+
+if __name__ == '__main__':
+    action, = sys.argv[1:]
+    require(action in ('prepare', 'host', *ORDER) and sys.executable == basis.reference.model.PYTHON,
+            'use the pinned interpreter and one fixed-context stage')
+    with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        bank.builder.guards.no_model_owners([])
+        ctx = experiment()
+        ctx.prepare() if action == 'prepare' else ctx.run(action)
