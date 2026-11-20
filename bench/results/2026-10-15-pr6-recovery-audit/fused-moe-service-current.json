@@ -560415,5 +560415,36 @@
       }
     ],
     "model_tested": false
+  },
+  "prefill_qsa_q8_value_v1": {
+    "source": "146f71321c459176d9476c4bfc02895eedd6e487",
+    "selector_environment": {
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PREFILL_TOPK_EARLY": "0",
+      "STRATA_SELECT_OLD": null,
+      "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+      "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1"
+    },
+    "parent_build": "913e9012c3f98898f9f8597639f2ebec384edc04df43a7cca33cedd7ff317a9f",
+    "overlay": {
+      "include/strata/kernels/qsa_bf16_prefix.hpp": "4202ab797a00feb673fa74e8b5151b8d61213fd27c0e8c598c4cf145cc8cf342",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "fc2fbe1e75cc79e6f51e8cf55db504e1f4f2dfa422a1104ab4bfa183dfadbab4",
+      "tests/sycl/qsa_bf16_prefix_layout_bench.cpp": "3cf84ee7da7c455b3f0e5e090643bca7f4bb3c0e0e3a1e24bec1e3806c83f198"
+    },
+    "recipe": "2000d4e22d988c9caf533540143315427b9358fd2b4ecd17fb74c1e559381553",
+    "controls": "3554ec4b2eb6c469dbbe2646987880ce28fe6259e841567517b73779609a7f2c",
+    "benchmark_environment_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
+    "runtime": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+    "controller_commit": "f353cdb430078b50700882af1e37d9b8c9fb8c1d",
+    "model_tested": false,
+    "stages": [
+      {
+        "stage": "build",
+        "passed": false,
+        "error": "RuntimeError(\"fixture build failed: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-q8-value-v1/tests/sycl/qsa_bf16_prefix_layout_bench.cpp:177:8: error: unused variable 'invoke' [-Werror,-Wunused-variable]\\n  177 |   auto invoke=[&](int variant) {\\n      |        ^~~~~~\\n1 error generated.\\n\")",
+        "ownership_closed": true
+      }
+    ]
   }
 }
