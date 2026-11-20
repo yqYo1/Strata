@@ -433,6 +433,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   state, snapshot payload and expert-cache restoration against the off arm.
   Treat this bounded state and route check separately from exact 262144-token
   fill and from both-phase performance.
+  Use `bench/sycl/decode_kv_fast_prefill_capacity.py` for the standalone
+  physical fill on the candidate's linked diagnostic. Replay the original
+  16385-token smoke and 262144-token input with aligned prefill KV reuse
+  fixed in all four cases. Only the decode KV selector changes within a
+  pair. Require the previous residual placement, KV prefix counts and host
+  mirror writes. At capacity, require 262143 batched rows and the checked
+  scalar width-one commit and drain of the final cell with zero output.
+  The leased server's exact-full protocol and RESTORE remain separate gates.
   Keep expert placement, logical context, resident KV and copy geometry fixed.
   `bench/sycl/decode_kv_fast_prefill_preservation.py` uses nine independent
   processes per length in retained/off/on, on/off/retained, retained/off/on
