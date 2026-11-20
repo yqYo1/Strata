@@ -236,6 +236,21 @@ void run(int cells,int queries,int cap,bool clustered,bool identity=false,bool s
       submit_value(arm); guards(); require(out.get()==invalid,"Q8 V diagnostic bit mismatch");
     }
     vs=saved; dvs.put(vs);
+    if (identity) {
+      std::vector<bool> selected(cells,false);
+      for (const int cell : ids) if (cell>=0 && cell<cells) selected[cell]=true;
+      const auto missing=std::find(selected.begin(),selected.end(),false);
+      require(missing!=selected.end(),"identity fixture needs an unselected active cell");
+      const auto cell=static_cast<int>(missing-selected.begin());
+      const size_t row=(size_t(cell/Page)*KV + 1)*Page + cell%Page;
+      vs[row*4+2]=0x7c00; dvs.put(vs);
+      for (int arm=0;arm<3;++arm) {
+        submit_value(arm); guards();
+        require(pb.get()[16+row]==1 && out.get()==reference,
+                "invalid unselected V must be flagged without changing any output");
+      }
+      vs=saved; dvs.put(vs);
+    }
   }
   // All six permutations balance earlier arms as well as positions.
   constexpr std::array<std::array<int,3>,6> order{{
@@ -251,7 +266,8 @@ void run(int cells,int queries,int cap,bool clustered,bool identity=false,bool s
   }
   std::cout<<"q8_v_checked cells="<<cells<<" queries="<<queries<<" cap="<<cap
       <<" page_size="<<Page<<" identity="<<identity<<" clustered="<<clustered<<" selected_pages="<<selected_pages
-      <<" expanded_untouched=1 finite_bits=1 invalid_scale_checked="<<(queries<100)<<'\n';
+      <<" expanded_untouched=1 finite_bits=1 invalid_scale_checked="<<(queries<100)
+      <<" unselected_invalid_checked="<<(queries<100 && identity)<<'\n';
   const int sample_count=rounds*3;
 #elif defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
   auto submit_ordered = [&] {
