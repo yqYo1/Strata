@@ -321,6 +321,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   for prose (5.65%). For a placement comparison, measure held-out hits and
   unique CPU jobs per layer and verifier window. Several entries can share
   a job. An increase in hits alone supplies no elapsed-time estimate.
+  The same two clocked processes at `bf5f94144` bound the logical expert
+  weight volume represented by these jobs even without per-layer job counts. Code
+  issued 1,074,995 unique CPU jobs over 3,121 verified rows, prose 3,718,375
+  over 13,525. Use the measured pack's `native_experts.txt` (SHA256 prefix
+  `d9ac2dfa3ee6`). Its 48 layers have seven expert blob sizes between
+  1,510,400 and 2,662,400 bytes. Each layer can issue at most ten CPU jobs
+  per verified row. Assign the total jobs to the smallest blobs first up to
+  that per-layer limit for a lower bound, then to the largest first for an
+  upper bound. Count a reused expert once per job. Dividing by the actual
+  generated tokens gives 0.741–0.828 GB/output for code and 1.026–1.209
+  GB/output for prose. At 70 tok/s these imply 51.9–58.0 and 71.8–84.6
+  GB/s of logical weight reads. The highest measured median for the 1 GiB
+  continuous RAM read on this host was 42.27 GB/s with three cores. If each
+  job fetched its full blob from RAM at that rate, even the lower bounds
+  would require reducing the bytes per output by 18.5% and 41.1% respectively.
+  Cache hits, repeated weight loads and nonsequential access change that
+  comparison. Recompute the bounds with the new job counts and draft yield
+  after changing the expert ranking or speculative width. Physical DRAM
+  traffic and the cost of GPU verification are separate measurements.
   Before training another ranking, compare the shipped Niko Intel profile
   to the current ordinary profile (source `8cb26e609`, data already in
   this fork at `97e9c9847`). On the actual 1256-slot layout, layers
