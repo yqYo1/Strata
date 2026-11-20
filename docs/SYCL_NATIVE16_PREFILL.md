@@ -455,6 +455,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   at most 0.6 ms. At 117489 the three intervals together left 3.9–4.2 ms
   of prompt time unassigned. The batch includes
   PCIe transfers, CPU waits and GPU kernels. Clean A/B timing and hardware attribution remain separate.
+  On the 117489-token split route, the first clean process for KV reuse alone
+  (`911cdbe59`) took 114.794 s at the warmed median, against 117.204 s for
+  ordinary reload (`040e8370b`). Both read every input token and used scalar
+  gather. The four-block comparison determines repeatability.
+  After it closes, use `bench/sycl/prefill_split_length_curve.py` on its
+  fastest eligible arm with the same executable and actual 128-slot placement.
+  Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
+  98304 batched rows fill twelve chunks. One more input row opens a thirteenth.
+  Take each length in two independent processes in reverse orders, with the
+  first request and the median of two subsequent fresh requests separate.
+  Compare affine, quadratic and n log n fits to prefill time and client TTFT
+  by leaving out a whole length. Hold 98306 outside the smooth fits and
+  report its change from 98305 with the actual expert jobs and transfer counts.
+  A time difference across these two bodies alone cannot isolate chunk setup.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
