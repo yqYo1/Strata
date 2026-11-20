@@ -559495,6 +559495,239 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "near-intel": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "requests": [
+          {
+            "prompt": 253919,
+            "read": 253919,
+            "reused": 0,
+            "output_hash": "6d4bbfb66910386a154ce3ec0b3d4ce7909406eab7e56213f980fae1600e72ca",
+            "finish": "length",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768,
+              40960,
+              49152,
+              57344,
+              65536,
+              73728,
+              81920,
+              90112,
+              98304,
+              106496,
+              114688,
+              122880,
+              131072,
+              139264,
+              147456,
+              155648,
+              163840,
+              172032,
+              180224,
+              188416,
+              196608,
+              204800,
+              212992,
+              221184,
+              229376,
+              237568,
+              245760,
+              253918
+            ],
+            "active_state": {
+              "L": "253919",
+              "gdn": "d8f32b8ee7823b86",
+              "ple": "7231e9941fc2f389",
+              "tail": "3f7d936b3ed2802a",
+              "pooled": "a972ca9991cc91fc",
+              "kv": "6cddc5f8cefbbc86",
+              "mtp": "4766095a4f99047f",
+              "ple_prev": "4061,4062"
+            },
+            "unused_state": {
+              "stale": "00519e6a2876d583",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "8b1ca215488acc67"
+            },
+            "attention_store": {
+              "pieces": 672,
+              "direct": 0,
+              "copy_bytes": 112742891520,
+              "gpu_rows": 114688,
+              "host_rows": 139230,
+              "window_mode": 10,
+              "maximum_rows": 81920
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124,
+            "attention_input": {
+              "eligible": 644,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 108045271040,
+              "checked_layers": 48
+            },
+            "expert_bank": {
+              "requested": 384,
+              "effective": 512,
+              "staged": false
+            }
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "finish": "length",
+            "publications": [
+              32
+            ],
+            "active_state": {
+              "L": "33",
+              "gdn": "7dd20ca7bb19fc2b",
+              "ple": "b106fc6bc536e7a0",
+              "tail": "81b94df0445e4a16",
+              "pooled": "493aba6704653b43",
+              "kv": "5e1c813c5a5ad765",
+              "mtp": "43e1f2debaaaa291",
+              "ple_prev": "159,160"
+            },
+            "unused_state": {
+              "stale": "5935ffeafc0fb98f",
+              "dead": "72b43cd1c2556b97",
+              "pooled_full": "03bb947bfc088087"
+            },
+            "attention_store": {
+              "pieces": 0,
+              "direct": 0,
+              "copy_bytes": 0
+            },
+            "decode_cache_lent": 0,
+            "prefill_route": "cache-window",
+            "attention_input": null
+          },
+          {
+            "prompt": 262128,
+            "read": 8209,
+            "reused": 253919,
+            "output_hash": "f66a8a966619a7aae703ba69f26c7d0b93f5a86b91d51608f9e8b51bb4acc4c5",
+            "finish": "stop",
+            "publications": [
+              262111,
+              262127
+            ],
+            "active_state": {
+              "L": "262128",
+              "gdn": "a901f515434ed70e",
+              "ple": "b25af4f423a1ecc9",
+              "tail": "343d6c368159849a",
+              "pooled": "1f46ebf0a7deb118",
+              "kv": "4feea24eb713a3cc",
+              "mtp": "5c3531962f8ea7ef",
+              "ple_prev": "271,256"
+            },
+            "unused_state": {
+              "stale": "14650fb0739d0383",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "3f747ee2b1f1977f"
+            },
+            "attention_store": {
+              "pieces": 96,
+              "direct": 0,
+              "copy_bytes": 8068792320,
+              "gpu_rows": 8208,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 8208
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124,
+            "attention_input": {
+              "eligible": 92,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 7732592640,
+              "checked_layers": 48
+            },
+            "expert_bank": {
+              "requested": 384,
+              "effective": 384,
+              "staged": true
+            }
+          }
+        ],
+        "validation": {
+          "pid": 4180370,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "restored_tokens": 253919,
+        "restore_payload": {
+          "draft": "a89bc3a7e22f0fff",
+          "cells": "253920",
+          "mode": "2",
+          "source": "ram",
+          "resident": "32848",
+          "main": "ab2e70232398469f",
+          "main_layers": "12",
+          "main_bytes": "3607695360",
+          "draft_bytes": "268139520",
+          "running": "6b2e9f2f9161b8e6",
+          "running_bytes": "118069304",
+          "upto": "253919",
+          "result": "PASS"
+        },
+        "decode_placement": [
+          {
+            "request": 1,
+            "membership_sha256": "4a72917dee3d5778cd9271419e02b52601b85ed64397735025113076e3277dfb",
+            "cpu_jobs": 451,
+            "cpu_entries": 451,
+            "vram_entries": 29,
+            "logical_job_blob_bytes": 916992000
+          },
+          {
+            "request": 2,
+            "membership_sha256": "4a72917dee3d5778cd9271419e02b52601b85ed64397735025113076e3277dfb",
+            "cpu_jobs": 463,
+            "cpu_entries": 463,
+            "vram_entries": 17,
+            "logical_job_blob_bytes": 945433600
+          },
+          {
+            "request": 3,
+            "membership_sha256": "4a72917dee3d5778cd9271419e02b52601b85ed64397735025113076e3277dfb",
+            "cpu_jobs": 416,
+            "cpu_entries": 416,
+            "vram_entries": 64,
+            "logical_job_blob_bytes": 845977600
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
     "passed": false,
