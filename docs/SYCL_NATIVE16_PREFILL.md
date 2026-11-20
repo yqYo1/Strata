@@ -340,6 +340,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   comparison. Recompute the bounds with the new job counts and draft yield
   after changing the expert ranking or speculative width. Physical DRAM
   traffic and the cost of GPU verification are separate measurements.
+  The fixed-width verifier imposes a second limit on either placement.
+  At width four a verifier window can emit at most four tokens. In the two
+  clocked `bf5f94144` runs, even perfect draft acceptance and zero time
+  outside verification would give only 13.84–13.90 tok/s for code and
+  15.19–15.24 for prose if verification retained its measured duration
+  (`4000 / verify_ms`). At 70 tok/s a four-token window allows 57.14 ms
+  in total. Verification alone therefore needs at least a 5.04–5.06×
+  reduction in time for code and 4.59–4.61× for prose under those favorable
+  assumptions. With the observed yields of 3.604 and 2.017 tokens per
+  window the required factors rise to 5.59–5.61× and 9.11–9.14×.
+  For the placement and confidence experiments record the new verifier
+  duration and yield together. Faster draft generation alone cannot close
+  this gap at the measured target-verifier cost.
   Before training another ranking, compare the shipped Niko Intel profile
   to the current ordinary profile (source `8cb26e609`, data already in
   this fork at `97e9c9847`). On the actual 1256-slot layout, layers
