@@ -38292,5 +38292,19 @@
     "review_sha256": "4f98040a2983c8b53a50345d7859a6be7aba4959ed4a37b24185aa1cbf5c681d",
     "finding": "The native reader sets the STOP flag asynchronously. A write to its input pipe alone cannot distinguish a late decode STOP from a request that never observed it.",
     "consumer": "In the interrupted-prefill and late-decode controls, acknowledge the actual flag store before releasing either barrier. Use bounded deadlines and a non-EOS control. Retain through the cancellation and recovery comparison."
+  },
+  "prefill-packed-suffix-owner-20261120": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "source_commit": "fa2b291f89c3dbbfd68aaa7a44d9af4d18ff41be",
+    "question": "Audit the implemented packed BF16 suffix reuse. Trace the actual allocation, page layout, preceding writer, same-layer callbacks, scratch aliasing and fallback. Check the four-token-page fixture against possible stale K, V or bad-row states. Identify a missing validity predicate or an observable model/device negative control if one exists. Stop after reviewing this implementation and its concrete gates.",
+    "prerequisite": "fa2b291f8 now contains the producer, owner, selector and device fixture. The prior qsa-packed-prefix-suffix review covered a proposal without this code."
+  },
+  "decode-round-clock-dependencies-20261120": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "source_commit": "fa2b291f89c3dbbfd68aaa7a44d9af4d18ff41be",
+    "question": "Trace the actual compiled ordinary MTP verifier and CPU pool. Establish exactly what the GPU-reach and CPU expert clocks include in the 781-window long-code run, what can overlap outside their timer boundaries, and what further measurement would distinguish a compute, host-memory or synchronization limit. Bound the remaining critical path if either timed section were shortened; identify one counterexample to simple subtraction. Compare with the prior small-batch/late-33K overlap reports, without repeating a library survey.",
+    "prerequisite": "The clean process at 8838bb802 and the first instrumented process at 866182a40 both completed the two long generations. In the instrumented run, code (781 windows) took 316.62 ms/window, verify 287.77, GPU reach 128.33 and CPU pool 131.73. Prose (3382 windows) took 291.14, 262.44, 125.17 and 108.66 ms respectively. Both had zero PCIe expert jobs. The remaining matched repetitions are required for representative attribution."
   }
 }
