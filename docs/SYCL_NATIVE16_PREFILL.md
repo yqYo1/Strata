@@ -304,6 +304,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   workload, report first-use capture separately. Require faster TG in two
   pairs and a geometric mean ratio above one per workload to select that
   workload's route. A failed safety or live-prefix comparison stops timing.
+  Prioritize reducing the work inside MTP over deferring its two intermediate
+  host waits. At `1532659f2`, the timestamps of 32 B570 graph replays cover
+  ten complete uncoupled T4 chains and the first two graphs of an eleventh.
+  Within each complete window, sum the two differences between the next
+  graph's start and the preceding graph's end. Those two gaps together took
+  0.140–0.201 ms (median 0.156 ms), within a median 31.365 ms from the
+  round's start to the final step's end. The gaps account for 0.51% across
+  these ten spans. The observer was active on one historical prose request.
+  Its 33.33 ms of host drain per window includes time the GPU spent executing.
+  Revisit deferred submission if a current same-queue trace shows a larger
+  inter-graph gap. [Original event tuples](https://github.com/yqYo1/Strata/blob/1532659f22488169459040c4a510ca7160bb33fd/bench/results/2026-10-15-pr6-recovery-audit/mtp-model-observer-current.json)
+  and [SYCL profiling timebase](https://github.khronos.org/SYCL_Reference/iface/event.html#sycl-info-event-profiling).
   At the fixed 1256-slot decode placement, resident experts handled 143,358
   of 1,498,080 routed entries for code (9.57%) and 366,480 of 6,492,000
   for prose (5.65%). For a placement comparison, measure held-out hits and
