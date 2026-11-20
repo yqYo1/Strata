@@ -410,8 +410,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   for 0, 4, 10, 20, 39 and 40 routed GPU rows. Reuse each captured graph with
   two different publications of the CPU rows. Poison unused rows so that
   selection failures show up in the output.
-  Run three separate fresh clean component processes in time-forward,
-  time-reverse, time-forward order with the qualified GPU runtime settings.
+  Run three fresh component processes in time-forward, time-reverse,
+  time-forward order with the qualified GPU runtime settings and parameter
+  validation. Collect API tracing only in the correctness process.
   Compare four counterbalanced pairs of 512 completed graph replays at each
   of 4, 10 and 20 GPU rows. Republish only the CPU miss rows between completed
   replays. Time graph launch through completion and leave publication outside
