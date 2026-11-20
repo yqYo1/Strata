@@ -266,6 +266,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the draft yield. Measure both after a ranking change. Reaching 70 at the
   observed yields also requires reducing the remaining verification/draft
   time or producing more accepted tokens per window.
+  Test the existing request's MTP confidence floor independently of expert
+  placement. The older six-process width comparison at `dcb8ba8cf` found
+  that fixed width two beat four on prose in every pair and lost on code in
+  every pair. The B570's short-output threshold comparison also favored 0.9
+  over 0.5 but generated only 128 tokens per request. For the ordinary stock
+  1256-slot layout, `bench/sycl/decode_confidence.py` keeps width four
+  available and compares confidence floors 0 and 0.9. First check actual
+  verification widths and accepted positions on two fresh 65537-token
+  prompts against the same engine's fixed-width trace. If widths shorten,
+  run three balanced pairs of complete official thinking suites. Determine
+  the strong/weak class from the reference and report the candidate's
+  changed draft denominator, generation length, time to answer and TG.
+  Preserve fixed-input prefill placement, PP and client TTFT independently.
   At the fixed 1256-slot decode placement, resident experts handled 143,358
   of 1,498,080 routed entries for code (9.57%) and 366,480 of 6,492,000
   for prose (5.65%). For a placement comparison, measure held-out hits and
