@@ -38483,9 +38483,29 @@
   "prefill-terminal-state-publication-20261120": {
     "source_commit": "1919720d900ede6c9b55d25d09bb82b503777fd2",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisite": "The isolated native CONSUME_FULL server and full-context parser fixture now exist at 1919720d9. The verified 253919-token parked prefix used by the prospective physical fill exists in the original near-base model receipt.",
     "question": "Audit the implemented terminal request after its real cache loan: last verifier/commit, MTP and full state fingerprint bounds, park/reset of a capacity-filling restored session, and the minimum protocol checks that distinguish stale/full fallback from the leased mixed route. Return concrete counterexamples or a bounded acceptance test.",
-    "consumer": "Main validates the new diagnostic before using the 262144-slot server result for the KV/gather comparison. Previous ownership research selected an entrypoint before this implementation existed."
+    "consumer": "Main validates the new diagnostic before using the 262144-slot server result for the KV/gather comparison. Previous ownership research selected an entrypoint before this implementation existed.",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-terminal-state-publication-20261120/report.md",
+    "report_sha256": "b7900f163c4f364a7e8549242639d6e02ccc2150729190ee09da9c535222e419",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-terminal-state-publication-20261120-control/native-review.md",
+    "review_sha256": "4e697a1990becddcede7ba7957dcdec3e7d2d1e9c616ecec026a246264145547",
+    "finding": "A parked n-1 prefix leaves no rows to borrow scratch before the terminal verifier. Reject this diagnostic before taking the parked session. Check a fully occupied stored snapshot, then an unrelated short resume=0 against a fresh process, including QSA/GDN/PLE and MTP ring invalidation or overwrite before reading. The state hash covers at most the allocated MTP extent. No model qualification follows from this audit.",
+    "worker_completion": {
+      "task": "task_e5db04c4e1ce",
+      "dispatch": "ctx_80424ca6150b",
+      "message": "msg_3d86000399a1",
+      "terminal": "term_2297cef6-0a1e-4906-984b-a10fdec8d9c1",
+      "exact_worker_exited": true,
+      "previous_attempt": {
+        "task": "task_ee2ce8b183bc",
+        "dispatch": "ctx_e34e2e46f1e7",
+        "message": "msg_0217c15980a3",
+        "terminal": "term_a4d072be-e6b0-42ec-b91d-861e2a1b3cab",
+        "exact_worker_exited": true,
+        "result": "Input check used an incorrect control path; no report. Fresh task used the verified relative path."
+      }
+    }
   }
 }

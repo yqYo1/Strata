@@ -438,7 +438,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   control would still need about 5.1–5.2 s to reach 1000 tok/s. The
   calibration used 256 MiB host-USM copies. Actual prefix copy sizes,
   submission costs and overlap can change the saving in either direction.
-  Check the actual per-layer reload/reuse counts and matched wall times in both arms.
+  The official dispatch check at `c6eda71cb` verified both lengths across
+  eight processes, two requests each. The per-layer reload counters and
+  observed append positions imply 336 prefix copies (2,906,652,672 bytes)
+  for the 65537-token control and 28 with aligned reuse
+  (242,221,056). At 117489 the counts were 672 (10,899,947,520 bytes)
+  and 56 (908,328,960). Scalar and vector gathers produced the same copy
+  totals. For the two 117489-token workloads, 7441 and 7434 jobs met the
+  gather threshold in every arm. The observed dispatch matches the volume
+  model at both lengths. Compare untraced request wall times separately.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
@@ -517,14 +525,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   from that same measured KV/gather parent. Its ten changed compile inputs
   include the two production changes and the physical-context diagnostic
   at `1919720d9`. The component timing fixtures stay at their independently
-  measured commits. The model image hash is
-  `5f4aa020ac81f0f49d17680a2d8d738c9a5095fc2c47d617b6eaebbe4f36af73`.
+  measured commits. The source-only projection at `def2dd8ee` precedes
+  the layer counters. Applying the score and GDN counter changes at
+  `e88604bca` and `063f2e392` in either order gives the same caller.
+  The resulting 1171-file model image hash is
+  `9d10b4918adef780b6890080e94aec7ee47d3c02b5464ad1e208917e857beef0`.
   Build admission requires both three-process component gains and the real
   indexer append/restore/overwrite check. Compare the four score/decay
   combinations with KV reload and scalar gather fixed. The baseline on
   the new binary must reproduce the old dispatch, state and decoder
-  handoff. Check actual score packing and GDN gate/recurrence dispatch
-  independently before taking clean timings.
+  handoff. In both traced and clean samples, explicitly set both selectors
+  in every process. After successful launches each layer reports its actual
+  packed/reused live key rows or the GDN recurrence rows for each path.
+  The controller's `dispatch` check derives expected counts from the
+  request positions. At 117488 batched rows, each of 12 attention layers
+  processes 459 score slices. Full packing visits 6,756,935 live rows
+  per layer and retention visits 244,427. The avoided FP32 reads and FP16
+  writes across these layers total 60.019 GB of logical work, excluding
+  padding and repeated GEMM reads. Each of the 36 GDN layers must account
+  for all 117488 recurrence rows in 15 chunks. These are predictions for
+  the upcoming model run; the component evidence remains separate.
   There is a second prefix operation entirely on the GPU. Before ordered-exp
   attention, the pack kernel dequantizes K and V for all live pages and writes
   BF16 operands and bad-scale flags into request scratch. The opt-in

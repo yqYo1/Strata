@@ -2,6 +2,7 @@
 
 import fcntl
 from pathlib import Path
+import re
 import sys
 
 sys.dont_write_bytecode = True
@@ -15,12 +16,15 @@ ROOT = bank.B / 'prefill-score-decay-model-v1'
 KEY = 'prefill_score_decay_model_v1'
 PARENT_BUILD = '83ae2717d51f5ab54f50787cbcae5acf1a945cff'
 TERMINAL = '1919720d900ede6c9b55d25d09bb82b503777fd2'
+SCORE_COUNTS = 'e88604bca4535fac04d4f8f61a3dc4469634ddaf'
+DECAY_COUNTS = '063f2e392394b2d465ee82a76aabcd7aa2421958'
 SCORE_FILES = (keys.HEADER, keys.ADMISSION, keys.CALLER, keys.PACKER)
 DECAY_FILES = (decay.HEADER, *(name for name in decay.UNITS if name != decay.FIXTURE))
 TERMINAL_FILES = ('src/program/generate.cpp', 'include/strata/program/full_context_diagnostic.hpp',
                   'tests/core/full_context_diagnostic_test.cpp')
 CHANGED = tuple(sorted(set((*SCORE_FILES, *DECAY_FILES, *TERMINAL_FILES))))
-IMAGE_HASH = '5f4aa020ac81f0f49d17680a2d8d738c9a5095fc2c47d617b6eaebbe4f36af73'
+BEFORE_COUNTS = '5f4aa020ac81f0f49d17680a2d8d738c9a5095fc2c47d617b6eaebbe4f36af73'
+IMAGE_HASH = '9d10b4918adef780b6890080e94aec7ee47d3c02b5464ad1e208917e857beef0'
 RECIPE_HASH = '1c5523147696377269762da5c25ec5b09e83fd75a8a3333b1c08eb2f632019e7'
 
 
@@ -34,6 +38,12 @@ def project(source, recipe):
             previous = source[name]
             source[name] = merge_delta(previous, name, before, after)
             require(merge_delta(source[name], name, after, before) == previous, 'irreversible source change: ' + name)
+    require(bank.signature(bank.stage.hashed(source)) == BEFORE_COUNTS, 'engine before dispatch counters changed')
+    for revision in (SCORE_COUNTS, DECAY_COUNTS):
+        previous = source[keys.CALLER]
+        source[keys.CALLER] = merge_delta(previous, keys.CALLER, revision + '^', revision)
+        require(merge_delta(source[keys.CALLER], keys.CALLER, revision, revision + '^') == previous,
+                'dispatch counters change the underlying implementation')
     hashes = bank.stage.hashed(source)
     require(len(hashes) == 1171 and bank.signature(hashes) == IMAGE_HASH
             and {p for p in hashes if original[p] != hashes[p]} == set(CHANGED), 'unexpected model source')
@@ -44,7 +54,8 @@ def project(source, recipe):
     require(bank.signature(relocated) == RECIPE_HASH, 'model tools, options or target set changed')
     return relocated, dict(source_sha256=IMAGE_HASH, recipe_sha256=RECIPE_HASH,
                            changed={p: hashes[p] for p in CHANGED}, parent_source=parent.DISPATCH_COUNTS,
-                           score_keys=keys.SOURCE, gdn_decay=decay.SOURCE, terminal_diagnostic=TERMINAL)
+                           score_keys=keys.SOURCE, gdn_decay=decay.SOURCE, terminal_diagnostic=TERMINAL,
+                           score_counts=SCORE_COUNTS, decay_counts=DECAY_COUNTS)
 
 
 def component_gates(parent_hash):
@@ -69,6 +80,39 @@ def component_gates(parent_hash):
             'finish the same-parent indexer append/restore/alias device check')
     gates[keys.BOUNDARY_KEY] = bank.signature(stages)
     return gates
+
+
+def check_dispatch(frame, start, rows, *, retain_keys, store_decay):
+    """One completed layer-major segment on this model, excluding the final verifier row."""
+    require(0 <= start < 262144 and 0 < rows <= 262144 - start, 'invalid prefill extent')
+    slices = full_rows = reused_rows = 0
+    for chunk in range(start, start + rows, 8192):
+        limit = min(chunk + 8192, start + rows)
+        previous = 0
+        for begin in range(chunk, limit, 256):
+            # qsa_step_fill at the last query in this slice, including its dead row.
+            active = min(begin + 256, limit) // 4 + 1
+            slices += 1
+            full_rows += active
+            reused_rows += previous
+            previous = active if retain_keys else 0
+    chunks = (rows + 8191) // 8192
+    require(frame.count('strata prefill score packs:') == 12 and frame.count('strata prefill GDN decay:') == 36,
+            'expected one complete dispatch record per model layer')
+    score_observed = re.findall(r'^strata prefill score packs: layer=(\d+) slices=(\d+) '
+                                r'packed_live_rows=(\d+) reused_live_rows=(\d+)$', frame, re.M)
+    gdn_observed = re.findall(r'^strata prefill GDN decay: layer=(\d+) chunks=(\d+) '
+                              r'reference_rows=(\d+) stored_rows=(\d+)$', frame, re.M)
+    require([tuple(map(int, v)) for v in score_observed] ==
+            [(layer, slices, full_rows - reused_rows, reused_rows) for layer in range(3, 48, 4)],
+            'score slices, actual packing or retained rows differ from request positions')
+    require([tuple(map(int, v)) for v in gdn_observed] ==
+            [(layer, chunks, 0 if store_decay else rows, rows if store_decay else 0)
+             for layer in range(48) if layer % 4 != 3],
+            'missing GDN recurrence or unexpected decay producer/consumer')
+    return dict(score_layers=12, gdn_layers=36, score_slices_per_layer=slices,
+                packed_live_rows_per_layer=full_rows-reused_rows, reused_live_rows_per_layer=reused_rows,
+                gdn_rows_per_layer=rows, chunks_per_layer=chunks)
 
 
 def inputs(expected=None):
@@ -167,6 +211,14 @@ def main(action):
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['dispatch']:
+        _, _, name, start, rows, keys_arm, decay_arm = sys.argv
+        path = Path(name)
+        require(keys_arm in ('0','1') and decay_arm in ('0','1') and path.stat().st_size <= 16 << 20,
+                'use one bounded completed segment and explicit 0/1 arms')
+        print(check_dispatch(path.read_text(), int(start), int(rows), retain_keys=keys_arm == '1',
+                             store_decay=decay_arm == '1'))
+        sys.exit(0)
     action, = sys.argv[1:]
     require(sys.executable == bank.basis.reference.model.PYTHON and action in ('recipe', 'prepare', 'configure', 'compile', 'host'),
             'use the pinned interpreter and a planned stage')
