@@ -377,6 +377,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   check against the measured 117K translation unit using all 798 original
   includes (`15c02eabc`). This check generated no model binary.
   The 253919-token mixed-host path follows a different planner branch.
+  The standalone ordinary copy control at `9c94b7206` filled all 262144
+  physical slots. Of its 262143 batched rows, 114688 stayed on device
+  and 147455 used a 3,019,878,400-byte BF16 host residual bank. Each of
+  47 layer boundaries writes that host portion and reads it back. The
+  corresponding copy requests total 141,934,284,800 bytes in each direction.
+  This is a calculation from the admitted split and the executed BF16
+  copy path. The measured 539.401 seconds include diagnostics; they do
+  not isolate transfer time or qualify throughput.
+  A separate scheduling experiment could run all 48 layers on successive
+  chunk-aligned token ranges when the ordinary placement spills residual
+  rows. Compare the avoided residual transfers with repeated dense and
+  expert weight uploads and prefix processing. Check actual per-range
+  placement, predecessor tokens, KV and recurrent state, ordered callbacks,
+  cancellation and the final slot before timing. Keep this experiment
+  independent of the two-switch KV and MoE gather comparison.
   The clean comparison at `9c03b44d0` completed three independent
   processes with the same ordinary copy route, decoder placement, 262144
   context and four historical thinking-on requests. The last three prompt
