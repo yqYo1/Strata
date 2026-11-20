@@ -28165,7 +28165,7 @@
     "deletion_decision_commit": "cb5a6b934be4fd70ddf9c81ce12a146f4b2890c7"
   },
   "iq4nl_down_pair_v1": {
-    "stage": "checked",
+    "stage": "closed",
     "source_commit": "c684f9d5d55563e47518d78cc983a7c7c7a0e832",
     "dependency_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
     "host_packages": [
@@ -28481,8 +28481,8 @@
     "adopted": false,
     "active": false,
     "ownership_closed": true,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "processes": [
       {
         "input": {
@@ -28827,6 +28827,75 @@
           "errors": [],
           "cleanup": [],
           "peak_session_rss_bytes": 4489216
+        }
+      },
+      {
+        "input": {
+          "cpu": 2,
+          "experts": 128,
+          "weights": 17229606291787211328,
+          "activation": 11664715603182564158
+        },
+        "timer_s": 5e-08,
+        "pairs": [
+          {
+            "order": "AB",
+            "reference_s": 0.441967185,
+            "candidate_s": 0.429836098,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.465570196,
+            "candidate_s": 0.42753492,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.483133578,
+            "candidate_s": 0.440583955,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "BA",
+            "reference_s": 0.457966375,
+            "candidate_s": 0.445694614,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          },
+          {
+            "order": "AB",
+            "reference_s": 0.449720297,
+            "candidate_s": 0.461735927,
+            "fingerprint": 14405839164276672445,
+            "eligible": true
+          }
+        ],
+        "pattern": "rotate",
+        "initial": "AB",
+        "receipt": {
+          "pid": 647830,
+          "direct_identity": {
+            "pid": 647830,
+            "state": "R",
+            "ppid": 647702,
+            "pgid": 647830,
+            "sid": 647830,
+            "start_ticks": 353959996,
+            "rss_bytes": 294912
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 5.105825196951628,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 121311232
         }
       }
     ],
@@ -29225,6 +29294,50 @@
           "cleanup": [],
           "peak_session_rss_bytes": 4489216
         }
+      ],
+      "5": [
+        {
+          "pid": 647811,
+          "direct_identity": {
+            "pid": 647811,
+            "state": "R",
+            "ppid": 647702,
+            "pgid": 647811,
+            "sid": 647811,
+            "start_ticks": 353959971,
+            "rss_bytes": 2412544
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.12034002458676696,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 0
+        },
+        {
+          "pid": 647830,
+          "direct_identity": {
+            "pid": 647830,
+            "state": "R",
+            "ppid": 647702,
+            "pgid": 647830,
+            "sid": 647830,
+            "start_ticks": 353959996,
+            "rss_bytes": 294912
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 5.105825196951628,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 121311232
+        }
       ]
     },
     "correctness": {
@@ -29251,6 +29364,22 @@
         "cleanup": [],
         "peak_session_rss_bytes": 0
       }
+    },
+    "decision": {
+      "process_ratios": {
+        "reuse": [
+          0.9873899306445871,
+          0.9816615195368403,
+          0.9980068661735575
+        ],
+        "rotate": [
+          0.9869299333582274,
+          1.0191089917844782,
+          0.972552064018056
+        ]
+      },
+      "qualified": false,
+      "scope": "Single-core IQ4_NL Down row loop"
     },
     "project": {
       "files": 209,
