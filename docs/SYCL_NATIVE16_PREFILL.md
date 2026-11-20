@@ -406,12 +406,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   decode phase selector and the owned cooperative translation unit from
   `644412c8e` and `93b964cae` onto the exact `fde0cdd11` build image.
   The projected delta is six files. The existing scalar KV translation unit
-  retains SHA256 prefix `4473c66af0` and all other source bytes match.
-  Rebuild the complete engine because the verifier headers change.
+  retains SHA256 prefix `4473c66af0` and the other engine source bytes match.
+  The `fde0cdd11` source label denotes the composed build recorded by
+  `prefill_large_gather_model_source.py`. Reconstructing its 1171 files
+  from the recorded Git inputs produced source SHA256 prefix
+  `f35b6b1a3f` and recipe prefix `ee8be44d38`, both equal to the retained
+  ELF's build record. All twelve measured-source files in the two Orca
+  reviews match that reconstruction. Their original manifests are preserved.
+  Rebuild the complete engine because the verifier headers change. Add the
+  existing `ae74403d1` planner fixture as a separate build target linked to
+  the same `strata_kernels` archive. Run its traced bounded smoke before its
+  full oracle/graph validation. The fixture exercises the physical last cell,
+  invalid tails and the planned 2/4-query shapes. Commit both results before
+  starting the model diagnostic.
   Before timing, `bench/sycl/decode_kv_fast_prefill_restore.py` checks
-  both settings at each fixed MTP width 2 and 4 on the candidate binary.
+  both settings at each fixed MTP width 2 and 4 on the candidate binary,
+  plus the scalar width-3 fallback on the shorter case.
   It uses the established 32769- and 253919-token fresh prefixes, an
   unrelated 33-token switch and 8209 fresh tokens after live RESTORE.
+  A final distinct 33-token request returns from the restored decode to
+  the short scalar path in the same process.
   The first two requests emit one token. The restored request has an
   eight-token output cap, leaving room for the last verifier window even
   when it commits more rows than it emits. Bind each verifier position,

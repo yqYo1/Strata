@@ -16,32 +16,46 @@ model, bank, restore, require = state.model, state.bank, state.restore, state.re
 ROOT = bank.B / 'decode-kv-fast-prefill-restore-v1'
 KEY = 'decode_kv_fast_prefill_restore_v1'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-ORDER = [f'{size}-{width}-{arm}' for size in ('short', 'near')
-         for width in (2, 4) for arm in ('off', 'on')]
-OUTPUTS = (1, 1, 8)
+ORDER = [f'{size}-{width}-{arm}' for size, widths in (('short', (2, 3, 4)), ('near', (2, 4)))
+         for width in widths for arm in ('off', 'on')]
+OUTPUTS = (1, 1, 8, 1)
 SELECTOR = 'STRATA_SYCL_DECODE_KV_COALESCED'
 WINDOW = r'^strata trace: window (\d+) (\d+)$'
 STATE = r'^strata serve: STATE_HASH (.+)$'
 PLAN = dict(order=ORDER, output_caps=list(OUTPUTS),
-    scope='Identical fresh prefix, unrelated short switch and live RESTORE on both arms. '
-          'Mask the decode resolver at process startup. Prove the first T1 and the actual T2 or T4 '
-          'after RESTORE, including the capped final output and committed state extent.',
+    scope='Identical fresh prefix, unrelated short switch, live RESTORE and a final new short conversation. '
+          'Prove actual T2/T4 and the scalar T3 fallback after RESTORE, then return to the scalar short route. '
+          'Compare the capped output and committed state extent.',
     stop='Stop on a wrong route, state, workload, fault, source, or ownership check. No speed claim.')
 
 
 def inputs():
-    _, speed, _, reference_device = state.inputs()
+    _, speed, _, _ = state.inputs()
     candidate = bank.previous.read(build.ROOT / 'record.json')
     build.check(candidate)
+    device = bank.basis.validation.committed(bank.RESULT, (build.DEVICE_KEY,))
+    build_hash = bank.signature(build.builder.compact(candidate))
     require(candidate['stage'] == 'built' and candidate['passed'] and candidate['complete']
-            and candidate['ownership_closed'] and not candidate['active'],
-            'commit the complete coherent KV candidate build first')
-    return candidate, speed, bank.signature(build.builder.compact(candidate)), reference_device
+            and candidate['ownership_closed'] and not candidate['active']
+            and device['stage'] == 'closed' and device['passed'] and device['complete']
+            and device['ownership_closed'] and not device['active']
+            and device['build_sha256'] == build_hash
+            and device['full_engine'] == candidate['binaries']['strata']
+            and device['binary'] == candidate['binaries'][build.FIXTURE_TARGET]
+            and [case['mode'] for case in device['cases']] == build.DEVICE_PLAN['order']
+            and all(case['passed'] and case['ownership_closed'] and case['native_exit_code'] == 0
+                    and not case['fresh_faults'] for case in device['cases']),
+            'commit the coherent KV build and both same-archive device results first')
+    return candidate, speed, build_hash, bank.signature(device)
+
+
+def workloads(near):
+    return [*restore.workloads(near), (list(range(256, 289)), 0)]
 
 
 def requests(near):
     cases = []
-    for (ids, reused), limit in zip(restore.workloads(near), OUTPUTS, strict=True):
+    for (ids, reused), limit in zip(workloads(near), OUTPUTS, strict=True):
         payload = restore.protocol.wire(ids, limit)
         cases.append(dict(prompt=len(ids), max_new=limit, reused=reused,
                           wire_bytes=len(payload), wire_sha256=restore.signature_bytes(payload)))
@@ -81,7 +95,7 @@ def interact(io, case, vocab_size, *, native):
     require(native and all(info.get(k) == v for k, v in restore.INFO.items())
             and info.get('mtp_max') == str(case['width']), 'wrong native placement, KV format or width cap')
     result = []
-    for (ids, reused), receipt in zip(restore.workloads(case['near']), case['requests'], strict=True):
+    for (ids, reused), receipt in zip(workloads(case['near']), case['requests'], strict=True):
         limit = receipt['max_new']
         payload = restore.protocol.wire(ids, limit)
         require(len(payload) == receipt['wire_bytes'] and restore.signature_bytes(payload) == receipt['wire_sha256'],

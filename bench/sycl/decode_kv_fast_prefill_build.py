@@ -5,9 +5,11 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 
 sys.dont_write_bytecode = True
 import prefill_large_gather_model_source as stock
+import kv_planner_experiment as planner
 
 bank = stock.bank
 builder, require = bank.builder, bank.require
@@ -17,6 +19,12 @@ KEY = 'decode_kv_fast_prefill_native_v1'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 PHASE = '644412c8edc625b1c634a8ecfa2fe6585aa12d67'
 ISOLATED = '93b964caeb829f909624bf6dc625fe9ad88c5718'
+FIXTURE_SOURCE = 'ae74403d163208bec938e0af92c5d10eb3d92263'
+FIXTURE = 'tools/sycl/kv_copy_groups_bench.cpp'
+ORACLE = 'tools/sycl/kv_copy_groups_oracle.hpp'
+FIXTURE_TARGET = planner.TARGET
+DEVICE_ROOT = ROOT / 'kv-fixture'
+DEVICE_KEY = 'decode_kv_fast_prefill_device_v1'
 PARENT_ELF = '85e3f202ef99661d52c03a17a8b609b8a8a44e9f584bfa8fc1a5c1c3d51aea7c'
 VERIFY = 'src/core/verify.cpp'
 POLICY = 'include/strata/core/verify_window_policy.hpp'
@@ -33,6 +41,9 @@ PROJECTED = {
     CMAKE: 'd850eb227e5936b5d8e6815d484f5ac0f714b33e6fd0171dde5a181f660b7f5a',
     COOPERATIVE: '40b4962e1d39db8e1a779d03f3a0150189c38589562203e106662c791ba238d1',
 }
+DEVICE_PLAN = dict(order=['smoke', 'full'],
+    scope='The existing KV planner fixture links the same strata_kernels archive as the new server. '
+          'Run traced bounded correctness before full oracle, graph, and physical-tail component checks.')
 
 
 def replace_once(source, text, replacement):
@@ -84,15 +95,23 @@ def project(expected=None):
     require({name for name, digest in bank.stage.hashed(source).items() if basis.get(name) != digest}
             == set(PROJECTED) and basis[SCALAR] == bank.stage.hashed({SCALAR: source[SCALAR]})[SCALAR],
             'shared scalar KV source or unrelated source changed')
+    fixture = stock.fixture.git_file(FIXTURE_SOURCE, FIXTURE)
+    require(bank.stage.hashed({FIXTURE: fixture})[FIXTURE] ==
+            'f5a993d7ac8ed25f782bc87350a728b8214a837a13b253c3d8e3810b29924d07'
+            and source[ORACLE] == stock.fixture.git_file(FIXTURE_SOURCE, ORACLE),
+            'cooperative fixture or independent host oracle changed')
+    source[FIXTURE] = fixture
     old, new = str(stock.MODEL_ROOT), str(ROOT)
     recipe = dict(configure=[s.replace(old, new) for s in recipe['configure']],
                   environment={k: v.replace(old, new) for k, v in recipe['environment'].items()},
-                  targets=recipe['targets'])
+                  targets=[*recipe['targets'], FIXTURE_TARGET])
     parent_objects = parent['actual_inputs']['objects']
     expected_objects = {Path(p).relative_to(stock.MODEL_ROOT / 'build').as_posix() for p in parent_objects}
     expected_objects.add(f'CMakeFiles/strata_kernels.dir/{COOPERATIVE}.o')
+    expected_objects.add(f'CMakeFiles/{FIXTURE_TARGET}.dir/{FIXTURE}.o')
     proof = dict(parent_source=stock.DISPATCH_COUNTS, parent_record_sha256=bank.sha(record_path),
                  parent_binary=reference, phase=PHASE, isolated=ISOLATED, projected=PROJECTED,
+                 fixture_source=FIXTURE_SOURCE, fixture_files=bank.stage.hashed({FIXTURE: fixture, ORACLE: source[ORACLE]}),
                  object_count=len(expected_objects), object_set_sha256=bank.signature(sorted(expected_objects)),
                  unchanged_scalar_sha256=basis[SCALAR])
     return native, foundation, source, recipe, proof
@@ -124,7 +143,7 @@ def check(row, committed=True):
                 and len(objects) == proof['object_count'] == actual['fresh_objects']
                 and bank.signature(objects) == proof['object_set_sha256']
                 and all(actual['compiled'].get(str(tree / p)) == row['source_files'][p]
-                        for p in (VERIFY, POLICY, SCALAR, COOPERATIVE))
+                        for p in (VERIFY, POLICY, SCALAR, COOPERATIVE, FIXTURE, ORACLE))
                 and set(row['binaries']) == set(recipe['targets'])
                 and all(bank.sha(b['path']) == b['sha256'] for b in row['binaries'].values())
                 and all(bank.sha(p) == h for group in bank.previous.ACTUAL for p, h in actual[group].items()),
@@ -170,9 +189,64 @@ def prepare():
     save(row)
 
 
+def device_inputs():
+    row = bank.previous.read(ROOT / 'record.json')
+    native = check(row)
+    require(row['stage'] == 'built' and row['passed'] and row['complete']
+            and row['ownership_closed'] and not row['active'], 'complete the exact native/fixture build first')
+    runtime = row['foundation']['runtime_manifest']
+    files = bank.previous.read(Path(runtime['path']))
+    require(bank.sha(runtime['path']) == runtime['sha256'] and len(files) == runtime['files']
+            and all(bank.sha(path) == h for path, h in files.items()), 'frozen runtime differs')
+    driver, = (path for path in files if Path(path).name.startswith('libze_intel_gpu.so.'))
+    return dict(source_commit=row['source_commit'], native_source_commit=row['native_source_commit'],
+                binary=row['binaries'][FIXTURE_TARGET], full_engine=row['binaries']['strata'],
+                build_sha256=bank.signature(builder.compact(row)), plan=DEVICE_PLAN,
+                boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=row['driver'],
+                runtime_manifest=runtime, runtime_files=files, recipe=row['recipe'], driver_library=driver,
+                native_validation_probe=native['native_validation_probe'])
+
+
+def compact_device(row):
+    value = {k: v for k, v in row.items() if k not in ('runtime_files', 'recipe')}
+    return dict(value, recipe_sha256=bank.signature(row['recipe']))
+
+
+def save_device(row):
+    bank.stage.write(DEVICE_ROOT / 'record.json', row)
+    results = bank.previous.read(bank.RESULT)
+    results[DEVICE_KEY] = compact_device(row)
+    bank.stage.write(bank.RESULT, results)
+
+
+def device_gate(action):
+    if action == 'prepare-device':
+        require(not DEVICE_ROOT.exists() and DEVICE_KEY not in bank.basis.validation.committed(bank.RESULT),
+                'fresh fixture plan only')
+        row = device_inputs()
+        DEVICE_ROOT.mkdir(mode=0o700)
+        save_device(dict(row, stage='built', cases=[], passed=False, complete=False,
+                         active=False, ownership_closed=True, GPU_executed=False))
+        return
+
+    loader = bank.basis.core.source.device.load_module
+    runner = loader('fast_prefill_kv_planner_fixture', planner.__file__)
+    fixture = loader('fast_prefill_kv_fixture_environment', planner.common.__file__)
+    runner.ROOT, fixture.ROOT = DEVICE_ROOT, DEVICE_ROOT
+
+    def check_device(row):
+        basis = device_inputs()
+        require(bank.basis.validation.committed(bank.RESULT, (DEVICE_KEY,)) == compact_device(row)
+                and all(row.get(k) == v for k, v in basis.items()),
+                'commit the exact device plan, binary, firmware/runtime and prior result')
+
+    runner.context = lambda: SimpleNamespace(check=check_device, environment=fixture.environment, save=save_device)
+    runner.run(action)
+
+
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['configure'], ['compile']), 'select one build stage')
     action, = sys.argv[1:]
+    require(action in ('prepare', 'configure', 'compile', 'prepare-device', 'smoke', 'full'), 'select one stage')
     builder.ROOT, builder.KEY = ROOT, KEY
     builder.check = check
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
@@ -180,7 +254,9 @@ if __name__ == '__main__':
         builder.guards.no_model_owners([])
         if action == 'prepare':
             prepare()
-        else:
+        elif action in ('configure', 'compile'):
             builder.TARGETS = bank.previous.read(ROOT / 'record.json')['recipe']['targets']
             builder.save = save
             builder.execute(action)
+        else:
+            device_gate(action)
