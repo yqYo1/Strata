@@ -856,10 +856,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   generation lengths and MTP counts before comparing sustained decode and
   agent follow-up rates. The standard sustained prompts have about 33K actual
   input tokens and exercise the ordinary route. Check split handoff with a
-  separate matched `--long-generation-only --long-generation-input-case
-  split-v1-96k` comparison. Require the actual 128-slot allocation, split tail
-  guard/drain, prefill-to-decode state and both thinking workloads with observed
-  MTP classes. Keep the 117K prefill timing as its own measurement.
+  separate matched `split-v1-96k` comparison in
+  `bench/sycl/prefill_split_continuation.py`. Three pairs keep the stock decode
+  settings and scalar gather fixed. Check count-preflight bodies, actual
+  128-slot admission, split tail guard/drain, MTP restore and same-request
+  decode footers. The code and prose workloads each need at least 1024 output
+  tokens with thinking. Judge the MTP classes from measured acceptance and
+  report warmup and the two long requests in their original order. Physical
+  context fill and RESTORE keep their separate qualification.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
