@@ -378,6 +378,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   actual admission, occupied slot identities, scratch loan/refill range and
   both near-full RESTORE and short decode-cache handoff. Measure the change
   in unique CPU jobs and actual throughput on both workloads.
+  Use `bench/sycl/decode_global_profile_restore.py` after both shipped
+  per-layer rankings pass their RESTORE comparison. Keep the same native ELF
+  and the 1500 MiB reserve. The predicted 1241/1244 global slots must be
+  reported by the server, including the primary-device slot count. Read back
+  every expert payload and check all 48 per-layer membership masks against the
+  original ranked prefix after the fresh prompt, the 33-token switch and the
+  resumed conversation (payload readback applies to the two loans).
+  Compare the fresh and restored prefill bank, row counts, KV copies and
+  expert jobs to the measured ordinary controls. Lower free VRAM at
+  startup can reduce the global admission even for an explicit count.
+  Keep that outcome separate from an 8192-token scratch shortage.
   The 8192-token scratch loan in both original RESTORE fixtures begins
   at slot 132 and covers 1124 slots (2,321,664,000 bytes). On this
   per-layer path, both the slot ranges and the slot widths depend only
