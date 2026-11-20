@@ -115,25 +115,30 @@ def baseline():
             and all(p['passed'] and p['complete'] and p['ownership_closed']
                     and p['native_exit_code'] == 0 and not p['fresh_faults'] for p in row['processes'])
             and row['binary'] == native['binaries']['strata'] and row['native_source_commit'] == native['native_source_commit']
-            and build.sha(row['binary']['path']) == row['binary']['sha256']
-            and build.sha(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'],
+            and build.sha(row['binary']['path']) == row['binary']['sha256'],
             'completed 64K comparison and verified same native image required')
-    # The 64K raw captures have been retired. Recover the two omitted
-    # dictionaries from the qualified reference and check their ORIGINAL hashes.
+    # The 64K capture directory, including its copy of the provider manifest,
+    # has been retired. Check the retained reference against the original bytes.
+    runtime = speed['runtime_manifest']
+    original = row['runtime_manifest']
+    require(runtime['files'] == original['files'] and
+            build.sha(runtime['path']) == runtime['sha256'] == original['sha256'],
+            'retained runtime providers differ from the measured 64K run')
     source = speed['environment_template']
     case_root = str(Path(row['plans'][0]['root']).parent)
     env = {k: v.replace(source['STRATA_MEASUREMENT_ROOT'], case_root) for k, v in source.items()}
     require(build.signature(env) == row['environment_template_sha256']
             and build.signature(speed['model_assets']) == row['model_assets_sha256'],
             'original 64K environment or model files do not match')
-    row.update(environment_template=env, model_assets=speed['model_assets'])
+    row.update(runtime_manifest=runtime, environment_template=env, model_assets=speed['model_assets'])
     return {**{k: row[k] for k in FIELDS}, 'native_build_sha256': identity,
             'ordinary_control': row['observer_admission']['ordinary_control']}
 
 
 def environment(row, plan):
-    env = model.ordinary_environment(row, plan['root'], row['ordinary_control'])
-    env[model.INPUT] = env[model.OUTPUT] = '0'
+    env = suite.environment(dict(row, ordinary_controls={'original': row['ordinary_control']}),
+                            dict(root=plan['root'], arm='original'))
+    env[model.INPUT] = '0'
     require(all(k not in env for k in ('STRATA_TRACE', 'STRATA_DECODE_TIMING', 'STRATA_VERIFY_PROFILE',
                                        'STRATA_DRAFT_TIMING', 'STRATA_SNAPSHOT_VERIFY', 'LD_PRELOAD')),
             'unexpected native observer')
