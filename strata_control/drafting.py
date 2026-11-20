@@ -604,12 +604,16 @@ def pack_path(data_dir: str | Path, engine: str | os.PathLike[str] | None = None
     for name in (PACK_NAME, LEGACY_PACK_NAME):
         if _here(Path(data_dir) / FOLDER / name):
             return Path(data_dir) / FOLDER / name
+    # D1 (0.2.16 retest): only the smaller prepared file was copied in (an offline computer).  For an engine that reads it, it is a complete
+    # drafter: the 522 MB file beside it is not needed.  (With `engine` given the line above already chose it.)
+    if engine is None and converted_ok(data_dir) and engine_has_selector_q4():
+        return converted_path(data_dir)
     return target_path(data_dir)
 
 
-def pack_ready(data_dir: str | Path | None) -> bool:
+def pack_ready(data_dir: str | Path | None, engine: str | os.PathLike[str] | None = None) -> bool:
     try:
-        return bool(data_dir) and _here(pack_path(data_dir))
+        return bool(data_dir) and _here(pack_path(data_dir, engine))
     except OSError:
         return False
 
@@ -1120,7 +1124,7 @@ def apply(cfg: dict[str, Any], *, klass: str = "other", data_dir: str | Path | N
     if decision.drafter == "dflash2":
         qualifies = tuned_applies(backend, cfg.get("model_name"), archs, args=strip_mtp_flags(strip_draft_flags(args)), vram_mib=vram_mib)
         pack = pack_path(data_dir, engine, model_name=cfg.get("model_name"), backend=backend, tuned=qualifies)
-        if Path(pack) != tuned_path(data_dir, tuned_variant(backend, cfg.get("model_name"))) and not pack_ready(data_dir):         # (only the tuned pack is here and this engine cannot read it: no drafter file for it)
+        if Path(pack) != tuned_path(data_dir, tuned_variant(backend, cfg.get("model_name"))) and not pack_ready(data_dir, engine):
             decision = Decision(decision.asked, "mtp", NOT_DOWNLOADED) if mtp_here is not False else Decision(decision.asked, "off", NONE_HERE)
     if decision.drafter == "off":
         cfg["args"] = strip_mtp_flags(strip_draft_flags(args))

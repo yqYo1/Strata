@@ -822,7 +822,7 @@ class FetchAndPack(unittest.TestCase):
         self.data = self.dir / "data"
         self.steps: list = []
         # the packed test file is a few hundred kB, not the real 0.76 GB: "ready" asks for more than 1 MiB by default
-        patcher = mock.patch.object(drafting, "pack_ready", lambda d: bool(d) and drafting.pack_path(d).is_file())
+        patcher = mock.patch.object(drafting, "pack_ready", lambda d, engine=None: bool(d) and drafting.pack_path(d, engine).is_file())
         patcher.start()
         self.addCleanup(patcher.stop)
 

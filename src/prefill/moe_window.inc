@@ -407,6 +407,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                                                owner.pending_prefix_upload);
     }
 #endif
+    const bool allow_vec8 = owner.scratch_mixed && prefill_moe_large_vec8_requested();
     int32_t loaded = -1;
     for (size_t index = 0; index < owner.routes->jobs().size(); ++index) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -469,10 +470,15 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         {
             hp::Host host(hp::moe_gather);
             auto tag = command_trace.tag(cp::Kind::gather, job.expert, job.global_row, job.rows, N);
-            if (owner.scratch_mixed)
-                native16::moe_gather_mixed(*owner.routes, index, mixed, mixed_tail,
-                    plan.primary_rows, source, gathered, status, m.cs);
-            else gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
+            if (owner.scratch_mixed) {
+                const auto gather = native16::prefill_moe_mixed_gather_kernel(allow_vec8, job.rows);
+                gather(*owner.routes, index, mixed, mixed_tail, plan.primary_rows,
+                       source, gathered, status, m.cs);
+                if (gather == native16::prefill_moe_gather_mixed_vec8) {
+                    ++owner.vec8_gather_jobs;
+                    owner.vec8_gather_rows += uint64_t(job.rows);
+                }
+            } else gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
         }
         bool fused_gu = false;
         {

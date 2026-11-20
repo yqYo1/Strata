@@ -254,7 +254,7 @@ void mixed_gather(int rows, int primary_rows, bool vec8 = false, size_t job_inde
 }
 // Each of 64 expert jobs has a different, stable subset of the same 64K
 // source bank. The timed batch reuses one destination, as in the model.
-void time_mixed_gather(int job_rows, int cluster, int process) {
+void time_mixed_gather(int job_rows, int cluster, int process, bool production_dispatch = false) {
     constexpr int rows = 65536, experts = 64;
     const int groups = (job_rows + cluster - 1) / cluster;
     std::vector<int32_t> ids(size_t(rows)*K), occupied(rows);
@@ -294,17 +294,23 @@ void time_mixed_gather(int job_rows, int cluster, int process) {
     q.memcpy(source.data(),map.data(),map.size()*sizeof(int32_t));
     runtime->wait();
     auto run_batch = [&](bool vec8, int first_job, int count) {
-        const auto gather = vec8 ? pn::prefill_moe_gather_mixed_vec8 : pn::moe_gather_mixed;
+        const auto raw_kernel = vec8 ? pn::prefill_moe_gather_mixed_vec8 : pn::moe_gather_mixed;
+        int vec8_jobs = 0;
         q.memset(output.data(),0xa5,values*sizeof(uint16_t));
         q.fill(status.data(),uint32_t(0),1);
         runtime->wait();
         const auto begin = std::chrono::steady_clock::now();
         for (int j = 0; j < count; ++j) {
             const int e = (first_job+j) % experts;
+            const auto gather = production_dispatch
+                ? pn::prefill_moe_mixed_gather_kernel(vec8, plan->jobs().at(e).rows) : raw_kernel;
             gather(*plan, size_t(e), input.data(), nullptr, rows, source.data(), output.data(), status.data(), &q);
+            if (production_dispatch && gather == pn::prefill_moe_gather_mixed_vec8) ++vec8_jobs;
         }
         runtime->wait();
         const auto end = std::chrono::steady_clock::now();
+        if (production_dispatch)
+            need(vec8_jobs == (vec8 && job_rows >= 2334 ? count : 0), "unexpected production gather kernel");
         q.memcpy(observed.data(),output.data(),values*sizeof(uint16_t));
         q.memcpy(&observed_status,status.data(),sizeof(observed_status));
         runtime->wait();
@@ -354,7 +360,9 @@ int main(int argc,char** argv) {
         gate("before-runtime");runtime=sb::runtime_for();
         std::cout<<"device="<<runtime->device().get_info<sycl::info::device::name>()<<" driver="<<runtime->device().get_info<sycl::info::device::driver_version>()<<'\n';
         gate("runtime-ready");
-        if (mode=="mixed-gather-time-0" || mode=="mixed-gather-time-1" || mode=="mixed-gather-time-2") {
+        const bool production_dispatch = mode == "mixed-gather-dispatch-0" || mode == "mixed-gather-dispatch-1"
+            || mode == "mixed-gather-dispatch-2";
+        if (production_dispatch || mode=="mixed-gather-time-0" || mode=="mixed-gather-time-1" || mode=="mixed-gather-time-2") {
             std::array<int64_t,1024> intervals{};
             for (auto& ns : intervals) {
                 const auto begin = std::chrono::steady_clock::now();
@@ -367,8 +375,15 @@ int main(int argc,char** argv) {
             std::cout << "gather_clock samples=1024 median_upper_ns=" << intervals[512]
                       << " p99_ns=" << intervals[1013] << '\n';
             const int process = mode.back()-'0';
-            for (int job_rows : {211,6640}) for (int cluster : {1,16})
-                time_mixed_gather(job_rows,cluster,process);
+            if (production_dispatch) {
+                static_assert(pn::prefill_moe_mixed_gather_kernel(true, 2333) == pn::moe_gather_mixed);
+                static_assert(pn::prefill_moe_mixed_gather_kernel(false, 8192) == pn::moe_gather_mixed);
+                for (int job_rows : {2334, 8192}) for (int cluster : {1, 16})
+                    time_mixed_gather(job_rows, cluster, process, true);
+            } else {
+                for (int job_rows : {211,6640}) for (int cluster : {1,16})
+                    time_mixed_gather(job_rows,cluster,process);
+            }
         } else if(mode=="mixed-gather-vec8-contiguous")mixed_gather(16384,16384,true);
         else if(mode=="mixed-gather-vec8-ragged")mixed_gather(16383,8192,true,1);
         else if(mode=="mixed-gather-smoke")mixed_gather(8193,8192);

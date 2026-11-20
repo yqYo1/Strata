@@ -222,6 +222,199 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   28.8 ms per window. Those totals include the work around verification.
   Measure verify, commit and draft on these same workloads before assigning
   the gap. The older 3157-output/900-window executable cannot supply that split.
+  Use `bench/sycl/ordinary_decode_round_cost.py` on the resident-input build
+  with both BF16 copy paths selected. Run the same official thinking-on suite
+  in clean, timing, timing, clean order. The timing arm enables only the
+  existing request-end decode footer. Bind its window count, verifier rows,
+  CPU expert entries and phase clocks to the native request and client result.
+  Compare the two pairs for each workload. Treat the clocks as representative
+  only with equal work and paired per-token times within a factor of 1.10.
+  GPU-reach wait and CPU-pool wall time are nested inside verification.
+  These counters cannot by themselves identify VRAM, RAM or CPU saturation.
+  The first instrumented process at `866182a40` closed with the same
+  generated-token, draft and CPU expert counts as the preceding clean process. Code/prose
+  verification took 287.77/262.44 ms per window, including GPU-reach
+  waits of 128.33/125.17 ms. The host interval following GPU reach was
+  141.45/117.95 ms. Inside it, 131.73/108.66 ms elapsed around the expert
+  dispatcher's pool run. In source `1bf54ec32`, the serve footer prints
+  `drive.d.ms_run` for the latter field. The dispatcher times from just
+  before pool invocation through its return and any peer/remote completion.
+  These wall clocks do not measure worker CPU cycles or RAM bandwidth.
+  Draft generation alone took 28.65/28.51 ms. At the observed acceptance,
+  70 tok/s leaves only 22.84 ms (code) or 0.31 ms (prose) for all other
+  work if draft time stays fixed. For this MTP-weak workload measure the
+  cost of proposing drafts and the emitted tokens per verification together;
+  reducing CPU expert time alone cannot recover that budget at fixed yield.
+  Both matched pairs closed at `bf5f94144`. The two clean code results
+  were 11.312/11.368 tok/s for 2815 output tokens and prose 6.844/6.604
+  for 6823. Clocked/clean per-token ratios were 0.994/1.003 for code
+  and 0.988/0.956 for prose. The second clocked process gave 289.07/263.32
+  ms for verification, 133.35/109.80 ms within the expert pool and
+  28.73/28.54 ms for drafting. Both workloads met the 1.10 observer gate
+  with matched work in both pairs. All four native processes exited zero
+  with no new fault. These observations qualify attribution on this route.
+  For each measured process and workload, let `t` be total engine decode ms
+  per window and `y` the actual emitted tokens divided by windows. Holding
+  work and every other interval fixed, halving the expert-pool interval `p`
+  gives `1000*y/(t-p/2)`, or 14.34–14.37 tok/s for code and 8.51–8.52 for
+  prose. Removing that interval entirely gives about 19.5 and 11.1 tok/s.
+  The per-layer GPU-reach wait ends before the pool callback starts in
+  `src/core/verify.cpp` at the measured source `1bf54ec32`. Even setting both
+  wall intervals to zero in the same calculation gives 63.73–63.98 tok/s
+  for code and 35.21–35.28 for prose. These are fixed-work sensitivities.
+  Moving experts changes how much other work the wait hides and may change
+  the draft yield. Measure both after a ranking change. Reaching 70 at the
+  observed yields also requires reducing the remaining verification/draft
+  time or producing more accepted tokens per window.
+  Test the existing request's MTP confidence floor independently of expert
+  placement. The older six-process width comparison at `dcb8ba8cf` found
+  that fixed width two beat four on prose in every pair and lost on code in
+  every pair. The B570's short-output threshold comparison also favored 0.9
+  over 0.5 but generated only 128 tokens per request. For the ordinary stock
+  1256-slot layout, `bench/sycl/decode_confidence.py` keeps width four
+  available and compares confidence floors 0 and 0.9. First check actual
+  verification widths and accepted positions on two fresh 65537-token
+  prompts against the same engine's fixed-width trace. If widths shorten,
+  run three balanced pairs of complete official thinking suites. Determine
+  the strong/weak class from the reference and report the candidate's
+  changed draft denominator, generation length, time to answer and TG.
+  Preserve fixed-input prefill placement, PP and client TTFT independently.
+  The decode-only committed-prefix candidate changes one other piece of work.
+  After the target commits `a+1` rows of a window of width `T`, the MTP round
+  ordinarily computes K/V for all `T` and then recomputes the selected row in
+  its full forward. With `STRATA_SYCL_MTP_DECODE_COMMITTED_PREFIX=1`, ordinary
+  uncoupled MTP4 selects the existing round graph for `a+1` rows. The
+  full forward, subsequent draft chain and host synchronization stay the same.
+  From the two clocked processes in `ordinary_decode_round_cost_v1` at
+  `bf5f94144`, code offered 2340 and accepted 2036 drafts. Prose offered
+  10143 and accepted 3442. Exclude the last verifier window, which generates
+  no further drafts. Of the original 3117 and 13521 K/V catch-up rows, this
+  can skip 303–304 (code) and 6699–6701 (prose). The ranges allow for the
+  unknown last acceptance using its two and one unemitted positions.
+  Elapsed savings need measurement because narrower matvecs can reread the same
+  weights, and the first occurrence of each width can capture another graph.
+  Compare off/on at fixed width and identical placement, separately from the
+  confidence-floor experiment and the proposed graph-drain change. First trace all four actual
+  catch-up widths against verified and accepted counts. Check live draft KV,
+  next-token probabilities, ordinary prefill dispatch, handoff and RESTORE
+  across a page boundary and near capacity. Include the initial single-row
+  and final truncated window. On the same qualified binary take three ordered
+  stock/candidate pairs (AB, BA, AB) of the thinking-enabled long, agent,
+  code and prose suite. Compare subsequent TG and full-answer time per
+  workload, report first-use capture separately. Require faster TG in two
+  pairs and a geometric mean ratio above one per workload to select that
+  workload's route. A failed safety or live-prefix comparison stops timing.
+  Prioritize reducing the work inside MTP over deferring its two intermediate
+  host waits. At `1532659f2`, the timestamps of 32 B570 graph replays cover
+  ten complete uncoupled T4 chains and the first two graphs of an eleventh.
+  Within each complete window, sum the two differences between the next
+  graph's start and the preceding graph's end. Those two gaps together took
+  0.140–0.201 ms (median 0.156 ms), within a median 31.365 ms from the
+  round's start to the final step's end. The gaps account for 0.51% across
+  these ten spans. The observer was active on one historical prose request.
+  Its 33.33 ms of host drain per window includes time the GPU spent executing.
+  Revisit deferred submission if a current same-queue trace shows a larger
+  inter-graph gap. [Original event tuples](https://github.com/yqYo1/Strata/blob/1532659f22488169459040c4a510ca7160bb33fd/bench/results/2026-10-15-pr6-recovery-audit/mtp-model-observer-current.json)
+  and [SYCL profiling timebase](https://github.khronos.org/SYCL_Reference/iface/event.html#sycl-info-event-profiling).
+  At the fixed 1256-slot decode placement, resident experts handled 143,358
+  of 1,498,080 routed entries for code (9.57%) and 366,480 of 6,492,000
+  for prose (5.65%). For a placement comparison, measure held-out hits and
+  unique CPU jobs per layer and verifier window. Several entries can share
+  a job. An increase in hits alone supplies no elapsed-time estimate.
+  The same two clocked processes at `bf5f94144` bound the logical expert
+  weight volume represented by these jobs even without per-layer job counts. Code
+  issued 1,074,995 unique CPU jobs over 3,121 verified rows, prose 3,718,375
+  over 13,525. Use the measured pack's `native_experts.txt` (SHA256 prefix
+  `d9ac2dfa3ee6`). Its 48 layers have seven expert blob sizes between
+  1,510,400 and 2,662,400 bytes. Each layer can issue at most ten CPU jobs
+  per verified row. Assign the total jobs to the smallest blobs first up to
+  that per-layer limit for a lower bound, then to the largest first for an
+  upper bound. Count a reused expert once per job. Dividing by the actual
+  generated tokens gives 0.741–0.828 GB/output for code and 1.026–1.209
+  GB/output for prose. At 70 tok/s these imply 51.9–58.0 and 71.8–84.6
+  GB/s of logical weight reads. The highest measured median for the 1 GiB
+  continuous RAM read on this host was 42.27 GB/s with three cores. If each
+  job fetched its full blob from RAM at that rate, even the lower bounds
+  would require reducing the bytes per output by 18.5% and 41.1% respectively.
+  Cache hits, repeated weight loads and nonsequential access change that
+  comparison. Recompute the bounds with the new job counts and draft yield
+  after changing the expert ranking or speculative width. Physical DRAM
+  traffic and the cost of GPU verification are separate measurements.
+  Before training another ranking, compare the shipped Niko Intel profile
+  to the current ordinary profile (source `8cb26e609`, data already in
+  this fork at `97e9c9847`). On the actual 1256-slot layout, layers
+  0–46 have 26 slots each and layer 47 has 34. Of the occupied
+  (layer, expert) pairs, 400 are common and 856 change. This comparison
+  holds capacity fixed. Niko's reported gain used a B70 at a different
+  capacity. The earlier local code-trained ranking reduced code latency
+  by 11.18% but increased prose latency by 1.24% in the one-pair
+  diagnostic (`cache-window-rank-current.json`). Compare the Intel
+  profile on both workloads and check the prefill loan and restored map.
+  A later comparison can keep the winning profile fixed and vary its
+  per-layer quotas. Removing `--expert-cache-per-layer` also changes the
+  meaning of `--expert-cache` for this native pack. In the measured SYCL
+  source the global allocator admits ranked slots up to the lesser of free
+  VRAM after the reserve and the requested count times the largest blob.
+  The per-layer 1256-slot layout uses 2,575,206,400 bytes. With sufficient
+  free VRAM, global 1256 would use about 768 MB more with either shipped
+  ranking, changing prefill headroom at the same time. Requesting global
+  967 instead caps it at 2,574,540,800 bytes. With the stock ranking this
+  funds 1241 slots (2,573,849,600 bytes, 1021 common pairs with per-layer
+  stock). With the Intel ranking it funds 1244 slots (2,573,772,800 bytes,
+  1097 common pairs with per-layer Intel). These counts use the pack's
+  256-byte-aligned sizes and the complete STRP order.
+  An unmodified global ranking at 967 fails the 8192-token scratch budget.
+  The observed per-layer loan starts at slot 132; dropping one slot leaves
+  2,319,692,800 bytes, below the required workspace. Keeping the first 128
+  global slots leaves only 2,308,224,000 (stock) or 2,301,670,400 (Intel).
+  Use `bench/sycl/decode_profile_tail.py` to permute the admitted set before
+  GPU qualification. It preserves every decode member and the first excluded
+  pair. With 26 (stock) or 32 (Intel) replacements among the first 132 members,
+  the tail from 132 has exactly the reference 2,321,664,000 bytes and its
+  first slot is exactly 1,971,200 bytes. The planner therefore selects the
+  same 8192-token workspace whenever the full computed cache is admitted.
+  The unborrowed experts and the bytes that must be refilled per layer can
+  differ. At smaller admissions, recompute both budgets. Before timing, verify
+  actual admission, occupied slot identities, scratch loan/refill range and
+  both near-full RESTORE and short decode-cache handoff. Measure the change
+  in unique CPU jobs and actual throughput on both workloads.
+  The 8192-token scratch loan in both original RESTORE fixtures begins
+  at slot 132 and covers 1124 slots (2,321,664,000 bytes). On this
+  per-layer path, both the slot ranges and the slot widths depend only
+  on layer and quota. At the same split the loan therefore has the same
+  byte extent with either ranking. The expert identities do change.
+  Only 48 of the 132 unborrowed experts are in both prefixes, and only
+  three occupy the same slot. Across the full cache, 27 occupy the same
+  slot. These are predictions from the two committed ranking files.
+  `bench/sycl/decode_profile_restore.py` checks the actual 48-layer
+  decode membership against each selected file after a long prompt, a
+  33-token conversation switch and the 8209-token restored suffix.
+  The diagnostic reads back the borrowed and retained expert payloads
+  and checks the loan extent on both the 32769 and 253919 input cases.
+  Keep its observed CPU jobs and GPU hits separate from clean decode
+  timing. Exact generated-token equality across different memberships
+  is not a correctness criterion.
+  After both profiles pass those state checks, use
+  `bench/sycl/decode_profile_generation.py` with the same executable. Run the
+  official thinking-enabled long, agent and sustained-generation suite in three
+  independent stock/Intel pairs, reversing the second pair. Only the expert
+  ranking changes. Check the fixed fresh prompt bodies, prefill dispatch, prompt
+  times and client TTFT on both generation workloads. Compare sustained TG
+  and MTP yield on code and prose, and keep agent request-history identity
+  separate from its achieved follow-up rate. Require higher TG in at least two
+  pairs and a geometric mean ratio above one on each sustained workload.
+  Report prefill and agent preservation separately before selecting a ranking.
+  The eight traced state/RESTORE processes at `4775de3b0` expose a separate
+  first-token cost on the resident-input executable (`b35d66a4`). On the
+  first one-token decode per process, the verifier's graph capture clock
+  covered 4.771–5.030 s of the 5.033–5.222 s decode (94.1–96.5% within
+  each request). The intervening 33-token prompt reused the graph. After
+  RESTORE the same one-token window took 28–52 ms to capture, in a total
+  decode of 156–256 ms. The clock in the compiled `Verifier::capture`
+  includes recording and finalizing segments, diagnostic output and the free
+  VRAM query. Driver compilation time within it is unknown. Measure these
+  parts before moving first-request work into startup. Use the separate
+  sustained-generation suite above for the steady decode question.
   The resident-input candidate at `1bf54ec32` is integrated into
   `feature/sycl` for validation. It lets eligible prefill layers read the preceding layer's
   BF16 bank directly and traces cumulative reads and copied bytes after
@@ -256,11 +449,409 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   both copies in each request. Active state, output hashes, publications,
   decode-cache loan and restored payload matched through 262128 tokens.
   All eight server processes closed normally with no fresh Xe fault, and
-  the final 15 model asset hashes matched. Physical slot 262144 and clean
-  speed remain separate checks.
-  After the required model state checks, `4d9b176e5` compares
-  copy, direct input, direct output and both over 16 independent clean
-  processes with three 65537-token prompts apiece.
+  the final 15 model asset hashes matched. The separate standalone
+  final-slot check is recorded below.
+  The four-way comparison from `4d9b176e5` closed at `73d9394a9`.
+  Each of 16 independent clean processes handled three fresh 65537-token
+  prompts. Every request produced 24 tokens and accepted 16 of 21 drafts.
+  Across the four counterbalanced blocks, warmed process median rates were
+  888.26 tok/s for copy, 885.30 for direct input, 891.71 for direct output,
+  and 888.00 for both. Direct output shortened warmed prefill time against
+  copy in every block by 0.30–1.11%. Median client TTFT was 73.70 s for
+  direct output and 73.99 s for copy. Direct input and the combined change
+  had mixed results. Keep direct output as a candidate on this executable.
+  The earlier direct-output loss on a different executable remains recorded.
+  The short outputs leave sustained decode open. The standalone capacity
+  run exercised the final slot independently of these timing samples.
+  Also revalidate the historical 117489-token workload on this ordinary
+  build with the configured context kept at 262144. At `792ec1ee5` the
+  reference clocked 1045.73–1051.06 PP across three warmed process medians
+  (median 1048.98). It used context and resident KV both 131072; the current
+  control uses 262144 and 20480 respectively. Both request split mode 10 and
+  384 expert slots. In the historical reference, increasing the input from
+  65537 to 117489 tokens increased the median warmed expert-bank upload
+  request from 37.173 to 38.541 GB. That reduces the requested bank bytes
+  per input token from 567.2 to 328.0 kB. These counts cover this bank only.
+  Compare the four current requests with their historical counterparts by
+  request hash, expert-bank bytes, jobs, fused Down jobs, routing-map bytes
+  and actual draft offers and accepts. All twelve historical requests produced
+  24 tokens with 16 of 21 drafts accepted. Check each body against its own
+  reference before attributing a time difference to the engine.
+  Record any differences separately from the speed decision. The historical
+  117K route rebuilt 223,227,900 draft-head bytes; the current route expects
+  zero. Equal expert work would still leave that handoff difference.
+  For 117488 batched rows the production planner instead
+  tries 128 slots and one split accumulator window. With the current model,
+  it budgets 2,406,154,240 bytes of BF16 residual, 531,988,736 bytes of extra
+  accumulator including its guard, a 340,787,200-byte expert bank, 241,555,328
+  bytes of QSA prefix, 256 bytes of score status and 512 MiB of headroom.
+  The total is 4,057,356,672 bytes before admission. In the three 64K control
+  requests at `880c93b14`, the same formula with its actual 384-slot bank
+  and no extra accumulator reproduces the logged fixed budget exactly.
+  Those requests reported 188–195 MB of free VRAM beyond the projected 117K
+  need. The split uses 897,762,560 bytes of aligned planes and guards
+  followed by a 265,994,240-byte mixed-input tail inside the existing
+  1,180,698,624-byte shared arena, leaving 16,941,824 bytes. The same
+  plane calculation reproduces the measured 888,410,624-byte tail offset
+  at 64K. The largest proposed individual allocation (the residual)
+  is below the reported 10,132,807,680-byte single-allocation limit.
+  The four traced requests at `5c760036d` admitted this layout with
+  4,245,643,264–4,262,002,688 bytes free at the planner check. Each
+  completed 48 GPU windows, including the split tail guard and queue drain.
+  Their request hashes, expert jobs, fused Down jobs, requested expert
+  and row-map bytes, and draft offers/accepts matched all three historical
+  processes body for body. The ordinary route restored zero draft-head
+  bytes. The traced native process exited normally without a fresh Xe fault.
+  At the same 262144 capacity, raising resident K8V8 from 20480 to
+  262144 cells adds `12*(262144-20480)*1056 = 3,062,366,208` pool
+  bytes across the main attention layers. The mode-1 residency-map
+  allowance from `kv_stream_map_bytes(5120)+6*16` is 1,230,720 bytes
+  across the twelve layers. Even crediting that entire allowance and
+  the measured 276,824,064-byte prefill stage leaves about 2.78 GB
+  extra, before other layout changes. The observed 117K prefill plan's
+  margin above its fixed requirement was only 188,286,592–204,646,016
+  bytes. Reproducing the historical all-resident layout at full capacity
+  requires changing another major allocation or its lifetime. Use the
+  one-layer KV reuse comparison to isolate transfer cost first.
+  Increasing the batched rows from 65,536 to 117,488 multiplies them by
+  1.793. The ordered QSA loop grows from 100,638,720 to 181,683,840
+  tiles (1.805 times): each of 12 layers and two KV heads processes
+  `ceil(min(position + 1, 2051) / 32)` tiles per fresh query. Counting
+  padded QK and PV matrix work gives 52.76 and 95.25 TFLOP respectively.
+  In contrast the median warmed expert-bank payload increases only from
+  37.17 to 38.54 GB (1.037 times). These different scaling rates motivate
+  measuring both lengths. Kernel time and physical traffic at 117K remain
+  open; the tile count is derived from the executed geometry.
+  In each of the four traced 117K requests, the streamed KV quantizer
+  published 1,488,807,936 bytes to the host. Each of 12 attention layers
+  issued 14 calls for 8192 rows and one for 2800 rows, with four copies
+  per call (720 copies in all). At the previously measured 6.56 GB/s
+  device-to-host rate for queued 64 MiB transfers, the same payload
+  would take 0.227 s. The two warmed 64K PTI windows at `c40c8c1bd`
+  recorded 384 D2H commands and 830,472,192 bytes each, exactly the
+  count and volume expected from eight chunks per layer. Their device
+  service was 147.960 and 147.956 ms (5.61 GB/s). At that rate the
+  117K payload would take 0.265 s. The PTI summary groups commands by
+  direction; it supplies no per-producer timing or 117K queue-wait time.
+  A change to host publication would need to explain a larger scheduling
+  or synchronization cost to recover several seconds from this route.
+  There is a separate transfer in the other direction. Before each
+  streamed QSA chunk, `kv_stage_from_host` reloads every page before
+  its starting position into the shared stage. For a fresh position-zero
+  request, chunks of 8192, 12 layers and 1056 bytes per cell, the code
+  requests 2,906,652,672 bytes at 64K and 10,899,947,520 at 117K.
+  This follows from the executed positions and copy lengths. The full
+  64K PTI window labeled 344 copies / 3,577,741,312 bytes as H2D;
+  source arithmetic alone cannot assign individual events to this caller.
+  The opt-in `STRATA_SYCL_PREFILL_KEEP_KV_STAGE=1` skips that reload
+  for contiguous, page-aligned chunks of the same nonfinal layer when its
+  typed Q8 writer has already populated the private stage on the same
+  queue. Each new layer or request starts without a reusable prefix.
+  Host publication continues after each chunk, including the partial tail.
+  External layer taps and the final output-callback layer keep ordinary
+  reloads. On this MTP route the 11 eligible layers could save 308 copy
+  commands / 2,664,431,616 bytes at 64K and 616 / 9,991,618,560 bytes
+  at 117K. At the three measured SYCL host-to-device process medians
+  (6.292–6.485 GB/s, `prefill_copy_engine_v6`), the removable payload
+  corresponds to 0.41–0.42 s at 64K and 1.54–1.59 s at 117K. If that
+  transfer time is fully exposed and other work is unchanged, the 117K
+  control would still need about 5.1–5.2 s to reach 1000 tok/s. The
+  calibration used 256 MiB host-USM copies. Actual prefix copy sizes,
+  submission costs and overlap can change the saving in either direction.
+  The official dispatch check at `c6eda71cb` verified both lengths across
+  eight processes, two requests each. The per-layer reload counters and
+  observed append positions imply 336 prefix copies (2,906,652,672 bytes)
+  for the 65537-token control and 28 with aligned reuse
+  (242,221,056). At 117489 the counts were 672 (10,899,947,520 bytes)
+  and 56 (908,328,960). Scalar and vector gathers produced the same copy
+  totals. For the two 117489-token workloads, 7441 and 7434 jobs met the
+  gather threshold in every arm. The observed dispatch matches the volume
+  model at both lengths. Compare untraced request wall times separately.
+  In these 16 traced requests, compare the native batched read, expert
+  loan and checked refill intervals with the committed per-request prompt
+  time. At 65537 tokens the batch occupied 98.87–99.50% of prompt time.
+  Refilling 1124 slots took 388.1–877.9 ms. At 117489 tokens the batch
+  occupied 99.03–99.69% and refill took 386.6–1125.8 ms. Lending took
+  at most 0.6 ms. At 117489 the three intervals together left 3.9–4.2 ms
+  of prompt time unassigned. The batch includes
+  PCIe transfers, CPU waits and GPU kernels. Clean A/B timing and hardware attribution remain separate.
+  On the 117489-token split route, the first clean process for KV reuse alone
+  (`911cdbe59`) took 114.794 s at the warmed median, against 117.204 s for
+  ordinary reload (`040e8370b`). Both read every input token and used scalar
+  gather. The four-block comparison determines repeatability.
+  The first six independent processes through `6b5e834e1` took 9.93–12.84 s
+  longer on their first long prompt than on their subsequent median. All six
+  used private cache directories with `SYCL_CACHE_PERSISTENT=0`, and all wrote
+  the same 53 `.l0_cache` files (10,461,608 bytes) in `neo_compiler_cache`.
+  SHA256 over sorted relative path, NUL and raw file SHA256 for each entry was
+  `12438bf9e0c669cb1a93c09e27fc82b83e51f10677ac7673e1c5e68d094e3414`.
+  In each process the same 12 entries (938,752 bytes) have last-write times
+  between the first long request's start and first output. The short chat
+  warm-up precedes this interval. Align filesystem and client clocks using
+  the last request's monotonic end and journal mtime. Moving that offset by
+  ±0.5 s or using the observed realtime-minus-monotonic offset retains all
+  12 identities. The 15.5–16.6 s span between first and last writes also
+  includes the intervening model work. A seed made by an actual short-only
+  process can isolate reuse of the remaining entries if its inventory first
+  matches the 41 entries seen before the long request.
+  The 12 device images have 91 distinct kernel names in their ELF
+  `.ze_info`; 90 include Strata, among them GDN recurrence, MoE row gather
+  and QSA score GEMM. Image membership establishes no per-kernel duration.
+  The timed provider manifest identifies Level Zero GPU 1.17.39758 (native
+  library SHA256 prefix `52e29a60`) and IGC 2.41.5 (`40badd8f`).
+  The installed NEO package is 26.35.39758.17-1~24.04~ppa1. Its matching
+  upstream release disables the cache if an explicit directory does not
+  exist. For a restart comparison, pre-create different empty private
+  directories, or populate them from whole completed cache snapshots including
+  `config.file`, anew for each process. Set `NEO_CACHE_PERSISTENT=1` and
+  `NEO_CACHE_DIR` before exec in every arm. Verify hits in a separate
+  `NEO_CACHE_STATS=1` run; keep stats off in clean samples. Time readiness,
+  first long-prompt TTFT, prompt time and a subsequent fresh request separately.
+  Keep SYCL disk caching off; the older image encoder failed when it was
+  enabled. Cache creation alone does not attribute latency to compilation.
+  [Release cache implementation](https://github.com/intel/compute-runtime/blob/c9fe9ecbe5c137657c34f2ae0bea35123afe35ac/shared/source/compiler_interface/default_cache_config.cpp),
+  [NEO cache format](https://github.com/intel/compute-runtime/blob/c9fe9ecbe5c137657c34f2ae0bea35123afe35ac/programmers-guide/COMPILER_CACHE.md),
+  [SYCL cache design](https://github.com/intel/llvm/blob/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/doc/design/KernelProgramCache.md),
+  [earlier Strata cache experiments](SYCL_IMPLEMENTATION.md).
+  On the selected 117489-token arm, `bench/sycl/prefill_driver_cache.py`
+  takes a whole short-warm-up cache from the producer before the first long
+  request, and its full cache after exit. Three separate diagnostic processes
+  compare driver hits and misses with empty, short and full seeds. If both
+  effects are observed, time the three seeds in three balanced blocks, with
+  a fresh process and two fresh long prompts per case. Compare seed preparation,
+  server readiness, short warm-up, first long prefill and TTFT, and subsequent
+  prefill and TTFT separately. A clock favors a seed when at least two of three
+  paired times improve and their median ratio is below one. For readiness use
+  the candidate's upper and reference's lower observation bounds.
+  After the 117489-token four-arm comparison closes, use `bench/sycl/prefill_split_length_curve.py` on its
+  fastest eligible arm with the same executable and actual 128-slot placement.
+  Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
+  98304 batched rows fill twelve chunks. One more input row opens a thirteenth.
+  On this route the extra chunk requests 48 additional prefix copies totalling
+  1,245,708,288 bytes with ordinary KV reload, or four copies totalling
+  103,809,024 bytes with aligned reuse. These counts follow from the twelve
+  QSA layers reading 98304 preceding cells at 1056 bytes per cell, with only
+  the final layer reloading when reuse is enabled.
+  Take each length in two independent processes in reverse orders, with the
+  first request and the median of two subsequent fresh requests separate.
+  Compare affine, quadratic and n log n fits to prefill time and client TTFT
+  by leaving out a whole length. Hold 98306 outside the smooth fits and
+  report its change from 98305 with the actual expert jobs and transfer counts.
+  A time difference across these two bodies alone cannot isolate chunk setup.
+  For a fresh request with `n-1` batched tokens, let
+  `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
+  `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
+  its predecessors. This term grows in steps even when the tensor work
+  grows smoothly with input length. Multiply by twelve for ordinary
+  reload and by one for aligned reuse on this MTP route. At 253919 tokens
+  (31 chunks), `116a0e295` observed the control's 48,271,196,160 bytes
+  and 3,217,648,896 bytes of separate D2H publication. At `924f752c7`
+  aligned reuse matched the predicted 4,022,599,680 H2D bytes and
+  reduced the copy count from 1440 to 120. The same D2H publication
+  continued. The difference of 44,248,596,480 requested bytes corresponds
+  to 6.82–7.03 s at the calibration rates. On the restored 8209-token
+  suffix both arms requested 6,539,157,504 bytes in 96 copies. All
+  three request states and the cache restoration payload matched; both
+  processes closed with no fresh fault. The clean request-time effect
+  remains unmeasured.
+  A separate QSA score-stage experiment reuses the FP16 pooled index keys
+  within one SELECT loop. The append for the complete chunk precedes selection
+  on the same queue. The ordinary scorer reconverts the growing pooled key
+  prefix for each batch of up to 256 queries. With 8192-row chunks, let
+  `a=(last_position+1)/4+1` using integer division. Skipping a previous
+  batch's `a` live key rows avoids `a*128*(4+2)` logical read/write bytes,
+  excluding cache and compression effects. Summed within each chunk over 12
+  QSA layers this gives 18,725,658,624 bytes at 65537 fresh tokens and
+  60,019,273,728 bytes at 117489. Neither number measures DRAM traffic.
+  Each new chunk, layer or restored request starts at zero; the existing
+  workspace and sticky validation word remain owned by the in-order queue.
+  All original scores, explicit IDs, query conversion, dead-key handling,
+  selection mapping, attention, residual and decode placement are preserved.
+
+  Compare the separately pinned source `a29048486` with its cold pack on
+  the measured ordinary image via `bench/sycl/prefill_retained_score_keys.py`.
+  The fixture uses the parent radix4, score GEMM, query8 and head1 settings.
+  Check two source epochs, ragged/equal active extents, zero padding, stale
+  keys, guards, invalid extents and sticky status on a small traced sequence
+  and a late 256/256/91/1/1-query sequence. Compare every score and selected
+  ID across arms. Then time the 2800-row final chunk of the 117489 request
+  with eleven score+selection calls, a 65538-word score stride and one final
+  drain. Each of three clean processes runs five alternating pairs of twelve
+  chunks per arm. Require every interval to exceed 100 ms, timer control at
+  most 1%, exact control IDs and lower median paired wall time in all three
+  processes before model integration. Stop on a fault, mismatch or owner
+  failure. At `328b7589d` all three processes passed. The median of their
+  median intervals for twelve chunks fell from 473.720 to 462.839 ms.
+  The paired process ratios were 0.97703, 0.97703 and 0.97685. The
+  separate correctness sequences matched every score and selected ID.
+  Each timed arm matched all selected IDs. The next fixture at `0cfa87d2d`
+  appends 2299 cells with the production device batch indexer, snapshots
+  its incomplete four-cell block, and appends 14 more cells. After restoring
+  the snapshot it appends different keys. Each epoch overwrites the borrowed
+  score arena and runs four sliced score and sparse-selection calls on the
+  indexer's in-order queue. Require exact scores and IDs against a fresh
+  pack, valid guards, and a detectable finite score mismatch when a stale
+  extent is deliberately carried across the overwrite. The boundary build
+  reuses the measured archive and compiles only the new fixture. Retain
+  that archive through the check, then recover its build inputs before
+  retirement. This tests the indexer/SELECT boundary. The full server
+  transition, final slot, model PP, TTFT and sustained decode remain open.
+  The current KV/gather comparison keeps its original executable.
+
+  The independent prefill GDN experiment at `f4e47cd02` moved the decay
+  calculation into the gate producer. At 8192 rows the joint producer and
+  recurrence interval for sixteen repetitions fell from 291.187 to 287.166 ms.
+  The paired process ratios were 0.98615, 0.98642 and 0.98619. The numerical
+  fixture and all three timing comparisons passed. Test this change on its
+  own before combining it with QSA or KV reuse in a model comparison.
+  On the measured `fde0cdd11` source image, applying the score-key and
+  decay deltas in either order produces the same shared prefill caller
+  (`43d1dfbf35344028f517e0b8ac827941c0d130fdd0112434c4bd5930866422fd`).
+  Reversing either patch recovers the other component's measured caller.
+  The combined 1171-file source fingerprint is
+  `027b2f5b32e267aed193f942f1d7b7e6249340a4c99258f8fd735820875d9b78`
+  using the original `a29048486` and `18d0b137e` fixtures. This source
+  check leaves compilation, four-way state/dispatch and model speed open.
+  `bench/sycl/prefill_score_decay_model.py` prepares the complete model
+  from that same measured KV/gather parent. Its ten changed compile inputs
+  include the two production changes and the physical-context diagnostic
+  at `1919720d9`. The component timing fixtures stay at their independently
+  measured commits. The source-only projection at `def2dd8ee` precedes
+  the layer counters. Applying the score and GDN counter changes at
+  `e88604bca` and `063f2e392` in either order gives the same caller.
+  The lookahead at `fa4b9855a` rejects a diagnostic that cannot borrow before
+  removing a parked conversation. Including this check, the 1171-file
+  model image hash is
+  `481eff69cf893772d41ec4c9478af9f991da722df1468db01d287da68e66e71b`.
+  Build admission requires both three-process component gains and the real
+  indexer append/restore/overwrite check. Compare the four score/decay
+  combinations with KV reload and scalar gather fixed. The baseline on
+  the new binary must reproduce the old dispatch, state and decoder
+  handoff. In both traced and clean samples, explicitly set both selectors
+  in every process. After successful launches each layer reports its actual
+  packed/reused live key rows or the GDN recurrence rows for each path.
+  The controller's `dispatch` check derives expected counts from the
+  request positions. At 117488 batched rows, each of 12 attention layers
+  processes 459 score slices. Full packing visits 6,756,935 live rows
+  per layer and retention visits 244,427. The avoided FP32 reads and FP16
+  writes across these layers total 60.019 GB of logical work, excluding
+  padding and repeated GEMM reads. Each of the 36 GDN layers must account
+  for all 117488 recurrence rows in 15 chunks. These are predictions for
+  the upcoming model run; the component evidence remains separate.
+  Use `bench/sycl/prefill_score_decay_restore.py` to compare all four
+  arms on the measured KV-reload/scalar-gather route. Each process
+  starts with 32769 or 253919 fresh tokens, issues the independent
+  33-token decode-layout request, then restores the original conversation
+  with 8209 new tokens. Check the original state and decoder handoff at
+  `b633f7d69`, then compare each candidate with the new binary's control.
+  On the 8208 batched rows of the near-capacity continuation, the 33 score
+  slices process 2,130,684 live key rows per layer when repacked in full.
+  Retaining keys still packs 131,060 because scratch expires at the chunk
+  boundary. The short cache-window request must produce no dedicated
+  score or decay dispatch. These checks precede the clean timing runs.
+  There is a second prefix operation entirely on the GPU. Before ordered-exp
+  attention, the pack kernel dequantizes K and V for all live pages and writes
+  BF16 operands and bad-scale flags into request scratch. The opt-in
+  `STRATA_SYCL_PREFILL_PACK_KV_SUFFIX=1` retains complete packed pages only
+  across consecutive chunks of the same owned layer. The first chunk after
+  entry or RESTORE packs the full extent. A partial page is always rewritten
+  with both heads and zero padding. The final callback and external taps use
+  the original full pack. This switch can be compared with KV H2D reuse off.
+  At 65537 and 117489 fresh input tokens, the 11 eligible layers could skip
+  5,046,272 and 18,923,520 head-rows. Each row writes 1028 bytes of packed
+  K/V and flags. This would remove 5.19 and 19.45 GB of logical device writes;
+  it does not lower the attention consumer's reads. The 14.38-second 64K
+  kernel interval measured the consumer. Time the producer and clean request
+  separately before assigning a gain to this change.
+  Use `bench/sycl/prefill_packed_suffix.py` to compile the caller and run
+  `sycl_qsa_bf16_prefix_test --packed-suffix` with the coherent model's
+  compiler and runtime. Its fixture replaces one kernel archive member and
+  checks both full and suffix work against the same executable. Compare all K/V words, flags, padding, output and
+  guards against a full pack at page size four, with invalid scales and
+  aligned and nonaligned starts. Check source refusal on invalid retained
+  extents. Then compare full/suffix with scalar gather and KV reload fixed,
+  using layer-major native16, owned staging (`STRATA_KV_STAGE_OWN=1`) and
+  the same copy/compute queue (`STRATA_SYCL_PREFILL_SAME_QUEUE=1`). Confirm
+  that the queue and stage actually selected meet the ownership check. With
+  the reload policy fixed, subsequent chunks reload the corresponding host
+  KV prefix. Packed reuse depends on those earlier host cells staying
+  unchanged during the same layer pass. Require nonzero retained pages on
+  eligible multi-chunk layers, the expected written/retained counts, equal
+  model work, unchanged restored state, cancellation and the physical final slot.
+  Collect the clean 64K/117K first and warmed prompt times and TTFT in
+  alternating order and recheck sustained decode before adoption.
+  Before timing, compare device and host state on a fresh prompt, a nonzero
+  restored prefix, interrupted/restarted prefill, the tail and a physical
+  262144 fill. Check the external-tap fallback and decode handoff. Time
+  this change with the original attention kernel and MoE gather in both
+  arms. Neither traffic savings nor a component pass qualifies model PP.
+  The isolated change at `fea0f3c79` passed the SYCL compiler's syntax
+  check against the measured 117K translation unit using all 798 original
+  includes (`15c02eabc`). This check generated no model binary.
+  All four ordinary input/output-copy combinations passed the standalone
+  262144-token capacity check at `0f5e11521`. Each processed 262143
+  batched rows, consumed the physical final slot and returned zero output
+  tokens. All four native processes exited normally without a new Xe fault.
+  Positions in each 48-layer trace account for 1488 KV-prefix H2D copy
+  requests (51,489,275,904 bytes) and 1632 host-mirror D2H copies
+  (3,321,876,096 bytes). The prefix count uses the executed positions and
+  original reload path. Bus service and overlap were not measured.
+  The 253919-token mixed-host path follows a different planner branch.
+  The standalone ordinary copy control at `9c94b7206` filled all 262144
+  physical slots. Of its 262143 batched rows, 114688 stayed on device
+  and 147455 used a 3,019,878,400-byte BF16 host residual bank. Each of
+  47 layer boundaries writes that host portion and reads it back. The
+  corresponding copy requests total 141,934,284,800 bytes in each direction.
+  This is a calculation from the admitted split and the executed BF16
+  copy path. The measured 539.401 seconds include diagnostics; they do
+  not isolate transfer time or qualify throughput.
+  A separate scheduling experiment could run all 48 layers on successive
+  chunk-aligned token ranges when the ordinary placement spills residual
+  rows. Compare the avoided residual transfers with repeated dense and
+  expert weight uploads and prefix processing. Check actual per-range
+  placement, predecessor tokens, KV and recurrent state, ordered callbacks,
+  cancellation and the final slot before timing. Keep this experiment
+  independent of the two-switch KV and MoE gather comparison.
+  The isolated candidate uses `STRATA_SYCL_PREFILL_SPLIT_HOST_RESIDUAL=1`.
+  It checks actual host spill after the ordinary placement decision and
+  before allocating the request workspace. It runs up to twelve original
+  8192-row chunks through all layers per sweep. A would-be final sweep of
+  at most one chunk receives two preceding chunks. At 262143 batched rows
+  the resulting range sizes are 98304, 98304 and 65535. Each is admitted
+  again against current VRAM, including the prefix through its absolute
+  end. Short inputs, explicitly set GPU row counts, tapped/checkpointed
+  requests and whole-pass command/layer profilers follow their original route.
+  Use an isolated coherent build for the comparison; both the gather and
+  KV-reload changes stay out of it. First check the host planner, SYCL
+  translation unit and actual unsplit dispatch. Trace fresh, restored and
+  cancelled requests across the cut, the final slot and the decode handoff.
+  Check actual residual placement, expert bank size, uploads, chunk order,
+  canonical KV/GDN/PLE and output/draft state. A completed sweep does not
+  authorize a retry on partially updated state. After those checks, run
+  thinking-on fresh 253919-token prompts in four independent process pairs,
+  ordered AB, BA, BA, AB (A ordinary, B split), with first use and subsequent
+  requests separate. Use the same bodies, allocation policy and decode setup.
+  Require a lower median paired warmed prefill time and improvement in at
+  least three pairs. Record TTFT and reconnect the sustained decode checks
+  before selecting the route. Stop on a state, placement, driver or ownership
+  error. Evaluate the 64K/117K KV and gather work independently.
+  Source `0e7cf8107` passed the isolated compiler and host check at
+  `cfe0ebd08`. The measured ordinary prefill translation unit compiled
+  in syntax-only mode against 799 verified inputs. The host planner
+  executable passed the existing lease/order tests and every input length
+  from 98305 through 262144 using 267 verified compiler inputs. This
+  leaves actual sweep dispatch, model state and timing open.
+  The clean comparison at `9c03b44d0` completed three independent
+  processes with the same ordinary copy route, decoder placement, 262144
+  context and four historical thinking-on requests. The last three prompt
+  times in each process gave median rates of 946.48, 945.88 and 929.10
+  tok/s. Across processes, the median was 945.88 tok/s, 124.211 s of
+  prefill and 124.485 s of client TTFT. First use had a median of
+  869.91 tok/s and 135.298 s TTFT. At the warmed median, reaching 1000
+  tok/s requires saving 6.722 s per request. The 64K copy control reached
+  888.26 tok/s with a different bank size. Treat these as two route-specific
+  observations when characterizing length dependence. The short outputs
+  in this cohort leave sustained decode to its own workload.
 
 - The optional `STRATA_SYCL_PREFILL_READ_ATTENTION_BANK=1` candidate reads
   the previous layer's resident BF16 rows directly in the native attention
@@ -2815,7 +3406,144 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   (229519, 229312 and 229131) with zero boundary crossings in both traces.
   Fresh warmed QSA prefix service is 14.376 and 14.383 s across 96 calls
   each. M2D service is 14.594 and 14.950 s for 48.338 and 48.302 GB of
-  requested API payload. Copy/kernel overlap is 12.8 and 14.9 ms.
+  requested API payload. PTI explicitly classifies another 344 copies
+  per request as H2D, taking 0.949 and 0.937 s for 3.578 GB each.
+  The M2D source memory type remains unknown. Copy/kernel overlap is
+  12.8 and 14.9 ms.
+  For these 65,536 fresh batched rows, row `t` selects up to
+  `min(t + 1, 2051)` cells. The 12 attention layers and two KV heads
+  execute 100,638,720 tiles of 32 cells. The QK and PV matrix products
+  each operate on 16 padded head rows and 256 dimensions. Counting a
+  multiply-add as two operations gives 52.76 TFLOP, or 3.67 TFLOP/s
+  over the measured compute-kernel service. Reading 256 BF16 values
+  each for K and V per valid cell gives at most 3.252 TB of logical
+  reads before cache reuse. Physical traffic and XMX utilization remain
+  unmeasured. In `qsa_prefill_probability_v1`, the ordered-exp reference
+  with 8,192 queries and width 2,051 took 224.05–224.21 ms on spread
+  cell IDs and 139.68–139.78 ms on clustered IDs (three process medians
+  per pattern). The generator changes the selected IDs, so the two inputs
+  can encounter different missing pages and reuse. To isolate layout,
+  measure the model's selected-row locality and compare equivalent physical
+  layouts with the same logical IDs, values and reduction order. Include
+  repacking in that comparison.
+  To budget a V-only storage change, `H=24*sum(min(i,2051))` over
+  positions `i=1..n-1` counts selected rows across both KV heads and
+  twelve layers for a fresh prompt. At 117489 tokens, H is 5,732,774,712.
+  Expanded BF16 V reads 512 bytes per valid row. Q8 V with four FP16
+  scales would use 264 bytes if lanes share the scales, or 384 bytes
+  with one scale load per four values. If all rows are valid, these two
+  mappings avoid 1.422 TB or 0.734 TB of logical operand reads while
+  adding 256 integer-to-float conversions, scale products and BF16
+  roundings per row. At 65537 tokens the differences are 0.788 TB and
+  0.406 TB. Actual DRAM bytes depend on cache reuse and coalescing.
+  Keep K storage, ID order, softmax and matrix accumulation fixed in
+  a comparison and include any V producer or addressing cost.
+  The candidate at `146f71321` keeps the original K pack and BF16
+  matrix operands. It records both the logical K row and the physical
+  V row while looking up the page, using the same 256 bytes of local
+  storage. Each four signed V codes share one FP16 scale; lanes convert
+  the products to BF16 when populating the PV tile. Both scale checks
+  remain in the original producer. The scratch allocation is unchanged.
+
+  Run `bench/sycl/prefill_qsa_groups.py --q8-value` with the measured
+  ordered-exp configuration. Compare ordinary packing, direct Q8 V with
+  the original V pack still executed, and direct V with the pack omitted.
+  The third arm must leave poisoned V scratch untouched. First test
+  page size four, sparse/dead/tail rows, physical aliases, identity and
+  remapped tables and all output bits and guards on the B570 with
+  validation. A selected invalid V scale must poison exactly its head group.
+  An active but unselected invalid scale in the identity table must set its
+  row flag while preserving every finite result. Then run three clean processes
+  with 6491 queries, 39260 live cells and selection width 2051. Use
+  spread IDs on both layouts, clustered IDs on identity staging, and a
+  causal identity case with 512 ascending four-cell pages and three tail
+  cells per query. These synthetic selections bracket locality.
+  In each case collect all six permutations of the three arms, including
+  admission, packing, attention and the final drain. Require every clean
+  interval to reach 10 ms and timer p99 below one percent. Record paired
+  median ratios for the consumer, eliminated pack and combined change.
+  Advance the combined identity-stage path only if the combined change
+  lowers paired time in every process on all three identity shapes. Record the
+  remapped result separately. Stop on invalid output, provider, fault,
+  budget or ownership. Keep model PP, TTFT and decode checks separate.
+  A separate candidate specializes selected-row lookup for the full KV
+  staging pool. Its owner constructs an immutable identity page table
+  and passes that table with the stage. The candidate selector requires
+  the owner's table pointer to match the pool and both page counts to
+  agree. All other calls use the original ordered-exp entry. The packer
+  and caller-visible diagnostics keep the original implementation.
+  Only the attention consumer skips its second page lookup for valid
+  selected cells. The 117K geometry permits up to 5,732,774,712
+  such lookups across both KV heads and 12 layers; invalid selections
+  reduce that count, and physical memory traffic depends on caching.
+  Compare the two loaders on the same initialized identity table and
+  original K lane/workgroup order, including invalid IDs, the last live
+  cell and a partial final page. Check null, unrelated and smaller
+  resident tables select the original function. Require matching output
+  bits, guards and three independent lower warmed medians on all three
+  wide locality patterns before testing this stage-specific model route.
+  The three independent processes at `3ec72cec2` passed the output and
+  guard checks. With width 2051, candidate/reference time ratios were
+  1.0196–1.0204 for spread IDs, 1.0275–1.0281 for clustered IDs and
+  0.9988–1.0073 for four-cell groups. The three-pattern speed criterion
+  failed. Keep the measured ordered-exp page lookup for the model.
+  First test changing just the K loader's lane mapping with the existing
+  packed layout. Four adjacent SIMD lanes read 32 contiguous bytes for
+  one cell. This can reduce global address segments per subgroup but can
+  increase conflicts writing transposed K to shared local memory. The
+  isolated test retains QK/PV matrix operations, ordered softmax, V loads,
+  publication barriers and packing. Compare exact full-output bits and
+  guards on identical inputs. Measure both arms through the pack and
+  drain over six alternating pairs in each of three processes. Include
+  width 33 and 2,051, spread, clustered and sorted four-cell groups with
+  invalid entries and missing pages. Report separate medians per shape.
+  Require three lower candidate medians on both wide spread and four-cell
+  maps, valid timers, quiet validation and no fresh fault before a model
+  trial. These synthetic maps do not measure real cache-line traffic.
+  Use the model's four-cell KV page for both arms and check its value
+  in every case. A selected four-cell group occupies one page at this
+  setting. The older probability fixture used 16-cell pages, including
+  its 224 ms and 140 ms references; its times cannot serve as the
+  four-cell baseline. Retrieve the reference interval from each pair.
+  The lane comparison builds two isolated translation units against the
+  measured engine's three static archives. Both arms use the original
+  ordered-exp compiler flags. Run a traced three-query smoke first. For
+  each timed process require all 48 samples with at least 0.5 ms per
+  narrow call and 10 ms per wide call. The steady-clock median must be
+  below 1 microsecond and its 99th percentile below 5 microseconds.
+  Keep packing and the checked queue drain in each sample, with the full
+  output comparison outside the clock. Retire the standalone fixture
+  once its model-trial decision and source recovery are recorded.
+  At `f7244dded` the four-lane K reader passed the traced smoke, output,
+  input and guard checks. In three independent processes it shortened
+  wide spread-cell time by 10.83–10.99%, but lengthened wide four-cell
+  group time by 7.29–7.88% and clustered time by 2.93–3.11%. The planned
+  wide spread and four-cell group gate failed. Keep the original K loader
+  in the model and in the independent workgroup and KV stage trials.
+  A separate QSA candidate at `f0b231aec` changes only how workgroups
+  map to (query, KV head). The current launch alternates the two KV
+  heads for each query. The candidate assigns the first `queries` groups
+  to head 0 and the rest to head 1. Each head therefore has consecutive
+  group IDs for adjacent queries sharing selected cells. The runtime
+  chooses which workgroups actually execute together. Both variants use
+  the original K reader, QK/PV tiles, per-query softmax order and output
+  addresses. The three-query smoke exercises an odd group boundary.
+  Use the same pack-to-drain clock and bit/guard checks as the lane
+  trial in separate processes. On the four-cell page fixture measure the
+  valid logical IDs shared with the preceding query, excluding duplicates,
+  out-of-range cells and missing pages. Require at most 10% shared for
+  the wide spread map, 40–50% for the sorted four-cell groups and at least
+  90% for the clustered map. These are synthetic distributions. Advance
+  the wide scheduling change only if all three wide maps improve in each
+  of the three independent processes. The comparison at `124ffb26d`
+  passed the output, overlap, guard and device checks. All three processes
+  agreed on direction for each distribution. Across their paired median
+  times, head-major/reference geometric means were 1.0040 for wide spread,
+  1.0340 for wide clustered, 0.9606 for wide four-cell groups and 1.0175
+  for width 33. The most shared IDs occurred in the clustered case, which
+  slowed down. Keep the existing workgroup order on the model route. The
+  four-cell gain is eligible evidence for a future locality-specific
+  experiment if measured production selections warrant it.
   In each trace, 9717 D2D commands requested 128,861,904,128 bytes in
   0.7884 and 0.7880 s of GPU service. Removing BF16 input/output copies
   can also change submission or scheduling costs, but the measured D2D
@@ -2830,6 +3558,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   exactly 3,013 commands and 11,164,427,264 bytes in each request.
   This is a cross-check on aggregate demand. The trace does not associate
   each copy with a call site or measure physical PCIe traffic.
+  The first clean four-way BF16 block at `03a379bba` also establishes
+  expert demand for layer 47 on the three 65537-token bodies. Its checked
+  final bank occupancy was 260, 256 and 261 in all four processes. These
+  counts are below the 383 permanent slots in the 384-slot bank, so none
+  of this layer's experts needed its scratch slot. At 2,662,400 bytes per
+  expert, this layer alone could issue 692,224,000, 681,574,400 and
+  694,886,400 bytes before its first reader. Earlier issue keeps the same
+  transfer volume. The model comparison still needs to measure its timing.
   The retained request summaries have no per-copy submission IDs or
   pointer classes to join to individual tensor uploads. The split
   accumulator submits both source and inverse int32 row maps. The two
@@ -2901,8 +3637,267 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Shape-specific advancement requires all three candidate median batch
   times to improve, with equal planned maps, numerical checks, outputs,
   normal exits, no new fault and no timer-floor failures. Keep each
-  shape's individual results. Test this candidate separately after the
-  pending bank-input and QSA decisions on their already pinned images.
+  shape's individual results. Build the gather fixture with
+  `bench/sycl/build_prefill_mixed_gather.py` against the verified
+  resident-input build. Compile the two changed units with their original
+  production and test flags. The header adds a free function. Recreate a
+  private prefill archive with the new kernel object and the original
+  eleven other members. Link only the fixture with that archive. Its next
+  consumer is the traced numerical check followed by the independent
+  scalar/vec8 timing comparison. Retire the fixture after that decision.
+  At `071032b9c`, the traced 8,192-row and split 8,191-row cases passed
+  bitwise, including invalid rows and slice offsets of 4, 8 and 12 bytes
+  modulo 16. In three
+  independent processes the 6,640-row vec8/scalar time ratios were
+  0.7421–0.7422 (spread) and 0.7418–0.7466 (clustered). At 211 rows
+  neither map won in all three processes. Keep scalar for small jobs.
+  The opt-in `STRATA_SYCL_PREFILL_MOE_GATHER_VEC8=1` trial starts at 2,334
+  rows, the lower edge of the existing large MoE job population; fusion
+  selection stays independent. The default is scalar. The request footer
+  records jobs and rows submitted to vec8. For the next fixture use the
+  actual production selector at 2,334 and 8,192 rows on both maps. Keep
+  the original three-process order, timing floor, six alternating pairs
+  and bit/guard checks. Require faster median time per process for each
+  of the four shapes before model timing. If it passes, verify that the
+  same model binary in both arms selects the expected jobs on real inputs,
+  preserves state and RESTORE, then compare clean 64K PP and client TTFT.
+  Keep decode placement and kernels fixed and check sustained generation
+  separately. The original component results establish no model speedup.
+  The dispatch screen passed at `194e1df1f`. Across the three process
+  medians at 2,334 rows, vec8/scalar ratios were 0.6999–0.7003 (spread)
+  and 0.7905–0.8554 (clustered). At 8,192 rows they were 0.7589–0.7665
+  and 0.7250–0.7388. All four configurations are in the performance CSV.
+  The model projection at `c6bc02593` recovers all 1,171 source files
+  of the resident-input engine from Git and changes only six gather inputs.
+  The checked candidate image hash is `b5d2c3bc755bc6ae53062fd74679a1c0eaa7b19ec24496352206d6165fb0e599`.
+  Its 12-target build recipe hashes to `4eeb51b69215bc2d2e0bea04e1676e7007e69fb119367d8532b7717714a817dc`.
+  The next coherent model build includes two switches in the same binary.
+  Applying `fea0f3c79` to that exact gather image changes only
+  `src/prefill/prefill.cpp`. Its source image hashes to
+  `466b03d720fa5dbff5a3855c154a6f8e45820d6c6b71a636570a2006789d1838`
+  and the relocated 12-target recipe to
+  `ee8be44d38b2badea4621a4e04259662ccc38fcc88ada6702dd9c72f79aa0fad`.
+  Clean comparisons explicitly set the KV selector in every arm. At
+  `fde0cdd11` each staged attention layer then reports its reload and
+  reuse counts without the full stage trace. The measured prefix lengths
+  and the retained GU fusion counts can therefore check both dispatches
+  during timing. The four-way build adds this reporting to the pinned
+  image above. Its 1171-file input digest is
+  `f35b6b1a3f0c4f6317bb132caf43d01d19bc06acb26eb50ea4a8f2234e570ca2`.
+  The measured parent retains its active consumers until they close. Build in
+  a fresh directory after its retirement. Check both switches off against
+  the parent's recorded route, expert and draft counts, KV state and output.
+  Exercise the gather fixture and KV lifecycle checks before collecting speed.
+  For the standalone final-slot check, use `bench/sycl/prefill_kv_capacity.py`.
+  On the measured 16385-token copy control the window used separate mixed
+  storage (mode 10). At exactly 262144 tokens it switched to mode 2 with
+  147455 host-backed residual rows. Neither used the mixed-scratch gather.
+  Keep the vec8 request on in both arms and verify this fallback. Compare
+  only full KV reload against aligned reuse on the same executable. The
+  32 chunks in each of 12 attention layers at physical capacity would
+  request 51,489,275,904 prefix bytes with reload or 4,290,772,992 with
+  reuse. Check the actual per-layer pages, host publication and final-slot
+  marker. The completed standalone comparison at `5fb96bc69` matched
+  both predicted volumes with 1488 prefix copies for reload and 124 for reuse.
+  Both arms published 3,321,876,096 bytes to RAM through 1632 calls,
+  consumed the last token with zero output, and closed without a fresh
+  fault. The instrumented batched intervals were 475.300 and 491.205 s
+  respectively, one sample per arm. The clean speed comparison uses
+  independent processes. Server workloads separately exercise the vector
+  gather and decode state handoff.
+  For the leased server route the diagnostic sibling accepts
+  `CONSUME_FULL <comma-separated token ids>` on stdin with MTP, the checked
+  cache loan, payload audit and stage trace enabled. It requires exactly
+  262144 tokens. The normal server keeps its output reserve. Park the same
+  253919-token prefix with the short divergent request used below, then
+  restore it with an 8225-token suffix. This leaves 8224 actual batched
+  rows and one terminal verifier row. Check RESUME/RESTORE and the mixed
+  bank, GU and scalar/vec8 counts in this last segment in each of the four
+  KV/gather arms. Match its loan generation from mask through publication,
+  audited expert payload and residency table. Require one checked terminal
+  commit and drain, zero emitted or drafted tokens, a full state hash and
+  DONE with zero outputs. Use different token IDs from the parking request
+  for the next short GEN (e.g. 512..544) and require RESUME 0. Compare its
+  QSA/GDN/PLE state and generation with that same short request in a fresh
+  server. Check MTP ring invalidation or overwrite before read; STATE_HASH
+  includes only the allocated draft extent. Exercise restore of the parked
+  full-capacity image via one of its shorter saved checkpoints, then send
+  a further independent short request and repeat the reset check. A full
+  prompt cannot reuse an exact full-length prefix. An effective fallback
+  or an earlier loan does not qualify mixed dispatch. Also reject ordinary
+  GEN with zero output, ordinary GEN with a full prompt and positive
+  output, and a short CONSUME_FULL. The diagnostic admission change at
+  `fa4b9855a` rejects a selected 262143-token parked prefix before taking
+  the entry: no rows remain between the prefix and the terminal verifier.
+  Exercise this rejection and reuse the still-parked entry afterwards.
+  The ordinary restore fixture disables turn and periodic checkpoints.
+  This leaves a full parked conversation with no shorter restore point.
+  `bench/sycl/prefill_terminal_server.py` sets the turn token to 4062,
+  already the last ID of the original 253919-token body. Disable the
+  optional root checkpoint and place the same turn token at the end of
+  the full prompt. The two checkpoints now cover 253918 and 262143
+  tokens without splitting the 8224-row terminal batch. Replaying the
+  full prompt must reject the 262143 match before removing the image.
+  A divergent ordinary prompt must then restore 253918 from that same
+  262144-token image (SNAPSHOT_VERIFY upto=262144). Compare real MTP
+  decode on both short reset prompts with independent ordinary-server
+  processes. This tests observed state and draft behavior over those
+  prompts. A general MTP ring overwrite invariant needs separate evidence.
+  The leased server model and protocol checks remain open.
+  Run `bench/sycl/prefill_kv_gather_restore.py` against the coherent build
+  after its contiguous and ragged gather checks. All four combinations
+  replay the original fresh 32769- and 253919-token prompts, switch to a
+  33-token request, and restore the original state for an 8209-token
+  suffix. Its first batched token starts at a non-page-aligned position.
+  Check actual per-layer prefix reloads against the Q8 host mirror writes.
+  With the fixed large-only GU kernel, its row threshold is the same as
+  the vector gather's. Compare the independent GU and gather job and row
+  counts, including the scalar route. Match state, decode-cache payload
+  and output with the original engine and same-build control. The
+  cancellation, external tap and physical-final-slot checks remain separate.
+  On the original copy server (`4775de3b0`), replay of the traced
+  32769- and 253919-token inputs found 1647/23317 and 6942/47991
+  gather jobs eligible for the 2334-row threshold. Their restored
+  suffixes had 115/18114 and 120/18039 eligible jobs. In those
+  suffixes the original reload path requested 934,382,592 and
+  6,539,157,504 prefix bytes respectively. Both suffixes start inside a
+  four-token page, so the aligned candidate keeps these reloads. This
+  provides a negative dispatch control and a separate optimization case.
+  On the two-switch build, the fresh 32769-token request with scalar
+  gather requested 622,854,144 prefix H2D bytes in 144 copies on the
+  control and 51,904,512 bytes in 12 copies with aligned reuse. Both
+  wrote 415,236,096 bytes to the host mirror. On the restored 8209-token
+  suffix both requested 934,382,592 prefix bytes. The vec8-only arm
+  matched the control's copies and used the vector gather on 1,647 jobs
+  (7,937,266 rows) on the fresh prompt. The combined arm at `274931d19`
+  preserved those gather counts and the KV-only arm's copy counts.
+  All four arms passed the same state and handoff checks with no new fault.
+  The counters measure requested copies. Clean prompt timing follows
+  separately.
+  A separate opt-in prefill candidate, `STRATA_SYCL_PREFILL_KEEP_KV_STAGE=partial-page`,
+  reuses complete pages only after the preceding typed Q8 append in the
+  same layer invocation. At a nonaligned successor it refreshes the one
+  boundary page from the canonical host mirror using the existing four-plane
+  range copy. Entry to a restored request still reloads the full prefix.
+  With scalar gather fixed, compare `1` against `partial-page` in separate
+  processes. In the second batched chunk of each restored suffix, the
+  11 eligible layers should retain 10240 or 65527 complete pages per layer,
+  saving 475,791,360 or 3,044,646,528 requested H2D bytes respectively.
+  Both arms still issue four plane copies per eligible layer in that chunk.
+  Check each layer's counts, all four boundary planes, active state, output and
+  decode handoff. Require equal counts on aligned fresh prompts and full
+  reload on layer entry, after cancellation and with an external tap. Verify
+  the physical final slot separately. This candidate has no native timing
+  or device qualification and is outside the pinned four-way build below.
+  For scalar/reload (A), scalar/reuse (B), vec8/reload (C), and vec8/reuse
+  (D), use the same ordinary expert copies, output-copy policy, ordered-exp
+  attention, 8192 chunk, K8V8, model and decode placement. At each of
+  65537 and 117489 actual tokens run independent processes in blocks
+  A-B-D-C, B-C-A-D, C-D-B-A, D-A-C-B. Each arm receives the same thinking-on
+  fresh prompt bodies. Separate first-use measurements from the median of
+  subsequent requests. Compare B/A and C/A to isolate the two changes, then
+  D/C and D/B to measure how each behaves with the other enabled. Report
+  block-wise prompt-time ratios and client TTFT. Advance a throughput
+  choice at a measured length if at least three of four paired prompt times
+  improve and the median paired ratio is below one. Keep an inconsistent
+  result open. Verify traced work and state outside the speed samples;
+  stop on a changed input, ownership, fault, numerical or dispatch failure.
+  Recheck sustained decode, agent sessions and full physical capacity before
+  adoption. No model speed sample from the two-switch build exists yet.
+  Run `bench/sycl/prefill_kv_gather_speed.py` first at 117489 tokens
+  (four original bodies per process), then at 65537 (three bodies).
+  Each length has 16 independent processes. Validate the KV and gather
+  dispatch counters on every timed request, with full tracing disabled.
+  Match its body hash, placement, expert and draft work to the original
+  control. Report each contrast, its four ratios and the absolute rates.
+  In the two warmed 64K requests of `eager_request_profile_v2`, all
+  scalar mixed gathers took 2.001 and 2.002 seconds of GPU service
+  (20,591 and 20,568 calls). The count includes the small jobs that keep
+  their scalar implementation. Eliminating all that service would cover
+  about 29% of the 6.896-second gap from the paired clean 64K prompt to
+  1000 PP if every saved second shortened the request. The model comparison
+  must measure how much of this time the large jobs actually save.
+  The current QSA selector emits the first one to four cells of each
+  contributing block in ascending order. Only one threshold-tied block may
+  be cut before the physical tail. The diagnostic 39,260-token request
+  validated 6,491 rows per layer with a width of 2,051 across all 12 layers.
+  One block ID per emitted group plus a row header suffices to represent
+  these rows. The header gives the first rank after the threshold cut and
+  the one to three skipped positions within that block. After this rank,
+  adding the skipped positions before dividing by four gives the descriptor
+  index directly. A last partial physical page needs no internal cut.
+  The proposed 515-word row reserves 16.09 MiB at chunk size 8192;
+  explicit 2051-word rows reserve 64.09 MiB. Neither this difference nor
+  the smaller index reads is a measurement of free VRAM or saved K/V bytes.
+  First check `bench/sycl/qsa_prefill_groups/host.cpp` against explicit IDs,
+  including every internal cut position at width 2051, tails, guard and
+  padding words, and ranks reaching the final physical page. Compile with
+  `/usr/bin/g++-13 -std=c++17 -O2 -Wall -Wextra -Werror` (GCC 13.3.0,
+  compiler SHA256 `1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769`),
+  `LC_ALL=C`, the committed fixture, and a fresh private output path.
+  The first GCC invocation at `1839471c1` rejected the nested padding
+  lambda's reference to the locally captured sentinel. The corrected fixture
+  uses the same sentinel value at file scope and keeps the original checks.
+  At `e39aca1e0` the host check passed all 3,240 cases and reproduced
+  3,231,810 explicit cell IDs in order. Full-width rows used 513 or 514
+  group IDs within the 515-word row including its header.
+  The executable SHA256 was
+  `5a0a13ffbd16a5d717be7698bc023e1d740169be971364dcc84c264de8e5a357`.
+  The host format check cannot qualify the selector or attention. A device
+  comparison must include the real threshold emission, the same typed
+  attention, exact selected-cell order, all four tail residues and measured
+  producer-plus-consumer time before any model comparison.
+  Source `ce7e64c4d` pairs the ordinary prefill threshold selector with
+  the ordered-exp attention kernel. The candidate emits block IDs during
+  the final selection scan and resolves each rank when attention reads
+  it. Both arms allocate the original explicit-ID capacity. This first
+  comparison isolates the representation and its indexing costs; a
+  smaller allocation needs separate extent, alias and lifetime checks.
+  The first component compiled at `342f02fcf`. Before device trials we
+  found that its single selector submission differed from the measured
+  caller's 256-query loop. Supersede its timing plan before sampling.
+  In `5c02d5b0a` the identical kernels receive the real 65,538-word
+  score-row stride and a separate active-block bound per slice. The last
+  91 rows of the 6,491-row case follow 25 full slices. Both arms reuse
+  the same synthetic score slab; timing begins after scoring.
+  The closed 253919-token model process at `116a0e295` used
+  `STRATA_SYCL_SELECT_RADIX4=1`, cyclic and early exit both zero, and
+  no `STRATA_SELECT_OLD`. Its recorded child environment matches the
+  planned SHA256 `0fa3ee921ad520ad9bd300e932c7750613536a488138646d7dc58cf9a4435066`.
+  Both earlier component plans used Mapping0. The single-call variant
+  compiled; neither variant supplied a device speed sample. Source
+  `9639531fd` retains the model's radix4 threshold search in both arms.
+  Recheck the model environment in the controller before each stage.
+  At `9bab6f3c1` both revised native kernels and the sliced fixture
+  compiled and linked against the traced build. The original single-call
+  executable was retired after source and recipe recovery at `cc0fd8744`.
+  Run the revised B570 component with `bench/sycl/prefill_qsa_groups.py`.
+  Use the same in-order queue, four-cell pages and remapped/missing pages.
+  Start with 16 queries at 97 cells and 259 queries at 401 cells,
+  both with capacity 33. Check cross-slice output placement, empty and
+  dense rows, partial ties, all tail residues, a one-word-short output and a
+  stable CPU cell sort. At the diagnostic geometry, use 6,491 synthetic
+  score rows ending at cell count 39,260, with capacity 2,051, and compare
+  every selected ID, output bit and guard. The measured interval includes
+  selection, packing, attention and completion. Run three fresh processes,
+  six alternating pairs each, reversing first arm by process and round.
+  Each interval must be at least 10 ms; timer p99 must be below 1% of it.
+  Advance only with a lower median paired time in all three processes.
+  At `4a8bc762e` every output check passed. The median of the three
+  process medians for explicit IDs was 136.445 ms and for grouped IDs
+  132.605 ms. The paired time ratios were 0.97083, 0.97182 and 0.96965.
+  The component gate passed using the original allocation in both arms.
+  This fixture cannot qualify a model fallback: if grouped attention
+  declines after selection, regenerate explicit IDs before any consumer,
+  including diagnostics. Score storage is reused every 256 rows, so replay
+  of earlier slices also needs their scores again. Model routing is still open.
+  The 117489-token ordinary control at `9c03b44d0` routed 56,394,240 rows
+  on each fresh prompt (48 layers, ten experts per token). Across the four
+  original bodies, jobs of at least 2334 rows carried 52,160,499–52,231,136
+  rows, or 92.49–92.62% of the total, in only 7423–7441 of 23816–23841
+  jobs. At 2560 FP16 values per row, the selected jobs account for
+  248.72–249.06 GiB of logical gather output per request. Vec8 still writes
+  that output. Only a gather-free reader could remove it.
   The mapped-input alternative now has a diagnostic at child `19999c6c1`.
   Its host mode checks the actual compact and wide TLA lane/atom
   coordinates, replicas and valid/padded rows over three of 80 K tiles.
@@ -2993,6 +3988,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.99878/1.01122/0.99390. All five GPU processes closed normally without
   a fresh Xe fault. Retain the original ordered-exp kernel for all three
   shapes. The reuse candidate did not qualify for a model trial.
+  Skipping padded-head ordered softmax already had a separate 72-sample
+  test at `24d666972`. It zeroed the unused probabilities and alpha once
+  before the tile loop. Wall-time ratios were 1.063/1.056 at 32K and
+  1.056/1.045 at 117488 cells (contiguous/strided). The current measured
+  source adds only an unrelated cached-subgroup export to that original
+  translation unit; the ordered-exp template and its entrypoint match.
+  The November proposal to publish zeros every tile has no demonstrated
+  advantage over that already tested variant. Defer it pending a distinct
+  mechanism or shape-specific evidence.
   In the measured bench ELF (`eeb1a47d`), the smoke trace binds each UR
   kernel name to its launch handle. Each arm launched both a WG64 pack and
   a WG128 compute kernel (eight calls to each in the original arm, seven

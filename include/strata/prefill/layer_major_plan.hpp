@@ -45,6 +45,20 @@ inline int64_t layer_major_requested_rows(const char* value) {
     return int64_t(rows);
 }
 
+// Native16 throughput route with 8192-row kernel chunks. Each sweep runs
+// all layers. Keep the last partial kernel chunk in the last sweep only.
+inline constexpr int64_t prefill_sweep_chunk = 8192;
+inline constexpr int64_t prefill_sweep_limit = 12 * prefill_sweep_chunk;
+
+constexpr int64_t prefill_next_sweep_rows(int64_t remaining) noexcept {
+    if (remaining <= prefill_sweep_limit) return remaining;
+    // A separate sweep for <=one chunk would load all weights again for a
+    // short tail. Leave two complete chunks with that tail instead.
+    if (remaining - prefill_sweep_limit <= prefill_sweep_chunk)
+        return prefill_sweep_limit - 2 * prefill_sweep_chunk;
+    return prefill_sweep_limit;
+}
+
 // FP16 is the legacy storage-only experiment. BF16 is used by native16 kernels.
 enum class LayerMajorResidualDtype { fp32, fp16, bf16 };
 

@@ -102,6 +102,15 @@
       "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
       "key": "new_interval",
       "status": "Prior function ports and unresolved component decisions remain scoped to their original upstream targets. New release observation does not qualify the unmodified upstream performance or close pending imports."
+    },
+    "unmodified_b570_bench_admission": {
+      "launcher": "tools/bench.sh changes to terminal/ and invokes .venv/bin/python tools/strata_bench.py.",
+      "server": "strata launch --backend intel --drafting mtp selects the public CLI route. Verify the resolved SYCL binary, IQ3_S model, private port and running server command before reusing its endpoint.",
+      "long_min_context": 33048,
+      "reason": "The 32768 target reserves 24 output and 256 extra tokens. Record actual fresh prompt counts and reject skipped long or agent workloads.",
+      "aot_device": "bmg-g21",
+      "review": "niko-0216-vanilla-bench-launch-20261120",
+      "next": "Compare unmodified default and hardware-tuned configurations in their own processes. The source inspection supplies no upstream throughput measurement."
     }
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
@@ -1442,6 +1451,26 @@
         "optional_SDK_clients_qualified": false
       },
       "incremental_function_ports": {
+        "offline_dflash2_pack_readiness": {
+          "upstream_commit": "3c36092124c23ef11561b0d9c0a53fd7e5218a28",
+          "source_commit": "c6facfbe35137d65e3abcfb52fafc098f9ba5759",
+          "parent_commit": "a8c628bc226809e72c1f2e546e1420fd9b4d8087",
+          "scope": "Standalone selector-Q4 readiness, fetch guidance and explicit engine selection in plan and launch. Native inference unchanged.",
+          "license": "Niko root MIT, identical root LICENSE blob",
+          "state": "ported_and_focused_host_tests_passed",
+          "tests": {
+            "target": "tests.terminal.test_fix2plat_d1",
+            "target_passed": 10,
+            "target_skipped": 0,
+            "comparison": "Unmodified git archives; same upstream-host-tests-146df3c4 CPython 3.12.3; unittest test_drafting*.py plus the focused module when present, PYTHONDONTWRITEBYTECODE=1 and PYTHONNOUSERSITE=1",
+            "parent": {"run": 266, "failures": 8, "errors": 11, "skipped": 0},
+            "port": {"run": 276, "failures": 8, "errors": 11, "skipped": 0},
+            "unchanged_failure_ids_classes_and_test_functions": 19,
+            "introduced_failure_ids": [],
+            "initial_attempt": "Model venv on worktree: 276 run, 8 failures and 11 errors; the pinned host environment comparison subsequently classified the common failures."
+          },
+          "remaining": "Previously failing App/Metal fixtures, missing rich or split test module, existing defaults/argv, download plan and notice assertions; native DFlash2 model speed is a separate decision."
+        },
         "plain_gpu_order": {
           "stage": "passed",
           "source_commit": "724a5bdae6fc46b8532060115e0976168e851303",
@@ -1688,6 +1717,25 @@
             "stderr_bytes": 358
           },
           "inference_performance_qualified": false
+        },
+        "weighted_expert_profile_cli": {
+          "required": true,
+          "state": "ported_host_tests_passed",
+          "upstream_target": "58ee3227720629ff2e41d640165ebe89c880dfef",
+          "source_commits": [
+            "9e3ba42755a4e4df0dd36396d7e3e414fc0dc3d8",
+            "8cb26e6095d15456eaf02528751e0bc9ef383456"
+          ],
+          "tools": [
+            "tools/make_profile_mix.py",
+            "tools/collect_profile_traces.py",
+            "bench/profile_corpus.json",
+            "tools/test_make_profile_mix.py"
+          ],
+          "scope": "Weight each trace by its own distribution and collect a selectable corpus. Mixer and 45 prompts match Niko Git blobs. Collector defaults to the fork host callback and thinking-on template, supports the upstream closed template and explicit device usage writer, and publishes a nonempty trace after successful child exit.",
+          "profile": "Bundled data/expert-profile-sycl.bin already equals Niko blob 3e040a7c55070c654957a41f556fbc0f2eef0d23. Current ordinary 1256-slot decode uses data/expert-profile.bin. Changing profile placement needs its own B570 inference comparison.",
+          "validation": "At 6236a586e all ten host unittests passed, with a ResourceWarning from unclosed JSON inputs. After closing both readers at d3f092fb95d420753d63ed4d9280b5a388b09480, the serialized python3 -B -W always::ResourceWarning -m unittest -v tools.test_make_profile tools.test_make_profile_mix run passed all ten again with no skips or ResourceWarning. Collector tests use a mock child. Full live corpus collection and inference performance remain separate.",
+          "license": "Niko1221/Strata root MIT"
         }
       }
     },

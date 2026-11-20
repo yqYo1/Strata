@@ -1387,8 +1387,18 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     if (!experts_ || experts_detached_) { err = "mtp: draft requires restored experts"; return false; }
     if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
+    int catchup_rows = T;
 #ifdef STRATA_ENABLE_SYCL
-    if (!observation.measure(Observation::capture, [&] { return capture_round(T, cp, err); })) return false;
+    static const bool use_committed_prefix = [] {
+        const char* value = std::getenv("STRATA_SYCL_MTP_DECODE_COMMITTED_PREFIX");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    if (use_committed_prefix && max_t_ == 4 && !cp) {
+        // The verifier committed rows [0, a]. The full step still selects row a,
+        // then writes and attends through cell p+a before proposing a new suffix.
+        catchup_rows = a + 1;
+    }
+    if (!observation.measure(Observation::capture, [&] { return capture_round(catchup_rows, cp, err); })) return false;
 #else
     if (!capture_round(T, cp, err)) return false;
 #endif
@@ -1434,7 +1444,7 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     h_row_[0] = a;
     h_row_[1] = 0;
     std::atomic_thread_fence(std::memory_order_seq_cst);
-    if (!replay(cp ? round_exec_c_[T] : round_exec_[T], 0)) return false;
+    if (!replay(cp ? round_exec_c_[catchup_rows] : round_exec_[catchup_rows], 0)) return false;
     drafts[0] = ((volatile int32_t*) h_out_)[0];
     float pj = ((volatile float*) h_prob_)[0];
     if (probs) probs[0] = pj;
@@ -1460,6 +1470,10 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     ++rounds;
 #ifdef STRATA_ENABLE_SYCL
     observation.complete();
+    static const bool trace = std::getenv("STRATA_TRACE") != nullptr;
+    if (trace)
+        std::fprintf(stderr, "strata mtp: decode catchup p=%lld verified=%d accepted=%d rows=%d coupled=%d\n",
+                     static_cast<long long>(p), T, a, catchup_rows, int(cp));
 #endif
     return true;
 }
