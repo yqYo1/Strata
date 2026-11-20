@@ -409,16 +409,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Both captured graphs must match the ordered FP32 CPU reference and guards
   for 0, 4, 10, 20, 39 and 40 routed GPU rows. Reuse each captured graph with
   two different publications of the CPU rows. Poison unused rows so that
-  selection failures show up in the output.
+  selection failures show up in the output. Inject one duplicate
+  destination into the candidate and require its token to report invalid
+  output while other tokens receive the ordinary CPU contribution.
   Run three fresh component processes in time-forward, time-reverse,
   time-forward order with the qualified GPU runtime settings and parameter
   validation. Collect API tracing only in the correctness process.
   Compare four counterbalanced pairs of 512 completed graph replays at each
   of 4, 10 and 20 GPU rows. Republish only the CPU miss rows between completed
-  replays. Time graph launch through completion and leave publication outside
-  the timed interval. Require each batch to reach 10 ms and charge at most
-  1% for the measured empty timing bracket. Advance the T4
-  path only if the candidate median is faster at all three hit counts in
+  replays. Retain both launch-through-completion and publication-through-
+  completion clocks. Require each graph batch to reach 10 ms and charge
+  at most 1% for the measured empty timing bracket. Advance the T4 path
+  only if both candidate medians are faster at all three hit counts in
   all three processes, with normal teardown and no fresh fault. Use these
   local intervals to decide whether to test the native server.
   Before clean model timing, verify traced T4 dispatch, CPU callback and

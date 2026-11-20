@@ -172,7 +172,11 @@ void decode_moe_combine_mapped_rows(const float *mapped_cpu_parts,
               const unsigned row = static_cast<unsigned>(gpu_rows[j]);
               const unsigned expert = row - first;
               if (row >= rows) gpu_mask |= invalid;
-              if (expert < experts) gpu_mask |= uint32_t{1} << expert;
+              if (expert < experts) {
+                const uint32_t bit = uint32_t{1} << expert;
+                if (gpu_mask & bit) gpu_mask |= invalid;
+                gpu_mask |= bit;
+              }
             }
           }
         }

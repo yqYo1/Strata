@@ -191,23 +191,43 @@ void run(std::string_view mode) {
         for (int batch = 0; batch < batches; ++batch) {
             const int first = start ^ (batch % 2);
             for (int arm : {first, 1 - first}) {
-                Clock::duration elapsed{}, empty{};
+                Clock::duration elapsed{}, full{}, empty{};
                 for (int i = 0; i < replays; ++i) {
+                    const auto publish_begin = Clock::now();
                     publish_cpu_rows(i % 2);
                     const auto begin = Clock::now();
                     graphs.replay(arm);
-                    elapsed += Clock::now() - begin;
+                    const auto end = Clock::now();
+                    elapsed += end - begin;
+                    full += end - publish_begin;
                     const auto empty_begin = Clock::now();
                     empty += Clock::now() - empty_begin;
                 }
                 const double ms = std::chrono::duration<double, std::milli>(elapsed).count();
+                const double full_ms = std::chrono::duration<double, std::milli>(full).count();
                 const double empty_ms = std::chrono::duration<double, std::milli>(empty).count();
                 require(ms >= 10.0 && empty_ms <= ms * 0.01, "ineligible timing batch or timer overhead");
                 std::cout << "decode MoE combine hits=" << count << " batch=" << batch
                           << " arm=" << arm << " replays=" << replays << " ms="
-                          << std::fixed << std::setprecision(6) << ms << " empty_ms=" << empty_ms << '\n';
+                          << std::fixed << std::setprecision(6) << ms << " full_ms=" << full_ms
+                          << " empty_ms=" << empty_ms << '\n';
             }
         }
+    }
+    if (mode == "validate") {
+        // The regular dispatcher publishes each output slot once. Exercise
+        // a malformed list separately, where the old scatter has no contract.
+        metadata[0] = 2;
+        metadata[1] = metadata[2] = 0;
+        std::fill_n(cpu, parts, 1.0f);
+        upload(meta.data(), metadata.data(), meta.size());
+        graphs.replay(1);
+        check(cudaMemcpyAsync(output.data(), result.data(), result.size(),
+                              cudaMemcpyDeviceToHost, graphs.stream), "malformed list readback");
+        check(cudaStreamSynchronize(graphs.stream), "malformed list completion");
+        for (int i = 0; i < outputs; ++i)
+            require(i < columns ? std::isnan(output[guard + i]) : std::isfinite(output[guard + i]),
+                    "duplicate destination was not rejected for its token");
     }
 }
 } // namespace
