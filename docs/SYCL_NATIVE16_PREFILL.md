@@ -398,6 +398,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   copy retirement and prioritize the larger layer-graph intervals.
   [Caller profiles](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json),
   [query profile](../bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-current.json).
+  Revalidate the cooperative KV resolver on the measured fast prefill image.
+  Its older same-ELF decode comparison `decode_kv_speed_v1` gained 6.77%
+  on code and 7.00% on prose. Its 64K warmed prefill preservation check
+  remains failed (0.48% longer).
+  `bench/sycl/decode_kv_fast_prefill_build.py` projects only the measured
+  decode phase selector and the owned cooperative translation unit from
+  `644412c8e` and `93b964cae` onto the exact `fde0cdd11` build image.
+  The projected delta is six files. The existing scalar KV translation unit
+  retains SHA256 prefix `4473c66af0` and all other source bytes match.
+  Rebuild the complete engine because the verifier headers change.
+  First verify the actual Q8 decode width 2 and 4 routes, prompt and single-row
+  fallback, exact KV payload, handoff and RESTORE near physical capacity.
+  Keep expert placement, logical context, resident KV and copy geometry fixed.
+  Use matched independent AB, BA, AB pairs. Compare the retained ELF against
+  the new ELF with the selector off to screen the build's prompt effects.
+  Separately compare off/on on the new ELF with the same 65K and 117K prefill
+  controls and the official agent and both thinking-enabled long-generation
+  workloads. Keep first-use, warmed timing and actual route counters separate.
+  Require prefill and TTFT preservation in both comparisons and higher TG in
+  at least two off/on pairs with a geometric mean ratio above one for each
+  sustained workload. Close on a state, identity, ownership or fault failure.
+  This projection has source evidence only. Its build waits until a comparison
+  generation retires and the current serialized measurements close.
   To distinguish layer-graph execution from the host's wait on the same
   event, sample the ordinary, unsplit 48-layer target verifier at width four.
   Set `STRATA_SYCL_DECODE_SEGMENT_CLOCK_REQUEST` before engine startup to
