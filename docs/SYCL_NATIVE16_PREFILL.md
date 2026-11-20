@@ -428,6 +428,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   calibration used 256 MiB host-USM copies. Actual prefix copy sizes,
   submission costs and overlap can change the saving in either direction.
   Check the actual per-layer reload/reuse counts and matched wall times in both arms.
+  For a fresh request with `n-1` batched tokens, let
+  `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
+  `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
+  its predecessors. This term grows in steps even when the tensor work
+  grows smoothly with input length. Multiply by twelve for ordinary
+  reload and by one for aligned reuse on this MTP route. At 253919 tokens
+  (31 chunks), `116a0e295` observed the control's 48,271,196,160 bytes
+  and 3,217,648,896 bytes of separate D2H publication. Aligned reuse
+  predicts 4,022,599,680 H2D bytes, a service difference equivalent
+  to 6.82–7.03 s at the calibration rates. Check this prediction on the
+  reuse arm. Neither the transfer formula nor the calibration gives
+  the total prefill time.
   There is a second prefix operation entirely on the GPU. Before ordered-exp
   attention, the pack kernel dequantizes K and V for all live pages and writes
   BF16 operands and bad-scale flags into request scratch. The opt-in
@@ -3446,10 +3458,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   it. Both arms allocate the original explicit-ID capacity. This first
   comparison isolates the representation and its indexing costs; a
   smaller allocation needs separate extent, alias and lifetime checks.
-  Run the B570 component with `bench/sycl/prefill_qsa_groups.py`.
+  The first component compiled at `342f02fcf`. Before device trials we
+  found that its single selector submission differed from the measured
+  caller's 256-query loop. Supersede its timing plan before sampling.
+  In `5c02d5b0a` the identical kernels receive the real 65,538-word
+  score-row stride and a separate active-block bound per slice. The last
+  91 rows of the 6,491-row case follow 25 full slices. Both arms reuse
+  the same synthetic score slab; timing begins after scoring.
+  Keep the first component build through comparison of the two builds'
+  kernel inputs. Then recover the first recipe from Git and retire its
+  executable and temporary build root.
+  Run the revised B570 component with `bench/sycl/prefill_qsa_groups.py`.
   Use the same in-order queue, four-cell pages and remapped/missing pages.
-  Start with 16 queries at 97 cells and capacity 33. Check empty and dense
-  rows, partial ties, all tail residues, a one-word-short output and a
+  Start with 16 queries at 97 cells and 259 queries at 401 cells,
+  both with capacity 33. Check cross-slice output placement, empty and
+  dense rows, partial ties, all tail residues, a one-word-short output and a
   stable CPU cell sort. At the diagnostic geometry, use 6,491 synthetic
   score rows ending at cell count 39,260, with capacity 2,051, and compare
   every selected ID, output bit and guard. The measured interval includes
@@ -3458,8 +3481,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Each interval must be at least 10 ms; timer p99 must be below 1% of it.
   Advance only with a lower median paired time in all three processes.
   This fixture cannot qualify a model fallback: if grouped attention
-  declines after selection, rerun the explicit selector before any
-  consumer of explicit IDs, including diagnostics. Model routing is still open.
+  declines after selection, regenerate explicit IDs before any consumer,
+  including diagnostics. Score storage is reused every 256 rows, so replay
+  of earlier slices also needs their scores again. Model routing is still open.
   The 117489-token ordinary control at `9c03b44d0` routed 56,394,240 rows
   on each fresh prompt (48 layers, ten experts per token). Across the four
   original bodies, jobs of at least 2334 rows carried 52,160,499–52,231,136

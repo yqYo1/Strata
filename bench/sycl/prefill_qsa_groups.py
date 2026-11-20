@@ -15,9 +15,10 @@ from official_model_sources import merge_delta
 
 bank, require = device.bank, device.require
 BASE = '43cac31ede2a7482689ff9d60a0fadf2c08e1b4e'
-SOURCE = 'ce7e64c4d53e0dbb7b8cd09570ae0b0b7af30bfa'
-ROOT = bank.B / 'prefill-qsa-groups-v1'
-KEY = 'prefill_qsa_groups_v1'
+FIRST_BUILD = 'ce7e64c4d53e0dbb7b8cd09570ae0b0b7af30bfa'
+SOURCE = '5c02d5b0a16eb7b86871e40a4fbd3eb17486d5bb'
+ROOT = bank.B / 'prefill-qsa-groups-v2'
+KEY = 'prefill_qsa_groups_v2'
 TARGET = 'sycl_qsa_bf16_prefix_ordered_exp_bench'
 BENCH = 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp'
 SELECT = 'src/kernels/sycl/qsa_select.cpp'
@@ -32,6 +33,13 @@ def recipe(helper, native):
     for path in (ATTEND, SELECT, BENCH):
         require(native['source_files'][path] == bank.sha(src / path), 'changed build input: ' + path)
     require((src / SELECT).read_bytes() == helper.git_file(BASE, SELECT), 'selector differs from measured parent')
+    require(all(helper.git_file(SOURCE, name) == helper.git_file(FIRST_BUILD, name)
+                for name in (SELECT, ATTEND, *HEADERS[:2])), 'only the fixture may change for the sliced comparison')
+    caller = (src/'src/prefill/prefill.cpp').read_text()
+    planner = (src/'include/strata/prefill/scratch_allocation.hpp').read_text()
+    require('int64_t sel_batch = 256, max_blocks = 0;' in caller and
+            'for (int64_t t0 = 0; t0 < T; t0 += m.sel_batch)' in caller and
+            'uint64_t(cells / index_block) + 2' in planner, 'production selector storage or launch shape changed')
     original = (src / ATTEND).read_bytes()
     projected = merge_delta(original, ATTEND, BASE, SOURCE)
     require(merge_delta(projected, ATTEND, SOURCE, BASE) == original, 'unrelated attention source change')
@@ -77,33 +85,40 @@ def recipe(helper, native):
 def samples(stdout, stage):
     smoke = stage == 'smoke'
     ordinal = 0 if smoke else int(stage)
-    cells, queries, cap = (97, 16, 33) if smoke else (39260, 6491, 2051)
+    geometry = ((97, 16, 33), (401, 259, 33)) if smoke else ((39260, 6491, 2051),)
     lines = stdout.splitlines()
     timer, = [s for s in lines if s.startswith('timer ')]
     median_ns, p99_ns = re.fullmatch(r'timer calls=10000 median_ns=([.\d]+) p99_ns=(\d+)', timer).groups()
     require(0 <= float(median_ns) <= int(p99_ns) < 5000 and float(median_ns) < 1000, 'clock overhead')
-    prefix = f'sample process={ordinal} cells={cells} queries={queries} cap={cap} pattern=gather '
-    observed = [line for line in lines if line.startswith('sample ')]
-    require(len(observed) == 12 and lines.count(f'case cells={cells} queries={queries} cap={cap} page_size=4 '
-            'pattern=gather samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS') == 1, 'missing exact outputs')
-    pairs = []
-    for rnd in range(6):
-        pair = {}
-        for pos in range(2):
-            arm = (ordinal + rnd + pos) % 2
-            name = 'groups' if arm else 'explicit'
-            start = prefix + f'round={rnd} order={pos} variant={arm} implementation={name} milliseconds='
-            m = re.fullmatch(re.escape(start) + r'(\S+)' + f' compared={queries*24*256} exact_bits=PASS guards=PASS status=PASS',
-                             observed[2 * rnd + pos])
-            require(m, 'wrong producer/consumer, sample or pair order')
-            ms = float(m[1])
-            require(math.isfinite(ms) and 0 < ms < 60000 and
-                    (smoke or (ms >= 10 and int(p99_ns) < ms * 10000)), 'ineligible timed interval')
-            pair[name] = ms
-        pairs.append(pair)
+    require(sum(line.startswith('sample ') for line in lines) == 12 * len(geometry)
+            and sum(line.startswith('selector_geometry ') for line in lines) == len(geometry),
+            'unexpected sample or geometry count')
+    for cells, queries, cap in geometry:
+        marker = (f'selector_geometry queries={queries} subbatches={(queries+255)//256} '
+                  f'maximum_rows={min(queries,256)} last_rows={(queries-1)%256+1} score_stride=65538')
+        require(lines.count(marker) == 1, 'selector slicing or score capacity differs')
+        prefix = f'sample process={ordinal} cells={cells} queries={queries} cap={cap} pattern=gather '
+        observed = [line for line in lines if line.startswith(prefix)]
+        require(len(observed) == 12 and lines.count(f'case cells={cells} queries={queries} cap={cap} page_size=4 '
+                'pattern=gather samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS') == 1, 'missing exact outputs')
+        pairs = []
+        for rnd in range(6):
+            pair = {}
+            for pos in range(2):
+                arm = (ordinal + rnd + pos) % 2
+                name = 'groups' if arm else 'explicit'
+                start = prefix + f'round={rnd} order={pos} variant={arm} implementation={name} milliseconds='
+                m = re.fullmatch(re.escape(start) + r'(\S+)' + f' compared={queries*24*256} exact_bits=PASS guards=PASS status=PASS',
+                                 observed[2 * rnd + pos])
+                require(m, 'wrong producer/consumer, sample or pair order')
+                ms = float(m[1])
+                require(math.isfinite(ms) and 0 < ms < 60000 and
+                        (smoke or (ms >= 10 and int(p99_ns) < ms * 10000)), 'ineligible timed interval')
+                pair[name] = ms
+            pairs.append(pair)
     require(lines.count('fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED') == 1,
             'missing fixture completion')
-    return dict(queries=queries, width_capacity=cap, cells=cells, timer_p99_ns=int(p99_ns),
+    return dict(shapes=geometry, timer_p99_ns=int(p99_ns),
                 **({} if smoke else dict(pairs_ms=pairs, median_paired_ratio=statistics.median(
                     p['groups']/p['explicit'] for p in pairs))))
 
