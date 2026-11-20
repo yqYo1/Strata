@@ -256,7 +256,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   For each measured process and workload, let `t` be total engine decode ms
   per window and `y` the actual emitted tokens divided by windows. Holding
   work and every other interval fixed, halving the expert-pool interval `p`
-  gives `1000*y/(t-p/2)`: 14.34–14.37 tok/s for code and 8.51–8.52 for
+  gives `1000*y/(t-p/2)`, or 14.34–14.37 tok/s for code and 8.51–8.52 for
   prose. Removing that interval entirely gives about 19.5 and 11.1 tok/s.
   The per-layer GPU-reach wait ends before the pool callback starts in
   `src/core/verify.cpp` at the measured source `1bf54ec32`. Even setting both
@@ -497,11 +497,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   includes the intervening model work. A seed made by an actual short-only
   process can isolate reuse of the remaining entries if its inventory first
   matches the 41 entries seen before the long request.
-  This identifies a restart/first-use experiment. On the same build and
-  driver, compare empty private directories to private copies seeded from a
-  completed control. Measure server readiness, first long-prompt time and
-  client TTFT separately, with a subsequent fresh prompt in both arms.
-  Cache creation alone does not attribute the first-use penalty to compilation.
+  The 12 device images have 91 distinct kernel names in their ELF
+  `.ze_info`; 90 include Strata, among them GDN recurrence, MoE row gather
+  and QSA score GEMM. Image membership establishes no per-kernel duration.
+  The timed provider manifest identifies Level Zero GPU 1.17.39758 (native
+  library SHA256 prefix `52e29a60`) and IGC 2.41.5 (`40badd8f`).
+  The installed NEO package is 26.35.39758.17-1~24.04~ppa1. Its matching
+  upstream release disables the cache if an explicit directory does not
+  exist. For a restart comparison, pre-create different empty private
+  directories, or populate them from whole completed cache snapshots including
+  `config.file`, anew for each process. Set `NEO_CACHE_PERSISTENT=1` and
+  `NEO_CACHE_DIR` before exec in every arm. Verify hits in a separate
+  `NEO_CACHE_STATS=1` run; keep stats off in clean samples. Time readiness,
+  first long-prompt TTFT, prompt time and a subsequent fresh request separately.
+  Keep SYCL disk caching off; the older image encoder failed when it was
+  enabled. Cache creation alone does not attribute latency to compilation.
+  [Release cache implementation](https://github.com/intel/compute-runtime/blob/c9fe9ecbe5c137657c34f2ae0bea35123afe35ac/shared/source/compiler_interface/default_cache_config.cpp),
+  [NEO cache format](https://github.com/intel/compute-runtime/blob/c9fe9ecbe5c137657c34f2ae0bea35123afe35ac/programmers-guide/COMPILER_CACHE.md),
+  [SYCL cache design](https://github.com/intel/llvm/blob/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/doc/design/KernelProgramCache.md),
+  [earlier Strata cache experiments](SYCL_IMPLEMENTATION.md).
   After it closes, use `bench/sycl/prefill_split_length_curve.py` on its
   fastest eligible arm with the same executable and actual 128-slot placement.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the

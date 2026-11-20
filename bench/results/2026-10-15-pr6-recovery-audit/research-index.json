@@ -38535,13 +38535,17 @@
     "prerequisite": "Six completed independent 117489-token processes on fde0cdd11 wrote the same 53 NEO cache payloads, while first prompt time exceeded the warmed median by 9.93–12.84 s. Documented at 5761d136d.",
     "question": "Which driver/runtime cache can help first long-prompt time here, and how can a matched clean experiment separate driver cache reuse from startup and warm-up?",
     "consumer": "Main selects a cache-seeding comparison for first-use latency. Keep warm model throughput and sustained decode separate.",
-    "worker": {
-      "state": "dispatched",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/neo-first-prefill-cache-20261120/report.md",
+    "report_sha256": "1b8a6bc675aeec45bc248cef604aaf7e0c75e2f26a8a18db5971bee5c09c3610",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/neo-first-prefill-cache-20261120-control/native-review.md",
+    "review_sha256": "2c96247adf93c17b3e71d516a764380b5a0b51c506626775cb568e0f210b8f95",
+    "finding": "Separate NEO from SYCL caching and in-process first use. Main pinned the installed package release and native provider hashes, checked the 12 long-request image memberships, and corrected the empty/seeded cache settings, per-process reset and separate hit diagnostics in SYCL_NATIVE16_PREFILL.md. Speed effect unmeasured.",
+    "worker_completion": {
       "task": "task_706cae3c12b0",
       "dispatch": "ctx_d005e5a6b174",
+      "message": "msg_e481f70cb05e",
       "terminal": "term_64c0fd05-5442-4151-acf5-d09199959280",
-      "spec": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/neo-first-prefill-cache-20261120-control/task.md",
-      "output": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/neo-first-prefill-cache-20261120/report.md"
+      "exact_worker_exited": true
     }
   }
 }
