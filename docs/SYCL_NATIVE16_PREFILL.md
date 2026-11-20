@@ -599,10 +599,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   at most 0.6 ms. At 117489 the three intervals together left 3.9–4.2 ms
   of prompt time unassigned. The batch includes
   PCIe transfers, CPU waits and GPU kernels. Clean A/B timing and hardware attribution remain separate.
-  On the 117489-token split route, the first clean process for KV reuse alone
-  (`911cdbe59`) took 114.794 s at the warmed median, against 117.204 s for
-  ordinary reload (`040e8370b`). Both read every input token and used scalar
-  gather. The four-block comparison determines repeatability.
+  The 117489-token comparison closed at `568d015ba` with 16 clean native
+  processes and four fresh prompts per process. Across four process medians
+  the warmed rates were 1000.36 tok/s for ordinary reload, 1039.64 for KV
+  reuse, 1014.31 for vector gather and 1024.16 for both. KV reuse with
+  scalar gather won all four pairs against reload (2.409–6.581 s less).
+  Median paired prompt time fell 3.77%; median client TTFT fell from
+  117.636 to 113.214 s. All four warmed KV rates exceeded 1000; the first
+  long prompts were 931.66–957.54 tok/s. Vector gather alone also beat
+  reload in four pairs. Adding it to reuse won only two pairs, and adding
+  reuse to vector gather also won only two. Select KV reuse alone for
+  the split-route length curve and decode-preservation suite.
+  The 9,991,618,560 fewer requested H2D bytes would take 1.54–1.59 s at
+  the 256 MiB calibration rate. The larger observed time differences
+  leave copy issue, synchronization, actual copy size, overlap and
+  run variation to distinguish before assigning the gain to PCIe bandwidth.
   The first six independent processes through `6b5e834e1` took 9.93–12.84 s
   longer on their first long prompt than on their subsequent median. All six
   used private cache directories with `SYCL_CACHE_PERSISTENT=0`, and all wrote
