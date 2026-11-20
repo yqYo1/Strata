@@ -3514,8 +3514,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   32 chunks in each of 12 attention layers at physical capacity would
   request 51,489,275,904 prefix bytes with reload or 4,290,772,992 with
   reuse. Check the actual per-layer pages, host publication and final-slot
-  marker. Standalone completion covers this fallback; the server workloads
-  separately exercise the vector gather and the decode state handoff.
+  marker. The completed standalone comparison at `5fb96bc69` matched
+  both predicted volumes with 1488 prefix copies for reload and 124 for reuse.
+  Both arms published 3,321,876,096 bytes to RAM through 1632 calls,
+  consumed the last token with zero output, and closed without a fresh
+  fault. The instrumented batched intervals were 475.300 and 491.205 s
+  respectively, one sample per arm. The clean speed comparison uses
+  independent processes. Server workloads separately exercise the vector
+  gather and decode state handoff.
   For the leased server route the diagnostic sibling accepts
   `CONSUME_FULL <comma-separated token ids>` on stdin with MTP, the checked
   cache loan, payload audit and stage trace enabled. It requires exactly
@@ -3541,7 +3547,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `fa4b9855a` rejects a selected 262143-token parked prefix before taking
   the entry: no rows remain between the prefix and the terminal verifier.
   Exercise this rejection and reuse the still-parked entry afterwards.
-  The native model and protocol checks remain open.
+  The ordinary restore fixture disables turn and periodic checkpoints.
+  This leaves a full parked conversation with no shorter restore point.
+  `bench/sycl/prefill_terminal_server.py` sets the turn token to 4062,
+  already the last ID of the original 253919-token body. Disable the
+  optional root checkpoint and place the same turn token at the end of
+  the full prompt. The two checkpoints now cover 253918 and 262143
+  tokens without splitting the 8224-row terminal batch. Replaying the
+  full prompt must reject the 262143 match before removing the image.
+  A divergent ordinary prompt must then restore 253918 from that same
+  262144-token image (SNAPSHOT_VERIFY upto=262144). Compare real MTP
+  decode on both short reset prompts with independent ordinary-server
+  processes. This tests observed state and draft behavior over those
+  prompts. A general MTP ring overwrite invariant needs separate evidence.
+  The leased server model and protocol checks remain open.
   Run `bench/sycl/prefill_kv_gather_restore.py` against the coherent build
   after its contiguous and ragged gather checks. All four combinations
   replay the original fresh 32769- and 253919-token prompts, switch to a
