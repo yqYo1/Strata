@@ -18,6 +18,38 @@ def require(ok, message):
         raise ValueError(message)
 
 
+def expected_prefix(positions, layer, reuse):
+    loaded = kept = calls = 0
+    for index, position in enumerate(positions):
+        pages = (position + PAGE - 1) // PAGE
+        if reuse and layer < 47 and index and position % PAGE == 0:
+            kept += pages
+        else:
+            loaded += pages
+            calls += 4 * bool(pages)
+    return loaded, kept, calls
+
+
+def check_clean_request(text, start, rows, chunk, *, reuse):
+    """Validate the native per-layer counters without enabling the full request trace."""
+    require(0 <= start < 262144 and 0 < rows <= 262144 - start and chunk > 0, 'invalid request range')
+    require('strata trace:' not in text, 'clean request contains the diagnostic trace')
+    positions = range(start, start + rows, chunk)
+    actual = []
+    for line in text.splitlines():
+        if line.startswith('strata prefill KV stage:'):
+            match = STAGE.fullmatch(line)
+            require(match, 'malformed clean KV stage counters')
+            actual.append(tuple(map(int, match.groups())))
+    expected = []
+    for layer in range(3, 48, 4):
+        loaded, kept, _ = expected_prefix(positions, layer, reuse)
+        if loaded or kept:
+            expected.append((layer, loaded, kept))
+    require(actual == expected, 'clean prefix reload/reuse differs from the planned layer dispatch')
+    return dict(reloaded_pages=sum(r[1] for r in actual), reused_pages=sum(r[2] for r in actual))
+
+
 def check_request(text, start, rows, chunk, *, reuse, external_tap=False, historical=False):
     """Use the separately observed append positions to check the stage's own counters."""
     require(0 <= start < 262144 and 0 < rows <= 262144 - start and chunk > 0, 'invalid request range')
@@ -59,14 +91,7 @@ def check_request(text, start, rows, chunk, *, reuse, external_tap=False, histor
                     'incomplete layer or chunk count')
             if layer % 4 == 3:
                 require(len(receipts) == len(positions), 'missing QSA application or host publication')
-                loaded = kept = calls = 0
-                for index, pos in enumerate(receipts):
-                    pages = (pos + PAGE - 1) // PAGE
-                    if reuse and not external_tap and layer < 47 and index and pos % PAGE == 0:
-                        kept += pages
-                    else:
-                        loaded += pages
-                        calls += 4 * bool(pages)
+                loaded, kept, calls = expected_prefix(receipts, layer, reuse and not external_tap)
                 expected = (loaded, kept) if not historical and loaded + kept else None
                 require(stage == expected, f'layer {layer} stage counters {stage} differ from {expected}')
                 totals['reloaded_pages'] += loaded

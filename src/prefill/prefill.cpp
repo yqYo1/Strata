@@ -2308,7 +2308,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         same_queue && m.copy == m.cs && stage_own();
     // No prefix is trusted on entry, including a resumed or cancelled request.
     int64_t kv_stage_end = -1;
-    const bool trace_kv_stage = m.layer_major_active && std::getenv("STRATA_TRACE");
+    // Expose actual reload/reuse counts in both arms of a clean comparison.
+    // Each attention layer publishes once, after all its chunks have finished.
+    const bool report_kv_stage = m.layer_major_active &&
+        (std::getenv("STRATA_TRACE") || std::getenv("STRATA_SYCL_PREFILL_KEEP_KV_STAGE"));
     uint64_t kv_reloaded_pages = 0, kv_reused_pages = 0;
 #endif
     // Observe the route only when an explicit layout comparison is requested.
@@ -3123,7 +3126,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         bool reload = true;
 #if defined(STRATA_ENABLE_SYCL)
                         reload = !(keep_kv_stage && typed_qsa && p0 == kv_stage_end && p0 % s.page_size == 0);
-                        if (trace_kv_stage) (reload ? kv_reloaded_pages : kv_reused_pages) += pages;
+                        if (report_kv_stage) (reload ? kv_reloaded_pages : kv_reused_pages) += pages;
 #endif
                         if (reload)
                             strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
@@ -4386,7 +4389,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     }
     if (next_run.valid() && !next_run.get()) { err = next_err; return false; }
 #if defined(STRATA_ENABLE_SYCL)
-    if (trace_kv_stage && (kv_reloaded_pages || kv_reused_pages))
+    if (report_kv_stage && (kv_reloaded_pages || kv_reused_pages))
         std::fprintf(stderr, "strata prefill KV stage: layer=%lld reloaded_pages=%llu reused_pages=%llu\n",
                      (long long) LB, (unsigned long long) kv_reloaded_pages, (unsigned long long) kv_reused_pages);
 #endif
