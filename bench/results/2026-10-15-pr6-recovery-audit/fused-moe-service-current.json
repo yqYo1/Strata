@@ -598265,7 +598265,7 @@
     "error": "RuntimeError('kernel failed: icpx: warning: argument unused during compilation: \\'-Xspirv-translator -spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate\\' [-Wunused-command-line-argument]\\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v1/probe-source/src/prefill/sycl/vllm_xe2/native16.cpp:5:10: fatal error: \\'xe_gemm_bsd.hpp\\' file not found\\n    5 | #include \"xe_gemm_bsd.hpp\"\\n      |          ^~~~~~~~~~~~~~~~~\\n1 error generated.\\n')"
   },
   "prefill_mapped_gu_a_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "controller": {
       "revision": "b4ea5c3e770979c3cbd2c823a381c648e358d86f",
       "sha256": "28e97d23a04e15c17ad920f97062f56e6b94f828081edde14addb76abc2fa084"
@@ -598461,7 +598461,7 @@
     "active": false,
     "complete": false,
     "passed": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "plan": {
       "build": "Apply only the guarded probe code to the recorded parent sources and enable its single macro for the probe object and fixture. Resolve sibling headers from the original source directory. Finalize the isolated BMG image and host slice and relink against the original checked archives.",
       "validation": "Host lane layout, traced three-row smoke, then full exact bank-to-fragment bits across both tile policies, tails and malformed maps. No model or timing.",
@@ -598474,6 +598474,7 @@
       "text_cap": 16777216,
       "file_cap": 67108864,
       "total_cap": 67108864
-    }
+    },
+    "error": "RuntimeError('link failed: pi/compiler/2026.2/bin/compiler/llvm-link\" --only-needed /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v2/tmp/icpx-64a767810b/fixture-39c7cc.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-crt.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-cmath.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-imf.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-itt-user-wrappers.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-itt-compiler-wrappers.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-itt-stubs.bc -o /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v2/tmp/icpx-64a767810b/fixture-9018e5.bc --suppress-warnings\\n')"
   }
 }
