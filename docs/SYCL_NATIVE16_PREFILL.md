@@ -552,6 +552,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   removed 1573 files and links with 410910775 regular-file bytes. The
   original build receipts remain for source recovery through the boundary
   comparison. See `retained_builds_review_20261103.boundary_candidate_reference_transition`.
+  The standalone boundary build passes all four checks at `04b277311`.
+  The 16385- and 262142-input cases each produce two outputs with final
+  width two. The full input processes 262143 batched rows and commits the
+  final slot at 262144 with a width-one window and a checked refill drain.
+  It emits zero tokens. All three GPU processes exit normally without a
+  fresh fault, and the final model asset hashes match.
   After the physical checks, run `decode_kv_fast_prefill_preservation.py boundary`
   at 65537 and 117489 to time the context fix against the fast-prefill
   reference before building the cooperative resolver. This timing uses
@@ -560,9 +566,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   decode KV and the same selected prefill configuration at each length.
   If both timing gates pass, use the boundary control as the prefill
   reference for the cooperative comparison. Prove the original fast-prefill
-  source and recipe against its executable before retiring it. The build
-  projection and RESTORE admission still need verified readers that can use
-  the retained source evidence after its build output ends.
+  source and recipe against its executable before retiring it. The previous
+  build record supplies source projection and historical workload admission
+  for the cooperative candidate. The paired timing still checks the exact
+  live fast-prefill executables and fixtures. Keep its build record for
+  reconstruction after that output is retired.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its

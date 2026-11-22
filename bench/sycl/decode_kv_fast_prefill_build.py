@@ -96,17 +96,20 @@ def cooperative_sources(source):
     return changed
 
 
-def project(expected=None, *, boundary_only=False):
-    record_path = stock.MODEL_ROOT / 'record.json'
-    parent = bank.previous.read(record_path)
-    reference = parent['binaries']['strata']
+def parent_reference():
+    """Recover the committed build identity for source and workload references."""
+    parent = bank.previous.read(stock.MODEL_ROOT / 'record.json')
     require(bank.basis.validation.committed(bank.RESULT, (stock.KEY,)) == builder.compact(parent)
             and parent['native_source_commit'] == stock.DISPATCH_COUNTS and parent['stage'] == 'built'
             and parent['passed'] and parent['complete'] and parent['ownership_closed'] and not parent['active']
             and parent['host_control']['passed']
-            and reference['sha256'] == PARENT_ELF and bank.sha(reference['path']) == PARENT_ELF
-            and Path(reference['path']).stat().st_size == reference['bytes'],
-            'retain the exact committed fast-prefill reference')
+            and parent['binaries']['strata']['sha256'] == PARENT_ELF,
+            'require the exact committed fast-prefill build record')
+    return parent
+
+
+def project(expected=None, *, boundary_only=False):
+    parent = parent_reference()
 
     # The foundation supplies historical source and compiler inputs. The
     # comparison runs the composed fast-prefill engine and its projections.
@@ -134,8 +137,10 @@ def project(expected=None, *, boundary_only=False):
     old, new = str(stock.MODEL_ROOT), str(BOUNDARY_ROOT if boundary_only else ROOT)
     expected_objects = {Path(p).relative_to(stock.MODEL_ROOT / 'build').as_posix()
                         for p in parent['actual_inputs']['objects']}
-    proof = dict(parent_source=stock.DISPATCH_COUNTS, parent_record_sha256=bank.sha(record_path),
-                 parent_binary=reference, boundary_fix=BOUNDARY_FIX, unchanged_scalar_sha256=basis[SCALAR])
+    proof = dict(parent_source=stock.DISPATCH_COUNTS,
+                 parent_record_sha256=bank.sha(stock.MODEL_ROOT / 'record.json'),
+                 parent_binary=parent['binaries']['strata'], boundary_fix=BOUNDARY_FIX,
+                 unchanged_scalar_sha256=basis[SCALAR])
 
     if not boundary_only:
         source.update(cooperative_sources(source))
@@ -172,9 +177,15 @@ def check(row, committed=True, *, boundary_only=False):
     if committed:
         require(bank.basis.validation.committed(bank.RESULT, (key,)) == builder.compact(row),
                 'commit the exact preceding build stage')
+    controls = row['controller_sources']
+    if committed and row['stage'] == 'built':
+        original = bank.stage.source.blobs(bank.P, row['source_commit'], controls)
+        checked = bank.stage.hashed(dict(original))
+    else:
+        checked = bank.stage.source.pin(bank.P, list(controls))['source_sha256']
+    require(controls == checked, 'the recorded build controller inputs changed')
     native, foundation, source, recipe, proof = project(row['foundation'], boundary_only=boundary_only)
     require(row['source_commit'] == row['native_source_commit']
-            and row['controller_sources'] == bank.stage.source.pin(bank.P, list(row['controller_sources']))['source_sha256']
             and row['recipe'] == recipe and row['foundation'] == foundation and row['projection'] == proof
             and row['source_files'] == bank.stage.hashed(source) and row['external_inputs'] == native['external_inputs']
             and row['driver'] == builder.guards.driver_guard()

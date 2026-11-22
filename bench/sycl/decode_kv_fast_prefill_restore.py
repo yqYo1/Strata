@@ -30,9 +30,10 @@ PLAN = dict(order=ORDER, output_caps=list(OUTPUTS),
 
 
 def inputs():
-    _, speed, _, _ = state.inputs()
     candidate = bank.previous.read(build.ROOT / 'record.json')
     build.check(candidate)
+    _, _, speed = bank.basis.basis(expected=candidate['foundation'])
+    state.reference_workloads(build.parent_reference(), speed)
     device = bank.basis.validation.committed(bank.RESULT, (build.DEVICE_KEY,))
     build_hash = bank.signature(build.builder.compact(candidate))
     require(candidate['stage'] == 'built' and candidate['passed'] and candidate['complete']
