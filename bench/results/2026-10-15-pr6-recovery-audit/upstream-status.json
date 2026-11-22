@@ -64,7 +64,18 @@
         "e8701bbdd: DFlash2 planar Q6_K head projection assembly in engine/sycl. Check actual local head layout and ownership before testing.",
         "928aa3d16: SYCL verifier device-plan selection for the no-host setting. Check Intel discrete-device applicability and preserve independent local safety controls.",
         "d59c36752: optional non-native router window batching is in engine/src. Verify actual IQ3_S routing and the SYCL resolver before treating it as a candidate."
-      ]
+      ],
+      "reviewed_component_slices": {
+        "e8701bbdd": "Keep the fork's canonical and DPAS-1 row-major head storage. The upstream gather requires planar storage. Packed-only mode 2 explicitly refuses DFlash2. Revisit the gather when evaluating a planar head owner.",
+        "928aa3d16": "The explicit STRATA_VERIFY_NO_HOST setting is absent from the measured width-four template. Evaluate the two settings' precedence independently when that device-plan route has a named comparison.",
+        "aef30d8fc": "Changes the STRATA_WINDOW_SYNC default for a unified-memory iGPU. Preserve the discrete B570 control.",
+        "host": "Port individual model retrieval with context metadata separately from live clocks, recovery counters and CLI completion. Check the actual fork engine's recovery log contract before adapting the cache-clear consumer.",
+        "review_index_keys": [
+          "niko-0218-dflash2-planar-head-20261122",
+          "niko-0218-serve-discovery-state-20261122"
+        ],
+        "model_performance_verified": false
+      }
     },
     "prior_pending_component_review": {
       "commit": "0a6d935887fc05a0a0f34600884fd7165f364053",

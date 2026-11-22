@@ -368,7 +368,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The validation preload retains a provider reference through process exit.
   The continuation checks the archived width-four smoke and both original
   long-case commands, inputs and environments. Only the private fixture and
-  output paths change. Proceed with `near-four` before measuring the exact fill.
+  output paths change. The width-four `near-four` run at `c559907fe` confirms
+  262141 batched rows for a 262142-token input, two outputs, one accepted
+  draft and actual terminal width two. The CLI exits normally and the trial
+  closes without a fresh driver fault. The exact fill is a separate case.
   The reviewed `decode-mtp-committed-width-numerics-20261121` audit finds a
   distinct Q8_0 matvec dispatch for one row. Row strides and per-row fused
   GR stay fixed across widths. Compare the earlier accepted K/V cells and
@@ -385,6 +388,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   actual commit, checks the draft and target state over the committed extent,
   and requires a shorter eligible catch-up at both lengths. A differing state
   fingerprint triggers a fixed-history numerical comparison before timing.
+  The host trace parser accepts both planned shapes and rejects excess
+  catch-up, skipped commit positions, wrong published extent and a terminal
+  draft call. Live state and timing evidence remain pending.
   Compare off/on at fixed width and identical placement, separately from the
   confidence-floor experiment and the proposed graph-drain change. First trace all four actual
   catch-up widths against verified and accepted counts. Check live draft KV,

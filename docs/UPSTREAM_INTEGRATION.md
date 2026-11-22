@@ -40,8 +40,15 @@ discovery with context metadata, request timing and recovery metrics, and
 CLI shell completion. The SYCL DFlash2 planar-Q6 head change and the
 verifier's no-host option are separate component evaluations. The matched
 unmodified Arc Qwen benchmark uses the source under `engine/sycl/` and the
-standard entrypoint at `tools/bench.sh`. These are source findings.
-[Niko1221's v0.2.18 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.18).
+standard entrypoint at `tools/bench.sh`. [Niko1221's v0.2.18 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.18).
+
+The source review keeps canonical Q6_K gathering on the current Qwen engine.
+The v0.2.18 DFlash2 gather handles upstream's planar Q6_K layout.
+The explicit no-host verifier further needs a matching launch configuration,
+and the synchronization default targets integrated GPUs. The next isolated
+host port is individual model retrieval with its context metadata. The
+recovery-counter port needs the matching engine log contract. The status
+file records these decisions under `new_interval.source_only_review`.
 
 The weighted expert-profile builder and its 45-prompt collector come from
 the checked `58ee32277` tree. The collector uses this fork's routing
