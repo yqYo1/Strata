@@ -16,9 +16,9 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check | 2026-11-19 20:12:25 UTC / November 20 05:12:25 JST. Fetched main and verified its remote ref. |
-| Observed upstream | `58ee3227720629ff2e41d640165ebe89c880dfef`, four commits after v0.2.16 |
-| Next check at the approximate 48-hour cadence | 2026-11-21 20:12 UTC / November 22 05:12 JST |
+| Last actual check | 2026-11-22 01:09:53 UTC / November 22 10:09:53 JST. Fetched main and verified its remote ref. |
+| Observed upstream | `6e38f588a646c0ee6948a74afbe670eb75896106`, the commit tagged v0.2.18 |
+| Next check at the approximate 48-hour cadence | 2026-11-24 01:09 UTC / November 24 10:09 JST |
 | Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4` plus individually tested ports, including GPU-list ordering, three server/Web fixes and offline DFlash2 pack readiness. Service and app changes remain open. |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
@@ -32,6 +32,16 @@ adaptations. Focused configuration, streaming, API and CLI changes have their
 own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
+
+The latest check adds 501 commits and 765 changed paths since `58ee32277`.
+The release adds Hy4-Flash and also changes shared Terminal, App and serving
+functions. The observed Qwen-facing candidates include individual model
+discovery with context metadata, request timing and recovery metrics, and
+CLI shell completion. The SYCL DFlash2 planar-Q6 head change and the
+verifier's no-host option are separate component evaluations. The matched
+unmodified Arc Qwen benchmark uses the source under `engine/sycl/` and the
+standard entrypoint at `tools/bench.sh`. These are source findings.
+[Niko1221's v0.2.18 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.18).
 
 The weighted expert-profile builder and its 45-prompt collector come from
 the checked `58ee32277` tree. The collector uses this fork's routing
