@@ -413,6 +413,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   All four native processes exited zero with closed ownership and no fresh
   GPU fault. See `decode_mtp_prefix_restore_v2` in the linked service result.
   The official suite now supplies the separate throughput comparison.
+  Retired 280 files and 54,045,800 bytes of private driver caches and process
+  streams from the closed V1 and V2 RESTORE trials. Their outcomes match
+  pushed commits `7a479bc5b` and `76bd5586e`. The seven local campaign and
+  execution receipts retain their verified hashes. The speed suite reads the
+  committed outcome and creates its own private caches.
   Compare off/on at fixed width and identical placement, separately from the
   confidence-floor experiment and the proposed graph-drain change. First trace all four actual
   catch-up widths against verified and accepted counts. Check live draft KV,
