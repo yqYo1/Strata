@@ -594874,5 +594874,54 @@
     },
     "environment_template_sha256": "ea4cbab152d1a2737a57e425f48dded05cf6b62e9edfe9049e31191c2d7f1ffb",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_split_direct_store_component_v1": {
+    "plan": {
+      "source_commit": "35395484e7ffa7b1eac4cf922a5011b84e8e058a",
+      "sources_sha256": "b90c90af795cad39b0e0a2cb97448b27cafc46eb687b405c44483e5d08604568",
+      "sources_count": 814,
+      "native_source_commit": "e4dfad786347e5adf0f913d69df50454e3decbaa",
+      "native_build_sha256": "17f4751e7ea9f38aecc1b65913cb1eb313d50967aaf06f4dadc15f8300deb0e8",
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-split-upload-native-v1/build/strata",
+        "sha256": "5e0f4044c0dfa8cd7b6aad28ef06121ec8d8328c92739a97cf7e1ea6a1f3a5cc",
+        "bytes": 26550560
+      },
+      "fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-split-upload-native-v1/build/sycl_prefill_attention_bank_test",
+        "sha256": "281c1b3d4660b3b923c95b86153cb1204bf19d715526c5325da312d6069ca67e",
+        "bytes": 2840536
+      },
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-split-upload-native-v1/build/sycl_prefill_attention_bank_test",
+        "correctness"
+      ],
+      "budgets": {
+        "wall": 180,
+        "cpu": 180,
+        "rss_cap": 6442450944,
+        "text_cap": 4194304,
+        "file_cap": 536870912,
+        "total_cap": 536870912
+      },
+      "environment_sha256": "fede33d267ecf6c27d83a57d171c12cfbee1251d856eefecb23ace5baa80beff",
+      "providers_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51",
+      "observer_reference": "1046b416442c889b90c7c9ea759d94970ae897a7",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "scope": "Exact BF16 store bits, guards and checked cancellation on the split-build fixture."
+    },
+    "stage": "prepared",
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true
   }
 }
