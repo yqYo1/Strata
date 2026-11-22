@@ -1308,6 +1308,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   normally with no fresh GPU fault. Use this coordinate proof for a matched
   gather-to-SwiGLU comparison. Keep the weights, B loading, accumulation,
   activation and output checks fixed when changing the A input path.
+  Retired `prefill-mapped-gu-a-v1` through `-v4` and the current `-v5`
+  cache, compile, layout, smoke, tmp and validate directories from the shared
+  state root. The original receipts and recipes match the pushed commits above.
+  The 311 removed files total 144007761 bytes with inventory SHA-256
+  `e3660a584291ccd38a02fee4680be4f3f7efd190471c6b36bd243cf0967d5588`.
+  Retain the current witness and compiler inputs through the next operator
+  comparison's build admission.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
