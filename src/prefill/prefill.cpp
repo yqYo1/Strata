@@ -2426,6 +2426,18 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         }
     }
     const bool ple_on = prefill_ple.ready() && LB <= 1 && 1 < LE;
+#if defined(STRATA_ENABLE_SYCL)
+    static const bool ple_wait_profile = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_WAIT_PROFILE");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    const bool observe_ple_wait = ple_on && m.layer_major_active && ple_wait_profile;
+#else
+    constexpr bool observe_ple_wait = false;
+#endif
+    size_t ple_wait_calls = 0;
+    double ple_wait_ms = 0.0;
+    const double ple_start_ms = observe_ple_wait ? stats_.ms_ple : 0.0;
     const auto& prefill_ple_weights = prefill_ple.w;
     // the PLE block batched over the chunk: the pinned postops and a BF16 or GGUF-native key (else token by token);
     // STRATA_PLE_BATCH=0 keeps the per-token block (the A/B)
@@ -2656,6 +2668,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             if (!ple_next.get()) {
                 err = ple_next_err;
                 return false;
+            }
+            if (observe_ple_wait) {
+                ple_wait_ms += ms_since(tp);
+                ++ple_wait_calls;
             }
             if (cudaMemcpyAsync(m.ple_emb, m.ple_emb_host[ple_buf], (size_t) T * N * 4, cudaMemcpyHostToDevice, m.cs) !=
                     cudaSuccess ||
@@ -4463,6 +4479,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     if (const cudaError_t cst = cudaStreamSynchronize(m.copy); cst != cudaSuccess) {
         err = std::string("prefill: expert copy stream: ") + cudaGetErrorString(cst);
         return false;
+    }
+    if (observe_ple_wait) {
+        const char* mode = ss.ple.table->mode() == strata::kernels::PleIo::Direct ? "direct" : "mmap";
+        std::fprintf(stderr, "strata prefill PLE wait: position=%lld rows=%lld mode=%s gathers=%zu "
+                     "future_get_ms=%.3f host_ple_ms=%.3f\n",
+                     (long long)pos0, (long long)n, mode, ple_wait_calls, ple_wait_ms,
+                     stats_.ms_ple - ple_start_ms);
     }
     if (!m.layer_major_active) stats_.ms_total += ms_since(t_start);
     if (pt.on) {

@@ -569,6 +569,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   earlier 65537-token cohort on the retained executable. Use the paired
   ratios for the preservation decision. The cause of the period difference
   remains unresolved.
+  The PLE attribution candidate enables `STRATA_SYCL_PREFILL_PLE_WAIT_PROFILE=1`
+  for SYCL layer-major prefill. Its layer-one record includes the position,
+  rows, table mode and completed gathers after the existing queue drains.
+  The future retrieval clock covers the caller's exposed gather wait. The
+  separate host interval also includes upload and PLE work submission.
+  Qualify the source in a serialized build, then bind the records to the
+  request boundaries and measure observer overhead with the same executable.
   Run the independent 117489-token comparison with
   `decode_kv_fast_prefill_preservation.py boundary`. Keep three matched
   pairs and separate first-use and warmed prompt time and client TTFT.
