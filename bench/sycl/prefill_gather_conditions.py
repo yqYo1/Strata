@@ -1,4 +1,4 @@
-"""Measure host and Xe conditions around the 65K prefill timing window."""
+"""Measure host and Xe conditions on the measured 65K and 117K copy routes."""
 
 import fcntl
 import json
@@ -15,14 +15,12 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 READER = Path(client_resources.__file__).resolve()
 SOURCES = (THIS, str(READER.relative_to(bank.P)),
            str(Path(hardware_conditions.__file__).resolve().relative_to(bank.P)))
-KEY = 'prefill_gather_conditions_65537_v1'
-ROOT = bank.B / KEY.replace('_', '-')
-READ = 65537
+DEFAULT_READ = 65537
 ORDER = ('clean', 'observed', 'clean')
 MAX_RATIO = 1.05
 PLAN = dict(order=list(ORDER), observed_index=1, seconds=900, interval=1,
     question='Record GPU frequency, throttle, scheduled CPU and host pressure on the '
-             'same 65537-token copy route that slowed between timing periods.',
+             'selected copy route that slowed between timing periods.',
     acceptance='Require the warmed observed prompt and client TTFT to be within 1.05x '
                'of both clean controls. Record first use separately. Require the '
                'owned reader, exact request work, coverage, and normal fault-free exit.',
@@ -51,6 +49,8 @@ def summarize(root, outcome, boot):
             contained_samples=conditions['contained_samples'],
             gpu_gauges={k: v for k, v in conditions['gauges'].items()
                         if not k.startswith('cpu/')},
+            cpu_reported_khz={k: v['median'] for k, v in conditions['gauges'].items()
+                              if k.startswith('cpu/') and k.endswith('/scaling_cur_freq')},
             gpu_energy=conditions['energy'],
             pci_and_throttle={k: v for k, v in conditions['text'].items()
                               if k.startswith('pci/') or '/throttle/' in k},
@@ -82,10 +82,12 @@ def decision(processes):
                 attribution_scope='Current timing period before client first output.')
 
 
-def experiment():
+def experiment(read):
     # Keep the copy arm fixed. Only the middle native wrapper spawns a reader.
-    ctx = store.experiment(READ, False, timing_order=(False,) * len(ORDER))
-    ctx.ROOT, ctx.KEY, ctx.THIS, ctx.decision = ROOT, KEY, THIS, decision
+    ctx = store.experiment(read, False, timing_order=(False,) * len(ORDER))
+    key = f'prefill_gather_conditions_{read}_v1'
+    ctx.ROOT, ctx.KEY, ctx.THIS, ctx.decision = bank.B / key.replace('_', '-'), key, THIS, decision
+    plan = dict(PLAN, read=read, requests=ctx.RUNS)
     pin_sources, store_environment, store_save = ctx.pins, ctx.environment, ctx.save
     store_current, store_native, store_work = ctx.current, ctx.native_context, ctx.after_execution
 
@@ -106,7 +108,7 @@ def experiment():
 
     def save(row):
         if row['stage'] == 'prepared':
-            row['condition_plan'] = PLAN
+            row['condition_plan'] = plan
             case = row['plans'][PLAN['observed_index']]
             path = Path(case['root']) / 'plan.json'
             native = json.loads(path.read_text())
@@ -116,7 +118,7 @@ def experiment():
         store_save(row)
 
     def current(row):
-        require(row['condition_plan'] == PLAN, 'frozen conditions plan differs')
+        require(row['condition_plan'] == plan, 'frozen conditions plan differs')
         for case in row['plans']:
             native = json.loads((Path(case['root']) / 'plan.json').read_text())
             if case['index'] == PLAN['observed_index']:
@@ -143,13 +145,16 @@ def experiment():
 
 
 if __name__ == '__main__':
-    action, = sys.argv[1:]
+    require(len(sys.argv) in (2, 3), 'use prepare|host|INDEX [65537|117489]')
+    action, *length = sys.argv[1:]
+    read = int(length[0]) if length else DEFAULT_READ
     require(sys.executable == basis.reference.model.PYTHON and
+            read in store.SELECTION and
             action in ('prepare', 'host', *map(str, range(len(ORDER)))), 'choose a planned conditions stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
-        ctx = experiment()
+        ctx = experiment(read)
         if action == 'prepare':
             ctx.prepare()
         elif action == 'host':

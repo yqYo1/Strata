@@ -1363,12 +1363,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The same 65537-token copy configuration previously reached 1009.33 tok/s.
   It uses the same executable, runtime inventory, request bodies and effective
   settings after path normalization. The elapsed-time difference remains
-  unattributed. The separate `bench/sycl/prefill_gather_conditions.py` bracket
-  uses two clean controls and the owned passive reader on that copy route.
-  It measures sampled GT clocks, throttle signals, PCI link state, scheduled
-  CPU time and host pressure during the client interval before first output.
-  The existing reader tests and host-side plan checks pass. Model observation
-  and the observer-cost screen remain pending.
+  unattributed. The first new 117489-token copy control also took 7.50 s
+  longer than the historical warmed median, at 974.96 tok/s. Its request
+  hashes, executable, providers and settings match the earlier KV-reuse
+  control. Keep comparisons within each timing period and placement.
+  The separate `bench/sycl/prefill_gather_conditions.py` bracket supports
+  both measured copy routes. It uses two clean controls and one observed
+  process to sample GT clocks, throttle signals, PCI link state, reported
+  CPU frequency, scheduled CPU time and host pressure before first output.
+  Run it at 117489 to characterize the selected route near the throughput
+  target. Model observation and the observer-cost screen remain pending.
   The same-build standalone KV trial passed the final slot at 262144 with
   114688 GPU rows, 147455 host rows and one terminal commit. Its mixed
   scratch bytes were zero. Carry this result as final-slot evidence for
