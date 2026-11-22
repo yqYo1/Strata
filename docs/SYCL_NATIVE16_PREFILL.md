@@ -1322,10 +1322,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Run the independent process pairs on the retained production executable.
   For the subsequent output-store comparison, the retained `fde0cdd11`
   source already exposes `STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE` and
-  its build includes `sycl_prefill_attention_bank_test`. Validate that
-  fixture on the retained build, then hold the selected KV and gather arms
-  fixed at each length. Check `pieces`, `direct` and
-  `requested_D2D_bytes` on the actual BF16 window path before clean timing.
+  its build includes `sycl_prefill_attention_bank_test`.
+  `bench/sycl/prefill_gather_store.py` uses that fixture with Level Zero
+  tracing. The model admission recovers the two traced copy requests for
+  each selected KV/gather arm and checks the exact two direct counterparts.
+  At 65537 and 117489 inputs the copy routes request 64,424,509,440 and
+  115,495,403,520 GPU-local bytes respectively. Require matching bank pieces
+  and no output copies in the direct cases. Collect three fresh pairs per
+  length with the chosen KV/gather settings fixed.
   The same-build standalone KV trial passed the final slot at 262144 with
   114688 GPU rows, 147455 host rows and one terminal commit. Its mixed
   scratch bytes were zero. Carry this result as final-slot evidence for

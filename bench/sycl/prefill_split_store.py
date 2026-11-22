@@ -68,6 +68,14 @@ def prepare():
               complete=False, ownership_closed=True))
 
 
+def validate_runtime(log, pid, probe):
+    validation = basis.validation.preload_evidence(log, pid)
+    require(validation['loader'] == probe['loader']['path']
+            and not any(error in log for error in ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', 'retirement failed')),
+            'unexpected store fixture runtime event')
+    return validation
+
+
 def run():
     row = bank.previous.read(ROOT / 'record.json')
     require(row == basis.validation.committed(RESULT, (KEY,)) and row['stage'] == 'prepared'
@@ -84,11 +92,7 @@ def run():
         command, output, errors = owner.run('fixture', plan['command'], env, P, **plan['budgets'])
         require(attention.ownership.closed(command) and command['exit_code'] == 0, 'native store fixture failed')
         basis.comparison.require_quiet_validation(ROOT)
-        log = errors.read_text()
-        validation = basis.validation.preload_evidence(log, command['pid'])
-        require(validation['loader'] == probe['loader']['path']
-                and not any(error in log for error in ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', 'retirement failed')),
-                'unexpected store fixture runtime event')
+        validation = validate_runtime(errors.read_text(), command['pid'], probe)
         result.update(attention.parse(output.read_text(), 'correctness'),
                       native_exit_code=0, validation=validation, host_probe_accepted=True)
     except Exception as error:
