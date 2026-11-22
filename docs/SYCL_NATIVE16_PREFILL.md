@@ -1269,10 +1269,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The same-build GPU fixture at `90c572ca9` passes exact BF16 bits for
   1, 63, 8191 and 8192 rows, guards, invalid spans and checked cancellation,
   with normal closure and no fresh fault. The `store-admit` phase fixes
-  batched upload and input copies and enables only direct output. Its two
-  fresh 117489-token requests use the original traced same-build batched
-  copy arm for work and decode-loan checks. A separate clean comparison
-  would measure the change in prefill and TTFT.
+  batched upload and input copies and enables only direct output. It closed
+  at `3f1e5b0b9`. Both fresh 117489-token requests matched the traced batched
+  copy arm's expert and draft work and restored the same 1124 decode slots.
+  Each used 720 direct writes and requested zero output-copy bytes. Both
+  completed without a fresh GPU fault. `store-time` compares copy and direct
+  with clean observers and the same engine and runtime safety settings. Run
+  three independent process pairs in copy/direct, direct/copy and copy/direct
+  order. Use the four established fresh request bodies in each process. Require
+  two faster warmed pairs and a paired median time ratio below one. Record
+  first-use and warmed TTFT and the repeated 1000 tok/s threshold separately.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`

@@ -19,12 +19,15 @@ REFERENCE = '7c88fb0123a76b35e2dc91e597a19439bd2ae5ca'
 CLOSED_TIMING = '982211f5c91b4251ff89b8ad93f1f369a46fbad0'
 STORE_FIXTURE_EVIDENCE = '90c572ca98efb28c1578fa23b6cb8cd13e103efe'
 STORE_FIXTURE_KEY = 'prefill_split_direct_store_component_v1'
+STORE_ADMISSION = '3f1e5b0b9d3acc52f745be4f4e18098d361b9d18'
 MODES = ('demand', 'batched', 'coalesced')
 BLOCKS = (MODES, MODES[1:] + MODES[:1], MODES[2:] + MODES[:2])
 CONTRASTS = (('batched', 'demand'), ('coalesced', 'batched'), ('coalesced', 'demand'))
+STORE_ORDER = (False, True, True, False, False, True)
 UPLOAD = 'STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD'
 KEYS = {'admit': 'prefill_split_upload_admission_v1', 'time': 'prefill_split_upload_speed_v1',
-        'profile': 'prefill_split_upload_cpu_wait_v1', 'store-admit': 'prefill_split_direct_store_admission_v1'}
+        'profile': 'prefill_split_upload_cpu_wait_v1', 'store-admit': 'prefill_split_direct_store_admission_v1',
+        'store-time': 'prefill_split_direct_store_speed_v1'}
 MAX_OBSERVER_RATIO = 1.03
 
 
@@ -97,9 +100,17 @@ def request_route(text, plan):
     return route
 
 
+def direct_work(work):
+    return [dict(item, store=dict(item['store'], direct=item['store']['pieces'], copy_bytes=0))
+            for item in work]
+
+
 def check_work(outcome, row, plan):
+    expected = row['observer_admission']['expected_work']
+    if plan.get('direct_output') and not plan['trace_progress']:
+        expected = direct_work(expected)
     require([split.work(r, s) for r, s in zip(outcome['routes'], outcome['samples'], strict=True)]
-            == row['observer_admission']['expected_work']
+            == expected
             and outcome['clean_speed'] == (not plan['trace_progress']),
             'exact model work, prefill route or timing scope differs')
     outcome['mode'] = plan['mode']
@@ -126,7 +137,7 @@ def profile_basis(runs):
     return native, prior, providers, extra
 
 
-def store_basis(runs):
+def store_basis(runs, traced):
     native, prior, providers, extra = profile_basis(runs)
     fixture = basis.validation.committed(bank.RESULT, (STORE_FIXTURE_KEY,))
     plan = fixture['plan']
@@ -143,25 +154,61 @@ def store_basis(runs):
     admission_row = basis.validation.committed(bank.RESULT, (KEYS['admit'],))
     copy = admission_row['processes'][MODES.index('batched')]
     observer = prior['observer_admission']
+    expected = observer['expected_work']
     original = [split.work(r, s) for r, s in zip(copy['routes'], copy['samples'], strict=True)]
     require(copy['mode'] == 'batched' and copy['passed'] and copy['ownership_closed']
             and copy['native_exit_code'] == 0 and not copy['fresh_faults']
-            and original == observer['expected_work']
+            and len(original) == 2 and original == expected[:2]
             and all(item['store']['pieces'] == 720 and item['store']['direct'] == 0
-                    and item['store']['copy_bytes'] == 115495403520 for item in original),
+                    and item['store']['copy_bytes'] == 115495403520 for item in expected),
             'same-build batched copy admission and exact store geometry required')
-    observer.update(traced=True, direct_store_component_sha256=bank.signature(fixture),
+    observer.update(traced=traced, direct_store_component_sha256=bank.signature(fixture),
                     expected_loaned_slots=[r['loaned_slots'] for r in copy['routes']],
-                    copied_D2D_bytes=[item['store']['copy_bytes'] for item in original],
-                    expected_work=[dict(item, store=dict(item['store'], direct=item['store']['pieces'], copy_bytes=0))
-                                   for item in original])
+                    copied_D2D_bytes=[item['store']['copy_bytes'] for item in expected])
+    if traced:
+        observer['expected_work'] = direct_work(expected)
+    else:
+        gate = basis.validation.committed(bank.RESULT, (KEYS['store-admit'],))
+        require(gate == bank.previous.historic(STORE_ADMISSION, KEYS['store-admit'])
+                and gate['stage'] == 'closed' and gate['passed'] and gate['complete']
+                and gate['ownership_closed'] and not gate['active'] and gate['plan']['direct_output']
+                and gate['binary'] == native['binaries']['strata']
+                and gate['native_source_commit'] == native['native_source_commit']
+                and gate['observer_admission']['direct_store_component_sha256'] == observer['direct_store_component_sha256']
+                and gate['observer_admission']['expected_work'] == direct_work(expected[:2])
+                and gate['decision']['matched_decode_loan'],
+                'closed same-build direct model route and decode-loan check required')
+        observer['direct_store_admission_sha256'] = bank.signature(gate)
     return native, prior, providers, extra
 
 
 def check_direct_store(outcome, row, plan):
     check_work(outcome, row, plan)
-    require([r['loaned_slots'] for r in outcome['routes']] == row['observer_admission']['expected_loaned_slots'],
-            'direct store restored a different decode expert loan')
+    if plan['trace_progress']:
+        require([r['loaned_slots'] for r in outcome['routes']] == row['observer_admission']['expected_loaned_slots'],
+                'direct store restored a different decode expert loan')
+    else:
+        outcome['direct_output'] = plan['direct_output']
+
+
+def store_timing_decision(processes):
+    require(tuple(p['direct_output'] for p in processes) == STORE_ORDER
+            and len({(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in processes}) == len(STORE_ORDER)
+            and all(p['mode'] == 'batched' and p['passed'] and p['complete'] and p['ownership_closed']
+                    and p['native_exit_code'] == 0 and p['clean_speed'] and not p['fresh_faults'] for p in processes),
+            'complete independent store timing pairs required')
+    ratios, rates = [], {'copy': [], 'direct': []}
+    for a, b in zip(processes[::2], processes[1::2], strict=True):
+        copy, direct = sorted((a, b), key=lambda p: p['direct_output'])
+        clocks = {arm: timing(p) for arm, p in (('copy', copy), ('direct', direct))}
+        for arm, values in clocks.items():
+            rates[arm].append(1000 * READ / values['warm_prompt_ms'])
+        ratios.append({key: value / clocks['copy'][key] for key, value in clocks['direct'].items()})
+    warm = [p['warm_prompt_ms'] for p in ratios]
+    return dict(warm_process_rates=rates, paired_direct_over_copy_ratios=ratios,
+                repeated_warm_gain=sum(t < 1 for t in warm) >= 2 and statistics.median(warm) < 1,
+                repeated_1000={arm: min(values) >= 1000 for arm, values in rates.items()},
+                model_qualified=False, adopted=False)
 
 
 def profiled_route(text, plan):
@@ -223,11 +270,12 @@ def decision(processes, traced, order):
 
 
 def experiment(action):
-    direct_store = action == 'store-admit'
-    traced = action == 'admit' or direct_store
+    store = action in ('store-admit', 'store-time')
+    traced = action in ('admit', 'store-admit')
     profiled = action == 'profile'
-    if direct_store:
-        order = ('batched',)
+    store_order = (True,) if traced else STORE_ORDER
+    if store:
+        order = ('batched',) * len(store_order)
     elif profiled:
         order = ('batched',) * len(host_profile.ROLES)
     else:
@@ -258,12 +306,18 @@ def experiment(action):
                         for scope in host_profile.SCOPES), 'extra or missing CPU accounting scope')
 
         ctx.validate_model_text = validate_model_text
-    if direct_store:
-        ctx.basis = lambda: store_basis(runs)
+    if store:
+        ctx.basis = lambda: store_basis(runs, traced)
         ctx.after_execution = check_direct_store
-        protocol.update(direct_output=True, acceptance=(
-            'Match the same-build traced batched copy work and decode loan for both inputs. '
-            'Require 720 direct pieces and zero output copies per input.'))
+        if traced:
+            protocol.update(direct_output=True, acceptance=(
+                'Match the same-build traced batched copy work and decode loan for both inputs. '
+                'Require 720 direct pieces and zero output copies per input.'))
+        else:
+            ctx.decision = store_timing_decision
+            protocol.update(direct_output_order=list(store_order), acceptance=(
+                'Match the admitted copy and direct work. Use at least two faster warm prompt times '
+                'and a paired median below one. Keep first-use and warmed TTFT separate.'))
 
     def pins(revision):
         values = old_pins(revision)
@@ -276,8 +330,9 @@ def experiment(action):
 
     def environment(row, plan):
         env = model.ordinary_environment(row, plan['root'], row['observer_admission']['ordinary_control'])
+        direct = store and store_order[plan['index']]
         env.update({UPLOAD: order[plan['index']], split.SLOT_OPTION: str(SLOTS),
-                    model.INPUT: '0', model.OUTPUT: str(int(direct_store)), speed.state.KV: '1', speed.state.GATHER: '0',
+                    model.INPUT: '0', model.OUTPUT: str(int(direct)), speed.state.KV: '1', speed.state.GATHER: '0',
                     'STRATA_SYCL_KV_COPY_GROUPS': '0', 'STRATA_SYCL_PREFILL_SPLIT_SCRATCH_CHECK_ONCE': '0'})
         require('STRATA_TRACE' not in env and 'STRATA_DECODE_TIMING' not in env
                 and env.get('STRATA_SYCL_CACHE_LOAN_AUDIT', '0') == '0', 'unexpected observer')
@@ -294,8 +349,8 @@ def experiment(action):
                 plan.update(mode=mode, trace_progress=traced)
                 if profiled:
                     plan.update(role=host_profile.ROLES[plan['index']], cpu_wait_scopes=plan['index'] == 1)
-                if direct_store:
-                    plan['direct_output'] = True
+                if store:
+                    plan['direct_output'] = store_order[plan['index']]
             row.update(whole_bytes=len(order) * row['budgets']['total_cap'] + (8 << 20), plan=protocol)
         old_save(row)
 
@@ -309,8 +364,8 @@ def experiment(action):
             require([(p['role'], p['cpu_wait_scopes']) for p in row['plans']]
                     == [(role, i == 1) for i, role in enumerate(host_profile.ROLES)],
                     'frozen CPU accounting roles differ')
-        if direct_store:
-            require(all(p['direct_output'] is True for p in row['plans']), 'frozen direct output differs')
+        if store:
+            require(tuple(p['direct_output'] for p in row['plans']) == store_order, 'frozen direct output differs')
         return old_current(row)
 
     ctx.pins, ctx.environment, ctx.current, ctx.save = pins, environment, current, save
@@ -320,7 +375,7 @@ def experiment(action):
 if __name__ == '__main__':
     phase, action = sys.argv[1:]
     require(sys.executable == basis.reference.model.PYTHON and phase in KEYS,
-            'use the benchmark environment and select admit, time, profile or store-admit')
+            'use the benchmark environment and select admit, time, profile, store-admit or store-time')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
