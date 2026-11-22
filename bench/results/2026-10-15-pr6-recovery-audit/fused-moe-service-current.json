@@ -598699,7 +598699,7 @@
     "error": "RuntimeError('incomplete actual AOT/host link inputs')"
   },
   "prefill_mapped_gu_a_v4": {
-    "stage": "built",
+    "stage": "checked",
     "controller": {
       "revision": "b7ad8db8a0bd9635039492a92a1114ad90abfc98",
       "sha256": "56788b9902dfbb358ae6e63d7d884c376b95638a1256c9b978d4ab30506fc7c5"
@@ -598891,7 +598891,29 @@
       ]
     },
     "environment_sha256": "4d2afe3ea188c6303e083f97802786d6f12f5919527206a29750d9c73925b661",
-    "stages": [],
+    "stages": [
+      {
+        "stage": "layout",
+        "environment_sha256": "1baed1f9d8dfbf99cbbd9a0142d3d1d89669d981b7f056192e06641d0783846c",
+        "gpu": false,
+        "completed_cases": 22,
+        "compared_device_words": 0,
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "active": false,
     "complete": false,
     "passed": false,
