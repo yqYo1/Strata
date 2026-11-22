@@ -1315,6 +1315,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `e3660a584291ccd38a02fee4680be4f3f7efd190471c6b36bd243cf0967d5588`.
   Retain the current witness and compiler inputs through the next operator
   comparison's build admission.
+  The complete mapped GU component closed its correctness plan at
+  `6b2a56899` using source `038e008a3`. The rebuilt fragment witness
+  passed 22 host and 26 GPU cases. The operator passed 12 GPU cases covering
+  41,322 expert rows across one and two input banks, both tiles, padded
+  tails, and invalid source endpoints. The scalar gather plus the existing
+  native GU adapter and the mapped read produced identical BF16 captures
+  and FP16 outputs. Sticky status, guards, immutable inputs, normal exits,
+  and fresh-fault checks passed.
+  Compare the complete scalar-gather-plus-GU and mapped-GU intervals for
+  the wide tile next. Keep the weight, bank layout and DPAS geometry fixed
+  across each pair. Repeat with clustered and spread source rows at the
+  production large-job sizes. The component has no timing or model
+  qualification yet. The next comparison needs the operator build and its
+  committed correctness evidence. Retire the superseded witness generation
+  after the timing controller passes admission using its Git record.
+  The closed operator's raw directories `cache`, `compile`, `layout`,
+  `smoke`, `tmp`, `validate`, `witness-smoke`, and `witness-validate`
+  are eligible for retirement after pushing the evidence. The compact
+  result retains the validated cases and link inputs. The 40 raw files
+  total 1,320,049 bytes with inventory SHA-256
+  `892b219e8f017b590293f24d90277af01270ae18eda619098db403a5ed27d21d`.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
