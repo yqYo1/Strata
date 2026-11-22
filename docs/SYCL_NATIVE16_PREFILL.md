@@ -1236,6 +1236,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   change. Match payloads, dequants, expert jobs and MTP work. Require at
   least two faster warm prompt times and a paired median ratio below one
   for a reproduced gain. Report first-use and warm TTFT separately.
+  The clean comparison closed at `982211f5c` with nine independent processes,
+  36 fresh requests, matched work and no new GPU faults. The median warmed
+  process rates for demand, batched and coalesced are 963.923, 989.117 and
+  987.504 tok/s. Median warmed client TTFT is 122.119, 119.009 and 119.220
+  seconds. Batched wins all three paired warmed prompt intervals. Their
+  median batched/demand ratio is 0.974529. Median first-use client TTFT
+  improves from 133.436 to 131.293 seconds. Coalescing cuts about 77% of
+  accepted copy commands and wins one of three warm pairs against batched.
+  Its median coalesced/batched ratio is 1.001633 and fails the incremental gain
+  gate. Advance batched for further tuning on this image. The median warmed
+  request needs 1.293 fewer seconds to sustain 1000 tok/s. Next attribute
+  exposed host submission and GPU wait on that same placement. Physical
+  262144, RESTORE and sustained decode qualification remain open on this build.
+  All 42 original samples, route counters and decisions match `982211f5c`.
+  Retired the numbered request directories and `host` from the closed
+  `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
+  roots under the shared state directory. The trace capture contained 214
+  files and 32,996,811 bytes with inventory SHA-256
+  `74833fb2ce4eb87979058de0a8d6cf3068bf12e9ac3c3de27163712342ef9d3f`.
+  The timing capture contained 634 files and 95,231,582 bytes with inventory
+  SHA-256 `6cdde1ea3ca90905f290f6491d7be3130bd6cc1ed119f3dd583606fc42dc229a`.
+  The comparison records and provider manifests remain for the same-build
+  attribution decision.
 
   The 65537-token comparison closed at `84c883393` with 16 independent
   processes and 48 fresh requests. The subsequent-request rates were
