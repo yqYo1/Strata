@@ -1263,12 +1263,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | `src/prefill/moe_window.inc` | `131e66d4dc3580e7e851bf11bc5948d5c9bda35852f33e42953b0bad40b3edc3` |
   | `src/prefill/layer_major.inc` | `69ebdcfac4e799dddb27cd208dcde998b3d76fa8e14cac66ae57851625701277` |
 
-  At the build boundary, check the retained upload executable and its
-  remaining consumers. Qualify a coherent projection when a same-build
-  demand/batched comparison on `fde0cdd11` is needed. Keep the 128-slot
-  placement, KV reuse, scalar gather and attention output policy fixed at
-  first. Compare batch issue before testing any interaction with direct
-  output. Build, state and clean timing remain pending for this projection.
+  The first KV/gather comparison uses the committed upload delta, its
+  device-tested helper and the admission restriction at `d92f63fa7`.
+  Batching selects only the 128-slot split with the original workspace.
+  Keep KV reuse, scalar gather and attention copies fixed for two traced
+  admissions and three counterbalanced timing pairs. Compare batch issue
+  before measuring its interaction with direct output. The two controllers
+  are `bench/sycl/prefill_kv_upload_build.py` and
+  `bench/sycl/prefill_kv_upload_compare.py`. Complete ordinary and near-full
+  fallback, state handoff and sustained decode before adoption.
   On the earlier upload build, `prefill_split_upload_compare.py profile`
   runs clean, CPU accounting and clean, each with the first two established
   fresh inputs. Only the
@@ -1401,15 +1404,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   hashes, executable, providers and settings match the earlier KV-reuse
   controls. Keep comparisons within each timing period and placement.
   The separate `bench/sycl/prefill_gather_conditions.py` bracket supports
-  both measured copy routes. It uses two clean controls and one observed
-  process to sample GT clocks, throttle signals, PCI link state, reported
-  CPU frequency, scheduled CPU time and host pressure before first output.
-  Run it at 117489 to characterize the selected route near the throughput
-  target. The first preparation stopped before launch because the benchmark
-  and observer controller derived different startup environments. The V2
-  observer enables measurement at its own entry point, with the same
-  validated inference environment in all three cases. Model observation
-  and the observer-cost screen remain pending.
+  both measured copy routes. The 117489-input V2 bracket closed at
+  `508745909`. Three processes and twelve fresh requests matched route,
+  work and inference settings, with normal exits, quiet validation and no
+  fresh GPU faults. Final hashes matched all fifteen model assets.
+  The clean, observed and clean warmed PP rates are 975.89, 977.03 and
+  971.48. Warmed client TTFT is 120.620, 120.494 and 121.156 s. First-use
+  TTFT is 132.583, 133.310 and 132.859 s. Both observed warm time ratios
+  are within the 1.05 cap for prefill and TTFT.
+  The observed warmed requests sample a 2750 MHz median GT0 clock,
+  7 PL2 indications across 358 samples and 98.9–99.1% compute-engine
+  busy fractions. Scheduled native CPU time is about 0.99 core equivalents,
+  with zero native major page faults during the sampled intervals. The
+  host-facing link consistently reports 16 GT/s x4. These samples describe
+  current conditions. Exposed transfer time, arithmetic/memory saturation
+  and conditions at the historical higher speed remain undetermined.
+  V1 refused before launch on a mismatched observer environment. V2
+  enables observation in its own entry point.
   The same-build standalone KV trial passed the final slot at 262144 with
   114688 GPU rows, 147455 host rows and one terminal commit. Its mixed
   scratch bytes were zero. Carry this result as final-slot evidence for

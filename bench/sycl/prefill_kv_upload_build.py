@@ -18,7 +18,7 @@ UPLOAD_EVIDENCE = '982211f5c91b4251ff89b8ad93f1f369a46fbad0'
 UPLOAD_BUILD = 'e4dfad786347e5adf0f913d69df50454e3decbaa'
 SCOPE = 'd92f63fa7e92e31324d27062f8ac5f1702a71bab'
 OVERLAYS = ((upload.UPLOAD, (upload.UNIT, upload.WINDOW, upload.LAYER)),
-            (upload.HELPER, (upload.WINDOW, upload.FIXTURE)),
+            (upload.HELPER, (upload.WINDOW, upload.HEADER, upload.FIXTURE)),
             (SCOPE, (upload.WINDOW,)))
 
 
@@ -30,8 +30,6 @@ def apply_upload(source):
             source[path] = merge_delta(before, path, revision + '^', revision)
             require(merge_delta(source[path], path, revision, revision + '^') == before,
                     'upload would replace unrelated source: ' + path)
-    require(upload.HEADER not in source, 'unexpected existing batch helper')
-    source[upload.HEADER] = gather.fixture.git_file(upload.HELPER, upload.HEADER)
     changed = {path: h for path, h in bank.stage.hashed(source).items() if original.get(path) != h}
     require(set(changed) == {upload.UNIT, upload.WINDOW, upload.LAYER, upload.HEADER, upload.FIXTURE},
             'unexpected native change in upload projection')
