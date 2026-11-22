@@ -587,6 +587,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `36c68b081b50699928315c206928b12f1485c5a11525e08ddd7664cace4e73c5`.
   After a native build, bind the records to request boundaries and measure
   observer overhead with the same executable.
+  The split-prefill accumulator can check its two fixed dequantization
+  workspace ranges once per nonempty window with
+  `STRATA_SYCL_PREFILL_SPLIT_SCRATCH_CHECK_ONCE=1`. The workspace allocations
+  and queue belong to the invocation through its checked drain. Each expert
+  blob and job source range still has its own check. The default checks both
+  workspace ranges on every new expert. The first matched 117489-token pair
+  executed 18860–18900 dequantizations across 48 windows per request. This
+  bounds the removed registry lookups at 37624–37704 calls per request. Measure
+  their host cost before assigning any change in request time to the lock.
+  Project this change onto the exact boundary image as the sole
+  `src/prefill/moe_window.inc` overlay. For syntax verification, copy the
+  original prefill translation unit into the same private directory as the
+  modified include, then use the pinned compiler, flags and original source
+  directory as a quoted include directory. Compare dependency hashes against
+  the original compile and external inputs, with the one include as the only
+  changed input. This projection uses the original PLE implementation.
+  For the same-image experiment, qualify checked numerical output, actual
+  split placement, route counts, cancellation and the decode handoff first.
+  Use the established four fresh 117489-token requests and three independent
+  pairs in off/on, on/off, off/on order. Capture prompt time and client TTFT
+  for the first request and warmed median separately. Hold the scalar decode
+  resolver, aligned KV reuse and expert dispatch fixed, with PLE timing
+  disabled in both arms.
+  Count a warmed gain when at least two pairs improve and their median ratio
+  is below one. Record first-use TTFT separately and verify phase preservation
+  before adoption. Preserve the actual new build inputs and sample spread.
   Run the independent 117489-token comparison with
   `decode_kv_fast_prefill_preservation.py boundary`. Keep three matched
   pairs and separate first-use and warmed prompt time and client TTFT.

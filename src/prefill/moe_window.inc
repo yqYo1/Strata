@@ -408,10 +408,22 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
 #endif
     const bool allow_vec8 = owner.scratch_mixed && prefill_moe_large_vec8_requested();
+    static const bool split_scratch_check_once = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_SPLIT_SCRATCH_CHECK_ONCE");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    const bool check_scratch_once = split_accumulator && split_scratch_check_once;
+    const auto& jobs = owner.routes->jobs();
+    const auto check_scratch = [&] {
+        sycl_backend::validate_device_span(m.dq_gu[0], size_t(2 * 640 * N * 2), queue);
+        sycl_backend::validate_device_span(m.dq_d[0], size_t(N * 640 * 2), queue);
+    };
+    // The prefill owns both scratch ranges through the checked window drain.
+    if (check_scratch_once && !jobs.empty()) check_scratch();
     int32_t loaded = -1;
-    for (size_t index = 0; index < owner.routes->jobs().size(); ++index) {
+    for (size_t index = 0; index < jobs.size(); ++index) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
-        const auto& job = owner.routes->jobs()[index];
+        const auto& job = jobs[index];
         if (job.expert != loaded) {
             int32_t slot = -1;
             if (owner.expert_slots) {
@@ -446,8 +458,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             const auto* blob = owner.private_expert_bank ? owner.private_expert_bank->device_slot(slot) :
                 m.cache->device_slot(slot);
             sycl_backend::validate_device_span(blob, size_t(layout.blob_bytes(layer)), queue);
-            sycl_backend::validate_device_span(m.dq_gu[0], size_t(2 * 640 * N * 2), queue);
-            sycl_backend::validate_device_span(m.dq_d[0], size_t(N * 640 * 2), queue);
+            if (!check_scratch_once) check_scratch();
             {
                 hp::Host host(hp::moe_dequant_gu);
                 auto tag = command_trace.tag(cp::Kind::dequant_gu, job.expert, job.global_row, job.rows,
