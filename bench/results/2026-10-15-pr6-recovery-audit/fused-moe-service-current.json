@@ -601197,5 +601197,53 @@
     },
     "environment_template_sha256": "8feeda9318b1d4a99f4c297dd4ec34d271c11b592e2bb418e21b34661afe8af6",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_gather_direct_store_component_v1": {
+    "plan": {
+      "source_commit": "6d8c6e5405474eeab14da1f58323200100c9d11e",
+      "sources_sha256": "6e41392f9f5cc070f15e08c9006131ecf97f37cf4cb87246a12ff7ce0e79a422",
+      "sources_count": 19,
+      "native_source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+      "native_build_sha256": "913e9012c3f98898f9f8597639f2ebec384edc04df43a7cca33cedd7ff317a9f",
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/strata",
+        "sha256": "85e3f202ef99661d52c03a17a8b609b8a8a44e9f584bfa8fc1a5c1c3d51aea7c",
+        "bytes": 26541640
+      },
+      "fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/sycl_prefill_attention_bank_test",
+        "sha256": "281c1b3d4660b3b923c95b86153cb1204bf19d715526c5325da312d6069ca67e",
+        "bytes": 2840536
+      },
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/sycl_prefill_attention_bank_test",
+        "correctness"
+      ],
+      "budgets": {
+        "wall": 180,
+        "cpu": 180,
+        "rss_cap": 6442450944,
+        "text_cap": 4194304,
+        "file_cap": 536870912,
+        "total_cap": 536870912
+      },
+      "environment_sha256": "cbddedf8bbb294dfdccdec7a9bda0952927423f2c9c2cae2f0648f838071360e",
+      "providers_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "scope": "Exact BF16 store bits, tails, guards and checked cancellation with Level Zero tracing."
+    },
+    "stage": "prepared",
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true
   }
 }
