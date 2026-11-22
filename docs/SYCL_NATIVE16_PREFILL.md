@@ -1330,6 +1330,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   115,495,403,520 GPU-local bytes respectively. Require matching bank pieces
   and no output copies in the direct cases. Collect three fresh pairs per
   length with the chosen KV/gather settings fixed.
+  The 65537-input traced check closed under
+  `prefill_gather_direct_store_65537_admission_v2`. Both requests executed
+  all 384 direct stores with zero requested output-copy bytes and matched
+  the recorded copy arm's workload and dispatch. Native validation and
+  shutdown passed with zero fresh GPU faults. V1 refused before native launch
+  because the case omitted the observer flag. The corrected plan pins it in
+  the environment and case metadata. The clean speed comparison remains open.
   The same-build standalone KV trial passed the final slot at 262144 with
   114688 GPU rows, 147455 host rows and one terminal commit. Its mixed
   scratch bytes were zero. Carry this result as final-slot evidence for
