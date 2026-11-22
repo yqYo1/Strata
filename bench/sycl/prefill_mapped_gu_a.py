@@ -16,7 +16,7 @@ from prefill_attention_bank_component import dependency_paths
 bank, validation = reference.bank, reference.validation
 owner, require = reference.owner, reference.require
 P, B, RESULT = bank.P, bank.B, bank.RESULT
-ROOT, KEY = B / 'prefill-mapped-gu-a-v2', 'prefill_mapped_gu_a_v2'
+ROOT, KEY = B / 'prefill-mapped-gu-a-v3', 'prefill_mapped_gu_a_v3'
 PARENT = reference.coherent_model.MODEL_ROOT
 SRC, BUILD = PARENT / 'source', PARENT / 'build'
 PROBE_SRC = ROOT / 'probe-source'
@@ -34,6 +34,8 @@ ROWS = {'layout': (1, 3, 16, 17, 128, 129, 211, 2334, 6640, 8191, 8192),
 BOOT = Path('/proc/sys/kernel/random/boot_id')
 BUDGET = dict(wall=480, cpu=840, rss_cap=12 << 30, text_cap=16 << 20,
               file_cap=64 << 20, total_cap=64 << 20)
+# SYCL link briefly retains both device bitcode and the extracted archive inputs.
+BUILD_BUDGET = dict(BUDGET, total_cap=384 << 20)
 sha, signature, write = bank.sha, bank.signature, bank.stage.write
 
 
@@ -172,7 +174,8 @@ def prepare(inputs):
                   validation='Host lane layout, traced three-row smoke, then full exact bank-to-fragment '
                              'bits across both tile policies, tails and malformed maps. No model or timing.',
                   retention='Only the witness ELF is a new fixture. Review its live consumer at closure; '
-                            'retain the primary prefill and decode engines.'), budgets=BUDGET)
+                            'retain the primary prefill and decode engines.'),
+        budgets=BUDGET, build_budgets=BUILD_BUDGET)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
         (ROOT / name).mkdir(mode=0o700)
@@ -188,7 +191,8 @@ def check(row, inputs):
     require(validation.committed(RESULT, (KEY,)) == compact(row) and row['controller'] == controls(row['controller']['revision']) and
             row['proof'] == proof and row['commands'] == commands and row['build_env'] == build_env and
             row['runtime_env'] == runtime_env and row['environment_sha256'] == signature((build_env, runtime_env))
-            and row['budgets'] == BUDGET and not row['active'] and row['ownership_closed'],
+            and row['budgets'] == BUDGET and row['build_budgets'] == BUILD_BUDGET
+            and not row['active'] and row['ownership_closed'],
             'commit exact prepared result and keep fixture inputs pinned')
     require(all((PROBE_SRC / p).read_bytes() == raw for p, raw in overlay.items()), 'private probe source changed')
 
@@ -235,8 +239,9 @@ def build(row, allowed):
     try:
         for label, product in (('kernel', 'kernel.o'), ('fixture', 'fixture.o'), ('image', IMAGE),
                                ('host-slice', HOST), ('link', TARGET)):
-            entry, out, err = job.run(label, row['commands'][label], row['build_env'], BUILD, **BUDGET)
-            require(owner.closed(entry) and entry['exit_code'] == 0, label + ' failed: ' + err.read_text()[-900:])
+            entry, out, err = job.run(label, row['commands'][label], row['build_env'], BUILD, **row['build_budgets'])
+            if not owner.closed(entry) or entry['exit_code'] != 0:
+                raise RuntimeError(label + ' failed: ' + (entry.get('error') or err.read_text()[-900:]))
             if label in ('kernel', 'fixture'):
                 dependencies[label] = compiled_inputs(allowed, label, KERNEL if label == 'kernel' else FIXTURE)
             if label == 'link':

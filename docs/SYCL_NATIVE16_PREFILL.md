@@ -1298,6 +1298,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   from the isolated probe directory. It stopped before linking or GPU
   execution. The second plan restores the original sibling-header lookup
   and checks the actual dependency against the retained source.
+  The second build compiled both units and finalized the device image and host
+  slice. The owner stopped the final link at its 64 MiB artifact limit
+  (`5e723ea98`). The child was reaped and its session was empty. The
+  interrupted build remains ineligible. Its files totaled 107290573 bytes
+  after tool shutdown, including two 22 MB bitcode stages and archive extracts.
+  The third plan gives the private build a 384 MiB aggregate limit and keeps
+  the 64 MiB per-file limit and runtime envelope. It also reports an owner
+  budget stop directly when one occurs.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
