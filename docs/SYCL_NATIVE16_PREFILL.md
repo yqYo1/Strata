@@ -1346,7 +1346,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   historical aggregate D2D rate of 128.86 GB of requested payload in 0.7884 s
   of device copy service, eliminating 64.42 GB corresponds to 0.394 s of
   service. Actual wall time depends on command sizes, overlap and the direct
-  store cost. Measure the three independent pairs before selecting an arm.
+  store cost.
+  The clean 65537-token comparison closed at `4d1c87515`. Each of six
+  independent processes handled the same three fresh prompts with KV-stage
+  reuse and vector gather enabled. All 18 requests matched executed work and
+  generated 24 tokens with 16 of 21 drafts accepted. All owners exited
+  normally without a fresh GPU fault. Paired warmed prompt-time ratios for
+  direct store over copy were 0.98433, 0.99893 and 1.00788. Two wins meet
+  the planned advancement gate, with a 0.11% median paired time reduction.
+  Across process medians, warmed PP was 908.61 for copy and 907.94 for
+  direct store. Warmed TTFT was 72.319 and 72.396 s, and first-request
+  TTFT was 83.278 and 82.849 s. Both arms remain below 1000 tok/s in this
+  timing period. Keep the ordinary model selection pending broader validation.
+  Compare direct store at 117489 with KV reuse and scalar gather fixed on
+  the admitted 128-slot split route.
+  The same 65537-token copy configuration previously reached 1009.33 tok/s.
+  It uses the same executable, runtime inventory, request bodies and effective
+  settings after path normalization. The elapsed-time difference remains
+  unattributed. The separate `bench/sycl/prefill_gather_conditions.py` bracket
+  uses two clean controls and the owned passive reader on that copy route.
+  It measures sampled GT clocks, throttle signals, PCI link state, scheduled
+  CPU time and host pressure during the client interval before first output.
+  The existing reader tests and host-side plan checks pass. Model observation
+  and the observer-cost screen remain pending.
   The same-build standalone KV trial passed the final slot at 262144 with
   114688 GPU rows, 147455 host rows and one terminal commit. Its mixed
   scratch bytes were zero. Carry this result as final-slot evidence for
