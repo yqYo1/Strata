@@ -524,7 +524,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   readers that still validate those bytes. The four-arm timing cohort consumes
   the original fast-prefill, boundary-control and cooperative generations.
   Check the other live readers and retire ended generations before opening
-  that cohort.
+  that cohort. The source reconstruction at `6bbcbf627` reproduced 1171
+  files for the boundary control and 1172 for the cooperative build. Both
+  contain the same two context edits and the unchanged scalar resolver.
+  The planned fresh object counts are 137 and 139. The existing model
+  admission still reaches `coherent_inputs` and `stock.check_build`, which
+  validate the original composed image and its retained inputs. Close the
+  frozen replay and cache cohorts before migrating those live readers.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
