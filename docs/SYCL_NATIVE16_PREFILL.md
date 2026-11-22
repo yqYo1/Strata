@@ -541,6 +541,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   validate the original composed image and its retained inputs. The replay
   and cache cohorts have ended. Check the remaining live readers before
   retiring an old build or opening the next timing cohort.
+  Admission of the committed fast-prefill build reads the original retained
+  decode identity from its build result. It still validates the fast-prefill
+  source, recipe, compiler inputs, executables and same-build fixtures.
+  The phase-naming executable was a build-time fallback. Retain coherent
+  `14508acbf` for decode and `fde0cdd11` for fast prefill during the
+  boundary comparison. Use the boundary-only build as the single temporary
+  third generation. Select and retire a superseded reference at the next
+  boundary before adding a cooperative build.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
