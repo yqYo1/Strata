@@ -1354,15 +1354,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   75.976 s. Three of the four warmed combined process rates reached 1000.
   Select the combination for validation on the ordinary 384-slot route at
   this length. The 117489-token split-route comparison selects KV reuse.
-  Run `bench/sycl/prefill_ordinary_generation.py` for the 65K combination
-  on the measured executable with the stock decode placement fixed. Its three
-  matched pairs cover the official long case, agent-session and both
-  thinking-enabled sustained workloads. The 65K prefill-only speed comparison
-  and final-slot checks remain separate evidence.
-  The 9,991,618,560 fewer requested H2D bytes would take 1.54–1.59 s at
-  the 256 MiB calibration rate. The larger observed time differences
-  leave copy issue, synchronization, actual copy size, overlap and
-  run variation to distinguish before assigning the gain to PCIe bandwidth.
+  Compute the interaction within each balanced block as
+  `T(both) - T(KV reuse) - T(vec8) + T(base)`, using warmed prompt times.
+  At 65537 tokens it is −0.763, −3.231, +0.262 and −6.014 s. At 117489
+  tokens it is +3.855, +4.102, −0.768 and +5.644 s. The interaction is
+  negative in three ordinary-route blocks and positive in three split-route
+  blocks. Keep the placements and their selected arms distinct in
+  subsequent comparisons.
+  At the 256 MiB H2D calibration rate, the removed request bytes correspond
+  to 0.41–0.42 s at 65537 tokens and 1.54–1.59 s at 117489. The measured
+  117489 KV-reuse savings range from 2.41 to 6.58 s across the four blocks.
+  Attribute the difference using copy issue, synchronization, actual copy
+  sizes and overlap as well as run variation before changing PCIe placement.
   The Q8 prefix helper issues four direct SYCL queue copies per prefix in
   `src/kernels/sycl/kv_stream.cpp`. The compatibility memcpy counters miss
   this call path. Use request-scoped direct call and event observations for
