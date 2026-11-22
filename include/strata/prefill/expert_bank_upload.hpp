@@ -13,7 +13,10 @@
 #else
 namespace strata::sycl_backend::native_copy { class NativeCopyList; }
 #endif
+#include <algorithm>
+#include <array>
 #include <cstring>
+#include <limits>
 #include <optional>
 #include <utility>
 
@@ -45,6 +48,49 @@ private:
     core::ExpertCache* cache_;
     uint8_t* base_;
     ExpertBankLayout layout_;
+};
+
+class PrefillSplitExpertBatch {
+public:
+    static constexpr int32_t capacity_limit = 16;
+
+    template<size_t Experts>
+    static PrefillSplitExpertBatch make(const std::array<int32_t, Experts>& counts, int32_t first,
+                                       int32_t capacity, bool coalesced) {
+        static_assert(Experts <= size_t(std::numeric_limits<int32_t>::max()));
+        if (first < 0 || size_t(first) >= Experts || counts[size_t(first)] <= 0 ||
+            capacity < 1 || capacity > capacity_limit)
+            throw std::invalid_argument("split prefill expert upload: invalid first expert or batch capacity");
+        const int32_t limit = first + std::min(capacity, int32_t(Experts) - first);
+        int32_t end = first + 1;
+        while (end < limit && counts[size_t(end)] > 0) ++end;
+        return PrefillSplitExpertBatch(first, end - first, coalesced);
+    }
+
+    int32_t end() const { return first_ + count_; }
+    int32_t count() const { return count_; }
+    int32_t copies() const { return coalesced_ ? 1 : count_; }
+
+    // The caller validates the extents and retains the source and private
+    // bank through the checked drain of this same in-order queue.
+    cudaError_t enqueue(uint8_t* bank, const uint8_t* slab, size_t stride, cudaStream_t stream) const {
+        const uint8_t* src = slab + size_t(first_) * stride;
+        const int32_t per_copy = coalesced_ ? count_ : 1;
+        for (int32_t i = 0; i < count_; i += per_copy) {
+            const size_t offset = size_t(i) * stride;
+            const auto status = cudaMemcpyAsync(bank + offset, src + offset, size_t(per_copy) * stride,
+                                                cudaMemcpyHostToDevice, stream);
+            if (status != cudaSuccess) return status;
+        }
+        return cudaSuccess;
+    }
+
+private:
+    PrefillSplitExpertBatch(int32_t first, int32_t count, bool coalesced)
+        : first_(first), count_(count), coalesced_(coalesced) {}
+    int32_t first_;
+    int32_t count_;
+    bool coalesced_;
 };
 
 inline bool prefill_fullfit_eager_requested() {

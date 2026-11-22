@@ -1136,9 +1136,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are `b9d49202dbdd4f1d0135af0faf4c6038d12a4f1d2f58c79181bfdac54cc6ed9b`,
   `131e66d4dc3580e7e851bf11bc5948d5c9bda35852f33e42953b0bad40b3edc3` and
   `69ebdcfac4e799dddb27cd208dcde998b3d76fa8e14cac66ae57851625701277`.
-  Before long timing, check multi-batch slot reuse
-  with distinct packed bytes, holes, a final short group and checked
-  cancellation, then verify real route, outputs and decode cache restoration.
+  The production batch planner and enqueue loop are shared with the existing
+  `sycl_expert_bank_test`. Build just that fixture in a private directory
+  from the boundary build's verified Ninja commands. Apply the test and
+  header delta from Git, compile the fixture and the original expert-cache
+  unit, and link the recorded `strata_sycl_runtime` archive. Check compiler
+  dependencies and executable identity. Use the qualified runtime, owner
+  and validation probe, with a 90-second deadline and 16 MiB per run.
+  Run `--split-upload-smoke` at stride 4096 with API tracing before
+  `--split-upload-native-stride` at stride 2662400 with parameter validation.
+  Each process checks 27 selected blobs in five groups, holes and a short
+  tail, slot reuse, device guard words and cancellation after 16 blobs.
+  Expected transfers are 27 for batched and five for coalesced, with identical
+  payloads. Require normal closure, no diagnostic errors and no fresh fault
+  before advancement. Then verify real model dispatch, output and decode
+  cache restoration on a coherent engine build.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
   Use three independent blocks in demand/batched/coalesced,
   batched/coalesced/demand and coalesced/demand/batched order on the

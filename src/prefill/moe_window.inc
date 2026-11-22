@@ -383,7 +383,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             bank.stride != blob_bytes || owner.expert_source_stride != blob_bytes ||
             owner.expert_slab_bytes != detail::layer_major_mul(NE, blob_bytes))
             throw std::invalid_argument("split prefill expert upload: source or device extent mismatch");
-        batch_capacity = std::min(16, bank.slots);
+        batch_capacity = std::min(detail::PrefillSplitExpertBatch::capacity_limit, bank.slots);
         batch_device = owner.private_expert_bank->device_slot(0);
         sycl_backend::validate_device_span(batch_device, size_t(bank.used_bytes), queue);
         sycl_backend::validate_spans({{batch_device, size_t(bank.used_bytes)}},
@@ -446,29 +446,20 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
 #endif
     int32_t batch_first = -1, batch_end = 0;
     const auto upload_batch = [&](int32_t first) -> bool {
-        const auto& counts = owner.routes->counts();
-        const int32_t limit = std::min<int32_t>(int32_t(counts.size()), first + batch_capacity);
-        int32_t end = first + 1;
-        while (end < limit && counts[size_t(end)] > 0) ++end;
-        const int32_t count = end - first;
-        const int32_t per_copy = split_upload == SplitPrefillExpertUpload::coalesced ? count : 1;
-        const auto* src = owner.expert_slab + size_t(first) * blob_bytes;
+        const auto batch = detail::PrefillSplitExpertBatch::make(owner.routes->counts(),
+            first, batch_capacity, split_upload == SplitPrefillExpertUpload::coalesced);
         // Consecutive experts fill slots at the start of the private bank.
         // The same queue orders this overwrite after the preceding batch's readers.
-        for (int32_t i = 0; i < count; i += per_copy) {
-            const size_t offset = size_t(i) * blob_bytes;
-            if (cudaMemcpyAsync(batch_device + offset, src + offset, size_t(per_copy) * blob_bytes,
-                                cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
-                err = "split prefill expert upload: batch copy failed"; return false;
-            }
+        if (batch.enqueue(batch_device, owner.expert_slab, size_t(blob_bytes), m.cs) != cudaSuccess) {
+            err = "split prefill expert upload: batch copy failed"; return false;
         }
         batch_first = first;
-        batch_end = end;
-        owner.staged_uploads += uint64_t(count);
-        stats_.experts_streamed += uint64_t(count);
-        owner.staged_upload_bytes += uint64_t(count) * blob_bytes;
-        owner.batched_upload_experts += uint64_t(count);
-        owner.batched_upload_commands += uint64_t(count / per_copy);
+        batch_end = batch.end();
+        owner.staged_uploads += uint64_t(batch.count());
+        stats_.experts_streamed += uint64_t(batch.count());
+        owner.staged_upload_bytes += uint64_t(batch.count()) * blob_bytes;
+        owner.batched_upload_experts += uint64_t(batch.count());
+        owner.batched_upload_commands += uint64_t(batch.copies());
         return true;
     };
     const bool allow_vec8 = owner.scratch_mixed && prefill_moe_large_vec8_requested();
