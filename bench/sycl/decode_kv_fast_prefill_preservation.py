@@ -18,9 +18,11 @@ SELECTED = {
     65537: ('both', '84c8833935644f989692ebe3a8a8075210b86c15'),
     117489: ('reuse', '568d015bae99e9aa0455ffedabe9a3f61a70f1f3'),
 }
-BLOCKS = (('retained', 'off', 'on'), ('on', 'off', 'retained'), ('retained', 'off', 'on'))
+BLOCKS = (('retained', 'boundary', 'off', 'on'),
+          ('on', 'off', 'boundary', 'retained'),
+          ('boundary', 'retained', 'on', 'off'))
 ORDER = tuple(arm for block in BLOCKS for arm in block)
-CONTRASTS = (('off', 'retained'), ('on', 'off'))
+CONTRASTS = (('boundary', 'retained'), ('off', 'boundary'), ('on', 'off'))
 METRICS = ('first_prompt_ms', 'warm_prompt_ms', 'first_ttft_s', 'warm_ttft_s')
 
 
@@ -35,6 +37,9 @@ def admission(read):
             'the exact repeated prefill selection is required')
     candidate = bank.previous.read(build.ROOT / 'record.json')
     build.check(candidate)
+    boundary = build.boundary_build()
+    control = dict(binary=boundary['binaries']['strata'], native_source_commit=boundary['native_source_commit'],
+                   build_sha256=bank.signature(build.builder.compact(boundary)))
     gate = basis.validation.committed(bank.RESULT, (handoff.KEY,))
     device = basis.validation.committed(bank.RESULT, (build.DEVICE_KEY,))
     runtime = gate['runtime_manifest']
@@ -54,11 +59,13 @@ def admission(read):
             and gate['native_validation_probe'] == prior['probe']
             and bank.sha(runtime['path']) == runtime['sha256']
             and bank.previous.read(Path(runtime['path'])) == providers
-            and parent['binaries']['strata']['sha256'] != candidate['binaries']['strata']['sha256'],
-            'close the matched model/RESTORE route qualification for the new ELF first')
+            and candidate['boundary_control'] == control
+            and boundary['projection']['parent_binary'] == parent['binaries']['strata']
+            and len({r['binaries']['strata']['sha256'] for r in (parent, boundary, candidate)}) == 3,
+            'require the exact boundary control and the matched model/RESTORE gate')
     builds = {name: dict(binary=row['binaries']['strata'],
                         native_source_commit=row['native_source_commit'])
-              for name, row in (('retained', parent), ('off', candidate))}
+              for name, row in (('retained', parent), ('boundary', boundary), ('off', candidate))}
     prior['observer_admission'].update(prefill_arm=selected, prefill_choice_commit=commit, native_builds=builds,
         decode_KV_handoff_sha256=bank.signature(gate), decode_KV_device_sha256=bank.signature(device))
     return parent, prior, providers, None
@@ -66,7 +73,7 @@ def admission(read):
 
 def summarize(read, runs, processes):
     require(len(processes) == len(ORDER) and len({(p['native_identity']['pid'], p['native_identity']['start_ticks'])
-                for p in processes}) == len(ORDER), 'nine independent closed processes required')
+                for p in processes}) == len(ORDER), 'one independent closed process per planned case required')
     times, pp = {arm: [] for arm in BLOCKS[0]}, {arm: [] for arm in BLOCKS[0]}
     by_contrast = {a + '/' + b: {metric: [] for metric in METRICS} for a, b in CONTRASTS}
     for index, (process, arm) in enumerate(zip(processes, ORDER, strict=True)):
@@ -78,7 +85,7 @@ def summarize(read, runs, processes):
         row = timing(process)
         times[arm].append(row)
         pp[arm].append(1000 * read / row['warm_prompt_ms'])
-        if (index + 1) % 3 == 0:
+        if (index + 1) % len(BLOCKS[0]) == 0:
             for a, b in CONTRASTS:
                 for k, v in by_contrast[a + '/' + b].items():
                     v.append(times[a][-1][k] / times[b][-1][k])
@@ -104,8 +111,8 @@ def experiment(read):
         contrasts=[a + '/' + b for a, b in CONTRASTS], prefill_arm=SELECTED[read][0],
         acceptance='All four paired median prompt/TTFT ratios must be <= 1 in each contrast. '
                    'Retain first and warmed clocks and every individual process. No speed-based stopping.',
-        scope='Retained/off compares the executable projection. Off/on compares only decode KV selection. '
-              'Both contrasts share the off process independently in each block.')
+        scope='Boundary/retained measures the context fix. Off/boundary measures the built-in KV projection '
+              'with scalar dispatch fixed. On/off measures cooperative decode KV selection on the same executable.')
 
     def pins(revision):
         values = base_pins(revision)
@@ -116,7 +123,7 @@ def experiment(read):
     def native_context(row, plan):
         arm = ORDER[plan['index']]
         require(plan['kernel'] == arm, 'unplanned native case')
-        native = row['observer_admission']['native_builds']['retained' if arm == 'retained' else 'off']
+        native = row['observer_admission']['native_builds']['off' if arm == 'on' else arm]
         return dict(native, native_validation_probe=row['native_validation_probe'], boot=row['boot'])
 
     def environment(row, plan):
@@ -141,8 +148,8 @@ def experiment(read):
         value['gather'] = speed.state.gather_counts(text, vec)
         if read == speed.dispatch.split.READ:
             value['admission'] = speed.dispatch.split.check_split_budget(text)
-        if plan['kernel'] == 'retained':
-            require('strata verify KV_PLAN:' not in text, 'retained scalar executable differs')
+        if plan['kernel'] in ('retained', 'boundary'):
+            require('strata verify KV_PLAN:' not in text, 'scalar control executable differs')
             value['decode_KV'] = []
         else:
             value['decode_KV'] = handoff.previous.kv_captures(text, int(plan['kernel'] == 'on'))
@@ -153,7 +160,7 @@ def experiment(read):
                 zip(outcome['routes'], outcome['samples'], strict=True)]
         require(outcome['clean_speed'] and outcome['index'] == plan['index']
                 and work == row['observer_admission']['expected_work'], 'fixed input or measured work changed')
-        if plan['kernel'] != 'retained':
+        if plan['kernel'] in ('off', 'on'):
             captures = [c for route in outcome['routes'] for c in route['decode_KV']]
             require(any(c['phase'] == 'decode' and c['width'] == 4 for c in captures),
                     'the selected decode shape was absent from the timed requests')

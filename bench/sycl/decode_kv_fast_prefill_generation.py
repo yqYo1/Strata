@@ -62,7 +62,7 @@ def baseline():
                                                        'boot', 'driver', 'python_contract', 'python_selected')),
                 'complete prefill preservation on both exact lengths and builds')
         for process in result['processes']:
-            arm = 'retained' if process['kernel'] == 'retained' else 'off'
+            arm = 'off' if process['kernel'] == 'on' else process['kernel']
             require(all(process[k] == v for k, v in binding['native_builds'][arm].items()),
                     'prefill result ran a different build')
         gates[str(read)] = bank.signature(result)

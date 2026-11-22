@@ -508,10 +508,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Applying that patch before or after the six-file KV projection produces
   identical bytes for all nine checked paths, including the unchanged scalar
   resolver. The MTP shortening change stays independent. After the reference
-  replay selects a base, qualify its boundary-only recipe first. Compare the
-  boundary-only engine against KV off on the new engine, then compare KV off
-  and on within the new engine. This keeps a change in build or verification
-  separate from the cooperative resolver's measured effect.
+  replay selects a base, qualify its boundary-only recipe first. The fast
+  prefill builder exposes `prepare-boundary`, `configure-boundary` and
+  `compile-boundary` for the two-file control on `fde0cdd11`. Its ordinary
+  `prepare` requires that committed closed build and adds the KV layer.
+  The build projection recovers the coherent foundation from its original
+  receipt and Git sources. Preserve its executables for live comparisons and
+  readers that still validate those bytes. The four-arm timing cohort consumes
+  the original fast-prefill, boundary-control and cooperative generations.
+  Check the other live readers and retire ended generations before opening
+  that cohort.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
@@ -541,11 +547,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   scalar width-one commit and drain of the final cell with zero output.
   The leased server's exact-full protocol and RESTORE remain separate gates.
   Keep expert placement, logical context, resident KV and copy geometry fixed.
-  `bench/sycl/decode_kv_fast_prefill_preservation.py` uses nine independent
-  processes per length in retained/off/on, on/off/retained, retained/off/on
-  blocks. The middle process supplies the same off arm to both contrasts.
-  Retained/off measures the executable change. Off/on measures the decode
-  selection within the new executable. Hold the measured prefill selection
+  `bench/sycl/decode_kv_fast_prefill_preservation.py` uses three
+  counterbalanced blocks per length with retained, boundary-only, KV off and
+  KV on. Boundary/retained measures the context fix. Off/boundary measures
+  the executable projection with scalar KV. On/off measures the decode
+  selector in the same executable. Hold the measured prefill selection
   fixed at KV reuse and vector gather for 65537, and KV reuse with scalar
   gather for 117489. Require the original bodies, read counts, expert work,
   draft counts, and actual decode capture route. Keep first and warmed
