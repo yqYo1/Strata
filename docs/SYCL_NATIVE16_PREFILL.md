@@ -1527,7 +1527,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   404578022400bytes per process,not measured bus traffic or saturation.
 
   Retain the coherent `14508acbf` decode reference for the next verifier
-  comparison. The three earlier reference processes and the first four
+  comparison. The three earlier reference processes and all six
   `decode_mtp_prefix_generation_v1` processes used the same v5 bodies, read and
   generated counts, draft counts, model assets, boot, driver and runtime
   manifest. Their expert footers report 1,074,995 CPU jobs and 1,354,722

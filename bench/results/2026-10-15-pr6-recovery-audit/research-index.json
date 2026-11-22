@@ -38999,5 +38999,33 @@
         }
       ]
     }
+  },
+  "cooperative-kv-coherent-verifier-20261122": {
+    "source_commit": "d38dfa0b96a660f276bdfc524679979bf7c456e4",
+    "coherent_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "prefill_source": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cooperative-kv-coherent-verifier-20261122/report.md",
+    "report_sha256": "09346d7b46f2c0e0184ea7c4cc86435aeb6b12f15f759c9e47ca0d54f252d704",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cooperative-kv-coherent-verifier-20261122/review.md",
+    "review_sha256": "e85db9a8f0df6b2ce92083288e72406b9b768c2b022adc97a81794ab70c62aca",
+    "worker": "Orca gpt-6-luna medium, task_8a837f369bbe, ctx_8c5103ddf8da. Verified both source views, filesystem preflight, worker IPC, acknowledged completion and scoped exit.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "classification": "decision_support",
+    "stage": "native_reviewed_hold",
+    "schedulable_now": false,
+    "finding": "Eight consumed source files match between the measured coherent and fast-prefill images. They cover the caller KV seam, scalar stream source, relevant headers, CMake, MTP and generator. The existing fde0 projection supplies a decode-only resolver and phase gate.",
+    "correction": "The isolated resolver uses decode_kv_stream_resolve_coalesced and needs its own CMake source. Preserve the separate final-window and MTP extent fix from 178d532 and repeat context and RESTORE checks. The eight file matches do not qualify the full prefill producer or checkpoint path.",
+    "consumer": "Select a base after the coherent replay. Use the existing fast-prefill projection as the source anchor for the isolated verifier comparison.",
+    "next_review": "On matched reference replay and committed source composition, including the independent boundary overlay.",
+    "review_stream_retirement": {
+      "reason": "The closed review has a verified digest and preserved execution receipt. The routine event stream has no subsequent reader.",
+      "files": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cooperative-kv-coherent-verifier-20261122-control/review-events.jsonl",
+          "sha256": "d1bb8bcca5262b2b143412c281037d8a450fa490766c0fb7df6a7fb140368f6d",
+          "bytes": 1242960
+        }
+      ]
+    }
   }
 }
