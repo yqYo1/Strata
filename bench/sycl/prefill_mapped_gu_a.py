@@ -16,7 +16,7 @@ from prefill_attention_bank_component import dependency_paths
 bank, validation = reference.bank, reference.validation
 owner, require = reference.owner, reference.require
 P, B, RESULT = bank.P, bank.B, bank.RESULT
-ROOT, KEY = B / 'prefill-mapped-gu-a-v1', 'prefill_mapped_gu_a_v1'
+ROOT, KEY = B / 'prefill-mapped-gu-a-v2', 'prefill_mapped_gu_a_v2'
 PARENT = reference.coherent_model.MODEL_ROOT
 SRC, BUILD = PARENT / 'source', PARENT / 'build'
 PROBE_SRC = ROOT / 'probe-source'
@@ -47,7 +47,9 @@ def recipe():
         require(Path(entry['directory']) == BUILD and '-fsycl' in cmd and DEFINE not in cmd and
                 cmd[-4:] == ['-o', entry['output'], '-c', entry['file']], 'changed compile rule for ' + source)
         outputs[label] = entry['output']
-        commands[label] = [cmd[0], DEFINE, '-I' + str((PROBE_SRC / HEADER).parent), *cmd[1:-4],
+        # The copied translation unit still needs its original sibling headers.
+        commands[label] = [cmd[0], DEFINE, '-iquote', str((SRC / source).parent),
+                           '-I' + str((PROBE_SRC / HEADER).parent), *cmd[1:-4],
                            '-MD', '-MF', str(ROOT / (label + '.d')), '-o', str(ROOT / (label + '.o')),
                            '-c', str(PROBE_SRC / source)]
 
@@ -164,7 +166,8 @@ def prepare(inputs):
         build_env=build_env, runtime_env=runtime_env, environment_sha256=signature((build_env, runtime_env)),
         stages=[], active=False, complete=False, passed=False, ownership_closed=True,
         plan=dict(build='Apply only the guarded probe code to the recorded parent sources and enable its '
-                        'single macro for the probe object and fixture. Finalize the '
+                        'single macro for the probe object and fixture. Resolve sibling headers from the '
+                        'original source directory. Finalize the '
                         'isolated BMG image and host slice and relink against the original checked archives.',
                   validation='Host lane layout, traced three-row smoke, then full exact bank-to-fragment '
                              'bits across both tile policies, tails and malformed maps. No model or timing.',
@@ -216,7 +219,10 @@ def check_link(text, allowed, generated, host_slices=()):
 
 def compiled_inputs(allowed, label, source):
     paths = dependency_paths((ROOT / (label + '.d')).read_text())
-    require({str(PROBE_SRC / HEADER), str(PROBE_SRC / source)} <= paths, 'actual probe translation unit or header missing')
+    required = {str(PROBE_SRC / HEADER), str(PROBE_SRC / source)}
+    if label == 'kernel':
+        required.add(str((SRC / KERNEL).with_name('xe_gemm_bsd.hpp')))
+    require(required <= paths, 'actual probe translation unit or header missing')
     require(all(sha(p) == allowed.get(p) for p in paths), 'changed actual compiler input')
     return dict(count=len(paths), sha256=signature({p: allowed[p] for p in paths}))
 

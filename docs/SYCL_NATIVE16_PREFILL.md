@@ -1294,6 +1294,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its three input files match the original probe base. The next throughput
   comparison needs the complete gather-to-SwiGLU interval to account for
   repeated mapped loads alongside saved writes.
+  The first witness build at `40544a62c` could not locate `xe_gemm_bsd.hpp`
+  from the isolated probe directory. It stopped before linking or GPU
+  execution. The second plan restores the original sibling-header lookup
+  and checks the actual dependency against the retained source.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
