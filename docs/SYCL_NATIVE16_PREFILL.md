@@ -1188,12 +1188,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1171 parent source files and the recipe from Git and verifies the original
   137-object build, including the measured executable hash beginning
   `08469b1eae25`. Its fresh build uses the same twelve targets.
-  The verified retirement candidate at
+  The verified boundary output retirement removed 1367 files and 196946050
+  bytes from
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-boundary-native-v1`
-  contains 1367 files and 196946050 bytes, with sorted path/size/SHA-256
-  digest `63828d6c4a704f45ee5016c06479b73d7267d3bf447b8c73097944bcf190fd76`.
-  Preserve the committed physical-context and speed receipts. Retire this
-  closed generation before preparing the successor.
+  with sorted path/size/SHA-256 digest
+  `63828d6c4a704f45ee5016c06479b73d7267d3bf447b8c73097944bcf190fd76`.
+  Preserve the committed physical-context and speed receipts. The first
+  successor preparation at `6b0ab53d5` found that the shared builder's legacy
+  decode reference pointed at the retired phase-naming executable. It stopped
+  before creating a build root. This controller now verifies the selected
+  coherent `14508acbf` reference from the recorded transition and recovers
+  its original compile inputs.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
   Use three independent blocks in demand/batched/coalesced,
   batched/coalesced/demand and coalesced/demand/batched order on the

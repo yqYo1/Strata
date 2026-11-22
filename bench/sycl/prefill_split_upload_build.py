@@ -13,6 +13,7 @@ KEY = 'prefill_split_upload_native_v1'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 PARENT_EVIDENCE = '04b27731118e10a68ab6954c88218b2cde5e6306'
 FIXTURE_EVIDENCE = 'b1392e966e1ae576fe71ad8ff47767ee48a9427e'
+DECODE_EVIDENCE = '7c88fb0123a76b35e2dc91e597a19439bd2ae5ca'
 UPLOAD = 'b17cced7887a2a989482e18f2281357b220f7402'
 HELPER = '99cc428a60e0e629a4c4ec58d48b204d75e82d1e'
 UNIT = 'src/prefill/prefill.cpp'
@@ -26,6 +27,27 @@ VERIFIED = {
     LAYER: '69ebdcfac4e799dddb27cd208dcde998b3d76fa8e14cac66ae57851625701277',
     HEADER: '44238ca87239cfbbf47308c1275693747c97509a04a86fd1aa02aa489b3f5a46',
 }
+
+
+def decode_reference(recover=False):
+    review = bank.previous.historic(DECODE_EVIDENCE, 'retained_builds_review_20261103')
+    name = 'coherent-prefill-native-v1'
+    selected = review['boundary_candidate_reference_transition']['retained_references'][name]
+    path = bank.B / name / 'record.json'
+    row = bank.previous.read(path)
+    binary = row['binaries']['strata']
+    require(row['stage'] == 'built' and row['passed'] and row['complete']
+            and row['ownership_closed'] and not row['active']
+            and selected['source'] == row['native_source_commit'] == row['project']['revision']
+            and selected['binary'] == binary and bank.sha(binary['path']) == binary['sha256']
+            and Path(binary['path']).stat().st_size == binary['bytes'],
+            'preserve the selected coherent decode reference before a new prefill build')
+    if recover:
+        builder.original.coherent.recover(row['project'])
+        for pin in row['dependencies']:
+            builder.original.coherent.recover(pin)
+    return dict(evidence=DECODE_EVIDENCE, source=selected['source'], binary=binary, record_sha256=bank.sha(path),
+                project_inputs=bank.signature(row['project']), recipe_sha256=bank.signature(row['recipe']))
 
 
 def project(expected=None):
@@ -74,7 +96,7 @@ def check(row, committed=True):
         checked = bank.stage.hashed(dict(bank.stage.source.blobs(bank.P, row['source_commit'], controls)))
     else:
         checked = bank.stage.source.pin(bank.P, list(controls))['source_sha256']
-        require(row['retained_decode_reference'] == builder.decode_reference(),
+        require(row['retained_decode_reference'] == decode_reference(),
                 'the independent decode reference changed')
     native, foundation, source, recipe, proof = project(row['foundation'])
     require(checked == controls and row['source_commit'] == row['native_source_commit']
@@ -131,7 +153,7 @@ def prepare():
                controller_sources=pins['source_sha256'], source_files=bank.stage.hashed(source),
                foundation=foundation, projection=proof, recipe=recipe, external_inputs=native['external_inputs'],
                build_tools={p: bank.sha(p) for p in ('/usr/bin/cmake', '/usr/bin/ninja')},
-               driver=builder.guards.driver_guard(), retained_decode_reference=builder.decode_reference(recover=True),
+               driver=builder.guards.driver_guard(), retained_decode_reference=decode_reference(recover=True),
                active=False, passed=False, complete=False, ownership_closed=True, commands=[],
                scope='Demand, batched and coalesced on the same split-prefill engine and scalar decode.',
                retention='Preserve the independent phase references. Review after the upload comparisons or first failed gate.')
