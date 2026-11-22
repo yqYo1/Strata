@@ -1317,10 +1317,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | `prefill-mapped-gu-operator-v1` | 11 | 18513739 | `215e7f265b0f79e2205661595bdc6411c2d8be49cbe180dfa7d1a88d15871654` |
   | `prefill-mapped-gu-timing-v1` | 38 | 19309485 | `f0638a381f79fe1181ce732f4dd8fc3239a683aef6ad743f5fef9254059104dc` |
 
-  Advance the measured 65537-token combination to the ordinary
-  generation suite using the retained production executable. After that
-  validation, review direct attention output and native gather variants
-  against the winning prefill composition as separate changes.
+  The measured 65537-token combination has a committed ordinary generation
+  plan and passing host probes under `prefill_ordinary_generation_v1`.
+  Run the independent process pairs on the retained production executable.
+  After that validation, compare direct attention output and native gather
+  variants against the winning prefill composition one at a time.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
