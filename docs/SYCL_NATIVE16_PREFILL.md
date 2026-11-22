@@ -396,12 +396,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   catch-up widths against verified and accepted counts. Check live draft KV,
   next-token probabilities, ordinary prefill dispatch, handoff and RESTORE
   across a page boundary and near capacity. Include the initial single-row
-  and final truncated window. On the same qualified binary take three ordered
-  stock/candidate pairs (AB, BA, AB) of the thinking-enabled long, agent,
-  code and prose suite. Compare subsequent TG and full-answer time per
-  workload, report first-use capture separately. Require faster TG in two
-  pairs and a geometric mean ratio above one per workload to select that
-  workload's route. A failed safety or live-prefix comparison stops timing.
+  and final truncated window. `bench/sycl/decode_mtp_prefix_generation.py`
+  requires the short and near-capacity RESTORE results before preparing the
+  official long, agent, code and prose suite. Use three independent selector
+  pairs (AB, BA, AB) on the same fixed engine, with thinking and the standard
+  warmups in every process. Compare TG and full request time per workload.
+  Retain logged MTP recapture times and count them in elapsed time. From the
+  bound native request counts, rejected drafts minus up to three in the
+  terminal window gives a lower bound on eligible omitted catch-up rows.
+  Keep PP and client TTFT for the fixed fresh input, and report agent work
+  matching separately. Require faster TG in two pairs and a geometric mean
+  ratio above one per workload. Complete the dedicated prefill-preservation
+  and model-quality checks before adopting a speed candidate.
   Prioritize reducing the work inside MTP over deferring its two intermediate
   host waits. At `1532659f2`, the timestamps of 32 B570 graph replays cover
   ten complete uncoupled T4 chains and the first two graphs of an eleventh.
