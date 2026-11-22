@@ -371,7 +371,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   output paths change. The width-four `near-four` run at `c559907fe` confirms
   262141 batched rows for a 262142-token input, two outputs, one accepted
   draft and actual terminal width two. The CLI exits normally and the trial
-  closes without a fresh driver fault. The exact fill is a separate case.
+  closes without a fresh driver fault. The exact-fill trial consumes 262143
+  batched rows and one final committed row, reaches physical position 262144
+  with zero outputs, and passes the commit and refill waits. The 114688 GPU
+  rows and 147455 host rows match the original placement. All 15 model assets
+  match after normal exit, with closed ownership and no fresh driver fault.
+  This qualifies physical fill on the fixed width-four configuration with
+  prefix selection disabled. Live prefix RESTORE and clean speed still need
+  their own evidence.
   The reviewed `decode-mtp-committed-width-numerics-20261121` audit finds a
   distinct Q8_0 matvec dispatch for one row. Row strides and per-row fused
   GR stay fixed across widths. Compare the earlier accepted K/V cells and
