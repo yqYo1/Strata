@@ -1389,6 +1389,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 (unsigned long long)window_context->staged_upload_bytes,
                 (unsigned long long)window_context->staged_hits,
                 window_context->expert_slots->permanent_used(), window_context->expert_slots->slots());
+        if (window_context->batched_upload_windows)
+            std::fprintf(stderr, "strata MoE split expert upload: windows=%llu experts=%llu copy_commands=%llu final_drain=checked\n",
+                (unsigned long long)window_context->batched_upload_windows,
+                (unsigned long long)window_context->batched_upload_experts,
+                (unsigned long long)window_context->batched_upload_commands);
         if (window_context->scratch_mixed)
             std::fprintf(stderr, "strata MoE prefill gather: vec8_jobs=%llu vec8_rows=%llu scalar_jobs=%llu min_rows=%lld\n",
                 (unsigned long long)window_context->vec8_gather_jobs,

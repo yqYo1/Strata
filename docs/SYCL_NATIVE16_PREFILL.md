@@ -1107,6 +1107,42 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   dependency marker per expert. Evaluate batching, queue and timing changes
   separately from this capacity change.
 
+  The split-prefill upload candidate batches consecutive demanded expert IDs
+  into at most 16 slots at the start of the existing private bank. It checks
+  the exact packed host and device strides and the in-order queue. The
+  submitted commands, last readers and next overwrite all use that queue.
+  The outer lease keeps the source and device ranges alive through the
+  existing checked drains, including an enqueue failure or cancellation.
+  [SYCL in-order queue semantics](https://github.khronos.org/SYCL_Reference/iface/queue.html#sycl-property-queue-in-order).
+  `STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD=demand` selects the existing
+  path. `batched` uses the new placement and one copy per expert.
+  `coalesced` uses the same placement and one copy per contiguous batch.
+  Both require the actual split accumulator, partial packed bank and equal
+  strides. They retain the ascending dequant/GEMM order and accept only
+  selected expert payloads. The request footer counts successful submissions
+  after the checked drains.
+  With 48 full windows, at least 18860 selected experts and capacity for 16
+  slots per batch, the historical 117489-token route has at most
+  (24576 - 18860 + 48 = 5764) contiguous runs. Splitting those into
+  16-expert groups yields at most 6582 copy submissions, a reduction of at
+  least 65% in requested commands. The bound uses the observed route counts
+  and sorted IDs. The actual provider may split a submission, and elapsed
+  transfer and prompt times require measurement.
+  Project this unit alone onto the exact boundary source. Apply the commit
+  delta to the three prefill files and use the pinned syntax recipe for the
+  prefill translation unit and its two local include overlays. Compare the
+  full dependency hashes. Before long timing, check multi-batch slot reuse
+  with distinct packed bytes, holes, a final short group and checked
+  cancellation, then verify real route, outputs and decode cache restoration.
+  Hold the bank capacity, scratch checks and all runtime settings fixed.
+  Use three independent blocks in demand/batched/coalesced,
+  batched/coalesced/demand and coalesced/demand/batched order on the
+  four established 117489-token bodies. Judge batched/demand for scheduling,
+  coalesced/batched for copy count and coalesced/demand for the combined
+  change. Match payloads, dequants, expert jobs and MTP work. Require at
+  least two faster warm prompt times and a paired median ratio below one
+  for a reproduced gain. Report first-use and warm TTFT separately.
+
   The 65537-token comparison closed at `84c883393` with 16 independent
   processes and 48 fresh requests. The subsequent-request rates were
   984.54 tok/s with ordinary reload, 980.22 with KV reuse, 984.42 with

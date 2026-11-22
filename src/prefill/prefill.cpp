@@ -650,6 +650,7 @@ struct MoeWindowContext {
     const uint8_t* expert_slab = nullptr;
     uint64_t expert_slab_bytes = 0, expert_stride = 0, expert_source_stride = 0;
     uint64_t staged_uploads = 0, staged_upload_bytes = 0, staged_hits = 0;
+    uint64_t batched_upload_windows = 0, batched_upload_experts = 0, batched_upload_commands = 0;
     uint16_t* bank = nullptr;
     uint64_t bank_bytes = 0;
     uint16_t* mixed = nullptr;

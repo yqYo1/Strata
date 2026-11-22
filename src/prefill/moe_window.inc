@@ -107,6 +107,19 @@ bool Prefill::run_prefill_moe_prefix_router(int64_t layer, int64_t rows, std::st
     return false;
 }
 
+enum class SplitPrefillExpertUpload { demand, batched, coalesced };
+
+static SplitPrefillExpertUpload split_prefill_expert_upload() {
+    static const auto mode = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD");
+        if (!value || std::strcmp(value, "demand") == 0) return SplitPrefillExpertUpload::demand;
+        if (std::strcmp(value, "batched") == 0) return SplitPrefillExpertUpload::batched;
+        if (std::strcmp(value, "coalesced") == 0) return SplitPrefillExpertUpload::coalesced;
+        throw std::invalid_argument("split prefill expert upload: expected demand, batched or coalesced");
+    }();
+    return mode;
+}
+
 // Main-authored expert-major window. Saved matrix inputs remain FP16;
 // router/shared scalar gate consume the original BF16 mix. Only the expert
 // accumulation order and the <=8192-row GEMM job shapes change numerically.
@@ -352,6 +365,30 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     const auto& format = layout.fmt[size_t(layer)];
     detail::PrefillFullfitUploadReceipt eager_upload;
     const bool use_prefix_upload = owner.prefix_expert_upload != PrefillPrefixExpertUpload::off;
+    const auto split_upload = split_accumulator ? split_prefill_expert_upload() :
+                                                 SplitPrefillExpertUpload::demand;
+    const bool batch_upload = split_upload != SplitPrefillExpertUpload::demand;
+    const uint64_t blob_bytes = layout.blob_bytes(layer);
+    uint8_t* batch_device = nullptr;
+    int32_t batch_capacity = 0;
+    if (batch_upload) {
+        if (!queue.is_in_order() || use_prefix_upload || owner.command_trace || !owner.scratch_mixed ||
+            m.layer_major_residual.gpu_rows != m.layer_major_residual.rows ||
+            !owner.private_expert_bank || owner.private_expert_bank->owner() != m.cache ||
+            owner.expert_cache != m.cache || !owner.expert_slots || owner.expert_slots->full_fit() ||
+            owner.expert_slots->permanent_used() || owner.expert_upload_staging)
+            throw std::invalid_argument("split prefill expert upload: expected a private partial bank and ordered queue");
+        const auto& bank = owner.private_expert_bank->layout();
+        if (!owner.expert_slab || !blob_bytes || bank.slots != owner.expert_slots->slots() ||
+            bank.stride != blob_bytes || owner.expert_source_stride != blob_bytes ||
+            owner.expert_slab_bytes != detail::layer_major_mul(NE, blob_bytes))
+            throw std::invalid_argument("split prefill expert upload: source or device extent mismatch");
+        batch_capacity = std::min(16, bank.slots);
+        batch_device = owner.private_expert_bank->device_slot(0);
+        sycl_backend::validate_device_span(batch_device, size_t(bank.used_bytes), queue);
+        sycl_backend::validate_spans({{batch_device, size_t(bank.used_bytes)}},
+                                    {{owner.expert_slab, size_t(owner.expert_slab_bytes)}}, 1);
+    }
     if (use_prefix_upload) {
         if (owner.prefix_expert_upload == PrefillPrefixExpertUpload::ffn) {
             if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -407,6 +444,33 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                                                owner.pending_prefix_upload);
     }
 #endif
+    int32_t batch_first = -1, batch_end = 0;
+    const auto upload_batch = [&](int32_t first) -> bool {
+        const auto& counts = owner.routes->counts();
+        const int32_t limit = std::min<int32_t>(int32_t(counts.size()), first + batch_capacity);
+        int32_t end = first + 1;
+        while (end < limit && counts[size_t(end)] > 0) ++end;
+        const int32_t count = end - first;
+        const int32_t per_copy = split_upload == SplitPrefillExpertUpload::coalesced ? count : 1;
+        const auto* src = owner.expert_slab + size_t(first) * blob_bytes;
+        // Consecutive experts fill slots at the start of the private bank.
+        // The same queue orders this overwrite after the preceding batch's readers.
+        for (int32_t i = 0; i < count; i += per_copy) {
+            const size_t offset = size_t(i) * blob_bytes;
+            if (cudaMemcpyAsync(batch_device + offset, src + offset, size_t(per_copy) * blob_bytes,
+                                cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+                err = "split prefill expert upload: batch copy failed"; return false;
+            }
+        }
+        batch_first = first;
+        batch_end = end;
+        owner.staged_uploads += uint64_t(count);
+        stats_.experts_streamed += uint64_t(count);
+        owner.staged_upload_bytes += uint64_t(count) * blob_bytes;
+        owner.batched_upload_experts += uint64_t(count);
+        owner.batched_upload_commands += uint64_t(count / per_copy);
+        return true;
+    };
     const bool allow_vec8 = owner.scratch_mixed && prefill_moe_large_vec8_requested();
     static const bool split_scratch_check_once = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_SPLIT_SCRATCH_CHECK_ONCE");
@@ -426,7 +490,17 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         const auto& job = jobs[index];
         if (job.expert != loaded) {
             int32_t slot = -1;
-            if (owner.expert_slots) {
+            if (batch_upload) {
+                // Route construction verifies IDs and emits one ascending run per expert.
+                if (job.expert >= batch_end) {
+                    hp::Host host(hp::upload_submit);
+                    if (!upload_batch(job.expert)) return false;
+                }
+                if (job.expert < batch_first)
+                    throw std::logic_error("split prefill expert upload: expert order changed");
+                slot = job.expert - batch_first;
+                if (upload_census) upload_census->record(job.rows, true);
+            } else if (owner.expert_slots) {
                 if (m.layer_major_residual.gpu_rows != m.layer_major_residual.rows ||
                     !owner.scratch_mixed || m.copy != m.cs || !owner.expert_cache ||
                     owner.expert_cache != m.cache)
@@ -588,6 +662,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     if (owner.scratch_mixed && std::getenv("STRATA_TRACE"))
         std::fprintf(stderr, "strata MoE mixed owners: phase=retired layer=%lld first=%lld rows=%lld route_status=0 shared_HC=checked_drain callbacks=after_return\n",
             (long long)layer, (long long)first_row, (long long)rows);
+    if (batch_upload) ++owner.batched_upload_windows;
     ++owner.windows; owner.source_bytes += uint64_t(rows * K * 4);
     if (use_prefix_upload) {
         const auto ids_hash = core::fnv1a64(reinterpret_cast<const uint8_t*>(owner.prefix_experts.data()),
