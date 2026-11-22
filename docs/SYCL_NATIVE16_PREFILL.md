@@ -603,6 +603,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   directory as a quoted include directory. Compare dependency hashes against
   the original compile and external inputs, with the one include as the only
   changed input. This projection uses the original PLE implementation.
+  The `f170e7863` syntax check passed on the boundary build's compiler
+  recipe with 799 verified inputs. The include overlay SHA-256 is
+  `683f2bfd190b8a2e36d66244447bee8d5ea076eae00cc26f43805af4588c6104`.
   For the same-image experiment, qualify checked numerical output, actual
   split placement, route counts, cancellation and the decode handoff first.
   Use the established four fresh 117489-token requests and three independent
