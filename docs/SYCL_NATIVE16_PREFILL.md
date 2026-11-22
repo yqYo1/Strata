@@ -554,6 +554,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   removed 1573 files and links with 410910775 regular-file bytes. The
   original build receipts remain for source recovery through the boundary
   comparison. See `retained_builds_review_20261103.boundary_candidate_reference_transition`.
+  After the physical checks, run `decode_kv_fast_prefill_preservation.py boundary`
+  at 65537 and 117489 to time the context fix against the fast-prefill
+  reference before building the cooperative resolver. This timing uses
+  three independent matched pairs per length, with first-use and warmed
+  prompt time and client TTFT gates kept separate. Both arms use scalar
+  decode KV and the same selected prefill configuration at each length.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
