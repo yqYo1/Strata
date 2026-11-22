@@ -616,12 +616,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Count a warmed gain when at least two pairs improve and their median ratio
   is below one. Record first-use TTFT separately and verify phase preservation
   before adoption. Preserve the actual new build inputs and sample spread.
-  Run the independent 117489-token comparison with
-  `decode_kv_fast_prefill_preservation.py boundary`. Keep three matched
-  pairs and separate first-use and warmed prompt time and client TTFT.
-  Both arms use scalar decode KV and the selected prefill configuration
-  for the length. A new 65K plan must establish preservation before the
-  cooperative comparison can advance. Keep the completed 65K outcome.
+  The independent 117489-token comparison closed all six processes and 24
+  fresh requests with matched work, no fresh faults and the original model
+  hashes. Both arms use scalar decode KV and aligned prefill KV reuse.
+  Warm process medians are 919.129, 947.399 and 931.788 tok/s for retained,
+  and 927.973, 944.208 and 1042.218 tok/s for boundary. The median paired
+  boundary/retained ratios are 1.007838 first prompt time, 0.990469 warm
+  prompt time, 1.007909 first client TTFT and 0.990693 warm TTFT. The
+  preservation gate fails on both first-use clocks. The last warm process
+  exceeds 1000 tok/s on this route. The other two produce less than 945
+  tok/s, so sustained repeatability remains open. Retain the original
+  65K and 117K outcomes without advancing the cooperative comparison.
+  The new upload experiment makes a separate comparison on the boundary
+  source with the same-engine demand arm. Its physical and phase
+  qualification remain required.
   After qualifying both lengths, use the boundary control as the prefill
   reference for the cooperative comparison. Prove the original fast-prefill
   source and recipe against its executable before retiring it. The previous
