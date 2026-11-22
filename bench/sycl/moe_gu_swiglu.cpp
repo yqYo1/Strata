@@ -374,7 +374,7 @@ struct MappedGuCase {
   sycl::event mapped(xe::Tile tile, bool capture) {
     return xe::prefill_mapped_gu_swiglu(*runtime, dense.q, problem(capture), tile);
   }
-  void check(xe::Tile tile, bool invalid) {
+  std::vector<uint16_t> check(xe::Tile tile, bool invalid) {
     auto &q = dense.q;
     reset_status();
     submit_wait(q, [&] { return gathered(tile, true); });
@@ -387,7 +387,7 @@ struct MappedGuCase {
         need(operand[size_t(i) * K + col] ==
              (row < 0 || row >= inputs.plan->rows() ? 0 : input_value(row, col)), "GU gather oracle");
     }
-    const auto ref = dense.candidate.get();
+    auto ref = dense.candidate.get();
     reset_status();
     submit_wait(q, [&] { return mapped(tile, true); });
     check_status(invalid);
@@ -412,6 +412,29 @@ struct MappedGuCase {
     need(observed == inputs.metadata && primary.get() == bank_values(0, primary.n) &&
          dense.w.get() == dense.hw && dense.x.get() == operand, "mapped GU input or guard changed");
     if (tail) need(tail->get() == bank_values(inputs.primary_rows, tail->n), "mapped GU tail or guard changed");
+    return ref;
+  }
+
+  double timed_batch(bool use_mapped, int repeat, const std::vector<uint16_t> &expected) {
+    auto &q = dense.q;
+    auto &output = use_mapped ? dense.reference : dense.candidate;
+    output.reset();
+    reset_status();
+    drain(q);
+    using Clock = std::chrono::steady_clock;
+    const auto start = Clock::now();
+    submit_wait(q, [&] {
+      sycl::event last;
+      for (int i = 0; i < repeat; ++i)
+        last = use_mapped ? mapped(xe::Tile::wide_128x128, false)
+                          : gathered(xe::Tile::wide_128x128, false);
+      return last;
+    });
+    const double ms = std::chrono::duration<double, std::milli>(Clock::now() - start).count();
+    need(ms > 0 && std::isfinite(ms), "invalid mapped GU batch interval");
+    check_status(false);
+    need(output.get() == expected, "timed mapped GU output changed");
+    return ms;
   }
 };
 
@@ -421,6 +444,58 @@ void check_mapped_gu(sycl::queue &q, xe::Tile tile, int rows, bool split, bool c
   std::cout << "prefill_mapped_gu rows=" << rows << " tile=" << (tile == xe::Tile::wide_128x128 ? "wide" : "compact")
             << " split=" << split << " clustered=" << clustered << " invalid=" << invalid
             << " gather=exact BF16_capture=exact FP16_output=exact null_capture=exact guards=PASS\n";
+}
+
+void time_mapped_gu(sycl::queue &q, int process) {
+  using Clock = std::chrono::steady_clock;
+  static_assert(Clock::is_steady);
+  constexpr int clock_pairs = 4096;
+  constexpr int pilot_repeats = 8, maximum_repeats = 2048, rounds = 6;
+  constexpr double target_ms = 180;
+  double maximum_mean_us = 0;
+  for (int trial = 0; trial < 3; ++trial) {
+    double sum_us = 0;
+    for (int i = 0; i < clock_pairs; ++i) {
+      const auto a = Clock::now(), b = Clock::now();
+      sum_us += std::chrono::duration<double, std::micro>(b - a).count();
+    }
+    maximum_mean_us = std::max(maximum_mean_us, sum_us / clock_pairs);
+  }
+  std::cout << "{\"kind\":\"timer\",\"clock_pairs\":" << clock_pairs
+            << ",\"maximum_mean_us\":" << maximum_mean_us << "}\n";
+  constexpr std::array sizes{2334, 5963, 8192};
+  const int shape_count = int(sizes.size()) * 2;
+  for (int visit = 0; visit < shape_count; ++visit) {
+    const int shape = (visit + 2 * process) % shape_count;
+    const int rows = sizes[shape / 2], clustered = shape % 2;
+    MappedGuCase c(rows, true, clustered, false, q);
+    const auto expected = c.check(xe::Tile::wide_128x128, false);
+    const int first_arm = (process + shape) % 2;
+    std::array<double, 2> pilot{};
+    for (int order = 0; order < 2; ++order) {
+      const int arm = first_arm ^ order;
+      // Untimed correctness calls already initialized both kernel paths.
+      pilot[arm] = c.timed_batch(arm != 0, pilot_repeats, expected);
+    }
+    const double proposed = std::ceil(target_ms * pilot_repeats / std::min(pilot[0], pilot[1]));
+    need(proposed >= 1 && proposed <= maximum_repeats, "mapped GU calibration exceeds repeat bound");
+    const int repeat = int(proposed);
+    std::cout << "{\"kind\":\"calibration\",\"process\":" << process << ",\"rows\":" << rows
+              << ",\"clustered\":" << clustered << ",\"first_arm\":" << first_arm
+              << ",\"pilot_repeats\":" << pilot_repeats << ",\"pilot_ms\":[" << pilot[0]
+              << ',' << pilot[1] << "],\"repeat\":" << repeat << "}\n";
+    for (int round = 0; round < rounds; ++round) {
+      for (int order = 0; order < 2; ++order) {
+        const int arm = (first_arm ^ (round % 2)) ^ order;
+        const double ms = c.timed_batch(arm != 0, repeat, expected);
+        std::cout << "{\"kind\":\"gu_batch\",\"process\":" << process << ",\"rows\":" << rows
+                  << ",\"clustered\":" << clustered << ",\"round\":" << round
+                  << ",\"order\":" << order << ",\"arm\":" << arm
+                  << ",\"repeat\":" << repeat << ",\"batch_ms\":" << ms
+                  << ",\"output_exact\":true}\n";
+      }
+    }
+  }
 }
 #endif
 
@@ -573,6 +648,17 @@ int main(int argc,char **argv) {
         check_mapped_gu(q, xe::Tile::wide_128x128, 8191, true, false, true);
       }
       std::cout << "fixture_status=PASS mode=" << mode << '\n';
+      return 0;
+    }
+    if (mode == "--prefill-mapped-gu-time") {
+      need(argc == 3 && std::string(argv[2]).size() == 1 && argv[2][0] >= '0' && argv[2][0] <= '2',
+           "mapped GU timing needs process 0 through 2");
+      runtime = sb::runtime_for();
+      auto q = runtime->make_queue(false);
+      topology(q);
+      const int process = argv[2][0] - '0';
+      time_mapped_gu(q, process);
+      std::cout << "fixture_status=PASS mode=" << mode << " process=" << process << '\n';
       return 0;
     }
 #endif
