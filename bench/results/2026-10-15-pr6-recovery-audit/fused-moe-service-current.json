@@ -609389,6 +609389,779 @@
     },
     "error": "RuntimeError: frozen store environment or observer differs",
     "cause": "The observer overlaid an environment flag in the context preparation. The existing store save check independently derived the original environment.",
-    "disposition": "Preserve this refusal. V2 uses a dedicated collector entry point, with the original engine environment in all arms."
+    "disposition": "Preserve this refusal. V2 uses a dedicated collector entry point, with the original engine environment in all arms.",
+    "capture_retirement": {
+      "complete": true,
+      "files": 7,
+      "bytes": 18332,
+      "reason": "Prelaunch-generated V1 inputs have their paths and hashes in the pushed refusal. V2 owns its separate inputs."
+    }
+  },
+  "prefill_gather_conditions_117489_v2": {
+    "stage": "prepared",
+    "source_commit": "9459fb2e9c9d24f7181a7c58171a836567416ebe",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/strata",
+      "sha256": "85e3f202ef99661d52c03a17a8b609b8a8a44e9f584bfa8fc1a5c1c3d51aea7c",
+      "bytes": 26541640
+    },
+    "native_source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "observer_admission": {
+      "fast_configuration_diagnostic": {
+        "key": "coherent_prefill_model_v3",
+        "evidence_sha256": "096d6a778244c8e9606732a07c4fc707894cc1e97876ea8c12dab8e9470dd48e",
+        "original_controller_source": "bcc836fa28a2084fe61d95ad1948fdfadffc18ec",
+        "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "model_handoff_passed": true,
+        "model_speed_task_full_context_inherited": false,
+        "final15full_hashes_reused_only_after_current_identity_check": true
+      },
+      "state_sha256": "f8a2f5555cdc116ec62c7eb811021dae409e79cf39bf3767b8f1e6b1dc70722e",
+      "ordinary_control": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-ordinary-bank-comparison-v1/1",
+        "environment_sha256": "5990eab9654303568db3c00994aafcc93671f5e549f6420fdaa10aae86d3999b"
+      },
+      "parent_work": {
+        "65537": [
+          {
+            "request": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "offered": 21,
+            "accepted": 16,
+            "generated": 24,
+            "GU": {
+              "gu": {
+                "fused_jobs": 4217,
+                "fused_rows": 27999153,
+                "separate_jobs": 16404
+              },
+              "down": {
+                "fused_jobs": 4217,
+                "fused_rows": 27999153,
+                "separate_jobs": 16404
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20621,
+              "windows": 48,
+              "dequants": 18222,
+              "maximum_physical_window_rows": 65536,
+              "requested_source_map_bytes": 125829120,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "window": {
+              "rows": 65536,
+              "residual_gpu_rows": 65536,
+              "residual_gpu_bytes": 1342177280,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20621,
+              "fused_down_jobs": 4217,
+              "maximum_window_rows": 65536,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 37214720000,
+              "requested_dequant_H2D_bytes": 125829120,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "store": {
+              "pieces": 384,
+              "direct": 0,
+              "copy_bytes": 64424509440,
+              "gpu_rows": 65536,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 65536
+            }
+          },
+          {
+            "request": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "offered": 21,
+            "accepted": 16,
+            "generated": 24,
+            "GU": {
+              "gu": {
+                "fused_jobs": 4217,
+                "fused_rows": 27998388,
+                "separate_jobs": 16374
+              },
+              "down": {
+                "fused_jobs": 4217,
+                "fused_rows": 27998388,
+                "separate_jobs": 16374
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 20591,
+              "windows": 48,
+              "dequants": 18204,
+              "maximum_physical_window_rows": 65536,
+              "requested_source_map_bytes": 125829120,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "window": {
+              "rows": 65536,
+              "residual_gpu_rows": 65536,
+              "residual_gpu_bytes": 1342177280,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 20591,
+              "fused_down_jobs": 4217,
+              "maximum_window_rows": 65536,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 37173094400,
+              "requested_dequant_H2D_bytes": 125829120,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "store": {
+              "pieces": 384,
+              "direct": 0,
+              "copy_bytes": 64424509440,
+              "gpu_rows": 65536,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 65536
+            }
+          }
+        ],
+        "117489": [
+          {
+            "request": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "offered": 21,
+            "accepted": 16,
+            "generated": 24,
+            "GU": {
+              "gu": {
+                "fused_jobs": 7441,
+                "fused_rows": 52231136,
+                "separate_jobs": 16375
+              },
+              "down": {
+                "fused_jobs": 7441,
+                "fused_rows": 52231136,
+                "separate_jobs": 16375
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 23816,
+              "windows": 48,
+              "dequants": 18878,
+              "maximum_physical_window_rows": 117488,
+              "requested_source_map_bytes": 225576960,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "window": {
+              "rows": 117488,
+              "residual_gpu_rows": 117488,
+              "residual_gpu_bytes": 2406154240,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 23816,
+              "fused_down_jobs": 7441,
+              "maximum_window_rows": 117488,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38540800000,
+              "requested_dequant_H2D_bytes": 225576960,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 115495403520,
+              "gpu_rows": 117488,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 117488
+            }
+          },
+          {
+            "request": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "offered": 21,
+            "accepted": 16,
+            "generated": 24,
+            "GU": {
+              "gu": {
+                "fused_jobs": 7434,
+                "fused_rows": 52222161,
+                "separate_jobs": 16406
+              },
+              "down": {
+                "fused_jobs": 7434,
+                "fused_rows": 52222161,
+                "separate_jobs": 16406
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 23840,
+              "windows": 48,
+              "dequants": 18900,
+              "maximum_physical_window_rows": 117488,
+              "requested_source_map_bytes": 225576960,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "window": {
+              "rows": 117488,
+              "residual_gpu_rows": 117488,
+              "residual_gpu_bytes": 2406154240,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 23840,
+              "fused_down_jobs": 7434,
+              "maximum_window_rows": 117488,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38589209600,
+              "requested_dequant_H2D_bytes": 225576960,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 115495403520,
+              "gpu_rows": 117488,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 117488
+            }
+          }
+        ]
+      },
+      "capacity_sha256": "9f24aed05bc8847b35882a8a9e5a170c739fd99476a5f1d25f872d4fc4ade790",
+      "dispatch_sha256": "a161c2b241e6eaacc5174ca9d102c5d734c403604e088a7c28c7267ac1016cb2",
+      "expected_work": [
+        {
+          "request": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+          "offered": 21,
+          "accepted": 16,
+          "generated": 24,
+          "GU": {
+            "gu": {
+              "fused_jobs": 7441,
+              "fused_rows": 52231136,
+              "separate_jobs": 16375
+            },
+            "down": {
+              "fused_jobs": 7441,
+              "fused_rows": 52231136,
+              "separate_jobs": 16375
+            },
+            "compact_jobs": 0,
+            "compact_rows": 0,
+            "jobs": 23816,
+            "windows": 48,
+            "dequants": 18878,
+            "maximum_physical_window_rows": 117488,
+            "requested_source_map_bytes": 225576960,
+            "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+          },
+          "window": {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23816,
+            "fused_down_jobs": 7441,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38540800000,
+            "requested_dequant_H2D_bytes": 225576960,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 0,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false
+          },
+          "store": {
+            "pieces": 720,
+            "direct": 0,
+            "copy_bytes": 115495403520,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          }
+        },
+        {
+          "request": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+          "offered": 21,
+          "accepted": 16,
+          "generated": 24,
+          "GU": {
+            "gu": {
+              "fused_jobs": 7434,
+              "fused_rows": 52222161,
+              "separate_jobs": 16406
+            },
+            "down": {
+              "fused_jobs": 7434,
+              "fused_rows": 52222161,
+              "separate_jobs": 16406
+            },
+            "compact_jobs": 0,
+            "compact_rows": 0,
+            "jobs": 23840,
+            "windows": 48,
+            "dequants": 18900,
+            "maximum_physical_window_rows": 117488,
+            "requested_source_map_bytes": 225576960,
+            "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+          },
+          "window": {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23840,
+            "fused_down_jobs": 7434,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38589209600,
+            "requested_dequant_H2D_bytes": 225576960,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 0,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false
+          },
+          "store": {
+            "pieces": 720,
+            "direct": 0,
+            "copy_bytes": 115495403520,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          }
+        },
+        {
+          "request": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+          "offered": 21,
+          "accepted": 16,
+          "generated": 24,
+          "GU": {
+            "gu": {
+              "fused_jobs": 7423,
+              "fused_rows": 52160499,
+              "separate_jobs": 16397
+            },
+            "down": {
+              "fused_jobs": 7423,
+              "fused_rows": 52160499,
+              "separate_jobs": 16397
+            },
+            "compact_jobs": 0,
+            "compact_rows": 0,
+            "jobs": 23820,
+            "windows": 48,
+            "dequants": 18860,
+            "maximum_physical_window_rows": 117488,
+            "requested_source_map_bytes": 225576960,
+            "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+          },
+          "window": {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23820,
+            "fused_down_jobs": 7423,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38507443200,
+            "requested_dequant_H2D_bytes": 225576960,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 0,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false
+          },
+          "store": {
+            "pieces": 720,
+            "direct": 0,
+            "copy_bytes": 115495403520,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          }
+        },
+        {
+          "request": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+          "offered": 21,
+          "accepted": 16,
+          "generated": 24,
+          "GU": {
+            "gu": {
+              "fused_jobs": 7433,
+              "fused_rows": 52191519,
+              "separate_jobs": 16408
+            },
+            "down": {
+              "fused_jobs": 7433,
+              "fused_rows": 52191519,
+              "separate_jobs": 16408
+            },
+            "compact_jobs": 0,
+            "compact_rows": 0,
+            "jobs": 23841,
+            "windows": 48,
+            "dequants": 18877,
+            "maximum_physical_window_rows": 117488,
+            "requested_source_map_bytes": 225576960,
+            "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+          },
+          "window": {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23841,
+            "fused_down_jobs": 7433,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38540748800,
+            "requested_dequant_H2D_bytes": 225576960,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 0,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false
+          },
+          "store": {
+            "pieces": 720,
+            "direct": 0,
+            "copy_bytes": 115495403520,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          }
+        }
+      ],
+      "store_proofs": {
+        "component_sha256": "176bb1fb99ba73d391b2176eee815591485b6c6b8d9d6b1e5570faa97b35c438",
+        "timing_sha256": "c830dd026a90e0a4e404cec59ff002e2887e64545ad1d4b1722585c8b3d6a9cf",
+        "copy_trace_sha256": "78f41296748dedd796470318dd33311ef850a5f0b21b265aad1d9c38c8f2678b",
+        "admission_sha256": "f054a729d1314241b5d81d60d7ab89beef759a4e9da053edaa66d9f3e9412d9e"
+      }
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "plans": [
+      {
+        "index": 0,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/0",
+        "generated": {
+          "config.json": "eab0c82ef31d4836bace7321fa20612c22c3f97f6a19727be8da2de28e785a53",
+          "plan.json": "44a42796a040aadd0004e4306550c7a7febff0d4f28c78216030cb54ecaec75e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/0/config.json",
+          "--port",
+          "34031",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/0/bench"
+        ],
+        "environment_sha256": "ed19977b1f4606f040ae9cbcc93ecdea0552ae39b6f5a264bb39340bf7be19ed",
+        "direct_output": false,
+        "trace_progress": false
+      },
+      {
+        "index": 1,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/1",
+        "generated": {
+          "config.json": "20d38c25e0f928996a4ee0fa758fdf01aabac20165be55a4c12cafda93514dc4",
+          "plan.json": "9239d59f20a24516d0c76ad7ffb07a0532a2c28b7a3a98889a1462d6df0fd127"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/1/config.json",
+          "--port",
+          "55243",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/1/bench"
+        ],
+        "environment_sha256": "6fcd3c239b125fcb867da35abccc6491c63db67c2885d822a83ed7109476cbbe",
+        "direct_output": false,
+        "trace_progress": false
+      },
+      {
+        "index": 2,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/2",
+        "generated": {
+          "config.json": "7850d82aedea3e6d9a07f2ed17000ed51cc3f9e011447bc386775ee472e7acb0",
+          "plan.json": "44a42796a040aadd0004e4306550c7a7febff0d4f28c78216030cb54ecaec75e"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/2/config.json",
+          "--port",
+          "54219",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v2/2/bench"
+        ],
+        "environment_sha256": "758aca362e14ece706ec34bb28d6e367c16e3642e1af3b794a4d90b07fb1ad67",
+        "direct_output": false,
+        "trace_progress": false
+      }
+    ],
+    "processes": [],
+    "request_hashes": {},
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "budgets": {
+      "wall": 2400,
+      "cpu": 28800,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 134217728
+    },
+    "whole_bytes": 411041792,
+    "plan": {
+      "length": 117489,
+      "kv_reuse": true,
+      "vector_gather": false,
+      "trace": false,
+      "requests": 4,
+      "direct_output_order": [
+        false,
+        false,
+        false
+      ],
+      "unit": "Change only the BF16 attention output store.",
+      "gate": "Match request, KV, gather, expert placement and draft work. Check executed bank pieces and all output copies. Speed needs two faster warmed pairs and paired median below one.",
+      "scope": "Official exact-count bench.sh. Keep first-use and warm PP and TTFT separately. The traced admission has no speed claim. Short output qualifies neither TG nor adoption.",
+      "stop": "Stop on first mismatch, ownership refusal, validation fault or budget failure."
+    },
+    "previous_attempt": {
+      "key": "coherent_prefill_model_v3",
+      "evidence_sha256": "096d6a778244c8e9606732a07c4fc707894cc1e97876ea8c12dab8e9470dd48e",
+      "original_controller_source": "bcc836fa28a2084fe61d95ad1948fdfadffc18ec",
+      "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "model_handoff_passed": true,
+      "model_speed_task_full_context_inherited": false,
+      "final15full_hashes_reused_only_after_current_identity_check": true
+    },
+    "condition_plan": {
+      "order": [
+        "clean",
+        "observed",
+        "clean"
+      ],
+      "observed_index": 1,
+      "seconds": 900,
+      "interval": 1,
+      "question": "Record GPU frequency, throttle, scheduled CPU and host pressure on the selected copy route that slowed between timing periods.",
+      "acceptance": "Require the warmed observed prompt and client TTFT to be within 1.05x of both clean controls. Record first use separately. Require the owned reader, exact request work, coverage, and normal fault-free exit.",
+      "limits": "Frequency and throttle are sampled global signals. The clean controls screen the observer cost in this bracket. Physical saturation and historical conditions need separate evidence.",
+      "read": 117489,
+      "requests": 4
+    },
+    "source_inputs": {
+      "files": 819,
+      "sha256": "46b88287a7009875c2a233b8f70e8f98911353b05184cca0f587c8bff99b7db8"
+    },
+    "environment_template_sha256": "41d96872eab779e9f0ca89731b445bd9888fc0a382c617d458e56a8ee0a0c165",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
