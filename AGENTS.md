@@ -33,6 +33,11 @@ explicitly requests them. Exclude their model choices, installation and launch
 paths from upstream imports; adapt shared functional changes without enabling
 these models. This exception applies to future sync rounds too.
 
+Investigate performance and correctness through project source, build settings
+and runtime measurements. Apply this scope to delegated research. Cybersecurity
+investigation, reverse engineering and analysis of executable contents are
+outside scope. Verify executable identity with recorded sizes and hashes.
+
 ## Installing Strata for a user
 
 Follow **[docs/AI_SETUP.md](docs/AI_SETUP.md)**: check the PC, pick the model by RAM, run setup non-interactively,
