@@ -17,12 +17,14 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 READ, SLOTS = 117489, 128
 REFERENCE = '7c88fb0123a76b35e2dc91e597a19439bd2ae5ca'
 CLOSED_TIMING = '982211f5c91b4251ff89b8ad93f1f369a46fbad0'
+STORE_FIXTURE_EVIDENCE = '90c572ca98efb28c1578fa23b6cb8cd13e103efe'
+STORE_FIXTURE_KEY = 'prefill_split_direct_store_component_v1'
 MODES = ('demand', 'batched', 'coalesced')
 BLOCKS = (MODES, MODES[1:] + MODES[:1], MODES[2:] + MODES[:2])
 CONTRASTS = (('batched', 'demand'), ('coalesced', 'batched'), ('coalesced', 'demand'))
 UPLOAD = 'STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD'
 KEYS = {'admit': 'prefill_split_upload_admission_v1', 'time': 'prefill_split_upload_speed_v1',
-        'profile': 'prefill_split_upload_cpu_wait_v1'}
+        'profile': 'prefill_split_upload_cpu_wait_v1', 'store-admit': 'prefill_split_direct_store_admission_v1'}
 MAX_OBSERVER_RATIO = 1.03
 
 
@@ -124,6 +126,44 @@ def profile_basis(runs):
     return native, prior, providers, extra
 
 
+def store_basis(runs):
+    native, prior, providers, extra = profile_basis(runs)
+    fixture = basis.validation.committed(bank.RESULT, (STORE_FIXTURE_KEY,))
+    plan = fixture['plan']
+    require(fixture == bank.previous.historic(STORE_FIXTURE_EVIDENCE, STORE_FIXTURE_KEY)
+            and fixture['stage'] == 'closed' and fixture['passed'] and fixture['complete']
+            and fixture['ownership_closed'] and not fixture['active']
+            and plan['engine'] == native['binaries']['strata']
+            and plan['fixture'] == native['binaries']['sycl_prefill_attention_bank_test']
+            and plan['native_build_sha256'] == prior['observer_admission']['build_sha256']
+            and plan['native_source_commit'] == native['native_source_commit']
+            and plan['boot'] == prior['boot'] and plan['driver'] == native['driver']
+            and fixture['result']['cases'] == 4 and not fixture['result']['fresh_faults'],
+            'exact same-build BF16, bounds and cancellation fixture required')
+    admission_row = basis.validation.committed(bank.RESULT, (KEYS['admit'],))
+    copy = admission_row['processes'][MODES.index('batched')]
+    observer = prior['observer_admission']
+    original = [split.work(r, s) for r, s in zip(copy['routes'], copy['samples'], strict=True)]
+    require(copy['mode'] == 'batched' and copy['passed'] and copy['ownership_closed']
+            and copy['native_exit_code'] == 0 and not copy['fresh_faults']
+            and original == observer['expected_work']
+            and all(item['store']['pieces'] == 720 and item['store']['direct'] == 0
+                    and item['store']['copy_bytes'] == 115495403520 for item in original),
+            'same-build batched copy admission and exact store geometry required')
+    observer.update(traced=True, direct_store_component_sha256=bank.signature(fixture),
+                    expected_loaned_slots=[r['loaned_slots'] for r in copy['routes']],
+                    copied_D2D_bytes=[item['store']['copy_bytes'] for item in original],
+                    expected_work=[dict(item, store=dict(item['store'], direct=item['store']['pieces'], copy_bytes=0))
+                                   for item in original])
+    return native, prior, providers, extra
+
+
+def check_direct_store(outcome, row, plan):
+    check_work(outcome, row, plan)
+    require([r['loaned_slots'] for r in outcome['routes']] == row['observer_admission']['expected_loaned_slots'],
+            'direct store restored a different decode expert loan')
+
+
 def profiled_route(text, plan):
     route = request_route(text, plan)
     if plan['cpu_wait_scopes']:
@@ -183,9 +223,12 @@ def decision(processes, traced, order):
 
 
 def experiment(action):
-    traced = action == 'admit'
+    direct_store = action == 'store-admit'
+    traced = action == 'admit' or direct_store
     profiled = action == 'profile'
-    if profiled:
+    if direct_store:
+        order = ('batched',)
+    elif profiled:
         order = ('batched',) * len(host_profile.ROLES)
     else:
         order = MODES if traced else tuple(arm for block in BLOCKS for arm in block)
@@ -215,6 +258,12 @@ def experiment(action):
                         for scope in host_profile.SCOPES), 'extra or missing CPU accounting scope')
 
         ctx.validate_model_text = validate_model_text
+    if direct_store:
+        ctx.basis = lambda: store_basis(runs)
+        ctx.after_execution = check_direct_store
+        protocol.update(direct_output=True, acceptance=(
+            'Match the same-build traced batched copy work and decode loan for both inputs. '
+            'Require 720 direct pieces and zero output copies per input.'))
 
     def pins(revision):
         values = old_pins(revision)
@@ -228,7 +277,7 @@ def experiment(action):
     def environment(row, plan):
         env = model.ordinary_environment(row, plan['root'], row['observer_admission']['ordinary_control'])
         env.update({UPLOAD: order[plan['index']], split.SLOT_OPTION: str(SLOTS),
-                    model.INPUT: '0', model.OUTPUT: '0', speed.state.KV: '1', speed.state.GATHER: '0',
+                    model.INPUT: '0', model.OUTPUT: str(int(direct_store)), speed.state.KV: '1', speed.state.GATHER: '0',
                     'STRATA_SYCL_KV_COPY_GROUPS': '0', 'STRATA_SYCL_PREFILL_SPLIT_SCRATCH_CHECK_ONCE': '0'})
         require('STRATA_TRACE' not in env and 'STRATA_DECODE_TIMING' not in env
                 and env.get('STRATA_SYCL_CACHE_LOAN_AUDIT', '0') == '0', 'unexpected observer')
@@ -245,6 +294,8 @@ def experiment(action):
                 plan.update(mode=mode, trace_progress=traced)
                 if profiled:
                     plan.update(role=host_profile.ROLES[plan['index']], cpu_wait_scopes=plan['index'] == 1)
+                if direct_store:
+                    plan['direct_output'] = True
             row.update(whole_bytes=len(order) * row['budgets']['total_cap'] + (8 << 20), plan=protocol)
         old_save(row)
 
@@ -258,6 +309,8 @@ def experiment(action):
             require([(p['role'], p['cpu_wait_scopes']) for p in row['plans']]
                     == [(role, i == 1) for i, role in enumerate(host_profile.ROLES)],
                     'frozen CPU accounting roles differ')
+        if direct_store:
+            require(all(p['direct_output'] is True for p in row['plans']), 'frozen direct output differs')
         return old_current(row)
 
     ctx.pins, ctx.environment, ctx.current, ctx.save = pins, environment, current, save
@@ -267,7 +320,7 @@ def experiment(action):
 if __name__ == '__main__':
     phase, action = sys.argv[1:]
     require(sys.executable == basis.reference.model.PYTHON and phase in KEYS,
-            'use the benchmark environment and select admit, time or profile')
+            'use the benchmark environment and select admit, time, profile or store-admit')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])

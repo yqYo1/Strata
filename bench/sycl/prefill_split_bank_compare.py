@@ -64,7 +64,7 @@ def request_route(text, plan):
     require(value['layout']['split'] and value['layer_cache_bytes'] == slots * workspace.STRIDE
             and value['permanent_hits'] == 0 and value['uploads'] == value['actual_GU_dispatch']['dequants']
             and 'strata MoE prefix expert upload layer:' not in text, 'unexpected slot reuse or copy schedule')
-    value['attention_store'] = model.restore.require_store(text, dict(direct=False), plan)
+    value['attention_store'] = model.restore.require_store(text, dict(direct=plan.get('direct_output', False)), plan)
     model.input_receipt(text, READ - 1, value['attention_store'], False, trace_layers=plan['trace_progress'])
     if plan['trace_progress']:
         kv = speed.state.kv.check_request(text, 0, READ - 1, 8192, reuse=True)
