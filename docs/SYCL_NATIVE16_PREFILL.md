@@ -1213,6 +1213,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   slot count. The admission result gates the separate clean comparison.
   The parser was checked against the four original frames with the planned
   explicit slot request and synthetic upload footers.
+  The three traced processes then completed all six fresh requests without
+  new GPU faults. The two prompts retain 38,540,800,000 and 38,589,209,600
+  requested expert H2D bytes. Demand and batched issue 18,878 and 18,900
+  copies. Coalesced issues 4,329 and 4,342, about 77.1% fewer submissions
+  for either prompt. All six restore the same 1,124 loaned decode slots
+  and payload. With observers, the second request takes 121.963, 119.797
+  and 119.711 seconds for demand, batched and coalesced respectively.
+  Each mode has one observed process. Use the clean repeated comparison
+  to judge speed and investigate the remaining exposed service time.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
   Use three independent blocks in demand/batched/coalesced,
   batched/coalesced/demand and coalesced/demand/batched order on the

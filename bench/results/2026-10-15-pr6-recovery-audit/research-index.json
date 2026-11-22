@@ -39143,5 +39143,21 @@
     "current_route": "Layer-major run_impl calls gather_batch asynchronously in the layer-1 slice. Its ms_ple accumulator includes the exposed future wait, upload scheduling and GPU work submission.",
     "next_check": "Prepare an interval-scoped PP attribution plan with original source, request timing boundaries and an observer overhead control. Select a queue-depth change only with consequential exposed wait.",
     "consumer": "Retrieve for the next serialized PLE attribution decision. Retain the report through that decision."
+  },
+  "prefill-upload-batch-overlap-20261122": {
+    "classification": "decision support",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "schedulable_now": false,
+    "source_commit": "e4dfad786347e5adf0f913d69df50454e3decbaa",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-upload-batch-overlap-20261122/report.md",
+    "report_sha256": "20e49a2dfe6ee71d544d268f467223b5c994f0078d6b642536267d1c8886c4fc",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-upload-batch-overlap-20261122-control/native-review.md",
+    "review_sha256": "0dd64cf3d36b3f42796c21b1b888a42efbfe78b6048fbd13f7e2573c08037359",
+    "finding": "Packed expert slots are last read by dequantization. GEMMs read separate scratch. Compare forced serialization and disjoint-slot overlap with the same two queues, last-reader events and checked drains.",
+    "correction": "The 27-expert fixture forms five batches and needs about ten two-edge event creations. The built-in transfer queue lacks profiling. See the review for the corrected COSP citation and profiling requirements.",
+    "consumer": "Retrieve if matched attribution shows exposed upload wait beyond the current same-queue batching comparison. Retain through that decision."
   }
 }
