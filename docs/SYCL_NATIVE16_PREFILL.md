@@ -1253,6 +1253,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   checks complete calling-thread partitions and a two-sided 3% prompt and
   TTFT envelope against both controls. Physical 262144, RESTORE and
   sustained decode qualification remain open on this build.
+  The bracket at `1046b4164` completed all six requests without a new GPU
+  fault. Warm prompt ratios are 0.99550 and 0.99745. First-use ratios 1.08067
+  and 1.07486 fail the observer envelope. Retain the counters as diagnostic
+  evidence. The warm calling thread used 111.27 CPU seconds, including
+  70.95 seconds inside 73.04 seconds of known waits. The 48 MoE status
+  enqueues account for 9.217 wall seconds inside the host status partition.
+  A four-byte enqueue can wait on the preceding work. Preserve the earlier
+  failed host-USM destination comparison at `d99bacc3f`.
+  Next compare the direct BF16 attention store at the measured split/batched
+  placement. The copied path requests 115,495,403,520 GPU-local bytes
+  across 720 pieces. The earlier `b973b13dd` comparison supports a new
+  test at this shape. `prefill_split_store.py` checks the exact current
+  fixture before enabling this selector for a model request.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
