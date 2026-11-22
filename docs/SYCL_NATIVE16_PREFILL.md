@@ -1248,9 +1248,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gate. Advance batched for further tuning on this image. The median warmed
   request needs 1.293 fewer seconds to sustain 1000 tok/s.
   The measured upload-scheduling gain also identifies a follow-up on the
-  retained KV/gather executable's `fde0cdd11` source. The first current
-  117489-token direct-store pair at `52415d2c6` leaves 2.245 s to reach the
-  target. The earlier demand-to-batched ratio of 0.974529 would save 3.050 s
+  retained KV/gather executable's `fde0cdd11` source. The median current
+  117489-token direct-store result at `1bfa911d5` leaves 2.423 s to reach the
+  target. The earlier demand-to-batched ratio of 0.974529 would save 3.054 s
   at that prompt time if it held on this source and placement. Treat this as a
   budget estimate for choosing an experiment.
   The exact three production source files used by the retained executable
@@ -1381,15 +1381,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   direct store. Warmed TTFT was 72.319 and 72.396 s, and first-request
   TTFT was 83.278 and 82.849 s. Both arms remain below 1000 tok/s in this
   timing period. Keep the ordinary model selection pending broader validation.
-  Compare direct store at 117489 with KV reuse and scalar gather fixed on
-  the admitted 128-slot split route.
+  The clean 117489-token comparison at `1bfa911d5` keeps KV reuse and scalar
+  gather fixed on the admitted 128-slot split route. The six processes and
+  24 fresh requests matched dispatch, cache handoff, 24 outputs and 16 of
+  21 accepted drafts per request. All processes exited normally without a
+  new GPU fault. Direct output used 720 stores and zero requested output-copy
+  bytes per request. Its three warmed prompt-time ratios over copy are
+  0.993587, 0.991169 and 0.995224. The median paired time reduction is
+  0.64%. Process medians aggregate to 974.08 and 979.80 tok/s for copy and
+  direct output. Median warmed TTFT is 120.860 and 120.141 s. Median
+  first-request TTFT is 133.153 and 131.213 s. Advance direct output as a
+  candidate for this route. The 1000 tok/s threshold and composed
+  physical-context, RESTORE and sustained decode gates remain open.
   The same 65537-token copy configuration previously reached 1009.33 tok/s.
   It uses the same executable, runtime inventory, request bodies and effective
   settings after path normalization. The elapsed-time difference remains
-  unattributed. The first new 117489-token copy control also took 7.50 s
-  longer than the historical warmed median, at 974.96 tok/s. Its request
+  unattributed. The 117489-token copy controls take a warmed median
+  120.616 s, about 7.60 s longer than the historical median. Their request
   hashes, executable, providers and settings match the earlier KV-reuse
-  control. Keep comparisons within each timing period and placement.
+  controls. Keep comparisons within each timing period and placement.
   The separate `bench/sycl/prefill_gather_conditions.py` bracket supports
   both measured copy routes. It uses two clean controls and one observed
   process to sample GT clocks, throttle signals, PCI link state, reported
