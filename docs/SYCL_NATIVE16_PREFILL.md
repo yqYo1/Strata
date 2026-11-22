@@ -1204,7 +1204,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `5e0f4044c0dfa8cd7b6aad28ef06121ec8d8328c92739a97cf7e1ea6a1f3a5cc`.
   Its expert-bank fixture matches the device-tested SHA-256 above.
   The same-build host control completed normally and verified the sparse
-  and repeated expert planner cases. Admit the model-route comparison next.
+  and repeated expert planner cases.
+  `bench/sycl/prefill_split_upload_compare.py` uses the same built engine
+  for traced admission of demand, batched and coalesced. Each process takes
+  the first two of the four established 117489-token bodies. Verify actual
+  split placement, accepted upload counts, expert and draft work, and the
+  checked decode expert table and payload. Each arm must restore the same
+  slot count. The admission result gates the separate clean comparison.
+  The parser was checked against the four original frames with the planned
+  explicit slot request and synthetic upload footers.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
   Use three independent blocks in demand/batched/coalesced,
   batched/coalesced/demand and coalesced/demand/batched order on the
