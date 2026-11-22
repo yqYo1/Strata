@@ -144,36 +144,63 @@ def experiment():
     return ctx
 
 
-def boundary_inputs():
-    candidate = build.boundary_build()
-    values = fixed_context.reference.inputs()
+def boundary_workloads(values, parent_binary):
+    retained = bank.previous.historic(ORIGINAL, build.stock.KEY)
+    original = bank.previous.historic(ORIGINAL, parent.KEY)
+    full = original['outcomes']['full-reuse']
+    qualification = original['qualification']
     first = fixed_context.first_trial()
     completed = bank.previous.historic(BOUNDARY_REFERENCE, fixed_context.KEY)
-    require(values['binary'] == candidate['projection']['parent_binary']
+    require(retained['binaries']['strata'] == parent_binary
+            and retained['native_source_commit'] == original['native_source_commit'] == build.stock.DISPATCH_COUNTS
+            and original['stage'] == 'closed' and original['passed'] and original['complete']
+            and original['ownership_closed'] and not original['active']
+            and original['binary'] == retained['binaries'][TARGET]
+            and original['host_binary'] == retained['binaries'][HOST]
+            and qualification['build'] == bank.signature(retained)
+            and full['passed'] and full['complete'] and full['GPU_executed']
+            and full['ownership_closed'] and not full['fresh_faults'] and full['native_exit_code'] == 0
+            and full['batched_rows'] == 262143 and full['final_slot_consumed'] and full['generated_ids'] == 0
+            and completed['full_reference'] == {k: full[k] for k in (*parent.MATCH, 'kv')},
+            'require the recorded full-context workload and exact retained prefill build')
+    require(first['stage'] == 'failed' and first['ownership_closed'] and not first['active']
             and first['binary'] == completed['binary'] and first['diagnostic'] == completed['diagnostic']
+            and first['native_source_commit'] == completed['native_source_commit'] == build.BOUNDARY_FIX
+            and first['qualification'] == completed['qualification'] == qualification
+            and first['vocab_size'] == completed['vocab_size'] == original['vocab_size']
             and completed['stage'] == 'closed' and completed['passed'] and completed['complete']
             and completed['ownership_closed'] and not completed['active']
-            and all(trial[k] == values[k] for trial in (first, completed)
-                    for k in ('configuration', 'native_validation_probe', 'runtime_manifest'))
-            and all(trial[k + '_sha256'] == bank.signature(values[k]) for trial in (first, completed)
+            and all(trial[k] == values[k] for trial in (original, first, completed)
+                    for k in ('configuration', 'native_validation_probe', 'runtime_manifest', 'boot', 'driver'))
+            and all(trial[k + '_sha256'] == bank.signature(values[k]) for trial in (original, first, completed)
                     for k in ('environment_template', 'model_assets')),
-            'require the measured exact-fit workloads and original provider settings')
-    originals = {case['name']: case for case in (*first['cases'], *completed['cases'])
-                 if case['name'] in BOUNDARY_ORDER}
+            'require the recorded exact-fit workloads and unchanged runtime inputs')
+    originals = {}
     for name in BOUNDARY_ORDER:
         trial = first if name == 'small-four' else completed
-        case = originals[name]
+        case, = (item for item in trial['cases'] if item['name'] == name)
         outcome = trial['outcomes'][name]
         target = trial['diagnostic'] if case['full'] else trial['binary']
         require(outcome['passed'] and outcome['complete'] and outcome['GPU_executed']
                 and outcome['ownership_closed'] and not outcome['fresh_faults'] and outcome['native_exit_code'] == 0
                 and case['command'][0] == target['path'], 'require an executed reference case: ' + name)
+        originals[name] = case
+    return originals, completed, qualification
 
+
+def boundary_inputs():
+    candidate = build.boundary_build()
+    # This standalone test runs the new executables. Get the original
+    # workload and outcome from Git and the live runtime from its own reader.
+    _, _, speed = basis.basis(expected=candidate['foundation'])
+    values = {k: speed[k] for k in parent.model.FIELDS}
+    originals, completed, qualification = boundary_workloads(values, candidate['projection']['parent_binary'])
     values.update(binary=candidate['binaries']['strata'],
         diagnostic=candidate['binaries'][TARGET], host_binary=candidate['binaries'][HOST],
         native_source_commit=candidate['native_source_commit'], vocab_size=completed['vocab_size'],
-        build_sha256=bank.signature(build.builder.compact(candidate)), full_reference=completed['full_reference'],
-        workload_references=dict(small=fixed_context.FIRST_TRIAL, long=BOUNDARY_REFERENCE))
+        build_sha256=bank.signature(build.builder.compact(candidate)), qualification=qualification,
+        full_reference=completed['full_reference'],
+        workload_references=dict(small=fixed_context.FIRST_TRIAL, long=BOUNDARY_REFERENCE, full_control=ORIGINAL))
     return values, originals
 
 

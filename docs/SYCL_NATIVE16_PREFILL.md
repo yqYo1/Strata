@@ -519,6 +519,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a terminal width of two from the two-window, one-draft receipt. The
   full case requires the width-one commit and drain at 262144 with zero
   outputs. Bind all four results to the same exact boundary-only build.
+  Standalone boundary admission reads the earlier exact-fit and physical-fill
+  outcomes from their original commits. It binds them to the recorded
+  fast-prefill build and checks the live runtime, model assets and new
+  executables. The closed MTP test executables and the phase-naming reference
+  are historical inputs for these standalone cases.
   The build projection recovers the coherent foundation from its original
   receipt and Git sources. Preserve its executables for live comparisons and
   readers that still validate those bytes. The four-arm timing cohort consumes
