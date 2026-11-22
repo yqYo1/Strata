@@ -1182,11 +1182,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `bench/sycl/prefill_split_upload_build.py` recovers the qualified boundary
   image from its Git receipts and the retained fast-prefill build. It applies
   the two verified upload deltas, including the exact expert-bank fixture.
-  Keep the separate phase references. Retire the superseded boundary-only
-  build after verifying its original source and recipe and closing its live
-  comparisons. Preserve the physical-context receipt and original build
-  identity for any later boundary or cooperative-KV comparison. The successor
-  uses a fresh build of the engine and the same twelve targets.
+  Keep the separate phase references. The boundary-only build's physical
+  check and both timing cohorts are closed. The cooperative-KV qualification
+  remains gated by its own preservation checks. The successor recovers all
+  1171 parent source files and the recipe from Git and verifies the original
+  137-object build, including the measured executable hash beginning
+  `08469b1eae25`. Its fresh build uses the same twelve targets.
+  The verified retirement candidate at
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-boundary-native-v1`
+  contains 1367 files and 196946050 bytes, with sorted path/size/SHA-256
+  digest `63828d6c4a704f45ee5016c06479b73d7267d3bf447b8c73097944bcf190fd76`.
+  Preserve the committed physical-context and speed receipts. Retire this
+  closed generation before preparing the successor.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
   Use three independent blocks in demand/batched/coalesced,
   batched/coalesced/demand and coalesced/demand/batched order on the
