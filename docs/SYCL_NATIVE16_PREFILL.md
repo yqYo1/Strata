@@ -1165,10 +1165,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its updated MoE and helper hashes are
   `3d1df9055f289de60563b52162ce8af7bb167d8aa4442d0f82d2b1397ba7db5a` and
   `44238ca87239cfbbf47308c1275693747c97509a04a86fd1aa02aa489b3f5a46`.
-  The next model check consumes these receipts. Retire the closed capture
+  The next model check consumes these receipts. Retired the closed capture
   and rebuildable fixture under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007/split-prefill-expert-upload-fixture-v1`
-  after committing the result. The verified root contains 25 files and
+  after committing and pushing the result. The verified root contained 25 files and
   1285631 bytes, with sorted path/size/SHA-256 digest
   `c546e8d5ad7ae333cfe22420edb2afa647250fb275fcdedc6b2a2884eedee5df`.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
