@@ -1279,6 +1279,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   order. Use the four established fresh request bodies in each process. Require
   two faster warmed pairs and a paired median time ratio below one. Record
   first-use and warmed TTFT and the repeated 1000 tok/s threshold separately.
+  The clean comparison at `37767d359` completed all 24 fresh 117489-token
+  requests with matched expert, KV and draft work and no fresh GPU fault.
+  Copy and direct warmed process medians aggregate to 990.919 and 994.337
+  tok/s. All three paired prompt-time ratios favor direct output
+  (0.997881, 0.994834 and 0.996562). Warmed client TTFT is 118.807 and
+  118.387 seconds. First-use TTFT improves in one of the three pairs.
+  Keep direct output for further split-prefill tuning. Its median warmed
+  prompt still needs 0.669 fewer seconds for 1000 tok/s. Final-slot, RESTORE
+  and sustained decode qualification remain open on this composition.
+  The same large expert jobs write 248.72–249.06 GiB of logical FP16 gather
+  output per request. Check the existing `prefill_mapped_gu_a.py` witness
+  on the retained `fde0cdd11` build before comparing alternate GU readers.
+  Its three input files match the original probe base. The next throughput
+  comparison needs the complete gather-to-SwiGLU interval to account for
+  repeated mapped loads alongside saved writes.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
