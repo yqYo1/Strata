@@ -18,15 +18,14 @@ SELECTED = {
     65537: ('both', '84c8833935644f989692ebe3a8a8075210b86c15'),
     117489: ('reuse', '568d015bae99e9aa0455ffedabe9a3f61a70f1f3'),
 }
-BLOCKS = (('retained', 'boundary', 'off', 'on'),
-          ('on', 'off', 'boundary', 'retained'),
-          ('boundary', 'retained', 'on', 'off'))
 BOUNDARY_BLOCKS = (('retained', 'boundary'), ('boundary', 'retained'), ('retained', 'boundary'))
-CONTRASTS = (('boundary', 'retained'), ('off', 'boundary'), ('on', 'off'))
+BOUNDARY_CONTRASTS = (('boundary', 'retained'),)
+BLOCKS = (('boundary', 'off', 'on'), ('off', 'on', 'boundary'), ('on', 'boundary', 'off'))
+CONTRASTS = (('off', 'boundary'), ('on', 'off'), ('on', 'boundary'))
 METRICS = ('first_prompt_ms', 'warm_prompt_ms', 'first_ttft_s', 'warm_ttft_s')
 
 
-def admission(read, *, boundary_only=False):
+def boundary_admission(read, boundary, control):
     parent, prior, providers, _ = speed.admission(read)
     selected, commit = SELECTED[read]
     evidence = bank.previous.historic(commit, f'prefill_kv_gather_speed_{read}_v1')
@@ -35,16 +34,62 @@ def admission(read, *, boundary_only=False):
             and evidence['binary'] == parent['binaries']['strata']
             and curve.select_arm(evidence['decision']) == selected,
             'the exact repeated prefill selection is required')
-    boundary, control = build.qualified_boundary()
     require(boundary['projection']['parent_binary'] == parent['binaries']['strata']
             and boundary['binaries']['strata']['sha256'] != parent['binaries']['strata']['sha256'],
             'compare the boundary fix against its exact retained prefill build')
     builds = {name: dict(binary=row['binaries']['strata'], native_source_commit=row['native_source_commit'])
               for name, row in (('retained', parent), ('boundary', boundary))}
-    prior['observer_admission'].update(prefill_arm=selected, prefill_choice_commit=commit, native_builds=builds)
+    prior['observer_admission'].update(prefill_arm=selected, prefill_choice_commit=commit, native_builds=builds,
+                                      boundary_control=control)
+    return parent, prior, providers, None
+
+
+def boundary_timing(read, boundary, control):
+    row = basis.validation.committed(bank.RESULT, (f'decode_kv_boundary_preservation_{read}_v1',))
+    expected = protocol(read, boundary_only=True)
+    observed = row['observer_admission']
+    builds = observed['native_builds']
+    selected, commit = SELECTED[read]
+    parent = boundary['projection']['parent_binary']
+    require(row['stage'] == 'closed' and row['complete'] and row['passed'] and row['ownership_closed']
+            and not row['active'] and row['plan'] == expected and row['binary'] == parent
+            and row['native_source_commit'] == boundary['projection']['parent_source']
+            and observed['boundary_control'] == control
+            and (observed['prefill_arm'], observed['prefill_choice_commit']) == (selected, commit)
+            and builds == {
+                'retained': dict(binary=parent, native_source_commit=row['native_source_commit']),
+                'boundary': dict(binary=control['binary'], native_source_commit=control['native_source_commit']),
+            }, 'require the closed paired timing of the exact boundary control')
+    decision = summarize(read, expected['requests'], row['processes'],
+                         blocks=BOUNDARY_BLOCKS, contrasts=BOUNDARY_CONTRASTS)
+    require(row['decision'] == decision and all(decision['preservation'].values()),
+            'complete the boundary-only prefill and TTFT preservation gate')
+    for process in row['processes']:
+        work = [speed.dispatch.signature(r, s) for r, s in zip(process['routes'], process['samples'], strict=True)]
+        require(all(process[k] == v for k, v in builds[process['kernel']].items())
+                and work == observed['expected_work'], 'the paired boundary timing used a different build or workload')
+    return row
+
+
+def admission(read, *, boundary_only=False):
+    boundary, control = build.qualified_boundary()
     if boundary_only:
-        prior['observer_admission']['boundary_control'] = control
-        return parent, prior, providers, None
+        return boundary_admission(read, boundary, control)
+
+    timing_result = boundary_timing(read, boundary, control)
+    _, _, reference = basis.basis(expected=boundary['foundation'])
+    prior = bank.previous.read(basis.reference.model.ROOT / 'record.json')
+    provider = reference['runtime_manifest']
+    providers = bank.previous.read(Path(provider['path']))
+    observed = timing_result['observer_admission']
+    require(prior['models'] == reference['model_assets'] and prior['probe'] == reference['native_validation_probe']
+            and all(timing_result[k] == prior[k] == reference[k] for k in ('boot', 'driver'))
+            and timing_result['configuration'] == reference['configuration']
+            and timing_result['native_validation_probe'] == prior['probe']
+            and timing_result['model_assets_sha256'] == bank.signature(prior['models'])
+            and timing_result['runtime_manifest']['sha256'] == provider['sha256']
+            and observed['ordinary_control'] == model.ordinary_control(),
+            'the boundary timing, runtime and exact model work must match')
 
     candidate = bank.previous.read(build.ROOT / 'record.json')
     build.check(candidate)
@@ -68,12 +113,13 @@ def admission(read, *, boundary_only=False):
             and bank.sha(runtime['path']) == runtime['sha256']
             and bank.previous.read(Path(runtime['path'])) == providers
             and candidate['boundary_control'] == control
-            and len({r['binaries']['strata']['sha256'] for r in (parent, boundary, candidate)}) == 3,
+            and candidate['binaries']['strata']['sha256'] != boundary['binaries']['strata']['sha256'],
             'require the exact boundary control and the matched model/RESTORE gate')
-    builds['off'] = dict(binary=candidate['binaries']['strata'], native_source_commit=candidate['native_source_commit'])
-    prior['observer_admission'].update(
+    builds = dict(boundary=observed['native_builds']['boundary'],
+                  off=dict(binary=candidate['binaries']['strata'], native_source_commit=candidate['native_source_commit']))
+    prior['observer_admission'] = dict(observed, native_builds=builds, boundary_timing_sha256=bank.signature(timing_result),
         decode_KV_handoff_sha256=bank.signature(gate), decode_KV_device_sha256=bank.signature(device))
-    return parent, prior, providers, None
+    return boundary, prior, providers, None
 
 
 def summarize(read, runs, processes, *, blocks=BLOCKS, contrasts=CONTRASTS):
@@ -102,9 +148,25 @@ def summarize(read, runs, processes, *, blocks=BLOCKS, contrasts=CONTRASTS):
                 adopted=False, sustained_decode_qualified=False)
 
 
+def protocol(read, *, boundary_only):
+    blocks = BOUNDARY_BLOCKS if boundary_only else BLOCKS
+    contrasts = BOUNDARY_CONTRASTS if boundary_only else CONTRASTS
+    scope = 'Boundary/retained measures the context fix with scalar KV dispatch fixed.'
+    if not boundary_only:
+        scope = ('Off/boundary measures the linked KV projection with scalar KV dispatch fixed. '
+                 'On/off measures the cooperative selector on the same executable. '
+                 'On/boundary measures their combined prefill impact against the boundary control.')
+    return dict(blocks=[list(block) for block in blocks], requests=3 if read == 65537 else 4,
+        contrasts=[a + '/' + b for a, b in contrasts], prefill_arm=SELECTED[read][0],
+        acceptance='All four paired median prompt/TTFT ratios must be <= 1 in each contrast. '
+                   'Retain first and warmed clocks and every individual process. No speed-based stopping.',
+        scope=scope)
+
+
 def experiment(read, *, boundary_only=False):
     blocks = BOUNDARY_BLOCKS if boundary_only else BLOCKS
-    contrasts = CONTRASTS[:1] if boundary_only else CONTRASTS
+    contrasts = BOUNDARY_CONTRASTS if boundary_only else CONTRASTS
+    plan_protocol = protocol(read, boundary_only=boundary_only)
     order = tuple(arm for block in blocks for arm in block)
     name = 'decode_kv_boundary_preservation' if boundary_only else 'decode_kv_fast_prefill_preservation'
     ctx = basis.core.source.device.load_module('decode_kv_prefill_preservation', basis.core.__file__)
@@ -113,19 +175,10 @@ def experiment(read, *, boundary_only=False):
     ctx.ROOT = bank.B / f'{name.replace("_", "-")}-{read}-v1'
     ctx.KEY = f'{name}_{read}_v1'
     ctx.READS, ctx.ORDER = (read,) * len(order), [(read, 1)] * len(order)
-    ctx.RUNS, ctx.CLEAN_FAST = (3 if read == 65537 else 4), True
+    ctx.RUNS, ctx.CLEAN_FAST = plan_protocol['requests'], True
     ctx.basis, ctx.check_sample = lambda: admission(read, boundary_only=boundary_only), reference.check_sample
     ctx.decision = lambda processes: summarize(read, ctx.RUNS, processes, blocks=blocks, contrasts=contrasts)
     base_save, base_current, base_pins = ctx.save, ctx.current, ctx.pins
-    scope = 'Boundary/retained measures the context fix with scalar KV dispatch fixed.'
-    if not boundary_only:
-        scope += (' Off/boundary measures the built-in KV projection with scalar dispatch fixed. '
-                  'On/off measures cooperative decode KV selection on the same executable.')
-    protocol = dict(blocks=[list(block) for block in blocks], requests=ctx.RUNS,
-        contrasts=[a + '/' + b for a, b in contrasts], prefill_arm=SELECTED[read][0],
-        acceptance='All four paired median prompt/TTFT ratios must be <= 1 in each contrast. '
-                   'Retain first and warmed clocks and every individual process. No speed-based stopping.',
-        scope=scope)
 
     def pins(revision):
         values = base_pins(revision)
@@ -186,12 +239,12 @@ def experiment(read, *, boundary_only=False):
                 native = native_context(row, plan)
                 ctx.write(root / 'plan.json', {k: native[k] for k in ('binary', 'native_validation_probe')})
                 plan['generated']['plan.json'] = bank.sha(root / 'plan.json')
-            row.update(plan=protocol, whole_bytes=len(order) * row['budgets']['total_cap'] + (8 << 20))
+            row.update(plan=plan_protocol, whole_bytes=len(order) * row['budgets']['total_cap'] + (8 << 20))
         base_save(row)
 
     def current(row):
         providers = base_current(row)
-        require(row['plan'] == protocol and row['configuration']['exe'] == str(bank.P / 'tools/sycl/engine_once.py'),
+        require(row['plan'] == plan_protocol and row['configuration']['exe'] == str(bank.P / 'tools/sycl/engine_once.py'),
                 'frozen comparison or supervised launcher differs')
         for index, (plan, arm) in enumerate(zip(row['plans'], order, strict=True)):
             root = ctx.ROOT / str(index)
@@ -223,8 +276,8 @@ if __name__ == '__main__':
     boundary_only = args[:1] == ['boundary']
     length, action = args[1:] if boundary_only else args
     read = int(length)
-    order = BOUNDARY_BLOCKS if boundary_only else BLOCKS
-    case_count = sum(map(len, order))
+    blocks = BOUNDARY_BLOCKS if boundary_only else BLOCKS
+    case_count = sum(map(len, blocks))
     require(sys.executable == basis.reference.model.PYTHON and read in SELECTED
             and action in ('prepare', 'host', *map(str, range(case_count))), 'select one planned comparison stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:

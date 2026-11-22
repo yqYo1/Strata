@@ -21,7 +21,8 @@ PROTOCOL = dict(order=list(ORDER), preservation_lengths=list(preservation.SELECT
     comparison='Three independent off/on, on/off, off/on pairs on the same new executable. '
                'Stock expert ranking, 1256 decode slots and the KV reuse/vec8 selectors chosen at 65K in every process. '
                'Run the official long, six-turn agent and both v5 thinking workloads. Change only decode KV selection.',
-    acceptance='Require both committed long-prefill preservation results, matched body and prefill dispatch, '
+    acceptance='Require both committed boundary and KV prefill preservation results at each length, '
+               'matched body and prefill dispatch, '
                'observed strong/weak MTP classes, and greater TG in two of three pairs with a geometric mean ratio '
                'above one for each sustained workload. Additional fixed-body prefill/TTFT ratios are reported '
                'separately, with a median at most one for preservation. Compare agent preservation only with matched '
@@ -31,7 +32,7 @@ PROTOCOL = dict(order=list(ORDER), preservation_lengths=list(preservation.SELECT
 
 
 def baseline():
-    parent, prior, providers, _ = preservation.admission(READ)
+    boundary, prior, providers, _ = preservation.admission(READ)
     binding = prior['observer_admission']
     native = binding['native_builds']['off']
     reference = bank.previous.read(basis.reference.ROOT / 'record.json')
@@ -48,13 +49,18 @@ def baseline():
     for read, (selected, revision) in preservation.SELECTED.items():
         plan = preservation.experiment(read)
         result = basis.validation.committed(bank.RESULT, (plan.KEY,))
+        boundary_result = preservation.boundary_timing(read, boundary, binding['boundary_control'])
+        boundary_sha = bank.signature(boundary_result)
         decision = preservation.summarize(read, plan.RUNS, result['processes'])
         actual = result['observer_admission']
         require(result['stage'] == 'closed' and result['complete'] and result['passed'] and result['ownership_closed']
-                and not result['active'] and result['decision'] == decision and all(decision['preservation'].values())
-                and result['binary'] == parent['binaries']['strata']
-                and result['native_source_commit'] == parent['native_source_commit']
-                and all(actual[k] == binding[k] for k in ('native_builds', 'decode_KV_handoff_sha256', 'decode_KV_device_sha256'))
+                and not result['active'] and result['plan'] == preservation.protocol(read, boundary_only=False)
+                and result['decision'] == decision and all(decision['preservation'].values())
+                and result['binary'] == boundary['binaries']['strata']
+                and result['native_source_commit'] == boundary['native_source_commit']
+                and actual['boundary_timing_sha256'] == boundary_sha
+                and all(actual[k] == binding[k] for k in (
+                    'native_builds', 'boundary_control', 'decode_KV_handoff_sha256', 'decode_KV_device_sha256'))
                 and (actual['prefill_arm'], actual['prefill_choice_commit']) == (selected, revision)
                 and result['runtime_manifest']['sha256'] == runtime['sha256']
                 and result['model_assets_sha256'] == model_sha
@@ -65,7 +71,7 @@ def baseline():
             arm = 'off' if process['kernel'] == 'on' else process['kernel']
             require(all(process[k] == v for k, v in binding['native_builds'][arm].items()),
                     'prefill result ran a different build')
-        gates[str(read)] = bank.signature(result)
+        gates[str(read)] = dict(boundary=boundary_sha, KV=bank.signature(result))
     return dict(fixed, **native, ordinary_control=binding['ordinary_control'], preservation_sha256=gates)
 
 

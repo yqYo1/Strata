@@ -530,10 +530,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   still needs its own build and device outcomes.
   The build projection recovers the coherent foundation from its original
   receipt and Git sources. Preserve its executables for live comparisons and
-  readers that still validate those bytes. The four-arm timing cohort consumes
-  the original fast-prefill, boundary-control and cooperative generations.
-  Check the other live readers and retire ended generations before opening
-  that cohort. The source reconstruction at `6bbcbf627` reproduced 1171
+  readers that still validate those bytes. The source reconstruction at
+  `6bbcbf627` reproduced 1171
   files for the boundary control and 1172 for the cooperative build. Both
   contain the same two context edits and the unchanged scalar resolver.
   The planned fresh object counts are 137 and 139. The existing model
@@ -560,6 +558,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   three independent matched pairs per length, with first-use and warmed
   prompt time and client TTFT gates kept separate. Both arms use scalar
   decode KV and the same selected prefill configuration at each length.
+  If both timing gates pass, use the boundary control as the prefill
+  reference for the cooperative comparison. Prove the original fast-prefill
+  source and recipe against its executable before retiring it. The build
+  projection and RESTORE admission still need verified readers that can use
+  the retained source evidence after its build output ends.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
@@ -589,11 +592,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   scalar width-one commit and drain of the final cell with zero output.
   The leased server's exact-full protocol and RESTORE remain separate gates.
   Keep expert placement, logical context, resident KV and copy geometry fixed.
-  `bench/sycl/decode_kv_fast_prefill_preservation.py` uses three
-  counterbalanced blocks per length with retained, boundary-only, KV off and
-  KV on. Boundary/retained measures the context fix. Off/boundary measures
-  the executable projection with scalar KV. On/off measures the decode
-  selector in the same executable. Hold the measured prefill selection
+  The cooperative timing uses three counterbalanced blocks per length with
+  the boundary control, KV off and KV on. Off/boundary measures the linked
+  change with scalar KV fixed. On/off measures the decode selector on the
+  same executable. On/boundary measures their combined impact. Bind all
+  three to the earlier paired boundary timing and keep its result separate.
+  Keep a later direct check of the complete change against the retained
+  phase references before adoption. Hold the measured prefill selection
   fixed at KV reuse and vector gather for 65537, and KV reuse with scalar
   gather for 117489. Require the original bodies, read counts, expert work,
   draft counts, and actual decode capture route. Keep first and warmed
