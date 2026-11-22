@@ -402,14 +402,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   widths one, four and four and catch-up widths one and four. The campaign
   stopped at the no-shortening-opportunity check before the candidate arm.
   The server exited zero and ownership closed without a fresh driver fault.
-  The next comparison uses the same native build and an 8209-token fresh
+  The V2 comparison uses the same native build and an 8209-token fresh
   suffix ending in the existing varied-prose task. The pinned model chat
   template renders the suffix with thinking enabled. The shorter resumed
   input has 40978 tokens; the near-capacity one has 262064, allowing 64 output
-  tokens plus 16 spare positions. Each size must expose a rejected
-  nonterminal draft and bind the changed catch-up width to the same fixed
-  request and live restore. Use these diagnostic requests for state evidence
-  and the official suite for timing.
+  tokens plus 16 spare positions. Both matched pairs generated 64 tokens,
+  accepted 36 of 81 drafts and exercised 19 shorter catch-up windows. Each
+  pair reduced MTP K/V catch-up from 105 to 62 rows with matching requests,
+  accepted positions, committed state fingerprints and RAM snapshot checks.
+  All four native processes exited zero with closed ownership and no fresh
+  GPU fault. See `decode_mtp_prefix_restore_v2` in the linked service result.
+  The official suite now supplies the separate throughput comparison.
   Compare off/on at fixed width and identical placement, separately from the
   confidence-floor experiment and the proposed graph-drain change. First trace all four actual
   catch-up widths against verified and accepted counts. Check live draft KV,
