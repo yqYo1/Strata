@@ -6944,6 +6944,24 @@
     }
   },
   "host_dma_cpu_expert_contention_methods_scope": {
+    "factorial_comparison_20261122": {
+      "report_sha256": "ff34c4aa0aa312f9f2ae33fc149287847636f506e765b3bbef0864ffbaaaa919",
+      "review_sha256": "57e155ff40adbd7fd9fe29d47bd765a2335d7f2c86e837c7477b8dd2a61128c5",
+      "worker": "Orca gpt-6-luna medium",
+      "reviewer": "native Codex gpt-6-luna max",
+      "source_commit": "e85cd47aa6524d3c35d78cdbff7804678811333b",
+      "worker_closed": true,
+      "terminal_closed": true,
+      "finding": "Use fixed expert-like reads and H2D traffic in a four-cell factorial comparison. Keep separate buffers and event spans, with an additional serialized-wait control.",
+      "calibration": [
+        "7b5b82c6f1cb3642fed9eea2446202ee760ab0f4:bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json#ram_read_ceiling_v4",
+        "a0404d96e50ac17a9fd05e131ef90bc4188b294e:bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json#prefill_copy_engine_v6"
+      ],
+      "limits": "The calibrations measure isolated requested work. The 1/16 production comparison changed generated work. Physical traffic and AMD DF counter availability on this CPU remain unverified.",
+      "schedulable_now": false,
+      "next_check": "Require an actual route receipt with independent H2D and CPU expert reads overlapping on the token critical path. Commit a fixed-work factorial plan before testing.",
+      "retention": "This entry retains the incremental test design. Review the duplicate report and temporary control captures for retirement at a serialized boundary."
+    },
     "id": "host-dma-cpu-expert-contention-methods-20261021",
     "classification": "knowledge collection",
     "status": "native_reviewed_conditional_reference",
@@ -39093,5 +39111,37 @@
     "correction": "The existing T2/T4 planner fixture has 5120 resident slots, 65536 logical blocks, synthetic disjoint selections and combined resolver/copy timing for zero/quarter/all misses. Any new comparison should cover actual overlap/cardinality or resolve the stage service. Eviction-policy changes have separate state semantics.",
     "consumer": "Retrieve only after actual decode route evidence places resolver service on a consequential critical path. Pin exact external commit and file notices before any source adaptation.",
     "retention": "Review input mirrors and temporary task transactions at the next serialized measurement boundary."
+  },
+  "prefill-file-page-in-first-use-20261122": {
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-file-page-in-first-use-20261122/report.md",
+    "report_sha256": "9cab0dade0f10ba85933f9e8ee11084f39e18e1fb1240d99c8c67677cb7d5e00",
+    "review_sha256": "57e155ff40adbd7fd9fe29d47bd765a2335d7f2c86e837c7477b8dd2a61128c5",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "source_commit": "e85cd47aa6524d3c35d78cdbff7804678811333b",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "finding": "File-backed expert page residency, async population and exposed waits require separate evidence from direct PLE, JIT and allocation. Retrieve for a scoped file-backed first-use question.",
+    "next_check": "Pin the active file-backed route and exact ranges. Use a bounded cold-state plan that preserves the other applications and the system cache.",
+    "retention": "Keep the reusable methods and primary sources through the first file-backed attribution decision."
+  },
+  "ple-direct-read-service-20261122": {
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ple-direct-read-service-20261122/report.md",
+    "report_sha256": "de273fd41174cf224c48eb51fe4a7cac610ed4bd33cb05bf4bb3c3eef58b1166",
+    "review_sha256": "774a6dcd332df2e039976be85dca34b1e10858114eb640e4739998453d72e577",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "source_commit": "2a03c5c212e1109d33ad8ecb61149859f2604cc9",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "classification": "decision support",
+    "schedulable_now": false,
+    "native_source_commit": "9d8def424975aafce38e684cd718655e579807fd",
+    "finding": "The measured route uses default PLE Direct I/O. Reader statistics are cumulative. The workload backlog cap and the Linux pread worker count are independent settings.",
+    "current_route": "Layer-major run_impl calls gather_batch asynchronously in the layer-1 slice. Its ms_ple accumulator includes the exposed future wait, upload scheduling and GPU work submission.",
+    "next_check": "Prepare an interval-scoped PP attribution plan with original source, request timing boundaries and an observer overhead control. Select a queue-depth change only with consequential exposed wait.",
+    "consumer": "Retrieve for the next serialized PLE attribution decision. Retain the report through that decision."
   }
 }
