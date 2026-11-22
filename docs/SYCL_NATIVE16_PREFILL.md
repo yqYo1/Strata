@@ -580,9 +580,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the original unit directory as a quoted include directory. Substitute
   syntax-only mode and a private dependency file for the object output.
   Verify that every dependency matches the recorded compile or external
-  inputs, with the private translation unit as the sole overlay. After a
-  native build, bind the records to request boundaries and measure observer
-  overhead with the same executable.
+  inputs, with the private translation unit as the sole overlay. The check
+  passed with 799 verified dependencies, overlay SHA-256
+  `903bc778ffbad603014a6e173d9fe3908b4f42534832185ccdf3612a61e1bbf9`
+  and compile database SHA-256
+  `36c68b081b50699928315c206928b12f1485c5a11525e08ddd7664cace4e73c5`.
+  After a native build, bind the records to request boundaries and measure
+  observer overhead with the same executable.
   Run the independent 117489-token comparison with
   `decode_kv_fast_prefill_preservation.py boundary`. Keep three matched
   pairs and separate first-use and warmed prompt time and client TTFT.
