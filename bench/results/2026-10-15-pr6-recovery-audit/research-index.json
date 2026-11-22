@@ -38941,7 +38941,22 @@
     "finding": "The verifier optionally coalesces KV resolution before attention. The attention kernel consumes per-query IDs and valid counts with separate K and V scales for INT8.",
     "correction": "Account for the actual resolver mode and per-row count producer before estimating reuse. GPU-reach wait includes other work.",
     "consumer": "Use when selecting a decode attention experiment after measuring direct service and exact overlap in valid physical pages and slots.",
-    "next_review": "Reconsider shared tiles if measured overlap is substantial. Check per-query masks, terminal tails and physical context capacity."
+    "next_review": "Reconsider shared tiles if measured overlap is substantial. Check per-query masks, terminal tails and physical context capacity.",
+    "review_stream_retirement": {
+      "reason": "Both review scopes are terminal. The timeout receipt and verified replacement digest retain the outcome, so the raw event streams have no remaining consumer.",
+      "files": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-qsa-and-dflash2-payoff-review-20261122-control/review-events.jsonl",
+          "sha256": "03b12dfaddf27ab99459114a24db3bbc4ccd62805da083bcf48b3dbbab3ce159",
+          "bytes": 436396
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-qsa-and-dflash2-payoff-review-v2-20261122-control/review-events.jsonl",
+          "sha256": "e975fb96362ca3a4d92ccc6d3ac7fc9401c4a2ccbda7d71976e6ac98aeacdb24",
+          "bytes": 264788
+        }
+      ]
+    }
   },
   "dflash2-mtp-bounded-gain-20261122": {
     "source_commit": "a09e08c78ca5565c48d027340108e4256365fe62",
@@ -38957,5 +38972,32 @@
     "finding": "DFlash2 requires a native target head and rejects the sole-packed head used in the retained MTP4 comparison. The existing bounds cover verifier time alone.",
     "consumer": "Retrieve for a measured common-head, width-four comparison once both drafts fit with the same target, KV and scratch placement.",
     "next_review": "After allocation admission, compare full request time, draft cost and actual outputs per window with matched target placement."
+  },
+  "dflash2-common-head-placement-20261122": {
+    "source_commit": "d9c4664ffc192c1d892065f8092c71b7f6dcf1b1",
+    "native_source_commit": "178d53212581cc5d11a0e80d8991e9fda3aaa339",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-common-head-placement-20261122/report.md",
+    "report_sha256": "bb5d254515fdfe87cb5f4d4d5463ce503a5552d86dd6dc008cb4b917627af54e",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-common-head-placement-20261122/review-digest.md",
+    "review_sha256": "f517bbd7efd99a64566ce4a894831e3d0d8a12655bc358c29898593774033836",
+    "worker": "Orca gpt-6-luna medium, task_3f9923f042a5, ctx_d8dfac60d00b. Verified compiled-source inputs, worker filesystem and IPC checks, completion acknowledgment and scoped exit.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "classification": "decision_support",
+    "stage": "native_reviewed_hold",
+    "schedulable_now": false,
+    "finding": "Both common head modes keep one 521472000-byte canonical Q6_K target head with the same Q8_1 scratch. Mode 1 changes the compute route. The existing MTP reference uses sole-packed mode 2 and neither its timing nor the old 256-slot DFlash2 free-memory reading provides matched admission.",
+    "correction": "Include DFlash2's persistent dvocab_ allocation at 4 bytes per draft vocabulary entry. The earlier gather IDs have a separate lifetime.",
+    "consumer": "Prepare matching mode-0, width-four allocation checks for the same target, 1256 expert slots, 20480 resident K8V8 cells, ordinary 8192-token prefill and the same head release policy.",
+    "next_review": "After both arms report startup, head restore, verifier/tap and graph high-water use and pass physical context admission. Fit and speed remain unmeasured at these common settings.",
+    "review_stream_retirement": {
+      "reason": "The completed reviewer produced a verified digest. The routine event stream has no subsequent reader.",
+      "files": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-common-head-placement-20261122-control/review-events.jsonl",
+          "sha256": "4bdc1d64b105228bf16e3aed1c833f834a53c748a513ec5741016106d5fdcfac",
+          "bytes": 315239
+        }
+      ]
+    }
   }
 }
