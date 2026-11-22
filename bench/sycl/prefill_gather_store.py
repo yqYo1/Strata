@@ -163,8 +163,8 @@ def decision(processes, order, read, traced):
                 model_qualified=False, adopted=False)
 
 
-def experiment(read, traced):
-    order = ADMISSION_ORDER if traced else TIMING_ORDER
+def experiment(read, traced, *, timing_order=TIMING_ORDER):
+    order = ADMISSION_ORDER if traced else timing_order
     runs = 2 if traced else (3 if read == 65537 else 4)
     ctx = basis.core.source.device.load_module('gather_store_comparison', basis.core.__file__)
     ctx.THIS, ctx.KEY = THIS, key_for(read, traced)
