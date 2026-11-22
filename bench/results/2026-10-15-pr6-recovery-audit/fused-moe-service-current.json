@@ -598699,7 +598699,7 @@
     "error": "RuntimeError('incomplete actual AOT/host link inputs')"
   },
   "prefill_mapped_gu_a_v4": {
-    "stage": "checked",
+    "stage": "failed",
     "controller": {
       "revision": "b7ad8db8a0bd9635039492a92a1114ad90abfc98",
       "sha256": "56788b9902dfbb358ae6e63d7d884c376b95638a1256c9b978d4ab30506fc7c5"
@@ -598912,6 +598912,38 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "stage": "smoke",
+        "environment_sha256": "bc6ab43f89a374bb0d1d08c0fc0bff7c9de60d799df60c20223cfd82c09813df",
+        "gpu": true,
+        "completed_cases": 2,
+        "compared_device_words": 61440,
+        "validation": {
+          "pid": 2470798,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "error": "RuntimeError('unexpected runtime validation message')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     ],
     "active": false,
