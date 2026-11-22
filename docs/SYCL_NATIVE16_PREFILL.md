@@ -1171,6 +1171,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   after committing and pushing the result. The verified root contained 25 files and
   1285631 bytes, with sorted path/size/SHA-256 digest
   `c546e8d5ad7ae333cfe22420edb2afa647250fb275fcdedc6b2a2884eedee5df`.
+  `bench/sycl/prefill_split_upload_build.py` recovers the qualified boundary
+  image from its Git receipts and the retained fast-prefill build. It applies
+  the two verified upload deltas, including the exact expert-bank fixture.
+  Keep the separate phase references. Retire the superseded boundary-only
+  build after verifying its original source and recipe and closing its live
+  comparisons. Preserve the physical-context receipt and original build
+  identity for any later boundary or cooperative-KV comparison. The successor
+  uses a fresh build of the engine and the same twelve targets.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
   Use three independent blocks in demand/batched/coalesced,
   batched/coalesced/demand and coalesced/demand/batched order on the
