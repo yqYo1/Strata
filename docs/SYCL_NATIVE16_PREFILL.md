@@ -1193,6 +1193,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-boundary-native-v1`
   with sorted path/size/SHA-256 digest
   `63828d6c4a704f45ee5016c06479b73d7267d3bf447b8c73097944bcf190fd76`.
+  The closed 117489-token comparison capture
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-boundary-preservation-117489-v1`
+  was also retired. Its 426 files total 63,788,821 bytes. The sorted file inventory
+  has SHA-256 `14923b49699761b6f760ca05db3172e318f0d9e02ebda10a4dfa0bab3c5173e8`.
+  All 24 original samples, source identities and decisions match the reachable
+  `7c88fb012` receipt. The live readers consume Git evidence.
   Preserve the committed physical-context and speed receipts. The first
   successor preparation at `6b0ab53d5` found that the shared builder's legacy
   decode reference pointed at the retired phase-naming executable. It stopped
