@@ -1130,8 +1130,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   transfer and prompt times require measurement.
   Project this unit alone onto the exact boundary source. Apply the commit
   delta to the three prefill files and use the pinned syntax recipe for the
-  prefill translation unit and its two local include overlays. Compare the
-  full dependency hashes. Before long timing, check multi-batch slot reuse
+  prefill translation unit and its two local include overlays. The
+  `b17cced78` syntax check on `9d8def424` passed with 799 verified compiler
+  inputs. The overlay hashes in translation-unit, MoE and layer-major order
+  are `b9d49202dbdd4f1d0135af0faf4c6038d12a4f1d2f58c79181bfdac54cc6ed9b`,
+  `131e66d4dc3580e7e851bf11bc5948d5c9bda35852f33e42953b0bad40b3edc3` and
+  `69ebdcfac4e799dddb27cd208dcde998b3d76fa8e14cac66ae57851625701277`.
+  Before long timing, check multi-batch slot reuse
   with distinct packed bytes, holes, a final short group and checked
   cancellation, then verify real route, outputs and decode cache restoration.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
