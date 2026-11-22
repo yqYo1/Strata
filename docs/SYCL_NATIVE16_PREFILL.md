@@ -1288,59 +1288,39 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep direct output for further split-prefill tuning. Its median warmed
   prompt still needs 0.669 fewer seconds for 1000 tok/s. Final-slot, RESTORE
   and sustained decode qualification remain open on this composition.
-  The same large expert jobs write 248.72–249.06 GiB of logical FP16 gather
-  output per request. Check the existing `prefill_mapped_gu_a.py` witness
-  on the retained `fde0cdd11` build before comparing alternate GU readers.
-  Its three input files match the original probe base. The next throughput
-  comparison needs the complete gather-to-SwiGLU interval to account for
-  repeated mapped loads alongside saved writes.
-  The original refusals remain in Git: sibling-header lookup `40544a62c`,
-  final-link artifact cap `5e723ea98`, link-input trace `cc1f45563` and the
-  intentional pre-main UR canary `117277096`. The current build preserves the
-  retained header lookup, gives the build 384 MiB for compiler artifacts, checks
-  38 persistent link inputs and six driver host slices, and uses the shared
-  strict canary check with an empty validation log. Its executable hash matches
-  the fourth build.
-  The witness closed at `b30fb35e4`. All 22 host layout cases and 26 GPU cases
-  passed. The traced three-row cases verified 61440 FP16 words. The later
-  24 cases verified 6979584 words with both tile layouts, ragged tails,
-  invalid row endpoints and unchanged source guards. All three owners exited
-  normally with no fresh GPU fault. Use this coordinate proof for a matched
-  gather-to-SwiGLU comparison. Keep the weights, B loading, accumulation,
-  activation and output checks fixed when changing the A input path.
-  Retired `prefill-mapped-gu-a-v1` through `-v4` and the current `-v5`
-  cache, compile, layout, smoke, tmp and validate directories from the shared
-  state root. The original receipts and recipes match the pushed commits above.
-  The 311 removed files total 144007761 bytes with inventory SHA-256
-  `e3660a584291ccd38a02fee4680be4f3f7efd190471c6b36bd243cf0967d5588`.
-  The timing plan at `acd92cd6f` verifies the historical witness in Git
-  without reading its local build. Recovered the exact `19999c6c1d` source,
-  recipe, compiler dependencies and linked inputs for the remaining
-  `prefill-mapped-gu-a-v5` directory. Its 11 files total 17,585,737 bytes
-  with inventory SHA-256
-  `294297ef66e219adeb22f3b2fbf67f404558ffb0294358b769a2c9e2495e8cac`.
-  The witness directory has no remaining executable consumer.
-  The complete mapped GU component closed its correctness plan at
-  `6b2a56899` using source `038e008a3`. The rebuilt fragment witness
-  passed 22 host and 26 GPU cases. The operator passed 12 GPU cases covering
-  41,322 expert rows across one and two input banks, both tiles, padded
-  tails, and invalid source endpoints. The scalar gather plus the existing
-  native GU adapter and the mapped read produced identical BF16 captures
-  and FP16 outputs. Sticky status, guards, immutable inputs, normal exits,
-  and fresh-fault checks passed.
-  Compare the complete scalar-gather-plus-GU and mapped-GU intervals for
-  the wide tile next. Keep the weight, bank layout and DPAS geometry fixed
-  across each pair. Repeat with clustered and spread source rows at the
-  production large-job sizes. The component has no timing or model
-  qualification yet. The next comparison needs the operator build and its
-  committed correctness evidence. The timing fixture relinks the original
-  operator objects with the committed timing driver.
-  Retired the closed operator's raw directories `cache`, `compile`, `layout`,
-  `smoke`, `tmp`, `validate`, `witness-smoke`, and `witness-validate`
-  after verifying the pushed evidence and retained comparison build. The
-  compact result retains the validated cases and link inputs. The 40 removed files
-  total 1,320,049 bytes with inventory SHA-256
-  `892b219e8f017b590293f24d90277af01270ae18eda619098db403a5ed27d21d`.
+  The large expert jobs on this route write 248.72–249.06 GiB of logical
+  FP16 gather output per request. The mapped GU experiment read the source
+  directly into DPAS fragments. The witness at `b30fb35e4` and the complete
+  operator at `6b2a56899` verified bit-identical BF16 and FP16 output,
+  bounds, guards and sticky status. Their exact sources and outcomes remain
+  recoverable from those commits. Historical refusals remain at
+  `40544a62c`, `5e723ea98`, `cc1f45563` and `117277096`.
+  The clean timing comparison at `0f1c4d7c5` uses the linked fixture from
+  `54a5e64c4`, reusing the qualified operator objects. Three independent
+  children closed 108 matched pairs with exact output and no fresh GPU
+  faults. Five conditions pass the timer and batch gates. Their median
+  mapped/gathered time ratios range from 8.328 to 8.934. Every eligible pair
+  favors scalar gather plus native fused GU. The 8192-row spread condition
+  has six sub-100 ms batches in the third process and remains ineligible.
+  The 8192-row clustered condition takes 1.213 ms with gather and 10.096 ms
+  with mapped reads. The trial measures complete operator wall time; actual
+  VRAM traffic and device-only service remain unknown. Keep the gathered
+  production path. This comparison admits no mapped shape for model review.
+  Retire the guarded prototype, its CMake option and the standalone controller.
+  The original sources, commands and individual samples remain reachable.
+  No later stage consumes these fixtures. The exact recovered deletion
+  inventories in the shared state directory are:
+
+  | Root | Files | Bytes | Inventory SHA-256 |
+  | --- | ---: | ---: | --- |
+  | `prefill-mapped-gu-a-v5` (retired) | 11 | 17585737 | `294297ef66e219adeb22f3b2fbf67f404558ffb0294358b769a2c9e2495e8cac` |
+  | `prefill-mapped-gu-operator-v1` | 11 | 18513739 | `215e7f265b0f79e2205661595bdc6411c2d8be49cbe180dfa7d1a88d15871654` |
+  | `prefill-mapped-gu-timing-v1` | 38 | 19309485 | `f0638a381f79fe1181ce732f4dd8fc3239a683aef6ad743f5fef9254059104dc` |
+
+  Advance the measured 65537-token combination to the ordinary
+  generation suite using the retained production executable. After that
+  validation, review direct attention output and native gather variants
+  against the winning prefill composition as separate changes.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
