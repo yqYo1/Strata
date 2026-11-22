@@ -365,8 +365,11 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     const auto& format = layout.fmt[size_t(layer)];
     detail::PrefillFullfitUploadReceipt eager_upload;
     const bool use_prefix_upload = owner.prefix_expert_upload != PrefillPrefixExpertUpload::off;
-    const auto split_upload = split_accumulator ? split_prefill_expert_upload() :
-                                                 SplitPrefillExpertUpload::demand;
+    // Keep the batch experiment within the 128-slot split workspace.
+    const bool split_upload_eligible = split_accumulator && !relocated_job_buffers &&
+        owner.expert_slots && owner.expert_slots->slots() == 128;
+    const auto split_upload = split_upload_eligible ? split_prefill_expert_upload() :
+                                                      SplitPrefillExpertUpload::demand;
     const bool batch_upload = split_upload != SplitPrefillExpertUpload::demand;
     const uint64_t blob_bytes = layout.blob_bytes(layer);
     uint8_t* batch_device = nullptr;
