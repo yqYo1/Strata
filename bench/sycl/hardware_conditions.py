@@ -191,3 +191,9 @@ def summarize(records, begin, end):
         reader_wall_sum_ms=sum(s['end_monotonic_ns']-s['begin_monotonic_ns'] for s in samples)/1e6,
         clean_speed_qualified=False,cpu_effective_frequency_qualified=False,hardware_saturation_qualified=False,
         limits='Wholly contained read spans;serial global samples are not device-stage clocks or exclusive model demand. Zero GPU frequency retained separately. Read span cost is not a causal observer-overhead bound;CPU reported frequency is not APERF/MPERF.')
+
+
+if __name__ == '__main__':
+    from client_resources import main
+
+    raise SystemExit(main(include_conditions=True))

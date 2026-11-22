@@ -1372,7 +1372,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   process to sample GT clocks, throttle signals, PCI link state, reported
   CPU frequency, scheduled CPU time and host pressure before first output.
   Run it at 117489 to characterize the selected route near the throughput
-  target. Model observation and the observer-cost screen remain pending.
+  target. The first preparation stopped before launch because the benchmark
+  and observer controller derived different startup environments. The V2
+  observer enables measurement at its own entry point, with the same
+  validated inference environment in all three cases. Model observation
+  and the observer-cost screen remain pending.
   The same-build standalone KV trial passed the final slot at 262144 with
   114688 GPU rows, 147455 host rows and one terminal commit. Its mixed
   scratch bytes were zero. Carry this result as final-slot evidence for

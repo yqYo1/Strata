@@ -12,9 +12,9 @@ import prefill_gather_store as store
 
 bank, basis, require = store.bank, store.basis, store.require
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-READER = Path(client_resources.__file__).resolve()
+READER = Path(hardware_conditions.__file__).resolve()
 SOURCES = (THIS, str(READER.relative_to(bank.P)),
-           str(Path(hardware_conditions.__file__).resolve().relative_to(bank.P)))
+           str(Path(client_resources.__file__).resolve().relative_to(bank.P)))
 DEFAULT_READ = 65537
 ORDER = ('clean', 'observed', 'clean')
 MAX_RATIO = 1.05
@@ -85,10 +85,10 @@ def decision(processes):
 def experiment(read):
     # Keep the copy arm fixed. Only the middle native wrapper spawns a reader.
     ctx = store.experiment(read, False, timing_order=(False,) * len(ORDER))
-    key = f'prefill_gather_conditions_{read}_v1'
+    key = f'prefill_gather_conditions_{read}_v2'
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.decision = bank.B / key.replace('_', '-'), key, THIS, decision
     plan = dict(PLAN, read=read, requests=ctx.RUNS)
-    pin_sources, store_environment, store_save = ctx.pins, ctx.environment, ctx.save
+    pin_sources, store_save = ctx.pins, ctx.save
     store_current, store_native, store_work = ctx.current, ctx.native_context, ctx.after_execution
 
     def pins(revision):
@@ -98,9 +98,6 @@ def experiment(read):
             require((bank.P / path).read_bytes() == original, 'changed condition source: ' + path)
             sources[path] = bank.sha(bank.P / path)
         return sources
-
-    def environment(row, case):
-        return dict(store_environment(row, case), STRATA_RESOURCE_CONDITIONS='1')
 
     def collection(sources):
         return dict(source=dict(path=str(READER), sha256=sources[SOURCES[1]]),
@@ -139,7 +136,7 @@ def experiment(read):
             outcome['clean_speed'] = False
             outcome['conditions'] = summarize(Path(case['root']), outcome, row['boot'])
 
-    ctx.pins, ctx.environment, ctx.save, ctx.current = pins, environment, save, current
+    ctx.pins, ctx.save, ctx.current = pins, save, current
     ctx.native_context, ctx.after_execution = native_context, after_execution
     return ctx
 
