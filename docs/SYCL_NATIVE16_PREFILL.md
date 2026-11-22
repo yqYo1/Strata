@@ -1468,6 +1468,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   103,809,024 bytes with aligned reuse. These counts follow from the twelve
   QSA layers reading 98304 preceding cells at 1056 bytes per cell, with only
   the final layer reloading when reuse is enabled.
+  The retained build's compiled planner allows 90113–117488 batched rows
+  for this split. All seven lengths also clear the expert bank's short-tail
+  guard. With `n = input_tokens - 1`, the fixed byte requirement is
+  `20480*n + 10240*(n - 65536) + 2056*round_up(n, 4) + 877658624`.
+  The constant includes the 128-slot bank, headroom, score status and
+  accumulator guard. The requirement rises from 3,294,331,392 bytes at
+  94209 inputs to 4,057,356,672 at 117489, matching the latter's traced
+  admission. Between 98305 and 98306 it rises by only 38,944 bytes while
+  the number of prefill chunks and prefix copies steps up. Check observed
+  free bytes, split placement and the arena tail for each measured length.
   Take each length in two independent processes in reverse orders, with the
   first request and the median of two subsequent fresh requests separate.
   Compare affine, quadratic and n log n fits to prefill time and client TTFT
@@ -1693,6 +1703,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   executable passed the existing lease/order tests and every input length
   from 98305 through 262144 using 267 verified compiler inputs. This
   leaves actual sweep dispatch, model state and timing open.
+  The retained KV/gather engine compiled the ordinary scheduler from the
+  projected `src/prefill/layer_major.inc` recorded as `8e6447663df0`.
+  The branch tree at `fde0cdd11` already contains the sweep selector. Use a
+  fresh coherent projection of `0e7cf8107` for the sweep comparison and
+  verify those actual compiler inputs before launch.
   The clean comparison at `9c03b44d0` completed three independent
   processes with the same ordinary copy route, decoder placement, 262144
   context and four historical thinking-on requests. The last three prompt
