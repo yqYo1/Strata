@@ -1533,6 +1533,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   remains unknown. Candidate code/prose requested copies are129390259200/
   404578022400bytes per process,not measured bus traffic or saturation.
 
+  Retain the coherent `14508acbf` decode reference for the next verifier
+  comparison. The v5 code and prose bodies, actual read and generated counts,
+  and draft counts match the MTP prefix control at `da3fc94fc`. The model
+  assets, boot, driver and runtime manifest also match. The coherent suite
+  runs the two long requests directly after four warmups. The MTP prefix
+  suite runs chat, prefill and agent requests before long generation, on a
+  different native revision. The coherent reference uses `ARENA_COPY=1`
+  with `--pcie-frac 0` and records zero submitted expert-miss blobs in both
+  workloads. Requalify the decode reference with identical preceding work,
+  phase settings and the required context-boundary checks when choosing the
+  next verifier candidate.
+
   V1's host-state mutation refusal and V2's missing presence-enabled callback
   failure remain failed in their original evidence. V3prospectively separates
   short warmup observations from the strict long read-1cells/8192chunk contract;
