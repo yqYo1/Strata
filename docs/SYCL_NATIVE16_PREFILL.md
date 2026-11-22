@@ -507,9 +507,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   On both bases, the resulting hashes start `243078ea8c` and `81fe4b074a`.
   Applying that patch before or after the six-file KV projection produces
   identical bytes for all nine checked paths, including the unchanged scalar
-  resolver. The MTP shortening change stays independent. After the reference
-  replay selects a base, qualify its boundary-only recipe first. The fast
-  prefill builder exposes `prepare-boundary`, `configure-boundary` and
+  resolver. The MTP shortening change stays independent. Qualify the
+  boundary-only recipe first. The fast prefill builder exposes
+  `prepare-boundary`, `configure-boundary` and
   `compile-boundary` for the two-file control on `fde0cdd11`. Its ordinary
   `prepare` requires that committed build and its completed boundary checks,
   then adds the KV layer. In `bench/sycl/decode_kv_fast_prefill_capacity.py`,
@@ -538,8 +538,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   contain the same two context edits and the unchanged scalar resolver.
   The planned fresh object counts are 137 and 139. The existing model
   admission still reaches `coherent_inputs` and `stock.check_build`, which
-  validate the original composed image and its retained inputs. Close the
-  frozen replay and cache cohorts before migrating those live readers.
+  validate the original composed image and its retained inputs. The replay
+  and cache cohorts have ended. Check the remaining live readers before
+  retiring an old build or opening the next timing cohort.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
@@ -1111,6 +1112,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   117.096/116.198/117.558 s. All six requests read 117489 fresh tokens and
   match output and draft counts. The 1.174 s first-long TTFT saving with
   the full seed is one block of the three-block decision.
+  The eighth process refused at prelaunch before opening a native owner.
+  The only differing control was `AGENTS.md` from the older gather build.
+  All seven completed processes and the original plan are preserved at
+  `1acdbbbe7`. Closed gather build admission now recovers its pinned control
+  bytes from the original commit and verifies the actual build as before.
+  A fresh cache comparison needs a separate committed plan.
   After the 117489-token four-arm comparison closes, use `bench/sycl/prefill_split_length_curve.py` on its
   fastest eligible arm with the same executable and actual 128-slot placement.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the

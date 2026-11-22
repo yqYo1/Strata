@@ -112,9 +112,17 @@ def check_build(row, committed=True):
     if committed:
         bank.require(bank.basis.validation.committed(bank.RESULT, (KEY,)) == bank.builder.compact(row),
                      'commit the exact preceding build stage')
+    controls = row['controller_sources']
+    if committed and row['stage'] == 'built':
+        # The original build used the recorded controller and policy bytes.
+        # New measurements still pin their own current controller inputs.
+        original = bank.stage.source.blobs(bank.P, row['source_commit'], controls)
+        checked = bank.stage.hashed(dict(original))
+    else:
+        checked = bank.stage.source.pin(bank.P, list(controls))['source_sha256']
+    bank.require(controls == checked, 'the recorded gather build controller inputs changed')
     native, foundation, source, recipe, projection = build_inputs(row['foundation'])
-    pins = bank.stage.source.pin(bank.P, list(row['controller_sources']))
-    bank.require(row['controller_sources'] == pins['source_sha256'] and row['projection'] == projection
+    bank.require(row['projection'] == projection
                  and row['native_source_commit'] == DISPATCH_COUNTS and row['parent_evidence'] == EVIDENCE
                  and row['foundation'] == foundation and row['external_inputs'] == native['external_inputs']
                  and row['driver'] == bank.builder.guards.driver_guard() and row['recipe'] == recipe
