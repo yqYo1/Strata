@@ -1306,14 +1306,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with mapped reads. The trial measures complete operator wall time; actual
   VRAM traffic and device-only service remain unknown. Keep the gathered
   production path. This comparison admits no mapped shape for model review.
-  Retire the guarded prototype, its CMake option and the standalone controller.
+  Retired the guarded prototype, its CMake option and the standalone controller.
   The original sources, commands and individual samples remain reachable.
-  No later stage consumes these fixtures. The exact recovered deletion
+  No later stage consumes these fixtures. The verified deletion
   inventories in the shared state directory are:
 
   | Root | Files | Bytes | Inventory SHA-256 |
   | --- | ---: | ---: | --- |
-  | `prefill-mapped-gu-a-v5` (retired) | 11 | 17585737 | `294297ef66e219adeb22f3b2fbf67f404558ffb0294358b769a2c9e2495e8cac` |
+  | `prefill-mapped-gu-a-v5` | 11 | 17585737 | `294297ef66e219adeb22f3b2fbf67f404558ffb0294358b769a2c9e2495e8cac` |
   | `prefill-mapped-gu-operator-v1` | 11 | 18513739 | `215e7f265b0f79e2205661595bdc6411c2d8be49cbe180dfa7d1a88d15871654` |
   | `prefill-mapped-gu-timing-v1` | 38 | 19309485 | `f0638a381f79fe1181ce732f4dd8fc3239a683aef6ad743f5fef9254059104dc` |
 
