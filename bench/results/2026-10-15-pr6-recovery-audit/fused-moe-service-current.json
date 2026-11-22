@@ -612580,6 +612580,2715 @@
         },
         "passed": true,
         "direct_output": false
+      },
+      {
+        "index": 1,
+        "read": 117489,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/strata",
+          "sha256": "85e3f202ef99661d52c03a17a8b609b8a8a44e9f584bfa8fc1a5c1c3d51aea7c",
+          "bytes": 26541640
+        },
+        "native_source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+        "native_identity": {
+          "pid": 3271054,
+          "start_ticks": 373852443,
+          "sid": 3270879
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3271054,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 117488,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 117488,
+              "residual_gpu_rows": 117488,
+              "residual_gpu_bytes": 2406154240,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 23816,
+              "fused_down_jobs": 7441,
+              "maximum_window_rows": 117488,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38540800000,
+              "requested_dequant_H2D_bytes": 225576960,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 7441,
+                "fused_rows": 52231136,
+                "separate_jobs": 16375
+              },
+              "down": {
+                "fused_jobs": 7441,
+                "fused_rows": 52231136,
+                "separate_jobs": 16375
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 23816,
+              "windows": 48,
+              "dequants": 18878,
+              "maximum_physical_window_rows": 117488,
+              "requested_source_map_bytes": 225576960,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "attention_store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 115495403520,
+              "gpu_rows": 117488,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 117488
+            },
+            "attention_input": {
+              "eligible": 690,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 110683095040,
+              "checked_layers": 0
+            },
+            "kv": {
+              "reloaded_pages": 215040,
+              "reused_pages": 2365440
+            },
+            "gather": {
+              "jobs": 23816,
+              "eligible_jobs": 7441,
+              "eligible_rows": 52231136
+            },
+            "admission": {
+              "active": 1,
+              "rows": 117488,
+              "extra_allocation_bytes": 531988736,
+              "prefill_slots": 128,
+              "gpu_prefix_rows": 117488,
+              "free_gpu_bytes": 4245647360,
+              "fixed_including_headroom_bytes": 4057356672,
+              "shared_arena_bytes": 1180698624
+            }
+          },
+          {
+            "rows": 117488,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 117488,
+              "residual_gpu_rows": 117488,
+              "residual_gpu_bytes": 2406154240,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 23840,
+              "fused_down_jobs": 7434,
+              "maximum_window_rows": 117488,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38589209600,
+              "requested_dequant_H2D_bytes": 225576960,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 7434,
+                "fused_rows": 52222161,
+                "separate_jobs": 16406
+              },
+              "down": {
+                "fused_jobs": 7434,
+                "fused_rows": 52222161,
+                "separate_jobs": 16406
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 23840,
+              "windows": 48,
+              "dequants": 18900,
+              "maximum_physical_window_rows": 117488,
+              "requested_source_map_bytes": 225576960,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "attention_store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 115495403520,
+              "gpu_rows": 117488,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 117488
+            },
+            "attention_input": {
+              "eligible": 690,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 110683095040,
+              "checked_layers": 0
+            },
+            "kv": {
+              "reloaded_pages": 215040,
+              "reused_pages": 2365440
+            },
+            "gather": {
+              "jobs": 23840,
+              "eligible_jobs": 7434,
+              "eligible_rows": 52222161
+            },
+            "admission": {
+              "active": 1,
+              "rows": 117488,
+              "extra_allocation_bytes": 531988736,
+              "prefill_slots": 128,
+              "gpu_prefix_rows": 117488,
+              "free_gpu_bytes": 4262002688,
+              "fixed_including_headroom_bytes": 4057356672,
+              "shared_arena_bytes": 1180698624
+            }
+          },
+          {
+            "rows": 117488,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 117488,
+              "residual_gpu_rows": 117488,
+              "residual_gpu_bytes": 2406154240,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 23820,
+              "fused_down_jobs": 7423,
+              "maximum_window_rows": 117488,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38507443200,
+              "requested_dequant_H2D_bytes": 225576960,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 7423,
+                "fused_rows": 52160499,
+                "separate_jobs": 16397
+              },
+              "down": {
+                "fused_jobs": 7423,
+                "fused_rows": 52160499,
+                "separate_jobs": 16397
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 23820,
+              "windows": 48,
+              "dequants": 18860,
+              "maximum_physical_window_rows": 117488,
+              "requested_source_map_bytes": 225576960,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "attention_store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 115495403520,
+              "gpu_rows": 117488,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 117488
+            },
+            "attention_input": {
+              "eligible": 690,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 110683095040,
+              "checked_layers": 0
+            },
+            "kv": {
+              "reloaded_pages": 215040,
+              "reused_pages": 2365440
+            },
+            "gather": {
+              "jobs": 23820,
+              "eligible_jobs": 7423,
+              "eligible_rows": 52160499
+            },
+            "admission": {
+              "active": 1,
+              "rows": 117488,
+              "extra_allocation_bytes": 531988736,
+              "prefill_slots": 128,
+              "gpu_prefix_rows": 117488,
+              "free_gpu_bytes": 4261998592,
+              "fixed_including_headroom_bytes": 4057356672,
+              "shared_arena_bytes": 1180698624
+            }
+          },
+          {
+            "rows": 117488,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 117488,
+              "residual_gpu_rows": 117488,
+              "residual_gpu_bytes": 2406154240,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 23841,
+              "fused_down_jobs": 7433,
+              "maximum_window_rows": 117488,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38540748800,
+              "requested_dequant_H2D_bytes": 225576960,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 7433,
+                "fused_rows": 52191519,
+                "separate_jobs": 16408
+              },
+              "down": {
+                "fused_jobs": 7433,
+                "fused_rows": 52191519,
+                "separate_jobs": 16408
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 23841,
+              "windows": 48,
+              "dequants": 18877,
+              "maximum_physical_window_rows": 117488,
+              "requested_source_map_bytes": 225576960,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "attention_store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 115495403520,
+              "gpu_rows": 117488,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 117488
+            },
+            "attention_input": {
+              "eligible": 690,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 110683095040,
+              "checked_layers": 0
+            },
+            "kv": {
+              "reloaded_pages": 215040,
+              "reused_pages": 2365440
+            },
+            "gather": {
+              "jobs": 23841,
+              "eligible_jobs": 7433,
+              "eligible_rows": 52191519
+            },
+            "admission": {
+              "active": 1,
+              "rows": 117488,
+              "extra_allocation_bytes": 531988736,
+              "prefill_slots": 128,
+              "gpu_prefix_rows": 117488,
+              "free_gpu_bytes": 4261998592,
+              "fixed_including_headroom_bytes": 4057356672,
+              "shared_arena_bytes": 1180698624
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 133084.7,
+            "prompt_tps": 882.8,
+            "ttft_s": 133.31,
+            "total_s": 135.441,
+            "generated_tokens": 24,
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 120707.8,
+            "prompt_tps": 973.3,
+            "ttft_s": 120.933,
+            "total_s": 122.998,
+            "generated_tokens": 24,
+            "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 120251.5,
+            "prompt_tps": 977.0,
+            "ttft_s": 120.494,
+            "total_s": 122.577,
+            "generated_tokens": 24,
+            "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 119936.2,
+            "prompt_tps": 979.6,
+            "ttft_s": 120.251,
+            "total_s": 122.255,
+            "generated_tokens": 24,
+            "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 120251.5,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "direct_output": false,
+        "conditions": [
+          {
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "contained_samples": 132,
+            "gpu_gauges": {
+              "tile0/gt0/act_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 0,
+                "median": 2750.0,
+                "maximum": 2750,
+                "zero_samples": 12,
+                "nonzero_median": 2750.0
+              },
+              "tile0/gt0/cur_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 2750.0,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/min_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200.0,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt0/max_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750.0,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/rp0_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750.0,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/throttle/status": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0.0,
+                "maximum": 0,
+                "zero_samples": 132
+              },
+              "tile0/gt1/act_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0.0,
+                "maximum": 0,
+                "zero_samples": 132,
+                "nonzero_median": null
+              },
+              "tile0/gt1/cur_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200.0,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt1/min_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200.0,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt1/max_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 1500,
+                "median": 1500.0,
+                "maximum": 1500,
+                "zero_samples": 0
+              },
+              "tile0/gt1/rp0_freq": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 1500,
+                "median": 1500.0,
+                "maximum": 1500,
+                "zero_samples": 0
+              },
+              "tile0/gt1/throttle/status": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0.0,
+                "maximum": 0,
+                "zero_samples": 132
+              },
+              "gpu/fan1/fan1/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 1008,
+                "median": 1723.0,
+                "maximum": 1788,
+                "zero_samples": 0
+              },
+              "gpu/power1/card/cap": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 170000000,
+                "median": 170000000.0,
+                "maximum": 170000000,
+                "zero_samples": 0
+              },
+              "gpu/temp10/vram_ch_4/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 54000,
+                "median": 66000.0,
+                "maximum": 70000,
+                "zero_samples": 0
+              },
+              "gpu/temp11/vram_ch_5/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 56000,
+                "median": 66000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp12/vram_ch_6/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 56000,
+                "median": 68000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp13/vram_ch_7/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 56000,
+                "median": 68000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp14/vram_ch_8/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 56000,
+                "median": 66000.0,
+                "maximum": 70000,
+                "zero_samples": 0
+              },
+              "gpu/temp15/vram_ch_9/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 56000,
+                "median": 66000.0,
+                "maximum": 70000,
+                "zero_samples": 0
+              },
+              "gpu/temp2/pkg/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 53000,
+                "median": 66000.0,
+                "maximum": 69000,
+                "zero_samples": 0
+              },
+              "gpu/temp3/vram/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 58000,
+                "median": 70000.0,
+                "maximum": 76000,
+                "zero_samples": 0
+              },
+              "gpu/temp4/mctrl/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 53000,
+                "median": 62000.0,
+                "maximum": 64000,
+                "zero_samples": 0
+              },
+              "gpu/temp5/pcie/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 54000,
+                "median": 63000.0,
+                "maximum": 65000,
+                "zero_samples": 0
+              },
+              "gpu/temp6/vram_ch_0/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 58000,
+                "median": 70000.0,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp7/vram_ch_1/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 58000,
+                "median": 70000.0,
+                "maximum": 76000,
+                "zero_samples": 0
+              },
+              "gpu/temp8/vram_ch_2/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 56000,
+                "median": 68000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp9/vram_ch_3/input": {
+                "observed": 132,
+                "missing": 0,
+                "minimum": 56000,
+                "median": 68000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              }
+            },
+            "cpu_reported_khz": {
+              "cpu/policy0/scaling_cur_freq": 4616453.0,
+              "cpu/policy1/scaling_cur_freq": 3712169.0,
+              "cpu/policy10/scaling_cur_freq": 3702326.5,
+              "cpu/policy11/scaling_cur_freq": 3709926.5,
+              "cpu/policy2/scaling_cur_freq": 3711737.0,
+              "cpu/policy3/scaling_cur_freq": 3713115.0,
+              "cpu/policy4/scaling_cur_freq": 3699888.5,
+              "cpu/policy5/scaling_cur_freq": 3706720.5,
+              "cpu/policy6/scaling_cur_freq": 4616549.0,
+              "cpu/policy7/scaling_cur_freq": 3712483.0,
+              "cpu/policy8/scaling_cur_freq": 3712416.0,
+              "cpu/policy9/scaling_cur_freq": 3712947.5
+            },
+            "gpu_energy": {
+              "gpu/energy1/card/input": {
+                "valid_intervals": 131,
+                "invalid_intervals": 0,
+                "average_watts": 123.41138052386626
+              },
+              "gpu/energy2/pkg/input": {
+                "valid_intervals": 131,
+                "invalid_intervals": 0,
+                "average_watts": 88.53895098569856
+              }
+            },
+            "pci_and_throttle": {
+              "tile0/gt0/throttle/reasons": {
+                "observed": 132,
+                "counts": {
+                  "none": 132
+                }
+              },
+              "tile0/gt1/throttle/reasons": {
+                "observed": 132,
+                "counts": {
+                  "none": 132
+                }
+              },
+              "pci/0000:05:00.0/current_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "2.5 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:05:00.0/current_link_width": {
+                "observed": 132,
+                "counts": {
+                  "1": 132
+                }
+              },
+              "pci/0000:05:00.0/max_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "2.5 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:05:00.0/max_link_width": {
+                "observed": 132,
+                "counts": {
+                  "1": 132
+                }
+              },
+              "pci/0000:04:01.0/current_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "2.5 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:04:01.0/current_link_width": {
+                "observed": 132,
+                "counts": {
+                  "1": 132
+                }
+              },
+              "pci/0000:04:01.0/max_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "2.5 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:04:01.0/max_link_width": {
+                "observed": 132,
+                "counts": {
+                  "1": 132
+                }
+              },
+              "pci/0000:03:00.0/current_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "16.0 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:03:00.0/current_link_width": {
+                "observed": 132,
+                "counts": {
+                  "4": 132
+                }
+              },
+              "pci/0000:03:00.0/max_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "16.0 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:03:00.0/max_link_width": {
+                "observed": 132,
+                "counts": {
+                  "8": 132
+                }
+              },
+              "pci/0000:02:02.0/current_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "16.0 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:02:02.0/current_link_width": {
+                "observed": 132,
+                "counts": {
+                  "4": 132
+                }
+              },
+              "pci/0000:02:02.0/max_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "16.0 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:02:02.0/max_link_width": {
+                "observed": 132,
+                "counts": {
+                  "4": 132
+                }
+              },
+              "pci/0000:01:00.0/current_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "16.0 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:01:00.0/current_link_width": {
+                "observed": 132,
+                "counts": {
+                  "4": 132
+                }
+              },
+              "pci/0000:01:00.0/max_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "16.0 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:01:00.0/max_link_width": {
+                "observed": 132,
+                "counts": {
+                  "8": 132
+                }
+              },
+              "pci/0000:00:01.2/current_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "16.0 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:00:01.2/current_link_width": {
+                "observed": 132,
+                "counts": {
+                  "4": 132
+                }
+              },
+              "pci/0000:00:01.2/max_link_speed": {
+                "observed": 132,
+                "counts": {
+                  "16.0 GT/s PCIe": 132
+                }
+              },
+              "pci/0000:00:01.2/max_link_width": {
+                "observed": 132,
+                "counts": {
+                  "8": 132
+                }
+              }
+            },
+            "host_counters": {
+              "vmstat": {
+                "pgfault": {
+                  "sum": 870039,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "pgmajfault": {
+                  "sum": 148,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "pgpgin": {
+                  "sum": 9531474,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "pgpgout": {
+                  "sum": 307381,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "pswpin": {
+                  "sum": 96,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "pswpout": {
+                  "sum": 0,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/cpu": {
+                "full": {
+                  "sum": 0,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 3188987,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/io": {
+                "full": {
+                  "sum": 5238565,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 6075488,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/memory": {
+                "full": {
+                  "sum": 4,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 4,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                }
+              },
+              "CPU": {
+                "valid_intervals": 131,
+                "busy_fraction": 0.24515298492906648,
+                "iowait_fraction": 0.03901018165741259,
+                "steal_fraction": 0.0
+              },
+              "native_faults": {
+                "minor_faults": {
+                  "sum": 41114,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                },
+                "major_faults": {
+                  "sum": 0,
+                  "valid_intervals": 131,
+                  "invalid_intervals": 0
+                }
+              }
+            },
+            "scheduled_cpu_seconds": 127.27,
+            "cpu_observed_wall_seconds": 132.3393747035,
+            "drm_engines": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "bcs",
+                "eligible_intervals": 131,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 2540812329,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "ccs",
+                "eligible_intervals": 131,
+                "busy_cycles": 2284578373,
+                "capacity_total_cycles": 2540812329,
+                "busy_fraction": 0.8991527421858634
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "rcs",
+                "eligible_intervals": 131,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 2540812329,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "vcs",
+                "eligible_intervals": 131,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 5081624658,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "vecs",
+                "eligible_intervals": 131,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 5081624658,
+                "busy_fraction": 0.0
+              }
+            ],
+            "condition_read_ms": 880.391886,
+            "max_condition_read_ms": 12.100022
+          },
+          {
+            "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "contained_samples": 120,
+            "gpu_gauges": {
+              "tile0/gt0/act_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 2100,
+                "median": 2750.0,
+                "maximum": 2750,
+                "zero_samples": 0,
+                "nonzero_median": 2750.0
+              },
+              "tile0/gt0/cur_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 2083,
+                "median": 2750.0,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/min_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200.0,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt0/max_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750.0,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/rp0_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750.0,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/throttle/status": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0.0,
+                "maximum": 1,
+                "zero_samples": 118
+              },
+              "tile0/gt1/act_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0.0,
+                "maximum": 0,
+                "zero_samples": 120,
+                "nonzero_median": null
+              },
+              "tile0/gt1/cur_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200.0,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt1/min_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200.0,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt1/max_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 1500,
+                "median": 1500.0,
+                "maximum": 1500,
+                "zero_samples": 0
+              },
+              "tile0/gt1/rp0_freq": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 1500,
+                "median": 1500.0,
+                "maximum": 1500,
+                "zero_samples": 0
+              },
+              "tile0/gt1/throttle/status": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0.0,
+                "maximum": 0,
+                "zero_samples": 120
+              },
+              "gpu/fan1/fan1/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 1652,
+                "median": 1784.0,
+                "maximum": 1903,
+                "zero_samples": 0
+              },
+              "gpu/power1/card/cap": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 170000000,
+                "median": 170000000.0,
+                "maximum": 170000000,
+                "zero_samples": 0
+              },
+              "gpu/temp10/vram_ch_4/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 60000,
+                "median": 68000.0,
+                "maximum": 70000,
+                "zero_samples": 0
+              },
+              "gpu/temp11/vram_ch_5/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 62000,
+                "median": 70000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp12/vram_ch_6/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 62000,
+                "median": 70000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp13/vram_ch_7/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 62000,
+                "median": 70000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp14/vram_ch_8/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 62000,
+                "median": 70000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp15/vram_ch_9/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 62000,
+                "median": 70000.0,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp2/pkg/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 58000,
+                "median": 68000.0,
+                "maximum": 71000,
+                "zero_samples": 0
+              },
+              "gpu/temp3/vram/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 74000.0,
+                "maximum": 76000,
+                "zero_samples": 0
+              },
+              "gpu/temp4/mctrl/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 58000,
+                "median": 64000.0,
+                "maximum": 65000,
+                "zero_samples": 0
+              },
+              "gpu/temp5/pcie/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 60000,
+                "median": 65000.0,
+                "maximum": 67000,
+                "zero_samples": 0
+              },
+              "gpu/temp6/vram_ch_0/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 64000,
+                "median": 72000.0,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp7/vram_ch_1/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 74000.0,
+                "maximum": 76000,
+                "zero_samples": 0
+              },
+              "gpu/temp8/vram_ch_2/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 64000,
+                "median": 72000.0,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp9/vram_ch_3/input": {
+                "observed": 120,
+                "missing": 0,
+                "minimum": 62000,
+                "median": 70000.0,
+                "maximum": 74000,
+                "zero_samples": 0
+              }
+            },
+            "cpu_reported_khz": {
+              "cpu/policy0/scaling_cur_freq": 4616385.0,
+              "cpu/policy1/scaling_cur_freq": 3697564.0,
+              "cpu/policy10/scaling_cur_freq": 3692929.0,
+              "cpu/policy11/scaling_cur_freq": 3693151.0,
+              "cpu/policy2/scaling_cur_freq": 3694836.5,
+              "cpu/policy3/scaling_cur_freq": 3712771.5,
+              "cpu/policy4/scaling_cur_freq": 3692752.0,
+              "cpu/policy5/scaling_cur_freq": 3693168.5,
+              "cpu/policy6/scaling_cur_freq": 4615680.5,
+              "cpu/policy7/scaling_cur_freq": 3698901.0,
+              "cpu/policy8/scaling_cur_freq": 3697781.0,
+              "cpu/policy9/scaling_cur_freq": 3712679.5
+            },
+            "gpu_energy": {
+              "gpu/energy1/card/input": {
+                "valid_intervals": 119,
+                "invalid_intervals": 0,
+                "average_watts": 133.80118385073357
+              },
+              "gpu/energy2/pkg/input": {
+                "valid_intervals": 119,
+                "invalid_intervals": 0,
+                "average_watts": 96.14278283138857
+              }
+            },
+            "pci_and_throttle": {
+              "tile0/gt0/throttle/reasons": {
+                "observed": 120,
+                "counts": {
+                  "none": 118,
+                  "pl2": 2
+                }
+              },
+              "tile0/gt1/throttle/reasons": {
+                "observed": 120,
+                "counts": {
+                  "none": 120
+                }
+              },
+              "pci/0000:05:00.0/current_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "2.5 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:05:00.0/current_link_width": {
+                "observed": 120,
+                "counts": {
+                  "1": 120
+                }
+              },
+              "pci/0000:05:00.0/max_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "2.5 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:05:00.0/max_link_width": {
+                "observed": 120,
+                "counts": {
+                  "1": 120
+                }
+              },
+              "pci/0000:04:01.0/current_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "2.5 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:04:01.0/current_link_width": {
+                "observed": 120,
+                "counts": {
+                  "1": 120
+                }
+              },
+              "pci/0000:04:01.0/max_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "2.5 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:04:01.0/max_link_width": {
+                "observed": 120,
+                "counts": {
+                  "1": 120
+                }
+              },
+              "pci/0000:03:00.0/current_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "16.0 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:03:00.0/current_link_width": {
+                "observed": 120,
+                "counts": {
+                  "4": 120
+                }
+              },
+              "pci/0000:03:00.0/max_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "16.0 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:03:00.0/max_link_width": {
+                "observed": 120,
+                "counts": {
+                  "8": 120
+                }
+              },
+              "pci/0000:02:02.0/current_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "16.0 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:02:02.0/current_link_width": {
+                "observed": 120,
+                "counts": {
+                  "4": 120
+                }
+              },
+              "pci/0000:02:02.0/max_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "16.0 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:02:02.0/max_link_width": {
+                "observed": 120,
+                "counts": {
+                  "4": 120
+                }
+              },
+              "pci/0000:01:00.0/current_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "16.0 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:01:00.0/current_link_width": {
+                "observed": 120,
+                "counts": {
+                  "4": 120
+                }
+              },
+              "pci/0000:01:00.0/max_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "16.0 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:01:00.0/max_link_width": {
+                "observed": 120,
+                "counts": {
+                  "8": 120
+                }
+              },
+              "pci/0000:00:01.2/current_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "16.0 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:00:01.2/current_link_width": {
+                "observed": 120,
+                "counts": {
+                  "4": 120
+                }
+              },
+              "pci/0000:00:01.2/max_link_speed": {
+                "observed": 120,
+                "counts": {
+                  "16.0 GT/s PCIe": 120
+                }
+              },
+              "pci/0000:00:01.2/max_link_width": {
+                "observed": 120,
+                "counts": {
+                  "8": 120
+                }
+              }
+            },
+            "host_counters": {
+              "vmstat": {
+                "pgfault": {
+                  "sum": 1378173,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "pgmajfault": {
+                  "sum": 242,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "pgpgin": {
+                  "sum": 1783412,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "pgpgout": {
+                  "sum": 519612,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "pswpin": {
+                  "sum": 164,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "pswpout": {
+                  "sum": 0,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/cpu": {
+                "full": {
+                  "sum": 0,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 3177731,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/io": {
+                "full": {
+                  "sum": 1988916,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 2277761,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/memory": {
+                "full": {
+                  "sum": 5,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 6,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                }
+              },
+              "CPU": {
+                "valid_intervals": 119,
+                "busy_fraction": 0.2541238996368533,
+                "iowait_fraction": 0.016545737144821757,
+                "steal_fraction": 0.0
+              },
+              "native_faults": {
+                "minor_faults": {
+                  "sum": 97967,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                },
+                "major_faults": {
+                  "sum": 0,
+                  "valid_intervals": 119,
+                  "invalid_intervals": 0
+                }
+              }
+            },
+            "scheduled_cpu_seconds": 119.49,
+            "cpu_observed_wall_seconds": 120.27631235900006,
+            "drm_engines": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "bcs",
+                "eligible_intervals": 119,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 2309222580,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "ccs",
+                "eligible_intervals": 119,
+                "busy_cycles": 2285645769,
+                "capacity_total_cycles": 2309222580,
+                "busy_fraction": 0.989790152233831
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "rcs",
+                "eligible_intervals": 119,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 2309222580,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "vcs",
+                "eligible_intervals": 119,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 4618445160,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "vecs",
+                "eligible_intervals": 119,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 4618445160,
+                "busy_fraction": 0.0
+              }
+            ],
+            "condition_read_ms": 841.962475,
+            "max_condition_read_ms": 16.041397
+          },
+          {
+            "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+            "contained_samples": 119,
+            "gpu_gauges": {
+              "tile0/gt0/act_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 2583,
+                "median": 2750,
+                "maximum": 2750,
+                "zero_samples": 0,
+                "nonzero_median": 2750
+              },
+              "tile0/gt0/cur_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/min_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt0/max_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/rp0_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/throttle/status": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0,
+                "maximum": 1,
+                "zero_samples": 117
+              },
+              "tile0/gt1/act_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0,
+                "maximum": 0,
+                "zero_samples": 119,
+                "nonzero_median": null
+              },
+              "tile0/gt1/cur_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt1/min_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt1/max_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1500,
+                "median": 1500,
+                "maximum": 1500,
+                "zero_samples": 0
+              },
+              "tile0/gt1/rp0_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1500,
+                "median": 1500,
+                "maximum": 1500,
+                "zero_samples": 0
+              },
+              "tile0/gt1/throttle/status": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0,
+                "maximum": 0,
+                "zero_samples": 119
+              },
+              "gpu/fan1/fan1/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1718,
+                "median": 1840,
+                "maximum": 1905,
+                "zero_samples": 0
+              },
+              "gpu/power1/card/cap": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 170000000,
+                "median": 170000000,
+                "maximum": 170000000,
+                "zero_samples": 0
+              },
+              "gpu/temp10/vram_ch_4/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 64000,
+                "median": 68000,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp11/vram_ch_5/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 70000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp12/vram_ch_6/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 72000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp13/vram_ch_7/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 72000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp14/vram_ch_8/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 64000,
+                "median": 70000,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp15/vram_ch_9/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 64000,
+                "median": 70000,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp2/pkg/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 63000,
+                "median": 69000,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp3/vram/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 70000,
+                "median": 74000,
+                "maximum": 78000,
+                "zero_samples": 0
+              },
+              "gpu/temp4/mctrl/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 61000,
+                "median": 65000,
+                "maximum": 66000,
+                "zero_samples": 0
+              },
+              "gpu/temp5/pcie/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 63000,
+                "median": 66000,
+                "maximum": 67000,
+                "zero_samples": 0
+              },
+              "gpu/temp6/vram_ch_0/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 68000,
+                "median": 74000,
+                "maximum": 76000,
+                "zero_samples": 0
+              },
+              "gpu/temp7/vram_ch_1/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 70000,
+                "median": 74000,
+                "maximum": 78000,
+                "zero_samples": 0
+              },
+              "gpu/temp8/vram_ch_2/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 72000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp9/vram_ch_3/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 72000,
+                "maximum": 74000,
+                "zero_samples": 0
+              }
+            },
+            "cpu_reported_khz": {
+              "cpu/policy0/scaling_cur_freq": 4616333,
+              "cpu/policy1/scaling_cur_freq": 3692596,
+              "cpu/policy10/scaling_cur_freq": 3692782,
+              "cpu/policy11/scaling_cur_freq": 3692752,
+              "cpu/policy2/scaling_cur_freq": 3693249,
+              "cpu/policy3/scaling_cur_freq": 3712738,
+              "cpu/policy4/scaling_cur_freq": 3692598,
+              "cpu/policy5/scaling_cur_freq": 3692735,
+              "cpu/policy6/scaling_cur_freq": 4603353,
+              "cpu/policy7/scaling_cur_freq": 3692812,
+              "cpu/policy8/scaling_cur_freq": 3693018,
+              "cpu/policy9/scaling_cur_freq": 3698159
+            },
+            "gpu_energy": {
+              "gpu/energy1/card/input": {
+                "valid_intervals": 118,
+                "invalid_intervals": 0,
+                "average_watts": 134.53970066366597
+              },
+              "gpu/energy2/pkg/input": {
+                "valid_intervals": 118,
+                "invalid_intervals": 0,
+                "average_watts": 96.55193210828747
+              }
+            },
+            "pci_and_throttle": {
+              "tile0/gt0/throttle/reasons": {
+                "observed": 119,
+                "counts": {
+                  "none": 116,
+                  "pl2": 3
+                }
+              },
+              "tile0/gt1/throttle/reasons": {
+                "observed": 119,
+                "counts": {
+                  "none": 119
+                }
+              },
+              "pci/0000:05:00.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "2.5 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:05:00.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "1": 119
+                }
+              },
+              "pci/0000:05:00.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "2.5 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:05:00.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "1": 119
+                }
+              },
+              "pci/0000:04:01.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "2.5 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:04:01.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "1": 119
+                }
+              },
+              "pci/0000:04:01.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "2.5 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:04:01.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "1": 119
+                }
+              },
+              "pci/0000:03:00.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:03:00.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:03:00.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:03:00.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "8": 119
+                }
+              },
+              "pci/0000:02:02.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:02:02.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:02:02.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:02:02.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:01:00.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:01:00.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:01:00.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:01:00.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "8": 119
+                }
+              },
+              "pci/0000:00:01.2/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:00:01.2/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:00:01.2/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:00:01.2/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "8": 119
+                }
+              }
+            },
+            "host_counters": {
+              "vmstat": {
+                "pgfault": {
+                  "sum": 652293,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pgmajfault": {
+                  "sum": 240,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pgpgin": {
+                  "sum": 779513,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pgpgout": {
+                  "sum": 258360,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pswpin": {
+                  "sum": 79,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pswpout": {
+                  "sum": 0,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/cpu": {
+                "full": {
+                  "sum": 0,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 2965636,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/io": {
+                "full": {
+                  "sum": 1086381,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 1238508,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/memory": {
+                "full": {
+                  "sum": 2,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 1,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              },
+              "CPU": {
+                "valid_intervals": 118,
+                "busy_fraction": 0.251094479201283,
+                "iowait_fraction": 0.009774457817398968,
+                "steal_fraction": 0.0
+              },
+              "native_faults": {
+                "minor_faults": {
+                  "sum": 109,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "major_faults": {
+                  "sum": 0,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              }
+            },
+            "scheduled_cpu_seconds": 118.41,
+            "cpu_observed_wall_seconds": 119.23031787900004,
+            "drm_engines": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "bcs",
+                "eligible_intervals": 118,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 2289111053,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "ccs",
+                "eligible_intervals": 118,
+                "busy_cycles": 2269331560,
+                "capacity_total_cycles": 2289111053,
+                "busy_fraction": 0.991359312614354
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "rcs",
+                "eligible_intervals": 118,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 2289111053,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "vcs",
+                "eligible_intervals": 118,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 4578222106,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "vecs",
+                "eligible_intervals": 118,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 4578222106,
+                "busy_fraction": 0.0
+              }
+            ],
+            "condition_read_ms": 793.477673,
+            "max_condition_read_ms": 12.365587
+          },
+          {
+            "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+            "contained_samples": 119,
+            "gpu_gauges": {
+              "tile0/gt0/act_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 2150,
+                "median": 2750,
+                "maximum": 2750,
+                "zero_samples": 0,
+                "nonzero_median": 2750
+              },
+              "tile0/gt0/cur_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 2133,
+                "median": 2750,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/min_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt0/max_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/rp0_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 2750,
+                "median": 2750,
+                "maximum": 2750,
+                "zero_samples": 0
+              },
+              "tile0/gt0/throttle/status": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0,
+                "maximum": 1,
+                "zero_samples": 117
+              },
+              "tile0/gt1/act_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0,
+                "maximum": 0,
+                "zero_samples": 119,
+                "nonzero_median": null
+              },
+              "tile0/gt1/cur_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt1/min_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1200,
+                "median": 1200,
+                "maximum": 1200,
+                "zero_samples": 0
+              },
+              "tile0/gt1/max_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1500,
+                "median": 1500,
+                "maximum": 1500,
+                "zero_samples": 0
+              },
+              "tile0/gt1/rp0_freq": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1500,
+                "median": 1500,
+                "maximum": 1500,
+                "zero_samples": 0
+              },
+              "tile0/gt1/throttle/status": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 0,
+                "median": 0,
+                "maximum": 0,
+                "zero_samples": 119
+              },
+              "gpu/fan1/fan1/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 1725,
+                "median": 1846,
+                "maximum": 1905,
+                "zero_samples": 0
+              },
+              "gpu/power1/card/cap": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 170000000,
+                "median": 170000000,
+                "maximum": 170000000,
+                "zero_samples": 0
+              },
+              "gpu/temp10/vram_ch_4/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 62000,
+                "median": 70000,
+                "maximum": 72000,
+                "zero_samples": 0
+              },
+              "gpu/temp11/vram_ch_5/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 64000,
+                "median": 72000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp12/vram_ch_6/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 72000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp13/vram_ch_7/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 64000,
+                "median": 72000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp14/vram_ch_8/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 70000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp15/vram_ch_9/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 70000,
+                "maximum": 74000,
+                "zero_samples": 0
+              },
+              "gpu/temp2/pkg/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 60000,
+                "median": 69000,
+                "maximum": 71000,
+                "zero_samples": 0
+              },
+              "gpu/temp3/vram/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 68000,
+                "median": 76000,
+                "maximum": 78000,
+                "zero_samples": 0
+              },
+              "gpu/temp4/mctrl/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 59000,
+                "median": 65000,
+                "maximum": 66000,
+                "zero_samples": 0
+              },
+              "gpu/temp5/pcie/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 61000,
+                "median": 66000,
+                "maximum": 67000,
+                "zero_samples": 0
+              },
+              "gpu/temp6/vram_ch_0/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 74000,
+                "maximum": 76000,
+                "zero_samples": 0
+              },
+              "gpu/temp7/vram_ch_1/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 68000,
+                "median": 76000,
+                "maximum": 78000,
+                "zero_samples": 0
+              },
+              "gpu/temp8/vram_ch_2/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 72000,
+                "maximum": 76000,
+                "zero_samples": 0
+              },
+              "gpu/temp9/vram_ch_3/input": {
+                "observed": 119,
+                "missing": 0,
+                "minimum": 66000,
+                "median": 72000,
+                "maximum": 74000,
+                "zero_samples": 0
+              }
+            },
+            "cpu_reported_khz": {
+              "cpu/policy0/scaling_cur_freq": 4609017,
+              "cpu/policy1/scaling_cur_freq": 3692407,
+              "cpu/policy10/scaling_cur_freq": 3691803,
+              "cpu/policy11/scaling_cur_freq": 3691516,
+              "cpu/policy2/scaling_cur_freq": 3692304,
+              "cpu/policy3/scaling_cur_freq": 3712575,
+              "cpu/policy4/scaling_cur_freq": 3691150,
+              "cpu/policy5/scaling_cur_freq": 3691693,
+              "cpu/policy6/scaling_cur_freq": 4603353,
+              "cpu/policy7/scaling_cur_freq": 3692677,
+              "cpu/policy8/scaling_cur_freq": 3692817,
+              "cpu/policy9/scaling_cur_freq": 3865559
+            },
+            "gpu_energy": {
+              "gpu/energy1/card/input": {
+                "valid_intervals": 118,
+                "invalid_intervals": 0,
+                "average_watts": 134.92744461101682
+              },
+              "gpu/energy2/pkg/input": {
+                "valid_intervals": 118,
+                "invalid_intervals": 0,
+                "average_watts": 96.7675817849682
+              }
+            },
+            "pci_and_throttle": {
+              "tile0/gt0/throttle/reasons": {
+                "observed": 119,
+                "counts": {
+                  "none": 117,
+                  "pl2": 2
+                }
+              },
+              "tile0/gt1/throttle/reasons": {
+                "observed": 119,
+                "counts": {
+                  "none": 119
+                }
+              },
+              "pci/0000:05:00.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "2.5 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:05:00.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "1": 119
+                }
+              },
+              "pci/0000:05:00.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "2.5 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:05:00.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "1": 119
+                }
+              },
+              "pci/0000:04:01.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "2.5 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:04:01.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "1": 119
+                }
+              },
+              "pci/0000:04:01.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "2.5 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:04:01.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "1": 119
+                }
+              },
+              "pci/0000:03:00.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:03:00.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:03:00.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:03:00.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "8": 119
+                }
+              },
+              "pci/0000:02:02.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:02:02.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:02:02.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:02:02.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:01:00.0/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:01:00.0/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:01:00.0/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:01:00.0/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "8": 119
+                }
+              },
+              "pci/0000:00:01.2/current_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:00:01.2/current_link_width": {
+                "observed": 119,
+                "counts": {
+                  "4": 119
+                }
+              },
+              "pci/0000:00:01.2/max_link_speed": {
+                "observed": 119,
+                "counts": {
+                  "16.0 GT/s PCIe": 119
+                }
+              },
+              "pci/0000:00:01.2/max_link_width": {
+                "observed": 119,
+                "counts": {
+                  "8": 119
+                }
+              }
+            },
+            "host_counters": {
+              "vmstat": {
+                "pgfault": {
+                  "sum": 728889,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pgmajfault": {
+                  "sum": 329,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pgpgin": {
+                  "sum": 968881,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pgpgout": {
+                  "sum": 482099,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pswpin": {
+                  "sum": 47,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "pswpout": {
+                  "sum": 0,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/cpu": {
+                "full": {
+                  "sum": 0,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 3019682,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/io": {
+                "full": {
+                  "sum": 2250226,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 2558648,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              },
+              "pressure/memory": {
+                "full": {
+                  "sum": 5,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "some": {
+                  "sum": 5,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              },
+              "CPU": {
+                "valid_intervals": 118,
+                "busy_fraction": 0.2466708070945751,
+                "iowait_fraction": 0.019245768097521522,
+                "steal_fraction": 0.0
+              },
+              "native_faults": {
+                "minor_faults": {
+                  "sum": 91301,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                },
+                "major_faults": {
+                  "sum": 0,
+                  "valid_intervals": 118,
+                  "invalid_intervals": 0
+                }
+              }
+            },
+            "scheduled_cpu_seconds": 118.45,
+            "cpu_observed_wall_seconds": 119.23112503949994,
+            "drm_engines": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "bcs",
+                "eligible_intervals": 118,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 2289134726,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "ccs",
+                "eligible_intervals": 118,
+                "busy_cycles": 2264160314,
+                "capacity_total_cycles": 2289134726,
+                "busy_fraction": 0.9890900209077516
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "rcs",
+                "eligible_intervals": 118,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 2289134726,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "vcs",
+                "eligible_intervals": 118,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 4578269452,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 65278,
+                "engine": "vecs",
+                "eligible_intervals": 118,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 4578269452,
+                "busy_fraction": 0.0
+              }
+            ],
+            "condition_read_ms": 795.069153,
+            "max_condition_read_ms": 22.384354
+          }
+        ]
       }
     ],
     "request_hashes": {
