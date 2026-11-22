@@ -327,7 +327,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   weights, and the first occurrence of each width can capture another graph.
   The `4d2efd356` translation unit passes the retained production SYCL
   syntax check with all 754 included files matching the recorded compiler
-  inputs. Linking, live state checks and timing remain pending.
+  inputs. The later linked build supplies the live state and timing checks.
   Qualify the context-boundary fix independently. The CLI admits `n + max_new`
   equal to the physical capacity. With a native pack, `n = capacity - 2`,
   width four and two requested outputs, the initial one-row verification fits.
@@ -412,29 +412,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   accepted positions, committed state fingerprints and RAM snapshot checks.
   All four native processes exited zero with closed ownership and no fresh
   GPU fault. See `decode_mtp_prefix_restore_v2` in the linked service result.
-  The official suite now supplies the separate throughput comparison.
   Retired 280 files and 54,045,800 bytes of private driver caches and process
   streams from the closed V1 and V2 RESTORE trials. Their outcomes match
   pushed commits `7a479bc5b` and `76bd5586e`. The seven local campaign and
   execution receipts retain their verified hashes. The speed suite reads the
   committed outcome and creates its own private caches.
-  Compare off/on at fixed width and identical placement, separately from the
-  confidence-floor experiment and the proposed graph-drain change. First trace all four actual
-  catch-up widths against verified and accepted counts. Check live draft KV,
-  next-token probabilities, ordinary prefill dispatch, handoff and RESTORE
-  across a page boundary and near capacity. Include the initial single-row
-  and final truncated window. `bench/sycl/decode_mtp_prefix_generation.py`
-  requires the short and near-capacity RESTORE results before preparing the
-  official long, agent, code and prose suite. Use three independent selector
-  pairs (AB, BA, AB) on the same fixed engine, with thinking and the standard
-  warmups in every process. Compare TG and full request time per workload.
-  Retain logged MTP recapture times and count them in elapsed time. From the
-  bound native request counts, rejected drafts minus up to three in the
-  terminal window gives a lower bound on eligible omitted catch-up rows.
-  Keep PP and client TTFT for the fixed fresh input, and report agent work
-  matching separately. Require faster TG in two pairs and a geometric mean
-  ratio above one per workload. Complete the dedicated prefill-preservation
-  and model-quality checks before adopting a speed candidate.
+  The six processes in `decode_mtp_prefix_generation_v1` closed normally
+  with no fresh GPU fault and verified final model assets. The thinking-on
+  official suite matched all request histories, token counts, draft counts
+  and fixed-input prefill dispatch. Code TG rose in two of three pairs,
+  with a geometric-mean gain of 1.073%. Prose rose in one pair, with a
+  geometric-mean loss of 1.113%. Code's fixed-input client TTFT was higher
+  in two pairs. Keep the original MTP route as the default. The linked
+  decision retains individual TG, PP and TTFT pairs and the separate
+  boundary and RESTORE evidence. Recheck the retained coherent decode
+  reference with the same official prelude before choosing the next
+  verifier experiment.
   Prioritize reducing the work inside MTP over deferring its two intermediate
   host waits. At `1532659f2`, the timestamps of 32 B570 graph replays cover
   ten complete uncoupled T4 chains and the first two graphs of an eleventh.
