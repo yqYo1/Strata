@@ -598913,7 +598913,7 @@
     }
   },
   "prefill_mapped_gu_timing_v1": {
-    "stage": "built",
+    "stage": "checked",
     "controller": {
       "revision": "54a5e64c4594cca780438906a2330cf30b888ed5",
       "sha256": "30e4f68350230623d8364e6b03cbf23b5e75b1306938ae7d879981884aade15f"
@@ -599061,7 +599061,45 @@
       ]
     },
     "environment_sha256": "3c4c0b47427846a73b614461bc4d16a7b1373d50b2b38d7c8ddf1b814ae41b69",
-    "stages": [],
+    "stages": [
+      {
+        "stage": "smoke",
+        "environment_sha256": "0220a47fca6eb47264f87754f3dc02ee1fbe47bd01fe44c0982fada1c87a9dec",
+        "native_exit_code": 0,
+        "completed_cases": 2,
+        "validation": {
+          "pid": 2581414,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "initialized_ELFs": 37,
+          "sha256": "6a7434323eb08cd14d77b43fc469d69e56f19655b51b9e450d41e0d4adc42424",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "active": false,
     "complete": false,
     "passed": false,
