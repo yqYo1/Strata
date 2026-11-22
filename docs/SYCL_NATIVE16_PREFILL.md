@@ -1304,6 +1304,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   SHA-256 `6cdde1ea3ca90905f290f6491d7be3130bd6cc1ed119f3dd583606fc42dc229a`.
   The comparison records and provider manifests remain for the same-build
   attribution decision.
+  Verified the four closed receipts against pushed Git before retiring these
+  raw captures under the same state directory. Retain the compact receipts
+  and runtime manifests for the build and route readers.
+
+  | Capture and retired children | Evidence | Files | Bytes | Inventory SHA-256 |
+  | --- | --- | ---: | ---: | --- |
+  | `prefill-split-upload-cpu-wait-v1` 0–2 and host | `1046b4164` | 214 | 31672563 | `30fa14032573af3837dcc42bbaa837d750263daea07b6c2946d1b6174c75da90` |
+  | `prefill-split-direct-store-component-v1` cache, owned, tmp and validation.log | `90c572ca9` | 6 | 335320 | `3254c10ebb92794a825af823e5eaf7352e56a76cb97ea36e82342bf1388f429e` |
+  | `prefill-split-direct-store-admission-v1` 0 and host | `3f1e5b0b9` | 74 | 11013896 | `8985923c4d6b98ffc912ec49bf20328ae25904980345be7c263e8e6fcde58f52` |
+  | `prefill-split-direct-store-speed-v1` 0–5 and host | `37767d359` | 424 | 63496408 | `6caef890f255218c5e04a62798ab69cb83cd85c681e5f7a24b76de0a048bedb0` |
 
   The 65537-token comparison closed at `84c883393` with 16 independent
   processes and 48 fresh requests. The subsequent-request rates were
