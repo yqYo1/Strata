@@ -501,6 +501,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `f35b6b1a3f` and recipe prefix `ee8be44d38`, both equal to the retained
   ELF's build record. All twelve measured-source files in the two Orca
   reviews match that reconstruction. Their original manifests are preserved.
+  The retained `14508acbf` composition matches the eight source files used
+  by the verifier projection and the context fix. Apply only the patch from
+  `178d532^` to `178d532` to `src/core/mtp.cpp` and `src/program/generate.cpp`.
+  On both bases, the resulting hashes start `243078ea8c` and `81fe4b074a`.
+  Applying that patch before or after the six-file KV projection produces
+  identical bytes for all nine checked paths, including the unchanged scalar
+  resolver. The MTP shortening change stays independent. After the reference
+  replay selects a base, qualify its boundary-only recipe first. Compare the
+  boundary-only engine against KV off on the new engine, then compare KV off
+  and on within the new engine. This keeps a change in build or verification
+  separate from the cooperative resolver's measured effect.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
