@@ -599048,7 +599048,7 @@
     }
   },
   "prefill_mapped_gu_a_v5": {
-    "stage": "checked",
+    "stage": "closed",
     "controller": {
       "revision": "e6c8b2ce67375d471db05a8f0ee7a89c741f5488",
       "sha256": "fb100f5a58c4209d39e9764f58ebfb941ca780fcb988504aed178ecb5c5f5f41"
@@ -599300,11 +599300,44 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "stage": "validate",
+        "environment_sha256": "6b71f8a117bc013579181d9c522ede20faad98039112b324be93582d4efe742c",
+        "gpu": true,
+        "completed_cases": 24,
+        "compared_device_words": 6979584,
+        "validation": {
+          "pid": 2493507,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "active": false,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
     "plan": {
       "build": "Apply only the guarded probe code to the recorded parent sources and enable its single macro for the probe object and fixture. Resolve sibling headers from the original source directory. Finalize the isolated BMG image and host slice and relink against the original checked archives.",
