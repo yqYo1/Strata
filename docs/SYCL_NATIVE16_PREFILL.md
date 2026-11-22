@@ -1313,8 +1313,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   state root. The original receipts and recipes match the pushed commits above.
   The 311 removed files total 144007761 bytes with inventory SHA-256
   `e3660a584291ccd38a02fee4680be4f3f7efd190471c6b36bd243cf0967d5588`.
-  Retain the current witness and compiler inputs through the next operator
-  comparison's build admission.
+  The timing plan at `acd92cd6f` verifies the historical witness in Git
+  without reading its local build. Recovered the exact `19999c6c1d` source,
+  recipe, compiler dependencies and linked inputs for the remaining
+  `prefill-mapped-gu-a-v5` directory. Its 11 files total 17,585,737 bytes
+  with inventory SHA-256
+  `294297ef66e219adeb22f3b2fbf67f404558ffb0294358b769a2c9e2495e8cac`.
+  The witness directory has no remaining executable consumer.
   The complete mapped GU component closed its correctness plan at
   `6b2a56899` using source `038e008a3`. The rebuilt fragment witness
   passed 22 host and 26 GPU cases. The operator passed 12 GPU cases covering
@@ -1328,8 +1333,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   across each pair. Repeat with clustered and spread source rows at the
   production large-job sizes. The component has no timing or model
   qualification yet. The next comparison needs the operator build and its
-  committed correctness evidence. Retire the superseded witness generation
-  after the timing controller passes admission using its Git record.
+  committed correctness evidence. The timing fixture relinks the original
+  operator objects with the committed timing driver.
   Retired the closed operator's raw directories `cache`, `compile`, `layout`,
   `smoke`, `tmp`, `validate`, `witness-smoke`, and `witness-validate`
   after verifying the pushed evidence and retained comparison build. The
