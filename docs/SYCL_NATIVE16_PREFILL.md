@@ -1294,29 +1294,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its three input files match the original probe base. The next throughput
   comparison needs the complete gather-to-SwiGLU interval to account for
   repeated mapped loads alongside saved writes.
-  The first witness build at `40544a62c` could not locate `xe_gemm_bsd.hpp`
-  from the isolated probe directory. It stopped before linking or GPU
-  execution. The second plan restores the original sibling-header lookup
-  and checks the actual dependency against the retained source.
-  The second build compiled both units and finalized the device image and host
-  slice. The owner stopped the final link at its 64 MiB artifact limit
-  (`5e723ea98`). The child was reaped and its session was empty. The
-  interrupted build remains ineligible. Its files totaled 107290573 bytes
-  after tool shutdown, including two 22 MB bitcode stages and archive extracts.
-  The third plan gives the private build a 384 MiB aggregate limit and keeps
-  the 64 MiB per-file limit and runtime envelope. It also reports an owner
-  budget stop directly when one occurs.
-  All five third-build commands exited normally. The old reader expected the
-  original AOT image and host objects in the final trace and refused the build
-  at `cc1f45563`. DPC++ passes temporary host objects from both link phases.
-  The next build checks the original three input hashes and requires every
-  traced host slice derived from the fixture, AOT image and host object.
-  The fourth build verified 38 persistent linker inputs and six host slices
-  (`01abd8fa6`). Its 22 host layout cases passed. The two traced cases matched
-  all 61440 device words with guards and normal exit. Their original admission
-  failed at `117277096` because the reader counted the intentional pre-main UR
-  validation probe as a runtime error. The next plan uses the shared strict
-  trace reader and retains the empty validation-log check.
+  The original refusals remain in Git: sibling-header lookup `40544a62c`,
+  final-link artifact cap `5e723ea98`, link-input trace `cc1f45563` and the
+  intentional pre-main UR canary `117277096`. The current build preserves the
+  retained header lookup, gives the build 384 MiB for compiler artifacts, checks
+  38 persistent link inputs and six driver host slices, and uses the shared
+  strict canary check with an empty validation log. Its executable hash matches
+  the fourth build.
+  The witness closed at `b30fb35e4`. All 22 host layout cases and 26 GPU cases
+  passed. The traced three-row cases verified 61440 FP16 words. The later
+  24 cases verified 6979584 words with both tile layouts, ragged tails,
+  invalid row endpoints and unchanged source guards. All three owners exited
+  normally with no fresh GPU fault. Use this coordinate proof for a matched
+  gather-to-SwiGLU comparison. Keep the weights, B loading, accumulation,
+  activation and output checks fixed when changing the A input path.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
