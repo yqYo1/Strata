@@ -565583,7 +565583,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_driver_cache_v1": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "3e432e20f8c5e9fc56df610f2d67a872b1403889",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/strata",
@@ -568619,6 +568619,23 @@
         "passed": true
       }
     ],
+    "prelaunch_refusal": {
+      "index": 7,
+      "arm": "short",
+      "phase": "coherent gathered build admission",
+      "recorded_utc": "2026-11-22T08:57:54.185241+00:00",
+      "error": "changed coherent gather build inputs",
+      "native_execution_attempted": false,
+      "case_outputs_created": false,
+      "completed_processes": 7,
+      "differing_live_control": "AGENTS.md",
+      "original_build_controller_commit": "8122e08b6a6f5a30174e59ced6783ded9de8e4bb",
+      "original_control_sha256": "e166e0c121c2ac6b55952c09539981ef739c7fa0c0fbfbdc3d41f12c5efe3b68",
+      "checked_live_control_sha256": "7d222b824825aeb328fba3f70c8c1d8c95a8d489705afccc33f34bddb91eca62",
+      "original_controller_pins_recovered": true,
+      "decision": "The original seven cases are preserved. The three-block timing decision is incomplete. A further run requires a new committed plan and the corrected closed-build reader.",
+      "retention_review": "Review temporary seeds and raw output at the next serialized cleanup. The failed cohort no longer consumes the seed directories."
+    },
     "source_inputs": {
       "files": 810,
       "sha256": "c6bb353c71d4c23c72fa113948b90957497b981ffd877b928187cddf99d62746"
