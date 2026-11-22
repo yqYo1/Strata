@@ -38926,5 +38926,36 @@
     "correction": "Direct DRAM-controller bytes are unestablished on this Ryzen 5600X. Qualify any supported local measure and preserve physical traffic as unknown otherwise.",
     "consumer": "Use for the next CPU expert service attribution when a relevant data-fabric measure is available with existing permissions.",
     "next_review": "At the next matched CPU-MoE attribution with controlled competing DMA, or at the report retention review."
+  },
+  "decode-qsa-query-kv-reuse-20261122": {
+    "source_commit": "a09e08c78ca5565c48d027340108e4256365fe62",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-qsa-query-kv-reuse-20261122/report.md",
+    "report_sha256": "d8742bd4c1de1608acd2a5beb1dda93a7b2514a1f8ab4e021fd17d026579bec8",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-qsa-and-dflash2-payoff-review-v2-20261122/review.md",
+    "review_sha256": "f06cadafba2b4a20b9668b530dbc5331c448d591fbb1dbb7b61585e34dd20c75",
+    "worker": "Orca gpt-6-luna medium, task_3d45837a7b72, ctx_9e4b6f60d2a0. Verified report inputs, worker IPC, acknowledged completion and scoped exit.",
+    "reviewer": "Native Codex gpt-6-luna max. First review reached its 600 s deadline without a digest. The narrower V2 review closed normally.",
+    "classification": "decision_support",
+    "stage": "native_reviewed_hold",
+    "schedulable_now": false,
+    "finding": "The verifier optionally coalesces KV resolution before attention. The attention kernel consumes per-query IDs and valid counts with separate K and V scales for INT8.",
+    "correction": "Account for the actual resolver mode and per-row count producer before estimating reuse. GPU-reach wait includes other work.",
+    "consumer": "Use when selecting a decode attention experiment after measuring direct service and exact overlap in valid physical pages and slots.",
+    "next_review": "Reconsider shared tiles if measured overlap is substantial. Check per-query masks, terminal tails and physical context capacity."
+  },
+  "dflash2-mtp-bounded-gain-20261122": {
+    "source_commit": "a09e08c78ca5565c48d027340108e4256365fe62",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-mtp-bounded-gain-20261122/report.md",
+    "report_sha256": "663edd8b93f1ce7f87d9af71ab170807acf1b5bd56b255477f24d856832194d5",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-qsa-and-dflash2-payoff-review-v2-20261122/review.md",
+    "review_sha256": "f06cadafba2b4a20b9668b530dbc5331c448d591fbb1dbb7b61585e34dd20c75",
+    "worker": "Orca gpt-6-luna medium, task_bdb2895acb2e, ctx_91090b79850d. Verified report inputs, worker IPC, acknowledged completion and scoped exit.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "classification": "knowledge_collection",
+    "stage": "native_reviewed_hold",
+    "schedulable_now": false,
+    "finding": "DFlash2 requires a native target head and rejects the sole-packed head used in the retained MTP4 comparison. The existing bounds cover verifier time alone.",
+    "consumer": "Retrieve for a measured common-head, width-four comparison once both drafts fit with the same target, KV and scratch placement.",
+    "next_review": "After allocation admission, compare full request time, draft cost and actual outputs per window with matched target placement."
   }
 }
