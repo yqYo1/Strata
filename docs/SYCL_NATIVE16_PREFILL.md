@@ -549,6 +549,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   boundary comparison. Use the boundary-only build as the single temporary
   third generation. Select and retire a superseded reference at the next
   boundary before adding a cooperative build.
+  The old phase-naming and MTP-prefix build outputs were retired after
+  recovering both original build recipes and compiler inputs. The cleanup
+  removed 1573 files and links with 410910775 regular-file bytes. The
+  original build receipts remain for source recovery through the boundary
+  comparison. See `retained_builds_review_20261103.boundary_candidate_reference_transition`.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
