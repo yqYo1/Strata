@@ -39027,5 +39027,39 @@
         }
       ]
     }
+  },
+  "decode-layer-contiguous-ownership-20261122": {
+    "source_revision": "0cfc676cc64e9643cd5328570183ccab2bfb247b",
+    "native_revision": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+    "classification": "decision_support",
+    "stage": "native_reviewed_hold",
+    "schedulable_now": false,
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-layer-contiguous-ownership-20261122/report.md",
+    "report_sha256": "924baaef7ae0967bbd19ca4a9a9f35a8f39606299667a1c53cc7e0e5e37909f7",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/decode-layer-contiguous-ownership-20261122/review.md",
+    "review_sha256": "669d61ff9f7fc5ecc91c2daa8fce827f1e1c3a0de01f84825c1bfd04703cb529",
+    "worker": "Orca gpt-6-luna medium, task_e9f3bd5e670e, ctx_f590d67c591a; 15 filesystem checks, worker IPC passed, acknowledged delivery_d2788284a055, exact terminal and scope closed.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "finding": "Per-layer readiness waits precede the CPU expert callback. Distinguish those host waits from resident/shared GPU work that can overlap the callback. No whole-layer performance choice follows from the current clocks.",
+    "correction": "The report models the two host intervals as overlapping and omits the timing receipt. Main checks 14 inputs plus manifest, and checks the order and time scopes against the maintained 1bf54ec32 evidence. The exact d9ac2dfa3e expert table gives a 2575206400-byte budget at 26 slots per layer plus eight final-layer slots, 512 experts per layer and 48 layers. The cheapest contiguous groups of three and four layers require 2555904000 and 3434086400 expert payload bytes. At this budget at most three full contiguous layers fit by weight payload alone.",
+    "consumer": "Keep the mixed placement while timing layer readiness, CPU expert pool and overlapping device work in the same windows. A whole-layer proposal must price dense CPU work and state/activation handoffs as well as the complete expert payload. Keep the original report for this specific comparison decision.",
+    "retention": "Review private input mirrors and task transactions at the next serialized measurement boundary. Preserve compact decisions and the reviewed reference for the named question."
+  },
+  "prefill-k8v4-qsa-quality-memory-20261122": {
+    "source_revision": "0cfc676cc64e9643cd5328570183ccab2bfb247b",
+    "native_revision": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "classification": "knowledge_collection",
+    "stage": "native_reviewed_hold",
+    "schedulable_now": false,
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-k8v4-qsa-quality-memory-20261122/report.md",
+    "report_sha256": "7fa027896eebaad690abbab1c8932c6985c970320a270f99162ead9dbdfaa229",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-k8v4-qsa-quality-memory-20261122/review.md",
+    "review_sha256": "c52c7412f6e0296720e3b583838fbff21076e52e0fc64b353978e1e9595e4346",
+    "worker": "Orca gpt-6-luna medium, task_61506b6665dc, ctx_f0797d3ad781; 15 filesystem checks, worker IPC passed, acknowledged delivery_b115d9d50467, exact terminal and scope closed.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "finding": "Measured prefill source fde0 has resident hybrid INT8 K and rotated Q4_0 V. Current native16 append/attention coverage uses INT8 K and V. CLI refuses hybrid resident streaming. The separate pooled indexer keys select QSA IDs before attention K/V is gathered.",
+    "correction": "Main checks the measured source pins for kv_q4.hpp c7624d5567d4 and kv_q8.hpp 8917232c1090. Per head, K8 uses 256 codes plus four FP16 scales, and V4 uses eight 18-byte blocks. With two heads the payload is 1056 versus 816 bytes per cell per layer, saving 720 MiB total for 12 layers at 262144 cells. This is a logical payload budget. Check the review correction to the cited KVQuant passkey range before reuse.",
+    "consumer": "Retrieve when measured K/V capacity or traffic selects a concrete variant. Require actual SYCL producer/consumer admission, fixed selector state, task quality, physical fill, boundaries, handoff and RESTORE before deciding speed and quality.",
+    "retention": "Review private input mirrors and task transactions at the next serialized measurement boundary. Preserve compact decisions and the reviewed reference for the named question."
   }
 }

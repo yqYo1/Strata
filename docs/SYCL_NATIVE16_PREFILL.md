@@ -1078,6 +1078,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   full seed hits all 53. First client TTFT in these three processes is
   130.091, 127.958 and 126.286 s. The repeated clean timing blocks still
   determine the size and reproducibility of the effect.
+  In the first clean block, empty/short/full first-long TTFT is
+  128.110/127.393/126.936 s and subsequent TTFT is
+  117.096/116.198/117.558 s. All six requests read 117489 fresh tokens and
+  match output and draft counts. The 1.174 s first-long TTFT saving with
+  the full seed is one block of the three-block decision.
   After the 117489-token four-arm comparison closes, use `bench/sycl/prefill_split_length_curve.py` on its
   fastest eligible arm with the same executable and actual 128-slot placement.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
@@ -1551,6 +1556,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   MTP width four. Requalify the decode reference with identical preceding
   work, phase settings and the required context-boundary checks before
   selecting the next verifier candidate.
+  On `14508acbf`, the Arena-copy view is acquired only when the effective
+  PCIe share is positive. The two suites report zero expert-miss copies at
+  share zero with early PCIe disabled. The snapshot setting prints the
+  draft-prefill marker and checks RESTORE when used. The measured requests
+  start fresh with no RESTORE. Keep the full request history and configuration
+  matched in the replay, and evaluate the measured gap before assigning it
+  to a setting.
 
   V1's host-state mutation refusal and V2's missing presence-enabled callback
   failure remain failed in their original evidence. V3prospectively separates
