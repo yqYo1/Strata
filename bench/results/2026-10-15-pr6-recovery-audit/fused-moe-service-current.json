@@ -598476,5 +598476,225 @@
       "total_cap": 67108864
     },
     "error": "RuntimeError('link failed: pi/compiler/2026.2/bin/compiler/llvm-link\" --only-needed /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v2/tmp/icpx-64a767810b/fixture-39c7cc.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-crt.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-cmath.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-imf.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-itt-user-wrappers.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-itt-compiler-wrappers.bc /opt/intel/oneapi/compiler/2026.2/bin/compiler/../../lib/dpcpp-2026/sycl/libsycl-itt-stubs.bc -o /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v2/tmp/icpx-64a767810b/fixture-9018e5.bc --suppress-warnings\\n')"
+  },
+  "prefill_mapped_gu_a_v3": {
+    "stage": "prepared",
+    "controller": {
+      "revision": "5048ea21a7dc3b0710a2558852486f9fee3e3a5e",
+      "sha256": "45a1a3bd58fe0329d8bba5b6d3ce45948ec766131301d1e5be48fc7175297603"
+    },
+    "proof": {
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/strata",
+        "sha256": "85e3f202ef99661d52c03a17a8b609b8a8a44e9f584bfa8fc1a5c1c3d51aea7c",
+        "bytes": 26541640
+      },
+      "parent": "913e9012c3f98898f9f8597639f2ebec384edc04df43a7cca33cedd7ff317a9f",
+      "native_source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+      "probe_source": "19999c6c1df5ce11f12478958904d602c5eff9ac",
+      "probe_inputs": {
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "dc03140a248a50db908d2b4442faa35e0c84a9596c27d2101f50b6f04b797492",
+        "src/prefill/sycl/vllm_xe2/native16.hpp": "f28476b8beff96ee13d11ced3c6a28425ad6412dfc21879f16d3829e64f4f7fa",
+        "bench/sycl/moe_gu_swiglu.cpp": "5c989c34daf6224ba92ee4a054d39f609ac144819072f84e9d7e315995295def"
+      },
+      "recipe_reader": {
+        "path": "/usr/bin/ninja",
+        "sha256": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "validation": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+        }
+      },
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "files": 84
+      }
+    },
+    "commands": {
+      "kernel": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DSTRATA_PREFILL_GU_A_PROBE",
+        "-iquote",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/src/prefill/sycl/vllm_xe2",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/probe-source/src/prefill/sycl/vllm_xe2",
+        "-DCUTLASS_ENABLE_HEADERS_ONLY",
+        "-DCUTLASS_ENABLE_SYCL",
+        "-DSTRATA_CPU_SERVICE_PROFILE=1",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-DSYCL_INTEL_TARGET",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/include/strata/sycl/compat",
+        "-isystem",
+        "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f/include",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-O3",
+        "-fsycl",
+        "-fsycl-targets=spir64_gen",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fno-sycl-instrument-device-code",
+        "-ftemplate-backtrace-limit=0",
+        "-Xspirv-translator",
+        "-spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate",
+        "-Xsycl-target-backend=spir64_gen",
+        "-device bmg-g21-a0 -internal_options -cl-intel-256-GRF-per-thread",
+        "-fsycl-id-queries-range=size_t",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/kernel.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/kernel.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/probe-source/src/prefill/sycl/vllm_xe2/native16.cpp"
+      ],
+      "fixture": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DSTRATA_PREFILL_GU_A_PROBE",
+        "-iquote",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/bench/sycl",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/probe-source/src/prefill/sycl/vllm_xe2",
+        "-DSTRATA_CPU_SERVICE_PROFILE=1",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/src/prefill/sycl/vllm_xe2",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/include/strata/sycl/compat",
+        "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+        "-isystem",
+        "/opt/intel/oneapi/mkl/2026.1/include",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DMKL_ILP64",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/fixture.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/fixture.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/probe-source/bench/sycl/moe_gu_swiglu.cpp"
+      ],
+      "image": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-O3",
+        "-fsycl",
+        "-fsycl-targets=spir64_gen",
+        "-fsycl-link",
+        "-fno-sycl-instrument-device-code",
+        "-Xspirv-translator",
+        "-spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate",
+        "-Xsycl-target-backend=spir64_gen",
+        "-device bmg-g21-a0 -internal_options -cl-intel-256-GRF-per-thread",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/kernel.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/strata_vllm_xe2_image.o"
+      ],
+      "host-slice": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/compiler/clang-offload-bundler",
+        "-unbundle",
+        "-type=o",
+        "-targets=host-x86_64-unknown-linux-gnu",
+        "-input=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/kernel.o",
+        "-output=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/strata_vllm_xe2_host.o"
+      ],
+      "link": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-v",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-Wl,-t",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/fixture.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/sycl_moe_gu_swiglu_bench",
+        "-Wl,-rpath,/opt/intel/oneapi/mkl/2026.1/lib",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/strata_vllm_xe2_image.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v3/strata_vllm_xe2_host.o",
+        "libstrata_prefill.a",
+        "libstrata_engine.a",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_sycl_runtime.a",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm",
+        "-fsycl",
+        "-fsycl-allow-device-image-dependencies",
+        "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+        "-lm",
+        "-ldl",
+        "-lpthread",
+        "-lze_loader"
+      ]
+    },
+    "environment_sha256": "c77461626662b1a66da4541923b2a3251eea0bf36c9410423dee4e808bdfd6d2",
+    "stages": [],
+    "active": false,
+    "complete": false,
+    "passed": false,
+    "ownership_closed": true,
+    "plan": {
+      "build": "Apply only the guarded probe code to the recorded parent sources and enable its single macro for the probe object and fixture. Resolve sibling headers from the original source directory. Finalize the isolated BMG image and host slice and relink against the original checked archives.",
+      "validation": "Host lane layout, traced three-row smoke, then full exact bank-to-fragment bits across both tile policies, tails and malformed maps. No model or timing.",
+      "retention": "Only the witness ELF is a new fixture. Review its live consumer at closure; retain the primary prefill and decode engines."
+    },
+    "budgets": {
+      "wall": 480,
+      "cpu": 840,
+      "rss_cap": 12884901888,
+      "text_cap": 16777216,
+      "file_cap": 67108864,
+      "total_cap": 67108864
+    },
+    "build_budgets": {
+      "wall": 480,
+      "cpu": 840,
+      "rss_cap": 12884901888,
+      "text_cap": 16777216,
+      "file_cap": 67108864,
+      "total_cap": 402653184
+    }
   }
 }
