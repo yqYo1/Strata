@@ -558,13 +558,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   final slot at 262144 with a width-one window and a checked refill drain.
   It emits zero tokens. All three GPU processes exit normally without a
   fresh fault, and the final model asset hashes match.
-  After the physical checks, run `decode_kv_fast_prefill_preservation.py boundary`
-  at 65537 and 117489 to time the context fix against the fast-prefill
-  reference before building the cooperative resolver. This timing uses
-  three independent matched pairs per length, with first-use and warmed
-  prompt time and client TTFT gates kept separate. Both arms use scalar
-  decode KV and the same selected prefill configuration at each length.
-  If both timing gates pass, use the boundary control as the prefill
+  The 65537-token boundary timing at `ea0f97045` closes six independent
+  processes and 18 matched fresh requests. Route, draft counts, provider
+  identities and final model asset hashes match. All six native processes
+  close without a fresh GPU fault. The median paired first-use prompt time
+  and client TTFT fall 1.289% and 1.180%. The warmed medians of the paired
+  time ratios are 1.000733 and 1.000881. These exceed the predeclared
+  preservation limits. The process-median warmed rates are 873.147 and
+  876.725 tok/s for retained and boundary, with lower rates than the
+  earlier 65537-token cohort on the retained executable. Use the paired
+  ratios for the preservation decision. The cause of the period difference
+  remains unresolved.
+  Run the independent 117489-token comparison with
+  `decode_kv_fast_prefill_preservation.py boundary`. Keep three matched
+  pairs and separate first-use and warmed prompt time and client TTFT.
+  Both arms use scalar decode KV and the selected prefill configuration
+  for the length. A new 65K plan must establish preservation before the
+  cooperative comparison can advance. Keep the completed 65K outcome.
+  After qualifying both lengths, use the boundary control as the prefill
   reference for the cooperative comparison. Prove the original fast-prefill
   source and recipe against its executable before retiring it. The previous
   build record supplies source projection and historical workload admission
