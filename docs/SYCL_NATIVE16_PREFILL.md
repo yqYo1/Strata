@@ -524,6 +524,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fast-prefill build and checks the live runtime, model assets and new
   executables. The closed MTP test executables and the phase-naming reference
   are historical inputs for these standalone cases.
+  The host input check on `c316a2666` reproduced all three token-body and
+  environment hashes using the retained runtime. It refused a changed boot
+  identity and a different parent executable hash. The new boundary executable
+  still needs its own build and device outcomes.
   The build projection recovers the coherent foundation from its original
   receipt and Git sources. Preserve its executables for live comparisons and
   readers that still validate those bytes. The four-arm timing cohort consumes
@@ -1577,16 +1581,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   warmups and enables Arena copy and the snapshot marker. The prefix suite
   uses a different native revision, adds chat, prefill and agent requests
   before long generation, and disables both options. Both use effective
-  MTP width four. Requalify the decode reference with identical preceding
-  work, phase settings and the required context-boundary checks before
-  selecting the next verifier candidate.
+  MTP width four. Match the preceding work and phase settings when selecting
+  the decode reference. The verifier candidate has its own context checks.
   On `14508acbf`, the Arena-copy view is acquired only when the effective
   PCIe share is positive. The two suites report zero expert-miss copies at
   share zero with early PCIe disabled. The snapshot setting prints the
   draft-prefill marker and checks RESTORE when used. The measured requests
-  start fresh with no RESTORE. Keep the full request history and configuration
-  matched in the replay, and evaluate the measured gap before assigning it
-  to a setting.
+  start fresh with no RESTORE.
+  The full-suite replay `decode_reference_replay_v1` closed at `097922a15`
+  with identical preceding requests, sustained work and MTP classes across
+  both cohorts. Each replay process exited normally with no fresh GPU fault.
+  The three-process medians were 11.394 versus 11.384 tok/s for code and
+  6.898 versus 6.867 for prose. Both meet the committed development-reference
+  screen. Retain coherent `14508acbf` for the next decode comparison.
+  The collections used different measurement periods, and the unchanged
+  replay build ranged from 10.468 to 11.534 tok/s on code. Use the decision
+  for reference selection. The MTP prefix build has ended its timing role.
+  Check its source recovery and remaining executable readers before retirement.
 
   V1's host-state mutation refusal and V2's missing presence-enabled callback
   failure remain failed in their original evidence. V3prospectively separates
