@@ -53,9 +53,10 @@ def workloads(near):
     return [*restore.workloads(near), (list(range(256, 289)), 0)]
 
 
-def requests(near):
+def requests(near, *, inputs=None, limits=OUTPUTS):
+    inputs = workloads(near) if inputs is None else inputs
     cases = []
-    for (ids, reused), limit in zip(workloads(near), OUTPUTS, strict=True):
+    for (ids, reused), limit in zip(inputs, limits, strict=True):
         payload = restore.protocol.wire(ids, limit)
         cases.append(dict(prompt=len(ids), max_new=limit, reused=reused,
                           wire_bytes=len(payload), wire_sha256=restore.signature_bytes(payload)))
@@ -68,7 +69,7 @@ def environment(row, case):
                    'STRATA_SYCL_KV_COPY_GROUPS': '0'})
 
 
-def plan(row, name):
+def plan(row, name, *, input_plan=None):
     size, width, arm = name.split('-')
     width = int(width)
     command = restore.argv(row)
@@ -76,13 +77,15 @@ def plan(row, name):
             and command.count('--suffix-draft') == 1 and command[command.index('--suffix-draft')+1] == '0',
             'require fixed-width MTP without a suffix proposal')
     command.extend(('--mtp-max-t', str(width)))
-    case = dict(name=name, root=str(ROOT / name), near=size == 'near', borrow=False, direct=False,
-                width=width, enabled=arm == 'on', requests=requests(size == 'near'), command=command)
+    near = size == 'near'
+    case = dict(name=name, root=str(ROOT / name), near=near, borrow=False, direct=False,
+                width=width, enabled=arm == 'on', requests=requests(near) if input_plan is None else input_plan,
+                command=command)
     case['environment_sha256'] = bank.signature(environment(row, case))
     return case
 
 
-def interact(io, case, vocab_size, *, native):
+def interact(io, case, vocab_size, *, native, inputs=None):
     info = {}
     while True:
         line = io.line(600)
@@ -95,7 +98,8 @@ def interact(io, case, vocab_size, *, native):
     require(native and all(info.get(k) == v for k, v in restore.INFO.items())
             and info.get('mtp_max') == str(case['width']), 'wrong native placement, KV format or width cap')
     result = []
-    for (ids, reused), receipt in zip(workloads(case['near']), case['requests'], strict=True):
+    inputs = workloads(case['near']) if inputs is None else inputs
+    for (ids, reused), receipt in zip(inputs, case['requests'], strict=True):
         limit = receipt['max_new']
         payload = restore.protocol.wire(ids, limit)
         require(len(payload) == receipt['wire_bytes'] and restore.signature_bytes(payload) == receipt['wire_sha256'],

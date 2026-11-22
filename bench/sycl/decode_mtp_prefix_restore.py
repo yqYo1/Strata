@@ -1,6 +1,7 @@
 """Check live MTP catch-up dispatch and restored state on the fixed engine."""
 
 import fcntl
+import json
 from pathlib import Path
 import re
 import sys
@@ -11,15 +12,32 @@ import decode_kv_fast_prefill_restore as server
 import decode_mtp_context_fixed as physical
 
 model, bank, restore, require = server.model, server.bank, server.restore, server.require
-ROOT = bank.B / 'decode-mtp-prefix-restore-v1'
-KEY = 'decode_mtp_prefix_restore_v1'
+sys.path[:0] = [str(bank.P), str(bank.P / 'tools')]
+from collect_profile_traces import load_tokenizer
+from long_generation_bench import WORKLOADS
+from serve.frontend import ChatTemplate
+
+ROOT = bank.B / 'decode-mtp-prefix-restore-v2'
+KEY = 'decode_mtp_prefix_restore_v2'
+FIRST_TRIAL = '7a479bc5b9652e4aa5c6a8fb1ec88d21766b9ace'
+FIRST_KEY = 'decode_mtp_prefix_restore_v1'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 ORDER = ('short-off', 'short-on', 'near-off', 'near-on')
+FRESH = 8209
+GENERATION = 64
+CONTEXT_RESERVE = 16
+OUTPUTS = (1, 1, GENERATION, 1)
+TOKENIZER_FILES = ('vocab.json', 'merges.txt', 'token_type.json', 'tokenizer.json', 'chat_template.jinja')
+PROMPT_SOURCES = ('tools/collect_profile_traces.py', 'tools/long_generation_bench.py',
+                  'tools/strata_tokenizer.py', 'serve/frontend.py')
 CATCHUP = (r'^strata mtp: decode catchup p=(\d+) verified=(\d+) accepted=(\d+) '
            r'rows=(\d+) coupled=(\d+)$')
-PLAN = dict(order=list(ORDER),
+PLAN = dict(order=list(ORDER), original_failure=FIRST_TRIAL, output_caps=list(OUTPUTS),
     scope='Fixed-width uncoupled MTP4. Use one binary and unchanged prefill, head, '
           'cache and math settings. Vary only whether catch-up consumes the committed prefix.',
+    workload='Keep 8209 fresh tokens after live RESTORE. Append the thinking-enabled varied-prose chat '
+             'suffix in place of the end of the synthetic pattern. Give it 64 output slots. Adjust '
+             'the near-capacity prefix to keep 16 additional slots for the server.',
     acceptance='Verify the emitted width of every nonterminal draft call against its verifier '
                'position and the next commit. Require actual shortening on both input sizes. '
                'Compare matched fixed greedy requests, committed state and live RESTORE. '
@@ -42,15 +60,62 @@ def inputs():
                     and v['ownership_closed'] and not v['fresh_faults'] for v in (near, full))
             and (near['batched_rows'], near['outputs']) == (262141, 2)
             and full['final_slot_consumed'], 'complete the fixed width-four physical gate')
+    first = bank.previous.historic(FIRST_TRIAL, FIRST_KEY)
+    rejected = first['outcomes']['short-off']
+    require(first['stage'] == 'failed' and first['ownership_closed'] and not first['active']
+            and first['binary'] == values['binary'] and first['build_sha256'] == values['build_sha256']
+            and not rejected['passed'] and rejected['native_exit_code'] == 0 and not rejected['fresh_faults']
+            and (rejected['requests'][2]['accepted'], rejected['requests'][2]['offered']) == (6, 6),
+            'preserve the original fully accepted restore baseline')
     binary = dict(binaries={'strata': values['binary']}, native_source_commit=values['native_source_commit'])
     return binary, values, values['build_sha256'], bank.signature(closed)
 
 
+def tokenizer_fixture(row):
+    folder = Path(row['configuration']['tokenizer'])
+    return dict(folder=str(folder), sha256={name: row['model_assets'][str(folder / name)]['sha256']
+                                            for name in TOKENIZER_FILES})
+
+
+def prose_tokens(fixture):
+    folder = Path(fixture['folder'])
+    require(set(fixture['sha256']) == set(TOKENIZER_FILES)
+            and all(bank.sha(folder / name) == expected for name, expected in fixture['sha256'].items()),
+            'restore tokenizer inputs changed')
+    config = json.loads((folder / 'tokenizer.json').read_text())
+    require(config['pre'] == 'qwen35', 'the fixture uses the Qwen chat tokenizer')
+    template = ChatTemplate(folder / 'chat_template.jinja')
+    text = template.render([{'role': 'user', 'content': WORKLOADS['varied-prose']['instruction']}],
+                           enable_thinking=True)
+    tokens = load_tokenizer(folder).encode(text, parse_special=True)
+    require(0 < len(tokens) <= FRESH and '<think>' in text, 'missing thinking prompt or suffix capacity')
+    return tokens
+
+
+def workload(near, tail):
+    initial = 32769
+    if near:
+        initial = physical.capacity.CAPACITY - FRESH - GENERATION - CONTEXT_RESERVE
+    prefix = [i % 4096 for i in range(initial)]
+    padding = [256 + i % 16 for i in range(FRESH - len(tail))]
+    return [(prefix, 0), (list(range(128, 161)), 0),
+            (prefix + padding + tail, initial), (list(range(256, 289)), 0)]
+
+
 def plan(row, name):
-    case = server.plan(row, name.replace('-', '-4-', 1))
-    case.update(name=name, root=str(ROOT / name))
+    near = name.startswith('near-')
+    tokenizer = tokenizer_fixture(row)
+    body = workload(near, prose_tokens(tokenizer))
+    requests = server.requests(near, inputs=body, limits=OUTPUTS)
+    case = server.plan(row, name.replace('-', '-4-', 1), input_plan=requests)
+    case.update(name=name, root=str(ROOT / name), tokenizer=tokenizer)
     case['environment_sha256'] = bank.signature(environment(row, case))
     return case
+
+
+def interact(io, case, vocab_size, *, native):
+    body = workload(case['near'], prose_tokens(case['tokenizer']))
+    return server.interact(io, case, vocab_size, native=native, inputs=body)
 
 
 def environment(row, case):
@@ -103,8 +168,9 @@ def inspect(log, row, case, requests, pid):
         observed.append(dict(catchup_evidence(content, request, case['enabled']),
                              loan_slots=server.loan_evidence(content, request)))
         previous_end = frame.end()
-    require(not re.search(server.WINDOW + '|' + CATCHUP + '|' + server.STATE, log[previous_end:], re.M)
-            and sum(o['eligible'] for o in observed) > 0, 'unassigned trace or no shortened width-four opportunity')
+    require(not re.search(server.WINDOW + '|' + CATCHUP + '|' + server.STATE, log[previous_end:], re.M),
+            'unassigned trace after the last request')
+    require(sum(o['eligible'] for o in observed) > 0, 'no shortened width-four opportunity')
     restored, kind = restore.capacity.one(log,
         r'^strata serve: conversation cache: restored (\d+) tokens \((live|checkpoint)\)', 'live RESTORE')
     snapshot = restore.capacity.one(log, r'^strata serve: SNAPSHOT_VERIFY (.*)$', 'restored payload')
@@ -129,10 +195,10 @@ def experiment():
     ctx = bank.basis.core.source.device.load_module('mtp_prefix_restore', model.__file__)
     ctx.ROOT, ctx.KEY, ctx.ORDER = ROOT, KEY, ORDER
     ctx.inputs, ctx.plan, ctx.environment, ctx.inspect = inputs, plan, environment, inspect
-    ctx.restore = SimpleNamespace(**{**vars(restore), 'interact': server.interact})
+    ctx.restore = SimpleNamespace(**{**vars(restore), 'interact': interact})
     save, current = ctx.save, ctx.current
     controllers = [THIS, physical.THIS, physical.build.THIS, physical.reference.THIS, server.THIS,
-                   *server.state.SCRIPTS, *physical.previous.SOURCES]
+                   *server.state.SCRIPTS, *physical.previous.SOURCES, *PROMPT_SOURCES]
 
     def write(row):
         if row['stage'] == 'prepared':

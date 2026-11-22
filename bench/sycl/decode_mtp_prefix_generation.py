@@ -148,6 +148,7 @@ def experiment():
     def pins(revision):
         values = suite.pins(revision)
         required = (THIS, clock.THIS, profiles.THIS, handoff.THIS, handoff.physical.THIS,
+                    handoff.server.THIS, *handoff.PROMPT_SOURCES,
                     profiles.profile.PROFILES['stock'], *profiles.profile.SOURCES)
         for name in required:
             require((bank.P / name).read_bytes() == suite.gen.git('show', revision + ':' + name),
