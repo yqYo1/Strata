@@ -570206,7 +570206,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "b3e1ee0d230b01eec735cf2d1f266cfae49496b6",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/build/strata",
@@ -570221,7 +570221,84 @@
       "environment_sha256": "5990eab9654303568db3c00994aafcc93671f5e549f6420fdaa10aae86d3999b"
     },
     "vocab_size": 248320,
-    "outcomes": {},
+    "outcomes": {
+      "short-off": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "native_exit_code": 0,
+        "requests": [
+          {
+            "prompt": 32769,
+            "read": 32769,
+            "reused": 0,
+            "generated": 1,
+            "finish": "length",
+            "accepted": 0,
+            "offered": 0,
+            "output_sha256": "da8c326d8b17883e05109f856f3fd093a3a9fde6473d42082d1f2c58be30e909",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768
+            ]
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "generated": 1,
+            "finish": "length",
+            "accepted": 0,
+            "offered": 0,
+            "output_sha256": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "publications": [
+              32
+            ]
+          },
+          {
+            "prompt": 40978,
+            "read": 8209,
+            "reused": 32769,
+            "generated": 8,
+            "finish": "length",
+            "accepted": 6,
+            "offered": 6,
+            "output_sha256": "45f67d371a379cbbfe7b8e0672542fbd873be5475ec49491ce9bdab8f1cdc42c",
+            "publications": [
+              40961,
+              40977
+            ]
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "generated": 1,
+            "finish": "length",
+            "accepted": 0,
+            "offered": 0,
+            "output_sha256": "da8c326d8b17883e05109f856f3fd093a3a9fde6473d42082d1f2c58be30e909",
+            "publications": [
+              32
+            ]
+          }
+        ],
+        "error": "RuntimeError('unassigned trace or no shortened width-four opportunity')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    },
     "passed": false,
     "complete": false,
     "ownership_closed": true,

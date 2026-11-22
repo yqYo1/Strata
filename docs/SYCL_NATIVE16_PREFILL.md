@@ -397,7 +397,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fingerprint triggers a fixed-history numerical comparison before timing.
   The host trace parser accepts both planned shapes and rejects excess
   catch-up, skipped commit positions, wrong published extent and a terminal
-  draft call. Live state and timing evidence remain pending.
+  draft call. The first traced baseline restored 32769 tokens, read 8209 more
+  and generated all eight requested tokens. It accepted all six drafts, with
+  widths one, four and four and catch-up widths one and four. The campaign
+  stopped at the no-shortening-opportunity check before the candidate arm.
+  The server exited zero and ownership closed without a fresh driver fault.
+  Keep this outcome and use a distinct workload with a varied-prose suffix
+  and more generation room for the next comparison.
   Compare off/on at fixed width and identical placement, separately from the
   confidence-floor experiment and the proposed graph-drain change. First trace all four actual
   catch-up widths against verified and accepted counts. Check live draft KV,
