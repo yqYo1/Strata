@@ -1246,9 +1246,32 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   accepted copy commands and wins one of three warm pairs against batched.
   Its median coalesced/batched ratio is 1.001633 and fails the incremental gain
   gate. Advance batched for further tuning on this image. The median warmed
-  request needs 1.293 fewer seconds to sustain 1000 tok/s. The same-build
-  `prefill_split_upload_compare.py profile` runs clean, CPU accounting
-  and clean, each with the first two established fresh inputs. Only the
+  request needs 1.293 fewer seconds to sustain 1000 tok/s.
+  The measured upload-scheduling gain also identifies a follow-up on the
+  retained KV/gather executable's `fde0cdd11` source. The first current
+  117489-token direct-store pair at `52415d2c6` leaves 2.245 s to reach the
+  target. The earlier demand-to-batched ratio of 0.974529 would save 3.050 s
+  at that prompt time if it held on this source and placement. Treat this as a
+  budget estimate for choosing an experiment.
+  The exact three production source files used by the retained executable
+  match its compiler receipt. Applying and reversing the `b17cced78` delta
+  recovers every original byte. These hashes identify the projection.
+
+  | Source | SHA-256 |
+  | --- | --- |
+  | `src/prefill/prefill.cpp` | `b9d49202dbdd4f1d0135af0faf4c6038d12a4f1d2f58c79181bfdac54cc6ed9b` |
+  | `src/prefill/moe_window.inc` | `131e66d4dc3580e7e851bf11bc5948d5c9bda35852f33e42953b0bad40b3edc3` |
+  | `src/prefill/layer_major.inc` | `69ebdcfac4e799dddb27cd208dcde998b3d76fa8e14cac66ae57851625701277` |
+
+  At the build boundary, check the retained upload executable and its
+  remaining consumers. Qualify a coherent projection when a same-build
+  demand/batched comparison on `fde0cdd11` is needed. Keep the 128-slot
+  placement, KV reuse, scalar gather and attention output policy fixed at
+  first. Compare batch issue before testing any interaction with direct
+  output. Build, state and clean timing remain pending for this projection.
+  On the earlier upload build, `prefill_split_upload_compare.py profile`
+  runs clean, CPU accounting and clean, each with the first two established
+  fresh inputs. Only the
   middle process enables `STRATA_PREFILL_CPU_WAIT_PROFILE`. The diagnostic
   checks complete calling-thread partitions and a two-sided 3% prompt and
   TTFT envelope against both controls. Physical 262144, RESTORE and
