@@ -38850,5 +38850,49 @@
     "schedulable_now": false,
     "reviewer": "Native Codex gpt-6-luna max",
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/niko-0218-serve-discovery-state-20261122/report.md"
+  },
+  "moe-speculation-expert-byte-budget-20261122": {
+    "source_commit": "7294f473548a68e9db7efe4eaa9ea90f5407699a",
+    "report_sha256": "5da13413de1def93615c34c400122421278d5fbfe3dd00e6776ad59b5b76b6d3",
+    "review_sha256": "8847f21495e9d66b7c518b3e102b6ed7545a125aaaa6d9e189f5aa732e5e4b87",
+    "worker": "Orca gpt-6-luna medium, task_3c446151283e, ctx_48352070a854. Filesystem and worker IPC checks passed. Task settlement, delivery acknowledgment and scoped exit verified.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-speculation-expert-byte-budget-20261122/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/speculation-expert-bytes-and-snapshot-pages-20261122/review.md",
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "stage": "native_reviewed_hold",
+    "finding": "Compare emitted target tokens per distinct packed CPU expert weight byte. Exact verification still scores every selected row.",
+    "correction": "Key each byte union by both layer and expert and use the packed size for that layer. The report still needs that correction before use.",
+    "evidence": {
+      "commit": "bf5f941446a66110491d5700c17f3449e7d49bf6",
+      "key": "ordinary_decode_round_cost_v1",
+      "tokens_per_window": {
+        "regular-code": 3.604,
+        "varied-prose": 2.017
+      }
+    },
+    "consumer": "Retrieve after the confidence-floor pilot for a held-out exact-verifier proposal comparison.",
+    "next_review": "Before that experiment, compare a layer-qualified byte predictor against ordinary and random selectors at matched widths."
+  },
+  "long-context-snapshot-page-ownership-20261122": {
+    "source_commit": "7294f473548a68e9db7efe4eaa9ea90f5407699a",
+    "report_sha256": "a634fa8c6a192344232be4ff57fb6ef63e71ce4c7d8d7bef1b1d49a737c48af6",
+    "review_sha256": "8847f21495e9d66b7c518b3e102b6ed7545a125aaaa6d9e189f5aa732e5e4b87",
+    "worker": "Orca gpt-6-luna medium, task_36cfc6bde8cf, ctx_32178ea414a2. Filesystem and worker IPC checks passed. Task settlement, delivery acknowledgment and scoped exit verified.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/long-context-snapshot-page-ownership-20261122/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/speculation-expert-bytes-and-snapshot-pages-20261122/review.md",
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "stage": "native_reviewed",
+    "finding": "Page reuse needs separate identity and publication rules for QSA K/V, MTP tails and recurrent state.",
+    "evidence": {
+      "commit": "7294f473548a68e9db7efe4eaa9ea90f5407699a",
+      "key": "decode_mtp_prefix_restore_v2.outcomes.near-off",
+      "restore_ms_with_diagnostic_verification": 24279.7
+    },
+    "consumer": "Retrieve when considering cross-request page reuse or host/device offload for long live restoration.",
+    "next_review": "When selecting one connector for complete-prefix page reuse and partial-tail repair, or at retention review."
   }
 }
