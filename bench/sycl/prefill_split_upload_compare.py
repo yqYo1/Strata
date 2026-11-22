@@ -9,17 +9,21 @@ sys.dont_write_bytecode = True
 import prefill_split_bank_compare as split
 import prefill_split_upload_build as build
 from prefill_prefix_expert_measure import timing
+import prefill_prefix_expert_profile as host_profile
 
 bank, basis, model, require = split.bank, split.basis, split.model, split.require
 speed, workspace = split.speed, split.workspace
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 READ, SLOTS = 117489, 128
 REFERENCE = '7c88fb0123a76b35e2dc91e597a19439bd2ae5ca'
+CLOSED_TIMING = '982211f5c91b4251ff89b8ad93f1f369a46fbad0'
 MODES = ('demand', 'batched', 'coalesced')
 BLOCKS = (MODES, MODES[1:] + MODES[:1], MODES[2:] + MODES[:2])
 CONTRASTS = (('batched', 'demand'), ('coalesced', 'batched'), ('coalesced', 'demand'))
 UPLOAD = 'STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD'
-KEYS = {'admit': 'prefill_split_upload_admission_v1', 'time': 'prefill_split_upload_speed_v1'}
+KEYS = {'admit': 'prefill_split_upload_admission_v1', 'time': 'prefill_split_upload_speed_v1',
+        'profile': 'prefill_split_upload_cpu_wait_v1'}
+MAX_OBSERVER_RATIO = 1.03
 
 
 def admission(traced, runs):
@@ -103,6 +107,56 @@ def check_work(outcome, row, plan):
                 'the same engine restored a different decode expert loan')
 
 
+def profile_basis(runs):
+    native, prior, providers, extra = admission(False, runs)
+    gate = basis.validation.committed(bank.RESULT, (KEYS['time'],))
+    require(gate == bank.previous.historic(CLOSED_TIMING, KEYS['time'])
+            and gate['stage'] == 'closed' and gate['passed'] and gate['complete']
+            and gate['ownership_closed'] and not gate['active']
+            and gate['binary'] == native['binaries']['strata']
+            and gate['native_source_commit'] == native['native_source_commit']
+            and gate['observer_admission']['build_sha256'] == prior['observer_admission']['build_sha256']
+            and gate['decision']['repeated_warm_gain']['batched/demand']
+            and not gate['decision']['repeated_warm_gain']['coalesced/batched'],
+            'recover the finished same-build batch placement comparison')
+    prior['observer_admission']['timing_evidence'] = CLOSED_TIMING
+    prior['observer_admission']['timing_sha256'] = bank.signature(gate)
+    return native, prior, providers, extra
+
+
+def profiled_route(text, plan):
+    route = request_route(text, plan)
+    if plan['cpu_wait_scopes']:
+        route['cpu_partition'] = host_profile.cpu_partition(text)
+    else:
+        require(all(scope not in text for scope in host_profile.SCOPES), 'CPU scopes appeared in a clean request')
+    return route
+
+
+def check_profile_work(outcome, row, plan):
+    check_work(outcome, row, plan)
+    outcome.update(role=plan['role'], clean_speed=not plan['cpu_wait_scopes'])
+
+
+def profile_decision(ctx, processes):
+    require([p['role'] for p in processes] == list(host_profile.ROLES)
+            and [p['clean_speed'] for p in processes] == [True, False, True]
+            and len({(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in processes}) == 3
+            and all(p['passed'] and p['complete'] and p['ownership_closed']
+                    and not p['fresh_faults'] and p['native_exit_code'] == 0 for p in processes),
+            'complete independent CPU-accounting bracket required')
+    result = ctx.profile_decision(processes)
+    eligible = all(1 / MAX_OBSERVER_RATIO <= value <= MAX_OBSERVER_RATIO
+                   for point in result['observer_ratios'] for field in ('prompt', 'client_TTFT')
+                   for value in point[field])
+    result.update(maximum_observer_ratio=MAX_OBSERVER_RATIO,
+                  observer_cost_qualified=eligible, normal_route_attribution_qualified=eligible,
+                  limits='Calling-thread accounting of host regions and instrumented waits only. '
+                         'Upload submission can contain provider blocking. Physical bus traffic and '
+                         'GPU saturation remain unmeasured.')
+    return result
+
+
 def decision(processes, traced, order):
     identities = {(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in processes}
     require(tuple(p['mode'] for p in processes) == order and len(identities) == len(order)
@@ -130,8 +184,12 @@ def decision(processes, traced, order):
 
 def experiment(action):
     traced = action == 'admit'
-    order = MODES if traced else tuple(arm for block in BLOCKS for arm in block)
-    runs = 2 if traced else 4
+    profiled = action == 'profile'
+    if profiled:
+        order = ('batched',) * len(host_profile.ROLES)
+    else:
+        order = MODES if traced else tuple(arm for block in BLOCKS for arm in block)
+    runs = 2 if traced or profiled else 4
     ctx = basis.core.source.device.load_module('split_upload_' + action, basis.core.__file__)
     ctx.THIS, ctx.KEY, ctx.ROOT = THIS, KEYS[action], bank.B / (KEYS[action].replace('_', '-'))
     ctx.READS, ctx.ORDER, ctx.RUNS, ctx.CLEAN_FAST = (READ,) * len(order), [(READ, 1)] * len(order), runs, True
@@ -143,11 +201,27 @@ def experiment(action):
     protocol = dict(order=list(order), requests=runs, trace=traced, bank=SLOTS,
                     acceptance='Match actual work and checked decode loan. For each contrast, use at least two '
                                'faster warm prompt times and a paired median below one. Keep both TTFT scopes.')
+    if profiled:
+        ctx.basis = lambda: profile_basis(runs)
+        ctx.request_route, ctx.after_execution = profiled_route, check_profile_work
+        ctx.decision = lambda processes: profile_decision(ctx, processes)
+        protocol.update(roles=list(host_profile.ROLES), maximum_observer_ratio=MAX_OBSERVER_RATIO,
+                        acceptance='Match actual work and close all owners. Compare first and second requests '
+                                   'to both clean controls. Use a two-sided 3% observer screen for attribution.')
+
+        def validate_model_text(text, plan):
+            count = runs if plan['cpu_wait_scopes'] else 0
+            require(all(sum(line.startswith(scope) for line in text.splitlines()) == count
+                        for scope in host_profile.SCOPES), 'extra or missing CPU accounting scope')
+
+        ctx.validate_model_text = validate_model_text
 
     def pins(revision):
         values = old_pins(revision)
         paths = [split.THIS, build.THIS, speed.THIS, speed.capacity.THIS, speed.dispatch.THIS,
                  speed.dispatch.split.THIS, *speed.state.SCRIPTS]
+        if profiled:
+            paths.append(host_profile.THIS)
         values.update(bank.stage.source.pin(bank.P, paths)['source_sha256'])
         return values
 
@@ -160,12 +234,17 @@ def experiment(action):
                 and env.get('STRATA_SYCL_CACHE_LOAN_AUDIT', '0') == '0', 'unexpected observer')
         if traced:
             env.update(STRATA_TRACE='1', STRATA_SYCL_CACHE_LOAN_AUDIT='1')
+        if profiled:
+            require(env.get(host_profile.SELECTOR, '0') == '0', 'unexpected CPU accounting flag')
+            env[host_profile.SELECTOR] = str(int(plan['index'] == 1))
         return env
 
     def save(row):
         if row['stage'] == 'prepared':
             for plan, mode in zip(row['plans'], order, strict=True):
                 plan.update(mode=mode, trace_progress=traced)
+                if profiled:
+                    plan.update(role=host_profile.ROLES[plan['index']], cpu_wait_scopes=plan['index'] == 1)
             row.update(whole_bytes=len(order) * row['budgets']['total_cap'] + (8 << 20), plan=protocol)
         old_save(row)
 
@@ -175,6 +254,10 @@ def experiment(action):
                 and [(p['index'], p['read'], p['mode'], p['trace_progress']) for p in row['plans']]
                     == [(i, READ, mode, traced) for i, mode in enumerate(order)],
                 'frozen split-upload configuration, order or arm differs')
+        if profiled:
+            require([(p['role'], p['cpu_wait_scopes']) for p in row['plans']]
+                    == [(role, i == 1) for i, role in enumerate(host_profile.ROLES)],
+                    'frozen CPU accounting roles differ')
         return old_current(row)
 
     ctx.pins, ctx.environment, ctx.current, ctx.save = pins, environment, current, save
@@ -184,7 +267,7 @@ def experiment(action):
 if __name__ == '__main__':
     phase, action = sys.argv[1:]
     require(sys.executable == basis.reference.model.PYTHON and phase in KEYS,
-            'use the benchmark environment and select admit or time')
+            'use the benchmark environment and select admit, time or profile')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])

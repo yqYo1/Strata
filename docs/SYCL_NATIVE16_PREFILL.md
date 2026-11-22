@@ -1246,9 +1246,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   accepted copy commands and wins one of three warm pairs against batched.
   Its median coalesced/batched ratio is 1.001633 and fails the incremental gain
   gate. Advance batched for further tuning on this image. The median warmed
-  request needs 1.293 fewer seconds to sustain 1000 tok/s. Next attribute
-  exposed host submission and GPU wait on that same placement. Physical
-  262144, RESTORE and sustained decode qualification remain open on this build.
+  request needs 1.293 fewer seconds to sustain 1000 tok/s. The same-build
+  `prefill_split_upload_compare.py profile` runs clean, CPU accounting
+  and clean, each with the first two established fresh inputs. Only the
+  middle process enables `STRATA_PREFILL_CPU_WAIT_PROFILE`. The diagnostic
+  checks complete calling-thread partitions and a two-sided 3% prompt and
+  TTFT envelope against both controls. Physical 262144, RESTORE and
+  sustained decode qualification remain open on this build.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
