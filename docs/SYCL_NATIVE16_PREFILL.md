@@ -1151,6 +1151,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   payloads. Require normal closure, no diagnostic errors and no fresh fault
   before advancement. Then verify real model dispatch, output and decode
   cache restoration on a coherent engine build.
+  Both `99cc428a6` fixture processes closed normally with quiet validation
+  and no fresh faults. At the native stride the full test compared 71884800
+  bytes, with 27 versus five copy submissions. Cancellation retired
+  42598400 bytes in one submitted copy with guards intact. The fixture
+  build verified 711 compiler inputs and the boundary runtime archive.
+  Executable SHA-256 is
+  `dd69762b225b612ba88ae1cf3542b0e9e0dcefcb6ab4f4b9db1c165c270b1326`.
+  The resolved build command SHA-256 is
+  `f5932894a2a285541944a2cd7ce200acab33237235189b71fd89e875c592d7ad`.
+  The combined `b17cced78` and `99cc428a6` production overlay also passed
+  syntax verification on the boundary image with 799 verified inputs.
+  Its updated MoE and helper hashes are
+  `3d1df9055f289de60563b52162ce8af7bb167d8aa4442d0f82d2b1397ba7db5a` and
+  `44238ca87239cfbbf47308c1275693747c97509a04a86fd1aa02aa489b3f5a46`.
+  The next model check consumes these receipts. Retire the closed capture
+  and rebuildable fixture under
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/split-prefill-expert-upload-fixture-v1`
+  after committing the result. The verified root contains 25 files and
+  1285631 bytes, with sorted path/size/SHA-256 digest
+  `c546e8d5ad7ae333cfe22420edb2afa647250fb275fcdedc6b2a2884eedee5df`.
   Hold the bank capacity, scratch checks and all runtime settings fixed.
   Use three independent blocks in demand/batched/coalesced,
   batched/coalesced/demand and coalesced/demand/batched order on the
