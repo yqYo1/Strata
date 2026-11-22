@@ -42,8 +42,13 @@ def measured_route(read):
 
 
 def fixture_inputs(revision):
-    native, prior, providers, _, _ = measured_route(65537)
-    env = model.ordinary_environment(prior, str(FIXTURE_ROOT), prior['observer_admission']['ordinary_control'])
+    native, prior, providers, _, evidence = measured_route(65537)
+    measured_root = Path(evidence['plans'][0]['root']).parent
+    measured = bank.previous.read(measured_root / 'record.json')
+    require(basis.compact(measured) == evidence and measured['native_validation_probe'] == prior['probe'],
+            'recover the original measured environment and validation probe')
+    env = model.ordinary_environment(measured, str(FIXTURE_ROOT),
+                                     prior['observer_admission']['ordinary_control'])
     env.update(TMPDIR=str(FIXTURE_ROOT / 'tmp'), XDG_CACHE_HOME=str(FIXTURE_ROOT / 'cache'))
     probe = prior['probe']
     env = native_environment(dict(native_validation_probe=probe), env)
