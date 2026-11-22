@@ -598911,5 +598911,218 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-operator-v1/strata_vllm_xe2_host.o": "25785b9defdb2d6160d205a733d260d371a56f1980e0315ba698ee7b51c53534",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-operator-v1/sycl_moe_gu_swiglu_bench": "577a05192c562119cc2d8c212f08fcfb9c8f5404c0b616a949330366768f743e"
     }
+  },
+  "prefill_mapped_gu_timing_v1": {
+    "stage": "prepared",
+    "controller": {
+      "revision": "54a5e64c4594cca780438906a2330cf30b888ed5",
+      "sha256": "30e4f68350230623d8364e6b03cbf23b5e75b1306938ae7d879981884aade15f"
+    },
+    "proof": {
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/strata",
+        "sha256": "85e3f202ef99661d52c03a17a8b609b8a8a44e9f584bfa8fc1a5c1c3d51aea7c",
+        "bytes": 26541640
+      },
+      "parent": "913e9012c3f98898f9f8597639f2ebec384edc04df43a7cca33cedd7ff317a9f",
+      "native_source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+      "probe_source": "54a5e64c4594cca780438906a2330cf30b888ed5",
+      "probe_inputs": {
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "cb6608c01d48b594f670f3cebe8885a75e7d58bef692aaed46cd9bab82bee56b",
+        "src/prefill/sycl/vllm_xe2/native16.hpp": "b1923cc89b79ea90d4fa5084da5684ca5a1e85517db478b90ba794298dfcc7b9",
+        "bench/sycl/moe_gu_swiglu.cpp": "b64065dad0ad9449db64f7902663b2e917ea02c977a9a5853ee525db3e0d69b4"
+      },
+      "qualified_operator": {
+        "revision": "6b2a568991a61ba479a70decb7d8d44cbc28ae46",
+        "executable": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-operator-v1/sycl_moe_gu_swiglu_bench",
+          "sha256": "577a05192c562119cc2d8c212f08fcfb9c8f5404c0b616a949330366768f743e"
+        },
+        "native_overlay_commit": "038e008a3219850d78db8515730ef9d8b907a1be"
+      },
+      "previous_witness": {
+        "revision": "b30fb35e4c237a24a6915c5c3025fb9eb99168a0",
+        "executable": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-a-v5/sycl_moe_gu_swiglu_bench",
+          "sha256": "bd4479e9f6e2b0aa722e649cd8bb426e63cec430b4542ed736df192bac6e27f6"
+        }
+      },
+      "reused_objects": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/strata_vllm_xe2_image.o": {
+          "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-operator-v1/strata_vllm_xe2_image.o",
+          "sha256": "044b6996c7529bde11c3c052387bda0e5e0c083f1af85d140d1b3d1173f4edb1"
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/strata_vllm_xe2_host.o": {
+          "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-operator-v1/strata_vllm_xe2_host.o",
+          "sha256": "25785b9defdb2d6160d205a733d260d371a56f1980e0315ba698ee7b51c53534"
+        }
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "validation": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+        }
+      },
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-speed-v1/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "files": 84
+      }
+    },
+    "commands": {
+      "fixture": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DSTRATA_PREFILL_GU_A_PROBE",
+        "-iquote",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/bench/sycl",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/probe-source/src/prefill/sycl/vllm_xe2",
+        "-DSTRATA_CPU_SERVICE_PROFILE=1",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/src/prefill/sycl/vllm_xe2",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/source/include/strata/sycl/compat",
+        "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+        "-isystem",
+        "/opt/intel/oneapi/mkl/2026.1/include",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DMKL_ILP64",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/fixture.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/fixture.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/probe-source/bench/sycl/moe_gu_swiglu.cpp"
+      ],
+      "link": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-v",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-Wl,-t",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/fixture.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/sycl_moe_gu_swiglu_bench",
+        "-Wl,-rpath,/opt/intel/oneapi/mkl/2026.1/lib",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/strata_vllm_xe2_image.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-mapped-gu-timing-v1/strata_vllm_xe2_host.o",
+        "libstrata_prefill.a",
+        "libstrata_engine.a",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_sycl_runtime.a",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm",
+        "-fsycl",
+        "-fsycl-allow-device-image-dependencies",
+        "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+        "-lm",
+        "-ldl",
+        "-lpthread",
+        "-lze_loader"
+      ]
+    },
+    "environment_sha256": "3c4c0b47427846a73b614461bc4d16a7b1373d50b2b38d7c8ddf1b814ae41b69",
+    "stages": [],
+    "active": false,
+    "complete": false,
+    "passed": false,
+    "ownership_closed": true,
+    "plan": {
+      "interval": "Wall time from first host call through the final checked event on the in-order compute queue. Compare scalar production mixed gather plus native fused GU with mapped native GU. Fix W, bank, source map, DPAS geometry, B loading, precision and output bytes in each pair. The model dispatcher, dequantization and all other layers are outside this component interval.",
+      "shapes": [
+        [
+          2334,
+          0
+        ],
+        [
+          2334,
+          1
+        ],
+        [
+          5963,
+          0
+        ],
+        [
+          5963,
+          1
+        ],
+        [
+          8192,
+          0
+        ],
+        [
+          8192,
+          1
+        ]
+      ],
+      "processes": 3,
+      "pairs_per_process_shape": 6,
+      "order": "Rotate shape order by two per process. Start with (process+shape_index)%2, then alternate arm order per pair. Arm 0 is gather plus native GU; arm 1 is mapped GU.",
+      "repeat": "After exact warmed checks, eight calls in each pilot. Use the same repeat count for the pair, ceil(target_ms*pilot_repeats/min(pilot_ms)), within [1,repeat_cap]. Minimum eligible duration applies to both arms of every pair. Keep all short batches with performance eligibility false for the affected workload. No replacement.",
+      "target_ms": 180,
+      "pilot_repeats": 8,
+      "repeat_cap": 2048,
+      "min_batch_ms": 100,
+      "timer": "Maximum mean of three windows of 4096 back-to-back steady_clock pairs must be at most 0.1% of the minimum eligible duration. Apply no time subtraction.",
+      "maximum_clock_mean_us": 100,
+      "validation": "Trace a fresh two-case smoke on the relinked fixture. Time separate unprofiled fresh processes. Before timing each shape, check gather oracle, BF16 and FP16 captures, no-capture outputs and guards. Check warmed output bits, status and output guards after each timed batch. Resets and checks are outside the clock.",
+      "advance": "For a layout at a given size, require complete eligible batches and at least two of three process medians of paired mapped/gather ratios below one with four of six paired wins each. The aggregate paired median must also be below one. Both layouts must pass to consider that size for route review. This is component evidence only.",
+      "retention": "Reuse the admitted operator device and host objects. Keep the latest comparison fixture and compact samples until the component decision. Preserve the model prefill and decode references."
+    },
+    "budgets": {
+      "wall": 480,
+      "cpu": 840,
+      "rss_cap": 12884901888,
+      "text_cap": 16777216,
+      "file_cap": 67108864,
+      "total_cap": 67108864
+    },
+    "build_budgets": {
+      "wall": 480,
+      "cpu": 840,
+      "rss_cap": 12884901888,
+      "text_cap": 16777216,
+      "file_cap": 67108864,
+      "total_cap": 402653184
+    }
   }
 }
