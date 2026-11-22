@@ -609345,5 +609345,50 @@
     },
     "environment_template_sha256": "216a9ec2f574afffb986709ce8ebc13cc631862c3f03ffc33490df33eac5a9e9",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_gather_conditions_117489_v1": {
+    "stage": "failed-before-launch",
+    "complete": false,
+    "passed": false,
+    "active": false,
+    "ownership_closed": true,
+    "native_execution_attempted": false,
+    "read": 117489,
+    "controller_commit": "ddb59ff8d7d09d395216bb82c1eccab4d2a4d9c6",
+    "native_source_commit": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-conditions-117489-v1",
+    "generated_inputs": {
+      "0/config.json": {
+        "bytes": 1639,
+        "sha256": "5358b7e5ba90974d335e14758e0504967cf0e66e421e94c330fceb988b0d073e"
+      },
+      "0/plan.json": {
+        "bytes": 707,
+        "sha256": "44a42796a040aadd0004e4306550c7a7febff0d4f28c78216030cb54ecaec75e"
+      },
+      "1/config.json": {
+        "bytes": 1639,
+        "sha256": "a19d3335ffc3155d39061df873202f7891d307a4ab45f26d32af4ea4083b638a"
+      },
+      "1/plan.json": {
+        "bytes": 971,
+        "sha256": "f17fd24fd86d6eaeb9d86672aad4fa73c278817122e00aeef1bb9d7f153f5999"
+      },
+      "2/config.json": {
+        "bytes": 1639,
+        "sha256": "3d9304e5ab05c5a9537eed7a4ead83346ae3a72ca64db5c52384db937955cf8a"
+      },
+      "2/plan.json": {
+        "bytes": 707,
+        "sha256": "44a42796a040aadd0004e4306550c7a7febff0d4f28c78216030cb54ecaec75e"
+      },
+      "runtime-inputs.json": {
+        "bytes": 11030,
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+      }
+    },
+    "error": "RuntimeError: frozen store environment or observer differs",
+    "cause": "The observer overlaid an environment flag in the context preparation. The existing store save check independently derived the original environment.",
+    "disposition": "Preserve this refusal. V2 uses a dedicated collector entry point, with the original engine environment in all arms."
   }
 }
