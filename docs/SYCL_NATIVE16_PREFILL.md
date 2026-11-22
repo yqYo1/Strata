@@ -337,9 +337,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   own `max_cells`, before staging or capture. The reference CLI has enough room
   for this width-four case's draft steps, so reproduce its refusal on a small
   exact-fit request. On the fixed image require both outputs, an actual
-  truncated verifier window, and quiet validation. Then check width eight,
-  the first-draft path, a 262142-input/2-output request and the separate
-  exact-262144 no-output fill. Keep the safety fix in both width-trial arms.
+  truncated verifier window, and quiet validation. The 262142-input/2-output
+  request and separate exact-262144 no-output fill use the same width-four
+  head configuration. Qualify width eight with its supported head separately.
+  Keep the safety fix in both prefix-selection arms.
   Both patch orders on the measured `fde0cdd11` image produce the same two
   source files. The fixed generator hash starts `81fe4b074a`. The MTP hashes
   start `243078ea8c` with the fix alone and `33f2e63708` with both changes.
@@ -355,9 +356,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   twelve linked targets. The normal CLI ELF begins `cdc551c029` and the
   exact-fill diagnostic begins `5fe3a8a5f6`. The independent
   decode fallback and the measured prefill reference stay available through
-  this comparison. `bench/sycl/decode_mtp_context_fixed.py` reuses the same
-  body for widths four and eight. It also checks 262142 input with two outputs
-  and the separate exact-262144 diagnostic against its measured original.
+  this comparison. The original fixed-context trial's same-build host check
+  and width-four smoke passed. The smoke processed 16384 batched rows, started
+  its first MTP catch-up at position 16384 and emitted both requested tokens
+  in two verifier windows, with the last width clipped to two. The width-eight
+  case exits 1 at initialization with `experimental sole-packed head requires
+  MTP4` from `MtpLayer::bind`, before processing the prompt. The trial stopped
+  there. Both processes closed with unchanged driver and no fresh faults.
+  The head mode is `STRATA_SYCL_DECODE_Q6_DPAS_HEAD=2`. Width eight needs a
+  separate check with the ordinary native head and its own allocation budget.
+  The validation preload retains a provider reference through process exit.
   The reviewed `decode-mtp-committed-width-numerics-20261121` audit finds a
   distinct Q8_0 matvec dispatch for one row. Row strides and per-row fused
   GR stay fixed across widths. Compare the earlier accepted K/V cells and
