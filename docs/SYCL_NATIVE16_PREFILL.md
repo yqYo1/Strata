@@ -574,8 +574,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   rows, table mode and completed gathers after the existing queue drains.
   The future retrieval clock covers the caller's exposed gather wait. The
   separate host interval also includes upload and PLE work submission.
-  Qualify the source in a serialized build, then bind the records to the
-  request boundaries and measure observer overhead with the same executable.
+  For the syntax check of `fcf8acbac`, apply its single source diff to a
+  private copy of the verified boundary build's prefill translation unit.
+  Keep the original `strata_prefill` compiler, flags and environment. Add
+  the original unit directory as a quoted include directory. Substitute
+  syntax-only mode and a private dependency file for the object output.
+  Verify that every dependency matches the recorded compile or external
+  inputs, with the private translation unit as the sole overlay. After a
+  native build, bind the records to request boundaries and measure observer
+  overhead with the same executable.
   Run the independent 117489-token comparison with
   `decode_kv_fast_prefill_preservation.py boundary`. Keep three matched
   pairs and separate first-use and warmed prompt time and client TTFT.
