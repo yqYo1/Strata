@@ -12,11 +12,12 @@ import sys
 sys.dont_write_bytecode = True
 import prefill_mixed_gather_measure as reference
 from prefill_attention_bank_component import dependency_paths
+from run_q6_columns import validation_log
 
 bank, validation = reference.bank, reference.validation
 owner, require = reference.owner, reference.require
 P, B, RESULT = bank.P, bank.B, bank.RESULT
-ROOT, KEY = B / 'prefill-mapped-gu-a-v4', 'prefill_mapped_gu_a_v4'
+ROOT, KEY = B / 'prefill-mapped-gu-a-v5', 'prefill_mapped_gu_a_v5'
 PARENT = reference.coherent_model.MODEL_ROOT
 SRC, BUILD = PARENT / 'source', PARENT / 'build'
 PROBE_SRC = ROOT / 'probe-source'
@@ -319,10 +320,9 @@ def run(row, stage, allowed):
         sample.update(read_case(out.read_text(), stage))
         log = err.read_text()
         if stage != 'layout':
-            sample['validation'] = validation.preload_evidence(log, entry['pid'])
+            sample['validation'] = validation_log(log, entry['pid'], probe['loader']['path'], traced=stage == 'smoke')
             v = root / 'validation.log'
-            require((not v.exists() or not v.stat().st_size) and not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_', log),
-                    'unexpected runtime validation message')
+            require(not v.exists() or not v.stat().st_size, 'unexpected runtime validation log')
         if stage == 'smoke':
             require('urEnqueueKernelLaunch' in log, 'missing first-use kernel trace')
             sample['providers'] = bank.device.loaded_providers(log, dict(environment=env, native_validation_probe=probe,

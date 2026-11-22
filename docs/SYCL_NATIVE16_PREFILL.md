@@ -1311,6 +1311,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   at `cc1f45563`. DPC++ passes temporary host objects from both link phases.
   The next build checks the original three input hashes and requires every
   traced host slice derived from the fixture, AOT image and host object.
+  The fourth build verified 38 persistent linker inputs and six host slices
+  (`01abd8fa6`). Its 22 host layout cases passed. The two traced cases matched
+  all 61440 device words with guards and normal exit. Their original admission
+  failed at `117277096` because the reader counted the intentional pre-main UR
+  validation probe as a runtime error. The next plan uses the shared strict
+  trace reader and retains the empty validation-log check.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
