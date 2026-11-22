@@ -602814,7 +602814,7 @@
     }
   },
   "prefill_gather_direct_store_65537_admission_v1": {
-    "stage": "ready",
+    "stage": "refused",
     "source_commit": "e3b43dfde70b87816fdf47b59d68a0a2dfa5c298",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/strata",
@@ -603389,6 +603389,22 @@
       "sha256": "7b4852e907978de305c04fd9f3e943687071c47de1953efddf67b6815aa2eed8"
     },
     "environment_template_sha256": "8647aff3ffd4ba2e0363434cf40df8f10adc1a5acb4537e213413018818319fb",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "prelaunch_refusal": {
+      "exit_code": 1,
+      "model_executed": false,
+      "ownership_closed": true,
+      "error": "RuntimeError('frozen request-progress observer differs')",
+      "cause": "The immutable environment enabled STRATA_TRACE, while the case omitted trace_progress and the runner interpreted it as false.",
+      "resolution": "Keep this refusal and prepare a new version with the explicit observer flag checked at preparation and launch."
+    },
+    "capture_retirement": {
+      "complete": true,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gather-direct-store-65537-admission-v1",
+      "files": 8,
+      "bytes": 155464,
+      "inventory_sha256": "2f9dc16a4e5e57dbfe5328db24212065c0dbfe0d061fef862d6ab5f979b8df5c",
+      "reason": "Prelaunch refusal reached no native owner. The exact initial plan, host result and failure remain recoverable from Git."
+    }
   }
 }

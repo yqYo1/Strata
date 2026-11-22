@@ -94,7 +94,7 @@ def controller_sources(revision):
 
 def key_for(read, traced):
     phase = 'admission' if traced else 'speed'
-    return f'prefill_gather_direct_store_{read}_{phase}_v1'
+    return f'prefill_gather_direct_store_{read}_{phase}_v2'
 
 
 def basis_for(read, traced, runs):
@@ -223,9 +223,11 @@ def experiment(read, traced):
         if row['stage'] == 'prepared':
             shared = None
             for case, direct in zip(row['plans'], order, strict=True):
-                case['direct_output'] = direct
+                case.update(direct_output=direct, trace_progress=traced)
                 env = environment(row, case)
-                require(basis.comparison.fingerprint(env) == case['environment_sha256'], 'frozen store environment differs')
+                require(basis.comparison.fingerprint(env) == case['environment_sha256']
+                        and env.get('STRATA_TRACE') == ('1' if case['trace_progress'] else None),
+                        'frozen store environment or observer differs')
                 normalized = {name: value.replace(case['root'], '<case>') for name, value in env.items()
                               if name != model.OUTPUT}
                 require(shared is None or shared == normalized, 'expected identical non-store settings')
@@ -234,8 +236,9 @@ def experiment(read, traced):
         base_save(row)
 
     def current(row):
-        require(row['plan'] == plan and [(p['index'], p['read'], p['direct_output']) for p in row['plans']]
-                == [(i, read, direct) for i, direct in enumerate(order)], 'frozen store comparison differs')
+        require(row['plan'] == plan and [(p['index'], p['read'], p['direct_output'], p['trace_progress'])
+                for p in row['plans']] == [(i, read, direct, traced) for i, direct in enumerate(order)],
+                'frozen store comparison or observer differs')
         return base_current(row)
 
     ctx.pins, ctx.environment, ctx.request_route, ctx.after_execution = pins, environment, route, check_work
