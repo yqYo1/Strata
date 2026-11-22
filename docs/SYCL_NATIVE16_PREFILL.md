@@ -1534,16 +1534,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   404578022400bytes per process,not measured bus traffic or saturation.
 
   Retain the coherent `14508acbf` decode reference for the next verifier
-  comparison. The v5 code and prose bodies, actual read and generated counts,
-  and draft counts match the MTP prefix control at `da3fc94fc`. The model
-  assets, boot, driver and runtime manifest also match. The coherent suite
-  runs the two long requests directly after four warmups. The MTP prefix
-  suite runs chat, prefill and agent requests before long generation, on a
-  different native revision. The coherent reference uses `ARENA_COPY=1`
-  with `--pcie-frac 0` and records zero submitted expert-miss blobs in both
-  workloads. Requalify the decode reference with identical preceding work,
-  phase settings and the required context-boundary checks when choosing the
-  next verifier candidate.
+  comparison. The three earlier reference processes and the first four
+  `decode_mtp_prefix_generation_v1` processes used the same v5 bodies, read and
+  generated counts, draft counts, model assets, boot, driver and runtime
+  manifest. Their expert footers report 1,074,995 CPU jobs and 1,354,722
+  entries for code, and 3,718,375 jobs and 6,125,520 entries for prose in
+  every process. Submitted expert-miss blobs are zero at `--pcie-frac 0`.
+  The coherent reference runs the two long requests directly after four
+  warmups and enables Arena copy and the snapshot marker. The prefix suite
+  uses a different native revision, adds chat, prefill and agent requests
+  before long generation, and disables both options. Both use effective
+  MTP width four. Requalify the decode reference with identical preceding
+  work, phase settings and the required context-boundary checks before
+  selecting the next verifier candidate.
 
   V1's host-state mutation refusal and V2's missing presence-enabled callback
   failure remain failed in their original evidence. V3prospectively separates
