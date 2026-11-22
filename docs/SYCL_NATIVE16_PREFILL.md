@@ -366,6 +366,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The head mode is `STRATA_SYCL_DECODE_Q6_DPAS_HEAD=2`. Width eight needs a
   separate check with the ordinary native head and its own allocation budget.
   The validation preload retains a provider reference through process exit.
+  The continuation checks the archived width-four smoke and both original
+  long-case commands, inputs and environments. Only the private fixture and
+  output paths change. Proceed with `near-four` before measuring the exact fill.
   The reviewed `decode-mtp-committed-width-numerics-20261121` audit finds a
   distinct Q8_0 matvec dispatch for one row. Row strides and per-row fused
   GR stay fixed across widths. Compare the earlier accepted K/V cells and
@@ -377,6 +380,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   token staging or remap the selected row explicitly. Shrinking those inputs
   along with the K/V pass leaves index `a=3` outside the staged rows. Measure
   the existing `a+1` route first, then test the selected-row change separately.
+  `bench/sycl/decode_mtp_prefix_restore.py` pins the post-capacity live
+  RESTORE comparison. It binds each catch-up line to its verifier window and
+  actual commit, checks the draft and target state over the committed extent,
+  and requires a shorter eligible catch-up at both lengths. A differing state
+  fingerprint triggers a fixed-history numerical comparison before timing.
   Compare off/on at fixed width and identical placement, separately from the
   confidence-floor experiment and the proposed graph-drain change. First trace all four actual
   catch-up widths against verified and accepted counts. Check live draft KV,
@@ -9354,6 +9362,11 @@ Bounded sampler/device and actual draft-route validation must precede a sampled
 model trial; no such execution or sampling-causality claim is established yet.
 
 ## Qualification and operating constraints
+
+Scope inference investigation to source code, primary technical references,
+ordinary inference logs and measured results. This applies to Main, collection
+and review. Exclude executable analysis, disassembly, reverse engineering and
+cybersecurity research from this project work.
 
 Before adoption, retain the model prompt-verify, task/agent quality and numerical
 checks, failure ownership and graph/allocation retirement, sustained decode,
