@@ -277,6 +277,153 @@ struct Case {
       <<",\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
   }
 };
+#ifdef STRATA_PREFILL_GU_A_PROBE
+using Routes = strata::prefill::detail::MoeWindowRoutes;
+
+struct MappedGuInputs {
+  std::shared_ptr<const Routes> plan;
+  size_t job_index;
+  int primary_rows;
+  std::vector<int32_t> metadata;
+};
+
+MappedGuInputs mapped_gu_inputs(int rows, bool split, bool clustered, bool invalid) {
+  const int bank_rows = 2 * rows + 7;
+  std::vector<int32_t> ids(size_t(bank_rows) * Routes::top_k);
+  for (int row = 0; row < bank_rows; ++row) {
+    ids[size_t(row) * Routes::top_k] = 0;
+    for (int slot = 1; slot < Routes::top_k; ++slot)
+      ids[size_t(row) * Routes::top_k + slot] = 15 + slot;
+  }
+  for (int row = 0; row < rows; ++row) {
+    const int token = clustered ? 32 * (row / 16) + row % 16 + 3 : 2 * row + 3;
+    ids[size_t(token) * Routes::top_k + 1] = 1;
+  }
+  auto plan = Routes::build_split_accum(bank_rows, ids.data(), ids.size());
+  const auto &jobs = plan->jobs();
+  const auto found = std::find_if(jobs.begin(), jobs.end(), [](const auto &job) { return job.expert == 1; });
+  need(found != jobs.end() && found->rows == rows && found->global_row > 0, "mapped GU fixture job");
+  const size_t job_index = size_t(found - jobs.begin());
+  std::vector<int32_t> metadata(ids.size() + 2 * Pad, -0x55aa);
+  std::copy(plan->source_rows().begin(), plan->source_rows().end(), metadata.begin() + Pad);
+  if (invalid) {
+    need(rows >= 2, "mapped GU invalid endpoints require distinct rows");
+    metadata[Pad + found->global_row] = -1;
+    metadata[Pad + found->global_row + rows - 1] = bank_rows;
+  }
+  return {std::move(plan), job_index, split ? rows + 3 : bank_rows, std::move(metadata)};
+}
+
+struct MappedGuCase {
+  MappedGuInputs inputs;
+  Case dense;
+  Buffer primary;
+  std::unique_ptr<Buffer> tail;
+  sb::Allocation metadata, sticky;
+  static constexpr uint32_t status_seed = 32, status_guard = 0xb3c4d5e6;
+
+  MappedGuCase(int rows, bool split, bool clustered, bool invalid, sycl::queue &q)
+      : inputs(mapped_gu_inputs(rows, split, clustered, invalid)), dense(rows, false, q),
+        primary(size_t(inputs.primary_rows) * K, q),
+        tail(split ? std::make_unique<Buffer>(size_t(inputs.plan->rows() - inputs.primary_rows) * K, q)
+                   : nullptr),
+        metadata(runtime, inputs.metadata.size() * sizeof(int32_t), sb::MemoryKind::Device),
+        sticky(runtime, 3 * sizeof(uint32_t), sb::MemoryKind::Device) {
+    primary.set(bank_values(0, primary.n));
+    if (tail) tail->set(bank_values(inputs.primary_rows, tail->n));
+    submit_wait(q, [&] {
+      return q.memcpy(metadata.data(), inputs.metadata.data(), inputs.metadata.size() * sizeof(int32_t));
+    });
+    reset_status();
+  }
+
+  ~MappedGuCase() { drain(dense.q); }
+
+  static uint16_t input_value(size_t row, size_t col) {
+    // Finite dyadic inputs with a row-dependent pattern in every K tile.
+    const uint32_t mixed = uint32_t((row + 1) * 257 + col) * 0x9e3779b9u;
+    return half(float(int(mixed >> 27) - 16) / 64.f);
+  }
+  static std::vector<uint16_t> bank_values(int first_row, size_t count) {
+    std::vector<uint16_t> v(count);
+    for (size_t i = 0; i < count; ++i) v[i] = input_value(first_row + i / K, i % K);
+    return v;
+  }
+  const int32_t *source() const { return metadata.as<int32_t>() + Pad; }
+  uint32_t *status() const { return sticky.as<uint32_t>() + 1; }
+  void reset_status() {
+    const std::array<uint32_t, 3> values{status_guard, status_seed, status_guard};
+    submit_wait(dense.q, [&] { return dense.q.memcpy(sticky.data(), values.data(), sizeof(values)); });
+  }
+  void check_status(bool invalid) {
+    std::array<uint32_t, 3> values{};
+    submit_wait(dense.q, [&] { return dense.q.memcpy(values.data(), sticky.data(), sizeof(values)); });
+    need(values == std::array<uint32_t, 3>{status_guard, status_seed | (invalid ? 4u : 0u), status_guard},
+         "mapped GU sticky status or guard mismatch");
+  }
+  sycl::event gathered(xe::Tile tile, bool capture) {
+    strata::prefill::native16::moe_gather_mixed(*inputs.plan, inputs.job_index, primary.data(),
+        tail ? tail->data() : nullptr, inputs.primary_rows, source(), dense.x.data(), status(), &dense.q);
+    return dense.fused(tile, capture);
+  }
+  xe::PrefillMappedGuProblem problem(bool capture) {
+    return {inputs.plan.get(), inputs.job_index, primary.data(), tail ? tail->data() : nullptr,
+        inputs.primary_rows, source(), dense.w.data(), dense.reference.data(), status(),
+        capture ? dense.gu.data() : nullptr};
+  }
+  sycl::event mapped(xe::Tile tile, bool capture) {
+    return xe::prefill_mapped_gu_swiglu(*runtime, dense.q, problem(capture), tile);
+  }
+  void check(xe::Tile tile, bool invalid) {
+    auto &q = dense.q;
+    reset_status();
+    submit_wait(q, [&] { return gathered(tile, true); });
+    check_status(invalid);
+    const auto operand = dense.x.get();
+    const auto &job = inputs.plan->jobs()[inputs.job_index];
+    for (int i = 0; i < job.rows; ++i) {
+      const int row = inputs.metadata[Pad + job.global_row + i];
+      for (int col = 0; col < K; ++col)
+        need(operand[size_t(i) * K + col] ==
+             (row < 0 || row >= inputs.plan->rows() ? 0 : input_value(row, col)), "GU gather oracle");
+    }
+    const auto ref = dense.candidate.get();
+    reset_status();
+    submit_wait(q, [&] { return mapped(tile, true); });
+    check_status(invalid);
+    need(dense.gu.get() == dense.capture.get(), "mapped GU BF16 bits differ from gathered GU");
+    need(dense.reference.get() == ref, "mapped GU FP16 output differs from gathered GU");
+
+    dense.gu.reset();
+    dense.capture.reset();
+    dense.reference.reset();
+    dense.candidate.reset();
+    reset_status();
+    submit_wait(q, [&] { return gathered(tile, false); });
+    check_status(invalid);
+    reset_status();
+    submit_wait(q, [&] { return mapped(tile, false); });
+    check_status(invalid);
+    need(dense.candidate.get() == ref && dense.reference.get() == ref, "mapped GU null capture changed output");
+    for (auto *out : {&dense.gu, &dense.capture})
+      for (auto word : out->get()) need(word == Sentinel, "mapped GU null capture wrote diagnostics");
+    std::vector<int32_t> observed(inputs.metadata.size());
+    submit_wait(q, [&] { return q.memcpy(observed.data(), metadata.data(), observed.size() * sizeof(int32_t)); });
+    need(observed == inputs.metadata && primary.get() == bank_values(0, primary.n) &&
+         dense.w.get() == dense.hw && dense.x.get() == operand, "mapped GU input or guard changed");
+    if (tail) need(tail->get() == bank_values(inputs.primary_rows, tail->n), "mapped GU tail or guard changed");
+  }
+};
+
+void check_mapped_gu(sycl::queue &q, xe::Tile tile, int rows, bool split, bool clustered, bool invalid) {
+  MappedGuCase c(rows, split, clustered, invalid, q);
+  c.check(tile, invalid);
+  std::cout << "prefill_mapped_gu rows=" << rows << " tile=" << (tile == xe::Tile::wide_128x128 ? "wide" : "compact")
+            << " split=" << split << " clustered=" << clustered << " invalid=" << invalid
+            << " gather=exact BF16_capture=exact FP16_output=exact null_capture=exact guards=PASS\n";
+}
+#endif
+
 void admissions(Case &c) {
   int count=0;
   auto reject=[&](xe::GuSwiGLUProblem p, xe::Tile tile=xe::Tile::wide_128x128) {
@@ -404,6 +551,26 @@ int main(int argc,char **argv) {
         if (smoke) prefill_gu_a_probe(q, tile, 3, false);
         else for (int rows : {16, 17, 128, 129, 211, 2334})
           for (bool invalid : {false, true}) prefill_gu_a_probe(q, tile, rows, invalid);
+      }
+      std::cout << "fixture_status=PASS mode=" << mode << '\n';
+      return 0;
+    }
+    if (mode == "--prefill-mapped-gu-smoke" || mode == "--prefill-mapped-gu-validate") {
+      need(argc == 2, "mapped GU verification takes no arguments");
+      runtime = sb::runtime_for();
+      auto q = runtime->make_queue(true);
+      topology(q);
+      if (mode == "--prefill-mapped-gu-smoke") {
+        check_mapped_gu(q, xe::Tile::compact_16x64, 3, true, false, false);
+        check_mapped_gu(q, xe::Tile::wide_128x128, 3, true, false, true);
+      } else {
+        check_mapped_gu(q, xe::Tile::compact_16x64, 1, false, false, false);
+        check_mapped_gu(q, xe::Tile::compact_16x64, 17, true, false, true);
+        check_mapped_gu(q, xe::Tile::wide_128x128, 129, true, true, true);
+        for (int rows : {2334, 5963, 8192})
+          for (bool clustered : {false, true})
+            check_mapped_gu(q, xe::Tile::wide_128x128, rows, true, clustered, false);
+        check_mapped_gu(q, xe::Tile::wide_128x128, 8191, true, false, true);
       }
       std::cout << "fixture_status=PASS mode=" << mode << '\n';
       return 0;

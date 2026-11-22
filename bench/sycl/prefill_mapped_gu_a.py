@@ -1,4 +1,4 @@
-"""Qualify the existing mapped GU input witness on the measured B570 runtime."""
+"""Verify the complete prefill mapped GU operator on the measured B570 runtime."""
 
 import fcntl
 import hashlib
@@ -17,21 +17,31 @@ from run_q6_columns import validation_log
 bank, validation = reference.bank, reference.validation
 owner, require = reference.owner, reference.require
 P, B, RESULT = bank.P, bank.B, bank.RESULT
-ROOT, KEY = B / 'prefill-mapped-gu-a-v5', 'prefill_mapped_gu_a_v5'
+ROOT, KEY = B / 'prefill-mapped-gu-operator-v1', 'prefill_mapped_gu_operator_v1'
 PARENT = reference.coherent_model.MODEL_ROOT
 SRC, BUILD = PARENT / 'source', PARENT / 'build'
 PROBE_SRC = ROOT / 'probe-source'
 THIS = str(Path(__file__).resolve().relative_to(P))
-PROBE = '19999c6c1df5ce11f12478958904d602c5eff9ac'
+WITNESS_SOURCE = '19999c6c1df5ce11f12478958904d602c5eff9ac'
+WITNESS_RESULT = 'b30fb35e4c237a24a6915c5c3025fb9eb99168a0'
+WITNESS_KEY = 'prefill_mapped_gu_a_v5'
 KERNEL = 'src/prefill/sycl/vllm_xe2/native16.cpp'
 HEADER = 'src/prefill/sycl/vllm_xe2/native16.hpp'
 FIXTURE = 'bench/sycl/moe_gu_swiglu.cpp'
 TARGET = 'sycl_moe_gu_swiglu_bench'
 IMAGE, HOST = 'strata_vllm_xe2_image.o', 'strata_vllm_xe2_host.o'
 DEFINE = '-DSTRATA_PREFILL_GU_A_PROBE'
-STAGES = ('layout', 'smoke', 'validate')
+STAGES = ('layout', 'witness-smoke', 'witness-validate', 'smoke', 'validate')
 ROWS = {'layout': (1, 3, 16, 17, 128, 129, 211, 2334, 6640, 8191, 8192),
         'smoke': (3,), 'validate': (16, 17, 128, 129, 211, 2334)}
+OPERATOR_CASES = {
+    'smoke': (('compact', 3, 1, 0, 0), ('wide', 3, 1, 0, 1)),
+    'validate': (
+        ('compact', 1, 0, 0, 0), ('compact', 17, 1, 0, 1), ('wide', 129, 1, 1, 1),
+        *(('wide', n, 1, clustered, 0) for n in (2334, 5963, 8192) for clustered in (0, 1)),
+        ('wide', 8191, 1, 0, 1),
+    ),
+}
 BOOT = Path('/proc/sys/kernel/random/boot_id')
 BUDGET = dict(wall=480, cpu=840, rss_cap=12 << 30, text_cap=16 << 20,
               file_cap=64 << 20, total_cap=64 << 20)
@@ -86,22 +96,23 @@ def recipe():
     return commands
 
 
-def probe_overlay(native):
+def probe_overlay(native, revision):
     guard = rb'^#ifdef STRATA_PREFILL_GU_A_PROBE\n.*?^#endif\n'
     overlay = {}
-    for name in (KERNEL, HEADER, FIXTURE):
-        original = reference.fixture.git_file(PROBE + '^', name)
-        candidate = reference.fixture.git_file(PROBE, name)
+    for name, guarded_blocks in ((KERNEL, 3), (HEADER, 2), (FIXTURE, 3)):
+        original = reference.fixture.git_file(WITNESS_SOURCE + '^', name)
+        candidate = reference.fixture.git_file(revision, name)
         require(original == (SRC / name).read_bytes() and sha(SRC / name) == native['source_files'][name],
                 'retained source must match the probe parent at ' + name)
+        require(candidate == (P / name).read_bytes(), 'mapped GU source differs from committed revision')
         stripped, count = re.subn(guard, b'', candidate, flags=re.M | re.S)
-        require(count == 2 and list(filter(bytes.strip, stripped.splitlines())) ==
+        require(count == guarded_blocks and list(filter(bytes.strip, stripped.splitlines())) ==
                 list(filter(bytes.strip, original.splitlines())), 'unrelated native source change at ' + name)
         overlay[name] = candidate
     return overlay
 
 
-def load_inputs():
+def load_inputs(revision):
     native, speed, _, build = reference.coherent_inputs()
     timing = validation.committed(RESULT, ('prefill_kv_gather_speed_65537_v1',))
     require(timing['stage'] == 'closed' and timing['complete'] and timing['passed'] and timing['ownership_closed']
@@ -109,7 +120,16 @@ def load_inputs():
             timing['native_source_commit'] == native['native_source_commit'] and
             all(timing['decision']['contrast_passes'][part] for part in ('both/base', 'both/reuse', 'both/vec8')),
             'same native 65K selection required')
-    overlay = probe_overlay(native)
+    witness = json.loads(reference.fixture.git_file(WITNESS_RESULT, str(RESULT.relative_to(P))))[WITNESS_KEY]
+    witness_root = B / 'prefill-mapped-gu-a-v5'
+    require(witness == compact(bank.previous.read(witness_root / 'record.json'))
+            and witness['stage'] == 'closed' and witness['complete'] and witness['passed']
+            and witness['ownership_closed'] and not witness['active']
+            and witness['proof']['probe_source'] == WITNESS_SOURCE
+            and witness['proof']['engine'] == native['binaries']['strata']
+            and all(sha(path) == expected for path, expected in witness['produced'].items()),
+            'original closed witness proof or retained build changed')
+    overlay = probe_overlay(native, revision)
     sources = {n: hashlib.sha256(raw).hexdigest() for n, raw in overlay.items()}
     allowed = {p: h for group in ('compiled', 'generated', 'links', 'objects', 'produced')
                for p, h in native['actual_inputs'][group].items()}
@@ -132,7 +152,8 @@ def load_inputs():
             and speed['boot'] == BOOT.read_text().strip() and all(sha(a['path']) == a['sha256'] for a in probe.values()),
             'runtime or qualified validation changed')
     proof = dict(engine=native['binaries']['strata'], parent=build['build_sha256'],
-                 native_source_commit=native['native_source_commit'], probe_source=PROBE, probe_inputs=sources,
+                 native_source_commit=native['native_source_commit'], probe_source=revision, probe_inputs=sources,
+                 previous_witness=dict(revision=WITNESS_RESULT, executable=witness['binary']),
                  recipe_reader=recipe_reader, boot=speed['boot'], driver=native['driver'], validation=probe,
                  runtime_manifest=native['foundation']['runtime_manifest'])
     return proof, allowed, commands, build_env, env, overlay
@@ -164,18 +185,22 @@ def save(row):
 
 def prepare(inputs):
     proof, _, commands, build_env, runtime_env, overlay = inputs
-    require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'fresh mapped-A fixture only')
+    require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'fresh mapped GU operator fixture only')
     row = dict(stage='prepared', controller=controls(), proof=proof, commands=commands,
         build_env=build_env, runtime_env=runtime_env, environment_sha256=signature((build_env, runtime_env)),
         stages=[], active=False, complete=False, passed=False, ownership_closed=True,
-        plan=dict(build='Apply only the guarded probe code to the recorded parent sources and enable its '
+        plan=dict(build='Apply only the guarded operator and fixture code to the recorded parent sources and enable its '
                         'single macro for the probe object and fixture. Resolve sibling headers from the '
                         'original source directory. Finalize the '
                         'isolated BMG image and host slice and relink against the original checked archives.',
-                  validation='Host lane layout, traced three-row smoke, then full exact bank-to-fragment '
-                             'bits across both tile policies, tails and malformed maps. No model or timing.',
-                  retention='Only the witness ELF is a new fixture. Review its live consumer at closure; '
-                            'retain the primary prefill and decode engines.'),
+                  validation='Recheck the host layout and A fragment after the two-bank reader change. '
+                             'Verify full gather plus GU output against the scalar gather and fused native adapter '
+                             'with the same B prefetch, DPAS geometry and rounding. Exercise one and two banks, '
+                             'tails and malformed endpoints, with exact BF16 and FP16 words, guard and sticky '
+                             'status checks and unchanged inputs. First GPU use per new kernel uses loader '
+                             'tracing and parameter validation. No model or timing in this plan.',
+                  retention='Keep the original witness through new-build admission. Review both fixtures at '
+                            'correctness closure or failure; retain the primary prefill and decode engines.'),
         budgets=BUDGET, build_budgets=BUILD_BUDGET)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
@@ -289,6 +314,21 @@ def read_case(text, stage):
     return dict(completed_cases=len(expected), compared_device_words=words)
 
 
+def read_operator(text, stage):
+    cases = OPERATOR_CASES[stage]
+    expected = [
+        f'prefill_mapped_gu rows={n} tile={tile} split={split} clustered={clustered} invalid={bad} '
+        'gather=exact BF16_capture=exact FP16_output=exact null_capture=exact guards=PASS'
+        for tile, n, split, clustered, bad in cases
+    ]
+    lines = text.splitlines()
+    require('{"kind":"topology","work_items":384,"status":"PASS"}' in lines, 'missing subgroup proof')
+    end = 'fixture_status=PASS mode=--prefill-mapped-gu-' + stage
+    require([line for line in lines if line.startswith(('prefill_mapped_gu', 'fixture_status='))]
+            == [*expected, end], 'mapped GU output, admission or case coverage differs')
+    return dict(completed_cases=len(cases), rows=sum(n for _, n, *_ in cases))
+
+
 def run(row, stage, allowed):
     require(row['stage'] in ('built', 'checked') and STAGES[len(row['stages'])] == stage and
             all(s['passed'] for s in row['stages']) and
@@ -306,7 +346,8 @@ def run(row, stage, allowed):
         env.update(LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
                    UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
                    UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(root / 'validation.log'))
-    if stage == 'smoke':
+    traced = stage.endswith('smoke')
+    if traced:
         env.update(LD_DEBUG='libs', UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                    UR_LOG_TRACING='level:info;flush:info;output:stderr')
     cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
@@ -314,16 +355,22 @@ def run(row, stage, allowed):
         if line.startswith('-- cursor: ')]
     job = owner.Owner(root / 'owned', lambda: write(root / 'execution.json', job.commands))
     sample = dict(stage=stage, environment_sha256=signature(env), gpu=stage != 'layout')
+    witness = stage == 'layout' or stage.startswith('witness-')
+    if witness:
+        mode = '--prefill-mapped-a-' + stage.removeprefix('witness-')
+    else:
+        mode = '--prefill-mapped-gu-' + stage
     try:
-        entry, out, err = job.run(stage, [row['binary']['path'], '--prefill-mapped-a-' + stage], env, P, **BUDGET)
-        require(owner.closed(entry) and entry['exit_code'] == 0, 'mapped input witness failed: ' + err.read_text()[-700:])
-        sample.update(read_case(out.read_text(), stage))
+        entry, out, err = job.run(stage, [row['binary']['path'], mode], env, P, **BUDGET)
+        require(owner.closed(entry) and entry['exit_code'] == 0, 'mapped GU verification failed: ' + err.read_text()[-700:])
+        sample.update(read_case(out.read_text(), stage.removeprefix('witness-')) if witness
+                      else read_operator(out.read_text(), stage))
         log = err.read_text()
         if stage != 'layout':
-            sample['validation'] = validation_log(log, entry['pid'], probe['loader']['path'], traced=stage == 'smoke')
+            sample['validation'] = validation_log(log, entry['pid'], probe['loader']['path'], traced=traced)
             v = root / 'validation.log'
             require(not v.exists() or not v.stat().st_size, 'unexpected runtime validation log')
-        if stage == 'smoke':
+        if traced:
             require('urEnqueueKernelLaunch' in log, 'missing first-use kernel trace')
             sample['providers'] = bank.device.loaded_providers(log, dict(environment=env, native_validation_probe=probe,
                                                        runtime_manifest=row['proof']['runtime_manifest']))
@@ -339,21 +386,21 @@ def run(row, stage, allowed):
         row.update(stage=('closed' if closed else 'checked') if sample['passed'] else 'failed', passed=closed,
                    complete=closed, active=bool(job.active), ownership_closed=sample['ownership_closed'])
         save(row)
-    require(sample['passed'], 'mapped input witness postcondition failed')
+    require(sample['passed'], 'mapped GU verification postcondition failed')
 
 
 if __name__ == '__main__':
     action, = sys.argv[1:]
     require(sys.executable == bank.basis.reference.model.PYTHON and action in ('prepare', 'build', *STAGES),
-            'select a prepared witness stage and qualified interpreter')
+            'select a prepared mapped GU stage and qualified interpreter')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
-        inputs = load_inputs()
         if action == 'prepare':
-            prepare(inputs)
+            prepare(load_inputs(controls()['revision']))
         else:
             row = bank.previous.read(ROOT / 'record.json')
+            inputs = load_inputs(row['proof']['probe_source'])
             check(row, inputs)
             if action == 'build':
                 build(row, inputs[1])

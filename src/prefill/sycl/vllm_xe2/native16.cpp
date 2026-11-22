@@ -152,6 +152,38 @@ template <bool Capture> class SplitRowAddressDownKernel;
 template <Tile Policy, bool Capture> class GuSwiGLUKernel;
 #ifdef STRATA_PREFILL_GU_A_PROBE
 template <Tile Policy> class PrefillGuAProbeKernel;
+template <Tile Policy, bool Capture> class PrefillMappedGuKernel;
+
+struct PrefillMappedRows {
+  const uint16_t *primary, *tail;
+  const int32_t *source;
+  uint32_t *status;
+  int rows, primary_rows, bank_rows;
+
+  template <class Coordinates, class Fragment>
+  CUTE_DEVICE void read(const Coordinates &coordinates, Fragment &fragment) const {
+    constexpr int k = 2560;
+    constexpr int words = decltype(size(coordinates))::value;
+    static_assert(words == decltype(size(fragment.tensor()))::value);
+    CUTE_UNROLL
+    for (int i = 0; i < words; ++i) {
+      const auto coordinate = coordinates(i);
+      const int row = get<0>(coordinate), col = get<1>(coordinate);
+      uint16_t bits = 0;
+      if (row >= 0 && row < rows && col >= 0 && col < k) {
+        const int mapped_row = source[row];
+        if (mapped_row >= 0 && mapped_row < bank_rows) {
+          bits = mapped_row < primary_rows ? primary[size_t(mapped_row) * k + col]
+                                          : tail[size_t(mapped_row - primary_rows) * k + col];
+        } else if (col == 0) {
+          sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed, sycl::memory_scope::device,
+              sycl::access::address_space::global_space>(*status).fetch_or(4);
+        }
+      }
+      fragment(i) = sycl::bit_cast<cutlass::half_t>(bits);
+    }
+  }
+};
 
 // Enumerate the public TLA coordinates on the host before any submission.
 // The N subgroups replicate A. Bijection is required within each replica.
@@ -234,21 +266,8 @@ sycl::event enqueue_prefill_gu_a_probe(sycl::queue &q, PrefillGuAProbe p) {
       static_assert(P::threads * words == P::rows * tile_k *
           (Policy == Tile::wide_128x128 ? 2 : 4));
       const size_t base = (item.get_group_linear_id() * P::threads + local) * words;
-      CUTE_UNROLL
-      for (int i = 0; i < words; ++i) {
-        const auto c = coordinates(i);
-        const int row = get<0>(c), col = get<1>(c);
-        uint16_t bits = 0;
-        if (row >= 0 && row < p.rows && col >= 0 && col < k) {
-          const int mapped_row = p.map[p.map_offset + row];
-          if (mapped_row >= 0 && mapped_row < p.bank_rows)
-            bits = p.bank[size_t(mapped_row) * k + col];
-          else if (col == 0)
-            sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed, sycl::memory_scope::device,
-                sycl::access::address_space::global_space>(*p.status).fetch_or(4);
-        }
-        mapped_a(i) = sycl::bit_cast<cutlass::half_t>(bits);
-      }
+      PrefillMappedRows{p.bank, nullptr, p.map + p.map_offset, p.status,
+                        p.rows, p.bank_rows, p.bank_rows}.read(coordinates, mapped_a);
       CUTE_UNROLL
       for (int i = 0; i < words; ++i) {
         const auto c = coordinates(i);
@@ -326,6 +345,66 @@ sycl::event enqueue_gu(sycl::queue &q, GuSwiGLUProblem p, Geometry g) {
     });
   });
 }
+
+#ifdef STRATA_PREFILL_GU_A_PROBE
+template <Tile Policy, bool Capture>
+sycl::event enqueue_prefill_mapped_gu(sycl::queue &q, PrefillMappedRows mapped,
+                                     GuSwiGLUProblem output, Geometry g) {
+  using P = ShapePolicy<Policy>;
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  const sycl::nd_range<3> range(sycl::range<3>(g.groups_m, g.groups_n, P::threads),
+                              sycl::range<3>(1, 1, P::threads));
+  return q.submit([&](sycl::handler &h) {
+    h.parallel_for<PrefillMappedGuKernel<Policy, Capture>>(range, props, [=](sycl::nd_item<3> item) {
+      const TileMMA<cutlass::half_t, Policy> mma{};
+      const auto tile = mma.tile_mnk();
+      const int group_m = int(item.get_group(0)), group_n = int(item.get_group(1));
+      const int local = int(item.get_local_linear_id());
+      const auto lane = mma.get_slice(local);
+      const auto a_id = make_identity_tensor(make_shape(g.t, g.k));
+      const auto a_grid = local_tile(a_id, select<0, 2>(tile), make_coord(group_m, _));
+      const auto c_id = make_identity_tensor(make_shape(g.t, g.n));
+      const auto c_tile = local_tile(c_id, tile, make_coord(group_m, group_n, 0), Step<_1, _1, X>{});
+      const auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(output.w)),
+          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+      const auto b_id = make_identity_tensor(b.shape());
+      const auto b_grid = local_tile(b_id, select<1, 2>(tile), make_coord(group_n, _));
+      auto a_fragment = lane.partition_sg_fragment_A(a_grid(_, _, 0));
+      auto b_fragment = lane.partition_sg_fragment_B(b_grid(_, _, 0));
+      auto accum = lane.partition_sg_fragment_C(c_tile);
+      clear(accum);
+
+      const auto load_b = get_block_2d_copy_B<void>(mma, b);
+      const auto b_lane = load_b.get_slice(local);
+      auto b_packed = b_lane.partition_sg_fragment_D(b_grid(_, _, 0));
+      const auto b_coords = b_lane.partition_S(b_grid);
+      const auto hint_b = make_block_2d_prefetch(load_b);
+      const auto b_hints = hint_b.get_slice(local).partition_S(b_grid);
+      const int k_tiles = ceil_div(g.k, get<2>(tile));
+      constexpr int lookahead = 3;
+      CUTE_UNROLL
+      for (int i = 0; i < lookahead && i < k_tiles; ++i)
+        prefetch(hint_b, b_hints(_, _, _, i));
+
+      // Load A from validated bank rows into the same DPAS fragment. Padded
+      // or malformed rows contribute zero and still join all collectives.
+      for (int i = 0; i < k_tiles; ++i) {
+        barrier_arrive(ScopeWorkgroup);
+        mapped.read(lane.partition_A(a_grid(_, _, i)), a_fragment);
+        copy(load_b, b_coords(_, _, _, i), b_packed);
+        if (i + lookahead < k_tiles)
+          prefetch(hint_b, b_hints(_, _, _, i + lookahead));
+        reorder(b_packed, b_fragment);
+        cute::gemm(mma, a_fragment, b_fragment, accum);
+        barrier_wait(ScopeWorkgroup);
+      }
+      GuSwiGLUEpilogue<Capture>{output}(accum, c_tile, mma, local);
+    });
+  });
+}
+#endif
 
 template <bool Capture, ScatterLayout Mapping> struct DownEpilogue {
   DownScatterProblem p;
@@ -1271,6 +1350,59 @@ sycl::event probe_prefill_gu_a(sycl_backend::Runtime &runtime, sycl::queue &q,
     throw std::invalid_argument("prefill GU A probe: native FP16 required");
   if (tile == Tile::wide_128x128) return enqueue_prefill_gu_a_probe<Tile::wide_128x128>(q, p);
   return enqueue_prefill_gu_a_probe<Tile::compact_16x64>(q, p);
+}
+
+sycl::event prefill_mapped_gu_swiglu(sycl_backend::Runtime &runtime, sycl::queue &q,
+                                    const PrefillMappedGuProblem &p, Tile tile) {
+  using Routes = strata::prefill::detail::MoeWindowRoutes;
+  if (!p.plan || p.plan->rows() < 1 || p.plan->rows() > p.plan->accumulator_row_limit() ||
+      p.primary_rows < 1 || p.primary_rows > p.plan->rows() ||
+      (p.tail != nullptr) != (p.primary_rows < p.plan->rows()))
+    throw std::invalid_argument("prefill mapped GU: invalid banks");
+  const int rows = p.plan->rows();
+  const size_t routes = size_t(rows) * Routes::top_k;
+  if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes ||
+      p.job_index >= p.plan->jobs().size())
+    throw std::invalid_argument("prefill mapped GU: invalid plan");
+  const auto &job = p.plan->jobs()[p.job_index];
+  if (job.rows < 1 || job.rows > Routes::max_job_rows || job.global_row < 0 ||
+      size_t(job.rows) > routes || size_t(job.global_row) > routes - size_t(job.rows))
+    throw std::invalid_argument("prefill mapped GU: invalid job interval");
+  Problem shape;
+  shape.t = job.rows;
+  shape.n = 1280;
+  shape.k = 2560;
+  const auto g = geometry(shape, tile);
+  const sycl_backend::Span primary{p.primary, size_t(p.primary_rows) * g.k * 2};
+  const sycl_backend::Span tail{p.tail, size_t(rows - p.primary_rows) * g.k * 2};
+  const sycl_backend::Span y{p.y, size_t(job.rows) * 640 * 2};
+  const sycl_backend::Span status{p.status, sizeof(uint32_t)};
+  const std::initializer_list<sycl_backend::Span> inputs{
+      primary, {p.source, routes * sizeof(int32_t)}, {p.w, g.wb}};
+  auto check_outputs = [&](std::initializer_list<sycl_backend::Span> outputs) {
+    validate_spans(outputs, inputs);
+    if (p.tail) validate_spans(outputs, {tail});
+    for (const auto span : outputs) validate_device_span(span.pointer, span.bytes, q);
+  };
+  if (p.rounded_diagnostic) check_outputs({y, status, {p.rounded_diagnostic, g.yb}});
+  else check_outputs({y, status});
+  for (const auto span : inputs) validate_device_span(span.pointer, span.bytes, q);
+  if (p.tail) {
+    validate_spans({primary}, {tail});
+    validate_device_span(tail.pointer, tail.bytes, q);
+  }
+  if (uintptr_t(p.w) % 64 || !check_device(runtime, q))
+    throw std::invalid_argument("prefill mapped GU: block2D weight alignment and native FP16 required");
+
+  const PrefillMappedRows mapped{p.primary, p.tail, p.source + job.global_row, p.status,
+                                 job.rows, int(p.primary_rows), rows};
+  const GuSwiGLUProblem output{nullptr, p.w, p.y, job.rows, p.rounded_diagnostic};
+  const auto submit = [&]<Tile Policy>() {
+    if (p.rounded_diagnostic) return enqueue_prefill_mapped_gu<Policy, true>(q, mapped, output, g);
+    return enqueue_prefill_mapped_gu<Policy, false>(q, mapped, output, g);
+  };
+  if (tile == Tile::compact_16x64) return submit.template operator()<Tile::compact_16x64>();
+  return submit.template operator()<Tile::wide_128x128>();
 }
 #endif
 

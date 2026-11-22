@@ -84,6 +84,22 @@ struct PrefillGuAProbe {
 std::vector<uint32_t> prefill_gu_a_layout(int rows, Tile tile);
 sycl::event probe_prefill_gu_a(sycl_backend::Runtime &runtime, sycl::queue &q,
                                Tile tile, const PrefillGuAProbe &p);
+
+// The maps and one or two FP16 banks belong to the same prefill job. All
+// borrowed inputs and outputs stay alive through its checked queue drain.
+struct PrefillMappedGuProblem {
+  const strata::prefill::detail::MoeWindowRoutes *plan;
+  size_t job_index;
+  const uint16_t *primary, *tail;
+  int64_t primary_rows;
+  const int32_t *source;
+  const uint16_t *w;
+  uint16_t *y;
+  uint32_t *status;  // Invalid source row sets sticky bit 4.
+  uint16_t *rounded_diagnostic = nullptr;
+};
+sycl::event prefill_mapped_gu_swiglu(sycl_backend::Runtime &runtime, sycl::queue &q,
+                                    const PrefillMappedGuProblem &p, Tile tile);
 #endif
 
 // Fixed interleaved GU shape: FP16 X[rows,2560], W[1280,2560], FP16 H[rows,640].
