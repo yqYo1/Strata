@@ -1336,7 +1336,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the recorded copy arm's workload and dispatch. Native validation and
   shutdown passed with zero fresh GPU faults. V1 refused before native launch
   because the case omitted the observer flag. The corrected plan pins it in
-  the environment and case metadata. The clean speed comparison remains open.
+  the environment and case metadata. At 117489 inputs, both traced requests in
+  `prefill_gather_direct_store_117489_admission_v2` executed 720 direct stores
+  with zero requested output-copy bytes. They matched the original work and
+  128-slot split, including allocation, guarded tail and checked drain. The
+  process exited normally with quiet validation and zero fresh GPU faults.
+  Start clean timing at 65537. The slowest of its four earlier combined
+  KV/gather process medians was 0.1423 s above the 65.537 s budget. At the
+  historical aggregate D2D rate of 128.86 GB of requested payload in 0.7884 s
+  of device copy service, eliminating 64.42 GB corresponds to 0.394 s of
+  service. Actual wall time depends on command sizes, overlap and the direct
+  store cost. Measure the three independent pairs before selecting an arm.
   The same-build standalone KV trial passed the final slot at 262144 with
   114688 GPU rows, 147455 host rows and one terminal commit. Its mixed
   scratch bytes were zero. Carry this result as final-slot evidence for
