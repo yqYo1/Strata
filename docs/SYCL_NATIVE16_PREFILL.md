@@ -1306,6 +1306,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The third plan gives the private build a 384 MiB aggregate limit and keeps
   the 64 MiB per-file limit and runtime envelope. It also reports an owner
   budget stop directly when one occurs.
+  All five third-build commands exited normally. The old reader expected the
+  original AOT image and host objects in the final trace and refused the build
+  at `cc1f45563`. DPC++ passes temporary host objects from both link phases.
+  The next build checks the original three input hashes and requires every
+  traced host slice derived from the fixture, AOT image and host object.
   All 42 original samples, route counters and decisions match `982211f5c`.
   Retired the numbered request directories and `host` from the closed
   `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`

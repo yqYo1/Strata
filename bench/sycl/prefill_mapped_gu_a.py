@@ -16,7 +16,7 @@ from prefill_attention_bank_component import dependency_paths
 bank, validation = reference.bank, reference.validation
 owner, require = reference.owner, reference.require
 P, B, RESULT = bank.P, bank.B, bank.RESULT
-ROOT, KEY = B / 'prefill-mapped-gu-a-v3', 'prefill_mapped_gu_a_v3'
+ROOT, KEY = B / 'prefill-mapped-gu-a-v4', 'prefill_mapped_gu_a_v4'
 PARENT = reference.coherent_model.MODEL_ROOT
 SRC, BUILD = PARENT / 'source', PARENT / 'build'
 PROBE_SRC = ROOT / 'probe-source'
@@ -197,7 +197,12 @@ def check(row, inputs):
     require(all((PROBE_SRC / p).read_bytes() == raw for p, raw in overlay.items()), 'private probe source changed')
 
 
-def check_link(text, allowed, generated, host_slices=()):
+def check_link(text, trace, allowed, generated, root):
+    inputs = [root / name for name in ('fixture.o', IMAGE, HOST)]
+    require(all(sha(p) == generated[str(p)] for p in inputs), 'driver input changed during link')
+    host_slices = {p.name: sorted(reference.fixture.fixture_host_slices(trace, p)) for p in inputs}
+    expected_slices = {path for paths in host_slices.values() for path in paths}
+    require(len(expected_slices) == sum(map(len, host_slices.values())), 'ambiguous driver host slices')
     observed = {}
     slices = set()
     for line in text.splitlines():
@@ -208,17 +213,16 @@ def check_link(text, allowed, generated, host_slices=()):
         if not path.is_absolute() and path.suffix not in ('.a', '.o', '.so'):
             continue
         path = (BUILD / path).resolve()
-        if path.is_file():
-            expected = generated.get(str(path), allowed.get(str(path)))
-            require(expected == sha(path), 'unexpected link input ' + str(path))
-            observed[str(path)] = expected
+        if str(path) in expected_slices:
+            slices.add(str(path))
+        elif path.is_file():
+            input_sha = generated.get(str(path), allowed.get(str(path)))
+            require(input_sha == sha(path), 'unexpected link input ' + str(path))
+            observed[str(path)] = input_sha
         else:
-            require(path.is_relative_to(ROOT / 'tmp') and path.suffix == '.o', 'unowned link temporary')
-            if str(path) in host_slices:
-                slices.add(str(path))
-    require(set(host_slices) == slices and {str(ROOT / IMAGE), str(ROOT / HOST)} <= observed.keys(),
-            'incomplete actual AOT/host link inputs')
-    return observed
+            require(path.is_relative_to(root / 'tmp') and path.suffix == '.o', 'unowned link temporary')
+    require(expected_slices == slices, 'incomplete actual fixture, AOT image or host object link input')
+    return observed, host_slices
 
 
 def compiled_inputs(allowed, label, source):
@@ -245,13 +249,12 @@ def build(row, allowed):
             if label in ('kernel', 'fixture'):
                 dependencies[label] = compiled_inputs(allowed, label, KERNEL if label == 'kernel' else FIXTURE)
             if label == 'link':
-                slices = reference.fixture.fixture_host_slices(err.read_text(), ROOT / 'fixture.o')
-                links = check_link(out.read_text(), allowed, outputs, slices)
+                links, slices = check_link(out.read_text(), err.read_text(), allowed, outputs, ROOT)
                 archives = {str((BUILD / v).resolve()) for v in row['commands']['link'] if v.endswith('.a')}
                 require(archives and archives <= links.keys(), 'consumed runtime/engine archives missing')
             outputs[str(ROOT / product)] = sha(ROOT / product)
         row.update(stage='built', binary=dict(path=str(ROOT / TARGET), sha256=outputs[str(ROOT / TARGET)]),
-                   compiler_inputs=dependencies, link_inputs=links, produced=outputs)
+                   compiler_inputs=dependencies, link_inputs=links, link_host_slices=slices, produced=outputs)
     except BaseException as error:
         row.update(stage='failed', error=repr(error))
         raise
