@@ -19,6 +19,7 @@ ROOT = bank.B / 'decode-kv-fast-prefill-native-v1'
 KEY = 'decode_kv_fast_prefill_native_v1'
 BOUNDARY_ROOT = bank.B / 'decode-kv-boundary-native-v1'
 BOUNDARY_KEY = 'decode_kv_boundary_native_v1'
+BOUNDARY_CAPACITY_KEY = 'decode_kv_boundary_capacity_v1'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 BOUNDARY_FIX = '178d53212581cc5d11a0e80d8991e9fda3aaa339'
 PHASE = '644412c8edc625b1c634a8ecfa2fe6585aa12d67'
@@ -211,6 +212,33 @@ def boundary_build():
     return row
 
 
+def qualified_boundary():
+    row = boundary_build()
+    capacity = bank.basis.validation.committed(bank.RESULT, (BOUNDARY_CAPACITY_KEY,))
+    build_sha = bank.signature(builder.compact(row))
+    outcomes = capacity['outcomes']
+    require(capacity['stage'] == 'closed' and capacity['passed'] and capacity['complete']
+            and capacity['ownership_closed'] and not capacity['active']
+            and capacity['native_source_commit'] == row['native_source_commit']
+            and capacity['build_sha256'] == build_sha and capacity['driver'] == row['driver']
+            and capacity['binary'] == row['binaries']['strata']
+            and capacity['diagnostic'] == row['binaries']['strata_full_context_diagnostic']
+            and capacity['host_binary'] == row['binaries']['full_context_diagnostic_host_test']
+            and tuple(outcomes) == ('host', 'small-four', 'near-four', 'full')
+            and all(v['passed'] and v['complete'] and v['ownership_closed'] and not v['fresh_faults']
+                    for v in outcomes.values())
+            and not outcomes['host']['GPU_executed']
+            and all(outcomes[k]['GPU_executed'] and outcomes[k]['native_exit_code'] == 0
+                    for k in ('small-four', 'near-four', 'full'))
+            and all((outcomes[k]['batched_rows'], outcomes[k]['outputs'], outcomes[k]['last_width'])
+                    == (tokens - 1, 2, 2) for k, tokens in (('small-four', 16385), ('near-four', 262142)))
+            and outcomes['full']['final_slot_consumed'] and outcomes['full']['batched_rows'] == 262143
+            and outcomes['full']['generated_ids'] == 0, 'complete the boundary-only host and physical-context checks')
+    proof = dict(binary=row['binaries']['strata'], native_source_commit=row['native_source_commit'],
+                 build_sha256=build_sha, capacity_sha256=bank.signature(capacity))
+    return row, proof
+
+
 def save(row, *, boundary_only=False):
     if row['stage'] == 'configured':
         root, _ = build_location(boundary_only)
@@ -240,9 +268,7 @@ def prepare(*, boundary_only=False):
                       'Keep the context fix and add the isolated decode-only KV resolver and selector.'),
                retention='Review after the boundary and paired phase comparisons or the first failed gate.')
     if not boundary_only:
-        boundary = boundary_build()
-        row['boundary_control'] = dict(binary=boundary['binaries']['strata'],
-            native_source_commit=boundary['native_source_commit'], build_sha256=bank.signature(builder.compact(boundary)))
+        _, row['boundary_control'] = qualified_boundary()
     root.mkdir(mode=0o700)
     for name in ('source', 'owned', 'tmp', 'cache'):
         (root / name).mkdir(mode=0o700)

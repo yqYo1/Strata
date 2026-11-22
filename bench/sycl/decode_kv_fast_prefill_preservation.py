@@ -37,9 +37,7 @@ def admission(read):
             'the exact repeated prefill selection is required')
     candidate = bank.previous.read(build.ROOT / 'record.json')
     build.check(candidate)
-    boundary = build.boundary_build()
-    control = dict(binary=boundary['binaries']['strata'], native_source_commit=boundary['native_source_commit'],
-                   build_sha256=bank.signature(build.builder.compact(boundary)))
+    boundary, control = build.qualified_boundary()
     gate = basis.validation.committed(bank.RESULT, (handoff.KEY,))
     device = basis.validation.committed(bank.RESULT, (build.DEVICE_KEY,))
     runtime = gate['runtime_manifest']

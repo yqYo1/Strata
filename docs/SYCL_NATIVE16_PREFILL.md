@@ -511,7 +511,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   replay selects a base, qualify its boundary-only recipe first. The fast
   prefill builder exposes `prepare-boundary`, `configure-boundary` and
   `compile-boundary` for the two-file control on `fde0cdd11`. Its ordinary
-  `prepare` requires that committed closed build and adds the KV layer.
+  `prepare` requires that committed build and its completed boundary checks,
+  then adds the KV layer. In `bench/sycl/decode_kv_fast_prefill_capacity.py`,
+  run `boundary-prepare`, `boundary-host`, `boundary-small-four`,
+  `boundary-near-four` and `boundary-full` in order. Reuse the original
+  MTP4 inputs and environment. Both exact-fit cases require two outputs and
+  a terminal width of two from the two-window, one-draft receipt. The
+  full case requires the width-one commit and drain at 262144 with zero
+  outputs. Bind all four results to the same exact boundary-only build.
   The build projection recovers the coherent foundation from its original
   receipt and Git sources. Preserve its executables for live comparisons and
   readers that still validate those bytes. The four-arm timing cohort consumes

@@ -120,6 +120,22 @@ def cases(row):
     return result
 
 
+def tail_evidence(stdout, stderr, row, case, pid):
+    proof = basis.validation.preload_evidence(stderr, pid)
+    count, timing = capacity.one(stdout, r'^prefill\s+(\d+) tokens in ([0-9.]+) ms', 'actual batched extent')
+    ids = [int(t) for t in capacity.one(stdout, r'^output\s*:(.*)$', 'output IDs').split()]
+    rounds, spec, accepted, offered = map(int, capacity.one(stdout,
+        r'^speculation\s+(\d+) rounds of (\d+), drafts accepted (\d+) of (\d+) ', 'actual verifier rounds'))
+    require(proof['loader'] == row['native_validation_probe']['loader']['path']
+            and int(count) == case['tokens']-1 and float(timing) > 0 and len(ids) == case['outputs']
+            and all(0 <= t < row['vocab_size'] for t in ids) and 0 <= accepted <= offered
+            and (rounds, spec, offered) == (2, case['spec'], 1)
+            and not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|teardown uncertain|cleanup failed|ran out of context', stderr),
+            'actual two-output tail or provider evidence differs')
+    return dict(validation=proof, batched_rows=int(count), outputs=len(ids), output_ids_sha256=bank.signature(ids),
+                verifier_rounds=rounds, last_width=offered+1, accepted=accepted)
+
+
 def evidence(stdout, stderr, row, case, pid):
     if case['full']:
         value = capacity.evidence(stdout, stderr, row, case, pid)
@@ -130,23 +146,13 @@ def evidence(stdout, stderr, row, case, pid):
         require(all(value[k] == v for k, v in row['full_reference'].items()), 'the measured exact fill changed')
         return value
 
-    proof = basis.validation.preload_evidence(stderr, pid)
-    count, timing = capacity.one(stdout, r'^prefill\s+(\d+) tokens in ([0-9.]+) ms', 'actual batched extent')
-    ids = [int(t) for t in capacity.one(stdout, r'^output\s*:(.*)$', 'output IDs').split()]
-    rounds, spec, accepted, offered = map(int, capacity.one(stdout,
-        r'^speculation\s+(\d+) rounds of (\d+), drafts accepted (\d+) of (\d+) ', 'actual verifier rounds'))
+    value = tail_evidence(stdout, stderr, row, case, pid)
     p, verified, accepted_first, rows, coupled = map(int, capacity.one(stderr,
         r'^strata mtp: decode catchup p=(\d+) verified=(\d+) accepted=(\d+) rows=(\d+) coupled=(\d+)$',
         'one completed MTP catch-up'))
-    require(proof['loader'] == row['native_validation_probe']['loader']['path']
-            and int(count) == case['tokens']-1 and float(timing) > 0 and len(ids) == case['outputs']
-            and all(0 <= t < row['vocab_size'] for t in ids) and 0 <= accepted <= offered
-            and (rounds, spec, offered) == (2, case['spec'], 1)
-            and (p, verified, accepted_first, rows, coupled) == (case['tokens']-1, 1, 0, 1, 0)
-            and not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|teardown uncertain|cleanup failed|ran out of context', stderr),
-            'actual two-output tail or provider evidence differs')
-    return dict(validation=proof, batched_rows=int(count), outputs=len(ids), output_ids_sha256=bank.signature(ids),
-                first_catchup_position=p, verifier_rounds=rounds, last_width=offered+1, accepted=accepted)
+    require((p, verified, accepted_first, rows, coupled) == (case['tokens']-1, 1, 0, 1, 0),
+            'actual first MTP catch-up differs')
+    return dict(value, first_catchup_position=p)
 
 
 def experiment():
