@@ -111235,6 +111235,169 @@
           "scope": "Regular content bytes,not physical disk blocks. Original failed/partial ODR/performance decisions remain unchanged. Both independent phase references preserved."
         }
       }
+    },
+    "boundary_candidate_reference_transition": {
+      "stage": "predeletion_verified",
+      "closed_case_decisions": [
+        "097922a15",
+        "1acdbbbe7"
+      ],
+      "admitted_controller": "561a668e5",
+      "retained_references": {
+        "coherent-prefill-native-v1": {
+          "source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coherent-prefill-native-v1/build/strata",
+            "sha256": "dcb8efd4698d4c9c6de913cb5f92e2229e945b242f24bd1fca2998e4cf89e6d1",
+            "bytes": 26448640,
+            "origin_source_commit": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43"
+          },
+          "purpose": "selected matched decode reference"
+        },
+        "prefill-large-gather-kv-model-v1": {
+          "source": "fde0cdd11a72a50aaa0e2105de24996589aef52c",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-large-gather-kv-model-v1/build/strata",
+            "sha256": "85e3f202ef99661d52c03a17a8b609b8a8a44e9f584bfa8fc1a5c1c3d51aea7c",
+            "bytes": 26541640
+          },
+          "purpose": "fast prefill control for the boundary comparison"
+        }
+      },
+      "groups": {
+        "phase-kv-naming-native-v1": {
+          "original_input_recovery": {
+            "source": "9849e35803f011aaafb2753c1e0f31411e40308e",
+            "evidence": "9ff38147e5d9bbbaec96dc8dcae86ffd969f457c",
+            "record": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c",
+            "recipe": "1c14fb531398338c49a4aa3ee0612e1fdad81f46ee9ce2a50ac01805b00b5fdd",
+            "compiler": 1473,
+            "link": 29,
+            "project_and_dependencies": 2384,
+            "executables": 14,
+            "census": "82aecb2e341e2981e7d471d1d4d6099dd44c357128eded3077264d48e026b037",
+            "consumers": "Naming and split comparisons closed. The current prefill admission uses the committed build-time reference identity."
+          },
+          "engine": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build/strata",
+            "sha256": "6d2b4f7d6a79424c3da5ac6e35d7e1336016604e2f7bdb68b84031d2879903de",
+            "bytes": 26476232,
+            "origin_source_commit": "9849e35803f011aaafb2753c1e0f31411e40308e"
+          },
+          "delete": [
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/build",
+              "file_count": 195,
+              "regular_bytes": 207275744,
+              "manifest_sha256": "98e7b2645bdf4b7c184288a4cb94d002a09fba1583556ca59742ccca460a8c41"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/cache",
+              "file_count": 0,
+              "regular_bytes": 0,
+              "manifest_sha256": "aa0b43c47fe80290432a2bd5eb3f76c83b5efec76c446433d26163272c7a4a16"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/compile",
+              "file_count": 5,
+              "regular_bytes": 7139269,
+              "manifest_sha256": "ec2081593ab8dcb347015fcd9865e78e477180746ac8d0098a5e93c22d2a0321"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/configure",
+              "file_count": 7,
+              "regular_bytes": 159060,
+              "manifest_sha256": "f0e3ef7078d7af2a0771057a2af5a77dacbd31cb927543844db22dea69ba6bbd"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/tmp",
+              "file_count": 0,
+              "regular_bytes": 0,
+              "manifest_sha256": "7ea6789f04b6715e92c4e919308cdf89dd89d044bbc1325e2cc92b2046185f30"
+            }
+          ],
+          "retained_receipts": [
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/record.json",
+              "sha256": "2dc7d4f3ead6068be12afa6ef36c589324f75d31ddd95f6fa96421552da57c9c"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-kv-naming-native-v1/actual-inputs.json",
+              "sha256": "82aecb2e341e2981e7d471d1d4d6099dd44c357128eded3077264d48e026b037"
+            }
+          ]
+        },
+        "decode-mtp-prefix-native-v1": {
+          "original_input_recovery": {
+            "source": "178d53212581cc5d11a0e80d8991e9fda3aaa339",
+            "evidence": "59914a469ab7f3f241f1779c39fbe90e7b25b4a2",
+            "record": "63704d89bf0df689a1273273cbbb48dbe5dcd458d8e1da2841b886ee87dafcf0",
+            "recipe": "7714abc4ce13aa9b8b36a46617a232b6cd97b5e3ea23d0d7c593c40c72134d9f",
+            "compiler": 1474,
+            "link": 30,
+            "project": 1171,
+            "dependencies": 1197,
+            "build_controls": 392,
+            "executables": 12,
+            "consumers": "The prefix speed and coherent replay decisions have ended. The boundary controller consumes committed work and results."
+          },
+          "engine": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/build/strata",
+            "sha256": "cdc551c02930cb7b3c3121fc4df2e0ddb586e50ffbe510accfe8180759563c22",
+            "bytes": 26546544
+          },
+          "delete": [
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/build",
+              "file_count": 190,
+              "regular_bytes": 177053530,
+              "manifest_sha256": "052a93d6e000ea0023ba5fdc7ab7cf64f75f70a0f2deb97d9b8f2dd9a16fa085"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/cache",
+              "file_count": 0,
+              "regular_bytes": 0,
+              "manifest_sha256": "aa0b43c47fe80290432a2bd5eb3f76c83b5efec76c446433d26163272c7a4a16"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/owned",
+              "file_count": 4,
+              "regular_bytes": 2613556,
+              "manifest_sha256": "faff1fe3954ef4abb5e613077831e064d241d72781b9d433eab63fb14d900f46"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/ownership.json",
+              "file_count": 1,
+              "regular_bytes": 86261,
+              "manifest_sha256": "7dea8b836dd0529c31b6e3a2802c7f98c66c19d08d3013f4bfaef57378bcbfdb"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/source",
+              "file_count": 1171,
+              "regular_bytes": 16583355,
+              "manifest_sha256": "0f725834fc0d8124529d8c5244f8568e82c90f4dbd535b5f2231a93c7c193743"
+            },
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/tmp",
+              "file_count": 0,
+              "regular_bytes": 0,
+              "manifest_sha256": "7ea6789f04b6715e92c4e919308cdf89dd89d044bbc1325e2cc92b2046185f30"
+            }
+          ],
+          "retained_receipts": [
+            {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-mtp-prefix-native-v1/record.json",
+              "sha256": "63704d89bf0df689a1273273cbbb48dbe5dcd458d8e1da2841b886ee87dafcf0"
+            }
+          ]
+        }
+      },
+      "legacy_configured_serving_outputs": [
+        "build-sycl-aot/strata",
+        "build-sycl/strata"
+      ],
+      "receipt_review": "At the boundary comparison closure, keep only proof still used for historical source recovery.",
+      "next_generation": "Temporary boundary-only control, with both selected references preserved through the physical checks."
     }
   },
   "cache_map_cpu_census_entry_v1": {
