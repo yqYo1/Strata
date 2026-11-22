@@ -1330,10 +1330,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   qualification yet. The next comparison needs the operator build and its
   committed correctness evidence. Retire the superseded witness generation
   after the timing controller passes admission using its Git record.
-  The closed operator's raw directories `cache`, `compile`, `layout`,
+  Retired the closed operator's raw directories `cache`, `compile`, `layout`,
   `smoke`, `tmp`, `validate`, `witness-smoke`, and `witness-validate`
-  are eligible for retirement after pushing the evidence. The compact
-  result retains the validated cases and link inputs. The 40 raw files
+  after verifying the pushed evidence and retained comparison build. The
+  compact result retains the validated cases and link inputs. The 40 removed files
   total 1,320,049 bytes with inventory SHA-256
   `892b219e8f017b590293f24d90277af01270ae18eda619098db403a5ed27d21d`.
   All 42 original samples, route counters and decisions match `982211f5c`.
