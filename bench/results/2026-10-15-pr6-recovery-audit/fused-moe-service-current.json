@@ -598445,7 +598445,7 @@
     }
   },
   "prefill_mapped_gu_operator_v1": {
-    "stage": "built",
+    "stage": "checked",
     "controller": {
       "revision": "038e008a3219850d78db8515730ef9d8b907a1be",
       "sha256": "f07a2725110d28000b7ee60983736d63b4a2230e04a17c7853320d800f40525a"
@@ -598644,7 +598644,29 @@
       ]
     },
     "environment_sha256": "a2a7af6c88f31cb0cc81c08153f9d24a2597e48997b0bffec234ecb0c3b7401b",
-    "stages": [],
+    "stages": [
+      {
+        "stage": "layout",
+        "environment_sha256": "88ee2887f4a1bed8a262e75aeb9fc6028a772dda0a85eb4513074d6e78168d2d",
+        "gpu": false,
+        "completed_cases": 22,
+        "compared_device_words": 0,
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "active": false,
     "complete": false,
     "passed": false,
