@@ -616220,7 +616220,7 @@
     }
   },
   "prefill_kv_upload_admission_v1": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "bf1d09c6f7fbb3e37009481b2bff1a20fc5f4c98",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/strata",
@@ -616999,6 +616999,39 @@
         },
         "passed": true,
         "mode": "demand"
+      },
+      {
+        "index": 1,
+        "read": 117489,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/strata",
+          "sha256": "a4b623ddb1ec012ed211eb4fc97a4f336be2101aa9a668675818b911b49d1be8",
+          "bytes": 26550328
+        },
+        "native_source_commit": "3abb9ff3a5066006db449294c4e5d67eab91e55a",
+        "native_identity": {
+          "pid": 3397843,
+          "start_ticks": 374183049,
+          "sid": 3397779
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     ],
     "request_hashes": {
@@ -617011,7 +617044,7 @@
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "wall": 2400,
       "cpu": 28800,
