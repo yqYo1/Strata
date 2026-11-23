@@ -1614,6 +1614,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The removed inventory is 53 files and 2226601 bytes with SHA-256
   `586ce9f362f38c5147cbf8c09ee929d16f9cf31400741305055662eddaf352c0`.
 
+  The model preparation at `df0520d8b` stopped before writing a campaign
+  receipt or launching a model. It read the score mode before the plan
+  attached that field. Derive the environment from the declared process
+  index. Retire the three partial preparation files, 13374 bytes with
+  inventory SHA-256 `d4885d299a470118409821a7921878e02c7b49c39101be2f090b1b5c20784679`,
+  after pushing the correction.
+
   The first build is closed as failed at `842d478b3`. Configure and link
   exited zero. The census expected six `Gemm` includers and the score
   fixture adds a seventh. No device case was launched. The source and

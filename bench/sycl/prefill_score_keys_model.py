@@ -145,7 +145,7 @@ def experiment(phase):
     def environment(row, arm):
         env = base.environment(row, dict(arm, index=1))
         require(SELECTOR not in env, 'the V2 reference unexpectedly fixes score-key retention')
-        env[SELECTOR] = str(int(arm['score_mode'] == 'retain'))
+        env[SELECTOR] = str(int(order[arm['index']] == 'retain'))
         if small:
             env.update(STRATA_TRACE='1', STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS='384')
         return env
