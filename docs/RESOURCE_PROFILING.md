@@ -169,6 +169,18 @@ pending work, model observer overhead or inference performance. Requalify the
 current collector/provider inputs before execution, preserve the owned launcher's
 `ZES_ENABLE_SYSMAN=0` policy, and serialize this work after the frozen model cohort.
 
+The retained V2 DFlash2 binary exposes a lighter request-level diagnostic.
+[dflash2_v2_decode_clocks.py](../bench/sycl/dflash2_v2_decode_clocks.py) uses
+the original 32K-plus code request in three fresh processes. It runs two
+unobserved controls around the rounded verifier clocks and conserved caller
+ledger. Active verifier rows equal the window count plus the offered drafts.
+The first window has width one, and confidence can limit later windows to
+two or three rows. The reader checks this work against the native footer
+and the client journal. It separates caller CPU in completion waits from
+wall time in the expert pool wrapper. Worker arithmetic, physical traffic
+and device utilization need their own evidence. The host reader controls
+pass at `96628562e`. Model execution and the paired overhead check are pending.
+
 The current a347 engine, built from `221e95e9ad890383deb418d0a865ee32c99168b6`,
 already has `STRATA_CPU_SERVICE_PROFILE:BOOL=ON`. Its compiled `pool.cpp` and
 `pool.hpp` match the producers in `verify_window_cpu_service_overhead_v1`.
