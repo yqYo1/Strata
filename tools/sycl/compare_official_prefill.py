@@ -629,7 +629,10 @@ def run(index, experiment=None):
             subsequent_median_ms=statistics.median(s['prompt_ms'] for s in samples[1:]))
         row['request_hashes'][str(plan['read'])] = hashes
         if index == len(policy.ORDER) - 1:
-            shared.models.model_pins(config, row['model_assets'], full=True)
+            if hasattr(policy, 'verify_model_assets'):
+                policy.verify_model_assets(row, config)
+            else:
+                shared.models.model_pins(config, row['model_assets'], full=True)
     except BaseException as error:
         outcome.update(error=repr(error), complete=False, host_probe_accepted=False)
     finally:

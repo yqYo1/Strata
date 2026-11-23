@@ -30,7 +30,7 @@ def expected_prefix(positions, layer, reuse):
     return loaded, kept, calls
 
 
-def check_clean_request(text, start, rows, chunk, *, reuse):
+def check_clean_request(text, start, rows, chunk, *, reuse, tap_layers=()):
     """Validate the native per-layer counters without enabling the full request trace."""
     require(0 <= start < 262144 and 0 < rows <= 262144 - start and chunk > 0, 'invalid request range')
     require('strata trace:' not in text, 'clean request contains the diagnostic trace')
@@ -43,7 +43,7 @@ def check_clean_request(text, start, rows, chunk, *, reuse):
             actual.append(tuple(map(int, match.groups())))
     expected = []
     for layer in range(3, 48, 4):
-        loaded, kept, _ = expected_prefix(positions, layer, reuse)
+        loaded, kept, _ = expected_prefix(positions, layer, reuse and layer not in tap_layers)
         if loaded or kept:
             expected.append((layer, loaded, kept))
     require(actual == expected, 'clean prefix reload/reuse differs from the planned layer dispatch')
