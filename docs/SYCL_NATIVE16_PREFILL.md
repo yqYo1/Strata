@@ -1448,14 +1448,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   aliasing, cancellation and error retirement. Keep the route-status check
   before any shared result updates the residual. Use the control's existing
   QSA and decode settings in both arms.
-  The completed captures `host`, `0`, `1` and `2` under the
-  `prefill-kv-upload-model-pti-v1` state root have no remaining consumer.
-  Their 218 files total 838023688 bytes with inventory SHA-256
+  Removed and verified the completed `host`, `0`, `1` and `2` captures under
+  `prefill-kv-upload-model-pti-v1` after pushing the comparison and reduction.
+  The 218 retired files total 838023688 bytes with inventory SHA-256
   `1395e983e41d4aecfbc0a7e81fc055a1aaa4a647c7132b67800b78524a5c4bb0`.
   The 790346612-byte trace SHA-256 is
   `6b35a0dfe29efc1f726aeec9a0b2e809e117fc7b951e7172eed6903edc1015f1`.
-  Retire these captures after the results and reduction are pushed. Keep the
-  compact campaign receipt and named executable consumers.
+  The compact campaign receipt and required executable were verified after
+  retirement.
   Removed and verified the following closed captures under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
   admission uses the fixture and model receipts recorded at `3c23f0b78`.
