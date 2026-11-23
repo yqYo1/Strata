@@ -1543,16 +1543,42 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The corrected controller binds the retained V2 build, exact committed PTI
   result, original model/runtime inputs and the same measured requests.
   This is a controller-only repair using the verified clock executable.
-  Match the two prior requests in each of three independent processes with
-  clock off, on and off. Compare first request and subsequent request
-  separately against both controls. Qualify observer cost within 3.0 seconds
-  for first use and 1.5 seconds for the subsequent request. These clocks
-  attribute host wrapper time. The checked wait may include earlier GPU work.
-  If the resulting dependency gap supports a scheduling trial, move only the
-  independent first dequantization ahead of the drain on the same queue.
-  Prove shared-weight and scratch bounds, aliasing, cancellation and error
-  retirement. Keep the route-status check before any shared result updates
-  the residual. Use the control's existing QSA and decode settings in both arms.
+  The bracket at `fb0fc95d4` closes all three processes and six 117489-token
+  requests with matched work and responses, zero fresh GPU faults and all
+  fifteen final model hashes verified. Clean first/subsequent PP is
+  877.9/995.3 and 910.4/996.8 tok/s, with client TTFT 134.054/118.262 and
+  129.273/118.106 s. The observed first request misses the 3.0-second
+  overhead screen by differing from the first control by 4.55 seconds.
+  The observed subsequent request passes the 1.5-second screen against
+  both controls, with prompt-time deltas of -0.247 and -0.072 s.
+  Its 48 status copy calls total 9.342 s wall and 9.309 s calling-thread CPU,
+  with per-layer wall times of 123–261 ms. The explicit checked wait totals
+  9.152 ms. Wait return to first Gate dequant wrapper entry totals 0.247 ms,
+  including projection preparation. The dequant wrapper totals 9.367 ms.
+  The older `prefill_split_upload_cpu_wait_v1` breakdown measured 9.217 s
+  in the `queue.memcpy` enqueue region on its subsequent request. The
+  measured wrapper includes any runtime-internal waiting for earlier GPU
+  work. Physical PCIe service and removable wall time remain open.
+  Next isolate moving only the first independent Gate dequantization
+  before the status copy on the existing in-order split queue. Audit its
+  shared-weight and GEMM scratch lifetimes and checked retirement before
+  enabling it. Keep route-status validation ahead of any shared result
+  update to the residual. Compare the same request bodies, QSA and decode
+  settings and observe whether the changed order reduces total clean prefill
+  time. The explicit wait alone is a small measured interval.
+  Retire the completed clock-only build and captures under the shared state
+  directory before building the scheduling candidate. The native recovery
+  at `2c6645de4` matched the 1172 projected sources, compiler and recipe
+  inputs, 137 fresh objects and twelve target hashes against the exact
+  measured executable. Keep the V2 prefill and coherent decode references.
+  The source/build receipts, runtime inventory and committed clock totals
+  preserve the recovered inputs and useful samples.
+
+  | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
+  | --- | --- | --- | --- |
+  | `prefill-moe-gate-clock-native-v1/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1370 | 196429735 | `1e79f47dc9feb47de80fe00933cad56b7d66d960b910685e0ebb8e7426865fad` |
+  | `prefill-moe-gate-clock-model-v1/{0,1,2,host}` | 214 | 31680012 | `3726d48d509d6d03972f78c20ad31eb1ab1cdb0d9facc2d76b80d6680dbd8719` |
+
   The sparse XPTI subscriber's V6 device run stopped after the second
   registration attempt at `ea8be6e5f`. V7 accepts a repeated registration
   when both exact callbacks are already active. CPU controls exercise that
