@@ -1336,6 +1336,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   aligned KV reuse and the standalone bank fixed. The fully occupied case
   exercises the host-backed fallback. Test the server's split and near-full
   RESTORE routes separately.
+  Both 16385-token controls at `b4eb71fee` pass on the current diagnostic.
+  They check 16384 resident BF16 rows, four matching output IDs, and equal
+  input-copy, KV prefix and host-mirror counters. Direct output writes 96
+  pieces in place and removes 16106127360 requested copy bytes. Both owners exit
+  normally with quiet validation and zero fresh GPU faults. The physical
+  pair follows under `prefill_kv_upload_capacity_v1`.
   Complete ordinary and near-full fallback, physical final slot, RESTORE,
   state handoff and sustained decode before adoption.
   On the pinned V2 build, `ExpertBankPlan::window_rows` is 81920 and the
@@ -1350,16 +1356,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   For MoE attribution, the first matched request at `297adab4d` ran 7441
   fused jobs out of 23816 in each of Gate/Up and Down. Those jobs accounted
   for 52231136 of 56394240 routed rows (92.62%). The 18878 dequantizations
-  produce a logical 185578291200 bytes in reused weight scratch.
+  produce a logical 185578291200 bytes in reused weight scratch. At the
+  source's 1280-by-2560 Gate/Up and 2560-by-640 Down shapes, the routed rows
+  represent about 554.38 TFLOP of GEMM work, counting two operations per
+  multiply-add. Across the four input bodies at `be8caf613`, both store arms
+  request the same 38.507–38.589 GB of expert H2D per request. That payload
+  would take about 5.94–6.13 s at the measured 6.292–6.485 GB/s large host-USM
+  copy rates. The direct arm's warmed median needs 2.739 s less prompt time
+  to reach 1000 tok/s. Use these work and time budgets to compare actual GEMM,
+  copy and host service and their overlap before selecting an optimization.
   `STRATA_PREFILL_LAYER_MAJOR_PROFILE=1` emits the planned row-width census
   from the existing host route data and coarse queue spans with host issue
   gaps. Use `tools/sycl/moe_upload_census.py` to check its 48 windows against
   the actual completed job and row totals. `STRATA_SYCL_PREFILL_MOE_CENSUS=1`
-  adds a first-chunk weight readback per layer. Keep the first observer
-  comparison to one selector and verify its cost against clean requests.
+  adds a first-chunk weight readback per layer. The earlier V1 timing-coupled
+  census failed at `237f6390f` with a 480-second watchdog and zero completed
+  requests. Qualify the current observer's extra queue operations and
+  event lifetimes in a bounded check before any long run with it. Change
+  one observer per comparison and verify its cost against clean requests.
   The retained UnitTrace launcher and collector hashes still match the
-  qualified tool build. Obtain device service evidence with a bounded
-  same-build trace if coarse spans leave the MoE cost unresolved.
+  qualified tool build. A bounded same-build trace is the other candidate
+  for obtaining device service evidence.
   Removed and verified the following closed captures under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
   admission uses the fixture and model receipts recorded at `3c23f0b78`.
