@@ -662,6 +662,7 @@ struct MoeWindowContext {
     uint8_t* extra_workspace = nullptr; // separately owned FP32 tail + optional job planes
     uint64_t extra_workspace_bytes = 0;
     bool relocated_job_buffers = false;
+    bool split_upload_eligible = false;
     int64_t accumulator_primary_rows = 0; // zero retains the ordinary route
     bool scratch_mixed = false;
     int64_t maximum_rows = 16384;

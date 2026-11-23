@@ -1006,6 +1006,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             window_context->extra_workspace = split_accumulator_storage.get();
             window_context->extra_workspace_bytes = split_accumulator_bytes;
             window_context->relocated_job_buffers = relocated_job_buffers_on;
+            // The request's slot budget stays fixed when layers repack the private bank.
+            window_context->split_upload_eligible = !relocated_job_buffers_on && bank_plan.slots == 128;
         }
         if (accumulation_rows) window_context->maximum_rows = accumulation_rows;
         m.moe_window = window_context.get();
