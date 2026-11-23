@@ -643493,6 +643493,32 @@
       "partial_sse_journal_sha256": "c04a2064983b15b98443e95c2fd14108e2ae0a66fe25a17cd5e1e5c3ef660744",
       "stderr_sha256": "c3f5137a2072e8b53bd6b9b53fb55a3565a2ca22d46f8839b4bd821d54509fa3",
       "interpretation": "The Xe compute counter advanced with output frozen. The first fault and CCS reset appear at closure. The pre-close counter measures occupancy and does not establish GPU instruction progress or the cause of the wait."
+    },
+    "retirement": {
+      "artifacts": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-v2-generation-v1/0/cache",
+          "files": 56,
+          "bytes": 14869152,
+          "file_tree_sha256": "77cbc11639c3455149c0abf256fa444f6c64c28002db8f65215b78ed4a7174e6"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-v2-generation-v1/1",
+          "files": 2,
+          "bytes": 2739,
+          "file_tree_sha256": "e6573f08c5e44ce68de5295b18b08572c99e9332075eaf26f983fc7d0530c9be"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-v2-generation-v1/2",
+          "files": 2,
+          "bytes": 2739,
+          "file_tree_sha256": "4c60848c5e65c498598a7d0c2241c1f5c7d9ec2283cb62dbc49d1c3766eca7e6"
+        }
+      ],
+      "retained_capture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-v2-generation-v1/0",
+      "review_at": "Closure of a bounded layer-zero replay diagnostic",
+      "complete": false,
+      "reason": "The failed request and owned log are still needed for scope selection. The private JIT cache and unlaunched arm directories have no live consumer."
     }
   },
   "dflash2_v2_post_reset_v1": {
@@ -643537,10 +643563,57 @@
       "failure": "1a418e7bb",
       "scope": "Four known BF16 store cases and checked retirements after automatic reset. No model execution."
     },
-    "stage": "prepared",
-    "passed": false,
-    "complete": false,
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
     "active": false,
-    "ownership_closed": true
+    "ownership_closed": true,
+    "result": {
+      "host_probe_accepted": true,
+      "cases": 4,
+      "compared_BF16": 168417280,
+      "checked_rejection_types": [
+        "overlap",
+        "zero extent",
+        "outside registered range"
+      ],
+      "native_exit_code": 0,
+      "validation": {
+        "pid": 1921582,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    },
+    "retirement": {
+      "artifacts": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-v2-post-reset-v1",
+          "files": 7,
+          "bytes": 338111,
+          "file_tree_sha256": "04f33f872145f3768ec946f62e0d64597d623732c77f35fa4925703fc587b60a"
+        }
+      ],
+      "complete": false,
+      "reason": "Keep the verified device outcome and original Git controller. The completed fixture has no further reader of private diagnostics."
+    }
   }
 }

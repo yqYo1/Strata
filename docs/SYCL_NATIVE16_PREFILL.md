@@ -10669,7 +10669,18 @@ all owned processes reaped. This failure identifies the first verifier
 completion boundary. The underlying fault mechanism and the effect of VRAM
 pressure require separate evidence. The two later processes remain unrun.
 Clean 32K and sustained generation, physical final-slot and RESTORE checks
-are pending on this DFlash2 route.
+are pending on this DFlash2 route. [DRM client counters](https://docs.kernel.org/gpu/drm-usage-stats.html)
+
+After the automatic reset, `dflash2_v2_post_reset_v1` completes the four
+retained BF16 store cases on the same boot and provider. It checks
+168417280 BF16 values, guards and retirement with normal exit and no new
+driver fault. The next model diagnostic needs a bounded DFlash2 width-four
+case around the first-layer completion boundary. Audit the dependencies and
+allocation lifetime of the submitted layer-zero graph and the previous
+window's commit. Consider verifier overlap as a separate control. Preserve
+the failed suite's journal and the relevant native frame until that case is
+prepared. Use the reviewed draft-confidence and ring reports once the
+verifier route is admissible for sustained timing.
 
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
