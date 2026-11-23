@@ -1466,6 +1466,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The fixture places the guarded K span on a 256-byte boundary in both
   arms. Its boundary mode explicitly selects the final mapped and first
   masked cell at extents 262143 and 262144.
+  Source `580276b38` generates candidate SHA-256
+  `0b6c0c1b3049cb56e3e274efdab91ea545363993f8694462630e10d72e54c4b6`.
+  The generator rejects a changed original. Both translation units pass
+  the pinned oneAPI 2026.2 syntax check with the measured compile flags.
+  The candidate inherits the reference's barrier deprecation warnings.
+  Device compilation, the smoke and boundary runs, and clean paired timing
+  are pending. Keep this fixture for that comparison.
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
