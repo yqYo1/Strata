@@ -28,15 +28,19 @@ std::atomic<bool> capture_stopped{false};
 constexpr int row_capacity = 2048;
 bool status_only = false;
 
-[[noreturn]] void fail() noexcept {
-  constexpr char message[] = "strata UR subscriber: incomplete diagnostic\n";
-  (void)!write(STDERR_FILENO, message, sizeof(message) - 1);
+[[noreturn]] void fail(const char* check, const char* subject = nullptr) noexcept {
+  constexpr char prefix[] = "strata UR subscriber: incomplete diagnostic";
+  char message[384];
+  const int n = std::snprintf(message, sizeof(message), "%s: %s%s%s\n", prefix,
+      check, subject ? " in " : "", subject ? subject : "");
+  if (n > 0 && size_t(n) < sizeof(message))
+    (void)!write(STDERR_FILENO, message, n);
   _exit(86);
 }
 
 uint64_t clock_ns(clockid_t clock) noexcept {
   timespec now{};
-  if (clock_gettime(clock, &now)) fail();
+  if (clock_gettime(clock, &now)) fail("clock read failed");
   return uint64_t(now.tv_sec) * 1000000000ULL + uint64_t(now.tv_nsec);
 }
 
@@ -48,7 +52,7 @@ void write_row(const char* row, int size) noexcept {
   while (offset < size) {
     const ssize_t written = write(log_fd, row + offset, size - offset);
     if (written < 0 && errno == EINTR) continue;
-    if (written <= 0) fail();
+    if (written <= 0) fail("cannot write capture");
     offset += int(written);
   }
 }
@@ -59,8 +63,8 @@ void write_row(const char* row, int size) noexcept {
 // prefix. Plain state/FDs intentionally remain alive through late callbacks.
 bool begin_row() noexcept {
   if (capture_stopped.load(std::memory_order_acquire)) return false;
-  if (log_fd < 0) fail();
-  if (pthread_mutex_lock(&output_lock)) fail();
+  if (log_fd < 0) fail("capture file not open");
+  if (pthread_mutex_lock(&output_lock)) fail("cannot lock capture output");
   if (!capture_stopped.load(std::memory_order_relaxed)) {
     if (sequence < record_budget) return true; // Reserve with the lock held.
     else {
@@ -70,19 +74,19 @@ bool begin_row() noexcept {
           "{\"kind\":\"overflow\",\"pid\":%ld,\"raw_ns\":%" PRIu64
           ",\"reason\":\"record_budget\",\"records\":%" PRIu64 ",\"limit\":%" PRIu64 "}\n",
           long(getpid()), raw_ns(), sequence, record_budget);
-      if (n <= 0 || size_t(n) >= sizeof(marker)) fail();
+      if (n <= 0 || size_t(n) >= sizeof(marker)) fail("invalid overflow marker size");
       write_row(marker, n);
     }
   }
-  if (pthread_mutex_unlock(&output_lock)) fail();
+  if (pthread_mutex_unlock(&output_lock)) fail("cannot unlock capture output");
   return false;
 }
 
 void finish_row(const char* row, int size) noexcept {
-  if (size <= 0 || size >= row_capacity) fail();
+  if (size <= 0 || size >= row_capacity) fail("invalid capture row size");
   ++sequence;
   write_row(row, size);
-  if (pthread_mutex_unlock(&output_lock)) fail();
+  if (pthread_mutex_unlock(&output_lock)) fail("cannot unlock capture output");
 }
 
 void emit(const char* row, int size) noexcept {
@@ -111,69 +115,73 @@ struct Metadata {
   void number(const char* key, uint64_t value) noexcept {
     int n = std::snprintf(text + used, sizeof(text) - used, "%s\"%s\":%" PRIu64,
                           first ? "" : ",", key, value);
-    if (n < 0 || size_t(n) >= sizeof(text) - used) fail();
+    if (n < 0 || size_t(n) >= sizeof(text) - used) fail("metadata capacity exceeded", key);
     used += size_t(n); first = false;
   }
   template<class T> static uint64_t address(T value) noexcept {
     return uint64_t(reinterpret_cast<uintptr_t>(value));
   }
   template<class T> void handle(const char* key, const T* value) noexcept {
-    if (!value) fail();
+    if (!value) fail("missing handle parameter", key);
     number(key, address(*value));
   }
   template<class T> void output(const char* key, T* const* value, bool success) noexcept {
-    if (!value) fail();
+    if (!value) fail("missing output parameter", key);
     number(key, success && *value ? address(**value) : 0);
   }
   template<class T> void array(const char* key, const T* values, uint32_t count) noexcept {
-    if (count > 32 || (count && !values)) fail();
+    if (count > 32 || (count && !values)) fail("invalid array parameter", key);
     int n = std::snprintf(text + used, sizeof(text) - used, "%s\"%s\":[", first ? "" : ",", key);
-    if (n < 0 || size_t(n) >= sizeof(text) - used) fail();
+    if (n < 0 || size_t(n) >= sizeof(text) - used) fail("metadata capacity exceeded", key);
     used += size_t(n); first = false;
     for (uint32_t i = 0; i < count; ++i) {
       uint64_t value;
       if constexpr (std::is_pointer_v<T>) value = address(values[i]);
       else value = uint64_t(values[i]);
       n = std::snprintf(text + used, sizeof(text) - used, "%s%" PRIu64, i ? "," : "", value);
-      if (n < 0 || size_t(n) >= sizeof(text) - used) fail();
+      if (n < 0 || size_t(n) >= sizeof(text) - used) fail("metadata capacity exceeded", key);
       used += size_t(n);
     }
-    if (used + 2 >= sizeof(text)) fail();
+    if (used + 2 >= sizeof(text)) fail("metadata capacity exceeded", key);
     text[used++] = ']'; text[used] = 0;
   }
   template<class T> void dependencies(const T* p, bool success) noexcept {
-    if (!p->pnumEventsInWaitList || !p->pphEventWaitList) fail();
+    if (!p->pnumEventsInWaitList || !p->pphEventWaitList) fail("missing event dependency fields");
     number("wait_count", *p->pnumEventsInWaitList);
     if (success) array("waits", *p->pphEventWaitList, *p->pnumEventsInWaitList);
     output("produced_event", p->pphEvent, success);
   }
   template<class T> void geometry(const T* p, bool success) noexcept {
     handle("kernel", p->phKernel);
-    if (!p->pworkDim) fail();
+    if (!p->pworkDim) fail("missing kernel work dimension");
     number("work_dim", *p->pworkDim);
     if (!success) return;
     const uint32_t dim = *p->pworkDim;
-    if (!dim || dim > 3 || !p->ppGlobalWorkSize || !p->ppGlobalWorkOffset || !p->ppLocalWorkSize) fail();
+    if (!dim || dim > 3 || !p->ppGlobalWorkSize || !p->ppGlobalWorkOffset || !p->ppLocalWorkSize)
+      fail("invalid launch geometry fields");
     array("global", *p->ppGlobalWorkSize, dim);
     array("offset", *p->ppGlobalWorkOffset, *p->ppGlobalWorkOffset ? dim : 0);
     array("local", *p->ppLocalWorkSize, *p->ppLocalWorkSize ? dim : 0);
   }
   template<class T> void graph_dependencies(const T* p, bool success) noexcept {
     dependencies(p, success);
-    if (!p->pnumSyncPointsInWaitList || !p->ppSyncPointWaitList || !p->ppSyncPoint || !p->pphCommand) fail();
+    if (!p->pnumSyncPointsInWaitList || !p->ppSyncPointWaitList || !p->ppSyncPoint || !p->pphCommand)
+      fail("missing graph dependency fields");
     number("sync_count", *p->pnumSyncPointsInWaitList);
     if (success) array("sync_waits", *p->ppSyncPointWaitList, *p->pnumSyncPointsInWaitList);
     number("sync_point", success && *p->ppSyncPoint ? **p->ppSyncPoint : 0);
     output("command", p->pphCommand, success);
   }
   const char* finish() noexcept {
-    if (used + 2 > sizeof(text)) fail();
+    if (used + 2 > sizeof(text)) fail("metadata capacity exceeded");
     text[used++] = '}'; text[used] = 0; return text;
   }
 };
 
 template<class T> const T* arguments(const xpti::function_with_args_t* data, const char* name) noexcept {
-  if (!data->args_data || std::strcmp(data->function_name, name)) fail();
+  if (!data->function_name || std::strcmp(data->function_name, name))
+    fail("function ID and name disagree", name);
+  if (!data->args_data) fail("missing typed UR arguments", name);
   return static_cast<const T*>(data->args_data);
 }
 
@@ -207,7 +215,7 @@ bool capture_status_call(const xpti::function_with_args_t* data, bool begin,
     return true;
   case UR_FUNCTION_ENQUEUE_USM_MEMCPY: {
     const auto* p = arguments<ur_enqueue_usm_memcpy_params_t>(data, "urEnqueueUSMMemcpy");
-    if (!p->psize || !p->phQueue) fail();
+    if (!p->psize || !p->phQueue) fail("missing copy size or queue", "urEnqueueUSMMemcpy");
     if (*p->psize != sizeof(uint32_t)) return false;
     if (begin) status_capture.queue = *p->phQueue;
     return true;
@@ -248,31 +256,31 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
       if (status_only && success) {
         const auto* p = arguments<ur_kernel_create_params_t>(data, "urKernelCreate");
         m.output("created_kernel", p->pphKernel, true);
-        if (!p->ppKernelName || !*p->ppKernelName) fail();
+        if (!p->ppKernelName || !*p->ppKernelName) fail("missing kernel name", "urKernelCreate");
         const char* name = *p->ppKernelName;
         m.number("half_dequant", std::strstr(name, "strata7kernels") && std::strstr(name, "7dequantItE"));
       }
       break;
     ARGS(QUEUE_IS_GRAPH_CAPTURE_ENABLED_EXP, queue_is_graph_capture_enabled_exp, "urQueueIsGraphCaptureEnabledExp")
       QUEUE;
-      if (!p->ppResult) fail();
+      if (!p->ppResult) fail("missing queue capture result");
       m.number("capture_result_valid", success && *p->ppResult ? 1 : 0);
       m.number("capture_enabled", success && *p->ppResult ? uint64_t(**p->ppResult) : 0); END
     ARGS(MEM_BUFFER_CREATE, mem_buffer_create, "urMemBufferCreate")
       m.handle("context", p->phContext);
-      if (!p->psize) fail();
+      if (!p->psize) fail("missing buffer size");
       m.number("bytes", *p->psize); m.output("created_buffer", p->pphBuffer, success); END
     ARGS(MEM_RETAIN, mem_retain, "urMemRetain") m.handle("buffer", p->phMem); END
     ARGS(MEM_RELEASE, mem_release, "urMemRelease") m.handle("buffer", p->phMem); END
     ARGS(MEM_GET_NATIVE_HANDLE, mem_get_native_handle, "urMemGetNativeHandle")
       m.handle("buffer", p->phMem);
-      if (!p->pphNativeMem) fail();
+      if (!p->pphNativeMem) fail("missing native buffer result");
       m.number("native_result_valid", success && *p->pphNativeMem ? 1 : 0);
       m.number("native_handle", success && *p->pphNativeMem ? uint64_t(**p->pphNativeMem) : 0); END
     ARGS(EVENT_RETAIN, event_retain, "urEventRetain") m.handle("event", p->phEvent); END
     ARGS(EVENT_RELEASE, event_release, "urEventRelease") m.handle("event", p->phEvent); END
     ARGS(EVENT_WAIT, event_wait, "urEventWait")
-      if (!p->pnumEvents || !p->pphEventWaitList) fail();
+      if (!p->pnumEvents || !p->pphEventWaitList) fail("missing event wait fields");
       m.number("wait_count", *p->pnumEvents);
       if (success) m.array("waits", *p->pphEventWaitList, *p->pnumEvents); END
     ARGS(USM_DEVICE_ALLOC, usm_device_alloc, "urUSMDeviceAlloc")
@@ -293,12 +301,12 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
       m.dependencies(p, success); END
     ARGS(ENQUEUE_MEM_BUFFER_READ, enqueue_mem_buffer_read, "urEnqueueMemBufferRead")
       QUEUE; m.handle("buffer", p->phBuffer); m.handle("host", p->ppDst);
-      if (!p->psize || !p->poffset || !p->pblockingRead) fail();
+      if (!p->psize || !p->poffset || !p->pblockingRead) fail("missing buffer read fields");
       m.number("bytes", *p->psize); m.number("offset", *p->poffset);
       m.number("blocking", uint64_t(*p->pblockingRead)); m.dependencies(p, success); END
     ARGS(ENQUEUE_MEM_BUFFER_WRITE, enqueue_mem_buffer_write, "urEnqueueMemBufferWrite")
       QUEUE; m.handle("buffer", p->phBuffer); m.handle("host", p->ppSrc);
-      if (!p->psize || !p->poffset || !p->pblockingWrite) fail();
+      if (!p->psize || !p->poffset || !p->pblockingWrite) fail("missing buffer write fields");
       m.number("bytes", *p->psize); m.number("offset", *p->poffset);
       m.number("blocking", uint64_t(*p->pblockingWrite)); m.dependencies(p, success); END
     ARGS(ENQUEUE_USM_FILL, enqueue_usm_fill, "urEnqueueUSMFill")
@@ -337,10 +345,12 @@ void callback(uint16_t type, xpti::trace_event_data_t*,
               const void* user_data) noexcept {
   const auto* data = static_cast<const xpti::function_with_args_t*>(user_data);
   const bool begin = type == xpti::trace_function_with_args_begin;
+  const bool end = type == xpti::trace_function_with_args_end;
   uint64_t selected_raw = 0, selected_cpu = 0;
   if (status_only) {
     if (capture_stopped.load(std::memory_order_acquire)) return;
-    if (!data) fail();
+    if (!data) fail("missing XPTI payload");
+    if (!begin && !end) fail("unexpected XPTI trace point");
     if (!capture_status_call(data, begin, instance)) return;
     selected_raw = raw_ns();
     selected_cpu = clock_ns(CLOCK_THREAD_CPUTIME_ID);
@@ -348,11 +358,13 @@ void callback(uint16_t type, xpti::trace_event_data_t*,
   // Reserve a row before extracting metadata. Sparse mode filters using only
   // input arguments. The lock keeps the row budget valid across threads.
   if (!begin_row()) return;
-  if (!data || !api_name(data->function_name) ||
-      (!begin && type != xpti::trace_function_with_args_end)) fail();
+  if (!data) fail("missing XPTI payload");
+  if (!api_name(data->function_name)) fail("invalid UR function name");
+  if (!begin && !end) fail("unexpected XPTI trace point", data->function_name);
   int32_t result = -1;
   static_assert(sizeof(ur_result_t) == sizeof(result));
-  if (begin ? data->ret_data != nullptr : data->ret_data == nullptr) fail();
+  if (begin && data->ret_data) fail("nonempty XPTI begin result", data->function_name);
+  if (end && !data->ret_data) fail("missing XPTI end result", data->function_name);
   if (!begin) std::memcpy(&result, data->ret_data, sizeof(result));
   char status[32] = "null";
   if (!begin) std::snprintf(status, sizeof(status), "%" PRId32, result);
@@ -370,7 +382,7 @@ void callback(uint16_t type, xpti::trace_event_data_t*,
 
 __attribute__((constructor)) void load() noexcept {
   if (const char* value = std::getenv("STRATA_UR_CALL_STATUS_ONLY")) {
-    if (std::strcmp(value, "0") && std::strcmp(value, "1")) fail();
+    if (std::strcmp(value, "0") && std::strcmp(value, "1")) fail("invalid sparse capture setting");
     status_only = value[0] == '1';
   }
   // Optional smaller pre-exec budget supports bounded captures and adversarial
@@ -378,19 +390,19 @@ __attribute__((constructor)) void load() noexcept {
   // collection. Never reread process environment from a runtime callback.
   if (const char* value = std::getenv("STRATA_UR_CALL_RECORD_LIMIT")) {
     uint64_t parsed = 0;
-    if (!*value) fail();
+    if (!*value) fail("empty capture limit");
     for (const char* p = value; *p; ++p) {
-      if (*p < '0' || *p > '9' || parsed > record_limit / 10) fail();
+      if (*p < '0' || *p > '9' || parsed > record_limit / 10) fail("invalid capture limit");
       parsed = parsed * 10 + uint64_t(*p - '0');
-      if (parsed > record_limit) fail();
+      if (parsed > record_limit) fail("capture limit too large");
     }
-    if (parsed < 2) fail();
+    if (parsed < 2) fail("capture limit too small");
     record_budget = parsed;
   }
   const char* name = std::getenv("STRATA_UR_CALL_LOG");
-  if (!name || name[0] != '/' || std::strlen(name) >= 4096) fail();
+  if (!name || name[0] != '/' || std::strlen(name) >= 4096) fail("invalid capture file path");
   log_fd = open(name, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW, 0600);
-  if (log_fd < 0) fail();
+  if (log_fd < 0) fail("cannot create capture file");
   char row[512];
   emit(row, std::snprintf(row, sizeof(row),
       "{\"kind\":\"load\",\"pid\":%ld,\"raw_ns\":%" PRIu64 "}\n", long(getpid()), raw_ns()));
@@ -418,7 +430,7 @@ extern "C" XPTI_CALLBACK_API void xptiTraceInit(unsigned, unsigned, const char*,
   if (xptiRegisterCallback(id, xpti::trace_function_with_args_begin, callback) !=
           xpti::result_t::XPTI_RESULT_SUCCESS ||
       xptiRegisterCallback(id, xpti::trace_function_with_args_end, callback) !=
-          xpti::result_t::XPTI_RESULT_SUCCESS) fail();
+          xpti::result_t::XPTI_RESULT_SUCCESS) fail("cannot register XPTI callbacks");
   char row[512];
   emit(row, std::snprintf(row, sizeof(row),
       "{\"kind\":\"subscribe\",\"stream\":\"ur.call\",\"pid\":%ld,\"raw_ns\":%" PRIu64 "}\n",

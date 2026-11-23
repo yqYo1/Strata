@@ -1,7 +1,6 @@
 """Qualify a sparse host clock for the V2 MoE status boundary."""
 
 import fcntl
-import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -15,7 +14,7 @@ from engine_once import native_environment
 bank, basis, require = fixture.bank, fixture.basis, fixture.require
 owner_module = fixture.owner_module
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'prefill_moe_status_capture_v5'
+KEY = 'prefill_moe_status_capture_v6'
 ROOT = bank.B / KEY.replace('_', '-')
 TIMELINE = '4bc26aaa9cbdd8d4084336826361aae7bb886449'
 CLOCK_COMPARISON = 'prefill_kv_upload_model_pti_v1'
@@ -23,7 +22,6 @@ BUDGET = dict(wall=100, cpu=100, rss_cap=4 << 30, text_cap=8 << 20,
               file_cap=16 << 20, total_cap=64 << 20)
 SOURCES = (THIS, subscriber.SOURCE, subscriber.DRIVER_SOURCE)
 ACTIONS = ('prepare', 'build', 'host', 'control', 'observed')
-HOST_PROOF = '21d79dc9a'
 LAUNCHES = ('urEnqueueKernelLaunch', 'urEnqueueKernelLaunchWithArgsExp')
 LINK_INPUTS = ('Scrt1.o', 'crt1.o', 'crti.o', 'crtbegin.o', 'crtbeginS.o', 'crtend.o', 'crtendS.o',
     'crtn.o', 'libstdc++.so', 'libgcc.a', 'libgcc_s.so', 'libgcc_s.so.1', 'libm.so', 'libm.so.6',
@@ -41,8 +39,10 @@ PLAN = dict(order=list(ACTIONS), fixture_arg='--smoke',
                'no fresh driver fault. No GPU timing, model, or diagnosis of the original PTI gap.',
     sdk_selection='Use the pinned SDK launch-with-arguments API. Original build refusals at '
                   '1dd8688fd, 6f073886e and c5d825faa.',
-    reuse='The reuse entry reopens the device pair in a new root using the verified V4 host '
-          'artifacts. Keep the original device-controller refusal at 21d79dc9a.')
+    previous_refusal='At bc5d27380, the same observed fixture exited from a callback guard '
+                     'after subscribing. Keep its failure. Rebuild the subscriber to capture '
+                     'the guard name and retain the final diagnostic and owned exit; keep '
+                     'the native program, its inputs and callback eligibility fixed.')
 
 
 def identity(path):
@@ -97,8 +97,13 @@ def named_deps(path):
 
 def checked_command(owner, name, command, env, *, output_error_ok=False):
     entry, out, err = owner.run(name, command, env, bank.P, **BUDGET)
-    require(owner_module.closed(entry) and entry['exit_code'] == 0,
-            name + ' failed' + (': ' + err.read_text()[:2048] if err.exists() else ''))
+    if not owner_module.closed(entry) or entry['exit_code'] != 0:
+        diagnostic = ''
+        if err.exists():
+            with err.open('rb') as stream:
+                stream.seek(max(0, err.stat().st_size - 2048))
+                diagnostic = stream.read(2048).decode(errors='replace').strip()
+        raise RuntimeError(f'{name} failed with exit {entry.get("exit_code")}: {diagnostic}')
     if not output_error_ok:
         require(not err.stat().st_size, 'unexpected diagnostics in ' + name)
     return entry, out, err
@@ -161,39 +166,6 @@ def current(row):
             'commit exact observed source, compiler inputs and planned stage')
     require(all(identity(x['path']) == x for x in row.get('artifacts', {}).values()),
             'built observer or CPU peer changed')
-
-
-def reuse_host_build():
-    require(not ROOT.exists() and KEY not in basis.validation.committed(bank.RESULT), 'fresh device pair only')
-    original = ROOT.with_name('prefill-moe-status-capture-v4')
-    row = bank.previous.read(original/'record.json')
-    require(compact(row) == bank.previous.historic(HOST_PROOF, 'prefill_moe_status_capture_v4')
-            and row['stage'] == 'failed' and row['ownership_closed'] and not row['active']
-            and all(row['outcomes'][k]['passed'] for k in ('build','host'))
-            and 'validation_log() missing' in row['outcomes']['control']['error'],
-            'original V4 build, host gates and stopped verification required')
-    revision = basis.validation.git('rev-parse','HEAD').decode().strip()
-    sources = pins(revision)
-    old_controller = basis.validation.git('show', row['source_commit'] + ':' + THIS)
-    require(sources.keys() == row['sources'].keys()
-            and {k for k in sources if sources[k] != row['sources'][k]} == {THIS}
-            and hashlib.sha256(old_controller).hexdigest() == row['sources'][THIS]
-            and all(bank.sha(p) == sha for p,sha in row['compiler_files'].items())
-            and all(identity(f['path']) == f for f in row['artifacts'].values()),
-            'only the controller may differ from the checked native artifact inputs')
-    require(device_basis() == row['device'], 'exact V2 device basis required')
-    row['outcomes'].pop('control')
-    row.update(stage='host-checked', source_commit=revision, sources=sources, plan=PLAN,
-               retained_artifact_build=dict(evidence=HOST_PROOF, root=str(original)), device_cases={})
-    ROOT.mkdir(mode=0o700)
-    for role in ('control','observed'):
-        path = ROOT/role
-        path.mkdir(mode=0o700)
-        (path/'tmp').mkdir(); (path/'cache').mkdir()
-        command, env = device_launch(row, role)
-        row['device_cases'][role] = dict(command=command, env_sha256=bank.signature(env))
-    save(row)
-    print('Reused verified native and host inputs; commit the fresh device pair.', flush=True)
 
 
 def selected_calls(text, pid):
@@ -335,13 +307,11 @@ def run(action):
 
 if __name__ == '__main__':
     action, = sys.argv[1:]
-    require(sys.executable == basis.reference.model.PYTHON and action in (*ACTIONS, 'reuse'), 'select one frozen stage')
+    require(sys.executable == basis.reference.model.PYTHON and action in ACTIONS, 'select one frozen stage')
     with (bank.B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
         if action == 'prepare':
             prepare()
-        elif action == 'reuse':
-            reuse_host_build()
         else:
             run(action)
