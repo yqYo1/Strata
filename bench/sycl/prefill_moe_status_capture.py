@@ -14,7 +14,7 @@ from engine_once import native_environment
 bank, basis, require = fixture.bank, fixture.basis, fixture.require
 owner_module = fixture.owner_module
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'prefill_moe_status_capture_v1'
+KEY = 'prefill_moe_status_capture_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 TIMELINE = '4bc26aaa9cbdd8d4084336826361aae7bb886449'
 CLOCK_COMPARISON = 'prefill_kv_upload_model_pti_v1'
@@ -32,7 +32,8 @@ PLAN = dict(order=list(ACTIONS), fixture_arg='--smoke',
           'same small device workload with and without sparse host observation.',
     acceptance='Exact CPU filter and application output, actual paired 4-byte copy and wait/launch '
                'coverage on the native device route, parameter validation, owned exit zero and '
-               'no fresh driver fault. No GPU timing, model, or diagnosis of the original PTI gap.')
+               'no fresh driver fault. No GPU timing, model, or diagnosis of the original PTI gap.',
+    sdk_selection='Use the pinned SDK launch-with-arguments API. Keep the first compile refusal at 1dd8688fd.')
 
 
 def identity(path):
@@ -113,7 +114,8 @@ def prepare():
         if name in ('control','observed'):
             (path / 'tmp').mkdir(); (path / 'cache').mkdir()
     owner = owner_module.Owner(ROOT / 'prepare-owned', lambda: None)
-    common = [compiler, '-std=c++17', '-O2', '-pthread', '-I' + str(sdk / 'include')]
+    common = [compiler, '-std=c++17', '-O2', '-pthread', '-DSTRATA_UR_WITH_ARGS_ONLY',
+              '-I' + str(sdk / 'include')]
     selected = ((subscriber.SOURCE, 'libstrata_ur_status.so'), (subscriber.DRIVER_SOURCE, 'ur_call_guard_test'))
     commands, compiler_files = {}, dict(tools)
     # Enumerate the current SDK and system dependencies for this recipe.

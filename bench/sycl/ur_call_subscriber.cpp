@@ -218,10 +218,12 @@ bool capture_status_call(const xpti::function_with_args_t* data, bool begin,
   }
   case UR_FUNCTION_EVENT_WAIT:
     return status_capture.queue != nullptr;
+#if !defined(STRATA_UR_WITH_ARGS_ONLY)
   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {
     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, "urEnqueueKernelLaunch");
     return p->phQueue && status_capture.launch(*p->phQueue, begin, instance);
   }
+#endif
   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH_WITH_ARGS_EXP: {
     const auto* p = arguments<ur_enqueue_kernel_launch_with_args_exp_params_t>(data, "urEnqueueKernelLaunchWithArgsExp");
     return p->phQueue && status_capture.launch(*p->phQueue, begin, instance);
@@ -280,8 +282,10 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
     ARGS(USM_SHARED_ALLOC, usm_shared_alloc, "urUSMSharedAlloc")
       m.handle("context", p->phContext); m.number("bytes", *p->psize); m.output("allocation", p->pppMem, success); END
     ARGS(USM_FREE, usm_free, "urUSMFree") m.handle("context", p->phContext); m.handle("allocation", p->ppMem); END
+#if !defined(STRATA_UR_WITH_ARGS_ONLY)
     ARGS(ENQUEUE_KERNEL_LAUNCH, enqueue_kernel_launch, "urEnqueueKernelLaunch")
       QUEUE; m.geometry(p, success); m.dependencies(p, success); END
+#endif
     ARGS(ENQUEUE_KERNEL_LAUNCH_WITH_ARGS_EXP, enqueue_kernel_launch_with_args_exp, "urEnqueueKernelLaunchWithArgsExp")
       QUEUE; m.geometry(p, success); m.dependencies(p, success); END
     ARGS(ENQUEUE_USM_MEMCPY, enqueue_usm_memcpy, "urEnqueueUSMMemcpy")
