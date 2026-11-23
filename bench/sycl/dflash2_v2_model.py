@@ -77,11 +77,11 @@ def save(row):
     bank.stage.write(bank.RESULT, result)
 
 
-def request(io, ids, output):
+def request(io, ids, output, *, reused_tokens=0):
     data = wire(ids, output)
     for offset in range(0, len(data), 256 << 10):
         io.send(data[offset:offset + (256 << 10)])
-    parser = RequestProtocol(len(ids), output)
+    parser = RequestProtocol(len(ids), output, reused_tokens=reused_tokens)
     while parser.done is None:
         parser.feed(io.line(480))
     return dict(prompt=len(ids), generated=len(parser.tokens), output_sha256=bank.signature(parser.tokens),

@@ -10743,9 +10743,11 @@ comparison. Keep the DFlash2 pack, canonical head, synchronization, 8192 chunk,
 and borrow policy fixed. Start with bounded short/32769/short requests. Compare
 the full tap and output evidence available from that fixture, validate the
 nine retained and three reloaded QSA layers, and require normal owner closure
-and no fresh Xe fault. Include a resumed ragged tail and exercise physical
-262144 fill and RESTORE before adoption. Verify the handoff and repeat decode
-with matching draft and verifier settings before deciding on the change.
+and no fresh Xe fault. Keep one live prompt cache entry in both processes.
+Extend an 83-token live prefix with 8209 new tokens, require the native
+reuse count, and confirm that the unaligned stages reload every prefix in
+both arms. Exercise physical 262144 fill and RESTORE before adoption.
+Verify the handoff and repeat decode with matching draft and verifier settings.
 
 After route admission, use fresh exact 65537-token `bench.sh` prefill inputs
 with first-use and subsequent-request timings in separate groups. Counterbalance

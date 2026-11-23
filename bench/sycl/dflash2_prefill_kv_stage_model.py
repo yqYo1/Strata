@@ -16,6 +16,7 @@ KEY = 'dflash2_prefill_kv_stage_model_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 ARMS = {'reload': '0', 'retain': '1'}
 READ, OUTPUT = 32769, 32
+RAGGED_PREFIX, RAGGED_READ = 83, 8209
 TAPPED_QSA_LAYERS = (15, 35)
 EXPECTED_H2D_REDUCTION = 467140608
 
@@ -44,9 +45,13 @@ def inputs(revision):
     for arm, value in ARMS.items():
         path = str(ROOT / arm)
         cfg = generation.configuration(base, dict(root=path))
-        command = [binary['path'], '--serve', *cfg['args']]
-        require(command[1:] == proof['plan']['cases']['long']['command'][1:],
+        args = cfg['args']
+        require(['--serve', *args] == proof['plan']['cases']['long']['command'][1:],
                 'keep the previous model and placement arguments')
+        # Cache the last short request so the next one can exercise an unaligned
+        # fresh suffix from its live prefix. Prefix checkpoints stay disabled.
+        args[args.index('--prompt-cache') + 1] = '1'
+        command = [binary['path'], '--serve', *args]
         env = generation.sync_environment(base, dict(root=path))
         env.update(STRATA_TRACE='1', STRATA_SYCL_CACHE_LOAN_AUDIT='1', STRATA_STATE_HASH='1')
         env[generation.v2.state.KV] = value
@@ -54,11 +59,15 @@ def inputs(revision):
 
         short = model.request_ids(Path(cfg['tokenizer']))['ids']
         long = [i % 4096 for i in range(READ - len(short))] + short
-        requests = [(ids, OUTPUT) for ids in (short, long, short)]
+        prefix = [64] + short
+        require(len(prefix) == RAGGED_PREFIX and RAGGED_PREFIX % 4 != 0, 'unaligned live prefix')
+        extended = prefix + [i % 4096 for i in range(RAGGED_READ - len(short))] + short
+        requests = [(ids, OUTPUT) for ids in (short, long, short)] + [(prefix, 1), (extended, 1)]
         wire = [dict(prompt=len(ids), output=count, sha256=model.restore.signature_bytes(model.wire(ids, count)))
                 for ids, count in requests]
-        require(wire == proof['plan']['cases']['long']['wire'], 'use the checked short/long/short inputs')
-        plans[arm] = dict(command=command, environment_sha256=bank.signature(env), wire=wire)
+        require(wire[:3] == proof['plan']['cases']['long']['wire'], 'use the checked short/long/short inputs')
+        plans[arm] = dict(command=command, environment_sha256=bank.signature(env), wire=wire,
+                          reused=[0, 0, 0, 0, RAGGED_PREFIX])
         launches[arm] = env, requests
     ignored = {generation.v2.state.KV}
     normalized = [{k: v.replace(str(ROOT / a), '<case>') for k, v in launches[a][0].items() if k not in ignored}
@@ -70,22 +79,32 @@ def inputs(revision):
         drafter_assets=base['dflash2_assets'], validation=base['native_validation_probe'],
         cases=plans, order=list(ARMS), limits=model.LIMITS, model_reference=generation.COMMIT_ORDER_GATE,
         tap_layers=list(TAPPED_QSA_LAYERS), expected_prefix_H2D_bytes_removed=EXPECTED_H2D_REDUCTION,
-        scope='Independent reload and retain processes. Match the 32769-token V2 DFlash2 model gate. '
+        scope='Independent reload and retain processes. Check the matched 32769-token and unaligned continuation requests. '
               'Compare per-layer KV counts, retained state and generated work, with tap and cache-loan checks. '
               'Preserve the exact candidate and both original references. These traced requests test correctness.')
     return plan, launches
 
 
 def inspect(log, pid, plan, arm, requests):
-    result = device.inspect(log, plan, pid, READ, requests)
-    frames = re.split(r'^strata trace: request (\d+) 0$', log, flags=re.M)
-    require(frames[1::2] == ['82', str(READ), '82'], 'the native trace must cover the three wire requests')
-    result['kv_stage'] = generation.v2.state.kv.check_request(
-        frames[4], 0, READ - 1, 8192, reuse=ARMS[arm] == '1', tap_layers=plan['tap_layers'])
+    pattern = r'^strata trace: request (\d+) 0$'
+    markers = list(re.finditer(pattern, log, re.M))
+    require([int(mark[1]) for mark in markers] == [82, READ, 82, RAGGED_PREFIX, RAGGED_PREFIX + RAGGED_READ],
+            'the native trace must cover all five wire requests')
+    result = device.inspect(log[:markers[3].start()], plan, pid, READ, requests[:3])
+    trace = generation.v2.state.kv
+    retain = ARMS[arm] == '1'
+    result['kv_stage'] = trace.check_request(log[markers[1].end():markers[2].start()],
+        0, READ - 1, 8192, reuse=retain, tap_layers=plan['tap_layers'])
+    ragged = log[markers[4].end():]
+    result['ragged_kv_stage'] = trace.check_request(ragged, RAGGED_PREFIX, RAGGED_READ - 1, 8192,
+                                                  reuse=retain, tap_layers=plan['tap_layers'])
+    result['ragged_store'] = model.restore.require_store(ragged, dict(direct=False), dict(read=RAGGED_READ))
+    require(result['ragged_kv_stage']['reused_pages'] == 0 and
+            result['ragged_store']['gpu_rows'] == RAGGED_READ - 1, 'unaligned chunks must reload every prefix')
     lines = re.findall(r'^strata serve: STATE_HASH L=.*$', log, re.M)
     states = [{k: v for k, v in re.findall(r'(\w+)=([0-9a-f,-]+)', line) if k in model.restore.ACTIVE_STATE}
               for line in lines]
-    require(len(states) == 3 and all(set(state) == set(model.restore.ACTIVE_STATE) for state in states)
+    require(len(states) == 5 and all(set(state) == set(model.restore.ACTIVE_STATE) for state in states)
             and states[0] == states[2], 'the restored short request state must agree')
     result['states'] = states
     return result
@@ -105,7 +124,8 @@ def run(row, arm, env, requests):
     row['outcomes'][arm] = outcome
     if arm == 'retain' and outcome['passed']:
         before = row['outcomes']['reload']
-        fields = ('states', 'requests', 'tap_rows', 'placement', 'loan', 'middle_windows')
+        fields = ('states', 'requests', 'tap_rows', 'placement', 'loan', 'middle_windows',
+                  'ragged_kv_stage', 'ragged_store')
         matched = all(before[k] == outcome[k] for k in fields)
         removed = before['kv_stage']['requested_prefix_H2D_bytes'] - outcome['kv_stage']['requested_prefix_H2D_bytes']
         row['comparison'] = dict(matched=matched, requested_prefix_H2D_bytes_removed=removed)

@@ -133,8 +133,9 @@ def run_case(plan, path, case, env, requests, inspect_case):
         require(line == 'READY 262144 stop' and all(info.get(k) == v for k, v in model.INFO.items()),
                 'unexpected context, drafter or placement')
         outcome['info'] = model.INFO
-        for ids, budget in requests:
-            done = model.request(io, ids, budget)
+        reuse = plan['cases'][case].get('reused', [0] * len(requests))
+        for (ids, budget), reused_tokens in zip(requests, reuse, strict=True):
+            done = model.request(io, ids, budget, reused_tokens=reused_tokens)
             outcome['requests'].append(done)
             print(case, done, flush=True)
         io.send(b'QUIT\n')
