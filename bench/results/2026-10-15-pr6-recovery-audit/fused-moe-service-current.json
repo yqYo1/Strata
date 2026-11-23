@@ -621209,5 +621209,54 @@
       },
       "reason": "All six owners and requests closed. The committed comparison preserves the workloads, route and timing values. Keep the compact execution record, runtime manifest, qualified fixture and engine for the next comparison."
     }
+  },
+  "prefill_kv_upload_store_component_v1": {
+    "plan": {
+      "source_commit": "f58e0d822f97c72395a661bdf878105cc897cd7c",
+      "sources_sha256": "ec9b6726f1929b78e00107bb849944c897d93312efca405605caee2ff4e8946a",
+      "sources_count": 818,
+      "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+      "native_build_sha256": "a4560c2e2ba537f4c0944e4ffcde2cd9d66eeea11081932c5fe0bb7574f705c5",
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/strata",
+        "sha256": "1b56f94c7434cc332ada4092bf6bb69b677bde1df10c049867e7c0884462c5d2",
+        "bytes": 26550328
+      },
+      "fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_prefill_attention_bank_test",
+        "sha256": "281c1b3d4660b3b923c95b86153cb1204bf19d715526c5325da312d6069ca67e",
+        "bytes": 2840536
+      },
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_prefill_attention_bank_test",
+        "correctness"
+      ],
+      "budgets": {
+        "wall": 180,
+        "cpu": 180,
+        "rss_cap": 6442450944,
+        "text_cap": 4194304,
+        "file_cap": 536870912,
+        "total_cap": 536870912
+      },
+      "environment_sha256": "24e8126b13d1899ce8a21abb90c193c7bdb033b618af5413585690657e405cea",
+      "providers_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51",
+      "observer_reference": "297adab4dfbd5da2d3a433962174238badd255f8",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "scope": "Exact BF16 store bits, tails, guards and checked cancellation on the KV/upload engine."
+    },
+    "stage": "prepared",
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true
   }
 }
