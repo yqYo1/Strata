@@ -39507,5 +39507,34 @@
     "schedulable_now": false,
     "finding": "The route resolves 24 query heads as 12 per two KV groups, with 4 padding rows in a 16-row tile. Host arguments expose submitted shapes; actual selected ID/page validity and consumption are GPU-only.",
     "consumer": "Confirm the pinned dispatch caller retains the host-to-call map. Aggregate candidate widths in the existing host step fill and join one row per call by ordinal. Reconcile the 360 measured calls before a shape replay."
+  },
+  "prefill-v2-qsa-prefix-renewal-cost-20261123": {
+    "classification": "decision support",
+    "stage": "reviewed",
+    "schedulable_now": false,
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "dispatch": "ctx_63f247bad672",
+    "report_sha256": "ce10384f3d07f6c802d63197dcb2e8666fe94106e655cbedc02a53ca4493b53a",
+    "review_sha256": "0f72c32927baa18046f9420b46d641aafe0419c982540b76c8473bb4e33cbf4f",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "Aligned INT8 KV staging reuse does not reuse BF16 prefix packing. The pinned PTI split attributes 0.129594 of 27.073162 seconds to packing; suffix refresh is deferred pending a material host or device effect.",
+    "retirement": "Compact evidence is in the current prefill decisions. Retire the report and review capture after verifying the exact owned terminal at the next serialized cleanup."
+  },
+  "decode-expert-pool-worker-cost-census-20261123": {
+    "classification": "decision support",
+    "stage": "reviewed",
+    "schedulable_now": false,
+    "native_source_commit": "1bf54ec3277f60c77417dac68642966f3782652d",
+    "dispatch": "ctx_a095e6ad80ce",
+    "report_sha256": "2fddb086e901bbc97178cff5737542155d97d44917bfe97eccf943f4884158a5",
+    "review_sha256": "216bc5d2c28472b5a70a0f5aed74f179020b1faf9f76b851855b27c5fd332706",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-expert-pool-worker-cost-census-20261123/report.md",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/decode-expert-pool-worker-cost-census-20261123-native-review-retry/review.txt",
+    "finding": "Compare disjoint per-worker active work and finish skew at matched verifier yields. This can identify imbalance. Physical DRAM traffic and the CPU instruction mix require separate evidence.",
+    "source_followup": "The review snapshot omitted the exact pool implementation and census definition. Recover src/kernels/cpu/pool.cpp and include/strata/core/cpu_work_census.hpp from the measured native revision before qualifying the proposed timing boundaries.",
+    "consumer": "Bound one phase-specific worker timing design before the next decode expert placement trial. Review retention at that design choice."
   }
 }

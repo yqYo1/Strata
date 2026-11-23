@@ -1434,6 +1434,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   suffix-only refresh directly removes only a fraction of the observed
   pack service. Host submission, memory traffic and clean elapsed time
   still need separate evidence for either change.
+  The submitted fresh-position widths reach 2051 for 115438 of 117488
+  batched rows in each QSA layer. Page validity still determines which
+  operands are actually read.
+  Compare a four-cell page layout for the packed BF16 K scratch. The
+  producer and its consumer would arrange four adjacent features
+  consecutively for each cell, then advance to the next feature
+  group within the same page and KV head. Keep each lane's cell assignment,
+  local K destinations, V and all arithmetic fixed. The four-lane reader
+  at `f7244dded` instead changed lane assignment with row-major packed K.
+  Its wide four-cell case was slower and remains rejected.
+  In an aligned address model for width 2051, counting 64- or 128-byte
+  address blocks separately for each 16-lane vector read gives
+  131264 for the original K layout and 32832–41088 for the candidate on
+  grouped inputs. The gapped partial-page case increases distinct 64-byte
+  blocks across the whole query from 16408 to 16448. With one selected cell
+  per page there is no per-read reduction, and the new producer can touch
+  more blocks per store. Physical device traffic remains unmeasured.
+  For the component test, use the same selected IDs and input bytes in
+  both arms at widths 33 and 2051. Include gapped groups, missing pages,
+  partial pages and the physical last cell. Require exact BF16 outputs,
+  guard preservation and checked retirement. Time the pack, attention and
+  drain together, and keep the grouped and spread cases separate.
+  [Intel SYCL subgroup guide](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/sub-groups-and-simd-vectorization.html)
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
