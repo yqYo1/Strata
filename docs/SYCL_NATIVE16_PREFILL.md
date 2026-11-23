@@ -10787,6 +10787,20 @@ copies and 37.14–37.21 GB of expert bank H2D uploads. These requested byte
 counts support separate transfer questions. The retention comparison needs
 the matched independent processes to finish before assigning any timing gain.
 
+The retain process also completes three requests, exits 0 and closes all
+owners with no new Xe fault. Each request retains 516096 pages and reduces
+requested KV prefix H2D by 2179989504 bytes. Output and reasoning hashes,
+draft counts, expert bank uploads, MoE work and attention-store copies match
+the reload requests. The paired first prefill times are 86.657 and 88.110 s.
+The two subsequent request medians are 74.582 and 73.681 s, with client TTFT
+of 74.793 and 73.885 s. These are individual observations.
+
+The V3 controller stops at process 1. Live bank and MoE tuples compare unequal
+to the lists read from the committed control. Replaying the actual footer
+records reproduces the refusal. A JSON round trip matches all non-KV work.
+The original decision remains failed. Revalidate stable field types under a
+fresh committed timing plan. The paired observations motivate that repeat.
+
 Use 117489 as a separate geometry when its actual residual placement is
 admitted in both arms. Require an observed transfer reduction and reproducible
 timing benefit. Compare the actual phase timings and physical traffic before
