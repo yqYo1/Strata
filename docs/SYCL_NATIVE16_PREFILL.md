@@ -10674,13 +10674,23 @@ are pending on this DFlash2 route. [DRM client counters](https://docs.kernel.org
 After the automatic reset, `dflash2_v2_post_reset_v1` completes the four
 retained BF16 store cases on the same boot and provider. It checks
 168417280 BF16 values, guards and retirement with normal exit and no new
-driver fault. The next model diagnostic needs a bounded DFlash2 width-four
-case around the first-layer completion boundary. Audit the dependencies and
-allocation lifetime of the submitted layer-zero graph and the previous
-window's commit. Consider verifier overlap as a separate control. Preserve
-the failed suite's journal and the relevant native frame until that case is
-prepared. Use the reviewed draft-confidence and ring reports once the
-verifier route is admissible for sustained timing.
+driver fault.
+
+`dflash2_v2_commit_order_v1` uses the same native engine with `STRATA_COMMIT_SYNC=1`.
+The verifier waits for each window's state writeback before starting the next
+draft. Verifier overlap stays enabled. In two independent processes, the
+11793-token and 32769-token middle requests each emit 32 tokens and execute
+width-four verifier windows. The first passes the prior stall position 11801
+at width four. Both hold every prefill residual row in VRAM, check the
+1124-slot loan refill, reproduce the short output before and after the middle
+request, and exit normally without a fresh Xe fault.
+
+These traced requests use synthetic prefixes and a shared thinking prompt. The
+earlier agent-session failure remains open as a workload-level question. Keep
+its journal and native failure frame until the clean sync-commit suite tests
+that history. Use the same `bench.sh` workload ID for its long prompt, agent
+session and sustained generation. The new result tests the synchronizing
+condition and leaves the speed cost and physical-context/RESTORE checks open.
 
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live

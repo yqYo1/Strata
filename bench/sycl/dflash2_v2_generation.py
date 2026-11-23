@@ -14,6 +14,8 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 KEY = 'dflash2_v2_generation_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 NATIVE_GATE = '6aa1c2b52f16c194d6869df56ed31a0ad99fefbe'
+COMMIT_ORDER_GATE = '423e0a58127444997f1c2581a6f74729e4132cb3'
+SYNC_KEY = 'dflash2_v2_generation_sync_v1'
 WORKLOAD_ID = 'dflash2_v2_generation_v1'
 ORDER = ('dflash2',) * 3
 WORKLOADS = suite.evidence_reader.SUSTAINED_WORKLOADS
@@ -35,6 +37,21 @@ def baseline():
                 validated_dflash2_args=plan['command'][2:])
 
 
+def sync_baseline():
+    row = baseline()
+    gate = bank.previous.historic(COMMIT_ORDER_GATE, 'dflash2_v2_commit_order_v1')
+    plan = gate['plan']
+    require(gate['stage'] == 'closed' and gate['passed'] and gate['complete'] and gate['ownership_closed']
+            and not gate['active'] and plan['binary'] == row['binary'] and plan['boot'] == row['boot']
+            and plan['driver'] == row['driver'] and plan['runtime_manifest'] == row['runtime_manifest']
+            and plan['native_build_sha256'] == row['native_build_sha256']
+            and plan['validation'] == row['native_validation_probe'] and plan['drafter_assets'] == row['dflash2_assets']
+            and plan['environment_changes']['STRATA_COMMIT_SYNC'] == '1'
+            and plan['environment_changes']['STRATA_WATCHDOG_S'] == '240',
+            'require the closed sync-commit device and model gate')
+    return dict(row, commit_order_gate=COMMIT_ORDER_GATE)
+
+
 def configuration(row, plan):
     base = suite.configuration(row, plan)
     cfg = dict(base, drafting='dflash2', user_args=['--spec', '4', '--prompt-cache', '0', '--prompt-cache-every', '0'])
@@ -53,6 +70,13 @@ def environment(row, plan):
                                        'STRATA_DECODE_TIMING', 'STRATA_DRAFT_TIMING', 'UR_LOG_TRACING', 'LD_PRELOAD'))
             and env.get('STRATA_SYCL_CACHE_LOAN_AUDIT', '0') == '0', 'unexpected timing observer')
     return env
+
+
+def sync_environment(row, plan):
+    env = environment(row, plan)
+    require('STRATA_COMMIT_SYNC' not in env and env.get('STRATA_SYCL_VERIFY_OVERLAP', '1') != '0',
+            'keep verifier overlap and select synchronous commit at launch')
+    return dict(env, STRATA_COMMIT_SYNC='1', STRATA_WATCHDOG_S='240')
 
 
 def routes(text, samples, arm):
@@ -108,7 +132,7 @@ def decision(processes):
                       'The nominal 32K prompt is supplemental if it reads fewer than 32768 tokens.')
 
 
-def experiment():
+def experiment(*, synchronous_commit=False):
     ctx = clock.experiment()
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.WORKLOAD_ID, ctx.ORDER = ROOT, KEY, THIS, WORKLOAD_ID, ORDER
     ctx.baseline, ctx.configuration, ctx.environment, ctx.routes = baseline, configuration, environment, routes
@@ -122,6 +146,13 @@ def experiment():
                  'first-use and later requests by phase. Preserve each process and use observed draft acceptance.',
         stop='Stop at the first source, runtime, ownership, route, eligibility or budget failure. Keep original outcomes. '
              'There is no speed-based exclusion or automatic adoption.')
+    if synchronous_commit:
+        ctx.KEY, ctx.ROOT = SYNC_KEY, bank.B / SYNC_KEY.replace('_', '-')
+        ctx.baseline = sync_baseline
+        ctx.environment = sync_environment
+        ctx.protocol['execution'] += (' Wait for each committed window before launching the next draft. '
+            'Keep verifier overlap enabled and use the 240-second watchdog from the two traced device checks. '
+            'Disable stage observers and keep the same workload ID as the failed suite.')
 
     def pins(revision):
         values = v2.experiment('official').pins(revision)
@@ -136,4 +167,4 @@ def experiment():
 
 
 if __name__ == '__main__':
-    clock.main(experiment())
+    clock.main(experiment(synchronous_commit=True))
