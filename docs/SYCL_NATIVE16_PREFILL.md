@@ -1577,12 +1577,43 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `prefill-first-gate-issue-admission-v1/{0,1,host}` captures after checking
   the 144 files, 21433360 bytes and inventory
   SHA-256 `14f9bc755de27cadbe8af1a569598fb85d50ca7185474a637a1a63e8dc9335f0`.
-  Keep the exact build and committed admission for the timed comparison.
-  Run three balanced independent 117489-input pairs with one first-use
-  and one subsequent request per process. Keep direct output, batched expert
-  upload, QSA, KV and decode fixed. Require two faster subsequent prompt times and a paired
-  median ratio below one for a repeated gain. Measure the 1000 tok/s
-  milestone and the wider model qualification separately.
+  The clean timing closes at `5e192224a`. All six processes and twelve
+  117489-input requests completed with the expected Gate dispatch, matching
+  work and responses, normal exits, no fresh GPU faults and all fifteen final
+  model assets verified. Direct output, batched expert uploads, QSA, KV and
+  decode were fixed. Second-request prompt-time reductions were 0.1959%,
+  0.0461% and 0.1799%, passing the repeated-gain criterion. Median PP was
+  995.676 → 996.135 tok/s and median second-request client TTFT was
+  118.341 → 118.175 s. First-use prompt time fell in two pairs and rose
+  0.838 s in the reverse-order pair. Both arms missed repeated 1000 tok/s.
+  The source and samples preserve the scheduling gain for later validation.
+  Whole-model adoption, physical-context qualification of this variant and
+  sustained decode remain open.
+
+  Use the retained V2 prefill reference for the next isolated QSA score-key
+  reuse test. The component at `328b7589d` reduced score-plus-selection
+  time by about 2.3% in three processes with matching scores and selected
+  IDs. The five V2 source inputs match the build receipt and accept the
+  reversible `9639531fd` → `a29048486` change. The independent append/restore
+  fixture at `0cfa87d2d` composes reversibly and the score scratch structure
+  is identical. Qualify the actual append, overwrite and RESTORE boundary
+  on V2 before model timing. Keep GDN, attention, selection mapping and
+  decode fixed in that comparison.
+
+  The Gate issue build recovers all 1171 projected source files, its exact
+  recipe and actual inputs, 137 fresh objects and twelve target hashes from
+  the pinned Git source and build receipt. Both retained phase reference
+  executables match their hashes. The completed speed and admission controls
+  are recoverable from Git. The Gate issue variant has no imminent binary
+  consumer, so retire the verified build and raw speed captures after this
+  result is reachable from the pushed primary branch. Keep the compact build,
+  campaign and runtime receipts.
+
+  | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
+  | --- | --- | ---: | --- |
+  | `prefill-first-gate-issue-native-v1/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1369 | 196435956 | `6c02a5f9fc6032d706ed1d3ec0ae760c8a447cdbb657212587c7488bae563f45` |
+  | `prefill-first-gate-issue-speed-v1/{0..5,host}` | 424 | 63277283 | `beb1e337320a5feb1f7403ec4fb90de92cb380bf61f35625e0ac56537df940a6` |
+
   Removed and verified the clock-only build and captures after matching
   their inventories to pushed `941d07a96`. The native recovery at
   `2c6645de4` matched the 1172 projected sources, compiler and recipe inputs,
