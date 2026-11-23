@@ -1573,13 +1573,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   work and response hashes and finish 48 layer windows. Checked preissue
   counts are zero for the original and 48 for each candidate request.
   All owners close normally with zero fresh GPU faults and matching final
-  model assets. Retire the closed `prefill-first-gate-issue-admission-v1/{0,1,host}`
-  captures after verifying the 144 files, 21433360 bytes and inventory
+  model assets. Removed and verified the closed
+  `prefill-first-gate-issue-admission-v1/{0,1,host}` captures after checking
+  the 144 files, 21433360 bytes and inventory
   SHA-256 `14f9bc755de27cadbe8af1a569598fb85d50ca7185474a637a1a63e8dc9335f0`.
   Keep the exact build and committed admission for the timed comparison.
   Run three balanced independent 117489-input pairs with one first-use
-  and one subsequent request per process. Keep direct output, batched expert upload, QSA, KV and
-  decode fixed. Require two faster subsequent prompt times and a paired
+  and one subsequent request per process. Keep direct output, batched expert
+  upload, QSA, KV and decode fixed. Require two faster subsequent prompt times and a paired
   median ratio below one for a repeated gain. Measure the 1000 tok/s
   milestone and the wider model qualification separately.
   Removed and verified the clock-only build and captures after matching
