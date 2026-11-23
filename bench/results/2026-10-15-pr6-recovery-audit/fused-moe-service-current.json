@@ -628601,7 +628601,7 @@
     "passed": false
   },
   "prefill_moe_status_capture_v4": {
-    "stage": "host-checked",
+    "stage": "failed",
     "source_commit": "4961aa2cbd2554987d673c431ddcc2dc32f15f49",
     "sources": {
       "count": 823,
@@ -628771,6 +628771,22 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "control": {
+        "error": "TypeError(\"validation_log() missing 3 required positional arguments: 'pid', 'loader', and 'traced'\")",
+        "complete": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "active": false,
