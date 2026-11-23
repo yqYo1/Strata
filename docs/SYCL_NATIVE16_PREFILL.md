@@ -1503,12 +1503,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Run the device checks and timing after the Gate comparison. The fixture
   uses the retained V2 archives until the component decision. Review its
   artifacts and reference at that decision.
-  At 117489 tokens the 1000 tok/s time budget is 117.489 seconds. The two
-  closed original Gate processes at `9ca6601c7` need warmed reductions of
-  0.288 and 0.830 seconds. If all the savings came from the profiled
-  27.073 seconds of QSA service and carried through to model wall time,
-  that would require 1.06–3.06% less QSA service. These figures quantify
-  the target gap under that assumption. Clean model times will decide it.
+  At 117489 tokens the 1000 tok/s time budget is 117.489 seconds. The three
+  original Gate processes at `06a199714` need warmed reductions of
+  0.288–1.420 seconds. If the savings came from the profiled 27.073
+  seconds of QSA service and carried through to model wall time, that
+  would require 1.06–5.24% less QSA service. Check the effect in clean
+  model timing if the component passes.
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
@@ -1664,10 +1664,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   expanded Gate weights 144 times with reload and 48 times with reuse. All
   modes matched response digests, work, 24 generated tokens and 16 of 21
   accepted drafts. The 15 final asset hashes match. All owners closed with
-  exit zero and no fresh fault. Start the frozen 117489-input comparison
-  in three balanced blocks of original, reload and reuse. Confirm actual
-  split placement and 720 versus 48 expansions per request. Keep performance,
-  sustained decode and physical-context qualification separate.
+  exit zero and no fresh fault. The 117489-input comparison closed at
+  `06a199714` with nine independent processes and 36 fresh requests.
+  Every request matched the split route, output and draft counts, and
+  the expected 720 expansions with reload or 48 with reuse. All owners
+  exited normally with zero fresh faults and matching final asset hashes.
+  The later-request process medians aggregate to 992.988, 995.509 and
+  994.729 tok/s for original, reload and reuse. Placement alone and reuse
+  at the alternate address each won one of three paired comparisons.
+  The placement-plus-reuse arm won two against original, with a median
+  prompt-time reduction of 0.308%. Each mode missed the repeated
+  1000 tok/s gate. Keep the combined result as a timing candidate and
+  use the retained V2 reference for the QSA component trial. Full-context,
+  RESTORE and sustained decode gates remain open for the combined arm.
   The long comparison reads the committed V2 admission receipt. Both short-run
   captures under the shared state directory were removed and verified absent.
   The V1 failure and V2 exact comparisons remain in Git at `df349d38d` and
