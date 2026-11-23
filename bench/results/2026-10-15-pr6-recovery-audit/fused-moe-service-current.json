@@ -637272,6 +637272,166 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "stage": "0",
+        "passed": true,
+        "environment_sha256": "210333a0ebcaa1291a64c9ea3e99f8c33f0b134e7f447b5aa2ee454c8a48472f",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/sycl_qsa_bf16_prefix_ordered_exp_bench",
+          "--component",
+          "0"
+        ],
+        "timer_p99_ns": 31,
+        "shapes": [
+          {
+            "cells": 78453,
+            "queries": 8192,
+            "width": 33,
+            "pattern": "gather",
+            "pairs_ms": [
+              {
+                "ordered_exp": 8.581195,
+                "key_page": 9.639547
+              },
+              {
+                "key_page": 9.60909,
+                "ordered_exp": 8.108066
+              },
+              {
+                "ordered_exp": 8.140226,
+                "key_page": 9.671477
+              },
+              {
+                "key_page": 9.622165,
+                "ordered_exp": 8.061909
+              },
+              {
+                "ordered_exp": 8.048433,
+                "key_page": 9.613268
+              },
+              {
+                "key_page": 10.031776,
+                "ordered_exp": 8.018978
+              }
+            ],
+            "median_paired_ratio": 1.1908217306619642
+          },
+          {
+            "cells": 78453,
+            "queries": 8192,
+            "width": 2051,
+            "pattern": "gather",
+            "pairs_ms": [
+              {
+                "ordered_exp": 213.126924,
+                "key_page": 291.322591
+              },
+              {
+                "key_page": 289.874927,
+                "ordered_exp": 212.941845
+              },
+              {
+                "ordered_exp": 212.837189,
+                "key_page": 289.80677
+              },
+              {
+                "key_page": 290.791372,
+                "ordered_exp": 212.746749
+              },
+              {
+                "ordered_exp": 213.151591,
+                "key_page": 290.406358
+              },
+              {
+                "key_page": 290.512868,
+                "ordered_exp": 213.270264
+              }
+            ],
+            "median_paired_ratio": 1.3623111351806216
+          },
+          {
+            "cells": 78453,
+            "queries": 8192,
+            "width": 2051,
+            "pattern": "clustered",
+            "pairs_ms": [
+              {
+                "ordered_exp": 136.634562,
+                "key_page": 138.961611
+              },
+              {
+                "key_page": 138.983001,
+                "ordered_exp": 136.63874
+              },
+              {
+                "ordered_exp": 136.559812,
+                "key_page": 138.99311
+              },
+              {
+                "key_page": 138.913099,
+                "ordered_exp": 136.518012
+              },
+              {
+                "ordered_exp": 136.543661,
+                "key_page": 138.91336
+              },
+              {
+                "key_page": 138.911586,
+                "ordered_exp": 136.729381
+              }
+            ],
+            "median_paired_ratio": 1.017255758084197
+          },
+          {
+            "cells": 78453,
+            "queries": 8192,
+            "width": 2051,
+            "pattern": "blocks4",
+            "pairs_ms": [
+              {
+                "ordered_exp": 160.522358,
+                "key_page": 177.563862
+              },
+              {
+                "key_page": 177.796479,
+                "ordered_exp": 161.371726
+              },
+              {
+                "ordered_exp": 162.70265,
+                "key_page": 178.354962
+              },
+              {
+                "key_page": 178.066197,
+                "ordered_exp": 161.875063
+              },
+              {
+                "ordered_exp": 161.651904,
+                "key_page": 177.760733
+              },
+              {
+                "key_page": 177.878724,
+                "ordered_exp": 162.004076
+              }
+            ],
+            "median_paired_ratio": 1.099836875719375
+          }
+        ],
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "device": "Intel(R) Arc(TM) B570 Graphics",
+        "driver": "1.17.39758+17",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ]
   }
