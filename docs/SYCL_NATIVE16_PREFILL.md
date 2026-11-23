@@ -1373,6 +1373,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   original ordinary request state, first emitted token and decode expert
   cache return. Measure sustained decode and the server terminal slot with
   their own qualified entrypoints.
+  The V2 ordinary server test at `bb4604e04` restored 32769 tokens and read
+  8209 more. The near-full fallback at `989af4815` restored 253919 tokens,
+  read 8209 and emitted one token at a 262128-token prompt. Both matched the
+  earlier state and output checks and returned 1124 borrowed decode-cache
+  slots. Neither produced a new GPU fault.
+  The first split-demand case stays failed at `74ad10536`. The native server
+  exited normally after restoring 172012 tokens, processing all 90115 batched
+  rows in VRAM, checking the scratch and bank drain, and emitting one token.
+  Its demand allocator recorded 127 permanent slot mappings, zero permanent
+  hits and 19993 uploads. The mappings record reservations in the last
+  partial bank. The initial reader incorrectly required their count to be
+  zero after demand retirement. The replacement plan checks the actual
+  drain, upload/dequant conservation and the spare-slot bound. Batching
+  bypasses demand reservations and must still report zero permanent slots.
+  Replay the original reader input on the host, then launch a fresh matched
+  pair with the same commands, settings and request bodies.
   For MoE attribution, the first matched request at `297adab4d` ran 7441
   fused jobs out of 23816 in each of Gate/Up and Down. Those jobs accounted
   for 52231136 of 56394240 routed rows (92.62%). The 18878 dequantizations

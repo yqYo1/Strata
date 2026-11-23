@@ -16,18 +16,14 @@ import prefill_kv_gather_restore as state
 bank, basis, require = upload.bank, upload.basis, upload.require
 restore = state.restore
 workspace = upload.previous.workspace
-KEY = 'prefill_kv_upload_restore_v1'
+KEY = 'prefill_kv_upload_restore_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 PHYSICAL = '6d5debd9cbcb9011d0fc7aa7374ec1700d9e6ccd'
-OLDER_RESTORE = 'b633f7d694cec941c0df25c0fb9edea650d41ca3'
+FIRST_RESTORE = '74ad105368ed894fecd2b3e06d76509547544268'
+FIRST_KEY = 'prefill_kv_upload_restore_v1'
 CONTEXT, CHUNK, SLOTS = 262144, 8192, 128
-CASES = {
-    'ordinary': (32769, 8209, 'batched'),
-    'near-fallback': (253919, 8209, 'batched'),
-    'split-demand': (172012, 90116, 'demand'),
-    'split-batched': (172012, 90116, 'batched'),
-}
+CASES = {'split-demand': 'demand', 'split-batched': 'batched'}
 ORDER = ('host', *CASES)
 
 
@@ -63,15 +59,22 @@ def required_basis():
             and all(bank.sha(p) == h for p, h in providers.items()), 'the measured runtime changed')
     basis.comparison.shared.models.model_pins(speed['configuration'], speed['model_assets'])
 
-    older = bank.previous.historic(OLDER_RESTORE, state.KEY)
-    require(upload.gather.closed(older)
-            and all(older['outcomes'][k]['passed'] for k in ('short-reuse', 'near-reuse')),
-            'require the earlier ordinary and near-capacity copied-output controls')
-    return native, speed, physical, older
+    first = bank.previous.historic(FIRST_RESTORE, FIRST_KEY)
+    require(first == basis.validation.committed(bank.RESULT, (FIRST_KEY,))
+            and first['stage'] == 'failed' and first['ownership_closed'] and not first['active']
+            and first['plan']['binary'] == native['binaries']['strata']
+            and first['plan']['runtime_manifest'] == manifest and first['plan']['boot'] == speed['boot']
+            and first['plan']['driver'] == speed['driver']
+            and all(first['outcomes'][k]['passed'] for k in ('host', 'ordinary', 'near-fallback'))
+            and first['outcomes']['split-demand']['error'] == "RuntimeError('split expert bank did not retire')"
+            and first['outcomes']['split-demand']['native_exit_code'] == 0
+            and not first['outcomes']['split-demand']['fresh_faults'],
+            'require the original V2 ordinary and fallback controls and preserved failed split reader')
+    return native, speed, physical, first
 
 
-def request_inputs(name):
-    prefix, suffix, _ = CASES[name]
+def request_inputs():
+    prefix, suffix = 172012, 90116
     initial = [i % 4096 for i in range(prefix)]
     return [(initial, 0), (list(range(128, 161)), 0),
             (initial + [256 + i % 16 for i in range(suffix)], prefix)]
@@ -93,23 +96,27 @@ def environment(speed, case):
     return env
 
 
-def make_plan(revision, native, speed, physical, older):
+def failed_stderr(first):
+    return Path(first['plan']['cases']['split-demand']['root']) / 'owned' / 'split-demand.stderr'
+
+
+def make_plan(revision, native, speed, physical, first):
     pins = upload.experiment('time').pins(revision)
     pins.update(bank.stage.source.pin(bank.P, [THIS])['source_sha256'])
     cases = {}
-    for name, (_, _, mode) in CASES.items():
-        inputs = request_inputs(name)
+    for name, mode in CASES.items():
+        inputs = request_inputs()
         requests = restore.input_plan(False, inputs=inputs)
         require(all(r['prompt'] + r['max_new'] + 8 <= CONTEXT for r in requests),
                 'restore sequence must leave the native server room to generate')
-        if name in ('ordinary', 'near-fallback'):
-            ref = 'short-reuse' if name == 'ordinary' else 'near-reuse'
-            historic, = (p for p in older['plans'] if p['name'] == ref)
-            require(requests == historic['requests'], 'ordinary or near-fallback wire inputs changed')
         root = ROOT / name
-        case = dict(root=str(root), near=name != 'ordinary', direct=False, mode=mode,
+        case = dict(root=str(root), near=True, direct=False, mode=mode,
                     command=restore.argv(dict(speed, binary=native['binaries']['strata'])),
-                    requests=requests, wall=1200 if name == 'ordinary' else 1800)
+                    requests=requests, wall=1800)
+        previous = first['plan']['cases'][name]
+        require(all(case[k] == previous[k] for k in ('requests', 'command', 'mode', 'wall'))
+                and bank.signature(environment(speed, previous)) == previous['environment_sha256'],
+                'the new reader must retain the original workload and launch')
         case['environment_sha256'] = bank.signature(environment(speed, case))
         cases[name] = case
     a, b = cases['split-demand'], cases['split-batched']
@@ -120,15 +127,16 @@ def make_plan(revision, native, speed, physical, older):
     return dict(source_commit=revision, source_inputs=dict(files=len(pins), sha256=bank.signature(pins)),
                 native_source_commit=native['native_source_commit'], binary=native['binaries']['strata'],
                 serial_order=list(ORDER), cases=cases, budgets=restore.capacity.BUDGET,
-                speed_reference=upload.UPLOAD_TIMING, capacity_reference=PHYSICAL, previous_restore=OLDER_RESTORE,
+                speed_reference=upload.UPLOAD_TIMING, capacity_reference=PHYSICAL, previous_restore=FIRST_RESTORE,
+                failed_stderr_sha256=bank.sha(failed_stderr(first)),
                 physical_receipt_sha256=bank.signature(physical), runtime_manifest=speed['runtime_manifest'],
                 model_assets_sha256=bank.signature(speed['model_assets']),
                 boot=speed['boot'], driver=speed['driver'],
                 scope='Instrumented native pipe GEN, parked live RESTORE, exact state and first verifier handoff.',
-                acceptance='First run a host peer for each geometry. Check exact input and state extents, '
-                           'snapshot and expert-cache bytes. Require matched original ordinary state/output. '
-                           'The aligned 90115-row split pair must match state and work and exercise 48 '
-                           'checked upload windows only with batching.',
+                acceptance='Check the original split stderr reader on the host, then run a fresh pair. Match '
+                           'state, work, snapshot and expert-cache bytes. Require bounded permanent mappings, '
+                           'upload and dequant conservation, checked scratch and bank retirement, and 48 '
+                           'batched upload windows with batching.',
                 stop='Stop at the first input, path, state, output, runtime, ownership, fault or budget failure.')
 
 
@@ -152,20 +160,24 @@ def split_evidence(frame, request, *, split, batched):
             'incomplete all-GPU split or checked scratch retirement')
     bank_end = workspace.one(frame, 'strata MoE expert bank complete: ')
     experts = int(bank_end['uploads'])
-    require(experts > 0 and int(bank_end['permanent_hits']) == int(bank_end['permanent_slots']) == 0
-            and bank_end['final_drain'] == 'checked', 'split expert bank did not retire')
+    permanent, total = int(bank_end['permanent_slots']), int(bank_end['total_slots'])
+    work = workspace.one(frame, 'strata MoE accumulator window: ')
+    h2d_bytes = int(bank_end['requested_H2D_bytes'])
+    require(experts > 0 and h2d_bytes > 0 and int(bank_end['permanent_hits']) == 0
+            and experts == int(work['dequants']) and 0 <= permanent < total == SLOTS
+            and bank_end['final_drain'] == 'checked', 'split expert bank work or retirement differs')
     if batched:
         record, = uploads
-        require((int(record['windows']), int(record['experts']), int(record['copy_commands']))
+        require(permanent == 0 and (int(record['windows']), int(record['experts']), int(record['copy_commands']))
                 == (48, experts, experts) and record['final_drain'] == 'checked',
                 'missing one or more checked batched upload windows')
     else:
         require(not uploads, 'demand unexpectedly ran batched upload')
-    return dict(split=True, slots=SLOTS, uploads=experts,
-                requested_h2d_bytes=int(bank_end['requested_H2D_bytes']), batched_windows=48 if batched else 0)
+    return dict(split=True, slots=SLOTS, uploads=experts, permanent_slots=permanent,
+                requested_h2d_bytes=h2d_bytes, batched_windows=48 if batched else 0)
 
 
-def inspect(log, speed, case, name, requests, pid, older, outcomes):
+def inspect(log, speed, case, name, requests, pid, outcomes):
     outcome = restore.inspect(log, speed, case, requests, pid)
     frames = re.split(r'^strata serve: STATE_HASH L=.*$', log, flags=re.M)
     traces = state.check_frames(log, requests, reuse=True, vec8=False)
@@ -174,21 +186,43 @@ def inspect(log, speed, case, name, requests, pid, older, outcomes):
         i = t['request']
         request = requests[i]
         t['input'] = state.model.input_receipt(frames[i], request['read'] - 1, request['attention_store'], False)
-        t['split'] = split_evidence(frames[i], request, split=i == 2 and name.startswith('split-'),
+        t['split'] = split_evidence(frames[i], request, split=i == 2,
                                     batched=case['mode'] == 'batched')
-    if name in ('ordinary', 'near-fallback'):
-        prior = older['outcomes']['short-reuse' if name == 'ordinary' else 'near-reuse']
-        restore.compare(outcome, prior)
-    elif name == 'split-batched':
+    if name == 'split-batched':
         control = outcomes['split-demand']
         restore.compare(outcome, control)
         for actual, prior in zip(traces, control['dispatch'], strict=True):
-            actual_split = {k: v for k, v in actual['split'].items() if k != 'batched_windows'}
-            prior_split = {k: v for k, v in prior['split'].items() if k != 'batched_windows'}
+            mode_fields = ('batched_windows', 'permanent_slots')
+            actual_split = {k: v for k, v in actual['split'].items() if k not in mode_fields}
+            prior_split = {k: v for k, v in prior['split'].items() if k not in mode_fields}
             require(actual_split == prior_split and all(actual[k] == prior[k] for k in ('kv', 'gather', 'input')),
                     'actual gathered rows, KV, or split upload work changed')
     outcome['dispatch'] = traces
     return outcome
+
+
+def reader_control(first):
+    log = failed_stderr(first).read_text()
+    frames = re.split(r'^strata serve: STATE_HASH L=.*$', log, flags=re.M)
+    require(len(frames) == 4, 'require the original completed request frames')
+    frame, request = frames[2], first['outcomes']['split-demand']['requests'][2]
+    observed = split_evidence(frame, request, split=True, batched=False)
+    require(observed['permanent_slots'] == 127 and observed['uploads'] == 19993,
+            'unexpected original demand-bank counters')
+    marker = 'permanent_hits=0 permanent_slots=127 total_slots=128 final_drain=checked'
+    require(frame.count(marker) == 1, 'unexpected bank retirement observation')
+    bad = (
+        marker.replace('permanent_slots=127', 'permanent_slots=128'),
+        marker.replace('permanent_hits=0', 'permanent_hits=1'),
+        marker.replace('final_drain=checked', 'final_drain=unverified'),
+    )
+    for replacement in bad:
+        try:
+            split_evidence(frame.replace(marker, replacement), request, split=True, batched=False)
+        except RuntimeError:
+            continue
+        raise RuntimeError('accepted an invalid bank counter or drain')
+    return dict(accepted_demand_slots=127, invalid_bank_receipts_rejected=len(bad))
 
 
 def save(row):
@@ -213,8 +247,8 @@ def run(name):
             and list(row['outcomes']) == list(ORDER[:ORDER.index(name)]),
             'commit the frozen inputs and verify completion of the preceding owner')
     plan = row['plan']
-    native, speed, physical, older = required_basis()
-    require(plan == make_plan(plan['source_commit'], native, speed, physical, older), 'frozen inputs differ')
+    native, speed, physical, first = required_basis()
+    require(plan == make_plan(plan['source_commit'], native, speed, physical, first), 'frozen inputs differ')
     root = ROOT / name
     require(not root.exists(), 'inspect the existing case owner before running again')
     for folder in ('tmp', 'cache'):
@@ -231,34 +265,29 @@ def run(name):
         vocab_size = max(vocab.values()) + 1
         if name == 'host':
             peer = restore.host_peer()
-            checked = []
-            for geometry in ('ordinary', 'near-fallback', 'split-demand'):
-                case = plan['cases'][geometry]
-                argv = [sys.executable, '-B', '-c', peer, json.dumps(case['requests'])]
-                entry, _, _ = owner.run(geometry, argv, dict(PATH='/usr/bin:/bin', LANG='C.UTF-8'), bank.P,
-                    interaction=lambda io, _: restore.interact(io, case, vocab_size, native=False,
-                                                               inputs=request_inputs(geometry)),
-                    wall=60, cpu=40, rss_cap=512 << 20, text_cap=128 << 10,
-                    file_cap=1 << 20, total_cap=4 << 20)
-                require(restore.owner_module.closed(entry) and entry['exit_code'] == 0, 'host peer failed')
-                checked.append(geometry)
-            outcome.update(host_cases=checked, gpu_executed=False)
+            case = plan['cases']['split-demand']
+            argv = [sys.executable, '-B', '-c', peer, json.dumps(case['requests'])]
+            entry, _, _ = owner.run('split-wire', argv, dict(PATH='/usr/bin:/bin', LANG='C.UTF-8'), bank.P,
+                interaction=lambda io, _: restore.interact(io, case, vocab_size, native=False, inputs=request_inputs()),
+                wall=60, cpu=40, rss_cap=512 << 20, text_cap=128 << 10, file_cap=1 << 20, total_cap=4 << 20)
+            require(restore.owner_module.closed(entry) and entry['exit_code'] == 0, 'host peer failed')
+            outcome.update(host_cases=['split-demand'], reader_control=reader_control(first), gpu_executed=False)
         else:
             case = plan['cases'][name]
             requests = []
 
             def exchange(io, _):
-                requests.extend(restore.interact(io, case, vocab_size, native=True, inputs=request_inputs(name)))
+                requests.extend(restore.interact(io, case, vocab_size, native=True, inputs=request_inputs()))
 
             print(f'Native restore case {name} starts', flush=True)
             entry, _, stderr = owner.run(name, case['command'], environment(speed, case), bank.P,
                 interaction=exchange, wall=case['wall'], **plan['budgets'])
             outcome.update(native_exit_code=entry['exit_code'], gpu_executed=True, requests=requests)
             require(restore.owner_module.closed(entry) and entry['exit_code'] == 0, 'native server or teardown failed')
-            outcome.update(inspect(stderr.read_text(), speed, case, name, requests, entry['pid'], older, row['outcomes']))
+            outcome.update(inspect(stderr.read_text(), speed, case, name, requests, entry['pid'], row['outcomes']))
             if name == ORDER[-1]:
                 basis.comparison.shared.models.model_pins(speed['configuration'], speed['model_assets'], full=True)
-        require(plan == make_plan(plan['source_commit'], native, speed, physical, older), 'inputs changed during run')
+        require(plan == make_plan(plan['source_commit'], native, speed, physical, first), 'inputs changed during run')
         outcome.update(complete=True, host_probe_accepted=True)
     except Exception as error:
         outcome['error'] = repr(error)
