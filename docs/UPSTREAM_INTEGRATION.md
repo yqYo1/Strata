@@ -90,7 +90,7 @@ DeepSeek/35B and CUDA/HIP execution remain excluded.
 
 | Reviewed source unit | Required action and qualification |
 | --- | --- |
-| One Off/MTP/DFlash2 decision through plan/fetch,setup,config,launch and visible status | Required functional port. Preserve existing MTP/legacy configurations and DFlash2 opt-in;do not silently replace the local default with upstream Auto. Start from [launch plan/argv](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/launch/runner.py#L1506),[CLI drafting](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/drafting_cmd.py#L117) and [draft selection](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_control/drafting.py#L467). The12GBIQ3_S example is at runner336-339/modelstate86-95;the old report's unrelated lines are not evidence. |
+| One Off/MTP/DFlash2 decision through plan/fetch, setup, config, launch and visible status | Required functional port. Carry the fork's DFlash2-first Auto rule for supported single-card SYCL Qwen text through these entrypoints. Preserve explicit MTP and Off choices and the existing compatibility fallback. The 12 GB IQ3_S example is at runner336-339/modelstate86-95. [Launch plan and arguments](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/launch/runner.py#L1506), [CLI drafting](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/drafting_cmd.py#L117), [draft selection](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_control/drafting.py#L467). |
 | Arc prepared-file/pack/config adaptation | Required and unqualified. Verify the native setup entrypoint,accepted engine arguments and direct config writers before porting [the launch adaptation](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/strata_cli/launch/runner.py#L1364). Preserve existing config and avoid unsupported layer/vision/draft downloads. The existing Arc source map below remains the adapter consumer. |
 | CPU IQ3_S weights with Q8_K activations | Conditional decode candidate,not long GPU prefill. [The mapping](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/src/quant/types.cpp#L32) uses the AVX2 quant path. [SYCL CMake](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/sycl/CMakeLists.txt#L130) includes root pool/native-expert sources but does not wire that quant layer. Native-expert checks use ggml-cpu in the SYCL branch and Strata quant with STRATA_OWN_CPU_QUANT;quant parity is a separate gate. Prove local route,compiler/ISA/activation packing,parity and decode-sized performance before adoption. Reviewed quant provenance is MIT ggml/llama.cpp;retain per-component provenance checks before import. |
 | Nested cgroup quota discovery | Conditional pool-capacity candidate. [The helper](https://github.com/Niko1221/Strata/blob/baf16363b4403ef0ed4f538f5d5ed11c43fb9535/include/strata/kernels/cpu/cgroup_cpu.hpp) changes quota discovery,not row math. A real local quota and performance evidence are prerequisites. |
@@ -143,15 +143,16 @@ terminal dependencies and existing launch/default/notice assertions.
 
 The current Unsloth v3.1 catalog/pinned metadata and stock DFlash2 pack are
 present. The focused v3.1 setup/pins/shard-discovery and DFlash2 packing tests
-passed77host cases with1skip; this does not qualify native v3.1 model/type
-execution. The native DFlash2 candidate is opt-in. Its corrected32,769-token
-route admission and32K-plus sustained thinking generation have been exercised;
-the cache-loan comparison also closed in six fresh processes. Those measurements
-charge validation/observation and do not qualify a clean, repeated DFlash2-versus-
-MTP speed comparison. Task quality, physical262144/RESTORE and default adoption
-remain open. Existing configurations retain their MTP selection, and the
-experimental cache loan remains off by default. See `current_sync` in the status
-file for the original checks and limits; component success is not model adoption.
+passed 77 host cases with one skip. Native v3.1 model execution still needs
+qualification. Server Auto prefers DFlash2 for supported single-card SYCL Qwen
+text launches with a ready pack. Use DFlash2 for new prefill and decode tuning
+and MTP for explicit use, compatibility and named comparisons. The 32,769-token
+route check and a corrected clean `bench.sh` process with sustained thinking
+generation have passed. Two more suite processes, task quality and physical
+262144 fill and RESTORE are pending. The separate six-process cache-loan
+comparison used observers and the loan is still opt-in. See the [maintained SYCL
+results](SYCL_NATIVE16_PREFILL.md) and `current_sync` in the status file for
+scope and evidence.
 
 ## Remaining integration work
 
