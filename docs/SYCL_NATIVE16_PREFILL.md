@@ -1359,11 +1359,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   original split requires `n > window_rows + m.T` and `n <= 117488`.
   The measured 8192-row chunk therefore admits 90113–117488 new rows by
   length. The existing near-full RESTORE shape of 253919 reused and 8209
-  fresh tokens gives 8208 new rows for the V2 split-fallback check. A candidate
-  split RESTORE shape is 172014 reused and 90114 fresh tokens, keeping the
-  total at 262128 and one output plus eight reserved slots available. Require
-  actual restored extent, one 90113-row read, the all-GPU 128-slot split and
-  all 48 batched uploads before treating it as split coverage.
+  fresh tokens gives 8208 new rows for the V2 split-fallback check.
+  [The retained-build controller](../bench/sycl/prefill_kv_upload_restore.py)
+  starts with the 32769-token version of the same sequence, then the near-full
+  fallback. The split RESTORE comparison parks 172012 tokens at a page
+  boundary and reads 90116 fresh tokens. Both near-full sequences reach a
+  262128-token prompt with room for one output and eight reserved slots.
+  Hold copied attention output, aligned KV reuse, scalar gathers, the 128-slot
+  request and stock decode fixed. Enable conversation caching and state/loan
+  validation for the native pipe. Compare demand and batched upload only on
+  the split sequence. Require the actual restored extent, one 90115-row
+  read, the all-GPU split and 48 checked batched uploads. Verify the snapshot,
+  original ordinary request state, first emitted token and decode expert
+  cache return. Measure sustained decode and the server terminal slot with
+  their own qualified entrypoints.
   For MoE attribution, the first matched request at `297adab4d` ran 7441
   fused jobs out of 23816 in each of Gate/Up and Down. Those jobs accounted
   for 52231136 of 56394240 routed rows (92.62%). The 18878 dequantizations

@@ -59,9 +59,10 @@ def workloads(near):
     return [(initial, 0), (switch, 0), (resumed, n)]
 
 
-def input_plan(near):
+def input_plan(near, *, inputs=None):
+    inputs = workloads(near) if inputs is None else inputs
     result = []
-    for ids, reused in workloads(near):
+    for ids, reused in inputs:
         payload = protocol.wire(ids, 1)
         result.append(dict(prompt=len(ids), max_new=1, reused=reused, wire_bytes=len(payload),
                            wire_sha256=signature_bytes(payload)))
@@ -118,7 +119,7 @@ def make_case(row, name):
     return case
 
 
-def interact(io, expected, vocab_size, *, native):
+def interact(io, expected, vocab_size, *, native, inputs=None):
     info = {}
     while True:
         line = io.line(600)
@@ -130,7 +131,8 @@ def interact(io, expected, vocab_size, *, native):
             break
     require(all(info.get(k) == v for k, v in INFO.items()), 'native server INFO does not match fixed placement')
     result = []
-    for (ids, reused), receipt in zip(workloads(expected['near']), expected['requests'], strict=True):
+    inputs = workloads(expected['near']) if inputs is None else inputs
+    for (ids, reused), receipt in zip(inputs, expected['requests'], strict=True):
         payload = protocol.wire(ids, 1)
         require(len(payload) == receipt['wire_bytes'] and signature_bytes(payload) == receipt['wire_sha256'],
                 'committed request bytes differ')
