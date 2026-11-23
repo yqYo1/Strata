@@ -1622,6 +1622,38 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   still match. Removed 144 files totaling 21450935 bytes with
   inventory SHA-256 `a25d225560cafabb9b607d1b1e00f98d04a57d5f328099984f384b33f82c8339`.
 
+  The clean 117489-token model comparison closed at `63d1765fe`. It used
+  three counterbalanced pairs with two fresh requests per process. All twelve
+  requests matched work, response digests and actual score dispatch. The
+  candidate reused 6512508 of 6756935 score-key row visits per QSA layer.
+  All six processes exited normally with closed owners and zero fresh GPU
+  faults. All fifteen final model asset hashes matched.
+
+  Across the three independent processes per mode, median warmed prefill was
+  998.44 tok/s for repacking and 997.51 tok/s for retention. The paired change
+  in warmed prompt time was +0.1408%,
+  +0.0932% and -0.4981%. It missed the repeated warm gain criterion and the
+  repeated 1000 tok/s criterion. First-request client TTFT changed by -5.058,
+  -5.965 and +1.244 s. The medians were 134.652 and 129.766 s. Keep these as
+  observations for a future first-use comparison. Select batched upload and
+  copied attention output on the retained V2 build for the next server
+  RESTORE and handoff checks. This is the configuration with a three-process
+  warmed median of 1008.865 tok/s at `297adab4d`.
+
+  Recovered the measured 1171-source build, 138 objects, thirteen targets
+  and original recipe from the pushed history at `ae54bc954`. The complete
+  result and the archived model and V2 fixture controllers are available
+  at `63d1765fe`. The original indexer and counter commits remain reachable
+  on `feature/sycl`. Removed the finished `verify/prefill-qsa-groups` worktree
+  and branch locally and remotely. Removed the following closed captures
+  under `~/.local/state/strata-sycl/post-reboot-tuning-20261007` and verified
+  both retained phase-reference executable hashes and the compact receipts.
+
+  | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
+  | --- | ---: | ---: | --- |
+  | `prefill-score-keys-native-v3/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1371 | 211470562 | `7e9588a5683aa21eb1c5ecde4da0b7579b323677badea8d53ea18d30c7f4fc91` |
+  | `prefill-score-keys-model-speed-v1/{0..5,host}` | 424 | 63301814 | `2ac1b4c0ecbd1cd4218c74b1d6a434f1d439125915ca54e6b4afba693c76ad4c` |
+
   The model preparation at `df0520d8b` stopped before writing a campaign
   receipt or launching a model. It read the score mode before the plan
   attached that field. The correction at `0b2a929b8` uses the declared
