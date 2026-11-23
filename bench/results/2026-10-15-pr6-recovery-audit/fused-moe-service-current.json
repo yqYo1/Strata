@@ -643268,9 +643268,36 @@
       "acceptance": "Check the original split stderr reader on the host, then run a fresh pair. Match state, work, snapshot and expert-cache bytes. Require bounded permanent mappings, upload and dequant conservation, checked scratch and bank retirement, and 48 batched upload windows with batching.",
       "stop": "Stop at the first input, path, state, output, runtime, ownership, fault or budget failure."
     },
-    "outcomes": {},
-    "stage": "prepared",
+    "outcomes": {
+      "host": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "host_cases": [
+          "split-demand"
+        ],
+        "reader_control": {
+          "accepted_demand_slots": 127,
+          "invalid_bank_receipts_rejected": 3
+        },
+        "gpu_executed": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
+    "stage": "running",
     "active": false,
-    "ownership_closed": true
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false
   }
 }
