@@ -638050,7 +638050,7 @@
     }
   },
   "prefill_moe_gate_clock_model_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "ed2df23eb2e4dcf0acc24c802a69a726300e202c",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-gate-clock-native-v1/build/strata",
@@ -638857,6 +638857,190 @@
             "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
           ]
         ]
+      },
+      {
+        "index": 2,
+        "read": 117489,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-gate-clock-native-v1/build/strata",
+          "sha256": "43f6ca2239809d5d6ee524efc91b3337355a3369697623d85f3f42761ecba84d",
+          "bytes": 26550520
+        },
+        "native_source_commit": "2c6645de4926c2c071a2e18d64f945451bda2646",
+        "native_identity": {
+          "pid": 848917,
+          "start_ticks": 378410911,
+          "sid": 848856
+        },
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 848917,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "layer_cache_bytes": 340787200,
+            "uploads": 18878,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 7441,
+                "fused_rows": 52231136,
+                "separate_jobs": 16375
+              },
+              "down": {
+                "fused_jobs": 7441,
+                "fused_rows": 52231136,
+                "separate_jobs": 16375
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 23816,
+              "windows": 48,
+              "dequants": 18878,
+              "maximum_physical_window_rows": 117488,
+              "requested_source_map_bytes": 225576960,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "requested_bank_H2D_bytes": 38540800000,
+            "attention_store": {
+              "pieces": 720,
+              "direct": 720,
+              "copy_bytes": 0,
+              "gpu_rows": 117488,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 117488
+            },
+            "kv": {
+              "reloaded_pages": 215040,
+              "reused_pages": 2365440
+            },
+            "gather": {
+              "jobs": 23816,
+              "eligible_jobs": 7441,
+              "eligible_rows": 52231136
+            },
+            "split_upload": {
+              "mode": "batched",
+              "experts": 18878,
+              "copy_commands": 18878
+            }
+          },
+          {
+            "layer_cache_bytes": 340787200,
+            "uploads": 18900,
+            "actual_GU_dispatch": {
+              "gu": {
+                "fused_jobs": 7434,
+                "fused_rows": 52222161,
+                "separate_jobs": 16406
+              },
+              "down": {
+                "fused_jobs": 7434,
+                "fused_rows": 52222161,
+                "separate_jobs": 16406
+              },
+              "compact_jobs": 0,
+              "compact_rows": 0,
+              "jobs": 23840,
+              "windows": 48,
+              "dequants": 18900,
+              "maximum_physical_window_rows": 117488,
+              "requested_source_map_bytes": 225576960,
+              "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+            },
+            "requested_bank_H2D_bytes": 38589209600,
+            "attention_store": {
+              "pieces": 720,
+              "direct": 720,
+              "copy_bytes": 0,
+              "gpu_rows": 117488,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 117488
+            },
+            "kv": {
+              "reloaded_pages": 215040,
+              "reused_pages": 2365440
+            },
+            "gather": {
+              "jobs": 23840,
+              "eligible_jobs": 7434,
+              "eligible_rows": 52222161
+            },
+            "split_upload": {
+              "mode": "batched",
+              "experts": 18900,
+              "copy_commands": 18900
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 129051.8,
+            "prompt_tps": 910.4,
+            "ttft_s": 129.273,
+            "total_s": 131.427,
+            "generated_tokens": 24,
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 117863.4,
+            "prompt_tps": 996.8,
+            "ttft_s": 118.106,
+            "total_s": 120.217,
+            "generated_tokens": 24,
+            "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 117863.4,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "role": "clean-after",
+        "response_sha256": [
+          [
+            "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          ],
+          [
+            "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          ]
+        ]
       }
     ],
     "request_hashes": {
@@ -638866,8 +639050,8 @@
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
@@ -638915,6 +639099,42 @@
         "passed": true
       }
     ],
+    "decision": {
+      "clock_cost": [
+        {
+          "scope": "first-use",
+          "observed_minus_clean_seconds": [
+            {
+              "prompt_s": -4.546899999999995,
+              "ttft_s": -4.552999999999997
+            },
+            {
+              "prompt_s": 0.23259999999999126,
+              "ttft_s": 0.22800000000000864
+            }
+          ],
+          "max_absolute_seconds": 3.0,
+          "overhead_qualified": false
+        },
+        {
+          "scope": "second-request",
+          "observed_minus_clean_seconds": [
+            {
+              "prompt_s": -0.24739999999999418,
+              "ttft_s": -0.2469999999999999
+            },
+            {
+              "prompt_s": -0.07239999999999418,
+              "ttft_s": -0.09099999999999397
+            }
+          ],
+          "max_absolute_seconds": 1.5,
+          "overhead_qualified": true
+        }
+      ],
+      "measured_host_intervals": true,
+      "speedup_qualified": false
+    },
     "source_inputs": {
       "files": 821,
       "sha256": "fb6dfd10966cbcbde19a7713ec66d478d586049ae12b87471f96c1cfef62ffcc"
