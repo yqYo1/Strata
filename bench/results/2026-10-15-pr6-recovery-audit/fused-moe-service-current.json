@@ -630724,7 +630724,7 @@
     }
   },
   "prefill_moe_status_capture_v6": {
-    "stage": "built",
+    "stage": "host-checked",
     "source_commit": "27d0ee45e48c3b605143f8f97a443c22620a3411",
     "sources": {
       "count": 823,
@@ -630846,6 +630846,41 @@
     },
     "outcomes": {
       "build": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      "host-default": {
+        "simulated_calls": 26,
+        "rejected_calls": 2,
+        "successful_calls": 24,
+        "recycled_queues": 2,
+        "recycled_allocations": 2,
+        "graph_children": 2,
+        "successful_replays": 2,
+        "failed_output_and_list_not_read": true,
+        "device_work_qualified": false,
+        "limits": "Fabricated CPU XPTI payloads only;no UR/LevelZero device calls or actual lifetime/graph execution qualification.",
+        "ownership_closed": true
+      },
+      "host-sparse": {
+        "simulated_calls": 8,
+        "selected_calls": 4,
+        "unrelated_queue_ignored": true,
+        "ownership_closed": true
+      },
+      "host": {
         "complete": true,
         "host_probe_accepted": true,
         "ownership_closed": true,
