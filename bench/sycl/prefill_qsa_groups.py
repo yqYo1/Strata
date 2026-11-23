@@ -207,6 +207,13 @@ def value_samples(stdout, action):
 
 
 def measure(action, binary, native, speed, stage, root, values):
+    arguments = ['--smoke'] if action == 'smoke' else ['--component', action]
+    def read_samples(stdout):
+        return value_samples(stdout, action) if values else samples(stdout, action)
+    measure_fixture(action, arguments, binary, native, speed, stage, root, read_samples)
+
+
+def measure_fixture(action, arguments, binary, native, speed, stage, root, read_samples):
     directory = root / ('measure-' + action)
     directory.mkdir(mode=0o700)
     for key in ('tmp', 'cache'):
@@ -219,14 +226,19 @@ def measure(action, binary, native, speed, stage, root, values):
         env.pop(k, None)
     env['STRATA_TEST_MAIN_GATES'] = '0'
     smoke = action == 'smoke'
-    if smoke:
-        env.update(LD_DEBUG='libs', LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
-                   UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION', UR_LOG_TRACING='level:info;flush:info;output:stderr',
+    checked = smoke or action == 'boundary'
+    if checked:
+        env.update(LD_DEBUG='libs', LD_PRELOAD=probe['library']['path'],
+                   STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
+                   UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
                    UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(directory/'validation.log'))
+    if smoke:
+        env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+                   UR_LOG_TRACING='level:info;flush:info;output:stderr')
     cursor, = [l.removeprefix('-- cursor: ') for l in subprocess.check_output(
         ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
         if l.startswith('-- cursor: ')]
-    argv = [binary['path'], *(['--smoke'] if smoke else ['--component', action])]
+    argv = [binary['path'], *arguments]
     stage.update(environment_sha256=bank.signature(env), argv=argv)
     try:
         cmd, out, err = owner.run(action, argv, env, bank.P, **(bank.device.SMALL if smoke else bank.device.LARGE))
@@ -234,19 +246,21 @@ def measure(action, binary, native, speed, stage, root, values):
         stdout, log = out.read_text(), err.read_text()
         gpu, = re.findall(r'^device=(.+) driver=(\S+)$', stdout, re.M)
         require('B570' in gpu[0], 'wrong GPU')
-        if smoke:
+        if checked:
             evidence = device.validation.preload_evidence(log, cmd['pid'])
             layer = directory/'validation.log'
-            require(evidence['loader'] == probe['loader']['path'] and (not layer.exists() or layer.stat().st_size == 0)
-                    and 'urEnqueueKernelLaunch' in log, 'missing trace or validation error')
-            bank.device.diagnostics.diagnostics(log, cmd['pid'])
+            require(evidence['loader'] == probe['loader']['path'] and (not layer.exists() or layer.stat().st_size == 0),
+                    'missing validation provider or parameter validation error')
+            if smoke:
+                require('urEnqueueKernelLaunch' in log, 'missing kernel launch trace')
+                bank.device.diagnostics.diagnostics(log, cmd['pid'])
             stage['providers'] = bank.device.loaded_providers(log, dict(environment=env, native_validation_probe=probe,
                                                               runtime_manifest=native['foundation']['runtime_manifest']))
-        else:
-            require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|cleanup failed|terminate called|strata UR validation:',log),
+        if not smoke:
+            require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|cleanup failed|terminate called',log)
+                    and (checked or 'strata UR validation:' not in log),
                     'unexpected observer or runtime error')
-        measurements = value_samples(stdout, action) if values else samples(stdout, action)
-        stage.update(**measurements, native_exit_code=0, host_probe_accepted=True, device=gpu[0], driver=gpu[1])
+        stage.update(**read_samples(stdout), native_exit_code=0, host_probe_accepted=True, device=gpu[0], driver=gpu[1])
     finally:
         device.validation.finish(stage, owner, cursor, speed['boot'])
         stage['passed'] = stage['passed'] and stage.get('driver_after') == native['driver']

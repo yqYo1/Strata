@@ -1471,8 +1471,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The generator rejects a changed original. Both translation units pass
   the pinned oneAPI 2026.2 syntax check with the measured compile flags.
   The candidate inherits the reference's barrier deprecation warnings.
-  Device compilation, the smoke and boundary runs, and clean paired timing
-  are pending. Keep this fixture for that comparison.
+  The [component controller](../bench/sycl/prefill_qsa_key_page.py) recovers
+  the retained V2 compile and link recipe. It links the generated variant
+  alongside the same measured reference archives. Prepare and commit the
+  plan before building. Run the traced smoke and quiet-validated boundary
+  checks before the three clean timing processes. Each shape uses six
+  opposite-order pairs. The grouped shape needs a lower paired median in
+  each process before model follow-up. Keep clustered and spread samples
+  for the workload-coverage decision. Device compilation, numerical
+  execution and clean paired timing remain pending.
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
