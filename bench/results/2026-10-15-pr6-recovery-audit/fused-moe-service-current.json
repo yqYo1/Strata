@@ -642499,5 +642499,49 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "prefill_score_keys_component_v2": {
+    "plan": {
+      "scope": "Repack only newly active FP16 index keys inside one prefill SELECT loop. Reset the extent for every chunk, layer and restored request.",
+      "roles": [
+        "smoke",
+        "check",
+        "boundary",
+        "0",
+        "1",
+        "2"
+      ],
+      "correctness": "Compare every score, selected ID and guard on both epochs. Require a detectable stale extent after overwriting the borrowed scratch.",
+      "performance": "Three independent processes, five alternating pairs of 12 chunks of 2800 queries. Require exact IDs, at least 100 ms per batch, timer control at most 1%, and a lower paired median in every process.",
+      "stopping": "Stop on changed build or launch inputs, output mismatch, new GPU fault, ineligible interval, owner failure or finite budget exhaustion."
+    },
+    "inputs": {
+      "native_source_commit": "9b7fd198f5fa095fa30d9d65edc45200906551b5",
+      "build_sha256": "169a8979c36df05d99822cd8c513d7d441173b53b6a4099682b524f85c40814a",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-score-keys-native-v3/build/sycl_qsa_score_gemm_test",
+        "sha256": "3fad01e92e8ec11b651da3deb2e73ed686bbc413463d6d0741900499a7f0bb5b",
+        "bytes": 14826440
+      },
+      "timeline": "4bc26aaa9cbdd8d4084336826361aae7bb886449",
+      "timeline_sha256": "5b5645af23ae07f76a0321bd0fe052b98e6f0fd4bf74d22192900326cb30eb0c",
+      "environment_template_sha256": "de4fe59cdf70ddf1e814d5dd20873a4e6c558fe169caece19b8e654f3f37df2b",
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-model-pti-v1/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "files": 84
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840"
+    },
+    "launches": {
+      "smoke": "32e34a55f4f70d639c199f765910f1fba999a7002eb0526eb58b8ca656e78860",
+      "check": "7da093397cc9bea84e4083cc8cc7e3f7ca5e5336e463eff8ff2066bd626d90db",
+      "boundary": "3770339ce759b3f273facad5f7e52ae05c5e072a6121ad2e8c9909377118f317",
+      "0": "dcba7aea3ac1b9d37be56e60ea60ea89d7863422d3847612e4a3ca323455a2fc",
+      "1": "bb59621d38c9072ab7d3c7fb3132084bfd4b76ef012fd6e1a37640c03c5b41be",
+      "2": "7fada8ff0fb58aadfefd9a9aff4e4f6699f0085a9ac7a7177e8e34e5e7ea9144"
+    },
+    "stages": [],
+    "stage": "ready"
   }
 }
