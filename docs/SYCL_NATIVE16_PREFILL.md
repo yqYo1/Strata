@@ -1617,8 +1617,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   137281 rows in the control and pack 10243 plus reuse 127038 in the
   candidate. The held V2 score engine can now enter the clean 117489-token
   comparison. Keep GDN, attention, selection mapping, expert transfer, KV
-  and decode fixed. Retire the admitted `0`, `1` and `host` captures after
-  pushing the closed result. Their 144 files total 21450935 bytes with
+  and decode fixed. Removed the closed `0`, `1` and `host` captures after
+  verifying pushed `b79c93403`. The campaign and runtime receipt hashes
+  still match. Removed 144 files totaling 21450935 bytes with
   inventory SHA-256 `a25d225560cafabb9b607d1b1e00f98d04a57d5f328099984f384b33f82c8339`.
 
   The model preparation at `df0520d8b` stopped before writing a campaign
