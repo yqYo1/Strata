@@ -100,6 +100,49 @@ int metadata_fixture() {
   return 0;
 }
 
+int status_fixture() {
+  xptiFrameworkInitialize();
+  if (xptiInitialize("ur.call", 0, 1, "status-host-fixture") != xpti::result_t::XPTI_RESULT_SUCCESS) return 6;
+  auto queue = reinterpret_cast<ur_queue_handle_t>(uintptr_t(0x101));
+  auto other = reinterpret_cast<ur_queue_handle_t>(uintptr_t(0x102));
+  auto kernel = reinterpret_cast<ur_kernel_handle_t>(uintptr_t(0x401));
+  auto* kernel_out = &kernel;
+  const char* kernel_name = "_ZTSN6strata7kernels12_GLOBAL__N_17dequantItEEE";
+  ur_kernel_create_params_t create{};
+  create.ppKernelName = &kernel_name; create.pphKernel = &kernel_out;
+  notify(UR_FUNCTION_KERNEL_CREATE, "urKernelCreate", &create);
+
+  void* dst = reinterpret_cast<void*>(uintptr_t(0x1000));
+  const void* src = reinterpret_cast<const void*>(uintptr_t(0x2000));
+  size_t bytes = 8;
+  uint32_t zero = 0, dim = 1;
+  const ur_event_handle_t* waits = nullptr;
+  ur_event_handle_t* out = nullptr;
+  ur_enqueue_usm_memcpy_params_t copy{};
+  copy.phQueue = &queue; copy.ppDst = &dst; copy.ppSrc = &src; copy.psize = &bytes;
+  copy.pnumEventsInWaitList = &zero; copy.pphEventWaitList = &waits; copy.pphEvent = &out;
+  notify(UR_FUNCTION_ENQUEUE_USM_MEMCPY, "urEnqueueUSMMemcpy", &copy);
+  bytes = 4;
+  notify(UR_FUNCTION_ENQUEUE_USM_MEMCPY, "urEnqueueUSMMemcpy", &copy);
+  ur_queue_finish_params_t wrong_finish{&other}, finish{&queue};
+  notify(UR_FUNCTION_QUEUE_FINISH, "urQueueFinish", &wrong_finish);
+  notify(UR_FUNCTION_QUEUE_FINISH, "urQueueFinish", &finish);
+
+  size_t extent[] = {102400};
+  const size_t *global = extent, *absent = nullptr;
+  ur_enqueue_kernel_launch_with_args_exp_params_t launch{};
+  launch.phQueue = &other; launch.phKernel = &kernel; launch.pworkDim = &dim;
+  launch.ppGlobalWorkSize = &global; launch.ppGlobalWorkOffset = &absent; launch.ppLocalWorkSize = &absent;
+  launch.pnumEventsInWaitList = &zero; launch.pphEventWaitList = &waits; launch.pphEvent = &out;
+  notify(UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH_WITH_ARGS_EXP, "urEnqueueKernelLaunchWithArgsExp", &launch);
+  launch.phQueue = &queue;
+  notify(UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH_WITH_ARGS_EXP, "urEnqueueKernelLaunchWithArgsExp", &launch);
+  notify(UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH_WITH_ARGS_EXP, "urEnqueueKernelLaunchWithArgsExp", &launch);
+  xptiFinalize("ur.call"); xptiFrameworkFinalize();
+  std::printf("{\"status_fixture\":\"PASS\",\"simulated_calls\":%u}\n", simulated_calls);
+  return 0;
+}
+
 int buffer_fixture() {
   // CPU XPTI payloads only. Addresses are scalar identities,never device work.
   // Invalid pointees on rejected calls must remain unread by the subscriber.
@@ -233,6 +276,7 @@ int main(int argc, char** argv) {
   if (argc != 2) return 2;
   const char* name = argv[1];
   if (!std::strcmp(name, "metadata")) return metadata_fixture();
+  if (!std::strcmp(name, "status")) return status_fixture();
   if (!std::strcmp(name, "buffers")) return buffer_fixture();
   if (!std::strcmp(name, "overflow")) return overflow_fixture();
   if (!std::strcmp(name, "overflow-boundary-begin")) return overflow_boundary_fixture(false);

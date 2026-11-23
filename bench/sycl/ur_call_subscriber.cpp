@@ -26,6 +26,7 @@ constexpr uint64_t record_limit = 65536;
 uint64_t record_budget = record_limit;
 std::atomic<bool> capture_stopped{false};
 constexpr int row_capacity = 2048;
+bool status_only = false;
 
 [[noreturn]] void fail() noexcept {
   constexpr char message[] = "strata UR subscriber: incomplete diagnostic\n";
@@ -33,11 +34,13 @@ constexpr int row_capacity = 2048;
   _exit(86);
 }
 
-uint64_t raw_ns() noexcept {
+uint64_t clock_ns(clockid_t clock) noexcept {
   timespec now{};
-  if (clock_gettime(CLOCK_MONOTONIC_RAW, &now)) fail();
+  if (clock_gettime(clock, &now)) fail();
   return uint64_t(now.tv_sec) * 1000000000ULL + uint64_t(now.tv_nsec);
 }
+
+uint64_t raw_ns() noexcept { return clock_ns(CLOCK_MONOTONIC_RAW); }
 
 // Called with the output lock held. No buffered I/O or heap allocation.
 void write_row(const char* row, int size) noexcept {
@@ -174,6 +177,60 @@ template<class T> const T* arguments(const xpti::function_with_args_t* data, con
   return static_cast<const T*>(data->args_data);
 }
 
+// In sparse mode only consider four-byte copies, their waits and the first
+// subsequent launch on that thread and queue. The reader identifies the MoE
+// status destination and the shared weight kernel from the captured pairs.
+struct StatusCapture {
+  ur_queue_handle_t queue = nullptr;
+  uint64_t launch_instance = 0;
+  bool launch_pending = false;
+
+  bool launch(ur_queue_handle_t target, bool begin, uint64_t instance) noexcept {
+    if (!begin) {
+      if (!launch_pending || launch_instance != instance) return false;
+      launch_pending = false;
+      return true;
+    }
+    if (!queue || target != queue) return false;
+    queue = nullptr;
+    launch_instance = instance;
+    launch_pending = true;
+    return true;
+  }
+};
+thread_local StatusCapture status_capture;
+
+bool capture_status_call(const xpti::function_with_args_t* data, bool begin,
+                         uint64_t instance) noexcept {
+  switch (data->function_id) {
+  case UR_FUNCTION_KERNEL_CREATE:
+    return true;
+  case UR_FUNCTION_ENQUEUE_USM_MEMCPY: {
+    const auto* p = arguments<ur_enqueue_usm_memcpy_params_t>(data, "urEnqueueUSMMemcpy");
+    if (!p->psize || !p->phQueue) fail();
+    if (*p->psize != sizeof(uint32_t)) return false;
+    if (begin) status_capture.queue = *p->phQueue;
+    return true;
+  }
+  case UR_FUNCTION_QUEUE_FINISH: {
+    const auto* p = arguments<ur_queue_finish_params_t>(data, "urQueueFinish");
+    return status_capture.queue && p->phQueue && *p->phQueue == status_capture.queue;
+  }
+  case UR_FUNCTION_EVENT_WAIT:
+    return status_capture.queue != nullptr;
+  case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {
+    const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, "urEnqueueKernelLaunch");
+    return p->phQueue && status_capture.launch(*p->phQueue, begin, instance);
+  }
+  case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH_WITH_ARGS_EXP: {
+    const auto* p = arguments<ur_enqueue_kernel_launch_with_args_exp_params_t>(data, "urEnqueueKernelLaunchWithArgsExp");
+    return p->phQueue && status_capture.launch(*p->phQueue, begin, instance);
+  }
+  default:
+    return false;
+  }
+}
+
 void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success) noexcept {
 #define ARGS(ID, type, name) case UR_FUNCTION_##ID: { const auto* p = arguments<ur_##type##_params_t>(data, name);
 #define END break; }
@@ -185,6 +242,15 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
     ARGS(QUEUE_RETAIN, queue_retain, "urQueueRetain") QUEUE; END
     ARGS(QUEUE_RELEASE, queue_release, "urQueueRelease") QUEUE; END
     ARGS(QUEUE_FINISH, queue_finish, "urQueueFinish") QUEUE; END
+    case UR_FUNCTION_KERNEL_CREATE:
+      if (status_only && success) {
+        const auto* p = arguments<ur_kernel_create_params_t>(data, "urKernelCreate");
+        m.output("created_kernel", p->pphKernel, true);
+        if (!p->ppKernelName || !*p->ppKernelName) fail();
+        const char* name = *p->ppKernelName;
+        m.number("half_dequant", std::strstr(name, "strata7kernels") && std::strstr(name, "7dequantItE"));
+      }
+      break;
     ARGS(QUEUE_IS_GRAPH_CAPTURE_ENABLED_EXP, queue_is_graph_capture_enabled_exp, "urQueueIsGraphCaptureEnabledExp")
       QUEUE;
       if (!p->ppResult) fail();
@@ -265,12 +331,19 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
 void callback(uint16_t type, xpti::trace_event_data_t*,
               xpti::trace_event_data_t*, uint64_t instance,
               const void* user_data) noexcept {
-  // Reserve a row before touching user_data, not merely before output. A
-  // concurrent callback cannot consume our remaining budget during metadata
-  // extraction. This extra serialization still needs observer-cost testing.
-  if (!begin_row()) return;
   const auto* data = static_cast<const xpti::function_with_args_t*>(user_data);
   const bool begin = type == xpti::trace_function_with_args_begin;
+  uint64_t selected_raw = 0, selected_cpu = 0;
+  if (status_only) {
+    if (capture_stopped.load(std::memory_order_acquire)) return;
+    if (!data) fail();
+    if (!capture_status_call(data, begin, instance)) return;
+    selected_raw = raw_ns();
+    selected_cpu = clock_ns(CLOCK_THREAD_CPUTIME_ID);
+  }
+  // Reserve a row before extracting metadata. Sparse mode filters using only
+  // input arguments. The lock keeps the row budget valid across threads.
+  if (!begin_row()) return;
   if (!data || !api_name(data->function_name) ||
       (!begin && type != xpti::trace_function_with_args_end)) fail();
   int32_t result = -1;
@@ -281,16 +354,21 @@ void callback(uint16_t type, xpti::trace_event_data_t*,
   if (!begin) std::snprintf(status, sizeof(status), "%" PRId32, result);
   Metadata details;
   metadata(details, data, !begin && result == UR_RESULT_SUCCESS);
+  if (status_only) details.number("thread_ns", selected_cpu);
   char row[row_capacity];
   const int size = std::snprintf(row, sizeof(row),
       "{\"kind\":\"%s\",\"pid\":%ld,\"tid\":%ld,\"instance\":%" PRIu64
       ",\"function_id\":%u,\"name\":\"%s\",\"raw_ns\":%" PRIu64 ",\"status\":%s,\"metadata\":%s}\n",
       begin ? "begin" : "end", long(getpid()), syscall(SYS_gettid), instance,
-      data->function_id, data->function_name, raw_ns(), status, details.finish());
+      data->function_id, data->function_name, status_only ? selected_raw : raw_ns(), status, details.finish());
   finish_row(row, size);
 }
 
 __attribute__((constructor)) void load() noexcept {
+  if (const char* value = std::getenv("STRATA_UR_CALL_STATUS_ONLY")) {
+    if (std::strcmp(value, "0") && std::strcmp(value, "1")) fail();
+    status_only = value[0] == '1';
+  }
   // Optional smaller pre-exec budget supports bounded captures and adversarial
   // host controls. It cannot raise the qualified maximum or enable full-model
   // collection. Never reread process environment from a runtime callback.
