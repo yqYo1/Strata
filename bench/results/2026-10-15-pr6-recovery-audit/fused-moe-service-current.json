@@ -630724,7 +630724,7 @@
     }
   },
   "prefill_moe_status_capture_v6": {
-    "stage": "host-checked",
+    "stage": "control",
     "source_commit": "27d0ee45e48c3b605143f8f97a443c22620a3411",
     "sources": {
       "count": 823,
@@ -630881,6 +630881,40 @@
         "ownership_closed": true
       },
       "host": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      "control": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+          "--smoke"
+        ],
+        "env_sha256": "b4d3722718cbc40f809aac9cf849195e95c6e20e22057985f49e2271750ad0fa",
+        "stdout_sha256": "b34e6c6398e710b9bb02dba371a0c6eae5020f4074d5a040de36111128d99851",
+        "validation": {
+          "pid": 280556,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
         "complete": true,
         "host_probe_accepted": true,
         "ownership_closed": true,
