@@ -131,13 +131,10 @@ def samples(output, ordinal):
                 median_paired_time_ratio=statistics.median(p['retained']/p['cold'] for p in pairs))
 
 
-def measure(action, binary, native, speed, stage, root):
+def fixture_launch(action, binary, speed, root):
     boundary = action == 'boundary'
     smoke, timed = action == 'smoke' or boundary, action.isdecimal()
     directory = root / ('run-' + action)
-    for name in ('tmp', 'cache'):
-        (directory / name).mkdir(mode=0o700, parents=True)
-    owner = device.owner.Owner(directory/'owned', lambda: bank.stage.write(directory/'execution.json', owner.commands))
     seed, probe = speed['environment_template'], speed['native_validation_probe']
     env = {k: v.replace(seed['STRATA_MEASUREMENT_ROOT'], str(directory)) for k,v in seed.items()}
     for k in ('STRATA_TRACE', 'UR_ENABLE_LAYERS', 'LD_DEBUG', 'LD_PRELOAD', 'STRATA_UR_PROBE_EXPECTED_LOADER',
@@ -165,13 +162,28 @@ def measure(action, binary, native, speed, stage, root):
         args += ['--indexer-boundary', '1']
     else:
         args += ['--key-benchmark', action] if timed else ['--key-sequence', '1' if smoke else '2']
+    return dict(argv=[binary['path'], *args], environment=env,
+                budget=bank.device.SMALL if smoke else bank.device.LARGE)
+
+
+def measure(action, binary, native, speed, stage, root, *, launch_sha256=None):
+    boundary = action == 'boundary'
+    smoke, timed = action == 'smoke' or boundary, action.isdecimal()
+    directory = root / ('run-' + action)
+    launch = fixture_launch(action, binary, speed, root)
+    require(launch_sha256 is None or bank.signature(launch) == launch_sha256,
+            'pinned score fixture command, environment or budget changed')
+    for name in ('tmp', 'cache'):
+        (directory / name).mkdir(mode=0o700, parents=True)
+    owner = device.owner.Owner(directory/'owned', lambda: bank.stage.write(directory/'execution.json', owner.commands))
+    env = launch['environment']
+    probe = speed['native_validation_probe']
     cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
         ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
         if line.startswith('-- cursor: ')]
     stage['environment_sha256'] = bank.signature(env)
     try:
-        cmd, out, err = owner.run(action, [binary['path'], *args], env, bank.P,
-                                  **(bank.device.SMALL if smoke else bank.device.LARGE))
+        cmd, out, err = owner.run(action, launch['argv'], env, bank.P, **launch['budget'])
         require(device.owner.closed(cmd) and cmd['exit_code'] == 0, 'score-key fixture failed: ' + err.read_text()[-900:])
         output, log = out.read_text(), err.read_text()
         gpu, = re.findall(r'^device=(.+) driver=(\S+)$', output, re.M)
