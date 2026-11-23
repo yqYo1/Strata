@@ -631261,7 +631261,7 @@
     }
   },
   "prefill_shared_gate_native_v1": {
-    "stage": "prepared",
+    "stage": "configured",
     "source_commit": "234976a5277dbb9e1966e6c3465c1b49f88dc250",
     "native_source_commit": "234976a5277dbb9e1966e6c3465c1b49f88dc250",
     "projection": {
@@ -631425,6 +631425,12 @@
     "ownership_closed": true,
     "scope": "Shared Gate only, in the exact V2 split-prefill source. Compare original and reload to measure placement, reload and reuse to measure removal of expansions, and original and reuse for the total effect. Keep KV reuse, scalar gather, batched uploads, attention placement and decode fixed.",
     "retention": "Retain the measured V2 prefill and coherent decode references. Retire the closed earlier KV/gather build before preparing this comparison.",
+    "configured_files": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-native-v1/build/CMakeCache.txt": "985f5f4920bddd2d965dbc4c77af697ccf88eb1c91b0a41f9fb5c5c2f98928a2",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-native-v1/build/build.ninja": "5c712497f079650a0382f1b6244697e199c0bb56b9565bf53e658006c3c184b3",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-native-v1/build/compile_commands.json": "c891b55a0cad422627ad8e60c725a443a3e98edeff2bbd5b98ed5ccf01cfcc19",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-native-v1/build/CMakeFiles/rules.ninja": "dd18c74c421ec85aabd66d29350c3ebcfb88db591bf029fc5476e3bc1ccea8c0"
+    },
     "controller_sources": {
       "files": 386,
       "sha256": "f558ce729203bbd9c2ddd875c9782a7706b2c067191033e0fda19c25c23441e6"
