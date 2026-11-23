@@ -633186,5 +633186,759 @@
     },
     "environment_template_sha256": "9bb3e19f1e60ad1bf2c457c6844209ffc2e833449e857ccfbd1bb6d9d0e71ca8",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_shared_gate_speed_v1": {
+    "stage": "prepared",
+    "source_commit": "363ea1fb75243f81398ce9d89aa7fb234e1e2fc6",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-native-v1/build/strata",
+      "sha256": "cbe94115f87014f7b7919d853f73889964accd7ce34aac10f9ca9fbae8c41f7d",
+      "bytes": 26550872
+    },
+    "native_source_commit": "234976a5277dbb9e1966e6c3465c1b49f88dc250",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "observer_admission": {
+      "reference": "be8caf6138b633d23df45cf0ee9ca10480589bcb",
+      "reference_configuration": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "262144",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "20480",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "128",
+          "--spec",
+          "4",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "1500",
+          "--no-coupled-draft",
+          "--no-token-graph",
+          "--prefill-strategy",
+          "throughput",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {},
+        "family": "qwen",
+        "backend": "sycl"
+      },
+      "ordinary_control": {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-ordinary-bank-comparison-v1/1",
+        "environment_sha256": "5990eab9654303568db3c00994aafcc93671f5e549f6420fdaa10aae86d3999b"
+      },
+      "fast_configuration_diagnostic": {
+        "key": "coherent_prefill_model_v3",
+        "evidence_sha256": "096d6a778244c8e9606732a07c4fc707894cc1e97876ea8c12dab8e9470dd48e",
+        "original_controller_source": "bcc836fa28a2084fe61d95ad1948fdfadffc18ec",
+        "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+        "model_handoff_passed": true,
+        "model_speed_task_full_context_inherited": false,
+        "final15full_hashes_reused_only_after_current_identity_check": true
+      },
+      "build_sha256": "26b53c6776fba9b47eb8f26cacec5552dec140ac4a965a14fa0fef7b8ee6935b",
+      "expected_work": [
+        {
+          "request": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+          "reads": 117489,
+          "offered": 21,
+          "accepted": 16,
+          "generated": 24,
+          "GU": {
+            "gu": {
+              "fused_jobs": 7441,
+              "fused_rows": 52231136,
+              "separate_jobs": 16375
+            },
+            "down": {
+              "fused_jobs": 7441,
+              "fused_rows": 52231136,
+              "separate_jobs": 16375
+            },
+            "compact_jobs": 0,
+            "compact_rows": 0,
+            "jobs": 23816,
+            "windows": 48,
+            "dequants": 18878,
+            "maximum_physical_window_rows": 117488,
+            "requested_source_map_bytes": 225576960,
+            "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+          },
+          "bank_bytes": 38540800000,
+          "store": {
+            "pieces": 720,
+            "direct": 720,
+            "copy_bytes": 0,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          },
+          "kv": {
+            "reloaded_pages": 215040,
+            "reused_pages": 2365440
+          },
+          "gather": {
+            "jobs": 23816,
+            "eligible_jobs": 7441,
+            "eligible_rows": 52231136
+          }
+        },
+        {
+          "request": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+          "reads": 117489,
+          "offered": 21,
+          "accepted": 16,
+          "generated": 24,
+          "GU": {
+            "gu": {
+              "fused_jobs": 7434,
+              "fused_rows": 52222161,
+              "separate_jobs": 16406
+            },
+            "down": {
+              "fused_jobs": 7434,
+              "fused_rows": 52222161,
+              "separate_jobs": 16406
+            },
+            "compact_jobs": 0,
+            "compact_rows": 0,
+            "jobs": 23840,
+            "windows": 48,
+            "dequants": 18900,
+            "maximum_physical_window_rows": 117488,
+            "requested_source_map_bytes": 225576960,
+            "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+          },
+          "bank_bytes": 38589209600,
+          "store": {
+            "pieces": 720,
+            "direct": 720,
+            "copy_bytes": 0,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          },
+          "kv": {
+            "reloaded_pages": 215040,
+            "reused_pages": 2365440
+          },
+          "gather": {
+            "jobs": 23840,
+            "eligible_jobs": 7434,
+            "eligible_rows": 52222161
+          }
+        },
+        {
+          "request": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+          "reads": 117489,
+          "offered": 21,
+          "accepted": 16,
+          "generated": 24,
+          "GU": {
+            "gu": {
+              "fused_jobs": 7423,
+              "fused_rows": 52160499,
+              "separate_jobs": 16397
+            },
+            "down": {
+              "fused_jobs": 7423,
+              "fused_rows": 52160499,
+              "separate_jobs": 16397
+            },
+            "compact_jobs": 0,
+            "compact_rows": 0,
+            "jobs": 23820,
+            "windows": 48,
+            "dequants": 18860,
+            "maximum_physical_window_rows": 117488,
+            "requested_source_map_bytes": 225576960,
+            "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+          },
+          "bank_bytes": 38507443200,
+          "store": {
+            "pieces": 720,
+            "direct": 720,
+            "copy_bytes": 0,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          },
+          "kv": {
+            "reloaded_pages": 215040,
+            "reused_pages": 2365440
+          },
+          "gather": {
+            "jobs": 23820,
+            "eligible_jobs": 7423,
+            "eligible_rows": 52160499
+          }
+        },
+        {
+          "request": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+          "reads": 117489,
+          "offered": 21,
+          "accepted": 16,
+          "generated": 24,
+          "GU": {
+            "gu": {
+              "fused_jobs": 7433,
+              "fused_rows": 52191519,
+              "separate_jobs": 16408
+            },
+            "down": {
+              "fused_jobs": 7433,
+              "fused_rows": 52191519,
+              "separate_jobs": 16408
+            },
+            "compact_jobs": 0,
+            "compact_rows": 0,
+            "jobs": 23841,
+            "windows": 48,
+            "dequants": 18877,
+            "maximum_physical_window_rows": 117488,
+            "requested_source_map_bytes": 225576960,
+            "scope": "Existing actual returned-boolean aggregates after checked drains. Same>=2334 eligibility for GU/Down is proved in the pinned source;auto difference is compact1..96. Legacy GU min_rows label names wide only. No per-job trace,physical bytes or saturation claim."
+          },
+          "bank_bytes": 38540748800,
+          "store": {
+            "pieces": 720,
+            "direct": 720,
+            "copy_bytes": 0,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          },
+          "kv": {
+            "reloaded_pages": 215040,
+            "reused_pages": 2365440
+          },
+          "gather": {
+            "jobs": 23841,
+            "eligible_jobs": 7433,
+            "eligible_rows": 52191519
+          }
+        }
+      ],
+      "admission_sha256": "dab99b4fb33b326f25ba5f6ca43ca9d2994d51f7a5eb82e65bc674691658c294"
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "plans": [
+      {
+        "index": 0,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/0",
+        "generated": {
+          "config.json": "d64c2373157db05720c4c1515f3236178f1b92d3ae9d4af305542a64147fe7e3",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/0/config.json",
+          "--port",
+          "37203",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/0/bench"
+        ],
+        "environment_sha256": "efbb22f097eeb734c7bd94a234bccb798d141e706aa8cb8988d86dd582363c22",
+        "gate_mode": "original",
+        "trace_progress": false
+      },
+      {
+        "index": 1,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/1",
+        "generated": {
+          "config.json": "80ce9e600900d170a47e034e05a57d600d86403a1ce7d899171468129c5b8296",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/1/config.json",
+          "--port",
+          "35249",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/1/bench"
+        ],
+        "environment_sha256": "da64c10151f75a82a72d80d64aeebe4598593be71c4c719996bdeb1bef059761",
+        "gate_mode": "reload",
+        "trace_progress": false
+      },
+      {
+        "index": 2,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/2",
+        "generated": {
+          "config.json": "826a920eb2ac16c5d12f045e68e414e3a80f7711c89b961116d6f02822c2ca19",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/2/config.json",
+          "--port",
+          "48883",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/2/bench"
+        ],
+        "environment_sha256": "3e3dd7078eb6e0d01e977db027a56fba5187c1304258c8d7d700d8c4a7d2dc71",
+        "gate_mode": "reuse",
+        "trace_progress": false
+      },
+      {
+        "index": 3,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/3",
+        "generated": {
+          "config.json": "60dbf940f975b889534140d22803a3dbb25158f8bf21c6cba9d93b460a3197e0",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/3/config.json",
+          "--port",
+          "55105",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/3/bench"
+        ],
+        "environment_sha256": "2631b023cd916a5ea40e8abc1e94600867e75de68e6fdf3015794218d144b8c3",
+        "gate_mode": "reload",
+        "trace_progress": false
+      },
+      {
+        "index": 4,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/4",
+        "generated": {
+          "config.json": "2798ff407fdf21f865af31c8b5534399d5acbf0c243ac6a0a826e507c6193184",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/4/config.json",
+          "--port",
+          "45653",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/4/bench"
+        ],
+        "environment_sha256": "9a0af573f85c61417d94be3f106b8450669bccca6c86b797aee4e8952e53e70f",
+        "gate_mode": "reuse",
+        "trace_progress": false
+      },
+      {
+        "index": 5,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/5",
+        "generated": {
+          "config.json": "732a865c6516688b828c9e3143d79ac66ed41e22deb9588d52d9efdac83595a2",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/5/config.json",
+          "--port",
+          "57989",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/5/bench"
+        ],
+        "environment_sha256": "77fd734104ac46b5f2c9fdff5520ec7e9e8269455140fb8010af4ccb0fd5c859",
+        "gate_mode": "original",
+        "trace_progress": false
+      },
+      {
+        "index": 6,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/6",
+        "generated": {
+          "config.json": "a6154a25ffbc39876d7b165cce318db428bb10e3888345cbb1765f556d812ab1",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/6/config.json",
+          "--port",
+          "56177",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/6/bench"
+        ],
+        "environment_sha256": "3db683a5783d76b04ce467186b0cf4efb0283a7ae593adeac148a69a81993bd0",
+        "gate_mode": "reuse",
+        "trace_progress": false
+      },
+      {
+        "index": 7,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/7",
+        "generated": {
+          "config.json": "ab43316e342da9041b9fb9940b021733422adcf458e71ec811e60704d97c9beb",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/7/config.json",
+          "--port",
+          "59913",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/7/bench"
+        ],
+        "environment_sha256": "63430f45f97fec0d2668c1899dc0335499771c5d798bd257135c02e1b39c17ee",
+        "gate_mode": "original",
+        "trace_progress": false
+      },
+      {
+        "index": 8,
+        "read": 117489,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/8",
+        "generated": {
+          "config.json": "97233d94fcf460912da1ab3c98e37d1b48ad6dbfd3d04f2caf364fc8a1cfe0f9",
+          "plan.json": "5f062ca7390412fdc19dfddeaaa2963244a95d131edff57c3fc4e51d80bc6929"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/8/config.json",
+          "--port",
+          "52199",
+          "--prefill-exact-tokens",
+          "117489",
+          "--think",
+          "--runs",
+          "4",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-speed-v1/8/bench"
+        ],
+        "environment_sha256": "c619faacb94b99963fd870594160b4a3fd189870cce750ff4c6bcb54ec914004",
+        "gate_mode": "reload",
+        "trace_progress": false
+      }
+    ],
+    "processes": [],
+    "request_hashes": {
+      "117489": [
+        "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+        "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+        "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+        "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2"
+      ]
+    },
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "budgets": {
+      "wall": 2400,
+      "cpu": 28800,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 134217728
+    },
+    "whole_bytes": 1216348160,
+    "plan": {
+      "order": [
+        "original",
+        "reload",
+        "reuse",
+        "reload",
+        "reuse",
+        "original",
+        "reuse",
+        "original",
+        "reload"
+      ],
+      "read": 117489,
+      "requests": 4,
+      "trace_progress": false,
+      "scope": "Compare alternate-buffer placement, reuse at that address and their combined effect on the measured split path.",
+      "acceptance": "Match all four historical input bodies, actual work and Gate expansion counts. Use three balanced blocks. Two faster paired warm prompt times and a median ratio below one flag a gain; keep first-use and warmed TTFT separate. Adoption, longer decode and physical-context qualification remain open.",
+      "stop": "Stop on the first identity, actual-work, route, validation, ownership, budget or runtime failure. Keep every eligible sample without replacement, speed-based stopping or reclassifying an earlier outcome."
+    },
+    "previous_attempt": {
+      "key": "coherent_prefill_model_v3",
+      "evidence_sha256": "096d6a778244c8e9606732a07c4fc707894cc1e97876ea8c12dab8e9470dd48e",
+      "original_controller_source": "bcc836fa28a2084fe61d95ad1948fdfadffc18ec",
+      "original_native_source": "14508acbf1b70eb994fdf37f97fb6d0f5cff7d43",
+      "model_handoff_passed": true,
+      "model_speed_task_full_context_inherited": false,
+      "final15full_hashes_reused_only_after_current_identity_check": true
+    },
+    "source_inputs": {
+      "files": 819,
+      "sha256": "2a2f164759a81aed09ef4ed6c1888d4a29dcc83a0579ee8ebc6a093b49b9a2bd"
+    },
+    "environment_template_sha256": "63cef73a2b0bf3cdd19690a5d0cdd04a2d11353783b7f071128d9fc77dc9bb3c",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
