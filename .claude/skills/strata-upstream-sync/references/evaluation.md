@@ -11,6 +11,10 @@
 速い結果でもそのsource・派生コードは採用対象にしない。
 fork は現在の採用構成、過去の速かった構成、部分移植後の候補を比較の起点にする。
 過去の良い設定を忘れて最近の遅い診断設定を新しい基準にしない。
+fork 側の prefill と decode は、[drafter の優先順位](../../../../AGENTS.md#git-integration-and-tuning)に
+沿って DFlash2 を先に評価する。上流の起動機能を移植した際は、対応する単一カード SYCL Qwen
+テキスト起動で Auto が DFlash2 を選び、明示した MTP と Off も選べることを確認する。
+計測では実効 drafter、pack、幅、confidence と状態書き戻しの設定を記録する。
 
 上流の箱出し設定だけで「上流は遅い」と判断しない。
 この環境で chunk、cache/VRAM 配分、worker/task、backend、speculative decoding 等を
@@ -37,7 +41,7 @@ prefill と decode の最良構成が別ならその違いも記録し、両者�
 ユーザー指定の長いdecode評価には、このforkの拡張 `./bench.sh --long --long-generation --think --runs 3`
 も両側へ同じclientで使う。Nikoの無変更標準結果と、変更したbenchmarkの追加項目を識別する。
 追加項目は実入力32768以上、thinking込みの実生成1024以上、fresh prefixを確認する。
-regular-codeとvaried-proseはMTPが強い/弱い候補であり、名前だけで分類しない。
+regular-code と varied-prose の受理率は、実際に使った drafter ごとに判定する。
 **thinkingは有効にする**。1Kは出力の例で、上限ではない。v1は1152全部がthinkingとなり、
 v2のthinkingOFF案はユーザー意図に合わず未実行で撤回した。v3は上限8192でscreeningし、計測harnessのCPU上限で日本語要求が中断した。
 v4は上限16384、thinkingON/xhigh、別の思考上限なし、context262144を使う。
@@ -51,8 +55,8 @@ thinking後の本文も512文字以上出たことを確認する（文字数を
 全個別値・request/output hash・終了理由・実生成数・draft countsを残し、比率は合計countsから
 求める。欠けたusageやstream piece数、早期EOSの短文を1K tokenと扱わない。
 1Kは24-token decodeより長い観測窓を得る初期条件であり、安定性を保証する長さではない。
-ばらつきが残れば独立process反復や生成長を増やし、MTP有効/無効の比較なしに速度向上を
-MTPの効果と断定しない。[実装と計測手順](../../../../docs/BENCHMARKS.md)を参照する。
+ばらつきが残れば独立 process 反復や生成長を増やす。drafter 自体の速度効果を測る際は、
+同じ入力に対して無効時の対照も取る。[実装と計測手順](../../../../docs/BENCHMARKS.md)を参照する。
 独自 GEN、kernel/帯域測定、デバッグの所要時間を、この速度比較へ代入しない。
 独自 GEN は品質・同期・lifetime 等の診断に使い、過去の速度記録は元の意味で保持する。
 
@@ -69,7 +73,7 @@ MTPの効果と断定しない。[実装と計測手順](../../../../docs/BENCHM
 生成履歴が異なる場合、処理 workload の違いも限界として記録する。
 
 source SHA/diff、binary/hash、compiler/flags、driver/SYCL/LevelZero、hardware、モデル/
-入力の識別、全argv/実効env、KV/context/chunk/cache、MTP/draft、CPU配置、reuse、
+入力の識別、全argv/実効env、KV/context/chunk/cache、drafter、CPU配置、reuse、
 実生成数、各phaseの時計位置、ログ/validation負荷を記録する。
 過去の速い値があれば session の user-facing 報告から該当の元測定へ遡り、上記を照合する。
 測定方式が変わっただけで古い値を棄却せず、比較可能な範囲と追加検証を示す。

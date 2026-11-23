@@ -10685,6 +10685,12 @@ at width four. Both hold every prefill residual row in VRAM, check the
 1124-slot loan refill, reproduce the short output before and after the middle
 request, and exit normally without a fresh Xe fault.
 
+Use width four and synchronous state writeback for new DFlash2 performance
+baselines on this B570. Set `STRATA_COMMIT_SYNC=1` in the native child's
+environment before launch. The current server Auto selection chooses the drafter.
+Qualify its ordinary launch with the same commit ordering after the frozen
+DFlash2 runs, starting with the launch configuration and a bounded model check.
+
 The traces use synthetic prefixes. The first clean synchronized `bench.sh`
 suite `dflash2_v2_generation_sync_v1` then completes all six agent turns.
 Its fifth request matches the original failure's body hash and emits 114 tokens

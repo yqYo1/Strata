@@ -39782,5 +39782,148 @@
     "schedulable_now": false,
     "finding": "DFlash2 draft clocks are host elapsed intervals including queue completion. Expert jobs are work counts; physical PCIe traffic remains unknown.",
     "consumer": "Track verifier width and emitted count against the same-binary clean reference before interpreting a clock split. Bound observer overhead."
+  },
+  "cross-device-completion-wait-20261124": {
+    "classification": "knowledge_collection",
+    "source_commit": "f25c08ad0f05a7ae55ab0ada75f8649d78a3e9d9",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "worker": "Orca gpt-6-luna medium",
+    "task": "task_7b2c8404a733",
+    "dispatch": "ctx_37bd5645b7ee",
+    "protected_inputs_sha256": "fa7d5e87c4a071d6143cab72c254367df6e6df18f938c5147b49ab4ee331f11b",
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "owners_closed": true,
+    "report_sha256": "d3815039c186796bec9d7fcd06f473e2f12768407f50d5f6f6ca564a0809f4b0",
+    "report_bytes": 9629,
+    "reviewer": "Native Codex gpt-6-luna max",
+    "review_passed": true,
+    "review_sha256": "32805d12da85a5de4b459a89a1c6f5db1227a1bf9985b6cd1eacf526a1d0adc1",
+    "prior_review_exit_signal": 25,
+    "stage": "native_reviewed",
+    "schedulable_now": false,
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cross-device-completion-wait-20261124/report.md",
+    "finding": "Compares accelerator and storage completion policies, including active polling, a finite spin-to-park window, and runtime-controlled waits.",
+    "consumer": "Retrieve only if measured wait attribution identifies significant caller CPU time or tail latency and a synchronization-policy comparison is useful.",
+    "next_scope": "Compare the same completion event with a direct wait, query, and bounded query then wait. Measure throughput, tail latency, waiter CPU time, numerical outcomes and errors.",
+    "retirement": {
+      "complete": true,
+      "artifacts": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-store-and-wait-pinned-20261124",
+          "files": 14,
+          "bytes": 4110355,
+          "inventory_sha256": "a0acd629d36a33fa4970e85291c2ce29880d2794bb43a63152509d365661fafd"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-direct-store-lifetime-20261124",
+          "files": 3,
+          "bytes": 22848,
+          "inventory_sha256": "795066a63f58f8e091d39d41007ef26961a285217038573144c85117e7e93cdf"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cross-device-completion-wait-20261124-control",
+          "files": 8,
+          "bytes": 11691,
+          "inventory_sha256": "4e751079db74af4b39c2e4121d277a819b64208c5001a02caf6525b3580148de"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cross-device-completion-wait-20261124-native-review",
+          "files": 0,
+          "bytes": 0,
+          "inventory_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cross-device-completion-wait-20261124-native-review-control",
+          "files": 5,
+          "bytes": 4041,
+          "inventory_sha256": "581f3edf7ce4f0c7eefa236c0f1c8bec21861d50d529a5fa1f089167c975f390"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cross-device-completion-wait-20261124-native-review-v2",
+          "files": 1,
+          "bytes": 2083,
+          "inventory_sha256": "ec2aef21c351c9485692feb7416fd1e541f37cbc83aa46ec836c5bd8a5c4655b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cross-device-completion-wait-20261124-native-review-v2-control",
+          "files": 3,
+          "bytes": 4037,
+          "inventory_sha256": "6ed1d2155ac104931bbf12c1ff5a16aaa554d9712fcbfa1ab3371cb1d0cda87c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-direct-store-lifetime-20261124-control",
+          "files": 8,
+          "bytes": 12057,
+          "inventory_sha256": "7a79b23ab34e81226a75a788f643e51c55cc7fbc1accf560f4dc820f21d4e5e1"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-store-lifetime-20261124-native-review",
+          "files": 0,
+          "bytes": 0,
+          "inventory_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-store-lifetime-20261124-native-review-control",
+          "files": 5,
+          "bytes": 4049,
+          "inventory_sha256": "f0281cc77adcfccd59c7afcae1a0602bc5196d1cbdb202c41b7bb53f746a83b4"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-store-lifetime-20261124-native-review-v2",
+          "files": 1,
+          "bytes": 2144,
+          "inventory_sha256": "3b30d4012398a115034a139574ae3cdbb11003d287a37cfc427728918f863d59"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-store-lifetime-20261124-native-review-v2-control",
+          "files": 3,
+          "bytes": 4045,
+          "inventory_sha256": "446862f4cdf95d253b45196abc9b5b61ed1c596144df87d88662240ffb6c0a58"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cross-device-completion-wait-20261124/worker-filesystem-proof.json",
+          "bytes": 6479,
+          "sha256": "56b4905ac0f07ed23e028447d10be0d0f63e4b1d2ea74eb6582ff0b656df622c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cross-device-completion-wait-20261124/worker-orca-status.json",
+          "bytes": 7900,
+          "sha256": "22325d71f973714b6c5026cf965c2410ad30d919eef70c02b54b37d5fd5c06c4"
+        }
+      ],
+      "reason": "Both Orca tasks and native reviews are closed. Keep the usable knowledge report and compact review decisions. The duplicate source view, transactions, raw rejected report and reviewer captures have no remaining reader."
+    }
+  },
+  "dflash2-direct-store-lifetime-20261124": {
+    "classification": "decision_support",
+    "source_commit": "f25c08ad0f05a7ae55ab0ada75f8649d78a3e9d9",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "worker": "Orca gpt-6-luna medium",
+    "task": "task_af89f6c0cda9",
+    "dispatch": "ctx_4bdf8b0a2557",
+    "protected_inputs_sha256": "fe872bb7752f685909a0497317ac094863850dea870076e447c58889585dea24",
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "owners_closed": true,
+    "report_sha256": "cc71d524a1e0a24b6d5e6d14e501d6bcf48ad35f1d592d2ab7e4a435066fe446",
+    "report_bytes": 7941,
+    "reviewer": "Native Codex gpt-6-luna max",
+    "review_passed": false,
+    "review_sha256": "48c8938cd5e74dd3ae361af15f78bd6fe4e8d54e729043bab30ecaa049ac9e52",
+    "prior_review_exit_signal": 25,
+    "stage": "native_review_rejected",
+    "schedulable_now": false,
+    "finding": "Native review rejects the proposed stale residual observation. The window runs the attention half, drains the MoE output, then complete_piece passes the packed row to DFlash2. The earlier owner review already identifies this boundary.",
+    "correction": "The original manifest omits the native16 direct output writer and includes a file reference without its source hash. Main locates and authenticates the actual compiled writer separately.",
+    "verified_writer": {
+      "path": "src/prefill/sycl/native16.cpp",
+      "sha256": "99a2e73c2f1cef6a2cf5e400e016b0635546cffaeea011b6b2be498af6f2124a",
+      "contract": "With the attention bank reader disabled, the writer uses the same update and BF16 rounding as the scratch path and validates the disjoint device spans. The window drains before its MoE consumer."
+    },
+    "consumer": "A future same-binary direct-store test compares the actual DFlash2 tap data, state handoff and emitted work before measuring request speed.",
+    "retirement": {
+      "shared_record": "cross-device-completion-wait-20261124"
+    }
   }
 }
