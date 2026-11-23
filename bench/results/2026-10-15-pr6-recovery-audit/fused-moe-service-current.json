@@ -628820,5 +628820,215 @@
         "env_sha256": "9d0fa5747fde1ec49319be1db1d979ab8b9e137fc48f3e8617f3101e0f9b7691"
       }
     }
+  },
+  "prefill_moe_status_capture_v5": {
+    "stage": "host-checked",
+    "source_commit": "04c2873b6a802e25fed64605349c7a7f4eab940e",
+    "sources": {
+      "count": 823,
+      "sha256": "da4b1029788b40306901884ebfdb0fe58e02e5a8bb1804c2f9e113d22b9f2165"
+    },
+    "plan": {
+      "order": [
+        "prepare",
+        "build",
+        "host",
+        "control",
+        "observed"
+      ],
+      "fixture_arg": "--smoke",
+      "scope": "Use unchanged native V2 device fixture and Intel 2026.2 XPTI. Compare the default observer on CPU, exercise sparse filtering on synthetic CPU callbacks, then run the same small device workload with and without sparse host observation.",
+      "acceptance": "Exact CPU filter and application output, actual paired 4-byte copy and wait/launch coverage on the native device route, parameter validation, owned exit zero and no fresh driver fault. No GPU timing, model, or diagnosis of the original PTI gap.",
+      "sdk_selection": "Use the pinned SDK launch-with-arguments API. Original build refusals at 1dd8688fd, 6f073886e and c5d825faa.",
+      "reuse": "The reuse entry reopens the device pair in a new root using the verified V4 host artifacts. Keep the original device-controller refusal at 21d79dc9a."
+    },
+    "budgets": {
+      "wall": 100,
+      "cpu": 100,
+      "rss_cap": 4294967296,
+      "text_cap": 8388608,
+      "file_cap": 16777216,
+      "total_cap": 67108864
+    },
+    "device": {
+      "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+      "native_build_sha256": "a4560c2e2ba537f4c0944e4ffcde2cd9d66eeea11081932c5fe0bb7574f705c5",
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/strata",
+        "sha256": "1b56f94c7434cc332ada4092bf6bb69b677bde1df10c049867e7c0884462c5d2",
+        "bytes": 26550328
+      },
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+        "sha256": "dd69762b225b612ba88ae1cf3542b0e9e0dcefcb6ab4f4b9db1c165c270b1326",
+        "bytes": 542560
+      },
+      "native_validation_probe": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+        }
+      },
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "timeline_commit": "4bc26aaa9cbdd8d4084336826361aae7bb886449",
+      "environment_sha256": "4ff5d596a384207ba7dad0fc9e91389c75e2ca29d1ca4cbd0b36212deb5089f8"
+    },
+    "commands": {
+      "libstrata_ur_status.so": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++17",
+        "-O2",
+        "-pthread",
+        "-DSTRATA_UR_WITH_ARGS_ONLY",
+        "-I/opt/intel/oneapi/compiler/2026.2/include",
+        "-fPIC",
+        "-shared",
+        "-DXPTI_CALLBACK_API_EXPORTS",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/libstrata_ur_status.so.d",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libxptifw.so.1.0.1",
+        "-Wl,-rpath,/opt/intel/oneapi/compiler/2026.2/lib",
+        "-Wl,--no-undefined",
+        "-Wl,--dependency-file=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/libstrata_ur_status.so.link.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/libstrata_ur_status.so"
+      ],
+      "ur_call_guard_test": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++17",
+        "-O2",
+        "-pthread",
+        "-DSTRATA_UR_WITH_ARGS_ONLY",
+        "-I/opt/intel/oneapi/compiler/2026.2/include",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/ur_call_guard_test.d",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_guard_test.cpp",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libxptifw.so.1.0.1",
+        "-Wl,-rpath,/opt/intel/oneapi/compiler/2026.2/lib",
+        "-Wl,--no-undefined",
+        "-Wl,--dependency-file=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/ur_call_guard_test.link.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/ur_call_guard_test"
+      ]
+    },
+    "compiler_files": {
+      "count": 297,
+      "sha256": "78f7a72b8dac6aec7d9dc15aab35cfa8c20bd6d20695b75e5492d2c60ebcbf95"
+    },
+    "dispatcher": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/lib/libxptifw.so.1.0.1",
+      "bytes": 118464,
+      "sha256": "e86145b0ca073c019b791d59ad877d49df7165c9190b1ec300f0b073914e9ddd"
+    },
+    "compiler_environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/tmp"
+    },
+    "outcomes": {
+      "build": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      "host-default": {
+        "simulated_calls": 26,
+        "rejected_calls": 2,
+        "successful_calls": 24,
+        "recycled_queues": 2,
+        "recycled_allocations": 2,
+        "graph_children": 2,
+        "successful_replays": 2,
+        "failed_output_and_list_not_read": true,
+        "device_work_qualified": false,
+        "limits": "Fabricated CPU XPTI payloads only;no UR/LevelZero device calls or actual lifetime/graph execution qualification.",
+        "ownership_closed": true
+      },
+      "host-sparse": {
+        "simulated_calls": 8,
+        "selected_calls": 4,
+        "unrelated_queue_ignored": true,
+        "ownership_closed": true
+      },
+      "host": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "artifacts": {
+      "libstrata_ur_status.so": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/libstrata_ur_status.so",
+        "bytes": 39112,
+        "sha256": "3a5246094837f0354ad95115e05844bb39dafdcd633d5c7ad34ced2db3053ed6"
+      },
+      "ur_call_guard_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/ur_call_guard_test",
+        "bytes": 23000,
+        "sha256": "8b8459139003768f46be912c1ef41cff2e740f8241c7a272d05f3556c89bedfd"
+      }
+    },
+    "device_cases": {
+      "control": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+          "--smoke"
+        ],
+        "env_sha256": "05a125b51fddb9a05dd47d112f1336282a198d4f14a41d8b450093d206a7c1d1"
+      },
+      "observed": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+          "--smoke"
+        ],
+        "env_sha256": "04a817786548b09064a3e419992823a2128422e3aeabd495d60b54e8146443df"
+      }
+    },
+    "retained_artifact_build": {
+      "evidence": "21d79dc9a",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4"
+    }
   }
 }
