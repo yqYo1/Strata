@@ -13,10 +13,12 @@ bank, basis, require = gate.bank, gate.basis, gate.require
 generation, build = gate.generation, gate.build
 comparison = basis.comparison
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_kv_stage_speed_v2'
+KEY = 'dflash2_prefill_kv_stage_speed_v3'
 ROOT = bank.B / KEY.replace('_', '-')
 MODEL_PROOF = '91186794c8624121f245067433c387785dffd757'
-PREVIOUS_KEY = 'dflash2_prefill_kv_stage_speed_v1'
+FINGERPRINT_REFUSAL = '16755c8184acb52fc6b7aba7a8d86113628de70d'
+PROFILE_PATH_STOP = 'fe958812755d6dce0faded3dd41073edf7371196'
+PROFILE_SOURCE = 'data/expert-profile.bin'
 READ, RUNS, HEADS = 65537, 3, 0
 ORDER = ('reload', 'retain', 'retain', 'reload', 'reload', 'retain')
 WORKLOAD_ID = 'native_gdn_20261018'
@@ -25,12 +27,19 @@ SELECTOR = generation.v2.state.KV
 
 
 def baseline():
-    previous = basis.validation.committed(bank.RESULT, (PREVIOUS_KEY,))
+    previous = bank.previous.historic(FINGERPRINT_REFUSAL, 'dflash2_prefill_kv_stage_speed_v1')
     refusal = previous['prelaunch_refusal']
     require(previous['stage'] == 'failed' and previous['ownership_closed'] and not previous['active']
             and not previous['processes'] and not refusal['native_execution_attempted']
             and refusal['plan_environment_sha256'] != refusal['runner_environment_sha256'],
             'recover the original prelaunch environment fingerprint refusal')
+    interrupted = bank.previous.historic(PROFILE_PATH_STOP, 'dflash2_prefill_kv_stage_speed_v2')
+    stopped = interrupted['profile_path_stop']
+    profile = bank.P / PROFILE_SOURCE
+    require(interrupted['stage'] == 'failed' and not interrupted['active']
+            and stopped['scope_empty'] and stopped['direct_child_reaped'] and stopped['fresh_faults'] == []
+            and stopped['actual'] != stopped['expected'] and bank.sha(profile) == stopped['sha256'],
+            'recover the interrupted comparison and verify the identical local ranking profile')
     base = generation.sync_baseline()
     native = bank.previous.read(build.DFLASH2_KV_ROOT / 'record.json')
     build.context('dflash2-kv-stage').check(native)
@@ -50,7 +59,19 @@ def baseline():
             'require the closed same-executable 32K and live prefix comparison')
     return dict(base, binary=native['binaries']['strata'], native_source_commit=native['native_source_commit'],
                 native_build_sha256=native_hash, stage_model_evidence=MODEL_PROOF,
-                previous_prelaunch_refusal=bank.signature(refusal))
+                preceding_attempts=[FINGERPRINT_REFUSAL, PROFILE_PATH_STOP],
+                ranking_profile=dict(path=str(profile), sha256=stopped['sha256'], old_path=stopped['actual']))
+
+
+def configuration(row, plan):
+    cfg = generation.configuration(row, plan)
+    args = cfg['args']
+    profile = row['ranking_profile']
+    require(args.count('--expert-profile') == 1, 'one explicit profile is required')
+    index = args.index('--expert-profile') + 1
+    require(args[index] == profile['old_path'], 'reference profile path changed')
+    args[index] = profile['path']
+    return cfg
 
 
 def environment(row, plan):
@@ -144,6 +165,7 @@ def experiment():
     ctx = generation.experiment(synchronous_commit=True)
     ctx.KEY, ctx.ROOT, ctx.THIS, ctx.ORDER = KEY, ROOT, THIS, ORDER
     ctx.baseline, ctx.environment, ctx.command = baseline, environment, command
+    ctx.configuration = configuration
     ctx.protocol = dict(order=list(ORDER), read=READ, requests_per_process=RUNS,
         unit='Change only aligned KV retention on the untapped QSA layers.',
         acceptance='Require matched exact inputs and route, ordinary all-GPU residuals, 384 staged slots, '
@@ -155,7 +177,7 @@ def experiment():
     old_pins, old_save, old_current = ctx.pins, ctx.save, ctx.current
 
     def pins(revision):
-        paths = (THIS, gate.THIS, build.__file__)
+        paths = (THIS, gate.THIS, build.__file__, PROFILE_SOURCE)
         relative = [str(Path(path).relative_to(bank.P)) if Path(path).is_absolute() else path for path in paths]
         sources = old_pins(revision)
         for path in relative:

@@ -10770,7 +10770,13 @@ reload/retain process order and keep individual samples and client TTFT.
 The first timing plan closes with a prelaunch refusal because its generator
 and exact-prefill runner use different environment fingerprint encodings.
 No native process starts. The second plan selects the generator's fingerprint
-function explicitly and freezes new inputs under the same comparison criteria.
+function explicitly. Its first request admits all 65536 residual rows in VRAM
+and the 384-slot staged expert bank. Main closes it after identifying a
+cross-worktree path mismatch in the ranking profile check. The two files
+have identical hashes. The owned process exits and the session empties with
+no fresh Xe fault. The third plan uses the verified profile from the benchmark
+worktree in every process and pins that file in Git. The comparison criteria
+stay fixed.
 Use 117489 as a separate geometry when its actual residual placement is
 admitted in both arms. Require an observed transfer reduction and reproducible
 timing benefit. Compare the actual phase timings and physical traffic before
