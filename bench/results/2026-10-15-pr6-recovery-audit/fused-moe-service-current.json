@@ -625816,7 +625816,7 @@
     }
   },
   "prefill_kv_upload_unitrace_fixture_v2": {
-    "stage": "prepared",
+    "stage": "running",
     "inputs": {
       "source_commit": "1ee76bde0f8c2c54bb9bcabbf1570c6aae56f5eb",
       "sources_sha256": "bbdd1c8f948ab5500153057abfdb10f22b3778e80be10902c444db2547228e26",
@@ -625911,7 +625911,67 @@
       "total_cap": 67108864
     },
     "session": "StrataV2Bankad910e5cf153e859d3bc221d",
-    "outcomes": {},
+    "outcomes": {
+      "control": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "fixtures": [
+          [
+            0,
+            0,
+            5,
+            27,
+            27,
+            110592
+          ],
+          [
+            1,
+            0,
+            5,
+            27,
+            5,
+            110592
+          ],
+          [
+            1,
+            1,
+            1,
+            16,
+            1,
+            65536
+          ]
+        ],
+        "validation": {
+          "pid": 4079091,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "count": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
     "active": false,
     "passed": false,
     "complete": false,
