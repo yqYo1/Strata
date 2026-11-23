@@ -1693,9 +1693,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   use the retained V2 reference for the next long-prefill trial. Full-context,
   RESTORE and sustained decode gates remain open for the combined arm.
   Keep the retained V2 prefill and coherent decode builds for the Gate clock
-  bracket and later independent phase validation. Retire the three closed
-  Gate and QSA outputs below after checking the named paths against the
-  inventory digests. The Gate projection at `234976a52` recovered all 1171
+  bracket and later independent phase validation. Removed and verified the
+  three closed Gate and QSA outputs below after matching their inventories
+  to pushed `2fcf092b3`. The Gate projection at `234976a52` recovered all 1171
   source files, matching configuration, actual compiler/link inputs and all
   12 target hashes. The ordered QSA plans at `f88150349` and `ad4a6fd8e`
   recovered both generated/fixture sources and the exact commands, 698
@@ -1709,8 +1709,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | `prefill-shared-gate-speed-v1/{0..8,host}` | 634 | 95241320 | `21ed1edf2eececa0c7a37ff4470d6a20274ea1832cf4d241452a0d1c4437a240` |
   | `prefill-qsa-key-page-v1/{cache,execution.json,measure-{0,1,2,boundary,smoke},owned,qsa_{bf16_prefix_layout_bench,key_page_component}.cpp.o{,.d},src,sycl_qsa_bf16_prefix_ordered_exp_bench,tests,tmp}` | 31 | 2393910 | `c33a880ac7e77ffa66de013d803588a23bd68e4d711c90867101533b66335e84` |
 
-  Preserve the closed source/build receipts and Gate timing runtime
-  inventory for provenance.
+  The closed source/build receipts and Gate timing runtime inventory are
+  retained for provenance. Both reference executables passed their hashes
+  before retirement.
   The long comparison reads the committed V2 admission receipt. Both short-run
   captures under the shared state directory were removed and verified absent.
   The V1 failure and V2 exact comparisons remain in Git at `df349d38d` and
