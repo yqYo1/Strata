@@ -10,16 +10,19 @@ import prefill_split_upload_build as upload
 from official_model_sources import merge_delta
 
 bank, builder, require = upload.bank, upload.builder, upload.require
-KEY = 'prefill_kv_upload_native_v1'
+KEY = 'prefill_kv_upload_native_v2'
 ROOT = bank.B / KEY.replace('_', '-')
+PREVIOUS_ROOT = bank.B / 'prefill-kv-upload-native-v1'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 PARENT_EVIDENCE = '83ae2717d51f5ab54f50787cbcae5acf1a945cff'
 UPLOAD_EVIDENCE = '982211f5c91b4251ff89b8ad93f1f369a46fbad0'
 UPLOAD_BUILD = 'e4dfad786347e5adf0f913d69df50454e3decbaa'
 SCOPE = 'd92f63fa7e92e31324d27062f8ac5f1702a71bab'
+REQUEST_SCOPE = 'b8aa2d3cba417f2c1d2d92381dad1aad4004b341'
 OVERLAYS = ((upload.UPLOAD, (upload.UNIT, upload.WINDOW, upload.LAYER)),
             (upload.HELPER, (upload.WINDOW, upload.HEADER, upload.FIXTURE)),
-            (SCOPE, (upload.WINDOW,)))
+            (SCOPE, (upload.WINDOW,)),
+            (REQUEST_SCOPE, (upload.UNIT, upload.LAYER, upload.WINDOW)))
 
 
 def apply_upload(source):
@@ -79,6 +82,7 @@ def prepare(ctx):
     require(not ROOT.exists() and KEY not in bank.basis.validation.committed(bank.RESULT),
             'inspect the existing KV/upload generation first')
     require(not upload.ROOT.exists(), 'verify retirement of the previous upload build')
+    require(not PREVIOUS_ROOT.exists(), 'verify retirement of the one-layer upload generation')
     native, foundation, source, recipe, proof = project()
     modules = (gather, gather.fixture, gather.kv, upload, upload.boundary, upload.boundary.stock)
     controls = [THIS, *(str(Path(m.__file__).resolve().relative_to(bank.P)) for m in modules)]

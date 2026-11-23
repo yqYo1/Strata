@@ -616220,6 +616220,66 @@
     }
   },
   "prefill_kv_upload_admission_v1": {
+    "failure_reconciliation": {
+      "original_failure": "aa461dcb44ba0170324e0416e867e0b535e05765",
+      "controller_error": "RuntimeError('actual batched upload or retirement differs')",
+      "physical_owners_verified_absent": true,
+      "checked_owners": 4,
+      "normal_teardown_receipt": false,
+      "trace_sha256": "340dbdf100270bbe37ea740f0a439c118a3e91ca1616d688c2dbb76800306117",
+      "admitted_slots": 128,
+      "packed_slots_by_layer_count": {
+        "128": 1,
+        "146": 9,
+        "156": 14,
+        "172": 15,
+        "182": 1,
+        "198": 3,
+        "225": 5
+      },
+      "batched_layers": [
+        47
+      ],
+      "executed_layer_count": 48,
+      "batched_copies": 258,
+      "total_expert_uploads": 18878,
+      "requested_expert_bytes": 38540800000,
+      "generated_tokens": 24,
+      "decoded_loan_slots_restored": 1124,
+      "reason": "The request funded a 128-slot allocation. Layer packing recalculated slots from each weight stride. The V1 predicate used that per-layer result. Request-level selection at b8aa2d3cb keeps the original workspace restriction across all layers.",
+      "followup": "Rebuild coherently and repeat both 117489-token admissions with the same 48-window requirement."
+    },
+    "capture_retirement": {
+      "stage": "recorded_before_deletion",
+      "inventory": {
+        "native_generation": {
+          "paths": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1"
+          ],
+          "files": 1370,
+          "bytes": 196989613,
+          "inventory_sha256": "b1d64aa4b8982dbf2738dde35f7060b4634b7b804d7d1efc94ce331f41e98ce2"
+        },
+        "admission_capture": {
+          "paths": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-admission-v1"
+          ],
+          "files": 142,
+          "bytes": 21880707,
+          "inventory_sha256": "31f96d0a283ede132abb15e16539169424bf316c54b8aab1af72dbf6ede4024a"
+        }
+      },
+      "source_recovery": {
+        "native_source": "3abb9ff3a5066006db449294c4e5d67eab91e55a",
+        "engine_sha256": "a4b623ddb1ec012ed211eb4fc97a4f336be2101aa9a668675818b911b49d1be8",
+        "source_files": 1171,
+        "actual_compile_inputs": 1474,
+        "recipe_sha256": "2c46ca15aca51aebe777ce4bc45cac4fb419496ebc2c2d2a2be808960a908048",
+        "source_files_sha256": "0f69b11dc9041daf5e92e0df9c64271ff4a50d9a4bfde09e9aa91eb94171c8d0",
+        "exact_source_and_recipe_recovered": true
+      },
+      "reason": "The model admission failed. Preserve original samples and the exact rejected dispatch in Git. Repeat both modes on a coherent V2 build while retaining the two independent phase references."
+    },
     "stage": "failed",
     "source_commit": "bf1d09c6f7fbb3e37009481b2bff1a20fc5f4c98",
     "binary": {

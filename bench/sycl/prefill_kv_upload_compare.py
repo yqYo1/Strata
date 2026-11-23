@@ -13,7 +13,7 @@ bank, basis, require = previous.bank, previous.basis, previous.require
 READ = previous.READ
 MODES = ('demand', 'batched')
 BLOCKS = (MODES, MODES[::-1], MODES)
-KEYS = {'admit': 'prefill_kv_upload_admission_v1', 'time': 'prefill_kv_upload_speed_v1'}
+KEYS = {'admit': 'prefill_kv_upload_admission_v2', 'time': 'prefill_kv_upload_speed_v2'}
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 
 

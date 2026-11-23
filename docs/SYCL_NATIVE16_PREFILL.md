@@ -1263,13 +1263,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | `src/prefill/moe_window.inc` | `131e66d4dc3580e7e851bf11bc5948d5c9bda35852f33e42953b0bad40b3edc3` |
   | `src/prefill/layer_major.inc` | `69ebdcfac4e799dddb27cd208dcde998b3d76fa8e14cac66ae57851625701277` |
 
-  The first KV/gather comparison uses the committed upload delta, its
-  device-tested helper and the admission restriction at `d92f63fa7`.
-  Batching selects only the 128-slot split with the original workspace.
-  Keep KV reuse, scalar gather and attention copies fixed for two traced
-  admissions and three counterbalanced timing pairs. Compare batch issue
-  before measuring its interaction with direct output. The two controllers
-  are `bench/sycl/prefill_kv_upload_build.py` and
+  The first KV/gather comparison failed at `aa461dcb4`. On the first
+  batched request, the 128-slot allocation repacked into 146–225 slots
+  on 47 of 48 layers. The per-layer equality at `d92f63fa7` selected
+  batching only on layer 47. The request reported 258 batched copies out
+  of 18,878 total, completed generation and restored its decode loan.
+  Admission stopped on the route mismatch. The original failure and the
+  separate owner reconciliation remain in `prefill_kv_upload_admission_v1`.
+  `b8aa2d3cb` selects from the admitted request's slot budget once, then
+  checks each layer's packed extent and queue before use. The V2 build
+  applies that fix to the same upload unit and device-tested helper.
+  Run both traced modes on the new image. Keep KV reuse, scalar gather and
+  attention copies fixed for three counterbalanced timing pairs after both
+  modes match the intended work. Compare batch issue before its interaction
+  with direct output. Use `bench/sycl/prefill_kv_upload_build.py` and
   `bench/sycl/prefill_kv_upload_compare.py`. Complete ordinary and near-full
   fallback, state handoff and sustained decode before adoption.
   On the earlier upload build, `prefill_split_upload_compare.py profile`
