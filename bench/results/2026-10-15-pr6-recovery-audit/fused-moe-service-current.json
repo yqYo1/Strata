@@ -643044,5 +643044,233 @@
     "ownership_closed": true,
     "passed": false,
     "complete": false
+  },
+  "prefill_kv_upload_restore_v2": {
+    "plan": {
+      "source_commit": "90a1b1d65d189d439117197ecbc22ca54057fcb3",
+      "source_inputs": {
+        "files": 819,
+        "sha256": "ef88b56b5e63bfddbfadf0007c02b33701df73e03e94c297b1984be11807eff5"
+      },
+      "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/strata",
+        "sha256": "1b56f94c7434cc332ada4092bf6bb69b677bde1df10c049867e7c0884462c5d2",
+        "bytes": 26550328
+      },
+      "serial_order": [
+        "host",
+        "split-demand",
+        "split-batched"
+      ],
+      "cases": {
+        "split-demand": {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-restore-v2/split-demand",
+          "near": true,
+          "direct": false,
+          "mode": "demand",
+          "command": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/strata",
+            "--serve",
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-context",
+            "262144",
+            "--kv",
+            "int8",
+            "--kv-resident",
+            "20480",
+            "--expert-cache",
+            "1256",
+            "--expert-profile",
+            "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--pcie-frac",
+            "0",
+            "--adapt-swaps",
+            "0",
+            "--conversation-cache-mib",
+            "8192",
+            "--prompt-cache",
+            "6",
+            "--turn-token",
+            "-1",
+            "--suffix-draft",
+            "0",
+            "--greedy",
+            "--no-spec-split",
+            "--short-read",
+            "128",
+            "--spec",
+            "4",
+            "--prefill",
+            "8192",
+            "--vram-reserve-mib",
+            "1500",
+            "--no-coupled-draft",
+            "--no-token-graph",
+            "--prefill-strategy",
+            "throughput",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--prompt-cache-every",
+            "0",
+            "--conversation-cache-slots",
+            "2",
+            "--conversation-cache-min-free-mib",
+            "4096"
+          ],
+          "requests": [
+            {
+              "prompt": 172012,
+              "max_new": 1,
+              "reused": 0,
+              "wire_bytes": 813446,
+              "wire_sha256": "d54a6edef76b9a65cca74f04b69cf869f5a6f154356b406165ba64faa53d24d0"
+            },
+            {
+              "prompt": 33,
+              "max_new": 1,
+              "reused": 0,
+              "wire_bytes": 138,
+              "wire_sha256": "aa403cae69457851a7d1fc1a6dbc0c845d70dc4e086d0adfb2a6d93477f275b1"
+            },
+            {
+              "prompt": 262128,
+              "max_new": 1,
+              "reused": 172012,
+              "wire_bytes": 1173910,
+              "wire_sha256": "48912fb618a2d99eeafba57b07e93e6ca3e1aa5dc61070b899169e9a29d29a2f"
+            }
+          ],
+          "wall": 1800,
+          "environment_sha256": "c44c1dee82b411ea37cbbe314f327e9cfa64edf55c84b6ee9316833a77c24be9"
+        },
+        "split-batched": {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-restore-v2/split-batched",
+          "near": true,
+          "direct": false,
+          "mode": "batched",
+          "command": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/strata",
+            "--serve",
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-context",
+            "262144",
+            "--kv",
+            "int8",
+            "--kv-resident",
+            "20480",
+            "--expert-cache",
+            "1256",
+            "--expert-profile",
+            "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--pcie-frac",
+            "0",
+            "--adapt-swaps",
+            "0",
+            "--conversation-cache-mib",
+            "8192",
+            "--prompt-cache",
+            "6",
+            "--turn-token",
+            "-1",
+            "--suffix-draft",
+            "0",
+            "--greedy",
+            "--no-spec-split",
+            "--short-read",
+            "128",
+            "--spec",
+            "4",
+            "--prefill",
+            "8192",
+            "--vram-reserve-mib",
+            "1500",
+            "--no-coupled-draft",
+            "--no-token-graph",
+            "--prefill-strategy",
+            "throughput",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--prompt-cache-every",
+            "0",
+            "--conversation-cache-slots",
+            "2",
+            "--conversation-cache-min-free-mib",
+            "4096"
+          ],
+          "requests": [
+            {
+              "prompt": 172012,
+              "max_new": 1,
+              "reused": 0,
+              "wire_bytes": 813446,
+              "wire_sha256": "d54a6edef76b9a65cca74f04b69cf869f5a6f154356b406165ba64faa53d24d0"
+            },
+            {
+              "prompt": 33,
+              "max_new": 1,
+              "reused": 0,
+              "wire_bytes": 138,
+              "wire_sha256": "aa403cae69457851a7d1fc1a6dbc0c845d70dc4e086d0adfb2a6d93477f275b1"
+            },
+            {
+              "prompt": 262128,
+              "max_new": 1,
+              "reused": 172012,
+              "wire_bytes": 1173910,
+              "wire_sha256": "48912fb618a2d99eeafba57b07e93e6ca3e1aa5dc61070b899169e9a29d29a2f"
+            }
+          ],
+          "wall": 1800,
+          "environment_sha256": "7c3675b249330afe9a647a845064f7b097fa5a78623751f34d557fca42af7c26"
+        }
+      },
+      "budgets": {
+        "cpu": 18000,
+        "rss_cap": 111669149696,
+        "text_cap": 16777216,
+        "file_cap": 33554432,
+        "total_cap": 268435456
+      },
+      "speed_reference": "297adab4dfbd5da2d3a433962174238badd255f8",
+      "capacity_reference": "6d5debd9cbcb9011d0fc7aa7374ec1700d9e6ccd",
+      "previous_restore": "74ad105368ed894fecd2b3e06d76509547544268",
+      "failed_stderr_sha256": "2fdb870b763329da005b5b4aecd01f2918a65f7005ddb8e121fb476d78b78725",
+      "physical_receipt_sha256": "0215e2fd04c35f999aaf788577a80f3ff6295b768378ec7c5961af83c3c1b718",
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "files": 84
+      },
+      "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "scope": "Instrumented native pipe GEN, parked live RESTORE, exact state and first verifier handoff.",
+      "acceptance": "Check the original split stderr reader on the host, then run a fresh pair. Match state, work, snapshot and expert-cache bytes. Require bounded permanent mappings, upload and dequant conservation, checked scratch and bank retirement, and 48 batched upload windows with batching.",
+      "stop": "Stop at the first input, path, state, output, runtime, ownership, fault or budget failure."
+    },
+    "outcomes": {},
+    "stage": "prepared",
+    "active": false,
+    "ownership_closed": true
   }
 }
