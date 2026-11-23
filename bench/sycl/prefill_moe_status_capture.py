@@ -14,7 +14,7 @@ from engine_once import native_environment
 bank, basis, require = fixture.bank, fixture.basis, fixture.require
 owner_module = fixture.owner_module
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'prefill_moe_status_capture_v3'
+KEY = 'prefill_moe_status_capture_v4'
 ROOT = bank.B / KEY.replace('_', '-')
 TIMELINE = '4bc26aaa9cbdd8d4084336826361aae7bb886449'
 CLOCK_COMPARISON = 'prefill_kv_upload_model_pti_v1'
@@ -26,6 +26,10 @@ LAUNCHES = ('urEnqueueKernelLaunch', 'urEnqueueKernelLaunchWithArgsExp')
 LINK_INPUTS = ('Scrt1.o', 'crt1.o', 'crti.o', 'crtbegin.o', 'crtbeginS.o', 'crtend.o', 'crtendS.o',
     'crtn.o', 'libstdc++.so', 'libgcc.a', 'libgcc_s.so', 'libgcc_s.so.1', 'libm.so', 'libm.so.6',
     'libmvec.so.1', 'libc.so', 'libc.so.6', 'libc_nonshared.a', 'libpthread.a', 'ld-linux-x86-64.so.2')
+# GNU ld records both architectures it inspects when resolving the dispatcher's
+# indirect dependencies. Pin the files found in the preceding link receipt.
+LINK_SEARCH_INPUTS = tuple(Path('/usr/lib') / arch / filename
+    for arch in ('i386-linux-gnu', 'x86_64-linux-gnu') for filename in ('libdl.so.2', 'libpthread.so.0'))
 PLAN = dict(order=list(ACTIONS), fixture_arg='--smoke',
     scope='Use unchanged native V2 device fixture and Intel 2026.2 XPTI. Compare the default '
           'observer on CPU, exercise sparse filtering on synthetic CPU callbacks, then run the '
@@ -33,7 +37,8 @@ PLAN = dict(order=list(ACTIONS), fixture_arg='--smoke',
     acceptance='Exact CPU filter and application output, actual paired 4-byte copy and wait/launch '
                'coverage on the native device route, parameter validation, owned exit zero and '
                'no fresh driver fault. No GPU timing, model, or diagnosis of the original PTI gap.',
-    sdk_selection='Use the pinned SDK launch-with-arguments API. Original refusals at 1dd8688fd and 6f073886e.')
+    sdk_selection='Use the pinned SDK launch-with-arguments API. Original build refusals at '
+                  '1dd8688fd, 6f073886e and c5d825faa.')
 
 
 def identity(path):
@@ -121,6 +126,7 @@ def prepare():
     commands, compiler_files = {}, dict(tools)
     # Enumerate the current SDK and system dependencies for this recipe.
     compiler_files[dispatcher['path']] = dispatcher['sha256']
+    compiler_files.update({str(path.resolve()): bank.sha(path) for path in LINK_SEARCH_INPUTS})
     for name in LINK_INPUTS:
         path = Path(subprocess.check_output([compiler, '-print-file-name=' + name],
                                             env=env, text=True, timeout=5).strip())
