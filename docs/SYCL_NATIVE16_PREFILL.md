@@ -1413,14 +1413,49 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `prefill-kv-upload-unitrace-fixture-v2` in the same state directory. The
   20 retired files total 514279 bytes, with inventory SHA-256
   `83ee06b2c05daa40cdedf19d0696c5eda130fbb8657047c7208aed03ceb3fc98`.
-  Run `bench/sycl/prefill_kv_upload_model_pti.py` on the direct-store
-  split route. The three fresh processes each use the same first and second
-  117489-token bench.sh inputs. Enable only the active PTI observer in the
-  middle one. For each request position compare prompt time and TTFT to both
-  controls within the declared 0.8–1.2 ratio. Record the request-to-first-output
-  service, host-to-device activity outside measured kernel intervals, and
-  copy/kernel overlap. The named model trace budget is 1280 MiB per file and
-  2 GiB for the cohort. Reduce and retire the trace after comparison.
+  The matched V2 PTI comparison closes at `4bc26aaa9` under
+  `prefill_kv_upload_model_pti_v1`. Three fresh processes each handle the
+  same two 117489-token bench.sh inputs, with 24 thinking-enabled outputs and
+  16 of 21 drafts accepted per request. All close normally, with zero new
+  GPU faults and all 15 final model hashes verified. Clean first/subsequent PP
+  is 908.9/993.1 before collection and 904.5/986.3 after it. Corresponding
+  client TTFT is 129.475/118.540 and 130.113/119.427 seconds. Collected PP is
+  856.1/934.0. Observed/clean prompt and TTFT ratios span 1.05596–1.06486,
+  within the declared 0.8–1.2 range. The two clean processes fall below
+  1000 PP. The timing comparison qualifies the observation under this
+  envelope. Model adoption still requires the server and decode checks above.
+  In the subsequent request's 126.229-second client window, GPU kernels
+  cover 99.560 seconds and M2D/H2D copy intervals cover 15.339 seconds, with
+  0.006435 seconds of overlap. The QSA prefix kernels account for 27.073
+  seconds of service across 360 calls. The 22327 M2D/H2D commands carry
+  52,103,695,548 requested bytes. Of those, 20024 commands match one of the
+  seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
+  and 12.008352 seconds of summed service. The engine's expert bank reports
+  18900 copies and 38,589,209,600 bytes. The size-matched group is larger
+  than the bank ledger. M2D sources have unknown memory type.
+  Physical PCIe traffic, GPU saturation and clean critical path remain unknown.
+  Clip the GPU event union to each request, then sum adjacent gaps from a
+  four-byte D2M/D2H completion to the next `dequant<unsigned short>` start.
+  Match the dequant command ID to its unique native PTI host flow and join
+  the flow's thread and timestamp to the launch API start. The first and
+  subsequent windows have 48 and 47 such joins. Of the 3.120212/3.150087 seconds
+  summed, 3.111451/3.141543 seconds precede the host launch API start. The
+  timings include runtime/collector behavior and host scheduling. Use a
+  bounded host clock without PTI to check the reported transition from
+  the MoE status drain to the first shared gate dequantization. If the gap
+  persists, compare moving only that independent dequantization ahead of
+  the drain on the same queue. Prove shared-weight and scratch bounds,
+  aliasing, cancellation and error retirement. Keep the route-status check
+  before any shared result updates the residual. Use the control's existing
+  QSA and decode settings in both arms.
+  The completed captures `host`, `0`, `1` and `2` under the
+  `prefill-kv-upload-model-pti-v1` state root have no remaining consumer.
+  Their 218 files total 838023688 bytes with inventory SHA-256
+  `1395e983e41d4aecfbc0a7e81fc055a1aaa4a647c7132b67800b78524a5c4bb0`.
+  The 790346612-byte trace SHA-256 is
+  `6b35a0dfe29efc1f726aeec9a0b2e809e117fc7b951e7172eed6903edc1015f1`.
+  Retire these captures after the results and reduction are pushed. Keep the
+  compact campaign receipt and named executable consumers.
   Removed and verified the following closed captures under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
   admission uses the fixture and model receipts recorded at `3c23f0b78`.
