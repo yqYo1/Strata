@@ -643534,12 +643534,254 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "split-batched": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "gpu_executed": true,
+        "requests": [
+          {
+            "prompt": 172012,
+            "read": 172012,
+            "reused": 0,
+            "output_hash": "e9931e6e88250d50342f0bbe226991f7fb41221b6bb3b238c79e8d5fb6f47cfe",
+            "finish": "length",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768,
+              40960,
+              49152,
+              57344,
+              65536,
+              73728,
+              81920,
+              90112,
+              98304,
+              106496,
+              114688,
+              122880,
+              131072,
+              139264,
+              147456,
+              155648,
+              163840,
+              172011
+            ],
+            "active_state": {
+              "L": "172012",
+              "gdn": "61752df353e001a8",
+              "ple": "956a50cf2c7d7250",
+              "tail": "662e2e958450555a",
+              "pooled": "8330961eccbd07bf",
+              "kv": "3ce70fa8004a06ff",
+              "mtp": "bc96163483180405",
+              "ple_prev": "4074,4075"
+            },
+            "unused_state": {
+              "stale": "14650fb0739d0383",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "7af075b7c228d888"
+            },
+            "attention_store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 120795955200,
+              "gpu_rows": 122880,
+              "host_rows": 49131,
+              "window_mode": 10,
+              "maximum_rows": 81920
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "finish": "length",
+            "publications": [
+              32
+            ],
+            "active_state": {
+              "L": "33",
+              "gdn": "d9e9a3ad75f9a003",
+              "ple": "9f417bc11288f313",
+              "tail": "dca122c73a9b6f43",
+              "pooled": "3cfd6a9da9e65a29",
+              "kv": "06640dd3c43a1316",
+              "mtp": "9e75b3492fcf6fd2",
+              "ple_prev": "159,160"
+            },
+            "unused_state": {
+              "stale": "5935ffeafc0fb98f",
+              "dead": "bff4a557b4a10f3d",
+              "pooled_full": "fc2a0818461b00b3"
+            },
+            "attention_store": {
+              "pieces": 0,
+              "direct": 0,
+              "copy_bytes": 0
+            },
+            "decode_cache_lent": 0,
+            "prefill_route": "cache-window"
+          },
+          {
+            "prompt": 262128,
+            "read": 90116,
+            "reused": 172012,
+            "output_hash": "52ff7563aef9cbf639666fe48417312cb9575ba1c60fca9b5d6a9996a3498232",
+            "finish": "length",
+            "publications": [
+              180204,
+              188396,
+              196588,
+              204780,
+              212972,
+              221164,
+              229356,
+              237548,
+              245740,
+              253932,
+              262124,
+              262127
+            ],
+            "active_state": {
+              "L": "262128",
+              "gdn": "00774bd72ffba297",
+              "ple": "118eddfa44eb3f25",
+              "tail": "95965e77abe93201",
+              "pooled": "df58f2da9e3d9168",
+              "kv": "1a3c698f120b6164",
+              "mtp": "9abfc7fbb54efef9",
+              "ple_prev": "258,259"
+            },
+            "unused_state": {
+              "stale": "14650fb0739d0383",
+              "dead": "4e1c44a7ab8a18f8",
+              "pooled_full": "136e3c555df440bf"
+            },
+            "attention_store": {
+              "pieces": 576,
+              "direct": 0,
+              "copy_bytes": 88586649600,
+              "gpu_rows": 90115,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 90115
+            },
+            "prefill_route": "layer-major",
+            "decode_cache_lent": 1124
+          }
+        ],
+        "validation": {
+          "pid": 1550206,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "restored_tokens": 172012,
+        "restore_payload": {
+          "draft": "bc96163483180405",
+          "cells": "172012",
+          "mode": "2",
+          "source": "ram",
+          "resident": "32848",
+          "main": "cdd32eee420db811",
+          "main_layers": "12",
+          "main_bytes": "2443952640",
+          "draft_bytes": "181644672",
+          "running": "58846de5ea7fde37",
+          "running_bytes": "118069304",
+          "upto": "172012",
+          "result": "PASS"
+        },
+        "dispatch": [
+          {
+            "request": 0,
+            "gather": {
+              "jobs": 48211,
+              "eligible_jobs": 7524,
+              "eligible_rows": 38694760
+            },
+            "kv": {
+              "reloaded_pages": 430080,
+              "reused_pages": 4730880,
+              "prefix_H2D_calls": 80,
+              "mirror_D2H_calls": 1104,
+              "mirror_D2H_bytes": 2179723392,
+              "requested_prefix_H2D_bytes": 1816657920
+            },
+            "input": {
+              "eligible": 690,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 115762790400,
+              "checked_layers": 48
+            },
+            "split": {
+              "split": false
+            }
+          },
+          {
+            "request": 2,
+            "gather": {
+              "jobs": 22023,
+              "eligible_jobs": 6275,
+              "eligible_rows": 36001788
+            },
+            "kv": {
+              "reloaded_pages": 1124237,
+              "reused_pages": 6690211,
+              "prefix_H2D_calls": 92,
+              "mirror_D2H_calls": 624,
+              "mirror_D2H_bytes": 1141937280,
+              "requested_prefix_H2D_bytes": 4748777088
+            },
+            "input": {
+              "eligible": 552,
+              "borrowed": 0,
+              "borrowed_bytes": 0,
+              "copy_bytes": 84895539200,
+              "checked_layers": 48
+            },
+            "split": {
+              "split": true,
+              "slots": 128,
+              "uploads": 19993,
+              "permanent_slots": 0,
+              "requested_h2d_bytes": 41108940800,
+              "batched_windows": 48
+            }
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
-    "stage": "running",
+    "stage": "closed",
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false
+    "passed": true,
+    "complete": true
   }
 }
