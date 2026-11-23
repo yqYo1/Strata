@@ -1566,11 +1566,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   update to the residual. Compare the same request bodies, QSA and decode
   settings and observe whether the changed order reduces total clean prefill
   time. The explicit wait alone is a small measured interval.
-  Retire the completed clock-only build and captures under the shared state
-  directory before building the scheduling candidate. The native recovery
-  at `2c6645de4` matched the 1172 projected sources, compiler and recipe
-  inputs, 137 fresh objects and twelve target hashes against the exact
-  measured executable. Keep the V2 prefill and coherent decode references.
+  Removed and verified the clock-only build and captures after matching
+  their inventories to pushed `941d07a96`. The native recovery at
+  `2c6645de4` matched the 1172 projected sources, compiler and recipe inputs,
+  137 fresh objects and twelve target hashes against the measured executable.
+  The V2 prefill and coherent decode references pass their executable hashes.
   The source/build receipts, runtime inventory and committed clock totals
   preserve the recovered inputs and useful samples.
 
