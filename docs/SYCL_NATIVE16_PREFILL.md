@@ -2182,17 +2182,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by leaving out a whole length. Hold 98306 outside the smooth fits and
   report its change from 98305 with the actual expert jobs and transfer counts.
   A time difference across these two bodies alone cannot isolate chunk setup.
-  Preserve the historical FDE0 generation plans in Git. Compare the selected
-  prefill route with its reference over three independent pairs (AB, BA, AB)
-  on the selected live build. Keep the stock decode layout, thinking and MTP fixed.
+  Preserve the historical FDE0 generation plans in Git. Use
+  `bench/sycl/prefill_v2_generation.py` on the retained V2 engine to compare
+  demand and batched expert uploads over three independent pairs (AB, BA, AB).
+  Verify the original 117489-token launch settings, physical terminal and
+  RESTORE results before preparing these requests. Keep the stock decode
+  layout, thinking, MTP, KV reuse and scalar gather fixed within each suite.
   Each process runs the official long, agent and two sustained generation
   workloads. Bind fresh prompt identities, executed gather and KV work,
   generation lengths and MTP counts before comparing sustained decode and
   agent follow-up rates. The standard sustained prompts have about 33K actual
   input tokens and exercise the ordinary route. Check split handoff with a
-  separate matched `split-v1-96k` comparison based on the workload in
-  `bench/sycl/prefill_split_continuation.py`. Three pairs keep the stock decode
-  settings and scalar gather fixed. Check count-preflight bodies, actual
+  separate matched `split-v1-96k` comparison using the same workload reader.
+  The ordinary suite uses the 384-slot bank. The split suite holds the
+  measured 128-slot launch options and changes only the upload selector.
+  Check count-preflight bodies, actual
   128-slot admission, split tail guard/drain, MTP restore and same-request
   decode footers. The code and prose workloads each need at least 1024 output
   tokens with thinking. Judge the MTP classes from measured acceptance and
