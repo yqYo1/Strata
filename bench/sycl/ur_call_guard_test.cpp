@@ -103,6 +103,7 @@ int metadata_fixture() {
 int status_fixture() {
   xptiFrameworkInitialize();
   if (xptiInitialize("ur.call", 0, 1, "status-host-fixture") != xpti::result_t::XPTI_RESULT_SUCCESS) return 6;
+  if (xptiInitialize("ur.call", 0, 1, "status-host-repeat") != xpti::result_t::XPTI_RESULT_SUCCESS) return 6;
   auto queue = reinterpret_cast<ur_queue_handle_t>(uintptr_t(0x101));
   auto other = reinterpret_cast<ur_queue_handle_t>(uintptr_t(0x102));
   auto kernel = reinterpret_cast<ur_kernel_handle_t>(uintptr_t(0x401));

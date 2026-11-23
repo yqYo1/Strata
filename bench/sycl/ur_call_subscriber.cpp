@@ -427,14 +427,20 @@ extern "C" XPTI_CALLBACK_API void xptiTraceInit(unsigned, unsigned, const char*,
                                                 const char* stream) {
   if (!stream || std::strcmp(stream, "ur.call")) return;
   const auto id = xptiRegisterStream(stream);
-  if (xptiRegisterCallback(id, xpti::trace_function_with_args_begin, callback) !=
-          xpti::result_t::XPTI_RESULT_SUCCESS ||
-      xptiRegisterCallback(id, xpti::trace_function_with_args_end, callback) !=
-          xpti::result_t::XPTI_RESULT_SUCCESS) fail("cannot register XPTI callbacks");
+  const auto begin = xptiRegisterCallback(id, xpti::trace_function_with_args_begin, callback);
+  const auto end = xptiRegisterCallback(id, xpti::trace_function_with_args_end, callback);
+  // DUPLICATE means the exact callback is already active for this stream and type.
+  const bool duplicate = begin == xpti::result_t::XPTI_RESULT_DUPLICATE && begin == end;
+  if (!duplicate && (begin != xpti::result_t::XPTI_RESULT_SUCCESS || begin != end)) {
+    char results[96];
+    std::snprintf(results, sizeof(results), "ur.call (begin=%" PRId32 ", end=%" PRId32 ")",
+                  int32_t(begin), int32_t(end));
+    fail("cannot register XPTI callbacks", results);
+  }
   char row[512];
   emit(row, std::snprintf(row, sizeof(row),
-      "{\"kind\":\"subscribe\",\"stream\":\"ur.call\",\"pid\":%ld,\"raw_ns\":%" PRIu64 "}\n",
-      long(getpid()), raw_ns()));
+      "{\"kind\":\"%s\",\"stream\":\"ur.call\",\"pid\":%ld,\"raw_ns\":%" PRIu64 "}\n",
+      duplicate ? "duplicate_registration" : "subscribe", long(getpid()), raw_ns()));
 }
 
 extern "C" XPTI_CALLBACK_API void xptiTraceFinish(const char* stream) {

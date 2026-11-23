@@ -47,11 +47,17 @@ def parse_calls(text, pid, *, intervals=False):
                 e['raw_ns'] >= rows[0]['raw_ns'] for e in rows), 'invalid subscriber owner/clock')
     require(sum(e['kind'] == 'load' for e in rows) == 1, 'duplicate subscriber load')
     subscribed = finished = False
+    duplicate_registrations = 0
     pending, seen, stacks, functions = {}, set(), collections.defaultdict(list), {}
     counts = collections.Counter()
     spans = []
     for event in rows[1:]:
         kind = event['kind']
+        if kind == 'duplicate_registration':
+            require(subscribed and not finished and event.get('stream') == 'ur.call',
+                    'duplicate registration outside the active UR stream')
+            duplicate_registrations += 1
+            continue
         if kind in ('subscribe', 'finish'):
             require(event.get('stream') == 'ur.call' and not pending, 'invalid stream boundary')
             if kind == 'subscribe':
@@ -96,6 +102,8 @@ def parse_calls(text, pid, *, intervals=False):
     result = dict(call_pairs=len(seen), source_threads=len(stacks),
                 outcomes=[dict(name=name, status=status, calls=count) for (name, status), count in sorted(counts.items())],
                 ordinary_runtime_teardown_qualified=False, device_work_qualified=False)
+    if duplicate_registrations:
+        result['duplicate_registrations'] = duplicate_registrations
     if intervals:
         result['intervals'] = spans
     return result

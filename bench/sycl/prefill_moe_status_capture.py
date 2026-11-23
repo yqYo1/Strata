@@ -14,7 +14,7 @@ from engine_once import native_environment
 bank, basis, require = fixture.bank, fixture.basis, fixture.require
 owner_module = fixture.owner_module
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'prefill_moe_status_capture_v6'
+KEY = 'prefill_moe_status_capture_v7'
 ROOT = bank.B / KEY.replace('_', '-')
 TIMELINE = '4bc26aaa9cbdd8d4084336826361aae7bb886449'
 CLOCK_COMPARISON = 'prefill_kv_upload_model_pti_v1'
@@ -32,17 +32,18 @@ LINK_SEARCH_INPUTS = tuple(Path('/usr/lib') / arch / filename
     for arch in ('i386-linux-gnu', 'x86_64-linux-gnu') for filename in ('libdl.so.2', 'libpthread.so.0'))
 PLAN = dict(order=list(ACTIONS), fixture_arg='--smoke',
     scope='Use unchanged native V2 device fixture and Intel 2026.2 XPTI. Compare the default '
-          'observer on CPU, exercise sparse filtering on synthetic CPU callbacks, then run the '
+          'observer on CPU, reinitialize the sparse stream and exercise synthetic callbacks, then run the '
           'same small device workload with and without sparse host observation.',
-    acceptance='Exact CPU filter and application output, actual paired 4-byte copy and wait/launch '
+    acceptance='Exact CPU filter and application output, proven duplicate registration on CPU and observed '
+               'device startup, actual paired 4-byte copy and wait/launch '
                'coverage on the native device route, parameter validation, owned exit zero and '
                'no fresh driver fault. No GPU timing, model, or diagnosis of the original PTI gap.',
     sdk_selection='Use the pinned SDK launch-with-arguments API. Original build refusals at '
                   '1dd8688fd, 6f073886e and c5d825faa.',
-    previous_refusal='At bc5d27380, the same observed fixture exited from a callback guard '
-                     'after subscribing. Keep its failure. Rebuild the subscriber to capture '
-                     'the guard name and retain the final diagnostic and owned exit; keep '
-                     'the native program, its inputs and callback eligibility fixed.')
+    previous_refusal='At ea8be6e5f, V6 subscribed once then stopped at registration with exit 86. '
+                     'Accept only a paired successful or already-active registration during the same '
+                     'stream lifetime. Record duplicate results and retain all failed outcomes. '
+                     'The native fixture, its inputs and call selection stay fixed.')
 
 
 def identity(path):
@@ -176,7 +177,7 @@ def selected_calls(text, pid):
         call['cpu_begin_ns'] = begins[call['instance']]
         call['cpu_end_ns'] = call['metadata']['thread_ns']
         require(0 <= call['cpu_begin_ns'] <= call['cpu_end_ns'], 'invalid thread-clock span')
-    return spans
+    return spans, summary.get('duplicate_registrations', 0)
 
 
 def observer_environment(row, root):
@@ -197,8 +198,9 @@ def host_check(row, owner):
         if case == 'metadata':
             result = subscriber.metadata_fixture(capture, entry['pid'])
         else:
-            calls = selected_calls(capture, entry['pid'])
+            calls, repeated = selected_calls(capture, entry['pid'])
             require(json.loads(out.read_text()) == {'status_fixture':'PASS','simulated_calls':8}
+                    and repeated == 1
                     and [p['name'] for p in calls] == ['urKernelCreate', 'urEnqueueUSMMemcpy',
                         'urQueueFinish','urEnqueueKernelLaunchWithArgsExp']
                     and all(p['status'] == 0 for p in calls)
@@ -207,7 +209,8 @@ def host_check(row, owner):
                     and all(p['metadata']['queue'] == 0x101 for p in calls[1:])
                     and calls[-1]['metadata']['kernel'] == calls[0]['metadata']['created_kernel'],
                     'sparse CPU callback selection differs')
-            result = dict(simulated_calls=8, selected_calls=4, unrelated_queue_ignored=True)
+            result = dict(simulated_calls=8, selected_calls=4, duplicate_registrations=repeated,
+                          unrelated_queue_ignored=True)
         row['outcomes'][name] = dict(result, ownership_closed=True)
 
 
@@ -244,13 +247,15 @@ def device_check(row, owner, action):
     result = dict(command=command, env_sha256=bank.signature(env), stdout_sha256=bank.sha(out), validation=validation)
     if action == 'observed':
         require(result['stdout_sha256'] == row['outcomes']['control']['stdout_sha256'], 'device numerical fixture changed')
-        calls = selected_calls((root/'calls.jsonl').read_text(), entry['pid'])
+        calls, repeated = selected_calls((root/'calls.jsonl').read_text(), entry['pid'])
+        require(repeated >= 1, 'the device run did not exercise duplicate XPTI registration')
         copies = [p for p in calls if p['name'] == 'urEnqueueUSMMemcpy']
         waits = [p for p in calls if p['name'] in ('urQueueFinish','urEventWait')]
         launches = [p for p in calls if p['name'] in LAUNCHES]
         require(copies and waits and launches and all(not p['status'] for p in (*copies, *waits, *launches))
                 and all(p['metadata']['bytes'] == 4 for p in copies), 'incomplete native sparse call coverage')
-        result['captured'] = dict(copies=len(copies), waits=len(waits), next_launches=len(launches))
+        result['captured'] = dict(copies=len(copies), waits=len(waits), next_launches=len(launches),
+                                  duplicate_registrations=repeated)
     return result
 
 
