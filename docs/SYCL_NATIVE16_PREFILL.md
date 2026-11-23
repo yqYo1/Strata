@@ -1323,6 +1323,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   total at 262128 and one output plus eight reserved slots available. Require
   actual restored extent, one 90113-row read, the all-GPU 128-slot split and
   all 48 batched uploads before treating it as split coverage.
+  For MoE attribution, the first matched request at `297adab4d` ran 7441
+  fused jobs out of 23816 in each of Gate/Up and Down. Those jobs accounted
+  for 52231136 of 56394240 routed rows (92.62%). The 18878 dequantizations
+  produce a logical 185578291200 bytes in reused weight scratch.
+  `STRATA_PREFILL_LAYER_MAJOR_PROFILE=1` emits the planned row-width census
+  from the existing host route data and coarse queue spans with host issue
+  gaps. Use `tools/sycl/moe_upload_census.py` to check its 48 windows against
+  the actual completed job and row totals. `STRATA_SYCL_PREFILL_MOE_CENSUS=1`
+  adds a first-chunk weight readback per layer. Keep the first observer
+  comparison to one selector and verify its cost against clean requests.
+  The retained UnitTrace launcher and collector hashes still match the
+  qualified tool build. Obtain device service evidence with a bounded
+  same-build trace if coarse spans leave the MoE cost unresolved.
   Removed and verified the following closed captures under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
   admission uses the fixture and model receipts recorded at `3c23f0b78`.
