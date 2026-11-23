@@ -646749,5 +646749,268 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "dflash2_prefill_kv_stage_model_v1": {
+    "plan": {
+      "source_commit": "af3b1f9221ced62e36481dfc23e7d3ed8275c38d",
+      "inputs": {
+        "files": 838,
+        "sha256": "32c3a9e4a8fb4142f90da07e2cafd849f95c782bb9e055ac527004138e168647"
+      },
+      "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+      "build_sha256": "927e584bfaa1701d751fc28b3c2781521b8cf1992cfc701bdfc1da25be586162",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+        "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+        "bytes": 26546256
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "files": 84
+      },
+      "drafter_assets": {
+        "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack": "cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+      },
+      "validation": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+        }
+      },
+      "cases": {
+        "reload": {
+          "command": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+            "--serve",
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-context",
+            "262144",
+            "--kv",
+            "int8",
+            "--kv-resident",
+            "20480",
+            "--expert-cache",
+            "1256",
+            "--expert-profile",
+            "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--pcie-frac",
+            "0",
+            "--adapt-swaps",
+            "0",
+            "--conversation-cache-mib",
+            "0",
+            "--turn-token",
+            "-1",
+            "--suffix-draft",
+            "0",
+            "--greedy",
+            "--no-spec-split",
+            "--short-read",
+            "128",
+            "--prefill",
+            "8192",
+            "--vram-reserve-mib",
+            "1500",
+            "--no-coupled-draft",
+            "--no-token-graph",
+            "--prefill-strategy",
+            "throughput",
+            "--spec",
+            "4",
+            "--prompt-cache",
+            "1",
+            "--prompt-cache-every",
+            "0",
+            "--draft",
+            "dflash2",
+            "--draft-model",
+            "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+            "--draft-fallback",
+            "none",
+            "--mtp-draft-vocab",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+            "--draft-conf",
+            "0.6"
+          ],
+          "environment_sha256": "5b17cd5435271ea1ca0fc4503d7f890f80ec69b56d656ad3e33c82934bbe62c5",
+          "wire": [
+            {
+              "prompt": 82,
+              "output": 32,
+              "sha256": "a146499755ed4cd280b677e4b68c8d86dc4231007824c07ca247a37ffc6e9ee4"
+            },
+            {
+              "prompt": 32769,
+              "output": 32,
+              "sha256": "6bc093ed344fd6f8cd6d48c585d2ff107e2c0ccd1ba515c4e9b75af218ff24e6"
+            },
+            {
+              "prompt": 82,
+              "output": 32,
+              "sha256": "a146499755ed4cd280b677e4b68c8d86dc4231007824c07ca247a37ffc6e9ee4"
+            },
+            {
+              "prompt": 83,
+              "output": 1,
+              "sha256": "50058c6ebdf7e8bf042dd6eb8d53c0cd40a5ea10bf598d3a71de6330d9c88c63"
+            },
+            {
+              "prompt": 8292,
+              "output": 1,
+              "sha256": "d814c99ef0621c6551f5504ec0486c09555874d76bfeef85726ff68238ac0617"
+            }
+          ],
+          "reused": [
+            0,
+            0,
+            0,
+            0,
+            83
+          ]
+        },
+        "retain": {
+          "command": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+            "--serve",
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-context",
+            "262144",
+            "--kv",
+            "int8",
+            "--kv-resident",
+            "20480",
+            "--expert-cache",
+            "1256",
+            "--expert-profile",
+            "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--pcie-frac",
+            "0",
+            "--adapt-swaps",
+            "0",
+            "--conversation-cache-mib",
+            "0",
+            "--turn-token",
+            "-1",
+            "--suffix-draft",
+            "0",
+            "--greedy",
+            "--no-spec-split",
+            "--short-read",
+            "128",
+            "--prefill",
+            "8192",
+            "--vram-reserve-mib",
+            "1500",
+            "--no-coupled-draft",
+            "--no-token-graph",
+            "--prefill-strategy",
+            "throughput",
+            "--spec",
+            "4",
+            "--prompt-cache",
+            "1",
+            "--prompt-cache-every",
+            "0",
+            "--draft",
+            "dflash2",
+            "--draft-model",
+            "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+            "--draft-fallback",
+            "none",
+            "--mtp-draft-vocab",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+            "--draft-conf",
+            "0.6"
+          ],
+          "environment_sha256": "5cf44ecd30e78aaec2839a18cf937cad99b1bb58970ebc13ba154ca7112d161f",
+          "wire": [
+            {
+              "prompt": 82,
+              "output": 32,
+              "sha256": "a146499755ed4cd280b677e4b68c8d86dc4231007824c07ca247a37ffc6e9ee4"
+            },
+            {
+              "prompt": 32769,
+              "output": 32,
+              "sha256": "6bc093ed344fd6f8cd6d48c585d2ff107e2c0ccd1ba515c4e9b75af218ff24e6"
+            },
+            {
+              "prompt": 82,
+              "output": 32,
+              "sha256": "a146499755ed4cd280b677e4b68c8d86dc4231007824c07ca247a37ffc6e9ee4"
+            },
+            {
+              "prompt": 83,
+              "output": 1,
+              "sha256": "50058c6ebdf7e8bf042dd6eb8d53c0cd40a5ea10bf598d3a71de6330d9c88c63"
+            },
+            {
+              "prompt": 8292,
+              "output": 1,
+              "sha256": "d814c99ef0621c6551f5504ec0486c09555874d76bfeef85726ff68238ac0617"
+            }
+          ],
+          "reused": [
+            0,
+            0,
+            0,
+            0,
+            83
+          ]
+        }
+      },
+      "order": [
+        "reload",
+        "retain"
+      ],
+      "limits": {
+        "wall": 900,
+        "cpu": 2400,
+        "rss_cap": 111669149696,
+        "text_cap": 16777216,
+        "file_cap": 33554432,
+        "total_cap": 67108864
+      },
+      "model_reference": "423e0a58127444997f1c2581a6f74729e4132cb3",
+      "tap_layers": [
+        15,
+        35
+      ],
+      "expected_prefix_H2D_bytes_removed": 467140608,
+      "scope": "Independent reload and retain processes. Check the matched 32769-token and unaligned continuation requests. Compare per-layer KV counts, retained state and generated work, with tap and cache-loan checks. Preserve the exact candidate and both original references. These traced requests test correctness."
+    },
+    "stage": "prepared",
+    "complete": false,
+    "passed": false,
+    "active": false,
+    "ownership_closed": true,
+    "outcomes": {}
   }
 }
