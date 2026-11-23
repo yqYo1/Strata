@@ -645154,6 +645154,121 @@
       "sha256": "08df90108a40b75be10223cc8c5c0fe469b4a8c7c3072d6eee72a02bd30f5eb2"
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "checker_review": {
+      "evidence_commit": "e0a799263acdceb9d773a6745313b4d8a66004f4",
+      "source_files": {
+        "src/prefill/prefill.cpp": "5f29de572eb61a441fbbce6f02a5610c7abbf3af7d462fe012785c7b8a011f43",
+        "src/program/generate.cpp": "f59cfe1d32016e2b46300a31fc10bad51a5d83b4dd53617e560fbd16b6071617"
+      },
+      "native_exit": 0,
+      "bench_exit": 0,
+      "exact_incident_request": true,
+      "incident_request_output": 114,
+      "routes": [
+        {
+          "phase": "prompt/32K",
+          "read": 32088,
+          "store": {
+            "pieces": 192,
+            "direct": 0,
+            "copy_bytes": 31542804480,
+            "gpu_rows": 32087,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 32087
+          },
+          "kv": {
+            "reloaded_pages": 147456,
+            "reused_pages": 0
+          },
+          "decode_work": {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 7124,
+            "cpu_entries": 9979
+          },
+          "tap_rows": 2046,
+          "dflash2_vram_bytes": 845776220
+        },
+        {
+          "phase": "long-generation/regular-code",
+          "read": 33217,
+          "store": {
+            "pieces": 240,
+            "direct": 0,
+            "copy_bytes": 32652656640,
+            "gpu_rows": 33216,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 33216
+          },
+          "kv": {
+            "reloaded_pages": 245760,
+            "reused_pages": 0
+          },
+          "decode_work": {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 1449976,
+            "cpu_entries": 1812670
+          },
+          "tap_rows": 2046,
+          "dflash2_vram_bytes": 845776220
+        },
+        {
+          "phase": "long-generation/varied-prose",
+          "read": 33287,
+          "store": {
+            "pieces": 240,
+            "direct": 0,
+            "copy_bytes": 32721469440,
+            "gpu_rows": 33286,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 33286
+          },
+          "kv": {
+            "reloaded_pages": 245760,
+            "reused_pages": 0
+          },
+          "decode_work": {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 4668262,
+            "cpu_entries": 5982938
+          },
+          "tap_rows": 2046,
+          "dflash2_vram_bytes": 845776220
+        }
+      ],
+      "stderr_sha256": "24292af468bbd53a6c506da379c443908d75088bbb03d53fedb5b990e09c3671",
+      "request_journal_sha256": "8cbdbac81be33b41c779588dc9ca4e515008684b08c719b9e7986bafd22d4ade",
+      "note": "Read-only replay of the corrected validator. In the measured source the DFlash2 layer tap sets on_layer and prevents keep_kv_stage. Reload counts match the resulting route. Keep the original failed campaign and collect fresh samples against the corrected plan."
+    },
+    "retirement": {
+      "complete": false,
+      "artifacts": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-v2-generation-sync-v1",
+          "files": 81,
+          "bytes": 15380670,
+          "tree_sha256": "f3f64ef14de3e8ec86835f96d522de39f45acd73d45747b699d6dc2afcdc5767"
+        }
+      ],
+      "reason": "The committed suite, same-PID exit receipts and corrected checker replay retain all useful evidence. The first run is closed and its next two plans are cancelled. The corrected campaign has separate roots."
+    }
   }
 }

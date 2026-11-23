@@ -15,7 +15,7 @@ KEY = 'dflash2_v2_generation_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 NATIVE_GATE = '6aa1c2b52f16c194d6869df56ed31a0ad99fefbe'
 COMMIT_ORDER_GATE = '423e0a58127444997f1c2581a6f74729e4132cb3'
-SYNC_KEY = 'dflash2_v2_generation_sync_v1'
+SYNC_KEY = 'dflash2_v2_generation_sync_v2'
 WORKLOAD_ID = 'dflash2_v2_generation_v1'
 ORDER = ('dflash2',) * 3
 WORKLOADS = suite.evidence_reader.SUSTAINED_WORKLOADS
@@ -107,7 +107,8 @@ def routes(text, samples, arm):
                            r'staged=(\d+) host_slab_bytes=\d+ device_bytes=(\d+) ', frame, re.M)
         require(banks == [('384', '384', '1', '1022361600')] and store['gpu_rows'] == read - 1
                 and store['window_mode'] == 10, 'expected ordinary all-GPU 384-slot residual route')
-        kv = v2.state.kv.check_clean_request(frame, 0, read - 1, 8192, reuse=True)
+        # The DFlash2 layer tap prevents Prefill::run_impl from retaining the KV stage.
+        kv = v2.state.kv.check_clean_request(frame, 0, read - 1, 8192, reuse=False)
         counts = dict(zip(footer.COPY_KEYS, map(int, copy.groups()), strict=True))
         require(all(counts[k] == 0 for k in footer.COPY_KEYS[:6])
                 and 0 < counts['cpu_unique_misses'] <= counts['cpu_entries'], 'actual decode expert route differs')
@@ -153,6 +154,8 @@ def experiment(*, synchronous_commit=False):
         ctx.protocol['execution'] += (' Wait for each committed window before launching the next draft. '
             'Keep verifier overlap enabled and use the 240-second watchdog from the two traced device checks. '
             'Disable stage observers and keep the same workload ID as the failed suite.')
+        ctx.protocol['evidence'] += (' Require the per-layer KV reload counts for the active DFlash2 tap route. '
+            'The prior checker replay is source validation. Collect new native samples for this cohort.')
 
     def pins(revision):
         values = v2.experiment('official').pins(revision)
