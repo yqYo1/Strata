@@ -719,6 +719,13 @@ class WhatTheEngineSaid(unittest.TestCase):
         self.assertEqual(drafting.engine_info(self.ARGS, log), {"drafting": "dflash2", "drafting_note": ""})
         self.assertEqual(drafting.fallback_note(log), "")
 
+    def test_sycl_start_records_the_command_before_the_drafter_loads(self):
+        args = ["--draft", "dflash2", "--draft-model", "/p", "--draft-fallback", "none"]
+        log = ("[strata] 2026-11-24 04:23:18 engine started: /strata --serve "
+               "--draft dflash2 --draft-model /p --draft-fallback none\n"
+               "strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics (SYCL)\n")
+        self.assertEqual(drafting.engine_info(args, log), {"drafting": "dflash2", "drafting_note": ""})
+
     def test_choices_that_never_reached_the_engine_keep_their_own_words(self):
         self.assertEqual(drafting.engine_info(["--mtp", "/m"], "", drafting.NOT_SUPPORTED)["drafting_note"],
                          "Drafting: MTP (DFlash2 is for Qwen3.8-Flash-Next only)")
