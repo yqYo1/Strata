@@ -39610,5 +39610,35 @@
     "schedulable_now": false,
     "finding": "Canonical subset dhead_ contributes to the retained drafter VRAM total. Sole-packed mode 2 backs up packed bytes. A packed-row subset requires new gather and allocation proof before timing.",
     "consumer": "Retrieve for a packed-head proposal after the canonical baseline."
+  },
+  "dflash2-window-policy-20261124": {
+    "source_commit": "4b5dc53c4e00b5748e2d839e62a873035dbe9dec",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-window-policy-20261124/report.md",
+    "report_sha256": "f0a632c77724d487c32a662ca1aeddad1e672f85a67ac61f69220678d4c98929",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-window-ring-20261124-native-review/review.json",
+    "review_sha256": "bf7337e28bd2006399624b2bb2309ebfb5a06fd268b696e68f5d4ffcff588398",
+    "worker": "Orca gpt-6-luna medium, task_dda5cefd29f2, ctx_9768a6dac08b. Read-only input proof and worker-side IPC passed. Accepted completion and terminal exit verified.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "classification": "decision_support",
+    "stage": "native_reviewed",
+    "schedulable_now": false,
+    "finding": "Report/Task hashes match. Source confirms drafting precedes confidence choice; B=8 block work stays fixed, while Verifier::run(T) and pool row count use T. Target work may fall; pool call count and cache/PCIe savings are unproven. 70 tok/s is scenario math.",
+    "consumer": "After layer-zero completion safety is established, use for a spec4 confidence calibration with actual verifier-width and time/token evidence."
+  },
+  "dflash2-ring-service-20261124": {
+    "source_commit": "4b5dc53c4e00b5748e2d839e62a873035dbe9dec",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-ring-service-20261124/report.md",
+    "report_sha256": "e066259361638f2f42b6c01d18ac5181b3d84942185110363ec54e1be3026fd3",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-window-ring-20261124-native-review/review.json",
+    "review_sha256": "bf7337e28bd2006399624b2bb2309ebfb5a06fd268b696e68f5d4ffcff588398",
+    "worker": "Orca gpt-6-luna medium, task_c6a1bb70e214, ctx_6c88ef15d341. Read-only input proof and worker-side IPC passed. Accepted completion and terminal exit verified.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "classification": "knowledge_collection",
+    "stage": "native_reviewed",
+    "schedulable_now": false,
+    "finding": "Report/Task hashes match. Source supports ring geometry and B=8; arithmetic is logical. df2_attention body is absent, so reuse is only a candidate. No measured VRAM or PCIe saturation is claimed.",
+    "consumer": "Retrieve for the next draft-ring component only if traced device service identifies an opportunity on the live path."
   }
 }
