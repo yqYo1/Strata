@@ -1437,6 +1437,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The submitted fresh-position widths reach 2051 for 115438 of 117488
   batched rows in each QSA layer. Page validity still determines which
   operands are actually read.
+  The V2 trace at `4bc26aaa9` includes 5508 `submit_topk<1>` launches.
+  This matches 12 layers with 14 full 8192-row chunks and one 2800-row
+  tail, using selector batches of at most 256 rows. The weighted selector
+  emits complete four-cell blocks in logical order, with at most two
+  partial blocks from the causal tail and the rank cutoff. A width-2051
+  row therefore has 512 complete blocks and three cells in the partial
+  blocks. The staged V2 route uses an identity page table.
+  The grouped fixture aligns complete groups to four-cell positions and
+  injects missing pages and masked IDs. Five sampled width-2051 rows have
+  190–199 masked cells. An earlier rank cutoff in the model can shift
+  subsequent complete groups across subgroup boundaries. Treat the fixture
+  as a test of page grouping and layout sensitivity. Model timing remains
+  necessary to account for that alignment and overlap between queries.
   Compare a four-cell page layout for the packed BF16 K scratch. The
   producer and its consumer would arrange four adjacent features
   consecutively for each cell, then advance to the next feature
@@ -1490,6 +1503,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Run the device checks and timing after the Gate comparison. The fixture
   uses the retained V2 archives until the component decision. Review its
   artifacts and reference at that decision.
+  At 117489 tokens the 1000 tok/s time budget is 117.489 seconds. The two
+  closed original Gate processes at `9ca6601c7` need warmed reductions of
+  0.288 and 0.830 seconds. If all the savings came from the profiled
+  27.073 seconds of QSA service and carried through to model wall time,
+  that would require 1.06–3.06% less QSA service. These figures quantify
+  the target gap under that assumption. Clean model times will decide it.
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
