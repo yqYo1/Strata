@@ -630980,7 +630980,7 @@
     }
   },
   "prefill_moe_status_capture_v7": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "154c21836bfeaba35992ea9ed1b6bfc434dbcf11",
     "sources": {
       "count": 823,
@@ -631100,9 +631100,54 @@
       "LC_ALL": "C.UTF-8",
       "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v7/tmp"
     },
-    "outcomes": {},
+    "outcomes": {
+      "build": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
     "active": false,
     "ownership_closed": true,
-    "passed": false
+    "passed": false,
+    "artifacts": {
+      "libstrata_ur_status.so": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v7/libstrata_ur_status.so",
+        "bytes": 44112,
+        "sha256": "2b6525b54c3eaa4f7aae1b8b228d69032f7fa751463d55c18152fe79ea2bbd39"
+      },
+      "ur_call_guard_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v7/ur_call_guard_test",
+        "bytes": 23000,
+        "sha256": "e0ce61da89f46c4d0ba65a4ef08407782531dcd05d49e88e981638b4a7ef6ccb"
+      }
+    },
+    "device_cases": {
+      "control": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+          "--smoke"
+        ],
+        "env_sha256": "5bdb384d9a71f2e6fc080cb779beeb24ff2204980ef3300551f09572219788b5"
+      },
+      "observed": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+          "--smoke"
+        ],
+        "env_sha256": "428bace3f8cb89852d5f00bd7f572be87d1ac3474476ee3c1b1b783ca0a33bcc"
+      }
+    }
   }
 }
