@@ -1568,11 +1568,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   GEMM and residual write. An error after issue reaches the existing outer
   checked lease while scratch and weight owners remain live. The first GEMM
   verifies the prepared block geometry and consumes that block once.
-  Run both modes on the comparable traced 16386-input ragged route first.
-  Require the original work and response hashes, 48 completed layer windows,
-  and zero or 48 preissues after the checked drains. Then run three balanced
-  independent 117489-input pairs with one first-use and one subsequent
-  request per process. Keep direct output, batched expert upload, QSA, KV and
+  The traced 16386-input ragged admission at `becc132b8` completes both
+  modes on the same coherent build. All four requests match the original
+  work and response hashes and finish 48 layer windows. Checked preissue
+  counts are zero for the original and 48 for each candidate request.
+  All owners close normally with zero fresh GPU faults and matching final
+  model assets. Retire the closed `prefill-first-gate-issue-admission-v1/{0,1,host}`
+  captures after verifying the 144 files, 21433360 bytes and inventory
+  SHA-256 `14f9bc755de27cadbe8af1a569598fb85d50ca7185474a637a1a63e8dc9335f0`.
+  Keep the exact build and committed admission for the timed comparison.
+  Run three balanced independent 117489-input pairs with one first-use
+  and one subsequent request per process. Keep direct output, batched expert upload, QSA, KV and
   decode fixed. Require two faster subsequent prompt times and a paired
   median ratio below one for a repeated gain. Measure the 1000 tok/s
   milestone and the wider model qualification separately.
