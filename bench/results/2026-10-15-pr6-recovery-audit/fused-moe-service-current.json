@@ -625816,7 +625816,7 @@
     }
   },
   "prefill_kv_upload_unitrace_fixture_v2": {
-    "stage": "running",
+    "stage": "closed",
     "inputs": {
       "source_commit": "1ee76bde0f8c2c54bb9bcabbf1570c6aae56f5eb",
       "sources_sha256": "bbdd1c8f948ab5500153057abfdb10f22b3778e80be10902c444db2547228e26",
@@ -625970,11 +625970,90 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "trace": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "fixtures": [
+          [
+            0,
+            0,
+            5,
+            27,
+            27,
+            110592
+          ],
+          [
+            1,
+            0,
+            5,
+            27,
+            5,
+            110592
+          ],
+          [
+            1,
+            1,
+            1,
+            16,
+            1,
+            65536
+          ]
+        ],
+        "validation": {
+          "pid": 4085952,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "count": 34,
+          "sha256": "0298660a1d07d23e89a5aa2c7632c0bb9e64d25033b08dd37ed4e16c69843a9f"
+        },
+        "trace": {
+          "timeline_sha256": "51e41211ddb3daa96c8c1bc9178d92517f2faa75763902abaa9c2397cc343d09",
+          "timeline_bytes": 63409,
+          "copy_commands": {
+            "M2D": 33,
+            "D2D": 11,
+            "D2M": 9
+          },
+          "requested_copy_bytes": {
+            "M2D": 286720,
+            "D2D": 286720,
+            "D2M": 288256
+          },
+          "fills": 3,
+          "gpu_events": 56,
+          "host_events": 148,
+          "gpu_interval_union_us": 1192.8857421875,
+          "joined_native_events": true,
+          "activated_from_exec": true
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "launches": {
       "control": {
