@@ -81,7 +81,7 @@ def read_complete_suite(root, workload_id):
                 decode_rates={r['workload']: r['generated_tokens'] * 1000 / r['decode_ms'] for r in rows})
 
 
-def routes(text, samples, arm):
+def routes(text, samples, arm, *, kv_reuse=None):
     standard.profiles.check_profile_startup(text, 'original')
     require(not any(mark in text for mark in ('strata trace:', 'strata loan audit:',
                                              'strata MoE prefix expert upload layer:', 'strata decode timing:')),
@@ -109,7 +109,8 @@ def routes(text, samples, arm):
                 'actual split, tail guard, drain or MTP restoration differs')
         store = clock.model.restore.require_store(frame, dict(direct=False), dict(read=read))
         clock.model.input_receipt(frame, read - 1, store, False, trace_layers=False)
-        kv = state.kv.check_clean_request(frame, 0, read - 1, 8192, reuse=arm == 'candidate')
+        kv = state.kv.check_clean_request(frame, 0, read - 1, 8192,
+                                          reuse=arm == 'candidate' if kv_reuse is None else kv_reuse)
         decode = dict(zip(clock.footer.COPY_KEYS, map(int, footer.groups()), strict=True))
         require(all(decode[k] == 0 for k in clock.footer.COPY_KEYS[:6])
                 and 0 < decode['cpu_unique_misses'] <= decode['cpu_entries'],

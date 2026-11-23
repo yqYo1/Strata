@@ -159,6 +159,11 @@ integration and testing.
   primary worktree, not another clone or a reason to create a replacement branch.
   Reuse `feature/sycl` across experiment phases rather than opening a branch for
   each build, measurement or report.
+- Default to **DFlash2** for supported single-card SYCL Qwen text launches and
+  prioritize its end-to-end tuning. Use MTP for explicit selection, compatibility
+  and named reference comparisons. Prioritize DFlash2 baselines, physical
+  context and RESTORE qualification before optional MTP performance work.
+  Pin the drafter and effective native settings for each comparison.
 - Concentrate current tuning on the dedicated long-input prefill path toward
   **1000 tok/s**, with repeated long-input results above **600 tok/s** as the
   first milestone. Record milestone evidence in results, not as changing state
@@ -357,11 +362,11 @@ integration and testing.
   useful diagnostics but do not replace long-input model measurements.
 - Keep thinking enabled and provide context/output room for thought and an
   actual answer. Long-generation evidence needs at least about **1K generated
-  tokens**, including thinking. Include both MTP-friendly and MTP-weak workloads;
-  confirm their classification from observed draft acceptance rather than their
-  names. A short prefill-only output does not qualify decode performance.
+  tokens**, including thinking. Include both strong and weak draft-acceptance
+  workloads for the active drafter. Confirm the classification from observed
+  acceptance. A short prefill-only output does not qualify decode performance.
 - Compare matched configurations and workloads, recording actual read/reused
-  tokens, placement, chunk size, cache state and MTP behavior. Separate first-use
+  tokens, placement, chunk size, cache state and drafter behavior. Separate first-use
   cost from subsequent requests and independent process repetitions. Repeat
   comparisons when variability prevents a decision, including decode alone when
   needed. Keep individual samples and spread; do not dismiss a slower result as

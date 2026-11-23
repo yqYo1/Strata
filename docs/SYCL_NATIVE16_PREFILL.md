@@ -2182,22 +2182,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by leaving out a whole length. Hold 98306 outside the smooth fits and
   report its change from 98305 with the actual expert jobs and transfer counts.
   A time difference across these two bodies alone cannot isolate chunk setup.
-  Preserve the historical FDE0 generation plans in Git. Compare the selected
-  prefill route with its reference over three independent pairs (AB, BA, AB)
-  on the selected live build. Keep the stock decode layout, thinking and MTP fixed.
-  Each process runs the official long, agent and two sustained generation
-  workloads. Bind fresh prompt identities, executed gather and KV work,
-  generation lengths and MTP counts before comparing sustained decode and
-  agent follow-up rates. The standard sustained prompts have about 33K actual
-  input tokens and exercise the ordinary route. Check split handoff with a
-  separate matched `split-v1-96k` comparison based on the workload in
-  `bench/sycl/prefill_split_continuation.py`. Three pairs keep the stock decode
-  settings and scalar gather fixed. Check count-preflight bodies, actual
-  128-slot admission, split tail guard/drain, MTP restore and same-request
-  decode footers. The code and prose workloads each need at least 1024 output
-  tokens with thinking. Judge the MTP classes from measured acceptance and
-  report warmup and the two long requests in their original order. Physical
-  context fill and RESTORE keep their separate qualification.
+  The first V2 MTP split continuation process at `9b943d968` yields
+  3573/7883 thinking-enabled outputs on 96204/96274 fresh input tokens.
+  Code/prose PP is 880.4/924.5 tok/s, client TTFT 109.719/104.439 s and
+  TG 11.54/5.40 tok/s. The native process and client exit zero with zero
+  fresh GPU faults. Both requests use the 128-slot split, all batched
+  residual rows on the GPU and a checked guard/drain. The reader's older
+  384-slot check refuses the first request. The original failed result and
+  remaining unrun arms stay in Git. Use these samples as observations only.
+  The next matched continuations prioritize DFlash2.
+
+  The same-source DFlash2 route check passes on the 32K input. Run the
+  official long, agent and two sustained generation workloads with DFlash2.
+  Keep the ordinary
+  384-slot launch and separate 128-slot `split-v1-96k` case explicit.
+  Check count-preflight bodies, actual bank admission, split guard/drain
+  and same-request decode. Require at least 1024 generated tokens per
+  sustained workload with thinking and a visible answer. Report the
+  observed draft acceptance and separate first-use and later requests.
+  Physical context fill and RESTORE keep their separate qualification.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
@@ -10638,14 +10641,27 @@ for a speed comparison. Legacy preload-reuse's changed-zlib refusal also stays
 unchanged;the new admission recovers the original probe source/recipe and
 checks six later current-runtime pre-main proofs.
 
-Native default MTP and legacy explicit-MTP configs remain selected. The host
-Auto policy can choose DFlash2 on a fresh supported configuration;the current
-candidate is not installed/default-adopted. Both fast phase references remain.
+DFlash2 is the default launch preference and the primary tuning target for
+supported single-card SYCL Qwen text configurations. MTP remains selectable
+for explicit configurations and named comparisons. The fast V2 MTP benchmark
+uses a packed-only target head. The initial DFlash2 comparison uses its
+supported canonical-head path with MTP expert release disabled. The Arc B570
+check `dflash2_v2_model_v1` runs V2 native source `59411e1de` with the
+Q4_0 drafter, spec4, DPAS head mode 1 and 8192-token prefill. It completes
+82, 32769 and 82 input tokens with 32, 1 and 32 generated tokens. The long
+request holds all 32768 batch residual rows in VRAM and verifies the contents
+of all 1256 cache slots after a 1124-slot loan. The short requests use the
+decode-cache route and produce matching active-state and output digests,
+with 23 of 23 draft tokens accepted each. The process exits normally with
+no fresh GPU fault. This is a traced correctness check with a configured
+262144-token context. Clean speed, physical final-slot and RESTORE checks
+are pending on this DFlash2 route.
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
 before release,preserves the MTP transition order,and keeps short-input decode
-placement available. DFlash2 width1,expert-release and cache-scratch conflicts
-are rejected before pack/GPU initialization;cache scratch remains MTP-only.
+placement available. The checked cache loan admits DFlash2 in the supported
+spec4 serving configuration. Native admission checks the width, borrowing,
+expert-release settings and graph constraints before GPU initialization.
 
 The host fixture passes29cases/845checks at controller source`930bab9a7`,with
 214compiler and28link inputs covered,no sanitizer output and normal closed
