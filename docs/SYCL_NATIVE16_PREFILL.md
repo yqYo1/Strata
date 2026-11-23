@@ -1424,7 +1424,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   In the subsequent request's 126.229-second client window, GPU kernels
   cover 99.560 seconds and M2D/H2D copy intervals cover 15.339 seconds, with
   0.006435 seconds of overlap. The QSA prefix kernels account for 27.073
-  seconds of service across 360 calls. The 22327 M2D/H2D commands carry
+  seconds of service across 360 calls. The recorded normalized attention
+  consumer group accounts for 180 calls and 26.943568 seconds. The pinned
+  `prefix_batch_impl` submits one prefix pack and one attention consumer.
+  Subtracting the consumer group from the exact family total leaves 180
+  pack calls at 0.129594 seconds. The first request gives 26.975405 seconds
+  consumer service and 0.129723 seconds pack service. Use these sums to
+  prioritize the consumer width census and bounded same-shape tests. A
+  suffix-only refresh directly removes only a fraction of the observed
+  pack service. Host submission, memory traffic and clean elapsed time
+  still need separate evidence for either change.
+  The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
   and 12.008352 seconds of summed service. The engine's expert bank reports
