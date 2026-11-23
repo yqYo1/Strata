@@ -625574,7 +625574,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_kv_upload_unitrace_fixture_v1": {
-    "stage": "prepared",
+    "stage": "running",
     "inputs": {
       "source_commit": "aaf05dc9efc01486bef00b9044443f5ea8f839f9",
       "sources_sha256": "7f275d3aa58a8729708d18eff5e516a81602d8951348dd316990dcd13984eb09",
@@ -625668,7 +625668,67 @@
       "total_cap": 67108864
     },
     "session": "StrataV2Bank4391a2259e539cd51ef5a4a3",
-    "outcomes": {},
+    "outcomes": {
+      "control": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "fixtures": [
+          [
+            0,
+            0,
+            5,
+            27,
+            27,
+            110592
+          ],
+          [
+            1,
+            0,
+            5,
+            27,
+            5,
+            110592
+          ],
+          [
+            1,
+            1,
+            1,
+            16,
+            1,
+            65536
+          ]
+        ],
+        "validation": {
+          "pid": 4064898,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "providers": {
+          "count": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
     "active": false,
     "passed": false,
     "complete": false,
