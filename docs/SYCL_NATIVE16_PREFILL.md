@@ -10707,6 +10707,18 @@ jobs to the CPU. Measure the CPU service and verifier waits separately
 before attributing that decode time to a hardware resource. Physical
 262144-context and RESTORE checks remain open for DFlash2.
 
+The first corrected suite process `bdd9ff4ce` passes the route, ownership
+and output gates. It exits 0 with no fresh Xe fault. The sustained code
+request reads 33217 tokens and emits 4111 at PP 694.5 and TG 12.635 tok/s.
+The prose request reads 33287 and emits 11783 at PP 704.0 and TG 7.047 tok/s.
+Client TTFT is 48.020 and 47.470 s. Body hashes, output lengths and
+draft counts agree with the preceding native run. Code still submits 1449976
+CPU expert jobs. At that work per emitted token, 70 tok/s would require
+about 24700 CPU expert jobs per wall-second. Measure CPU execution and GPU
+completion waits separately to locate the cost. The two further clean
+processes remain pending. Use a synthetic multi-source methods dossier for
+the next weak-acceptance screen.
+
 #### DFlash2 KV stage retention outside the tap layers
 
 Candidate source `44a2926a6` uses a typed DFlash2 observer with the same five
