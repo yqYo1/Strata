@@ -10798,8 +10798,12 @@ of 74.793 and 73.885 s. These are individual observations.
 The V3 controller stops at process 1. Live bank and MoE tuples compare unequal
 to the lists read from the committed control. Replaying the actual footer
 records reproduces the refusal. A JSON round trip matches all non-KV work.
-The original decision remains failed. Revalidate stable field types under a
-fresh committed timing plan. The paired observations motivate that repeat.
+The original decision remains failed. The V4 reader stores bank and MoE
+counters as named integer fields. It accepts the six replayed frames across
+serialization and rejects a changed upload count. All three fresh reload
+requests pass at 766.6, 877.7 and 881.7 tok/s with client TTFT of 85.686,
+74.878 and 74.542 s. The native process exits 0 with closed owners and
+no fresh Xe fault. The retain process follows in the same committed order.
 
 Use 117489 as a separate geometry when its actual residual placement is
 admitted in both arms. Require an observed transfer reduction and reproducible
