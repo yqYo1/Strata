@@ -14,7 +14,7 @@ from engine_once import native_environment
 bank, basis, require = fixture.bank, fixture.basis, fixture.require
 owner_module = fixture.owner_module
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'prefill_moe_status_capture_v2'
+KEY = 'prefill_moe_status_capture_v3'
 ROOT = bank.B / KEY.replace('_', '-')
 TIMELINE = '4bc26aaa9cbdd8d4084336826361aae7bb886449'
 CLOCK_COMPARISON = 'prefill_kv_upload_model_pti_v1'
@@ -33,7 +33,7 @@ PLAN = dict(order=list(ACTIONS), fixture_arg='--smoke',
     acceptance='Exact CPU filter and application output, actual paired 4-byte copy and wait/launch '
                'coverage on the native device route, parameter validation, owned exit zero and '
                'no fresh driver fault. No GPU timing, model, or diagnosis of the original PTI gap.',
-    sdk_selection='Use the pinned SDK launch-with-arguments API. Keep the first compile refusal at 1dd8688fd.')
+    sdk_selection='Use the pinned SDK launch-with-arguments API. Original refusals at 1dd8688fd and 6f073886e.')
 
 
 def identity(path):
@@ -80,8 +80,9 @@ def save(row):
 
 
 def named_deps(path):
-    values = path.read_text().replace('\\\n', ' ').split(':', 1)[1]
-    require('\\' not in values, 'unrecognised dependency-file escaping')
+    rule = path.read_text().replace('\\\n', ' ').splitlines()[0]
+    _, separator, values = rule.partition(':')
+    require(separator and '\\' not in values, 'unrecognised dependency-file rule')
     return {str(Path(name).resolve()) for name in values.split()}
 
 
