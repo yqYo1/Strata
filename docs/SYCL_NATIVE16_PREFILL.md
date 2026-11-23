@@ -1388,13 +1388,37 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   GPU faults. All fifteen final model asset hashes matched. Both result keys
   and the revised controller recover at `1697efe2f`.
 
-  The next terminal test applies the diagnostic-only changes at `1919720d9`
-  and `fa4b9855a` to the measured V2 source. The generator, its diagnostic
-  header and host fixture each pass a reversible source projection. Check
-  every affected translation unit and the exact archive/link inputs before
-  running the dedicated diagnostic target. Exercise one checked terminal
-  commit at 262144, zero output and restoration of the parked full snapshot.
-  Sustained decode remains a separate matched, clean model comparison.
+  The V2 leased server terminal case passes at `d5d60596f`. It applies
+  the diagnostic changes at `1919720d9` and `fa4b9855a` to the measured
+  `59411e1de` source. The original dependency table identifies two
+  consumers of the changed header. Both were rebuilt with verified inputs
+  before linking the retained V2 libraries. The host bounds check and two
+  independent ordinary-server controls pass. The diagnostic short request
+  matches the ordinary server's state, output and MTP work.
+
+  The diagnostic server restores 253919 tokens from RAM, processes 8224
+  more batched rows on the GPU and commits exactly one final verifier row
+  at position 262144. It emits zero tokens and offers zero drafts. The final
+  commit wait and cache refill drain pass for loan generation 2, returning
+  all 1124 borrowed slots. The short reset request matches its fresh control.
+  The repeat full request is rejected before removing the parked state.
+  The server verifies the full 262144-token RAM snapshot, restores its
+  253918-token checkpoint and generates one token after a three-token
+  divergent suffix. The next short decode matches its fresh control,
+  including 16 output tokens and 10 of 21 accepted drafts.
+  All native owners exit normally with zero fresh GPU faults and all fifteen
+  final model asset hashes match. Ordinary GEN reserves output capacity and
+  rejects the full-input request before processing.
+
+  Recover the exact relink recipe, controller and compact results from
+  `d5d60596f`. Removed the closed `prefill-v2-terminal-v1` state root and
+  retired its controller after checking the source projection, recipe,
+  executable hashes and pushed evidence. The retired root had 219 files
+  and 68237428 bytes with inventory SHA-256
+  `51cc27d6aa5e6c645790352af3278bdd88157d444329518a40ef6c0f4707bc5e`.
+  Keep the measured V2 prefill and coherent decode references for the
+  matched official suite and the separate split-prefill continuation
+  comparison. Sustained decode and model adoption still need those results.
 
   Removed both closed RESTORE capture roots after verifying pushed `1697efe2f`,
   their completed owners, exact Git result copies and both retained engine
@@ -5313,7 +5337,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   decode on both short reset prompts with independent ordinary-server
   processes. This tests observed state and draft behavior over those
   prompts. A general MTP ring overwrite invariant needs separate evidence.
-  The leased server model and protocol checks remain open.
+  The retained V2 leased server result above qualifies its selected route.
+  The older KV/gather combinations still have their own terminal cases.
   Run `bench/sycl/prefill_kv_gather_restore.py` against the coherent build
   after its contiguous and ragged gather checks. All four combinations
   replay the original fresh 32769- and 253919-token prompts, switch to a
