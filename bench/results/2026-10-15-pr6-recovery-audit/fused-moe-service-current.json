@@ -631553,7 +631553,7 @@
     }
   },
   "prefill_shared_gate_admission_v1": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "a5c8d8cc43cab52aa299dc1922d3bddb00b3a4ba",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-native-v1/build/strata",
@@ -631860,13 +631860,47 @@
         "trace_progress": true
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 16386,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-shared-gate-native-v1/build/strata",
+          "sha256": "cbe94115f87014f7b7919d853f73889964accd7ce34aac10f9ca9fbae8c41f7d",
+          "bytes": 26550872
+        },
+        "native_source_commit": "234976a5277dbb9e1966e6c3465c1b49f88dc250",
+        "native_identity": {
+          "pid": 363483,
+          "start_ticks": 377164587,
+          "sid": 363428
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "wall": 2400,
       "cpu": 28800,

@@ -1563,6 +1563,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cohort closed on its recorded prelaunch failure. No FDE0 split curve,
   split continuation, generation or score-decay campaign is running. Pin
   future split tests to the selected build and commit their plans first.
+  The first `prefill_shared_gate_admission_v1` request processed 16386 fresh
+  tokens and generated 24 outputs. Its first route gate then stopped the
+  owner at `observed total/max-allocation admission differs`. The measured
+  16385-row mode-10 route uses 1928491296 fixed bytes. The reader's 16-cell
+  rounding predicts 1928515968 bytes. The measured QSA page size is four,
+  which gives the logged 33693728 transient bytes and exact fixed total.
+  The bench exited on SIGTERM with incomplete observation and zero fresh
+  GPU faults. All recorded process identities are absent and the session is
+  empty. Preserve the failed receipt. Replay the recorded route when fixing
+  the four-cell plan before starting three fresh admission processes.
   The finished FDE0 build's 1171 original source files, recipe, configured
   inputs, recorded compiler inputs and 12 target hashes match the recovered
   Git projection. The original commits are reachable from pushed `9b92a032f`.
