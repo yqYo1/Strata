@@ -1577,7 +1577,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
   | --- | --- | --- | --- |
   | `prefill-moe-gate-clock-native-v1/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1370 | 196429735 | `1e79f47dc9feb47de80fe00933cad56b7d66d960b910685e0ebb8e7426865fad` |
-  | `prefill-moe-gate-clock-model-v1/{0,1,2,host}` | 214 | 31680012 | `3726d48d509d6d03972f78c20ad31eb1ab1cdb0d9facc2d76b80d6680dbd8719` |
+  | `prefill-moe-gate-clock-model-v1/{0,1,2,host}` | 214 | 31680012 | `3726d48d509d6d03972f78c20ad31eb1ab1cdb0d9facc2d76b80d6680dbd8718` |
 
   The sparse XPTI subscriber's V6 device run stopped after the second
   registration attempt at `ea8be6e5f`. V7 accepts a repeated registration
