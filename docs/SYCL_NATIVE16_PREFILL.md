@@ -630,13 +630,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The new upload experiment makes a separate comparison on the boundary
   source with the same-engine demand arm. Its physical and phase
   qualification remain required.
-  After qualifying both lengths, use the boundary control as the prefill
-  reference for the cooperative comparison. Prove the original fast-prefill
-  source and recipe against its executable before retiring it. The previous
-  build record supplies source projection and historical workload admission
-  for the cooperative candidate. The paired timing still checks the exact
-  live fast-prefill executables and fixtures. Keep its build record for
-  reconstruction after that output is retired.
+  Both preservation outcomes close the original cooperative advance gate.
+  A future comparison must first qualify its boundary control on the
+  selected live prefill build. Keep the original results and build receipts
+  for reconstructing the historical comparisons.
   Rebuild the complete engine because the verifier headers change. Add the
   existing `ae74403d1` planner fixture as a separate build target linked to
   the same `strata_kernels` archive. Run its traced bounded smoke before its
@@ -1560,6 +1557,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The combined option fails decode preservation on the ordinary route. Keep
   the original ordinary selection and the separate exact 65537-input speed
   result at `84c883393`. The phase-boundary effect remains to be localized.
+  Use the measured V2 split/batched build for the next shared Gate comparison
+  and retain the coherent decode reference. Both FDE0 KV/gather timing cohorts,
+  RESTORE and the ordinary generation comparison have closed. The cache
+  cohort closed on its recorded prelaunch failure. No FDE0 split curve,
+  split continuation, generation or score-decay campaign is running. Pin
+  future split tests to the selected build and commit their plans first.
+  The finished FDE0 build's 1171 original source files, recipe, configured
+  inputs, recorded compiler inputs and 12 target hashes match the recovered
+  Git projection. The original commits are reachable from pushed `9b92a032f`.
+  Retire `prefill-large-gather-kv-model-v1/build` under the shared state
+  directory after verifying the V2 and Gate readers
+  against their original evidence. Its 190 entries comprise 177053149 bytes
+  of regular files. Inventory SHA-256 is
+  `e60c9e8715d43df55630b8cea31cf2d51bcd02023a2063b9c24a5596efbe1b89`.
+  Keep the original `record.json` for source and workload recovery.
   For the subsequent output-store comparison, the retained `fde0cdd11`
   source already exposes `STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE` and
   its build includes `sycl_prefill_attention_bank_test`.
@@ -1764,8 +1776,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `1acdbbbe7`. Closed gather build admission now recovers its pinned control
   bytes from the original commit and verifies the actual build as before.
   A fresh cache comparison needs a separate committed plan.
-  After the 117489-token four-arm comparison closes, use `bench/sycl/prefill_split_length_curve.py` on its
-  fastest eligible arm with the same executable and actual 128-slot placement.
+  The historical FDE0 length plan is in `bench/sycl/prefill_split_length_curve.py`.
+  Its unstarted execution is superseded by the planned sweep on the selected
+  live split build, with a fresh actual-placement check.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
   98304 batched rows fill twelve chunks. One more input row opens a thirteenth.
   On this route the extra chunk requests 48 additional prefix copies totalling
@@ -1789,15 +1802,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by leaving out a whole length. Hold 98306 outside the smooth fits and
   report its change from 98305 with the actual expert jobs and transfer counts.
   A time difference across these two bodies alone cannot isolate chunk setup.
-  `bench/sycl/prefill_split_generation.py` compares the baseline and the selected
-  KV policy over three independent pairs (AB, BA, AB). Keep the stock decode
-  layout, thinking, MTP and native binary fixed.
+  Preserve the historical FDE0 generation plans in Git. Compare the selected
+  prefill route with its reference over three independent pairs (AB, BA, AB)
+  on the selected live build. Keep the stock decode layout, thinking and MTP fixed.
   Each process runs the official long, agent and two sustained generation
   workloads. Bind fresh prompt identities, executed gather and KV work,
   generation lengths and MTP counts before comparing sustained decode and
   agent follow-up rates. The standard sustained prompts have about 33K actual
   input tokens and exercise the ordinary route. Check split handoff with a
-  separate matched `split-v1-96k` comparison in
+  separate matched `split-v1-96k` comparison based on the workload in
   `bench/sycl/prefill_split_continuation.py`. Three pairs keep the stock decode
   settings and scalar gather fixed. Check count-preflight bodies, actual
   128-slot admission, split tail guard/drain, MTP restore and same-request
