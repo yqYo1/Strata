@@ -628822,7 +628822,7 @@
     }
   },
   "prefill_moe_status_capture_v5": {
-    "stage": "control",
+    "stage": "failed",
     "source_commit": "04c2873b6a802e25fed64605349c7a7f4eab940e",
     "sources": {
       "count": 823,
@@ -629027,6 +629027,22 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "observed": {
+        "error": "RuntimeError('observed failed:      76256:\\tfind library=libze_loader.so.1 [0]; searching\\n     76256:\\t search path=/opt/intel/oneapi/compiler/2026.2/lib/glibc-hwcaps/x86-64-v3:/opt/intel/oneapi/compiler/2026.2/lib/glibc-hwcaps/x86-64-v2:/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib/glibc-hwcaps/x86-64-v3:/opt/intel/oneapi/umf/1.2/lib/glibc-hwcaps/x86-64-v2:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib/glibc-hwcaps/x86-64-v3:/opt/intel/oneapi/mkl/2026.1/lib/glibc-hwcaps/x86-64-v2:/opt/intel/oneapi/mkl/2026.1/lib\\t\\t(LD_LIBRARY_PATH)\\n     76256:\\t  trying file=/opt/intel/oneapi/compiler/2026.2/lib/glibc-hwcaps/x86-64-v3/libze_loader.so.1\\n     76256:\\t  trying file=/opt/intel/oneapi/compiler/2026.2/lib/glibc-hwcaps/x86-64-v2/libze_loader.so.1\\n     76256:\\t  trying file=/opt/intel/oneapi/compiler/2026.2/lib/libze_loader.so.1\\n     76256:\\t  trying file=/opt/intel/oneapi/umf/1.2/lib/glibc-hwcaps/x86-64-v3/libze_loader.so.1\\n     76256:\\t  trying file=/opt/intel/oneapi/umf/1.2/lib/glibc-hwcaps/x86-64-v2/libze_loader.so.1\\n     76256:\\t  trying file=/opt/intel/oneapi/umf/1.2/lib/libze_loader.so.1\\n     76256:\\t  trying file=/opt/intel/oneapi/mkl/2026.1/lib/glibc-hwcaps/x86-64-v3/libze_loader.so.1\\n     76256:\\t  trying file=/opt/intel/oneapi/mkl/2026.1/lib/glibc-hwcaps/x86-64-v2/libze_loader.so.1\\n     76256:\\t  trying file=/opt/intel/oneapi/mkl/2026.1/lib/libze_loader.so.1\\n     76256:\\t search cache=/etc/ld.so.cache\\n     76256:\\t  trying file=/lib/x86_64-linux-gnu/libze_loader.so.1\\n     76256:\\t\\n     76256:\\tfind library=libsycl.so.9 [0]; searching\\n     76256:\\t search path=/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib\\t\\t(LD_LIBRARY_PATH)\\n     76256:\\t  trying file=/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9\\n     76256:\\t\\n     76256:\\tfind library=libstdc++.so.6 [0]; searching\\n     76256:\\t search path=/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib\\t\\t(LD_LIBRARY_PATH)\\n     76256:\\t  trying file=/opt/intel/oneapi/compiler/2026.')",
+        "complete": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "active": false,
