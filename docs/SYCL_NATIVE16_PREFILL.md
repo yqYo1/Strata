@@ -1590,15 +1590,28 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Whole-model adoption, physical-context qualification of this variant and
   sustained decode remain open.
 
-  Use the retained V2 prefill reference for the next isolated QSA score-key
-  reuse test. The component at `328b7589d` reduced score-plus-selection
-  time by about 2.3% in three processes with matching scores and selected
-  IDs. The five V2 source inputs match the build receipt and accept the
-  reversible `9639531fd` → `a29048486` change. The independent append/restore
-  fixture at `0cfa87d2d` composes reversibly and the score scratch structure
-  is identical. Qualify the actual append, overwrite and RESTORE boundary
-  on V2 before model timing. Keep GDN, attention, selection mapping and
-  decode fixed in that comparison.
+  The isolated QSA score-key change projects onto the retained V2 source.
+  The corrected same-build engine and fixture at `9dd552bec` cover 138
+  fresh objects, thirteen targets and all seven `Gemm` includers. The six
+  B570 processes closed at `9d19c029f` with normal exits and no fresh GPU
+  faults. Both score stride checks match every score and selected ID. The
+  indexer test saves 2299 cells, appends fourteen and restores with a changed
+  suffix in a second epoch. It matches the freshly packed scores, IDs and
+  guards over four slices per epoch and detects the stale extent after a
+  deliberate scratch overwrite.
+
+  All fifteen timing pairs qualify. The paired process time ratios are
+  0.976715, 0.976928 and 0.975243. The median of the three process medians
+  is 473.311 → 461.273 ms for a twelve-chunk interval. All intervals exceed
+  460 ms and timer control stays below 0.019 ms. This passes the component
+  gain gate. The retained engine at `prefill-score-keys-native-v3` now has
+  an imminent same-build model comparison. Start with the traced 16386-token
+  input and verify actual packing counts under both selectors before clean
+  117489-token timing. Keep GDN, attention, selection mapping and decode
+  fixed. Production RESTORE, physical context and sustained decode remain
+  separate model gates. Retire the six finished component captures after
+  pushing the results. Their inventory is 53 files and 2226601 bytes with
+  SHA-256 `586ce9f362f38c5147cbf8c09ee929d16f9cf31400741305055662eddaf352c0`.
 
   The first build is closed as failed at `842d478b3`. Configure and link
   exited zero. The census expected six `Gemm` includers and the score
