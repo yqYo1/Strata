@@ -643186,7 +643186,7 @@
       "--draft-conf",
       "0.6"
     ],
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "468125ec3fc893b5cb4f38a90c8966dc23cdd662",
     "host_passed": true,
     "ownership_closed": true,
@@ -643303,7 +643303,35 @@
         "environment_sha256": "49abbe63a479bf6484aa5fc0c34cd7e44db9913532812fc647560170027695cd"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "dflash2",
+        "complete": false,
+        "host_probe_accepted": false,
+        "native_identity": {
+          "pid": 1862637,
+          "start_ticks": 381056270,
+          "sid": 1862556
+        },
+        "error": "RuntimeError('official bench exit/ownership failed: output or return code')",
+        "ownership_closed": true,
+        "fresh_faults": [
+          "Nov 24 04:39:25 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -ENOENT",
+          "Nov 24 04:39:25 jitakusaba01 kernel: xe 0000:05:00.0: [drm] Tile0: GT0: Engine reset: engine_class=ccs, logical_mask: 0x1, guc_id=2, state=0x289"
+        ],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -643337,6 +643365,134 @@
       "sha256": "541c888f0bf8758b131651f862fb91cdc06fdb9235e40c7af2949d4d6e55bdf0"
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "first_process_stall": {
+      "input_source": "468125ec3fc893b5cb4f38a90c8966dc23cdd662",
+      "last_completed_samples": [
+        {
+          "phase": "prompt/4K",
+          "turn": null,
+          "read_tokens": 4060,
+          "generated_tokens": 24,
+          "prompt_tps": 197.8,
+          "prompt_ms": 20526.5,
+          "ttft_s": 21.246,
+          "decode_tps": 7.2,
+          "decode_ms": 3317.8,
+          "drafts_accepted": 15,
+          "drafts_offered": 16
+        },
+        {
+          "phase": "prompt/16K",
+          "turn": null,
+          "read_tokens": 16098,
+          "generated_tokens": 24,
+          "prompt_tps": 408.2,
+          "prompt_ms": 39438.3,
+          "ttft_s": 39.683,
+          "decode_tps": 10.6,
+          "decode_ms": 2259.5,
+          "drafts_accepted": 18,
+          "drafts_offered": 19
+        },
+        {
+          "phase": "agent",
+          "turn": 0,
+          "read_tokens": 642,
+          "generated_tokens": 96,
+          "prompt_tps": 35.2,
+          "prompt_ms": 18252.0,
+          "ttft_s": 18.416,
+          "decode_tps": 12.1,
+          "decode_ms": 7958.6,
+          "drafts_accepted": 58,
+          "drafts_offered": 80
+        },
+        {
+          "phase": "agent",
+          "turn": 1,
+          "read_tokens": 3686,
+          "generated_tokens": 142,
+          "prompt_tps": 126.8,
+          "prompt_ms": 29067.9,
+          "ttft_s": 29.392,
+          "decode_tps": 10.2,
+          "decode_ms": 13857.8,
+          "drafts_accepted": 79,
+          "drafts_offered": 118
+        },
+        {
+          "phase": "agent",
+          "turn": 2,
+          "read_tokens": 5294,
+          "generated_tokens": 174,
+          "prompt_tps": 173.5,
+          "prompt_ms": 30505.6,
+          "ttft_s": 32.26,
+          "decode_tps": 10.2,
+          "decode_ms": 17065.4,
+          "drafts_accepted": 105,
+          "drafts_offered": 138
+        },
+        {
+          "phase": "agent",
+          "turn": 3,
+          "read_tokens": 8843,
+          "generated_tokens": 154,
+          "prompt_tps": 247.5,
+          "prompt_ms": 35726.9,
+          "ttft_s": 35.961,
+          "decode_tps": 8.4,
+          "decode_ms": 18402.3,
+          "drafts_accepted": 77,
+          "drafts_offered": 134
+        }
+      ],
+      "request": {
+        "phase": "agent",
+        "turn_zero_based": 4,
+        "sha256": "2fc4c8c8bee44a78a5757ce6f550868a2ab6b2c969c282b7e9ad1ead629422dd",
+        "prompt_tokens": 11793,
+        "max_new": 8192,
+        "generated_before_stall": 9,
+        "thinking": true
+      },
+      "wait": {
+        "stage": "Verifier::run layer 0 completion event",
+        "width": 4,
+        "position": 11801,
+        "window": 517,
+        "seconds": 480,
+        "served_layers_during_wait": 0,
+        "all_five_pool_workers_parked": true,
+        "previous_pool_jobs_done": 18,
+        "watchdog_drain_budget_seconds": 5,
+        "watchdog_drain_succeeded": false
+      },
+      "observation": {
+        "metrics_elapsed_s": [
+          339,
+          409.6
+        ],
+        "cpu_ticks_delta": 332,
+        "xe_client_resident_vram": "10288208 KiB",
+        "xe_client_resident_gtt": "7064040 KiB",
+        "xe_client_counter_delta": {
+          "drm-cycles-ccs": 1356531758,
+          "drm-total-cycles-ccs": 1356531756
+        },
+        "xe_fault_log_unchanged_during_two_live_reads": true
+      },
+      "tool_status": {
+        "bench_exit_code": 1,
+        "native_exit_code_receipt": false,
+        "no_owned_native_process": true,
+        "stopped_before_nominal_32k_and_sustained": true
+      },
+      "observed_metrics_note": "Successful SYCL DFlash2 start reported drafting=off with a fallback note. The native command and eager lines verify DFlash2.",
+      "partial_sse_journal_sha256": "c04a2064983b15b98443e95c2fd14108e2ae0a66fe25a17cd5e1e5c3ef660744",
+      "stderr_sha256": "c3f5137a2072e8b53bd6b9b53fb55a3565a2ca22d46f8839b4bd821d54509fa3",
+      "interpretation": "The Xe compute counter advanced with output frozen. The first fault and CCS reset appear at closure. The pre-close counter measures occupancy and does not establish GPU instruction progress or the cause of the wait."
+    }
   }
 }

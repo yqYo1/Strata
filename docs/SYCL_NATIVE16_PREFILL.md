@@ -2192,10 +2192,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   remaining unrun arms stay in Git. Use these samples as observations only.
   The next matched continuations prioritize DFlash2.
 
-  The same-source DFlash2 route check passes on the 32K input. Run the
-  official long, agent and two sustained generation workloads with DFlash2.
-  Keep the ordinary
-  384-slot launch and separate 128-slot `split-v1-96k` case explicit.
+  The same-source DFlash2 route check passes on the 32K input. The first
+  untraced official suite stops during agent generation, as recorded under
+  `dflash2_v2_generation_v1`. Isolate the verifier completion wait before
+  repeating the long, agent and sustained generation suite. Keep the
+  ordinary 384-slot launch and separate 128-slot `split-v1-96k` case explicit.
   Check count-preflight bodies, actual bank admission, split guard/drain
   and same-request decode. Require at least 1024 generated tokens per
   sustained workload with thinking and a visible answer. Report the
@@ -10654,8 +10655,22 @@ of all 1256 cache slots after a 1124-slot loan. The short requests use the
 decode-cache route and produce matching active-state and output digests,
 with 23 of 23 draft tokens accepted each. The process exits normally with
 no fresh GPU fault. This is a traced correctness check with a configured
-262144-token context. Clean speed, physical final-slot and RESTORE checks
+262144-token context.
+
+The first clean `bench.sh` suite at controller `468125ec3` and plan
+`6df2efa9b` completes the short prompts and four agent turns. In the fifth
+turn it reads 11793 tokens and emits nine tokens before waiting for layer 0
+completion at width four and position 11801. The 480-second watchdog reports
+zero layers served and all five expert workers parked. The same Xe client
+holds 10288208 KiB resident VRAM across two live reads 70.6 seconds apart.
+Its compute-engine cycle counter advances with no output progress. The Xe
+fault and CCS reset appear at process closure. The benchmark exits 1 with
+all owned processes reaped. This failure identifies the first verifier
+completion boundary. The underlying fault mechanism and the effect of VRAM
+pressure require separate evidence. The two later processes remain unrun.
+Clean 32K and sustained generation, physical final-slot and RESTORE checks
 are pending on this DFlash2 route.
+
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
 before release,preserves the MTP transition order,and keeps short-input decode
