@@ -1299,6 +1299,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `store-admit` adds direct output for the first two fresh traced requests.
   Match the admitted batched copy work and decode-cache return. Require 720
   direct stores and zero output-copy bytes per request.
+  The same-build fixture passed at `6a5fdebac` with 168417280 exact BF16
+  values and all four cases. Both traced requests at `3c23f0b78` matched the
+  copy-control work and restored the same 1124 borrowed decode slots. Each
+  request replaced 115495403520 requested copy bytes with 720 direct stores.
+  The native process exited normally with quiet validation, no fresh GPU
+  fault and all 15 final model asset hashes verified.
   `store-time` holds batched upload, input copies, KV reuse and scalar gather
   fixed. Each process handles the four established fresh requests. Run three
   independent pairs in copy/direct, direct/copy and copy/direct order. Select
@@ -1308,6 +1314,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   runtime, fault or budget failure. Record all eligible pairs through closure.
   Complete ordinary and near-full fallback, physical final slot, RESTORE,
   state handoff and sustained decode before adoption.
+  The following closed captures are approved for removal from
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
+  admission uses the fixture and model receipts recorded at `3c23f0b78`.
+  The exact executable and same-build fixture remain in the current build.
+
+  | Capture directory | Files | Bytes | Inventory SHA-256 |
+  | --- | --- | --- | --- |
+  | `prefill-kv-upload-store-component-v1` | 7 | 439815 | `d9dc9c7c843cd906852402eaf836468a1d2709465714860965f0daa3c4b446e2` |
+  | `prefill-kv-upload-store-admission-v1` | 76 | 11152193 | `283287db383ece297feee78c4d9063f54dd9262021f8d06d51130873cbf9ec0c` |
+
   On the earlier upload build, `prefill_split_upload_compare.py profile`
   runs clean, CPU accounting and clean, each with the first two established
   fresh inputs. Only the
