@@ -1600,6 +1600,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   on V2 before model timing. Keep GDN, attention, selection mapping and
   decode fixed in that comparison.
 
+  The first build is closed as failed at `842d478b3`. Configure and link
+  exited zero. The census expected six `Gemm` includers and the score
+  fixture adds a seventh. No device case was launched. The source and
+  recipe recovery matches all 1171 paths, 138 fresh objects, 30 external
+  link inputs and thirteen target hashes. The target-set digest is
+  `3fa36507f88b0c438fc663c47fb1a19e82584ca4232ca45f09fc7714a64c9ba8`.
+  The corrected build declares the exact additional object at `d9c276bf5`.
+  Retire the failed build's `build`, `cache`, `owned`, `ownership.json`,
+  `source` and `tmp` after preserving the original refusal and this audit
+  in the pushed branch. The inventory is 1368 files and 211467437 bytes
+  with SHA-256 `d2a5d9839293fd3347060b26366080d9d599c5ba2562f8c2d451aa01d7d9be43`.
+
   The Gate issue build recovers all 1171 projected source files, its exact
   recipe and actual inputs, 137 fresh objects and twelve target hashes from
   the pinned Git source and build receipt. Both retained phase reference
