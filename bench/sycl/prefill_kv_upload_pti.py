@@ -19,14 +19,15 @@ from run_q6_columns import validation_log
 bank, basis, require = capacity.bank, capacity.basis, capacity.require
 owner_module = capacity.capacity.owner_module
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'prefill_kv_upload_unitrace_fixture_v1'
+KEY = 'prefill_kv_upload_unitrace_fixture_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 ORDER = ('control', 'trace')
 BUDGET = dict(wall=90, cpu=90, rss_cap=4 << 30, text_cap=4 << 20,
               file_cap=16 << 20, total_cap=64 << 20)
 PLAN = dict(order=list(ORDER), fixture_arg='--split-upload-smoke',
+            previous_failed_attempt='60a23f1c94818dc522167d14eb8f17d1f29774cf',
             acceptance='Match all three data, guard and cancellation cases. Verify actual providers, '
-                       'RAW clock and lossless copy/fill inventory. Stop at the first failure.',
+                       'RAW clock, the M2D/D2D/D2M copy ledger and three fills. Stop at the first failure.',
             scope='Current-build copy-path collector admission. Model coverage and overhead have separate gates.')
 
 
@@ -151,8 +152,9 @@ def trace_evidence(path, pid, begin, end):
     summary = profile.trace_summary(events, pid, begin, end)
     sizes = [65536, 20480, 4096, 16384, 4096]
     readers = 2 * sizes + sizes[:1]
-    expected = {'H2D': Counter([4096] * 27 + sizes + sizes[:1]), 'D2D': Counter(readers),
-                'D2H': Counter([110592, 110592, 65536] + [256] * 6)}
+    # PTI uses M for the fixture's std::vector storage (ZE_MEMORY_TYPE_UNKNOWN).
+    expected = {'M2D': Counter([4096] * 27 + sizes + sizes[:1]), 'D2D': Counter(readers),
+                'D2M': Counter([110592, 110592, 65536] + [256] * 6)}
     copies = {k: Counter() for k in expected}
     fills = []
     for event in events:
@@ -160,12 +162,13 @@ def trace_evidence(path, pid, begin, end):
             continue
         name = event['name']
         if name.startswith('zeCommandListAppendMemoryCopy'):
-            match = re.search(r'\((H2D|D2D|D2H)\)\s*\[(\d+)\]$', name)
+            match = re.search(r'\((M2D|D2D|D2M)\)\s*\[(\d+)\]$', name)
             require(match, 'copy direction or bytes absent')
             copies[match[1]][int(match[2])] += 1
         if name.startswith('zeCommandListAppendMemoryFill'):
             fills.append(int(re.search(r'\[(\d+)\]$', name)[1]))
-    require(copies == expected and fills == [66048] * 3, 'GPU copy/fill inventory differs from the fixture')
+    require(copies == expected and fills == [66048] * 3 and summary['gpu_events'] == 56,
+            'GPU copy/fill inventory differs from the fixture')
     return dict(timeline_sha256=bank.sha(path), timeline_bytes=path.stat().st_size,
                 copy_commands={k: sum(v.values()) for k, v in copies.items()},
                 requested_copy_bytes={k: sum(n * count for n, count in v.items()) for k, v in copies.items()},
