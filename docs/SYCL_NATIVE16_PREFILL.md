@@ -1323,10 +1323,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   this cohort. The earlier batched-upload cohort used the same executable and
   its 1000+ observations remain valid for that timing period.
   Keep the closed timing record and its runtime manifest for the same-build
-  physical-context comparison. The raw process directories `0` through `5`
-  and `host` under `prefill-kv-upload-store-speed-v1` are eligible for
-  retirement after this decision is pushed. Their 424 files total
-  63496014 bytes with inventory SHA-256 `745b7a3d7de1b5a78a8619ed952f35db504d1e3463f041b61e57c2ce49ca0c5c`.
+  physical-context comparison. Removed and verified the raw process directories
+  `0` through `5` and `host` under
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-store-speed-v1`.
+  Retirement removed 424 files and 63496014 bytes. The inventory SHA-256 was
+  `745b7a3d7de1b5a78a8619ed952f35db504d1e3463f041b61e57c2ce49ca0c5c`.
   The committed result preserves the individual samples and admission checks.
   Use `bench/sycl/prefill_kv_upload_capacity.py` on the existing V2 diagnostic.
   Run the host bounds first, then compare the two stores on a 16385-token
