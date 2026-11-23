@@ -39253,5 +39253,42 @@
       },
       "reason": "Worker and both native review attempts closed. Keep the report, bounded corrected digest and source revision."
     }
+  },
+  "prefill-packed-expert-dpas-staging-20261123": {
+    "classification": "knowledge collection",
+    "stage": "closed",
+    "source_commit": "db2250aaf66e9cb8816ec482188c979d824b83c6",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-packed-expert-dpas-staging-20261123/report.md",
+    "report_sha256": "81f24080816db357ef8751921bc471749f11d4e344d6e3045262b044ebe761c1",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-packed-expert-dpas-staging-20261123-native-review/review.json",
+    "review_sha256": "7194c2be69332068e5c09514e5bbefbe8e75df6b1ced625993d9e101f975d8ed",
+    "worker": "Orca gpt-6-luna medium. Workspace-write scope, 14 read-only input checks, worker-side IPC, task_b39b9ec0a6a0 and ctx_dc051b2cc482 verified. Completion acknowledged and owned terminal closed.",
+    "reviewer": "Native Codex gpt-6-luna max. Read-only review exited normally with the pinned digest.",
+    "schedulable_now": false,
+    "finding": "Distinct weight-dataflow question: materialize packed IQ per expert, decode into reused DPAS fragments, or stage tiles in SLM. Partial resource-accounting overlap with native16 traffic and bank-capacity entries; indexed-A, upload, direct-store, and Q6 draft-head scopes differ. Three alternatives include scratch and reuse math, measurable break-evens, numerical and overflow gates, counterevidence, and explicit transfer limits. Sources are mostly primary: Intel/IGC, original MARLIN, official CUTLASS/SGLang docs, and the pinned ggml header. No B570 result is claimed.",
+    "correction": "Clarify that 8192 is the m.T/GEMM chunk bound, not the physical-window maximum: source admits larger MoE windows, and the pinned receipt reports 117,488 physical rows.",
+    "consumer": "Retrieve for a later source-pinned materialization-versus-tile-staging decision; treat byte totals as logical scratch estimates, not measured traffic or performance evidence.",
+    "next_review": "Collect per-expert routed-row counts and pinned-path stage timings before a matched staging comparison. The supplied receipts lack per-job histograms and timings, so this prerequisite is unproved.",
+    "capture_retirement": {
+      "stage": "approved",
+      "inventory": {
+        "paths": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-packed-expert-dpas-staging-20261123-control",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-packed-expert-dpas-staging-20261123",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-packed-expert-dpas-staging-20261123/worker-filesystem-proof.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-packed-expert-dpas-staging-20261123-native-review/events.jsonl",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-packed-expert-dpas-staging-20261123-native-review/exit.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-packed-expert-dpas-staging-20261123-native-review/launch-argv.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-packed-expert-dpas-staging-20261123-native-review/schema.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-packed-expert-dpas-staging-20261123-native-review/stderr.txt",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-packed-expert-dpas-staging-20261123-native-review/task.txt"
+        ],
+        "files": 35,
+        "bytes": 524671,
+        "inventory_sha256": "b23b5a8d201f9afe1b3dfc2ed0bb6a92e36b7942a76d2eda88a02a3a9b674d60"
+      },
+      "reason": "Worker and reviewer closed. Keep the source-linked report and short review. The source view and transaction captures have served their consumers."
+    }
   }
 }

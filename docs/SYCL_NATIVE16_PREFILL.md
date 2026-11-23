@@ -1280,11 +1280,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in each mode. Every request restored the same 1124 borrowed decode slots.
   Both owners exited normally with quiet validation, no new GPU fault and
   all fifteen final model asset hashes verified.
-  Keep KV reuse, scalar gather and attention copies fixed for three
-  counterbalanced timing pairs. Compare batch issue before its interaction
-  with direct output. Use `bench/sycl/prefill_kv_upload_build.py` and
-  `bench/sycl/prefill_kv_upload_compare.py`. Complete ordinary and near-full
-  fallback, state handoff and sustained decode before adoption.
+  The V2 clean timing at `297adab4d` completed three counterbalanced
+  pairs and 24 fresh 117489-token requests. KV reuse, scalar gather and
+  attention copies were fixed. Every request matched its original work and
+  dispatch. All six processes exited normally without a new GPU fault, and
+  the final 15 model asset hashes matched.
+  The warmed process medians were 1003.40, 995.68 and 994.76 tok/s for
+  demand, and 1010.45, 1008.87 and 1004.79 tok/s for batched issue. All
+  three pairs favor batching. The paired median prompt-time reduction is
+  1.00%. Median warmed client TTFT was 118.218 and 116.666 s, and median
+  first-request TTFT was 129.132 and 127.671 s. Batching passes the
+  repeated 1000 tok/s gate for this workload and configuration.
+  Use the same coherent engine and fix batched issue for the next isolated
+  attention-output store comparison. Verify the current fixture and model
+  dispatch before collecting the copy/direct pairs. Complete ordinary and
+  near-full fallback, physical final slot, RESTORE, state handoff and
+  sustained decode before adoption.
   On the earlier upload build, `prefill_split_upload_compare.py profile`
   runs clean, CPU accounting and clean, each with the first two established
   fresh inputs. Only the
