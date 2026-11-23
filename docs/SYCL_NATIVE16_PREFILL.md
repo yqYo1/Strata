@@ -1535,6 +1535,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   dequant wrapper. It emits a completed record after the checked HC drain.
   Its reader accepts 48 ordered layer records per 117489-input request and
   rejects missing, extra, reordered, invalid and changed-geometry records.
+  The coherent build at `f49cd34ac` closes 137 fresh objects and twelve
+  targets with complete input coverage. Its host control passes at
+  `78eebdb20`. The initial model preparation on that commit stopped
+  before writing a model plan or starting a GPU process because its
+  historical admission chain still required the retired FDE0 CMake cache.
+  The corrected controller binds the retained V2 build, exact committed PTI
+  result, original model/runtime inputs and the same measured requests.
+  This is a controller-only repair using the verified clock executable.
   Match the two prior requests in each of three independent processes with
   clock off, on and off. Compare first request and subsequent request
   separately against both controls. Qualify observer cost within 3.0 seconds

@@ -68,13 +68,29 @@ def clock_summary(text, observed):
 
 
 def admitted_basis():
-    parent, prior, providers, extra = upload.store_basis(RUNS, False)
+    parent = bank.previous.read(upload.build.ROOT / 'record.json')
+    upload.build.context().check(parent)
     timeline = basis.validation.committed(bank.RESULT, (TIMELINE_KEY,))
-    require(timeline == bank.previous.historic(TIMELINE, TIMELINE_KEY) and upload.gather.closed(timeline)
+    recorded = bank.previous.read(bank.B / TIMELINE_KEY.replace('_', '-') / 'record.json')
+    require(timeline == basis.compact(recorded) == bank.previous.historic(TIMELINE, TIMELINE_KEY)
+            and upload.gather.closed(timeline)
             and timeline['decision']['normal_route_attribution_qualified']
             and timeline['binary'] == parent['binaries']['strata']
-            and timeline['native_source_commit'] == parent['native_source_commit'],
+            and timeline['native_source_commit'] == parent['native_source_commit']
+            and timeline['driver'] == parent['driver']
+            and timeline['boot'] == Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
             'recover the matched V2 PTI route and original work')
+    prior = bank.previous.read(basis.reference.model.ROOT / 'record.json')
+    providers = prior['runtime_files']
+    manifest = prior['runtime_manifest']
+    require(prior['probe'] == timeline['native_validation_probe'] and prior['boot'] == timeline['boot']
+            and prior['driver'] == timeline['driver']
+            and bank.signature(prior['models']) == timeline['model_assets_sha256']
+            and manifest['sha256'] == timeline['runtime_manifest']['sha256']
+            and bank.sha(manifest['path']) == manifest['sha256']
+            and bank.previous.read(Path(manifest['path'])) == providers
+            and all(bank.sha(p) == h for p, h in providers.items()),
+            'original model assets, validation, boot and providers required')
     native = bank.previous.read(build.ROOT / 'record.json')
     build.context(native['source_commit']).check(native)
     require(native['stage'] == 'built' and native['passed'] and native['complete']
@@ -82,14 +98,16 @@ def admitted_basis():
             and native['projection']['clock_parent_build_sha256'] == bank.signature(bank.builder.compact(parent))
             and native['driver'] == parent['driver'] == prior['driver'],
             'complete the checked clock build and preserve the V2 baseline')
-    proof = prior['observer_admission']
-    work = upload.previous.direct_work(proof['expected_work'])
+    original = timeline['observer_admission']
+    work = upload.previous.direct_work(original['expected_work'])
     require(len(work) == RUNS and [w['request'] for w in work] == timeline['request_hashes'][str(READ)]
             and all([upload.previous.split.work(r, s) for r, s in zip(p['routes'], p['samples'], strict=True)] == work
                     for p in timeline['processes']), 'unchanged V2 work across all PTI arms required')
+    proof = {k: original[k] for k in ('ordinary_control', 'fast_configuration_diagnostic')}
     proof.update(expected_work=work, timeline=TIMELINE, timeline_sha256=bank.signature(timeline),
+                 reference_configuration=timeline['configuration'],
                  clock_build_sha256=bank.signature(bank.builder.compact(native)))
-    return native, prior, providers, extra
+    return native, dict(prior, observer_admission=proof), providers, None
 
 
 def decision(processes):
@@ -137,6 +155,7 @@ def experiment():
 
     def current(row):
         require(row['plan'] == PLAN and row['budgets'] == BUDGET
+                and row['configuration'] == row['observer_admission']['reference_configuration']
                 and row['whole_bytes'] == len(ROLES) * BUDGET['total_cap'] + (8 << 20)
                 and [(p['index'], p['role'], p['mode'], p['direct_output'], p['trace_progress'])
                      for p in row['plans']] == [(i, role, 'batched', True, False) for i, role in enumerate(ROLES)],
@@ -158,6 +177,8 @@ def experiment():
 
     def save(row):
         if row['stage'] == 'prepared':
+            require(row['configuration'] == row['observer_admission']['reference_configuration'],
+                    'the prepared server configuration differs from the measured V2 route')
             row.update(plan=PLAN, budgets=BUDGET, whole_bytes=len(ROLES) * BUDGET['total_cap'] + (8 << 20))
             row['request_hashes'][str(READ)] = [w['request'] for w in row['observer_admission']['expected_work']]
             for plan, role in zip(row['plans'], ROLES, strict=True):
