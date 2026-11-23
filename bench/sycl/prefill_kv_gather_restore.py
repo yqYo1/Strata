@@ -24,10 +24,10 @@ SCRIPTS = [str(Path(p).resolve().relative_to(bank.P)) for p in
             device.coherent_model.__file__, device.coherent_model.kv.__file__)]
 
 
-def inputs():
-    native, speed, _, build = device.coherent_inputs()
+def reference_workloads(native, speed):
+    build_sha = bank.signature(bank.builder.compact(native))
     gate = device.validation.committed(bank.RESULT, (device.COHERENT_KEY,))
-    require(gate['build_sha256'] == build['build_sha256'] and gate['binary'] == build['binary']
+    require(gate['build_sha256'] == build_sha and gate['binary'] == native['binaries'][device.fixture.TARGET]
             and gate['native_source_commit'] == native['native_source_commit']
             and [s['stage'] for s in gate['stages']] == ['contiguous', 'ragged']
             and all(s['passed'] and s['ownership_closed'] and s['native_exit_code'] == 0
@@ -42,7 +42,13 @@ def inputs():
             and parent['environment_template_sha256'] == bank.signature(speed['environment_template'])
             and all(parent['outcomes'][arm]['passed'] for arm in model.ORDER),
             'the original measured model/state/RESTORE control is required')
-    return native, speed, build['build_sha256'], bank.signature(gate)
+    return build_sha, bank.signature(gate)
+
+
+def inputs():
+    native, speed, _, _ = device.coherent_inputs()
+    build_sha, device_sha = reference_workloads(native, speed)
+    return native, speed, build_sha, device_sha
 
 
 def gather_counts(frame, vec8, *, historical=False):

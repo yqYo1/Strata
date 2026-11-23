@@ -3,9 +3,6 @@
 #include "strata/sycl/runtime.hpp"
 #include "strata/prefill/moe_window_routes.hpp"
 #include <cstdint>
-#ifdef STRATA_PREFILL_GU_A_PROBE
-#include <vector>
-#endif
 
 namespace strata::experimental::vllm_xe2_native16 {
 
@@ -65,26 +62,6 @@ struct GuPairOwnership {
 // by local lane XOR1 in its SIMD16 subgroup, for both actual TLA layouts.
 // A nonzero partner_mismatch is evidence against that schedule, not a GPU run.
 GuPairOwnership inspect_gu_pair_ownership(int64_t rows, Tile tile, GuLayout layout);
-
-#ifdef STRATA_PREFILL_GU_A_PROBE
-// Device diagnostic for the prefill gate/up A operand. One record per
-// lane/fragment element, including replicated N subgroups and padded rows.
-struct PrefillGuAWord {
-  uint32_t cell;
-  uint16_t dense_bits, mapped_bits;
-};
-struct PrefillGuAProbe {
-  int rows, bank_rows, map_offset;
-  const uint16_t *dense, *bank;
-  const int32_t *map;
-  PrefillGuAWord *result;
-  uint32_t *status;
-  size_t result_words;
-};
-std::vector<uint32_t> prefill_gu_a_layout(int rows, Tile tile);
-sycl::event probe_prefill_gu_a(sycl_backend::Runtime &runtime, sycl::queue &q,
-                               Tile tile, const PrefillGuAProbe &p);
-#endif
 
 // Fixed interleaved GU shape: FP16 X[rows,2560], W[1280,2560], FP16 H[rows,640].
 // FP32 DPAS -> per-operand BF16 RNE -> FP32 SwiGLU -> finite FP16 saturation.

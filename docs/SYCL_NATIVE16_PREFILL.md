@@ -262,10 +262,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `src/core/verify.cpp` at the measured source `1bf54ec32`. Even setting both
   wall intervals to zero in the same calculation gives 63.73–63.98 tok/s
   for code and 35.21–35.28 for prose. These are fixed-work sensitivities.
+  Halving both intervals yields 19.26–19.32 and 11.55–11.58 tok/s on
+  the same samples. Halving draft generation as well yields 20.86–20.92
+  and 12.58–12.61 tok/s. These calculations keep the observed yields of
+  3.604 and 2.017 tokens per window. Planning, input quantization and job
+  preparation together account for 8.17–8.42 ms per window, at most 2.82%
+  of its measured time. Use the queued segment clocks to distinguish
+  execution of the verifier's layer graph from the delay in reaching it.
+  Keep reductions in routed work and changes in accepted tokens per window
+  in the same decode comparison.
   Moving experts changes how much other work the wait hides and may change
   the draft yield. Measure both after a ranking change. Reaching 70 at the
   observed yields also requires reducing the remaining verification/draft
   time or producing more accepted tokens per window.
+  In the three completed CPU-service observer processes at `c74d1539c`,
+  the single-token IQ4_NL Down bins are 20.61–20.64% of summed leaf CPU
+  time for code and 15.12–15.15% for prose. These concurrent worker clocks
+  motivate a bounded component test on the measured Zen 3 host. The
+  denominator is CPU time within the instrumented pool's leaves.
+  The decode-only paired-row candidate at `5c1052eb8` reused Q8_0 input loads
+  for two adjacent IQ4_NL Down output rows. The CPU build verified 618 inputs,
+  and all 60 bitwise-output and guard cases passed. The six processes at
+  `34506f209` closed with 30 eligible pairs. Median candidate/reference times
+  were 0.9874/0.9817/0.9980 for one-expert reuse and 0.9869/1.0191/0.9726
+  for rotation through 128 experts. The rotation arm missed the three-gain
+  gate. The original plan and linked build evidence remain at `e4a9cc023`
+  and `a0ec64a8e`. The rejected selector and fixture were removed from the
+  active tree. After recovering the exact inputs and checking the archives and
+  ELF, the private build and output were removed (103 files, 16,085,717 bytes).
   Test the existing request's MTP confidence floor independently of expert
   placement. The older six-process width comparison at `dcb8ba8cf` found
   that fixed width two beat four on prose in every pair and lost on code in
@@ -279,6 +303,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the strong/weak class from the reference and report the candidate's
   changed draft denominator, generation length, time to answer and TG.
   Preserve fixed-input prefill placement, PP and client TTFT independently.
+  The reviewed `mtp-confidence-work-contract-20261121` audit confirms that
+  draft-0 runs before the confidence check. Assess later draft work and
+  target verifier width separately. Define `A_i` as the event that draft `i`
+  is offered and accepted, and `s_i` as its probability given acceptance of
+  the preceding draft prefix. Before EOS or output clipping, expected yield
+  is `1 + sum_i product_{j=1..i} s_j`. Use the measured emitted count after
+  clipping. The pilot records widths and acceptance by depth. Request-mean
+  observer phase clocks and clean speed remain separate measurements.
   The decode-only committed-prefix candidate changes one other piece of work.
   After the target commits `a+1` rows of a window of width `T`, the MTP round
   ordinarily computes K/V for all `T` and then recomputes the selected row in
@@ -293,17 +325,109 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   unknown last acceptance using its two and one unemitted positions.
   Elapsed savings need measurement because narrower matvecs can reread the same
   weights, and the first occurrence of each width can capture another graph.
-  Compare off/on at fixed width and identical placement, separately from the
-  confidence-floor experiment and the proposed graph-drain change. First trace all four actual
-  catch-up widths against verified and accepted counts. Check live draft KV,
-  next-token probabilities, ordinary prefill dispatch, handoff and RESTORE
-  across a page boundary and near capacity. Include the initial single-row
-  and final truncated window. On the same qualified binary take three ordered
-  stock/candidate pairs (AB, BA, AB) of the thinking-enabled long, agent,
-  code and prose suite. Compare subsequent TG and full-answer time per
-  workload, report first-use capture separately. Require faster TG in two
-  pairs and a geometric mean ratio above one per workload to select that
-  workload's route. A failed safety or live-prefix comparison stops timing.
+  The `4d2efd356` translation unit passes the retained production SYCL
+  syntax check with all 754 included files matching the recorded compiler
+  inputs. The later linked build supplies the live state and timing checks.
+  Qualify the context-boundary fix independently. The CLI admits `n + max_new`
+  equal to the physical capacity. With a native pack, `n = capacity - 2`,
+  width four and two requested outputs, the initial one-row verification fits.
+  The next width-four window can fail the CLI range check before emitting the
+  second output. Clip the final width after suffix lookup. Bound MTP catch-up,
+  the standalone first draft and every subsequent draft step by the drafter's
+  own `max_cells`, before staging or capture. The reference CLI has enough room
+  for this width-four case's draft steps, so reproduce its refusal on a small
+  exact-fit request. On the fixed image require both outputs, an actual
+  truncated verifier window, and quiet validation. The 262142-input/2-output
+  request and separate exact-262144 no-output fill use the same width-four
+  head configuration. Qualify width eight with its supported head separately.
+  Keep the safety fix in both prefix-selection arms.
+  Both patch orders on the measured `fde0cdd11` image produce the same two
+  source files. The fixed generator hash starts `81fe4b074a`. The MTP hashes
+  start `243078ea8c` with the fix alone and `33f2e63708` with both changes.
+  With both changes, the pinned `e69d184fc` syntax check passes for the MTP
+  engine unit, normal generator and exact-fill diagnostic, with 754, 804 and
+  805 matched includes respectively.
+  The original CLI at `4ac41d827` completes 16384 batched rows on the
+  16385-input, 16387-capacity request and exits at the expected refusal at
+  position 16385. Validation and ownership close without a fresh driver fault.
+  `bench/sycl/decode_mtp_prefix_build.py` projects only the two changed units
+  onto the measured prefill source. The build at `59914a469` closes with 137
+  fresh objects, 1474 verified compiler inputs, zero uncovered inputs and all
+  twelve linked targets. The normal CLI ELF begins `cdc551c029` and the
+  exact-fill diagnostic begins `5fe3a8a5f6`. The independent
+  decode fallback and the measured prefill reference stay available through
+  this comparison. The original fixed-context trial's same-build host check
+  and width-four smoke passed. The smoke processed 16384 batched rows, started
+  its first MTP catch-up at position 16384 and emitted both requested tokens
+  in two verifier windows, with the last width clipped to two. The width-eight
+  case exits 1 at initialization with `experimental sole-packed head requires
+  MTP4` from `MtpLayer::bind`, before processing the prompt. The trial stopped
+  there. Both processes closed with unchanged driver and no fresh faults.
+  The head mode is `STRATA_SYCL_DECODE_Q6_DPAS_HEAD=2`. Width eight needs a
+  separate check with the ordinary native head and its own allocation budget.
+  The validation preload retains a provider reference through process exit.
+  The continuation checks the archived width-four smoke and both original
+  long-case commands, inputs and environments. Only the private fixture and
+  output paths change. The width-four `near-four` run at `c559907fe` confirms
+  262141 batched rows for a 262142-token input, two outputs, one accepted
+  draft and actual terminal width two. The CLI exits normally and the trial
+  closes without a fresh driver fault. The exact-fill trial consumes 262143
+  batched rows and one final committed row, reaches physical position 262144
+  with zero outputs, and passes the commit and refill waits. The 114688 GPU
+  rows and 147455 host rows match the original placement. All 15 model assets
+  match after normal exit, with closed ownership and no fresh driver fault.
+  This qualifies physical fill on the fixed width-four configuration with
+  prefix selection disabled. Live prefix RESTORE and clean speed still need
+  their own evidence.
+  The reviewed `decode-mtp-committed-width-numerics-20261121` audit finds a
+  distinct Q8_0 matvec dispatch for one row. Row strides and per-row fused
+  GR stay fixed across widths. Compare the earlier accepted K/V cells and
+  scales separately from the selected cell overwritten by the full one-row
+  forward. Check the draft ID and probability with the same staged inputs.
+  The reviewed `decode-mtp-selected-row-kv-20261121` source audit supports
+  rewriting the selected cell in the full forward after omitting its earlier
+  K/V write. A separate change would have to retain the selected residual and
+  token staging or remap the selected row explicitly. Shrinking those inputs
+  along with the K/V pass leaves index `a=3` outside the staged rows. Measure
+  the existing `a+1` route first, then test the selected-row change separately.
+  `bench/sycl/decode_mtp_prefix_restore.py` pins the post-capacity live
+  RESTORE comparison. It binds each catch-up line to its verifier window and
+  actual commit, checks the draft and target state over the committed extent,
+  and requires a shorter eligible catch-up at both lengths. A differing state
+  fingerprint triggers a fixed-history numerical comparison before timing.
+  The host trace parser accepts both planned shapes and rejects excess
+  catch-up, skipped commit positions, wrong published extent and a terminal
+  draft call. The first traced baseline restored 32769 tokens, read 8209 more
+  and generated all eight requested tokens. It accepted all six drafts, with
+  widths one, four and four and catch-up widths one and four. The campaign
+  stopped at the no-shortening-opportunity check before the candidate arm.
+  The server exited zero and ownership closed without a fresh driver fault.
+  The V2 comparison uses the same native build and an 8209-token fresh
+  suffix ending in the existing varied-prose task. The pinned model chat
+  template renders the suffix with thinking enabled. The shorter resumed
+  input has 40978 tokens; the near-capacity one has 262064, allowing 64 output
+  tokens plus 16 spare positions. Both matched pairs generated 64 tokens,
+  accepted 36 of 81 drafts and exercised 19 shorter catch-up windows. Each
+  pair reduced MTP K/V catch-up from 105 to 62 rows with matching requests,
+  accepted positions, committed state fingerprints and RAM snapshot checks.
+  All four native processes exited zero with closed ownership and no fresh
+  GPU fault. See `decode_mtp_prefix_restore_v2` in the linked service result.
+  Retired 280 files and 54,045,800 bytes of private driver caches and process
+  streams from the closed V1 and V2 RESTORE trials. Their outcomes match
+  pushed commits `7a479bc5b` and `76bd5586e`. The seven local campaign and
+  execution receipts retain their verified hashes. The speed suite reads the
+  committed outcome and creates its own private caches.
+  The six processes in `decode_mtp_prefix_generation_v1` closed normally
+  with no fresh GPU fault and verified final model assets. The thinking-on
+  official suite matched all request histories, token counts, draft counts
+  and fixed-input prefill dispatch. Code TG rose in two of three pairs,
+  with a geometric-mean gain of 1.073%. Prose rose in one pair, with a
+  geometric-mean loss of 1.113%. Code's fixed-input client TTFT was higher
+  in two pairs. Keep the original MTP route as the default. The linked
+  decision retains individual TG, PP and TTFT pairs and the separate
+  boundary and RESTORE evidence. Recheck the retained coherent decode
+  reference with the same official prelude before choosing the next
+  verifier experiment.
   Prioritize reducing the work inside MTP over deferring its two intermediate
   host waits. At `1532659f2`, the timestamps of 32 B570 graph replays cover
   ten complete uncoupled T4 chains and the first two graphs of an eleventh.
@@ -353,6 +477,330 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   For the placement and confidence experiments record the new verifier
   duration and yield together. Faster draft generation alone cannot close
   this gap at the measured target-verifier cost.
+  The two completed on-mode caller profiles in `decode_service_overhead_v3`
+  put per-layer copy retirement plus the final copy wait at 0.232–0.239 ms
+  per verifier window across code and prose. This is about 0.09% of each
+  profiled request's caller interval. The campaign's final overhead gate
+  remains failed. Separately, the code request at `55265f9e3` spent 0.242%
+  of decode in the resident completion-query wrappers. Keep the checked
+  copy retirement and prioritize the larger layer-graph intervals.
+  [Caller profiles](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json),
+  [query profile](../bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-current.json).
+  Revalidate the cooperative KV resolver on the measured fast prefill image.
+  Its older same-ELF decode comparison `decode_kv_speed_v1` gained 6.77%
+  on code and 7.00% on prose. Its 64K warmed prefill preservation check
+  remains failed (0.48% longer).
+  `bench/sycl/decode_kv_fast_prefill_build.py` projects only the measured
+  decode phase selector and the owned cooperative translation unit from
+  `644412c8e` and `93b964cae` onto the exact `fde0cdd11` build image.
+  The projected delta is six files. The existing scalar KV translation unit
+  retains SHA256 prefix `4473c66af0` and the other engine source bytes match.
+  The `fde0cdd11` source label denotes the composed build recorded by
+  `prefill_large_gather_model_source.py`. Reconstructing its 1171 files
+  from the recorded Git inputs produced source SHA256 prefix
+  `f35b6b1a3f` and recipe prefix `ee8be44d38`, both equal to the retained
+  ELF's build record. All twelve measured-source files in the two Orca
+  reviews match that reconstruction. Their original manifests are preserved.
+  The retained `14508acbf` composition matches the eight source files used
+  by the verifier projection and the context fix. Apply only the patch from
+  `178d532^` to `178d532` to `src/core/mtp.cpp` and `src/program/generate.cpp`.
+  On both bases, the resulting hashes start `243078ea8c` and `81fe4b074a`.
+  Applying that patch before or after the six-file KV projection produces
+  identical bytes for all nine checked paths, including the unchanged scalar
+  resolver. The MTP shortening change stays independent. Qualify the
+  boundary-only recipe first. The fast prefill builder exposes
+  `prepare-boundary`, `configure-boundary` and
+  `compile-boundary` for the two-file control on `fde0cdd11`. Its ordinary
+  `prepare` requires that committed build and its completed boundary checks,
+  then adds the KV layer. In `bench/sycl/decode_kv_fast_prefill_capacity.py`,
+  run `boundary-prepare`, `boundary-host`, `boundary-small-four`,
+  `boundary-near-four` and `boundary-full` in order. Reuse the original
+  MTP4 inputs and environment. Both exact-fit cases require two outputs and
+  a terminal width of two from the two-window, one-draft receipt. The
+  full case requires the width-one commit and drain at 262144 with zero
+  outputs. Bind all four results to the same exact boundary-only build.
+  Standalone boundary admission reads the earlier exact-fit and physical-fill
+  outcomes from their original commits. It binds them to the recorded
+  fast-prefill build and checks the live runtime, model assets and new
+  executables. The closed MTP test executables and the phase-naming reference
+  are historical inputs for these standalone cases.
+  The host input check on `c316a2666` reproduced all three token-body and
+  environment hashes using the retained runtime. It refused a changed boot
+  identity and a different parent executable hash. The new boundary executable
+  still needs its own build and device outcomes.
+  The build projection recovers the coherent foundation from its original
+  receipt and Git sources. Preserve its executables for live comparisons and
+  readers that still validate those bytes. The source reconstruction at
+  `6bbcbf627` reproduced 1171
+  files for the boundary control and 1172 for the cooperative build. Both
+  contain the same two context edits and the unchanged scalar resolver.
+  The planned fresh object counts are 137 and 139. The existing model
+  admission still reaches `coherent_inputs` and `stock.check_build`, which
+  validate the original composed image and its retained inputs. The replay
+  and cache cohorts have ended. Check the remaining live readers before
+  retiring an old build or opening the next timing cohort.
+  Admission of the committed fast-prefill build reads the original retained
+  decode identity from its build result. It still validates the fast-prefill
+  source, recipe, compiler inputs, executables and same-build fixtures.
+  The phase-naming executable was a build-time fallback. Retain coherent
+  `14508acbf` for decode and `fde0cdd11` for fast prefill during the
+  boundary comparison. Use the boundary-only build as the single temporary
+  third generation. Select and retire a superseded reference at the next
+  boundary before adding a cooperative build.
+  The old phase-naming and MTP-prefix build outputs were retired after
+  recovering both original build recipes and compiler inputs. The cleanup
+  removed 1573 files and links with 410910775 regular-file bytes. The
+  original build receipts remain for source recovery through the boundary
+  comparison. See `retained_builds_review_20261103.boundary_candidate_reference_transition`.
+  The standalone boundary build passes all four checks at `04b277311`.
+  The 16385- and 262142-input cases each produce two outputs with final
+  width two. The full input processes 262143 batched rows and commits the
+  final slot at 262144 with a width-one window and a checked refill drain.
+  It emits zero tokens. All three GPU processes exit normally without a
+  fresh fault, and the final model asset hashes match.
+  The 65537-token boundary timing at `ea0f97045` closes six independent
+  processes and 18 matched fresh requests. Route, draft counts, provider
+  identities and final model asset hashes match. All six native processes
+  close without a fresh GPU fault. The median paired first-use prompt time
+  and client TTFT fall 1.289% and 1.180%. The warmed medians of the paired
+  time ratios are 1.000733 and 1.000881. These exceed the predeclared
+  preservation limits. The process-median warmed rates are 873.147 and
+  876.725 tok/s for retained and boundary, with lower rates than the
+  earlier 65537-token cohort on the retained executable. Use the paired
+  ratios for the preservation decision. The cause of the period difference
+  remains unresolved.
+  The PLE attribution candidate enables `STRATA_SYCL_PREFILL_PLE_WAIT_PROFILE=1`
+  for SYCL layer-major prefill. Its layer-one record includes the position,
+  rows, table mode and completed gathers after the existing queue drains.
+  The future retrieval clock covers the caller's exposed gather wait. The
+  separate host interval also includes upload and PLE work submission.
+  For the syntax check of `fcf8acbac`, apply its single source diff to a
+  private copy of the verified boundary build's prefill translation unit.
+  Keep the original `strata_prefill` compiler, flags and environment. Add
+  the original unit directory as a quoted include directory. Substitute
+  syntax-only mode and a private dependency file for the object output.
+  Verify that every dependency matches the recorded compile or external
+  inputs, with the private translation unit as the sole overlay. The check
+  passed with 799 verified dependencies, overlay SHA-256
+  `903bc778ffbad603014a6e173d9fe3908b4f42534832185ccdf3612a61e1bbf9`
+  and compile database SHA-256
+  `36c68b081b50699928315c206928b12f1485c5a11525e08ddd7664cace4e73c5`.
+  After a native build, bind the records to request boundaries and measure
+  observer overhead with the same executable.
+  The split-prefill accumulator can check its two fixed dequantization
+  workspace ranges once per nonempty window with
+  `STRATA_SYCL_PREFILL_SPLIT_SCRATCH_CHECK_ONCE=1`. The workspace allocations
+  and queue belong to the invocation through its checked drain. Each expert
+  blob and job source range still has its own check. The default checks both
+  workspace ranges on every new expert. The first matched 117489-token pair
+  executed 18860–18900 dequantizations across 48 windows per request. This
+  bounds the removed registry lookups at 37624–37704 calls per request. Measure
+  their host cost before assigning any change in request time to the lock.
+  Project this change onto the exact boundary image as the sole
+  `src/prefill/moe_window.inc` overlay. For syntax verification, copy the
+  original prefill translation unit into the same private directory as the
+  modified include, then use the pinned compiler, flags and original source
+  directory as a quoted include directory. Compare dependency hashes against
+  the original compile and external inputs, with the one include as the only
+  changed input. This projection uses the original PLE implementation.
+  The `f170e7863` syntax check passed on the boundary build's compiler
+  recipe with 799 verified inputs. The include overlay SHA-256 is
+  `683f2bfd190b8a2e36d66244447bee8d5ea076eae00cc26f43805af4588c6104`.
+  For the same-image experiment, qualify checked numerical output, actual
+  split placement, route counts, cancellation and the decode handoff first.
+  Use the established four fresh 117489-token requests and three independent
+  pairs in off/on, on/off, off/on order. Capture prompt time and client TTFT
+  for the first request and warmed median separately. Hold the scalar decode
+  resolver, aligned KV reuse and expert dispatch fixed, with PLE timing
+  disabled in both arms.
+  Count a warmed gain when at least two pairs improve and their median ratio
+  is below one. Record first-use TTFT separately and verify phase preservation
+  before adoption. Preserve the actual new build inputs and sample spread.
+  The independent 117489-token comparison closed all six processes and 24
+  fresh requests with matched work, no fresh faults and the original model
+  hashes. Both arms use scalar decode KV and aligned prefill KV reuse.
+  Warm process medians are 919.129, 947.399 and 931.788 tok/s for retained,
+  and 927.973, 944.208 and 1042.218 tok/s for boundary. The median paired
+  boundary/retained ratios are 1.007838 first prompt time, 0.990469 warm
+  prompt time, 1.007909 first client TTFT and 0.990693 warm TTFT. The
+  preservation gate fails on both first-use clocks. The last warm process
+  exceeds 1000 tok/s on this route. The other two produce less than 945
+  tok/s, so sustained repeatability remains open. Retain the original
+  65K and 117K outcomes without advancing the cooperative comparison.
+  The new upload experiment makes a separate comparison on the boundary
+  source with the same-engine demand arm. Its physical and phase
+  qualification remain required.
+  Both preservation outcomes close the original cooperative advance gate.
+  A future comparison must first qualify its boundary control on the
+  selected live prefill build. Keep the original results and build receipts
+  for reconstructing the historical comparisons.
+  Rebuild the complete engine because the verifier headers change. Add the
+  existing `ae74403d1` planner fixture as a separate build target linked to
+  the same `strata_kernels` archive. Run its traced bounded smoke before its
+  full oracle/graph validation. The fixture exercises the physical last cell,
+  invalid tails and the planned 2/4-query shapes. Commit both results before
+  starting the model diagnostic.
+  Before timing, `bench/sycl/decode_kv_fast_prefill_restore.py` checks
+  both settings at each fixed MTP width 2 and 4 on the candidate binary,
+  plus the scalar width-3 fallback on the shorter case.
+  It uses the established 32769- and 253919-token fresh prefixes, an
+  unrelated 33-token switch and 8209 fresh tokens after live RESTORE.
+  A final distinct 33-token request returns from the restored decode to
+  the short scalar path in the same process.
+  The first two requests emit one token. The restored request has an
+  eight-token output cap, leaving room for the last verifier window even
+  when it commits more rows than it emits. Bind each verifier position,
+  width and capture to the same native reply. Compare the actual committed
+  state, snapshot payload and expert-cache restoration against the off arm.
+  Treat this bounded state and route check separately from exact 262144-token
+  fill and from both-phase performance.
+  Use `bench/sycl/decode_kv_fast_prefill_capacity.py` for the standalone
+  physical fill on the candidate's linked diagnostic. Replay the original
+  16385-token smoke and 262144-token input with aligned prefill KV reuse
+  fixed in all four cases. Only the decode KV selector changes within a
+  pair. Require the previous residual placement, KV prefix counts and host
+  mirror writes. At capacity, require 262143 batched rows and the checked
+  scalar width-one commit and drain of the final cell with zero output.
+  The leased server's exact-full protocol and RESTORE remain separate gates.
+  Keep expert placement, logical context, resident KV and copy geometry fixed.
+  The cooperative timing uses three counterbalanced blocks per length with
+  the boundary control, KV off and KV on. Off/boundary measures the linked
+  change with scalar KV fixed. On/off measures the decode selector on the
+  same executable. On/boundary measures their combined impact. Bind all
+  three to the earlier paired boundary timing and keep its result separate.
+  Keep a later direct check of the complete change against the retained
+  phase references before adoption. Hold the measured prefill selection
+  fixed at KV reuse and vector gather for 65537, and KV reuse with scalar
+  gather for 117489. Require the original bodies, read counts, expert work,
+  draft counts, and actual decode capture route. Keep first and warmed
+  prefill and client TTFT ratios separate. After both length gates pass,
+  `bench/sycl/decode_kv_fast_prefill_generation.py` compares the decode
+  selector off/on in three independent pairs on the same new executable.
+  Keep the stock 1256-slot decode placement and the 65K KV reuse/vec8
+  choices fixed. Run official long, six-turn agent and both thinking-enabled
+  long-generation workloads in each process. Verify the captured width-four
+  selection and the actual prefill dispatch. Retain TG both with and without
+  matching generated and draft counts, and assess agent preservation only
+  for matching histories and work. Measuring the new and retained binaries
+  on the sustained suite is still a separate preservation check.
+  Require prefill and TTFT preservation in both comparisons and higher TG in
+  at least two off/on pairs with a geometric mean ratio above one for each
+  sustained workload. Close on a state, identity, ownership or fault failure.
+  This projection has source evidence only. Its build waits until a comparison
+  generation retires and the current serialized measurements close.
+  To distinguish layer-graph execution from the host's wait on the same
+  event, sample the ordinary, unsplit 48-layer target verifier at width four.
+  Set `STRATA_SYCL_DECODE_SEGMENT_CLOCK_REQUEST` before engine startup to
+  the native request ID of one sustained workload. The SYCL server instantiates
+  profiled layer graphs for eligible decode shapes. Only eligible windows
+  9–12 of the selected request query clocks. The first graph includes input
+  staging and the first layer's pre-router work. Interior segments span the
+  preceding layer's post-router work and the next layer's pre-router work.
+  Segment 48 contains the final layer's post-router work and output head.
+  Shared/resident and PCIe expert graphs retain their original instantiation.
+  The host reads the reusable event after its existing completion wait and
+  before the next launch replaces it. Report the device execution envelope,
+  submit-to-start delay, host wait and CPU expert callback wall time separately.
+  Their sum would double-count overlapping time. The B570 command service
+  profile at `6afcc0ddb` retains 17 submit-clock inversions. SYCL's
+  event contract orders submit before start. Treat such device returns as
+  evidence that queue-delay attribution is unavailable for those segments.
+  [B570 command samples](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json),
+  [SYCL event timing](https://github.khronos.org/SYCL_Reference/iface/event.html#sycl-info-event-profiling),
+  [DPC++ graph profiling](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties).
+
+  For a new model timing plan use `bench/sycl/decode_segment_envelopes.py`.
+  Retain all inverted or zero-valued submit readings and leave the whole-window
+  delay unknown unless all 49 submit comparisons qualify. Require complete
+  ordered start/end and checked native completion in every case. Sum the
+  49 layer-graph envelopes and the 48 gaps
+  between consecutive layer graphs. They must reconcile with the first
+  start to final end duration. The gaps can contain expert graphs and CPU
+  dependencies. The same-position wall controls keep their local overhead
+  gate. The queued source check retains its original pinned reader.
+  First check the two compiled translation units against the retained build's
+  production SYCL recipe and exercise the reader on ordered and damaged rows.
+  For model evidence use a coherent reference and candidate build, then
+  separate same-binary wall/profiled/profiled/wall processes for each
+  thinking-enabled code and prose workload. Keep the current ordinary capture,
+  stock expert placement and T4 decode settings. Check native request IDs,
+  accepted/offered drafts, emitted tokens and expert work between each pair.
+  Set the same request selector to `wall:<id>` in the wall controls. They
+  retain ordinary graphs and time just the four matching verifier windows
+  from before capture lookup through successful completion. Compare each
+  window by absolute position and width, charging timestamp queries and raw
+  formatting to the profiled arm. Require each matched window and the whole
+  sustained per-token time within 1.10× in both directions. The aggregate
+  request rate alone can conceal an expensive observer on four windows.
+  Require all 196 consecutive valid start/end samples per profiled process,
+  normal closure and no new Xe faults. Inspect each transition's graph and host time
+  separately. A failed overhead screen leaves the clocks diagnostic only.
+  This observer has no model timing or speed claim yet.
+  The decode MoE combine candidate changes the post-router path for ordinary
+  unsplit, batched T4 verification at width 2560 with ten routed experts.
+  The previous short device capture at `current_decode_device_service_v1`
+  observed 133–177 ms of mapped-row copy service in two 2.46–2.82 s windows.
+  Its decode observer overhead failed the predeclared screen. Use those
+  observations to select this experiment. Keep the clean verifier clocks
+  above as the request-level reference.
+  With `STRATA_SYCL_DECODE_MOE_COMBINE_MAPPED=1`, the reduction reads each
+  expert result from the existing mapped CPU output or from the GPU output
+  according to the published route. It keeps the original FP32 expert order
+  and shared-expert addition. The fused reduction needs the row selection to
+  remove the assembled tensor. Test this as one replacement for copy, add
+  and reduction while expert placement, PCIe scheduling, target verification
+  width and MTP all stay fixed. This removes two recorded kernel nodes per
+  eligible layer and the logical write and read of the assembled tensor.
+  That tensor traffic is 39,321,600 bytes per 48-layer T4 window. The same
+  mapped CPU result values must still reach the GPU.
+  The retained SYCL build compiles `src/program/generate.cpp` into the
+  actual `strata` target. Its `--native` initialization enables the existing
+  native reduction before graph capture. The mapped projection keeps that
+  initializer and selects its new reduction for ordinary, unsplit decode
+  windows with four rows. Compare the selector on and off with the same
+  `--native` arguments. Confirm eligible capture and replay in the model test.
+  Build `sycl_decode_moe_combine_test` and the native engine against the
+  same kernel objects and production flags. Preserve the retained measured
+  engine and its fixtures through the comparison. First run the component's
+  `validate` arm with bounded runtime tracing and parameter validation.
+  Both captured graphs must match the ordered FP32 CPU reference and guards
+  for 0, 4, 10, 20, 39 and 40 routed GPU rows. Reuse each captured graph with
+  two different publications of the CPU rows. Poison unused rows so that
+  selection failures show up in the output. Inject one duplicate
+  destination into the candidate and require its token to report invalid
+  output while other tokens receive the ordinary CPU contribution.
+  Run three fresh component processes in time-forward, time-reverse,
+  time-forward order with the qualified GPU runtime settings and parameter
+  validation. Collect API tracing only in the correctness process.
+  Compare four counterbalanced pairs of 512 completed graph replays at each
+  of 4, 10 and 20 GPU rows. Republish only the CPU miss rows between completed
+  replays. Retain both launch-through-completion and publication-through-
+  completion clocks. Require each graph batch to reach 10 ms and charge
+  at most 1% for the measured empty timing bracket. Advance the T4 path
+  only if both candidate medians are faster at all three hit counts in
+  all three processes, with normal teardown and no fresh fault. Use these
+  local intervals to decide whether to test the native server.
+  Before clean model timing, verify traced T4 dispatch, CPU callback and
+  graph completion at the normal handoff, near the end of context and after
+  RESTORE. Production performance requires
+  three independent matched pairs of the official long, agent, and both
+  sustained thinking workloads with placement and width fixed. Preserve
+  prefill PP and client TTFT and screen controlled decode separately.
+  The mapped-row fusion has no speed or device correctness result yet.
+  A separate same-ELF decode screen covers the empty PCIe expert projection.
+  The first 30 measured requests in the 65537-token comparison reported zero
+  expert-copy bytes and groups at `--pcie-frac 0`. For the same prompt body,
+  their CPU expert jobs and entries were identical in all ten processes.
+  The compiled verifier at `12ea4b002` still records the inline zero-count
+  projection. The grouped kernels return before loading weights, but their
+  graph also records a scratch clear, SwiGLU and activation quantization.
+  Its early scheduler records the same projection separately and launches it
+  only for a positive count. The controller at `d4c210196` holds Arena copy,
+  overlap, the input and expert work fixed in two opposite-order pairs.
+  Check the zero-copy route on the short startup request first. Retain graph
+  capture, prefill, client TTFT and native decode clocks per long request.
+  The early selector also affects prompt verification. A gain warrants a
+  decode-only capture and replay change, followed by sustained generation.
   Before training another ranking, compare the shipped Niko Intel profile
   to the current ordinary profile (source `8cb26e609`, data already in
   this fork at `97e9c9847`). On the actual 1256-slot layout, layers
@@ -363,6 +811,34 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   by 11.18% but increased prose latency by 1.24% in the one-pair
   diagnostic (`cache-window-rank-current.json`). Compare the Intel
   profile on both workloads and check the prefill loan and restored map.
+  The stock and Intel layouts both pass the 32769-token and 253919-token
+  RESTORE controls at `f67440687`. The near-capacity suffix reads 8209 new
+  tokens, reaches 262128 input tokens and generates one token. All four native
+  processes exit normally with no fresh Xe faults. In that restored T1
+  window Intel uses 416 CPU expert jobs versus 426 with stock. With the short
+  restored prefix it uses 425 versus 414. Use the three independent matched
+  full-suite pairs for the sustained generation decision.
+  In the first sustained pair at `5ed90bf00`, both arms use a one-row first
+  window followed by width four. The native counters start after cache
+  refill. The table uses the same pack-based traffic bound.
+
+  | Workload | Windows, stock → Intel | Unique CPU jobs, stock → Intel | Engine ms/window | Output/window | Logical GB/output |
+  | --- | ---: | ---: | ---: | ---: | ---: |
+  | Code | 781 → 816 | 1,074,995 → 1,124,557 | 270.318 → 269.042 | 3.604 → 3.577 | 0.741–0.828 → 0.748–0.835 |
+  | Prose | 3382 → 3199 | 3,718,375 → 3,506,954 | 254.990 → 255.045 | 2.017 → 1.965 | 1.026–1.209 → 1.049–1.238 |
+
+  Jobs per window move by +0.12% for code and −0.29% for prose. The shorter
+  prose response reduces total jobs and raises logical bytes per output.
+  The Intel arm's lower bound implies 52.36 GB/s for code and 73.45 GB/s for
+  prose at 70 tok/s, assuming each job reads its packed blob once. Physical
+  traffic needs separate evidence. All three long/agent/generation pairs
+  closed at `3e432e20f`. Intel won zero TG pairs on either sustained workload.
+  Its paired geometric mean TG was 0.98758 times stock for code and 0.93350
+  for prose. Both observed MTP classes qualified. Agent histories differed
+  in all three pairs, so the follow-up rate does not qualify preservation.
+  Keep stock placement for the next isolated comparison. Measure verifier
+  wall time and emitted tokens per window together when changing draft width
+  or host-expert work.
   A later comparison can keep the winning profile fixed and vary its
   per-layer quotas. Removing `--expert-cache-per-layer` also changes the
   meaning of `--expert-cache` for this native pack. In the measured SYCL
@@ -606,14 +1082,863 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   scalar gather won all four pairs against reload (2.409–6.581 s less).
   Median paired prompt time fell 3.77%; median client TTFT fell from
   117.636 to 113.214 s. All four warmed KV rates exceeded 1000; the first
-  long prompts were 931.66–957.54 tok/s. Vector gather alone also beat
-  reload in four pairs. Adding it to reuse won only two pairs, and adding
-  reuse to vector gather also won only two. Select KV reuse alone for
+  long prompts were 931.66–957.54 tok/s. At 117489 tokens, 1000 tok/s
+  allows 117.489 s of prompt time. Across the four KV-reuse processes,
+  reaching that rate on the first long request would require saving
+  5.209–8.618 s, or 50–73% of the observed first-to-subsequent prompt-time
+  gap in each process. Use this budget to interpret the driver-cache results
+  alongside the separately measured startup and client TTFT.
+  Vector gather alone also beat reload in four pairs. Combining it with reuse
+  won two pairs against each individual change. Select KV reuse alone for
   the split-route length curve and decode-preservation suite.
-  The 9,991,618,560 fewer requested H2D bytes would take 1.54–1.59 s at
-  the 256 MiB calibration rate. The larger observed time differences
-  leave copy issue, synchronization, actual copy size, overlap and
-  run variation to distinguish before assigning the gain to PCIe bandwidth.
+
+  The 64 native footer records in that same comparison each report 128
+  slots, 127 permanent slots and zero permanent hits. Each request uploads
+  18,860–18,900 blobs and requests 38.507–38.589 GB. The route plan groups
+  all jobs for an expert consecutively and the split caller uses the same
+  dequantized weights for those jobs. A single ordered scratch slot would
+  free 338,124,800 bytes of the 340,787,200-byte bank. The comparison uses
+  the ordinary source view and the same in-order queue.
+  Mode 10 now accepts an explicitly smaller bank through the existing
+  slot setting. `bench/sycl/prefill_split_bank_build.py` projects the one-file
+  change onto the measured 117K source and recipe. At a serialized boundary,
+  `bench/sycl/prefill_split_bank_compare.py` compares actual 128-slot and
+  one-slot admission with aligned KV reuse and scalar gather fixed. The first
+  two processes check the route, guards, response digests and decode cache
+  restoration. Three fresh process pairs then compare first and subsequent
+  prefill and TTFT separately, with identical blobs, requested bytes, expert
+  jobs and draft counts. Check full-context and sustained decode before use.
+  The earlier ordinary-RAM lane lost its component comparison with one
+  dependency marker per expert. Evaluate batching, queue and timing changes
+  separately from this capacity change.
+
+  The split-prefill upload candidate batches consecutive demanded expert IDs
+  into at most 16 slots at the start of the existing private bank. It checks
+  the exact packed host and device strides and the in-order queue. The
+  submitted commands, last readers and next overwrite all use that queue.
+  The outer lease keeps the source and device ranges alive through the
+  existing checked drains, including an enqueue failure or cancellation.
+  [SYCL in-order queue semantics](https://github.khronos.org/SYCL_Reference/iface/queue.html#sycl-property-queue-in-order).
+  `STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD=demand` selects the existing
+  path. `batched` uses the new placement and one copy per expert.
+  `coalesced` uses the same placement and one copy per contiguous batch.
+  Both require the actual split accumulator, partial packed bank and equal
+  strides. They retain the ascending dequant/GEMM order and accept only
+  selected expert payloads. The request footer counts successful submissions
+  after the checked drains.
+  With 48 full windows, at least 18860 selected experts and capacity for 16
+  slots per batch, the historical 117489-token route has at most
+  (24576 - 18860 + 48 = 5764) contiguous runs. Splitting those into
+  16-expert groups yields at most 6582 copy submissions, a reduction of at
+  least 65% in requested commands. The bound uses the observed route counts
+  and sorted IDs. The actual provider may split a submission, and elapsed
+  transfer and prompt times require measurement.
+  Project this unit alone onto the exact boundary source. Apply the commit
+  delta to the three prefill files and use the pinned syntax recipe for the
+  prefill translation unit and its two local include overlays. The
+  `b17cced78` syntax check on `9d8def424` passed with 799 verified compiler
+  inputs. The overlay hashes in translation-unit, MoE and layer-major order
+  are `b9d49202dbdd4f1d0135af0faf4c6038d12a4f1d2f58c79181bfdac54cc6ed9b`,
+  `131e66d4dc3580e7e851bf11bc5948d5c9bda35852f33e42953b0bad40b3edc3` and
+  `69ebdcfac4e799dddb27cd208dcde998b3d76fa8e14cac66ae57851625701277`.
+  The production batch planner and enqueue loop are shared with the existing
+  `sycl_expert_bank_test`. Build just that fixture in a private directory
+  from the boundary build's verified Ninja commands. Apply the test and
+  header delta from Git, compile the fixture and the original expert-cache
+  unit, and link the recorded `strata_sycl_runtime` archive. Check compiler
+  dependencies and executable identity. Use the qualified runtime, owner
+  and validation probe, with a 90-second deadline and 16 MiB per run.
+  Run `--split-upload-smoke` at stride 4096 with API tracing before
+  `--split-upload-native-stride` at stride 2662400 with parameter validation.
+  Each process checks 27 selected blobs in five groups, holes and a short
+  tail, slot reuse, device guard words and cancellation after 16 blobs.
+  Expected transfers are 27 for batched and five for coalesced, with identical
+  payloads. Require normal closure, no diagnostic errors and no fresh fault
+  before advancement. Then verify real model dispatch, output and decode
+  cache restoration on a coherent engine build.
+  Both `99cc428a6` fixture processes closed normally with quiet validation
+  and no fresh faults. At the native stride the full test compared 71884800
+  bytes, with 27 versus five copy submissions. Cancellation retired
+  42598400 bytes in one submitted copy with guards intact. The fixture
+  build verified 711 compiler inputs and the boundary runtime archive.
+  Executable SHA-256 is
+  `dd69762b225b612ba88ae1cf3542b0e9e0dcefcb6ab4f4b9db1c165c270b1326`.
+  The resolved build command SHA-256 is
+  `f5932894a2a285541944a2cd7ce200acab33237235189b71fd89e875c592d7ad`.
+  The combined `b17cced78` and `99cc428a6` production overlay also passed
+  syntax verification on the boundary image with 799 verified inputs.
+  Its updated MoE and helper hashes are
+  `3d1df9055f289de60563b52162ce8af7bb167d8aa4442d0f82d2b1397ba7db5a` and
+  `44238ca87239cfbbf47308c1275693747c97509a04a86fd1aa02aa489b3f5a46`.
+  The next model check consumes these receipts. Retired the closed capture
+  and rebuildable fixture under
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/split-prefill-expert-upload-fixture-v1`
+  after committing and pushing the result. The verified root contained 25 files and
+  1285631 bytes, with sorted path/size/SHA-256 digest
+  `c546e8d5ad7ae333cfe22420edb2afa647250fb275fcdedc6b2a2884eedee5df`.
+  `bench/sycl/prefill_split_upload_build.py` recovers the qualified boundary
+  image from its Git receipts and the retained fast-prefill build. It applies
+  the two verified upload deltas, including the exact expert-bank fixture.
+  Keep the separate phase references. The boundary-only build's physical
+  check and both timing cohorts are closed. The cooperative-KV qualification
+  remains gated by its own preservation checks. The successor recovers all
+  1171 parent source files and the recipe from Git and verifies the original
+  137-object build, including the measured executable hash beginning
+  `08469b1eae25`. Its fresh build uses the same twelve targets.
+  The verified boundary output retirement removed 1367 files and 196946050
+  bytes from
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-boundary-native-v1`
+  with sorted path/size/SHA-256 digest
+  `63828d6c4a704f45ee5016c06479b73d7267d3bf447b8c73097944bcf190fd76`.
+  The closed 117489-token comparison capture
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-boundary-preservation-117489-v1`
+  was also retired. Its 426 files total 63,788,821 bytes. The sorted file inventory
+  has SHA-256 `14923b49699761b6f760ca05db3172e318f0d9e02ebda10a4dfa0bab3c5173e8`.
+  All 24 original samples, source identities and decisions match the reachable
+  `7c88fb012` receipt. The live readers consume Git evidence.
+  Preserve the committed physical-context and speed receipts. The first
+  successor preparation at `6b0ab53d5` found that the shared builder's legacy
+  decode reference pointed at the retired phase-naming executable. It stopped
+  before creating a build root. This controller now verifies the selected
+  coherent `14508acbf` reference from the recorded transition and recovers
+  its original compile inputs.
+  The successor from `e4dfad786` built 137 fresh objects and twelve targets,
+  with 1474 checked compile inputs. Its engine SHA-256 is
+  `5e0f4044c0dfa8cd7b6aad28ef06121ec8d8328c92739a97cf7e1ea6a1f3a5cc`.
+  Its expert-bank fixture matches the device-tested SHA-256 above.
+  The same-build host control completed normally and verified the sparse
+  and repeated expert planner cases.
+  `bench/sycl/prefill_split_upload_compare.py` uses the same built engine
+  for traced admission of demand, batched and coalesced. Each process takes
+  the first two of the four established 117489-token bodies. Verify actual
+  split placement, accepted upload counts, expert and draft work, and the
+  checked decode expert table and payload. Each arm must restore the same
+  slot count. The admission result gates the separate clean comparison.
+  The parser was checked against the four original frames with the planned
+  explicit slot request and synthetic upload footers.
+  The three traced processes then completed all six fresh requests without
+  new GPU faults. The two prompts retain 38,540,800,000 and 38,589,209,600
+  requested expert H2D bytes. Demand and batched issue 18,878 and 18,900
+  copies. Coalesced issues 4,329 and 4,342, about 77.1% fewer submissions
+  for either prompt. All six restore the same 1,124 loaned decode slots
+  and payload. With observers, the second request takes 121.963, 119.797
+  and 119.711 seconds for demand, batched and coalesced respectively.
+  Each mode has one observed process. Use the clean repeated comparison
+  to judge speed and investigate the remaining exposed service time.
+  Hold the bank capacity, scratch checks and all runtime settings fixed.
+  Use three independent blocks in demand/batched/coalesced,
+  batched/coalesced/demand and coalesced/demand/batched order on the
+  four established 117489-token bodies. Judge batched/demand for scheduling,
+  coalesced/batched for copy count and coalesced/demand for the combined
+  change. Match payloads, dequants, expert jobs and MTP work. Require at
+  least two faster warm prompt times and a paired median ratio below one
+  for a reproduced gain. Report first-use and warm TTFT separately.
+  The clean comparison closed at `982211f5c` with nine independent processes,
+  36 fresh requests, matched work and no new GPU faults. The median warmed
+  process rates for demand, batched and coalesced are 963.923, 989.117 and
+  987.504 tok/s. Median warmed client TTFT is 122.119, 119.009 and 119.220
+  seconds. Batched wins all three paired warmed prompt intervals. Their
+  median batched/demand ratio is 0.974529. Median first-use client TTFT
+  improves from 133.436 to 131.293 seconds. Coalescing cuts about 77% of
+  accepted copy commands and wins one of three warm pairs against batched.
+  Its median coalesced/batched ratio is 1.001633 and fails the incremental gain
+  gate. Advance batched for further tuning on this image. The median warmed
+  request needs 1.293 fewer seconds to sustain 1000 tok/s.
+  The measured upload-scheduling gain also identifies a follow-up on the
+  retained KV/gather executable's `fde0cdd11` source. The median current
+  117489-token direct-store result at `1bfa911d5` leaves 2.423 s to reach the
+  target. The earlier demand-to-batched ratio of 0.974529 would save 3.054 s
+  at that prompt time if it held on this source and placement. Treat this as a
+  budget estimate for choosing an experiment.
+  The exact three production source files used by the retained executable
+  match its compiler receipt. Applying and reversing the `b17cced78` delta
+  recovers every original byte. These hashes identify the projection.
+
+  | Source | SHA-256 |
+  | --- | --- |
+  | `src/prefill/prefill.cpp` | `b9d49202dbdd4f1d0135af0faf4c6038d12a4f1d2f58c79181bfdac54cc6ed9b` |
+  | `src/prefill/moe_window.inc` | `131e66d4dc3580e7e851bf11bc5948d5c9bda35852f33e42953b0bad40b3edc3` |
+  | `src/prefill/layer_major.inc` | `69ebdcfac4e799dddb27cd208dcde998b3d76fa8e14cac66ae57851625701277` |
+
+  The first KV/gather comparison failed at `aa461dcb4`. On the first
+  batched request, the 128-slot allocation repacked into 146–225 slots
+  on 47 of 48 layers. The per-layer equality at `d92f63fa7` selected
+  batching only on layer 47. The request reported 258 batched copies out
+  of 18,878 total, completed generation and restored its decode loan.
+  Admission stopped on the route mismatch. The original failure and the
+  separate owner reconciliation remain in `prefill_kv_upload_admission_v1`.
+  `b8aa2d3cb` selects from the admitted request's slot budget once, then
+  checks each layer's packed extent and queue before use. The V2 build
+  applies that fix to the same upload unit and device-tested helper.
+  The V2 admission closed at `541992caf`. Both traced modes processed
+  two fresh 117489-token requests with the same split, KV, gather and
+  attention-copy work. The batched mode issued all 48 layer windows.
+  Per-request uploads were 18878 and 18900 with the same requested bytes
+  in each mode. Every request restored the same 1124 borrowed decode slots.
+  Both owners exited normally with quiet validation, no new GPU fault and
+  all fifteen final model asset hashes verified.
+  The V2 clean timing at `297adab4d` completed three counterbalanced
+  pairs and 24 fresh 117489-token requests. KV reuse, scalar gather and
+  attention copies were fixed. Every request matched its original work and
+  dispatch. All six processes exited normally without a new GPU fault, and
+  the final 15 model asset hashes matched.
+  The warmed process medians were 1003.40, 995.68 and 994.76 tok/s for
+  demand, and 1010.45, 1008.87 and 1004.79 tok/s for batched issue. All
+  three pairs favor batching. The paired median prompt-time reduction is
+  1.00%. Median warmed client TTFT was 118.218 and 116.666 s, and median
+  first-request TTFT was 129.132 and 127.671 s. Batching passes the
+  repeated 1000 tok/s gate for this workload and configuration.
+  Use the same coherent engine and fix batched issue for the next isolated
+  attention-output store comparison. `prefill_kv_upload_compare.py
+  store-fixture` runs the current correctness fixture with full UR tracing
+  and parameter validation. Check exact BF16 results for 1, 63, 8191 and
+  8192 rows, buffer guards, invalid spans and checked cancellation.
+  `store-admit` adds direct output for the first two fresh traced requests.
+  Match the admitted batched copy work and decode-cache return. Require 720
+  direct stores and zero output-copy bytes per request.
+  The same-build fixture passed at `6a5fdebac` with 168417280 exact BF16
+  values and all four cases. Both traced requests at `3c23f0b78` matched the
+  copy-control work and restored the same 1124 borrowed decode slots. Each
+  request replaced 115495403520 requested copy bytes with 720 direct stores.
+  The native process exited normally with quiet validation, no fresh GPU
+  fault and all 15 final model asset hashes verified.
+  `store-time` holds batched upload, input copies, KV reuse and scalar gather
+  fixed. Each process handles the four established fresh requests. Run three
+  independent pairs in copy/direct, direct/copy and copy/direct order. Select
+  a speed gain when at least two pairs improve warmed prompt time and the
+  paired median ratio is below one. Keep first-use and warmed TTFT and the
+  repeated 1000 tok/s gate. Stop on the first source, dispatch, work, ownership,
+  runtime, fault or budget failure. Record all eligible pairs through closure.
+  The six independent processes and 24 requests closed at `be8caf613`.
+  Copy process medians were 969.15, 960.97 and 970.35 tok/s. Direct process
+  medians in pair order were 981.52, 963.53 and 977.22 tok/s. Warmed prompt time
+  fell by 1.260%, 0.266% and 0.703%, so direct store passes the gain screen.
+  Median client TTFT was 121.510 and 120.536 s warmed, and 133.182 and 133.265 s
+  on the first request. All requests matched their work and route, every
+  owner exited normally, the GPU fault count was zero and the final 15 model
+  asset hashes matched. Both arms missed the repeated 1000 tok/s gate for
+  this cohort. The earlier batched-upload cohort used the same executable and
+  its 1000+ observations remain valid for that timing period.
+  Keep the closed timing record and its runtime manifest for the same-build
+  physical-context comparison. Removed and verified the raw process directories
+  `0` through `5` and `host` under
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-store-speed-v1`.
+  Retirement removed 424 files and 63496014 bytes. The inventory SHA-256 was
+  `745b7a3d7de1b5a78a8619ed952f35db504d1e3463f041b61e57c2ce49ca0c5c`.
+  The committed result preserves the individual samples and admission checks.
+  Use `bench/sycl/prefill_kv_upload_capacity.py` on the existing V2 diagnostic.
+  Run the host bounds first, then compare the two stores on a 16385-token
+  prompt with four generated tokens and on all 262144 input positions. Require
+  the final checked commit and queue drain with zero generated tokens. Keep
+  aligned KV reuse and the standalone bank fixed. The fully occupied case
+  exercises the host-backed fallback. Test the server's split and near-full
+  RESTORE routes separately.
+  Both 16385-token controls at `b4eb71fee` pass on the current diagnostic.
+  They check 16384 resident BF16 rows, four matching output IDs, and equal
+  input-copy, KV prefix and host-mirror counters. Direct output writes 96
+  pieces in place and removes 16106127360 requested copy bytes. Both owners
+  exit normally with quiet validation and zero fresh GPU faults.
+  Both standalone physical-context cases close at `6d5debd9c` under
+  `prefill_kv_upload_capacity_v1`. Each batches 262143 tokens and checks the
+  final one-token commit, commit wait and refill drain at position 262144.
+  The full context generates zero output tokens. The matched mode-2
+  fallback holds 114688 BF16 rows in VRAM and 147455 in RAM. Each arm keeps
+  11173888 KV pages and publishes the same host-mirror extent. Direct output
+  writes 672 pieces in place with zero requested output-copy bytes. The
+  copy arm requests 112742891520 such bytes. Both owners exit normally with
+  quiet validation and zero fresh GPU faults. All 15 final model hashes match.
+  Keep the compact timing and diagnostic records for the server comparison.
+  Removed and verified the five case directories and two generated token files under
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-capacity-v1`
+  after pushing the evidence. The retired capture had 225 files and 43453439
+  bytes with inventory SHA-256
+  `2ff4d65f75fcec95a78e4ca5bf7e0b7c5966aae425263837f872e0d17590f9b0`.
+  Complete ordinary and near-full server fallback, RESTORE, state handoff
+  and sustained decode before adoption.
+  On the pinned V2 build, `ExpertBankPlan::window_rows` is 81920 and the
+  original split requires `n > window_rows + m.T` and `n <= 117488`.
+  The measured 8192-row chunk therefore admits 90113–117488 new rows by
+  length. The existing near-full RESTORE shape of 253919 reused and 8209
+  fresh tokens gives 8208 new rows for the V2 split-fallback check. A candidate
+  split RESTORE shape is 172014 reused and 90114 fresh tokens, keeping the
+  total at 262128 and one output plus eight reserved slots available. Require
+  actual restored extent, one 90113-row read, the all-GPU 128-slot split and
+  all 48 batched uploads before treating it as split coverage.
+  For MoE attribution, the first matched request at `297adab4d` ran 7441
+  fused jobs out of 23816 in each of Gate/Up and Down. Those jobs accounted
+  for 52231136 of 56394240 routed rows (92.62%). The 18878 dequantizations
+  produce a logical 185578291200 bytes in reused weight scratch. At the
+  source's 1280-by-2560 Gate/Up and 2560-by-640 Down shapes, the routed rows
+  represent about 554.38 TFLOP of GEMM work, counting two operations per
+  multiply-add. Across the four input bodies at `be8caf613`, both store arms
+  request the same 38.507–38.589 GB of expert H2D per request. That payload
+  would take about 5.94–6.13 s at the measured 6.292–6.485 GB/s large host-USM
+  copy rates. The direct arm's warmed median needs 2.739 s less prompt time
+  to reach 1000 tok/s. Use these work and time budgets to compare actual GEMM,
+  copy and host service and their overlap before selecting an optimization.
+  `STRATA_PREFILL_LAYER_MAJOR_PROFILE=1` emits the planned row-width census
+  from the existing host route data and coarse queue spans with host issue
+  gaps. Use `tools/sycl/moe_upload_census.py` to check its 48 windows against
+  the actual completed job and row totals. `STRATA_SYCL_PREFILL_MOE_CENSUS=1`
+  adds a first-chunk weight readback per layer. The earlier V1 timing-coupled
+  census failed at `237f6390f` with a 480-second watchdog and zero completed
+  requests. Qualify the current observer's extra queue operations and
+  event lifetimes in a bounded check before any long run with it. Change
+  one observer per comparison and verify its cost against clean requests.
+  The retained UnitTrace launcher and collector hashes still match the
+  qualified tool build. The focused review of the observer paths and the
+  independent recheck of the historical failed owner are in
+  `prefill-v2-observer-isolation-20261123` in the research index. Use the
+  existing V2 expert-bank `--split-upload-smoke` fixture for the first
+  non-counter collector admission. Keep one clean control and the same
+  fixture with collection enabled. Verify checked cancellation, copy
+  identity and ownership before any long trace.
+  The first attempt at `60a23f1c9` preserved the exact payloads, guards and
+  checked cancellation. Both owners closed, with no new GPU fault. Its copy
+  label acceptance failed because PTI classifies the fixture's ordinary
+  `std::vector` buffers as `M`, the Level Zero unknown memory type. The
+  original 63415-byte timeline SHA-256 was
+  `685e3e19304402225ce7c4f6a6e6b7f53dd84a83957842541434b7d4d0621521`.
+  The fresh corrected pair at `83da1a72a` passes the same three
+  data/guard/cancellation cases. PTI reports 33 M2D copies (286720 requested
+  bytes), 11 D2D (286720), nine D2M (288256) and three fills. All 56 GPU
+  events have unique native flow joins within the enclosing RAW clock
+  bounds. Both processes close with quiet validation and zero fresh GPU
+  faults. This qualifies the copy fixture and collector pairing.
+  Removed and verified both closed fixture roots after pushing their results.
+  The roots were `prefill-kv-upload-unitrace-fixture-v1` and
+  `prefill-kv-upload-unitrace-fixture-v2` in the same state directory. The
+  20 retired files total 514279 bytes, with inventory SHA-256
+  `83ee06b2c05daa40cdedf19d0696c5eda130fbb8657047c7208aed03ceb3fc98`.
+  The matched V2 PTI comparison closes at `4bc26aaa9` under
+  `prefill_kv_upload_model_pti_v1`. Three fresh processes each handle the
+  same two 117489-token bench.sh inputs, with 24 thinking-enabled outputs and
+  16 of 21 drafts accepted per request. All close normally, with zero new
+  GPU faults and all 15 final model hashes verified. Clean first/subsequent PP
+  is 908.9/993.1 before collection and 904.5/986.3 after it. Corresponding
+  client TTFT is 129.475/118.540 and 130.113/119.427 seconds. Collected PP is
+  856.1/934.0. Observed/clean prompt and TTFT ratios span 1.05596–1.06486,
+  within the declared 0.8–1.2 range. The two clean processes fall below
+  1000 PP. The timing comparison qualifies the observation under this
+  envelope. Model adoption still requires the server and decode checks above.
+  In the subsequent request's 126.229-second client window, GPU kernels
+  cover 99.560 seconds and M2D/H2D copy intervals cover 15.339 seconds, with
+  0.006435 seconds of overlap. The QSA prefix kernels account for 27.073
+  seconds of service across 360 calls. The recorded normalized attention
+  consumer group accounts for 180 calls and 26.943568 seconds. The pinned
+  `prefix_batch_impl` submits one prefix pack and one attention consumer.
+  Subtracting the consumer group from the exact family total leaves 180
+  pack calls at 0.129594 seconds. The first request gives 26.975405 seconds
+  consumer service and 0.129723 seconds pack service. Use these sums to
+  prioritize the consumer width census and bounded same-shape tests. A
+  suffix-only refresh directly removes only a fraction of the observed
+  pack service. Host submission, memory traffic and clean elapsed time
+  still need separate evidence for either change.
+  The submitted fresh-position widths reach 2051 for 115438 of 117488
+  batched rows in each QSA layer. Page validity still determines which
+  operands are actually read.
+  The V2 trace at `4bc26aaa9` includes 5508 `submit_topk<1>` launches.
+  This matches 12 layers with 14 full 8192-row chunks and one 2800-row
+  tail, using selector batches of at most 256 rows. The weighted selector
+  emits complete four-cell blocks in logical order, with at most two
+  partial blocks from the causal tail and the rank cutoff. A width-2051
+  row therefore has 512 complete blocks and three cells in the partial
+  blocks. The staged V2 route uses an identity page table.
+  The grouped fixture aligns complete groups to four-cell positions and
+  injects missing pages and masked IDs. Five sampled width-2051 rows have
+  190–199 masked cells. An earlier rank cutoff in the model can shift
+  subsequent complete groups across subgroup boundaries. Treat the fixture
+  as a test of page grouping and layout sensitivity. Model timing remains
+  necessary to account for that alignment and overlap between queries.
+  Compare a four-cell page layout for the packed BF16 K scratch. The
+  producer and its consumer would arrange four adjacent features
+  consecutively for each cell, then advance to the next feature
+  group within the same page and KV head. Keep each lane's cell assignment,
+  local K destinations, V and all arithmetic fixed. The four-lane reader
+  at `f7244dded` instead changed lane assignment with row-major packed K.
+  Its wide four-cell case was slower and remains rejected.
+  In an aligned address model for width 2051, counting 64- or 128-byte
+  address blocks separately for each 16-lane vector read gives
+  131264 for the original K layout and 32832–41088 for the candidate on
+  grouped inputs. The gapped partial-page case increases distinct 64-byte
+  blocks across the whole query from 16408 to 16448. With one selected cell
+  per page there is no per-read reduction, and the new producer can touch
+  more blocks per store. Physical device traffic remains unmeasured.
+  For the component test, use the same selected IDs and input bytes in
+  both arms at widths 33 and 2051. Include gapped groups, missing pages,
+  partial pages and the physical last cell. Require exact BF16 outputs,
+  guard preservation and checked retirement. Time the pack, attention and
+  drain together, and keep the grouped and spread cases separate.
+  [Intel SYCL subgroup guide](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/sub-groups-and-simd-vectorization.html)
+  The [isolated source generator](../bench/sycl/prefill_qsa_key_page_source.py)
+  reads the exact projected ordered-exp source and checks a reversible
+  producer/consumer delta. Use its separate export with the ordinary
+  ordered-exp reference in the layout fixture. For source admission, use
+  the retained Gate build's two compile database entries and replace the
+  fixture definition with `STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT=1`.
+  The fixture places the guarded K span on a 256-byte boundary in both
+  arms. Its boundary mode explicitly selects the final mapped and first
+  masked cell at extents 262143 and 262144.
+  Source `580276b38` generates candidate SHA-256
+  `0b6c0c1b3049cb56e3e274efdab91ea545363993f8694462630e10d72e54c4b6`.
+  The generator rejects a changed original. Both translation units pass
+  the pinned oneAPI 2026.2 syntax check with the measured compile flags.
+  The candidate inherits the reference's barrier deprecation warnings.
+  The [component controller](../bench/sycl/prefill_qsa_key_page.py) recovers
+  the retained V2 compile and link recipe. It links the generated variant
+  alongside the same measured reference archives. Prepare and commit the
+  plan before building. Run the traced smoke and quiet-validated boundary
+  checks before the three clean timing processes. Each shape uses six
+  opposite-order pairs. The grouped shape needs a lower paired median in
+  each process before model follow-up. Keep clustered and spread samples
+  for the workload-coverage decision. At `c8e39f14b`, the read-only recipe
+  check recovered both source inputs and the two compiler commands plus
+  linker command against the retained V2 build. The result reader accepts
+  the three planned report formats and rejects misordered arms, changed
+  widths, undersized intervals, a failed bit check and excessive timer
+  overhead. The standalone fixture built after the second Gate block
+  from the committed plan at `f88150349`. Both compiler commands and the
+  link closed with exit zero. The recorded build checks 698 compiler
+  inputs and 27 link inputs, and pins the 1612984-byte fixture by SHA-256.
+  The traced small check at `85d137a61` and the 262143/262144-cell boundary
+  checks at `378554ea6` pass exact BF16 output, input and guard checks.
+  At `371770ab8`, all 72 timing pairs complete across three independent
+  processes, with matching output bits, intact guards, normal exits and zero
+  fresh GPU faults. The grouped width-2051 paired time ratios are
+  1.09984, 1.09974 and 1.09816. The clustered, spread and width-33 gather
+  cases also take longer in each process. The component misses its speed
+  gate. Use the retained V2 ordered-exp layout for the next model
+  measurement and measure the MoE status-to-launch transition below.
+  At 117489 tokens the 1000 tok/s time budget is 117.489 seconds. The three
+  original Gate processes at `06a199714` need warmed reductions of
+  0.288–1.420 seconds. If the savings came from the profiled 27.073
+  seconds of QSA service and carried through to model wall time, that
+  would require 1.06–5.24% less QSA service. Check the effect in clean
+  model timing for a future eligible component.
+  The 22327 M2D/H2D commands carry
+  52,103,695,548 requested bytes. Of those, 20024 commands match one of the
+  seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
+  and 12.008352 seconds of summed service. The engine's expert bank reports
+  18900 copies and 38,589,209,600 bytes. The size-matched group is larger
+  than the bank ledger. M2D sources have unknown memory type.
+  Physical PCIe traffic, GPU saturation and clean critical path remain unknown.
+  Clip the GPU event union to each request, then sum adjacent gaps from a
+  four-byte D2M/D2H completion to the next `dequant<unsigned short>` start.
+  Match the dequant command ID to its unique native PTI host flow and join
+  the flow's thread and timestamp to the launch API start. The first and
+  subsequent windows have 48 and 47 such joins. Of the 3.120212/3.150087 seconds
+  summed, 3.111451/3.141543 seconds precede the host launch API start. The
+  timings include runtime/collector behavior and host scheduling. The V2
+  source-clock projection at `41c2c1cbf` measures disjoint calling-thread
+  wall and CPU intervals for the actual status D2H call, checked wait,
+  status-to-projection handoff, projection preparation and first Gate
+  dequant wrapper. It emits a completed record after the checked HC drain.
+  Its reader accepts 48 ordered layer records per 117489-input request and
+  rejects missing, extra, reordered, invalid and changed-geometry records.
+  The coherent build at `f49cd34ac` closes 137 fresh objects and twelve
+  targets with complete input coverage. Its host control passes at
+  `78eebdb20`. The initial model preparation on that commit stopped
+  before writing a model plan or starting a GPU process because its
+  historical admission chain still required the retired FDE0 CMake cache.
+  The corrected controller binds the retained V2 build, exact committed PTI
+  result, original model/runtime inputs and the same measured requests.
+  This is a controller-only repair using the verified clock executable.
+  The bracket at `fb0fc95d4` closes all three processes and six 117489-token
+  requests with matched work and responses, zero fresh GPU faults and all
+  fifteen final model hashes verified. Clean first/subsequent PP is
+  877.9/995.3 and 910.4/996.8 tok/s, with client TTFT 134.054/118.262 and
+  129.273/118.106 s. The observed first request misses the 3.0-second
+  overhead screen by differing from the first control by 4.55 seconds.
+  The observed subsequent request passes the 1.5-second screen against
+  both controls, with prompt-time deltas of -0.247 and -0.072 s.
+  Its 48 status copy calls total 9.342 s wall and 9.309 s calling-thread CPU,
+  with per-layer wall times of 123–261 ms. The explicit checked wait totals
+  9.152 ms. Wait return to first Gate dequant wrapper entry totals 0.247 ms,
+  including projection preparation. The dequant wrapper totals 9.367 ms.
+  The older `prefill_split_upload_cpu_wait_v1` breakdown measured 9.217 s
+  in the `queue.memcpy` enqueue region on its subsequent request. The
+  measured wrapper includes any runtime-internal waiting for earlier GPU
+  work. Physical PCIe service and removable wall time remain open.
+  The [first Gate issue experiment](../bench/sycl/prefill_first_gate_issue.py)
+  moves only the first independent Gate dequantization before the status
+  copy. The selected path checks the current in-order queue, the same GEMM
+  stream, a device scratch span disjoint from both status locations and
+  the original weight geometry. The already queued routed readers precede the
+  scratch write. Status check and cancellation still precede the first shared
+  GEMM and residual write. An error after issue reaches the existing outer
+  checked lease while scratch and weight owners remain live. The first GEMM
+  verifies the prepared block geometry and consumes that block once.
+  The traced 16386-input ragged admission at `becc132b8` completes both
+  modes on the same coherent build. All four requests match the original
+  work and response hashes and finish 48 layer windows. Checked preissue
+  counts are zero for the original and 48 for each candidate request.
+  All owners close normally with zero fresh GPU faults and matching final
+  model assets. Removed and verified the closed
+  `prefill-first-gate-issue-admission-v1/{0,1,host}` captures after checking
+  the 144 files, 21433360 bytes and inventory
+  SHA-256 `14f9bc755de27cadbe8af1a569598fb85d50ca7185474a637a1a63e8dc9335f0`.
+  The clean timing closes at `5e192224a`. All six processes and twelve
+  117489-input requests completed with the expected Gate dispatch, matching
+  work and responses, normal exits, no fresh GPU faults and all fifteen final
+  model assets verified. Direct output, batched expert uploads, QSA, KV and
+  decode were fixed. Second-request prompt-time reductions were 0.1959%,
+  0.0461% and 0.1799%, passing the repeated-gain criterion. Median PP was
+  995.676 → 996.135 tok/s and median second-request client TTFT was
+  118.341 → 118.175 s. First-use prompt time fell in two pairs and rose
+  0.838 s in the reverse-order pair. Both arms missed repeated 1000 tok/s.
+  The source and samples preserve the scheduling gain for later validation.
+  Whole-model adoption, physical-context qualification of this variant and
+  sustained decode remain open.
+
+  Use the retained V2 prefill reference for the next isolated QSA score-key
+  reuse test. The component at `328b7589d` reduced score-plus-selection
+  time by about 2.3% in three processes with matching scores and selected
+  IDs. The five V2 source inputs match the build receipt and accept the
+  reversible `9639531fd` → `a29048486` change. The independent append/restore
+  fixture at `0cfa87d2d` composes reversibly and the score scratch structure
+  is identical. Qualify the actual append, overwrite and RESTORE boundary
+  on V2 before model timing. Keep GDN, attention, selection mapping and
+  decode fixed in that comparison.
+
+  The Gate issue build recovers all 1171 projected source files, its exact
+  recipe and actual inputs, 137 fresh objects and twelve target hashes from
+  the pinned Git source and build receipt. Both retained phase reference
+  executables match their hashes. The completed speed and admission controls
+  are recoverable from Git. Removed and verified the completed build and raw
+  speed captures after confirming their inventories and source reachability
+  from pushed `feb720f15`. The compact build, campaign and runtime receipt
+  hashes still match.
+
+  | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
+  | --- | --- | ---: | --- |
+  | `prefill-first-gate-issue-native-v1/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1369 | 196435956 | `6c02a5f9fc6032d706ed1d3ec0ae760c8a447cdbb657212587c7488bae563f45` |
+  | `prefill-first-gate-issue-speed-v1/{0..5,host}` | 424 | 63277283 | `beb1e337320a5feb1f7403ec4fb90de92cb380bf61f35625e0ac56537df940a6` |
+
+  Removed and verified the clock-only build and captures after matching
+  their inventories to pushed `941d07a96`. The native recovery at
+  `2c6645de4` matched the 1172 projected sources, compiler and recipe inputs,
+  137 fresh objects and twelve target hashes against the measured executable.
+  The V2 prefill and coherent decode references pass their executable hashes.
+  The source/build receipts, runtime inventory and committed clock totals
+  preserve the recovered inputs and useful samples.
+
+  | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
+  | --- | --- | --- | --- |
+  | `prefill-moe-gate-clock-native-v1/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1370 | 196429735 | `1e79f47dc9feb47de80fe00933cad56b7d66d960b910685e0ebb8e7426865fad` |
+  | `prefill-moe-gate-clock-model-v1/{0,1,2,host}` | 214 | 31680012 | `3726d48d509d6d03972f78c20ad31eb1ab1cdb0d9facc2d76b80d6680dbd8718` |
+
+  The sparse XPTI subscriber's V6 device run stopped after the second
+  registration attempt at `ea8be6e5f`. V7 accepts a repeated registration
+  when both exact callbacks are already active. CPU controls exercise that
+  case and preserve all four selected callback pairs. The same-build B570
+  fixture closes with identical output, one repeat notification, eight
+  four-byte copies, 50 waits and seven selected launches. Both device owners
+  exit normally without fresh GPU faults. `prefill_moe_status_capture_v7`
+  qualifies this fixture. Attribute the actual 117489-token transition
+  with a separately bounded, matched observer comparison.
+  Removed and verified the completed `host`, `0`, `1` and `2` captures under
+  `prefill-kv-upload-model-pti-v1` after pushing the comparison and reduction.
+  The 218 retired files total 838023688 bytes with inventory SHA-256
+  `1395e983e41d4aecfbc0a7e81fc055a1aaa4a647c7132b67800b78524a5c4bb0`.
+  The 790346612-byte trace SHA-256 is
+  `6b35a0dfe29efc1f726aeec9a0b2e809e117fc7b951e7172eed6903edc1015f1`.
+  The compact campaign receipt and required executable were verified after
+  retirement.
+  Removed and verified the following closed captures under
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
+  admission uses the fixture and model receipts recorded at `3c23f0b78`.
+  The exact executable and same-build fixture remain in the current build.
+
+  | Capture directory | Files | Bytes | Inventory SHA-256 |
+  | --- | --- | --- | --- |
+  | `prefill-kv-upload-store-component-v1` | 7 | 439815 | `d9dc9c7c843cd906852402eaf836468a1d2709465714860965f0daa3c4b446e2` |
+  | `prefill-kv-upload-store-admission-v1` | 76 | 11152193 | `283287db383ece297feee78c4d9063f54dd9262021f8d06d51130873cbf9ec0c` |
+
+  On the earlier upload build, `prefill_split_upload_compare.py profile`
+  runs clean, CPU accounting and clean, each with the first two established
+  fresh inputs. Only the
+  middle process enables `STRATA_PREFILL_CPU_WAIT_PROFILE`. The diagnostic
+  checks complete calling-thread partitions and a two-sided 3% prompt and
+  TTFT envelope against both controls. Physical 262144, RESTORE and
+  sustained decode qualification remain open on this build.
+  The bracket at `1046b4164` completed all six requests without a new GPU
+  fault. Warm prompt ratios are 0.99550 and 0.99745. First-use ratios 1.08067
+  and 1.07486 fail the observer envelope. Retain the counters as diagnostic
+  evidence. The warm calling thread used 111.27 CPU seconds, including
+  70.95 seconds inside 73.04 seconds of known waits. The 48 MoE status
+  enqueues account for 9.217 wall seconds inside the host status partition.
+  A four-byte enqueue can wait on the preceding work. Preserve the earlier
+  failed host-USM destination comparison at `d99bacc3f`.
+  Next compare the direct BF16 attention store at the measured split/batched
+  placement. The copied path requests 115,495,403,520 GPU-local bytes
+  across 720 pieces. The earlier `b973b13dd` comparison supports a new
+  test at this shape. `prefill_split_store.py` checks the exact current
+  fixture before enabling this selector for a model request.
+  The same-build GPU fixture at `90c572ca9` passes exact BF16 bits for
+  1, 63, 8191 and 8192 rows, guards, invalid spans and checked cancellation,
+  with normal closure and no fresh fault. The `store-admit` phase fixes
+  batched upload and input copies and enables only direct output. It closed
+  at `3f1e5b0b9`. Both fresh 117489-token requests matched the traced batched
+  copy arm's expert and draft work and restored the same 1124 decode slots.
+  Each used 720 direct writes and requested zero output-copy bytes. Both
+  completed without a fresh GPU fault. `store-time` compares copy and direct
+  with clean observers and the same engine and runtime safety settings. Run
+  three independent process pairs in copy/direct, direct/copy and copy/direct
+  order. Use the four established fresh request bodies in each process. Require
+  two faster warmed pairs and a paired median time ratio below one. Record
+  first-use and warmed TTFT and the repeated 1000 tok/s threshold separately.
+  The clean comparison at `37767d359` completed all 24 fresh 117489-token
+  requests with matched expert, KV and draft work and no fresh GPU fault.
+  Copy and direct warmed process medians aggregate to 990.919 and 994.337
+  tok/s. All three paired prompt-time ratios favor direct output
+  (0.997881, 0.994834 and 0.996562). Warmed client TTFT is 118.807 and
+  118.387 seconds. First-use TTFT improves in one of the three pairs.
+  Keep direct output for further split-prefill tuning. Its median warmed
+  prompt still needs 0.669 fewer seconds for 1000 tok/s. Final-slot, RESTORE
+  and sustained decode qualification remain open on this composition.
+  The large expert jobs on this route write 248.72–249.06 GiB of logical
+  FP16 gather output per request. The mapped GU experiment read the source
+  directly into DPAS fragments. The witness at `b30fb35e4` and the complete
+  operator at `6b2a56899` verified bit-identical BF16 and FP16 output,
+  bounds, guards and sticky status. Their exact sources and outcomes remain
+  recoverable from those commits. Historical refusals remain at
+  `40544a62c`, `5e723ea98`, `cc1f45563` and `117277096`.
+  The clean timing comparison at `0f1c4d7c5` uses the linked fixture from
+  `54a5e64c4`, reusing the qualified operator objects. Three independent
+  children closed 108 matched pairs with exact output and no fresh GPU
+  faults. Five conditions pass the timer and batch gates. Their median
+  mapped/gathered time ratios range from 8.328 to 8.934. Every eligible pair
+  favors scalar gather plus native fused GU. The 8192-row spread condition
+  has six sub-100 ms batches in the third process and remains ineligible.
+  The 8192-row clustered condition takes 1.213 ms with gather and 10.096 ms
+  with mapped reads. The trial measures complete operator wall time; actual
+  VRAM traffic and device-only service remain unknown. Keep the gathered
+  production path. This comparison admits no mapped shape for model review.
+  Retired the guarded prototype, its CMake option and the standalone controller.
+  The original sources, commands and individual samples remain reachable.
+  No later stage consumes these fixtures. The verified deletion
+  inventories in the shared state directory are:
+
+  | Root | Files | Bytes | Inventory SHA-256 |
+  | --- | ---: | ---: | --- |
+  | `prefill-mapped-gu-a-v5` | 11 | 17585737 | `294297ef66e219adeb22f3b2fbf67f404558ffb0294358b769a2c9e2495e8cac` |
+  | `prefill-mapped-gu-operator-v1` | 11 | 18513739 | `215e7f265b0f79e2205661595bdc6411c2d8be49cbe180dfa7d1a88d15871654` |
+  | `prefill-mapped-gu-timing-v1` | 38 | 19309485 | `f0638a381f79fe1181ce732f4dd8fc3239a683aef6ad743f5fef9254059104dc` |
+
+  The ordinary generation comparison for the 65537-token candidate closed
+  under `prefill_ordinary_generation_v1`. All six independent processes
+  finished the official long prompt, six agent turns and both thinking-on
+  generation workloads with normal exits, matching model assets and no fresh
+  GPU fault. The nominal 32K prompt read 32089 tokens. The sustained code
+  and prose workloads read 33211 and 33281 tokens and generated 2815 and
+  6823 tokens, with 87.009% and 33.935% draft acceptance. All matched work
+  and agent request bodies agree. The paired candidate/original decode
+  geometric-mean ratios are 0.98938 for code, 1.01629 for prose and 0.94992
+  for agent follow-ups. All three agent pairs were slower. Code client TTFT
+  increased in all three pairs, from a process median of 47.458 to 48.526 s.
+  The combined option fails decode preservation on the ordinary route. Keep
+  the original ordinary selection and the separate exact 65537-input speed
+  result at `84c883393`. The phase-boundary effect remains to be localized.
+  Use the measured V2 split/batched build for the next shared Gate comparison
+  and retain the coherent decode reference. Both FDE0 KV/gather timing cohorts,
+  RESTORE and the ordinary generation comparison have closed. The cache
+  cohort closed on its recorded prelaunch failure. No FDE0 split curve,
+  split continuation, generation or score-decay campaign is running. Pin
+  future split tests to the selected build and commit their plans first.
+  The first `prefill_shared_gate_admission_v1` request processed 16386 fresh
+  tokens and generated 24 outputs. Its first route gate then stopped the
+  owner at `observed total/max-allocation admission differs`. The measured
+  16385-row mode-10 route uses 1928491296 fixed bytes. The reader's 16-cell
+  rounding predicts 1928515968 bytes. The measured QSA page size is four,
+  which gives the logged 33693728 transient bytes and exact fixed total.
+  The bench exited on SIGTERM with incomplete observation and zero fresh
+  GPU faults. All recorded process identities are absent and the session is
+  empty. The preserved route passes a CPU replay with the verified four-cell
+  plan. The original receipt remains failed.
+  `prefill_shared_gate_admission_v2` closed three fresh processes and six
+  matched requests on the same executable. All 16385 batched rows and 144
+  direct attention stores per request used the GPU. The alternate buffer
+  expanded Gate weights 144 times with reload and 48 times with reuse. All
+  modes matched response digests, work, 24 generated tokens and 16 of 21
+  accepted drafts. The 15 final asset hashes match. All owners closed with
+  exit zero and no fresh fault. The 117489-input comparison closed at
+  `06a199714` with nine independent processes and 36 fresh requests.
+  Every request matched the split route, output and draft counts, and
+  the expected 720 expansions with reload or 48 with reuse. All owners
+  exited normally with zero fresh faults and matching final asset hashes.
+  The later-request process medians aggregate to 992.988, 995.509 and
+  994.729 tok/s for original, reload and reuse. Placement alone and reuse
+  at the alternate address each won one of three paired comparisons.
+  The placement-plus-reuse arm won two against original, with a median
+  prompt-time reduction of 0.308%. Each mode missed the repeated
+  1000 tok/s gate. Keep the combined result as a timing candidate and
+  use the retained V2 reference for the next long-prefill trial. Full-context,
+  RESTORE and sustained decode gates remain open for the combined arm.
+  Keep the retained V2 prefill and coherent decode builds for the Gate clock
+  bracket and later independent phase validation. Removed and verified the
+  three closed Gate and QSA outputs below after matching their inventories
+  to pushed `2fcf092b3`. The Gate projection at `234976a52` recovered all 1171
+  source files, matching configuration, actual compiler/link inputs and all
+  12 target hashes. The ordered QSA plans at `f88150349` and `ad4a6fd8e`
+  recovered both generated/fixture sources and the exact commands, 698
+  compiler inputs, 27 link inputs and the final fixture hash. The timing
+  readers' production references use V2. Their useful individual comparison
+  samples remain at `06a199714` and `371770ab8`.
+
+  | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
+  | --- | --- | --- | --- |
+  | `prefill-shared-gate-native-v1/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1369 | 196408142 | `afe3fd615f6c9c01f40b6c1eb4712b76fcf3dbe97a67d90715b940f277bd9ba0` |
+  | `prefill-shared-gate-speed-v1/{0..8,host}` | 634 | 95241320 | `21ed1edf2eececa0c7a37ff4470d6a20274ea1832cf4d241452a0d1c4437a240` |
+  | `prefill-qsa-key-page-v1/{cache,execution.json,measure-{0,1,2,boundary,smoke},owned,qsa_{bf16_prefix_layout_bench,key_page_component}.cpp.o{,.d},src,sycl_qsa_bf16_prefix_ordered_exp_bench,tests,tmp}` | 31 | 2393910 | `c33a880ac7e77ffa66de013d803588a23bd68e4d711c90867101533b66335e84` |
+
+  The closed source/build receipts and Gate timing runtime inventory are
+  retained for provenance. Both reference executables passed their hashes
+  before retirement.
+  The long comparison reads the committed V2 admission receipt. Both short-run
+  captures under the shared state directory were removed and verified absent.
+  The V1 failure and V2 exact comparisons remain in Git at `df349d38d` and
+  `f3707ee5e`.
+
+  | Capture directory | Entries | Regular bytes | Inventory SHA-256 |
+  | --- | --- | --- | --- |
+  | `prefill-shared-gate-admission-v1` | 76 | 10734500 | `052e5ab0cbf91610717453530739c5c44985d1570fb3c98cbd0d4fbe5bc3f7d2` |
+  | `prefill-shared-gate-admission-v2` | 216 | 32299517 | `88fb85d3b11b565887cf906c26c3f0554bd12b8d7039200b1be7863109a2fc90` |
+  The finished FDE0 build's 1171 original source files, recipe, configured
+  inputs, recorded compiler inputs and 12 target hashes match the recovered
+  Git projection. The original commits are reachable from pushed `9b92a032f`.
+  Retired `prefill-large-gather-kv-model-v1/build` under the shared state
+  directory. With that path absent, the exact V2 device inputs, shared Gate
+  source projection and coherent decode reference verified successfully.
+  The 190 entries comprise 177053149 bytes of regular files. The inventory hash is
+  `e60c9e8715d43df55630b8cea31cf2d51bcd02023a2063b9c24a5596efbe1b89`.
+  The original `record.json` still verifies for source and workload recovery.
+  For the subsequent output-store comparison, the retained `fde0cdd11`
+  source already exposes `STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE` and
+  its build includes `sycl_prefill_attention_bank_test`.
+  `bench/sycl/prefill_gather_store.py` uses that fixture with Level Zero
+  tracing. The model admission recovers the two traced copy requests for
+  each selected KV/gather arm and checks the exact two direct counterparts.
+  At 65537 and 117489 inputs the copy routes request 64,424,509,440 and
+  115,495,403,520 GPU-local bytes respectively. Require matching bank pieces
+  and no output copies in the direct cases. Collect three fresh pairs per
+  length with the chosen KV/gather settings fixed.
+  The 65537-input traced check closed under
+  `prefill_gather_direct_store_65537_admission_v2`. Both requests executed
+  all 384 direct stores with zero requested output-copy bytes and matched
+  the recorded copy arm's workload and dispatch. Native validation and
+  shutdown passed with zero fresh GPU faults. V1 refused before native launch
+  because the case omitted the observer flag. The corrected plan pins it in
+  the environment and case metadata. At 117489 inputs, both traced requests in
+  `prefill_gather_direct_store_117489_admission_v2` executed 720 direct stores
+  with zero requested output-copy bytes. They matched the original work and
+  128-slot split, including allocation, guarded tail and checked drain. The
+  process exited normally with quiet validation and zero fresh GPU faults.
+  Start clean timing at 65537. The slowest of its four earlier combined
+  KV/gather process medians was 0.1423 s above the 65.537 s budget. At the
+  historical aggregate D2D rate of 128.86 GB of requested payload in 0.7884 s
+  of device copy service, eliminating 64.42 GB corresponds to 0.394 s of
+  service. Actual wall time depends on command sizes, overlap and the direct
+  store cost.
+  The clean 65537-token comparison closed at `4d1c87515`. Each of six
+  independent processes handled the same three fresh prompts with KV-stage
+  reuse and vector gather enabled. All 18 requests matched executed work and
+  generated 24 tokens with 16 of 21 drafts accepted. All owners exited
+  normally without a fresh GPU fault. Paired warmed prompt-time ratios for
+  direct store over copy were 0.98433, 0.99893 and 1.00788. Two wins meet
+  the planned advancement gate, with a 0.11% median paired time reduction.
+  Across process medians, warmed PP was 908.61 for copy and 907.94 for
+  direct store. Warmed TTFT was 72.319 and 72.396 s, and first-request
+  TTFT was 83.278 and 82.849 s. Both arms remain below 1000 tok/s in this
+  timing period. Keep the ordinary model selection pending broader validation.
+  The clean 117489-token comparison at `1bfa911d5` keeps KV reuse and scalar
+  gather fixed on the admitted 128-slot split route. The six processes and
+  24 fresh requests matched dispatch, cache handoff, 24 outputs and 16 of
+  21 accepted drafts per request. All processes exited normally without a
+  new GPU fault. Direct output used 720 stores and zero requested output-copy
+  bytes per request. Its three warmed prompt-time ratios over copy are
+  0.993587, 0.991169 and 0.995224. The median paired time reduction is
+  0.64%. Process medians aggregate to 974.08 and 979.80 tok/s for copy and
+  direct output. Median warmed TTFT is 120.860 and 120.141 s. Median
+  first-request TTFT is 133.153 and 131.213 s. Advance direct output as a
+  candidate for this route. The 1000 tok/s threshold and composed
+  physical-context, RESTORE and sustained decode gates remain open.
+  The same 65537-token copy configuration previously reached 1009.33 tok/s.
+  It uses the same executable, runtime inventory, request bodies and effective
+  settings after path normalization. The elapsed-time difference remains
+  unattributed. The 117489-token copy controls take a warmed median
+  120.616 s, about 7.60 s longer than the historical median. Their request
+  hashes, executable, providers and settings match the earlier KV-reuse
+  controls. Keep comparisons within each timing period and placement.
+  The separate `bench/sycl/prefill_gather_conditions.py` bracket supports
+  both measured copy routes. The 117489-input V2 bracket closed at
+  `508745909`. Three processes and twelve fresh requests matched route,
+  work and inference settings, with normal exits, quiet validation and no
+  fresh GPU faults. Final hashes matched all fifteen model assets.
+  The clean, observed and clean warmed PP rates are 975.89, 977.03 and
+  971.48. Warmed client TTFT is 120.620, 120.494 and 121.156 s. First-use
+  TTFT is 132.583, 133.310 and 132.859 s. Both observed warm time ratios
+  are within the 1.05 cap for prefill and TTFT.
+  The observed warmed requests sample a 2750 MHz median GT0 clock,
+  7 PL2 indications across 358 samples and 98.9–99.1% compute-engine
+  busy fractions. Scheduled native CPU time is about 0.99 core equivalents,
+  with zero native major page faults during the sampled intervals. The
+  host-facing link consistently reports 16 GT/s x4. These samples describe
+  current conditions. Exposed transfer time, arithmetic/memory saturation
+  and conditions at the historical higher speed remain undetermined.
+  V1 refused before launch on a mismatched observer environment. V2
+  enables observation in its own entry point.
+  The same-build standalone KV trial passed the final slot at 262144 with
+  114688 GPU rows, 147455 host rows and one terminal commit. Its mixed
+  scratch bytes were zero. Carry this result as final-slot evidence for
+  the fallback and qualify the fast mixed-window composition separately.
+  All 42 original samples, route counters and decisions match `982211f5c`.
+  Retired the numbered request directories and `host` from the closed
+  `prefill-split-upload-admission-v1` and `prefill-split-upload-speed-v1`
+  roots under the shared state directory. The trace capture contained 214
+  files and 32,996,811 bytes with inventory SHA-256
+  `74833fb2ce4eb87979058de0a8d6cf3068bf12e9ac3c3de27163712342ef9d3f`.
+  The timing capture contained 634 files and 95,231,582 bytes with inventory
+  SHA-256 `6cdde1ea3ca90905f290f6491d7be3130bd6cc1ed119f3dd583606fc42dc229a`.
+  The comparison records and provider manifests remain for the same-build
+  attribution decision.
+  Verified the four closed receipts against pushed Git before retiring these
+  raw captures under the same state directory. Retain the compact receipts
+  and runtime manifests for the build and route readers.
+
+  | Capture and retired children | Evidence | Files | Bytes | Inventory SHA-256 |
+  | --- | --- | ---: | ---: | --- |
+  | `prefill-split-upload-cpu-wait-v1` 0–2 and host | `1046b4164` | 214 | 31672563 | `30fa14032573af3837dcc42bbaa837d750263daea07b6c2946d1b6174c75da90` |
+  | `prefill-split-direct-store-component-v1` cache, owned, tmp and validation.log | `90c572ca9` | 6 | 335320 | `3254c10ebb92794a825af823e5eaf7352e56a76cb97ea36e82342bf1388f429e` |
+  | `prefill-split-direct-store-admission-v1` 0 and host | `3f1e5b0b9` | 74 | 11013896 | `8985923c4d6b98ffc912ec49bf20328ae25904980345be7c263e8e6fcde58f52` |
+  | `prefill-split-direct-store-speed-v1` 0–5 and host | `37767d359` | 424 | 63496408 | `6caef890f255218c5e04a62798ab69cb83cd85c681e5f7a24b76de0a048bedb0` |
+
+  The 65537-token comparison closed at `84c883393` with 16 independent
+  processes and 48 fresh requests. The subsequent-request rates were
+  984.54 tok/s with ordinary reload, 980.22 with KV reuse, 984.42 with
+  vector gather and 1009.33 with both. KV reuse alone won one paired block
+  and vector gather alone won two. The combination won all four blocks
+  against each single change and the reference. Median paired prompt time
+  fell 2.32% against the reference and warmed client TTFT went from
+  66.739 to 65.097 s. First long-request TTFT medians were 77.332 and
+  75.976 s. Three of the four warmed combined process rates reached 1000.
+  Select the combination for validation on the ordinary 384-slot route at
+  this length. The 117489-token split-route comparison selects KV reuse.
+  Compute the interaction within each balanced block as
+  `T(both) - T(KV reuse) - T(vec8) + T(base)`, using warmed prompt times.
+  At 65537 tokens it is −0.763, −3.231, +0.262 and −6.014 s. At 117489
+  tokens it is +3.855, +4.102, −0.768 and +5.644 s. The interaction is
+  negative in three ordinary-route blocks and positive in three split-route
+  blocks. Keep the placements and their selected arms distinct in
+  subsequent comparisons.
+  At the 256 MiB H2D calibration rate, the removed request bytes correspond
+  to 0.41–0.42 s at 65537 tokens and 1.54–1.59 s at 117489. The measured
+  117489 KV-reuse savings range from 2.41 to 6.58 s across the four blocks.
+  Attribute the difference using copy issue, synchronization, actual copy
+  sizes and overlap as well as run variation before changing PCIe placement.
+  The Q8 prefix helper issues four direct SYCL queue copies per prefix in
+  `src/kernels/sycl/kv_stream.cpp`. The compatibility memcpy counters miss
+  this call path. Use request-scoped direct call and event observations for
+  the 8192–114688-cell prefixes, keeping scalar gather and clean timing fixed.
   The first six independent processes through `6b5e834e1` took 9.93–12.84 s
   longer on their first long prompt than on their subsequent median. All six
   used private cache directories with `SYCL_CACHE_PERSISTENT=0`, and all wrote
@@ -632,6 +1957,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The 12 device images have 91 distinct kernel names in their ELF
   `.ze_info`; 90 include Strata, among them GDN recurrence, MoE row gather
   and QSA score GEMM. Image membership establishes no per-kernel duration.
+  A read-only comparison of the closed `84c883393` and `568d015ba`
+  cohorts found the same 53 names and sizes in all 32 private caches. The
+  base and selected process in each cohort also matched the full SHA256
+  above and the `config.file` size of 10,461,608. The selected 65537
+  and 117489 cases wrote the same 12 image names during their first long
+  requests, using the journal alignment and its ±0.5 s check. Across the
+  16 processes at each length, median first-minus-own-subsequent prompt
+  time was 10.768 and 10.522 s, with ranges of 8.721–13.408 and
+  8.896–13.942 s. This makes the shorter measured workload a candidate
+  for producing a complete seed on this exact engine and provider.
+  The retained `fde0cdd11` executable embeds the three native ELF images
+  from its linked Xe2 object (recorded SHA256 prefix `f89830ee88`). Its 39
+  named kernel text sections have zero exact name overlap with the 91
+  in the 12 first-long cache images. The present AOT object therefore
+  provides no exact named coverage for this cache set. Module selection
+  and compile time still require runtime evidence.
   The timed provider manifest identifies Level Zero GPU 1.17.39758 (native
   library SHA256 prefix `52e29a60`) and IGC 2.41.5 (`40badd8f`).
   The installed NEO package is 26.35.39758.17-1~24.04~ppa1. Its matching
@@ -658,8 +1999,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prefill and TTFT separately. A clock favors a seed when at least two of three
   paired times improve and their median ratio is below one. For readiness use
   the candidate's upper and reference's lower observation bounds.
-  After the 117489-token four-arm comparison closes, use `bench/sycl/prefill_split_length_curve.py` on its
-  fastest eligible arm with the same executable and actual 128-slot placement.
+  The three diagnostic processes at `42466f2ee` pass the cache-hit gate.
+  Before and during the first long prompt, the empty cache misses 41 and
+  12 images. The short seed hits the first 41 and misses the next 12. The
+  full seed hits all 53. First client TTFT in these three processes is
+  130.091, 127.958 and 126.286 s. The repeated clean timing blocks still
+  determine the size and reproducibility of the effect.
+  In the first clean block, empty/short/full first-long TTFT is
+  128.110/127.393/126.936 s and subsequent TTFT is
+  117.096/116.198/117.558 s. All six requests read 117489 fresh tokens and
+  match output and draft counts. The 1.174 s first-long TTFT saving with
+  the full seed is one block of the three-block decision.
+  The eighth process refused at prelaunch before opening a native owner.
+  The only differing control was `AGENTS.md` from the older gather build.
+  All seven completed processes and the original plan are preserved at
+  `1acdbbbe7`. Closed gather build admission now recovers its pinned control
+  bytes from the original commit and verifies the actual build as before.
+  A fresh cache comparison needs a separate committed plan.
+  The historical FDE0 length plan is in `bench/sycl/prefill_split_length_curve.py`.
+  Its unstarted execution is superseded by the planned sweep on the selected
+  live split build, with a fresh actual-placement check.
   Measure six lengths from 94209 through 117489, plus 98306. At 98305 the
   98304 batched rows fill twelve chunks. One more input row opens a thirteenth.
   On this route the extra chunk requests 48 additional prefix copies totalling
@@ -667,20 +2026,38 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   103,809,024 bytes with aligned reuse. These counts follow from the twelve
   QSA layers reading 98304 preceding cells at 1056 bytes per cell, with only
   the final layer reloading when reuse is enabled.
+  The retained build's compiled planner allows 90113–117488 batched rows
+  for this split. All seven lengths also clear the expert bank's short-tail
+  guard. With `n = input_tokens - 1`, the fixed byte requirement is
+  `20480*n + 10240*(n - 65536) + 2056*round_up(n, 4) + 877658624`.
+  The constant includes the 128-slot bank, headroom, score status and
+  accumulator guard. The requirement rises from 3,294,331,392 bytes at
+  94209 inputs to 4,057,356,672 at 117489, matching the latter's traced
+  admission. Between 98305 and 98306 it rises by only 38,944 bytes while
+  the number of prefill chunks and prefix copies steps up. Check observed
+  free bytes, split placement and the arena tail for each measured length.
   Take each length in two independent processes in reverse orders, with the
   first request and the median of two subsequent fresh requests separate.
   Compare affine, quadratic and n log n fits to prefill time and client TTFT
   by leaving out a whole length. Hold 98306 outside the smooth fits and
   report its change from 98305 with the actual expert jobs and transfer counts.
   A time difference across these two bodies alone cannot isolate chunk setup.
-  For the same selected long-prefill path, `bench/sycl/prefill_split_generation.py`
-  compares the baseline and candidate over three independent pairs (AB, BA,
-  AB). Keep the stock decode layout, thinking, MTP and native binary fixed.
+  Preserve the historical FDE0 generation plans in Git. Compare the selected
+  prefill route with its reference over three independent pairs (AB, BA, AB)
+  on the selected live build. Keep the stock decode layout, thinking and MTP fixed.
   Each process runs the official long, agent and two sustained generation
   workloads. Bind fresh prompt identities, executed gather and KV work,
   generation lengths and MTP counts before comparing sustained decode and
-  agent follow-up rates. Keep the original 117K speed decision separate
-  from this handoff and decode-preservation decision.
+  agent follow-up rates. The standard sustained prompts have about 33K actual
+  input tokens and exercise the ordinary route. Check split handoff with a
+  separate matched `split-v1-96k` comparison based on the workload in
+  `bench/sycl/prefill_split_continuation.py`. Three pairs keep the stock decode
+  settings and scalar gather fixed. Check count-preflight bodies, actual
+  128-slot admission, split tail guard/drain, MTP restore and same-request
+  decode footers. The code and prose workloads each need at least 1024 output
+  tokens with thinking. Judge the MTP classes from measured acceptance and
+  report warmup and the two long requests in their original order. Physical
+  context fill and RESTORE keep their separate qualification.
   For a fresh request with `n-1` batched tokens, let
   `c = ceil((n-1)/8192)`. An ordinary attention layer reloads
   `1056 * 8192 * c*(c-1)/2` bytes of prefix: every chunk rereads all
@@ -884,6 +2261,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   executable passed the existing lease/order tests and every input length
   from 98305 through 262144 using 267 verified compiler inputs. This
   leaves actual sweep dispatch, model state and timing open.
+  The retained KV/gather engine compiled the ordinary scheduler from the
+  projected `src/prefill/layer_major.inc` recorded as `8e6447663df0`.
+  The branch tree at `fde0cdd11` already contains the sweep selector. Use a
+  fresh coherent projection of `0e7cf8107` for the sweep comparison and
+  verify those actual compiler inputs before launch.
   The clean comparison at `9c03b44d0` completed three independent
   processes with the same ordinary copy route, decoder placement, 262144
   context and four historical thinking-on requests. The last three prompt
@@ -1108,6 +2490,35 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   repair remain open before adoption. The actual limiting hardware resource
   remains unknown. Candidate code/prose requested copies are129390259200/
   404578022400bytes per process,not measured bus traffic or saturation.
+
+  Retain the coherent `14508acbf` decode reference for the next verifier
+  comparison. The three earlier reference processes and all six
+  `decode_mtp_prefix_generation_v1` processes used the same v5 bodies, read and
+  generated counts, draft counts, model assets, boot, driver and runtime
+  manifest. Their expert footers report 1,074,995 CPU jobs and 1,354,722
+  entries for code, and 3,718,375 jobs and 6,125,520 entries for prose in
+  every process. Submitted expert-miss blobs are zero at `--pcie-frac 0`.
+  The coherent reference runs the two long requests directly after four
+  warmups and enables Arena copy and the snapshot marker. The prefix suite
+  uses a different native revision, adds chat, prefill and agent requests
+  before long generation, and disables both options. Both use effective
+  MTP width four. Match the preceding work and phase settings when selecting
+  the decode reference. The verifier candidate has its own context checks.
+  On `14508acbf`, the Arena-copy view is acquired only when the effective
+  PCIe share is positive. The two suites report zero expert-miss copies at
+  share zero with early PCIe disabled. The snapshot setting prints the
+  draft-prefill marker and checks RESTORE when used. The measured requests
+  start fresh with no RESTORE.
+  The full-suite replay `decode_reference_replay_v1` closed at `097922a15`
+  with identical preceding requests, sustained work and MTP classes across
+  both cohorts. Each replay process exited normally with no fresh GPU fault.
+  The three-process medians were 11.394 versus 11.384 tok/s for code and
+  6.898 versus 6.867 for prose. Both meet the committed development-reference
+  screen. Retain coherent `14508acbf` for the next decode comparison.
+  The collections used different measurement periods, and the unchanged
+  replay build ranged from 10.468 to 11.534 tok/s on code. Use the decision
+  for reference selection. The MTP prefix build has ended its timing role.
+  Check its source recovery and remaining executable readers before retirement.
 
   V1's host-state mutation refusal and V2's missing presence-enabled callback
   failure remain failed in their original evidence. V3prospectively separates
@@ -3846,7 +5257,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   result open. Verify traced work and state outside the speed samples;
   stop on a changed input, ownership, fault, numerical or dispatch failure.
   Recheck sustained decode, agent sessions and full physical capacity before
-  adoption. No model speed sample from the two-switch build exists yet.
+  adoption. The two-switch build's completed 65K and 117K timing decisions
+  are recorded above.
   Run `bench/sycl/prefill_kv_gather_speed.py` first at 117489 tokens
   (four original bodies per process), then at 65537 (three bodies).
   Each length has 16 independent processes. Validate the KV and gather
@@ -3950,6 +5362,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   sticky status and a four-byte-aligned single bank. Run the host witness
   before the traced three-row smoke, then all shape/bit cases before
   considering full DPAS. Device build and execution are pending.
+  The 65537-token workload gathers about 28 million eligible rows per
+  request. Their temporary matrix writes represent 133.5 GiB of logical
+  FP16 output. The reviewed `prefill-gu-indirect-load-traffic-20261120`
+  scope identifies repeated reads across N workgroups and subgroup replicas
+  as the main question for indexed A. After the bit test, compare dense
+  materialization, indexed A and tile-local repack on the production wide
+  shape. Time each arm from input availability through completed SwiGLU
+  output. Use compact tiles to test the effect of more read replicas.
   The source inputs (783 for the pair and 776 for the probe), all four
   generated inputs and the final comparison decision were verified from
   Git before cleanup. The 152 capture files (571,845,791 bytes), 42,745-byte
@@ -8084,6 +9504,26 @@ verification. Physical PCIe/VRAM traffic and the limiting resource remain
 unqualified;this tests arithmetic sensitivity at unchanged logical data volume.
 Model speed,prefill/TTFT preservation,task quality,and physical262144/RESTORE
 qualification remain separate gates.
+
+The indexed MTP draft-head candidate at `a0ede5973` was tested against
+the packed-head projection followed by vocabulary gather. Controller
+`5c3e72146` binds the same retained `fde0cdd11` build, model shards and
+ordered draft vocabulary. The linked fixture has SHA256 prefix `9e9ac48d0a`
+and the compiled recipe has prefix `19ea3964f3`.
+The traced smoke and all three timing processes pass the 24 exact and
+three masked cases, input immutability and guards. All four retire with
+normal exits and no fresh fault. Reference/candidate process medians
+are 220.077/320.724, 217.753/310.100 and 234.613/300.157 ms for the
+timing batch. Candidate time ratios are 1.457, 1.424 and 1.279.
+The component misses the performance gate in all three processes. Keep
+the existing projection and gather. Its private `decode-q6-draft-indexed-v1`
+build and captures were retired (52 files, 61,262,282 bytes, tree SHA256
+`80925e94c2ab6f5da1759bf0be2e2a6761f415184ce439136eaec107fda71f79`).
+Before retirement, Git recovered the three source overlays and 472 controller
+inputs. The four recorded commands, 797 actual input and executable hashes,
+and all 48 archive members matched. The source and controller remain
+reachable through `1a2f2ab37`.
+
 The source-only implementation/controller audits at `f7a96d864` and their
 native Luna-max reviews are closed. They confirm the valid-domain centering
 seam and same-geometry arms;the 32smoke cases and retained paired samples are
@@ -8948,6 +10388,11 @@ Bounded sampler/device and actual draft-route validation must precede a sampled
 model trial; no such execution or sampling-causality claim is established yet.
 
 ## Qualification and operating constraints
+
+Scope inference investigation to source code, primary technical references,
+ordinary inference logs and measured results. This applies to Main, collection
+and review. Exclude executable analysis, disassembly, reverse engineering and
+cybersecurity research from this project work.
 
 Before adoption, retain the model prompt-verify, task/agent quality and numerical
 checks, failure ownership and graph/allocation retirement, sustained decode,

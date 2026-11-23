@@ -1,116 +1,92 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-11-19T20:12:25.098075+00:00",
+  "queried_utc": "2026-11-22T01:09:53+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "queried_utc": "2026-11-17T20:52:28.026884+00:00",
-    "observed_sha": "c77572806996349b49995e4f98d41b5294d36a21"
+    "queried_utc": "2026-11-19T20:12:25.098075+00:00",
+    "observed_sha": "58ee3227720629ff2e41d640165ebe89c880dfef"
   },
-  "observed_sha": "58ee3227720629ff2e41d640165ebe89c880dfef",
+  "observed_sha": "6e38f588a646c0ee6948a74afbe670eb75896106",
   "changed_since_previous_observation": true,
   "source_fetched": true,
-  "fetch_command": "git fetch --no-tags --recurse-submodules=no origin main",
+  "fetch_command": "git fetch --no-write-fetch-head --no-recurse-submodules origin",
   "remote_check": {
-    "command": "git ls-remote --heads origin main",
-    "observed_sha": "58ee3227720629ff2e41d640165ebe89c880dfef",
+    "command": "git ls-remote --exit-code origin refs/heads/main",
+    "observed_sha": "6e38f588a646c0ee6948a74afbe670eb75896106",
     "matches_fetched_origin_main": true,
-    "checked_utc": "2026-11-19T20:12:25.098075+00:00",
-    "fetch_head_mtime_utc": "2026-11-19T20:09:09.190572+00:00"
+    "checked_utc": "2026-11-22T01:09:53+00:00",
+    "tag": "v0.2.18",
+    "tag_object": "2b02185645e985d16da927c527cce542e7f7747e",
+    "peeled_tag_commit": "6e38f588a646c0ee6948a74afbe670eb75896106"
   },
   "new_interval": {
     "start": "146df3c468739147f520ac3816de806f71232571",
-    "target": "58ee3227720629ff2e41d640165ebe89c880dfef",
-    "commits": 1894,
-    "changed_paths": 7957,
-    "describe": "v0.2.16-4-g58ee32277",
-    "source_access": "Fetched main in the independent ghq clone and verified it with ls-remote. Counts use rename detection with no candidate limit. Release tag resolved remotely without changing existing local tags.",
+    "target": "6e38f588a646c0ee6948a74afbe670eb75896106",
+    "commits": 2395,
+    "changed_paths": 8286,
+    "describe": "v0.2.18",
+    "source_access": "Fetched in the independent ghq clone and matched remote main and the peeled tag. Path counts use rename detection with no candidate limit.",
     "integration_state": "fetched_not_imported",
     "whole_function_ledger_complete": false,
     "unmodified_hardware_tuned_performance_complete": false,
     "since_previous_check": {
-      "start": "c77572806996349b49995e4f98d41b5294d36a21",
-      "target": "58ee3227720629ff2e41d640165ebe89c880dfef",
-      "commits": 728,
-      "changed_paths": 7752,
+      "start": "58ee3227720629ff2e41d640165ebe89c880dfef",
+      "target": "6e38f588a646c0ee6948a74afbe670eb75896106",
+      "commits": 501,
+      "changed_paths": 765,
       "by_top_level_area": {
-        ".gitattributes": 1,
-        ".github": 15,
+        ".github": 3,
         ".gitignore": 1,
         "AGENTS.md": 1,
-        "README.de.md": 1,
-        "README.es.md": 1,
-        "README.fr.md": 1,
-        "README.ja.md": 1,
         "README.md": 1,
-        "README.pl.md": 1,
-        "README.pt-BR.md": 1,
-        "README.zh-CN.md": 1,
-        "SETUP.bat": 1,
-        "START-HERE.bat": 1,
-        "SUPPORTERS.md": 1,
-        "UPDATE.bat": 1,
-        "app": 1217,
-        "apps": 9,
-        "cmake": 2,
-        "docs": 2397,
-        "engine": 2462,
-        "include": 2,
-        "packaging": 1,
-        "serve": 6,
-        "setup.sh": 1,
-        "src": 19,
-        "strata_control": 1,
-        "sycl": 7,
-        "terminal": 1385,
-        "tests": 10,
-        "third_party": 66,
-        "tools": 136,
-        "update.sh": 1
+        "app": 170,
+        "docs": 32,
+        "engine": 280,
+        "terminal": 245,
+        "tools": 32
       },
       "status": "fetched_not_imported"
     },
     "source_only_review": {
       "state": "preliminary_not_full_function_ledger",
       "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
-      "upstream_release_tag": "v0.2.16",
-      "release_commit": "64524fb9fc82222ddce554c0643b64f056ec8366",
-      "version_declaration": "07f6f32185b7a18d87a00731e20617fbf58f0bd6",
-      "versions": "App/Terminal 0.2.16, Control 0.1.62, engine packages 0.1.61.",
-      "layout": "Moved source to engine/, terminal/ and app/. Resolve engine/sycl and its root dependencies for an unmodified upstream build. A moved path alone does not imply implementation changes.",
+      "release_note": "https://github.com/Niko1221/Strata/releases/tag/v0.2.18",
+      "release_commit": "6e38f588a646c0ee6948a74afbe670eb75896106",
+      "versions": "App and Terminal 0.2.18. Control and engine packages 0.1.64.",
       "required_function_candidates": [
-        "3c3609212: offline DFlash2 prepared-pack readiness and CLI copy instructions",
-        "43e4f52f6: detached stdin on service hardware and system probes",
-        "bf1295276: accept arch lists encoded as a BUILD.json string",
-        "terminal/platform offline installation, app update/reconnect, CLI launch/help, packaging and other non-inference changes require a cumulative ledger."
+        "23d94d00a, dd6da3a9d, 18cce81d0: individual model discovery and context metadata fields.",
+        "4f0e0f8b0, a73ef2419: request clocks across yield and reset of parked-session metrics after recovery.",
+        "9ff9e5c01: Bash, Zsh and Fish completion from the CLI parser.",
+        "12d491da4: protect mapped PLE rows from premature page-cache eviction during launch."
       ],
-      "inference_and_correctness_candidates": [
-        "6da3a80e5: Strata-owned quant dispatch for the CPU expert pool in the Arc build. Evaluate the actual IQ3_S path for this PC and each inference phase independently.",
-        "f59c0da97 / bba1a0e92 / f0f39de26: prompt-queue ownership on release, device/host window timeout handling, and stable expert dispatch IDs. Compare production entrypoints and preserve independent local safety corrections."
+      "inference_component_candidates": [
+        "e8701bbdd: DFlash2 planar Q6_K head projection assembly in engine/sycl. Check actual local head layout and ownership before testing.",
+        "928aa3d16: SYCL verifier device-plan selection for the no-host setting. Check Intel discrete-device applicability and preserve independent local safety controls.",
+        "d59c36752: optional non-native router window batching is in engine/src. Verify actual IQ3_S routing and the SYCL resolver before treating it as a candidate."
       ],
-      "exclusions": "DeepSeek and 35B-model execution excluded. No CUDA/HIP inference import or XeStrata implementation use.",
-      "arc_component_decisions": {
-        "f59c0da97": "The measured SYCL prefill aliases the copy queue to the caller-owned stream and destroys only a distinct queue. Existing ownership protection covers the upstream change.",
-        "bba1a0e92": "Device-side bounded wait failure is distinct from an event synchronization failure. Check the actual called path before a port. Explicit release or failed copy submission refuses a later run; an ordinary event error alone does not establish persistent refusal.",
-        "f0f39de26": "The fork waits for IDs, runs its CPU callback synchronously, and submits the next segment after it returns. No overlapping writer of those IDs has been demonstrated.",
-        "a73361755": "AVX2 IQ3_S gathered decoder and provider switch 6da3a80e5 have distinct origins. In engine/src/kernels/cpu/expert_layout.cpp, cpu_gather_fast requires GenuineIntel and AVX-VNNI. /proc/cpuinfo on this Ryzen 5 5600X reports AVX2/FMA and no AVX-VNNI or AVX-512F. The measured environment omits STRATA_IQ256_GATHER. Auto does not select the gathered variant on this CPU.",
-        "6da3a80e5": "Separate actual quant/dot fallback and format-specific CPU job counts before any performance comparison. Upstream src/quant/UPSTREAM.md pins ggml 3cf03257f219afbe7334045ff7c6a06ac68c627d and attributes src/quant; it does not by itself resolve the provenance of every external table or row specialization. No inference code imported."
+      "reviewed_component_slices": {
+        "e8701bbdd": "Keep the fork's canonical and DPAS-1 row-major head storage. The upstream gather requires planar storage. Packed-only mode 2 explicitly refuses DFlash2. Revisit the gather when evaluating a planar head owner.",
+        "928aa3d16": "The explicit STRATA_VERIFY_NO_HOST setting is absent from the measured width-four template. Evaluate the two settings' precedence independently when that device-plan route has a named comparison.",
+        "aef30d8fc": "Changes the STRATA_WINDOW_SYNC default for a unified-memory iGPU. Preserve the discrete B570 control.",
+        "host": "Port individual model retrieval with context metadata separately from live clocks, recovery counters and CLI completion. Check the actual fork engine's recovery log contract before adapting the cache-clear consumer.",
+        "review_index_keys": [
+          "niko-0218-dflash2-planar-head-20261122",
+          "niko-0218-serve-discovery-state-20261122"
+        ],
+        "model_performance_verified": false
       }
     },
     "prior_pending_component_review": {
-      "commit": "b4978bd42e7e742dc0502acb351df56dee15f433",
+      "commit": "0a6d935887fc05a0a0f34600884fd7165f364053",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
       "key": "new_interval",
-      "status": "Prior function ports and unresolved component decisions remain scoped to their original upstream targets. New release observation does not qualify the unmodified upstream performance or close pending imports."
+      "status": "The prior v0.2.16 interval decisions and pending imports remain recoverable at the original observation."
     },
     "unmodified_b570_bench_admission": {
       "launcher": "tools/bench.sh changes to terminal/ and invokes .venv/bin/python tools/strata_bench.py.",
-      "server": "strata launch --backend intel --drafting mtp selects the public CLI route. Verify the resolved SYCL binary, IQ3_S model, private port and running server command before reusing its endpoint.",
-      "long_min_context": 33048,
-      "reason": "The 32768 target reserves 24 output and 256 extra tokens. Record actual fresh prompt counts and reject skipped long or agent workloads.",
-      "aot_device": "bmg-g21",
-      "review": "niko-0216-vanilla-bench-launch-20261120",
-      "next": "Compare unmodified default and hardware-tuned configurations in their own processes. The source inspection supplies no upstream throughput measurement."
+      "build_source": "engine/sycl/CMakeLists.txt",
+      "next": "Qualify the unmodified Intel Arc Qwen route and use the same long, agent, and thinking-enabled generation workloads on default and hardware-tuned settings."
     }
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
@@ -121,9 +97,9 @@
   "current_engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
   "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-11-21T20:12:25.098075+00:00",
-  "pending": "Complete the cumulative non-inference feature ledger through 58ee32277, including the new engine/terminal/app layout, offline DFlash2 readiness, service and desktop changes, and pending Intel setup and signed feed functions. The base functional import remains scoped to 146df3c4 plus enumerated incremental ports. Native session persistence, BGEN/capability, native v3.1 execution, matched unmodified hardware-tuned Niko performance, and DFlash2 repeated workloads/physical capacity/RESTORE/adoption remain open. Assess upstream inference per component and phase. DeepSeek and 35B execution remain excluded.",
-  "legacy_upstream_clone_root": "Preserved main 99f3dbd0b21d1401b3769e0c0d963913607f380b, 628 ahead / 7834 behind origin/main. Only remote refs fetched; existing checkout untouched.",
+  "next_check_utc": "2026-11-24T01:09:53+00:00",
+  "pending": "Complete the cumulative non-inference feature ledger through 6e38f588a, including the new engine/terminal/app layout, offline DFlash2 readiness, service and desktop changes, and pending Intel setup and signed feed functions. The base functional import remains scoped to 146df3c4 plus enumerated incremental ports. Native session persistence, BGEN/capability, native v3.1 execution, matched unmodified hardware-tuned Niko performance, and DFlash2 repeated workloads/physical capacity/RESTORE/adoption remain open. Assess upstream inference per component and phase. DeepSeek and 35B execution remain excluded.",
+  "legacy_upstream_clone_root": "Preserved main 99f3dbd0b21d1401b3769e0c0d963913607f380b, 628 ahead / 8335 behind origin/main. Only remote refs fetched; existing checkout untouched.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
     "target": "477ac13cbe8e582c20484871ce459d20d82df09d",

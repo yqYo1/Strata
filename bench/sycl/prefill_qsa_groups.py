@@ -19,8 +19,8 @@ FIRST_BUILD = 'ce7e64c4d53e0dbb7b8cd09570ae0b0b7af30bfa'
 SOURCE = '9639531fddd1a43bd3aba38e2940b518f291a7ef'
 ROOT = bank.B / 'prefill-qsa-groups-v3'
 KEY = 'prefill_qsa_groups_v3'
-VALUE_ROOT = bank.B / 'prefill-qsa-q8-value-v1'
-VALUE_KEY = 'prefill_qsa_q8_value_v1'
+VALUE_ROOT = bank.B / 'prefill-qsa-q8-value-v2'
+VALUE_KEY = 'prefill_qsa_q8_value_v2'
 VALUE_SOURCE = '146f71321c459176d9476c4bfc02895eedd6e487'
 VALUE_BASE = 'af9d017ff6a30910182bfc83c265de9f14b3e4a1'
 VALUE_HEADER = 'include/strata/kernels/qsa_bf16_prefix.hpp'
@@ -68,6 +68,13 @@ def value_sources(helper, native):
     end = header.index(b'// Diagnostic-only online state', begin)
     require(header[:begin] + header[end:] == helper.git_file(VALUE_BASE, VALUE_HEADER),
             'existing QSA public interface changed')
+    # The Q8 fixture times submit_value. Other compile modes use invoke.
+    # Apply the declaration fix to the pinned fixture without importing a
+    # different kernel or changing any of the three Q8 comparison arms.
+    declaration = b'  auto invoke=[&](int variant) {\n'
+    fixture = overlay[BENCH]
+    require(fixture.count(declaration) == 1, 'unexpected historical fixture declaration')
+    overlay[BENCH] = fixture.replace(declaration, b'  [[maybe_unused]] auto invoke=[&](int variant) {\n')
     return overlay
 
 
@@ -200,6 +207,13 @@ def value_samples(stdout, action):
 
 
 def measure(action, binary, native, speed, stage, root, values):
+    arguments = ['--smoke'] if action == 'smoke' else ['--component', action]
+    def read_samples(stdout):
+        return value_samples(stdout, action) if values else samples(stdout, action)
+    measure_fixture(action, arguments, binary, native, speed, stage, root, read_samples)
+
+
+def measure_fixture(action, arguments, binary, native, speed, stage, root, read_samples):
     directory = root / ('measure-' + action)
     directory.mkdir(mode=0o700)
     for key in ('tmp', 'cache'):
@@ -212,14 +226,19 @@ def measure(action, binary, native, speed, stage, root, values):
         env.pop(k, None)
     env['STRATA_TEST_MAIN_GATES'] = '0'
     smoke = action == 'smoke'
-    if smoke:
-        env.update(LD_DEBUG='libs', LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
-                   UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION', UR_LOG_TRACING='level:info;flush:info;output:stderr',
+    checked = smoke or action == 'boundary'
+    if checked:
+        env.update(LD_DEBUG='libs', LD_PRELOAD=probe['library']['path'],
+                   STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
+                   UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
                    UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(directory/'validation.log'))
+    if smoke:
+        env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+                   UR_LOG_TRACING='level:info;flush:info;output:stderr')
     cursor, = [l.removeprefix('-- cursor: ') for l in subprocess.check_output(
         ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
         if l.startswith('-- cursor: ')]
-    argv = [binary['path'], *(['--smoke'] if smoke else ['--component', action])]
+    argv = [binary['path'], *arguments]
     stage.update(environment_sha256=bank.signature(env), argv=argv)
     try:
         cmd, out, err = owner.run(action, argv, env, bank.P, **(bank.device.SMALL if smoke else bank.device.LARGE))
@@ -227,19 +246,21 @@ def measure(action, binary, native, speed, stage, root, values):
         stdout, log = out.read_text(), err.read_text()
         gpu, = re.findall(r'^device=(.+) driver=(\S+)$', stdout, re.M)
         require('B570' in gpu[0], 'wrong GPU')
-        if smoke:
+        if checked:
             evidence = device.validation.preload_evidence(log, cmd['pid'])
             layer = directory/'validation.log'
-            require(evidence['loader'] == probe['loader']['path'] and (not layer.exists() or layer.stat().st_size == 0)
-                    and 'urEnqueueKernelLaunch' in log, 'missing trace or validation error')
-            bank.device.diagnostics.diagnostics(log, cmd['pid'])
+            require(evidence['loader'] == probe['loader']['path'] and (not layer.exists() or layer.stat().st_size == 0),
+                    'missing validation provider or parameter validation error')
+            if smoke:
+                require('urEnqueueKernelLaunch' in log, 'missing kernel launch trace')
+                bank.device.diagnostics.diagnostics(log, cmd['pid'])
             stage['providers'] = bank.device.loaded_providers(log, dict(environment=env, native_validation_probe=probe,
                                                               runtime_manifest=native['foundation']['runtime_manifest']))
-        else:
-            require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|cleanup failed|terminate called|strata UR validation:',log),
+        if not smoke:
+            require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|cleanup failed|terminate called',log)
+                    and (checked or 'strata UR validation:' not in log),
                     'unexpected observer or runtime error')
-        measurements = value_samples(stdout, action) if values else samples(stdout, action)
-        stage.update(**measurements, native_exit_code=0, host_probe_accepted=True, device=gpu[0], driver=gpu[1])
+        stage.update(**read_samples(stdout), native_exit_code=0, host_probe_accepted=True, device=gpu[0], driver=gpu[1])
     finally:
         device.validation.finish(stage, owner, cursor, speed['boot'])
         stage['passed'] = stage['passed'] and stage.get('driver_after') == native['driver']
@@ -280,7 +301,18 @@ def execute(action, values=False):
         print(f'{len(overlay)} pinned sources, {len(commands)} build commands, reversible attention projection')
         return
     result = device.validation.committed(bank.RESULT)
-    if action == 'build':
+    if values:
+        env = dict(native['recipe']['environment'], TMPDIR=str(root/'tmp'), XDG_CACHE_HOME=str(root/'cache'))
+        plan = dict(commands=commands, environment_sha256=bank.signature(env),
+                    stages=list(STAGES), previous_attempt='prefill_qsa_q8_value_v1')
+        if action == 'prepare':
+            require(key not in result and not root.exists(), 'inspect existing Q8 value plan')
+            result[key] = dict(**identity, controller_commit=pins['revision'], model_tested=False,
+                               stages=[], build_plan=plan)
+            bank.stage.write(bank.RESULT, result)
+            return
+        require(result[key]['build_plan'] == plan, 'commit exact Q8 value plan before building')
+    if action == 'build' and not values:
         require(key not in result and not root.exists(), 'inspect existing QSA generation')
         row = dict(**identity, controller_commit=pins['revision'], model_tested=False, stages=[])
     else:
@@ -335,7 +367,8 @@ if __name__ == '__main__':
     args = sys.argv[1:]
     values = args[:1] == ['--q8-value']
     action, = args[1:] if values else args
-    require(action in (*STAGES, 'recipe') and sys.executable == bank.basis.reference.model.PYTHON,
+    actions = (*STAGES, 'recipe', 'prepare') if values else (*STAGES, 'recipe')
+    require(action in actions and sys.executable == bank.basis.reference.model.PYTHON,
             'select one pinned QSA stage')
     if action == 'recipe':
         execute(action, values)

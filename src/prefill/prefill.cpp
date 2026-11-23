@@ -650,6 +650,7 @@ struct MoeWindowContext {
     const uint8_t* expert_slab = nullptr;
     uint64_t expert_slab_bytes = 0, expert_stride = 0, expert_source_stride = 0;
     uint64_t staged_uploads = 0, staged_upload_bytes = 0, staged_hits = 0;
+    uint64_t batched_upload_windows = 0, batched_upload_experts = 0, batched_upload_commands = 0;
     uint16_t* bank = nullptr;
     uint64_t bank_bytes = 0;
     uint16_t* mixed = nullptr;
@@ -661,6 +662,7 @@ struct MoeWindowContext {
     uint8_t* extra_workspace = nullptr; // separately owned FP32 tail + optional job planes
     uint64_t extra_workspace_bytes = 0;
     bool relocated_job_buffers = false;
+    bool split_upload_eligible = false;
     int64_t accumulator_primary_rows = 0; // zero retains the ordinary route
     bool scratch_mixed = false;
     int64_t maximum_rows = 16384;
@@ -696,6 +698,7 @@ struct MoeWindowContext {
     uint64_t gu_fused_jobs = 0, gu_fused_rows = 0;
     uint64_t down_fused_jobs = 0, down_fused_rows = 0;
     uint64_t vec8_gather_jobs = 0, vec8_gather_rows = 0;
+    uint64_t shared_gate_windows = 0, shared_gate_chunks = 0, shared_gate_expansions = 0;
     std::unique_ptr<sycl_backend::command_profile::Trace> command_trace;
 };
 bool prefill_moe_large_vec8_requested() {
@@ -2426,6 +2429,18 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         }
     }
     const bool ple_on = prefill_ple.ready() && LB <= 1 && 1 < LE;
+#if defined(STRATA_ENABLE_SYCL)
+    static const bool ple_wait_profile = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_WAIT_PROFILE");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    const bool observe_ple_wait = ple_on && m.layer_major_active && ple_wait_profile;
+#else
+    constexpr bool observe_ple_wait = false;
+#endif
+    size_t ple_wait_calls = 0;
+    double ple_wait_ms = 0.0;
+    const double ple_start_ms = observe_ple_wait ? stats_.ms_ple : 0.0;
     const auto& prefill_ple_weights = prefill_ple.w;
     // the PLE block batched over the chunk: the pinned postops and a BF16 or GGUF-native key (else token by token);
     // STRATA_PLE_BATCH=0 keeps the per-token block (the A/B)
@@ -2656,6 +2671,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             if (!ple_next.get()) {
                 err = ple_next_err;
                 return false;
+            }
+            if (observe_ple_wait) {
+                ple_wait_ms += ms_since(tp);
+                ++ple_wait_calls;
             }
             if (cudaMemcpyAsync(m.ple_emb, m.ple_emb_host[ple_buf], (size_t) T * N * 4, cudaMemcpyHostToDevice, m.cs) !=
                     cudaSuccess ||
@@ -4463,6 +4482,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     if (const cudaError_t cst = cudaStreamSynchronize(m.copy); cst != cudaSuccess) {
         err = std::string("prefill: expert copy stream: ") + cudaGetErrorString(cst);
         return false;
+    }
+    if (observe_ple_wait) {
+        const char* mode = ss.ple.table->mode() == strata::kernels::PleIo::Direct ? "direct" : "mmap";
+        std::fprintf(stderr, "strata prefill PLE wait: position=%lld rows=%lld mode=%s gathers=%zu "
+                     "future_get_ms=%.3f host_ple_ms=%.3f\n",
+                     (long long)pos0, (long long)n, mode, ple_wait_calls, ple_wait_ms,
+                     stats_.ms_ple - ple_start_ms);
     }
     if (!m.layer_major_active) stats_.ms_total += ms_since(t_start);
     if (pt.on) {

@@ -1,12 +1,13 @@
 // Authored for Strata; repository LICENSE (MIT) applies.
-// Matched component pairs selected at compile time; original K/KV or ordered exp.
-// Wall timing includes admission, prefix refresh, attention and checked drain;
+// Matched component pairs selected at compile time.
+// Wall timing includes admission, prefix refresh, attention and checked drain.
 // uploads/readbacks/checks are outside timing. No physical-bandwidth claim.
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 #if defined(STRATA_QSA_PREFILL_HEAD_MAJOR_COMPONENT) || \
-    defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
+    defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT) || \
+    defined(STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT)
 #define STRATA_QSA_PREFILL_PAGE4_FIXTURE
 #endif
 #if defined(STRATA_QSA_PREFILL_PV_COMPONENT) || defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)
@@ -22,6 +23,10 @@ decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ord
 namespace strata::kernels::prefill_stage_identity {
 decltype(&strata::kernels::qsa_bf16_prefix_ordered_exp_batch) select(
     const QsaAttnPools &, const QsaPromptBf16Bounds &, const int32_t *owned_identity_table);
+}
+#elif defined(STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT)
+namespace strata::kernels::prefill_key_page {
+decltype(strata::kernels::qsa_bf16_prefix_ordered_exp_batch) qsa_bf16_prefix_ordered_exp_batch;
 }
 #endif
 #if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
@@ -54,6 +59,10 @@ constexpr const char *baseline_name = "ordered_exp", *candidate_name = "head_maj
 #elif defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
 constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name = "ordered_exp", *candidate_name = "stage_identity";
+#elif defined(STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT)
+constexpr auto baseline_attention = qsa_bf16_prefix_ordered_exp_batch;
+constexpr auto candidate_attention = prefill_key_page::qsa_bf16_prefix_ordered_exp_batch;
+constexpr const char *baseline_name = "ordered_exp", *candidate_name = "key_page";
 #elif defined(STRATA_QSA_BENCH_CACHED_SUBGROUP)
 constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_cached_subgroup_batch;
@@ -130,6 +139,13 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
     table[p]=p%13==5 ? -1 : pages-1-p;
 #endif
   }
+#if defined(STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT)
+  const bool boundary_case = cells >= 262143;
+  if (boundary_case) {
+    require(table.back() == 0, "physical boundary page must be mapped");
+    std::swap(table.front(), table.back());
+  }
+#endif
   std::vector<int8_t> k(size_t(rows)*Dim),v(k.size());
   for (size_t i=0;i<k.size();++i) {
     k[i]=int8_t(int((uint64_t(i)*1664525+1013904223)%255)-127);
@@ -164,6 +180,8 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
 #if defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
       if (c == 0) cell = cells - 1;
       if (c == 1) cell = cells;
+#elif defined(STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT)
+      if (boundary_case && c < 2) cell = cells - 1 + c;
 #endif
       ids[size_t(b)*cap+c]=cell;
     }
@@ -190,17 +208,33 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
   Buffer<uint16_t> dq(q.size()),dks(ks.size()),dvs(vs.size()),out(q.size()+32);
   Buffer<int8_t> dk(k.size()),dv(v.size());
   Buffer<int32_t> dt(table.size()),di(ids.size()),ds(steps.size());
-  Buffer<uint16_t> pk(size_t(rows)*Dim+32),pv(size_t(rows)*Dim+32);
+  constexpr size_t KeyGuard = 16;
+  const size_t key_words = size_t(rows) * Dim;
+#if defined(STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT)
+  constexpr size_t KeyAlignment = 256;
+  constexpr size_t KeyPadding = KeyAlignment / sizeof(uint16_t);
+#else
+  constexpr size_t KeyPadding = 0;
+#endif
+  Buffer<uint16_t> pk(key_words+2*KeyGuard+KeyPadding),pv(size_t(rows)*Dim+32);
   Buffer<int32_t> pb(size_t(rows)+32);
   Drain pending;
   dq.put(q);dks.put(ks);dvs.put(vs);dk.put(k);dv.put(v);dt.put(table);di.put(ids);ds.put(steps);
   out.put(std::vector<uint16_t>(q.size()+32,marker));
-  pk.put(std::vector<uint16_t>(size_t(rows)*Dim+32,marker));
+  pk.put(std::vector<uint16_t>(key_words+2*KeyGuard+KeyPadding,marker));
   pv.put(std::vector<uint16_t>(size_t(rows)*Dim+32,marker));
   pb.put(std::vector<int32_t>(size_t(rows)+32,bad_marker));
   QsaAttnPools pools;pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
   auto shape=qsa_real_shapes();shape.page_size=Page;
-  const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
+  auto *key = pk.data() + KeyGuard;
+#if defined(STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT)
+  void *aligned = key;
+  size_t space = (key_words + KeyPadding) * sizeof(uint16_t);
+  key = static_cast<uint16_t *>(std::align(KeyAlignment, key_words * sizeof(uint16_t), aligned, space));
+  require(key, "packed K alignment within guard span");
+#endif
+  const size_t key_start = key - pk.data();
+  const QsaBf16PackedScratch scratch{key,pv.data()+16,pb.data()+16};
 #if defined(STRATA_QSA_PREFILL_STAGE_IDENTITY_COMPONENT)
   const QsaPromptBf16Bounds full_stage{pages, pages};
   const auto *owned_identity_table = dt.data();
@@ -237,8 +271,10 @@ void run(int cells,int queries,int cap,bool clustered, bool blocks4 = false) {
 #endif
   auto guards=[&] {
     const auto &a=pk.get();const auto &b=pv.get();const auto &c=pb.get();const auto &y=out.get();
-    for (size_t i=0;i<16;++i) require(a[i]==marker && a[a.size()-16+i]==marker &&
-        b[i]==marker && b[b.size()-16+i]==marker && c[i]==bad_marker &&
+    const auto key_guard = [&](uint16_t value) { return value == marker; };
+    require(std::all_of(a.begin(),a.begin()+key_start,key_guard) &&
+        std::all_of(a.begin()+key_start+key_words,a.end(),key_guard),"packed K guards");
+    for (size_t i=0;i<16;++i) require(b[i]==marker && b[b.size()-16+i]==marker && c[i]==bad_marker &&
         c[c.size()-16+i]==bad_marker && y[i]==marker && y[y.size()-16+i]==marker,"output/scratch guards");
   };
 #if defined(STRATA_QSA_BENCH_FULLFIT_OVERLAP)
@@ -315,7 +351,12 @@ int main(int argc,char **argv) {
 #else
     constexpr bool source_admission = false;
 #endif
-    require(source_admission || ((argc==2 || argc==3) && (std::string(argv[1])=="--smoke" ||
+#if defined(STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT)
+    const bool boundary = argc == 2 && std::string(argv[1]) == "--boundary";
+#else
+    constexpr bool boundary = false;
+#endif
+    require(source_admission || boundary || ((argc==2 || argc==3) && (std::string(argv[1])=="--smoke" ||
         std::string(argv[1])=="--component")),"explicit fixture mode required");
     if (argc==3) { process_id=std::stoi(argv[2]);require(process_id>=0 && process_id<3,"process ordinal"); }
     const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gated=g && std::string(g)=="1";
@@ -331,7 +372,10 @@ int main(int argc,char **argv) {
     else if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else run(65536,8192,2051,false);
 #else
-    if (std::string(argv[1])=="--smoke") run(97,3,33,false);
+    if (boundary) {
+      run(262143,3,33,true);
+      run(262144,3,33,true);
+    } else if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else {
       run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true);
 #if defined(STRATA_QSA_PREFILL_PAGE4_FIXTURE)

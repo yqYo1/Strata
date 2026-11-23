@@ -349,11 +349,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         other_reserved, gpu_headroom, max_alloc, requested_gpu_rows,
         residual_dtype, requested_slots,
         window_on && scratch_window && native16_on && scratch_mixed_on);
-    // The initial candidate deliberately leaves the existing short-tail and
-    // full-context fallback untouched. The original split admits90113..117488
-    // rows at128slots. Explicit mode16 may admit up to131072rows using its
-    // separately requested bank capacity and relocated job buffers. Charge the
-    // complete extra allocation before R admission;decode1256 stays untouched.
+    // Mode 10 defaults to a 128-slot split and honors an explicitly smaller
+    // bank. Mode 16 may admit up to 131072 rows with its requested bank
+    // capacity and relocated job buffers. Charge the whole extra allocation
+    // against admission of the GPU residual.
     bool split_accumulator_on = false;
     bool relocated_job_buffers_on = false;
     uint64_t split_accumulator_bytes = 0;
@@ -370,10 +369,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                     detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
             const auto extra = relocate ? split.extra_bytes : split.accumulator_tail_allocation_bytes();
             if (extra <= max_alloc) {
+                int64_t split_slots = requested_slots;
+                if (!long_window_requested && (split_slots == 0 || split_slots > 128))
+                    split_slots = 128;
                 auto candidate = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
                     detail::layer_major_add(other_reserved, extra), gpu_headroom, max_alloc,
                     requested_gpu_rows,
-                    residual_dtype, long_window_requested ? requested_slots : 128, true);
+                    residual_dtype, split_slots, true);
                 if (candidate.staged() && candidate.residual.gpu_rows == n) {
                     bank_plan = std::move(candidate);
                     split_accumulator_on = true;
@@ -1004,6 +1006,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             window_context->extra_workspace = split_accumulator_storage.get();
             window_context->extra_workspace_bytes = split_accumulator_bytes;
             window_context->relocated_job_buffers = relocated_job_buffers_on;
+            // The request's slot budget stays fixed when layers repack the private bank.
+            window_context->split_upload_eligible = !relocated_job_buffers_on && bank_plan.slots == 128;
         }
         if (accumulation_rows) window_context->maximum_rows = accumulation_rows;
         m.moe_window = window_context.get();
@@ -1387,12 +1391,22 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 (unsigned long long)window_context->staged_upload_bytes,
                 (unsigned long long)window_context->staged_hits,
                 window_context->expert_slots->permanent_used(), window_context->expert_slots->slots());
+        if (window_context->batched_upload_windows)
+            std::fprintf(stderr, "strata MoE split expert upload: windows=%llu experts=%llu copy_commands=%llu final_drain=checked\n",
+                (unsigned long long)window_context->batched_upload_windows,
+                (unsigned long long)window_context->batched_upload_experts,
+                (unsigned long long)window_context->batched_upload_commands);
         if (window_context->scratch_mixed)
             std::fprintf(stderr, "strata MoE prefill gather: vec8_jobs=%llu vec8_rows=%llu scalar_jobs=%llu min_rows=%lld\n",
                 (unsigned long long)window_context->vec8_gather_jobs,
                 (unsigned long long)window_context->vec8_gather_rows,
                 (unsigned long long)(window_context->jobs - window_context->vec8_gather_jobs),
                 (long long)native16::prefill_moe_vec8_min_rows);
+        if (window_context->shared_gate_windows)
+            std::fprintf(stderr, "strata MoE prefill shared Gate: windows=%llu chunks=%llu expansions=%llu final_drain=checked\n",
+                (unsigned long long)window_context->shared_gate_windows,
+                (unsigned long long)window_context->shared_gate_chunks,
+                (unsigned long long)window_context->shared_gate_expansions);
         std::fprintf(stderr, "strata MoE GU fusion: fused_jobs=%llu fused_rows=%llu separate_jobs=%llu min_rows=2334\n",
             (unsigned long long)window_context->gu_fused_jobs,
             (unsigned long long)window_context->gu_fused_rows,

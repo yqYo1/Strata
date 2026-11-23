@@ -669,7 +669,85 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
         <<" layers="<<layers<<" cancellations="<<cancellations<<" rejects="<<rejects<<"\n";
 }
 
+static void split_prefill_upload_case(size_t stride, bool coalesced, bool cancel) {
+    constexpr int32_t capacity = pd::PrefillSplitExpertBatch::capacity_limit;
+    constexpr size_t source_experts = 48;
+    constexpr std::array<std::pair<int32_t, int32_t>, 5> ranges{
+        {{2, 18}, {18, 23}, {24, 25}, {31, 35}, {47, 48}}};
+    constexpr size_t all_experts = 27;
+    const size_t words = stride / sizeof(uint32_t);
+    const size_t wanted = cancel ? size_t(capacity) : all_experts;
+    std::array<int32_t, source_experts> counts{};
+    std::vector<uint32_t> source(source_experts * words, Guard);
+    for (const auto& [first, last] : ranges) {
+        for (int32_t expert = first; expert < last; ++expert) {
+            counts[size_t(expert)] = 1;
+            for (size_t i = 0; i < words; ++i)
+                source[size_t(expert) * words + i] = value(expert, i, 1);
+        }
+    }
+
+    auto runtime = sb::runtime_for();
+    auto& queue = runtime->compute();
+    need(queue.is_in_order(), "split upload fixture requires the ordered compute queue");
+    sb::Allocation bank(runtime, capacity * stride + 2 * G * sizeof(uint32_t), sb::MemoryKind::Device);
+    sb::Allocation snapshots(runtime, wanted * stride, sb::MemoryKind::Device);
+    auto* slots = reinterpret_cast<uint8_t*>(bank.as<uint32_t>() + G);
+    std::vector<uint32_t> observed(wanted * words);
+    std::array<uint32_t, 2 * G> guards{};
+    size_t readers = 0, commands = 0, groups = 0;
+    unsigned drains = 0;
+    try {
+        pd::DraftUploadGuard lease([&] { runtime->wait(); ++drains; return true; },
+            [] { sb::cleanup_fail_stop("split prefill expert upload fixture retirement"); });
+        lease.arm();
+        queue.memset(bank.data(), 0xa5, bank.size());
+        for (const auto& [first, last] : ranges) {
+            const auto batch = pd::PrefillSplitExpertBatch::make(counts, first, capacity, coalesced);
+            need(batch.end() == last, "split upload grouped a hole or exceeded the capacity");
+            need(batch.enqueue(slots, reinterpret_cast<const uint8_t*>(source.data()), stride, &queue) ==
+                cudaSuccess, "split upload enqueue failed");
+            // Submit each reader before reusing slot zero, with a checked drain at the end.
+            queue.memcpy(snapshots.as<uint8_t>() + readers * stride, slots, size_t(batch.count()) * stride);
+            readers += size_t(batch.count());
+            commands += size_t(batch.copies());
+            ++groups;
+            if (cancel) break;
+        }
+        queue.memcpy(observed.data(), snapshots.data(), wanted * stride);
+        queue.memcpy(guards.data(), bank.data(), G * sizeof(uint32_t));
+        queue.memcpy(guards.data() + G, slots + capacity * stride, G * sizeof(uint32_t));
+        if (cancel) throw Stop{};
+    } catch (const Stop&) {
+        need(cancel, "unexpected cancellation");
+    }
+    need(drains == 1 && readers == wanted && groups == (cancel ? 1 : ranges.size()) &&
+        commands == (coalesced ? groups : readers), "split upload submission or retirement count");
+    need(std::all_of(guards.begin(), guards.end(), [](uint32_t word) { return word == Guard; }),
+         "split upload overwrote a bank guard");
+    size_t row = 0;
+    for (const auto& [first, last] : ranges) {
+        for (int32_t expert = first; expert < last; ++expert, ++row) {
+            for (size_t i = 0; i < words; ++i)
+                need(observed[row * words + i] == value(expert, i, 1), "split upload payload differs");
+        }
+        if (cancel) break;
+    }
+    std::cout << "split_prefill_upload_fixture PASS stride=" << stride << " coalesced=" << coalesced
+              << " cancellation=" << cancel << " groups=" << groups << " experts=" << readers
+              << " copy_commands=" << commands << " payload_bytes=" << readers * stride
+              << " guards=PASS checked_drain=PASS\n";
+}
+
 int main(int argc, char** argv) try {
+    if (argc == 2 && (std::string(argv[1]) == "--split-upload-smoke" ||
+                      std::string(argv[1]) == "--split-upload-native-stride")) {
+        const size_t stride = std::string(argv[1]) == "--split-upload-smoke" ? 4096 : 2662400;
+        split_prefill_upload_case(stride, false, false);
+        split_prefill_upload_case(stride, true, false);
+        split_prefill_upload_case(stride, true, true);
+        return 0;
+    }
 #if defined(STRATA_SYCL_PREFILL_NATIVE_COPY)
     if (argc==2 && std::string(argv[1])=="--fullfit-host-stage-order-smoke") {
         for (auto stage_order : {pd::PrefillHostStageOrder::all_before_copy, pd::PrefillHostStageOrder::span_before_copy}) {
