@@ -1509,11 +1509,6 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cases also take longer in each process. The component misses its speed
   gate. Use the retained V2 ordered-exp layout for the next model
   measurement and measure the MoE status-to-launch transition below.
-  The completed component build and five capture directories at
-  `prefill-qsa-key-page-v1` total 2496784 regular bytes. Verify the exact
-  Git-generated source, compile/link recipe and final fixture inputs before
-  retiring that build. Review the capture identities with that retirement
-  before building another engine.
   At 117489 tokens the 1000 tok/s time budget is 117.489 seconds. The three
   original Gate processes at `06a199714` need warmed reductions of
   0.288–1.420 seconds. If the savings came from the profiled 27.073
@@ -1533,14 +1528,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the flow's thread and timestamp to the launch API start. The first and
   subsequent windows have 48 and 47 such joins. Of the 3.120212/3.150087 seconds
   summed, 3.111451/3.141543 seconds precede the host launch API start. The
-  timings include runtime/collector behavior and host scheduling. Use a
-  bounded host clock without PTI to check the reported transition from
-  the MoE status drain to the first shared gate dequantization. If the gap
-  persists, compare moving only that independent dequantization ahead of
-  the drain on the same queue. Prove shared-weight and scratch bounds,
-  aliasing, cancellation and error retirement. Keep the route-status check
-  before any shared result updates the residual. Use the control's existing
-  QSA and decode settings in both arms.
+  timings include runtime/collector behavior and host scheduling. The V2
+  source-clock projection at `41c2c1cbf` measures disjoint calling-thread
+  wall and CPU intervals for the actual status D2H call, checked wait,
+  status-to-projection handoff, projection preparation and first Gate
+  dequant wrapper. It emits a completed record after the checked HC drain.
+  Its reader accepts 48 ordered layer records per 117489-input request and
+  rejects missing, extra, reordered, invalid and changed-geometry records.
+  Match the two prior requests in each of three independent processes with
+  clock off, on and off. Compare first request and subsequent request
+  separately against both controls. Qualify observer cost within 3.0 seconds
+  for first use and 1.5 seconds for the subsequent request. These clocks
+  attribute host wrapper time. The checked wait may include earlier GPU work.
+  If the resulting dependency gap supports a scheduling trial, move only the
+  independent first dequantization ahead of the drain on the same queue.
+  Prove shared-weight and scratch bounds, aliasing, cancellation and error
+  retirement. Keep the route-status check before any shared result updates
+  the residual. Use the control's existing QSA and decode settings in both arms.
   The sparse XPTI subscriber's V6 device run stopped after the second
   registration attempt at `ea8be6e5f`. V7 accepts a repeated registration
   when both exact callbacks are already active. CPU controls exercise that
@@ -1688,10 +1692,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   1000 tok/s gate. Keep the combined result as a timing candidate and
   use the retained V2 reference for the next long-prefill trial. Full-context,
   RESTORE and sustained decode gates remain open for the combined arm.
-  Review the closed `prefill-shared-gate-speed-v1` process captures and
-  `prefill-shared-gate-native-v1` generation before the next engine build.
-  Recover the exact Gate source projection, recipe and final inputs from Git
-  and check current consumers before deleting the executable or captures.
+  Keep the retained V2 prefill and coherent decode builds for the Gate clock
+  bracket and later independent phase validation. Retire the three closed
+  Gate and QSA outputs below after checking the named paths against the
+  inventory digests. The Gate projection at `234976a52` recovered all 1171
+  source files, matching configuration, actual compiler/link inputs and all
+  12 target hashes. The ordered QSA plans at `f88150349` and `ad4a6fd8e`
+  recovered both generated/fixture sources and the exact commands, 698
+  compiler inputs, 27 link inputs and the final fixture hash. The timing
+  readers' production references use V2. Their useful individual comparison
+  samples remain at `06a199714` and `371770ab8`.
+
+  | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
+  | --- | --- | --- | --- |
+  | `prefill-shared-gate-native-v1/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1369 | 196408142 | `afe3fd615f6c9c01f40b6c1eb4712b76fcf3dbe97a67d90715b940f277bd9ba0` |
+  | `prefill-shared-gate-speed-v1/{0..8,host}` | 634 | 95241320 | `21ed1edf2eececa0c7a37ff4470d6a20274ea1832cf4d241452a0d1c4437a240` |
+  | `prefill-qsa-key-page-v1/{cache,execution.json,measure-{0,1,2,boundary,smoke},owned,qsa_{bf16_prefix_layout_bench,key_page_component}.cpp.o{,.d},src,sycl_qsa_bf16_prefix_ordered_exp_bench,tests,tmp}` | 31 | 2393910 | `c33a880ac7e77ffa66de013d803588a23bd68e4d711c90867101533b66335e84` |
+
+  Preserve the closed source/build receipts and Gate timing runtime
+  inventory for provenance.
   The long comparison reads the committed V2 admission receipt. Both short-run
   captures under the shared state directory were removed and verified absent.
   The V1 failure and V2 exact comparisons remain in Git at `df349d38d` and
