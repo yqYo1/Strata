@@ -222,6 +222,27 @@ class SyclVisionDrafting(unittest.TestCase):
         self.assertEqual(args[args.index("--draft") + 1], "dflash2")
         self.assertNotIn("--mtp", args)
 
+    def test_implicit_sycl_text_prefers_ready_dflash2(self):
+        cfg = self.config(None, None)
+        del cfg["drafting"]
+        with mock.patch.object(drafting, "mtp_ready", return_value=True):
+            args = server.engine_args(cfg, announce=False)
+            self.assertEqual(args[args.index("--draft") + 1], "dflash2")
+            self.assertNotIn("--mtp", args)
+            with mock.patch.object(drafting, "drafter_ready", return_value=False):
+                args = server.engine_args(cfg, announce=False)
+        self.assertIn("--mtp", args)
+        self.assertNotIn("--draft", args)
+
+    def test_implicit_sycl_text_respects_native_mtp_choice(self):
+        cfg = self.config(None, None)
+        del cfg["drafting"]
+        cfg["args"] += ["--draft", "mtp"]
+        with mock.patch.object(drafting, "mtp_ready", return_value=True):
+            args = server.engine_args(cfg, announce=False)
+        self.assertIn("--mtp", args)
+        self.assertNotIn("--draft", args)
+
     def test_transparent_measurement_launcher_keeps_the_named_drafter(self):
         launcher = server.ROOT / "tools/sycl/engine_once.py"
         self.assertIsNone(drafting.engine_form(launcher))

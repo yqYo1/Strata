@@ -6,6 +6,13 @@ does not import or qualify that engine version. `tools/ab_engine.py`,
 `tools/agent_turns_bench.py` and `tools/serve_load.py` are unchanged dependencies.
 This fork extends `tools/strata_bench.py` and `bench.sh`.
 
+The default for supported single-card SYCL Qwen text server launches is
+DFlash2 through the existing Auto resolver. Explicit drafter choices remain
+available. Pin the drafter in controlled benchmarks and verify the engine's
+effective width, confidence, pack and draft acceptance. Use DFlash2 for new
+prefill and decode tuning on this PC. Use a named MTP reference when a comparison
+requires it.
+
 The native engine accepts `--prefill-strategy ttft` or
 `--prefill-strategy throughput` in the same binary. Append the pair to the
 engine's existing command,or its configuration's `args` array,before starting
