@@ -11,11 +11,12 @@ import prefill_kv_upload_compare as upload
 bank, basis, require = upload.bank, upload.basis, upload.require
 previous = upload.previous
 READ, SMALL_READ = upload.READ, 16386
+QSA_PREFIX_PAGE_SIZE = 4
 MODES = ('original', 'reload', 'reuse')
 BLOCKS = (MODES, MODES[1:] + MODES[:1], MODES[2:] + MODES[:2])
 CONTRASTS = (('reload', 'original'), ('reuse', 'reload'), ('reuse', 'original'))
 SELECTOR = 'STRATA_SYCL_PREFILL_SHARED_GATE_WEIGHTS'
-KEYS = {'admit': 'prefill_shared_gate_admission_v1', 'time': 'prefill_shared_gate_speed_v1'}
+KEYS = {'admit': 'prefill_shared_gate_admission_v2', 'time': 'prefill_shared_gate_speed_v1'}
 REFERENCE = 'be8caf6138b633d23df45cf0ee9ca10480589bcb'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 
@@ -63,7 +64,8 @@ def measured_basis(small, runs):
 def request_route(text, plan):
     read, mode = plan['read'], plan['gate_mode']
     if plan['trace_progress']:
-        value = previous.workspace.request_route(text, dict(plan, bank=384, window=10, relocate=0, upload='jit'))
+        value = previous.workspace.request_route(text, dict(plan, bank=384, window=10, relocate=0, upload='jit'),
+                                                 prefix_page_size=plan['qsa_prefix_page_size'])
         store = previous.model.restore.require_store(text, dict(direct=True), plan)
         previous.model.input_receipt(text, read - 1, store, False, trace_layers=True)
         kv = previous.speed.state.kv.check_request(text, 0, read - 1, 8192, reuse=True)
@@ -152,6 +154,9 @@ def experiment(phase):
             'TTFT separate. Adoption, longer decode and physical-context qualification remain open.',
         stop='Stop on the first identity, actual-work, route, validation, ownership, budget or runtime failure. '
              'Keep every eligible sample without replacement, speed-based stopping or reclassifying an earlier outcome.')
+    if small:
+        # The retained candidate's qsa_real_shapes() uses four-cell pages.
+        plan.update(qsa_prefix_page_size=QSA_PREFIX_PAGE_SIZE, previous_failure='df349d38d')
 
     def environment(row, arm):
         env = same_route.environment(row, dict(arm, index=1))
@@ -168,13 +173,16 @@ def experiment(phase):
             for arm, mode in zip(row['plans'], order, strict=True):
                 arm.update(gate_mode=mode, trace_progress=small)
                 if small:
+                    arm['qsa_prefix_page_size'] = plan['qsa_prefix_page_size']
                     arm['command'].append('--prefill-short-diagnostic')
         base_save(row)
 
     def current(row):
         require(row['plan'] == plan and row['configuration'] == row['observer_admission']['reference_configuration']
                 and [(p['index'], p['read'], p['gate_mode'], p['trace_progress']) for p in row['plans']]
-                == [(i, read, m, small) for i, m in enumerate(order)], 'frozen Gate comparison differs')
+                == [(i, read, m, small) for i, m in enumerate(order)]
+                and all(p.get('qsa_prefix_page_size') == plan.get('qsa_prefix_page_size') for p in row['plans']),
+                'frozen Gate comparison differs')
         return base_current(row)
 
     ctx.environment, ctx.current, ctx.save = environment, current, save

@@ -130,7 +130,8 @@ def eager_route(text,plan):
         physical_bus_traffic_or_overlap_measured=False)
 
 
-def request_route(text,plan):
+def request_route(text,plan,*,prefix_page_size=16):
+    require(prefix_page_size in (4,16),'unsupported BF16 prefix page size')
     result=core.request_route(text,plan);n=plan['read']-1
     split=n>90112 and (plan['window']==16 or n<=117488)
     relocated=split and bool(plan['window']==16 or plan['relocate'])
@@ -174,7 +175,9 @@ def request_route(text,plan):
         and int(mixed['primary_bytes'])==layout['mixed_primary'] and int(mixed['tail_bytes'])==layout['mixed_tail']
         and int(mixed['tail_offset'])==layout['region'] and layout['region']+layout['mixed_tail']<=arena
         and mixed['phase']=='FFN_only_after_attention_drain','actual mixed producer/consumer layout differs')
-    prefix=((n+15)//16)*16*2056+256;fixed=cache+prefix+536870912+n*ROW+layout['extra']
+    padded_prefix_rows = ((n + prefix_page_size - 1) // prefix_page_size) * prefix_page_size
+    prefix = padded_prefix_rows * 2056 + 256
+    fixed = cache + prefix + 536870912 + n * ROW + layout['extra']
     require(admission['requested_mode']==str(plan['window']) and int(admission['rows'])==maximum
         and int(admission['gpu_prefix_rows'])==n and int(admission['mixed_fp16_bytes'])==maximum*5120
         and int(admission['fixed_including_headroom_bytes'])==fixed<=int(admission['free_gpu_bytes'])
