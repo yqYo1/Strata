@@ -10731,8 +10731,9 @@ exclusive stage ownership with an empty layer callback. The same-queue
 condition uses SYCL's in-order submission guarantee. [SYCL queue property](https://github.khronos.org/SYCL_Reference/iface/queue.html#sycl-property-queue-in-order)
 
 The build recipe projects four changes onto the recovered V2 source set and
-checks that every other file matches its build manifest. The projected
-candidate is pending a coherent rebuild and device validation.
+checks that every other file matches its build manifest. The coherent build
+at `20439698b` recompiles all 137 objects. The exact candidate executable
+(`7a8e5b1ab2a8…`) passes the host controls and both traced model processes.
 
 The clean trace counters show 20480 prefix pages reloaded per QSA layer in
 both sustained cases. A page has four cells of 1056 bytes. Retaining nine
@@ -10750,16 +10751,18 @@ At the previously measured large-copy range of 6.292–6.485 GB/s, the last
 row represents about 1.26–1.30 seconds of serialized transfer service.
 The estimate uses logical byte counts and excludes overlap with other work.
 
-Compare both controls in the same rebuilt executable. Use `STRATA_SYCL_PREFILL_KEEP_KV_STAGE=0` or `1` at launch for the paired
-comparison. Keep the DFlash2 pack, canonical head, synchronization, 8192 chunk,
-and borrow policy fixed. Start with bounded short/32769/short requests. Compare
-the full tap and output evidence available from that fixture, validate the
-nine retained and three reloaded QSA layers, and require normal owner closure
-and no fresh Xe fault. Keep one live prompt cache entry in both processes.
-Extend an 83-token live prefix with 8209 new tokens, require the native
-reuse count, and confirm that the unaligned stages reload every prefix in
-both arms. Exercise physical 262144 fill and RESTORE before adoption.
-Verify the handoff and repeat decode with matching draft and verifier settings.
+The two processes vary `STRATA_SYCL_PREFILL_KEEP_KV_STAGE` at launch while
+holding the DFlash2 pack, canonical head, synchronization, 8192-token chunk
+and borrow policy fixed. At 32769 tokens, retained pages rise from zero to
+110592 and reloaded pages fall from 147456 to 36864. Prefix copy calls fall
+from 144 to 36, saving 467140608 requested H2D bytes. Both arms reuse an
+83-token live prefix and read 8209 new tokens in the last request. Its
+unaligned stages reload 25080 pages in each arm. The output, state, tap and
+cache-loan checks agree across arms. Both processes exit 0 and close all
+owners with no new Xe fault. The traced result is
+`dflash2_prefill_kv_stage_model_v1`. Exercise physical 262144 fill and
+RESTORE and repeat decode with matching draft and verifier settings before
+adopting the candidate.
 
 After route admission, use fresh exact 65537-token `bench.sh` prefill inputs
 with first-use and subsequent-request timings in separate groups. Counterbalance

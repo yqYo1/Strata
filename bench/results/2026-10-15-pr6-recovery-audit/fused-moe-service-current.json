@@ -647006,9 +647006,9 @@
       "expected_prefix_H2D_bytes_removed": 467140608,
       "scope": "Independent reload and retain processes. Check the matched 32769-token and unaligned continuation requests. Compare per-layer KV counts, retained state and generated work, with tap and cache-loan checks. Preserve the exact candidate and both original references. These traced requests test correctness."
     },
-    "stage": "partial",
-    "complete": false,
-    "passed": false,
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "outcomes": {
@@ -647231,7 +647231,231 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "retain": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 32769,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 25,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 83,
+            "generated": 1,
+            "output_sha256": "4c9f01ba9b7eeea9900cd9cbab1fcf8abba5eca628cf63960aec216e83a4b107",
+            "accepted": 0,
+            "offered": 0,
+            "finish": "length"
+          },
+          {
+            "prompt": 8292,
+            "generated": 1,
+            "output_sha256": "4c9f01ba9b7eeea9900cd9cbab1fcf8abba5eca628cf63960aec216e83a4b107",
+            "accepted": 0,
+            "offered": 0,
+            "finish": "length"
+          }
+        ],
+        "info": {
+          "context": "262144",
+          "spec": "4",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256"
+        },
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 2277685,
+          "start_ticks": 382126850
+        },
+        "validation": {
+          "pid": 2277685,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "placement": {
+          "pieces": 192,
+          "direct": 0,
+          "copy_bytes": 32212254720,
+          "gpu_rows": 32768,
+          "host_rows": 0,
+          "window_mode": 10,
+          "maximum_rows": 32768
+        },
+        "loan": [
+          1,
+          132,
+          1124
+        ],
+        "tap_rows": [
+          81,
+          2046,
+          81
+        ],
+        "middle_windows": [
+          [
+            32768,
+            1
+          ],
+          [
+            32769,
+            4
+          ],
+          [
+            32771,
+            2
+          ],
+          [
+            32773,
+            4
+          ],
+          [
+            32777,
+            4
+          ],
+          [
+            32781,
+            4
+          ],
+          [
+            32785,
+            4
+          ],
+          [
+            32789,
+            4
+          ],
+          [
+            32793,
+            4
+          ],
+          [
+            32797,
+            4
+          ]
+        ],
+        "kv_stage": {
+          "reloaded_pages": 36864,
+          "reused_pages": 110592,
+          "prefix_H2D_calls": 36,
+          "mirror_D2H_calls": 192,
+          "mirror_D2H_bytes": 415236096,
+          "requested_prefix_H2D_bytes": 155713536
+        },
+        "ragged_kv_stage": {
+          "reloaded_pages": 25080,
+          "reused_pages": 0,
+          "prefix_H2D_calls": 96,
+          "mirror_D2H_calls": 480,
+          "mirror_D2H_bytes": 104011776,
+          "requested_prefix_H2D_bytes": 105937920
+        },
+        "ragged_store": {
+          "pieces": 96,
+          "direct": 0,
+          "copy_bytes": 8068792320,
+          "gpu_rows": 8208,
+          "host_rows": 0,
+          "window_mode": 10,
+          "maximum_rows": 8208
+        },
+        "states": [
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "32801",
+            "gdn": "57629a5c982bff8f",
+            "ple": "82566af58076dc27",
+            "tail": "43c2c0cbe54f80f7",
+            "pooled": "fa10bae824e14f83",
+            "kv": "8cf518b641aa588f",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "83",
+            "gdn": "fb403c6531e91874",
+            "ple": "f141833ac14f6c69",
+            "tail": "a9606646b6ecd37a",
+            "pooled": "ef649ba9ac7c900b",
+            "kv": "0c7ee9b7eb3ae4a7",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "248068,198"
+          },
+          {
+            "L": "8292",
+            "gdn": "d7e953ee8b971c74",
+            "ple": "99ffa2a93945ef70",
+            "tail": "025f01f3a8625177",
+            "pooled": "33f77f1e9874b9c3",
+            "kv": "1c4299f7e3aa720e",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "248068,198"
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
+    },
+    "comparison": {
+      "matched": true,
+      "requested_prefix_H2D_bytes_removed": 467140608
     }
   }
 }
