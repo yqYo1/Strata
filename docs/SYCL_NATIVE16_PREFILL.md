@@ -1314,6 +1314,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   runtime, fault or budget failure. Record all eligible pairs through closure.
   Complete ordinary and near-full fallback, physical final slot, RESTORE,
   state handoff and sustained decode before adoption.
+  On the pinned V2 build, `ExpertBankPlan::window_rows` is 81920 and the
+  original split requires `n > window_rows + m.T` and `n <= 117488`.
+  The measured 8192-row chunk therefore admits 90113–117488 new rows by
+  length. The existing near-full RESTORE shape of 253919 reused and 8209
+  fresh tokens gives 8208 new rows for the V2 split-fallback check. A candidate
+  split RESTORE shape is 172014 reused and 90114 fresh tokens, keeping the
+  total at 262128 and one output plus eight reserved slots available. Require
+  actual restored extent, one 90113-row read, the all-GPU 128-slot split and
+  all 48 batched uploads before treating it as split coverage.
   Removed and verified the following closed captures under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
   admission uses the fixture and model receipts recorded at `3c23f0b78`.
