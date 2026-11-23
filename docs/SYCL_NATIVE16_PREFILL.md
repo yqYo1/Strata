@@ -2192,8 +2192,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   remaining unrun arms stay in Git. Use these samples as observations only.
   The next matched continuations prioritize DFlash2.
 
-  Run the official long, agent and two sustained generation workloads
-  after DFlash2 passes the same-source route check. Keep the ordinary
+  The same-source DFlash2 route check passes on the 32K input. Run the
+  official long, agent and two sustained generation workloads with DFlash2.
+  Keep the ordinary
   384-slot launch and separate 128-slot `split-v1-96k` case explicit.
   Check count-preflight bodies, actual bank admission, split guard/drain
   and same-request decode. Require at least 1024 generated tokens per
@@ -10644,13 +10645,23 @@ DFlash2 is the default launch preference and the primary tuning target for
 supported single-card SYCL Qwen text configurations. MTP remains selectable
 for explicit configurations and named comparisons. The fast V2 MTP benchmark
 uses a packed-only target head. The initial DFlash2 comparison uses its
-supported canonical-head path and disables the MTP expert-release policy.
-Its long-input speed, physical final slot and RESTORE still need measurement.
+supported canonical-head path with MTP expert release disabled. The Arc B570
+check `dflash2_v2_model_v1` runs V2 native source `59411e1de` with the
+Q4_0 drafter, spec4, DPAS head mode 1 and 8192-token prefill. It completes
+82, 32769 and 82 input tokens with 32, 1 and 32 generated tokens. The long
+request holds all 32768 batch residual rows in VRAM and verifies the contents
+of all 1256 cache slots after a 1124-slot loan. The short requests use the
+decode-cache route and produce matching active-state and output digests,
+with 23 of 23 draft tokens accepted each. The process exits normally with
+no fresh GPU fault. This is a traced correctness check with a configured
+262144-token context. Clean speed, physical final-slot and RESTORE checks
+are pending on this DFlash2 route.
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
 before release,preserves the MTP transition order,and keeps short-input decode
-placement available. DFlash2 width1,expert-release and cache-scratch conflicts
-are rejected before pack/GPU initialization;cache scratch remains MTP-only.
+placement available. The checked cache loan admits DFlash2 in the supported
+spec4 serving configuration. Native admission checks the width, borrowing,
+expert-release settings and graph constraints before GPU initialization.
 
 The host fixture passes29cases/845checks at controller source`930bab9a7`,with
 214compiler and28link inputs covered,no sanitizer output and normal closed

@@ -642841,10 +642841,135 @@
       },
       "scope": "DFlash2 alone on a canonical DPAS-1 target head. Verify actual short/long/short routing, the checked 8192-token cache lease and exact short state after reset. Diagnostic clocks only."
     },
-    "stage": "prepared",
-    "complete": false,
-    "passed": false,
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
     "active": false,
-    "ownership_closed": true
+    "ownership_closed": true,
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "requests": [
+        {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        },
+        {
+          "prompt": 32769,
+          "generated": 1,
+          "output_sha256": "4c9f01ba9b7eeea9900cd9cbab1fcf8abba5eca628cf63960aec216e83a4b107",
+          "accepted": 0,
+          "offered": 0,
+          "finish": "length"
+        },
+        {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        }
+      ],
+      "info": {
+        "context": "262144",
+        "spec": "4",
+        "kv": "int8",
+        "kv_resident": "20480",
+        "expert_slots": "1256"
+      },
+      "native_exit_code": 0,
+      "validation": {
+        "pid": 1814114,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "states": [
+        {
+          "L": "114",
+          "gdn": "4f5ea7ff8b50a528",
+          "ple": "658c6b4cf144dfa8",
+          "tail": "60845c54dfa17711",
+          "pooled": "cd5a74ed9881eb7e",
+          "kv": "928417f78152ab15",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        },
+        {
+          "L": "32769",
+          "gdn": "9e76887a00b63836",
+          "ple": "9952845a9bc7494e",
+          "tail": "df9ae1aab238b46c",
+          "pooled": "7c17c0fc7a88fb57",
+          "kv": "b44264035f887140",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "248068,198"
+        },
+        {
+          "L": "114",
+          "gdn": "4f5ea7ff8b50a528",
+          "ple": "658c6b4cf144dfa8",
+          "tail": "60845c54dfa17711",
+          "pooled": "cd5a74ed9881eb7e",
+          "kv": "928417f78152ab15",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        }
+      ],
+      "placement": {
+        "pieces": 192,
+        "direct": 0,
+        "copy_bytes": 32212254720,
+        "gpu_rows": 32768,
+        "host_rows": 0,
+        "window_mode": 10,
+        "maximum_rows": 32768
+      },
+      "loan": [
+        1,
+        132,
+        1124
+      ],
+      "dflash2": [
+        {
+          "tap_rows": 81,
+          "cold_prefix": 0,
+          "vram_bytes": 845776220
+        },
+        {
+          "tap_rows": 2046,
+          "cold_prefix": 0,
+          "vram_bytes": 845776220
+        },
+        {
+          "tap_rows": 81,
+          "cold_prefix": 0,
+          "vram_bytes": 845776220
+        }
+      ],
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    }
   }
 }
