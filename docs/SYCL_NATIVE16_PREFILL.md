@@ -10803,7 +10803,11 @@ counters as named integer fields. It accepts the six replayed frames across
 serialization and rejects a changed upload count. All three fresh reload
 requests pass at 766.6, 877.7 and 881.7 tok/s with client TTFT of 85.686,
 74.878 and 74.542 s. The native process exits 0 with closed owners and
-no fresh Xe fault. The retain process follows in the same committed order.
+no fresh Xe fault. The first retain process passes the same work checks and
+removes 2179989504 bytes of requested KV copies per prompt. Its first prefill
+takes 87.414 s versus 85.487 s for reload. The subsequent medians are 74.415
+and 74.501 s, respectively. The first TTFT is 87.674 versus 85.686 s.
+The next two processes reverse the order to check repeatability.
 
 Use 117489 as a separate geometry when its actual residual placement is
 admitted in both arms. Require an observed transfer reduction and reproducible
