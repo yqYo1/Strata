@@ -67,7 +67,7 @@ def clock_summary(text, observed):
                 handoff_wall_max_s=max(p['handoff_wall'] for p in points))
 
 
-def admitted_basis():
+def retained_v2_model():
     parent = bank.previous.read(upload.build.ROOT / 'record.json')
     upload.build.context().check(parent)
     timeline = basis.validation.committed(bank.RESULT, (TIMELINE_KEY,))
@@ -91,13 +91,6 @@ def admitted_basis():
             and bank.previous.read(Path(manifest['path'])) == providers
             and all(bank.sha(p) == h for p, h in providers.items()),
             'original model assets, validation, boot and providers required')
-    native = bank.previous.read(build.ROOT / 'record.json')
-    build.context(native['source_commit']).check(native)
-    require(native['stage'] == 'built' and native['passed'] and native['complete']
-            and native['ownership_closed'] and not native['active'] and native['host_control']['passed']
-            and native['projection']['clock_parent_build_sha256'] == bank.signature(bank.builder.compact(parent))
-            and native['driver'] == parent['driver'] == prior['driver'],
-            'complete the checked clock build and preserve the V2 baseline')
     original = timeline['observer_admission']
     work = upload.previous.direct_work(original['expected_work'])
     require(len(work) == RUNS and [w['request'] for w in work] == timeline['request_hashes'][str(READ)]
@@ -105,9 +98,21 @@ def admitted_basis():
                     for p in timeline['processes']), 'unchanged V2 work across all PTI arms required')
     proof = {k: original[k] for k in ('ordinary_control', 'fast_configuration_diagnostic')}
     proof.update(expected_work=work, timeline=TIMELINE, timeline_sha256=bank.signature(timeline),
-                 reference_configuration=timeline['configuration'],
-                 clock_build_sha256=bank.signature(bank.builder.compact(native)))
-    return native, dict(prior, observer_admission=proof), providers, None
+                 reference_configuration=timeline['configuration'])
+    return parent, dict(prior, observer_admission=proof), providers
+
+
+def admitted_basis():
+    parent, prior, providers = retained_v2_model()
+    native = bank.previous.read(build.ROOT / 'record.json')
+    build.context(native['source_commit']).check(native)
+    require(native['stage'] == 'built' and native['passed'] and native['complete']
+            and native['ownership_closed'] and not native['active'] and native['host_control']['passed']
+            and native['projection']['clock_parent_build_sha256'] == bank.signature(bank.builder.compact(parent))
+            and native['driver'] == parent['driver'] == prior['driver'],
+            'complete the checked clock build and preserve the V2 baseline')
+    prior['observer_admission']['clock_build_sha256'] = bank.signature(bank.builder.compact(native))
+    return native, prior, providers, None
 
 
 def decision(processes):

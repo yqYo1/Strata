@@ -68,7 +68,7 @@ def clock_projection(source, clock):
     return {UNIT: unit, WINDOW: window, INCLUDE: clock}
 
 
-def project(revision, expected=None):
+def retained_v2_projection(expected=None):
     native, foundation, source, recipe, proof = upload.project(expected)
     parent = bank.previous.read(upload.ROOT / 'record.json')
     source_hashes = bank.stage.hashed(source)
@@ -81,6 +81,18 @@ def project(revision, expected=None):
             and builder.compact(parent) == bank.basis.validation.committed(bank.RESULT, (upload.KEY,))
             and bank.sha(parent['binaries']['strata']['path']) == parent['binaries']['strata']['sha256'],
             'recover the exact V2 native source and preserve the measured engine')
+    return native, foundation, source, recipe, proof, parent
+
+
+def recipe_at(recipe, root):
+    old, new = str(upload.ROOT), str(root)
+    return dict(configure=[arg.replace(old, new) for arg in recipe['configure']],
+                environment={key: val.replace(old, new) for key, val in recipe['environment'].items()},
+                targets=recipe['targets'])
+
+
+def project(revision, expected=None):
+    native, foundation, source, recipe, proof, parent = retained_v2_projection(expected)
     clock = dict(bank.stage.source.blobs(bank.P, revision, [CLOCK]))[CLOCK]
     require(INCLUDE not in source, 'the diagnostic include already exists in the V2 projection')
     overlay = clock_projection(source, clock)
@@ -88,27 +100,26 @@ def project(revision, expected=None):
     proof = dict(proof, clock_source_commit=revision,
                  clock_parent_build_sha256=bank.signature(builder.compact(parent)),
                  overlays=proof['overlays'] | bank.stage.hashed(overlay))
-    old, new = str(upload.ROOT), str(ROOT)
-    recipe = dict(configure=[arg.replace(old, new) for arg in recipe['configure']],
-                  environment={key: val.replace(old, new) for key, val in recipe['environment'].items()},
-                  targets=recipe['targets'])
-    return native, foundation, source, recipe, proof
+    return native, foundation, source, recipe_at(recipe, ROOT), proof
 
 
 def context(revision):
     ctx = upload.context()
     ctx.ROOT, ctx.KEY = ROOT, KEY
     ctx.project = lambda expected=None: project(revision, expected)
+    ctx.scope = 'V2 status-copy, checked wait, status-to-Gate handoff and first dequant host intervals.'
+    ctx.retention = 'Preserve the V2 prefill and coherent decode references through the observation bracket.'
     return ctx
 
 
-def prepare(ctx, revision):
-    require(not ROOT.exists() and KEY not in bank.basis.validation.committed(bank.RESULT),
-            'inspect the existing clock build')
+def prepare(ctx, revision, controls):
+    root = ctx.ROOT
+    require(not root.exists() and ctx.KEY not in bank.basis.validation.committed(bank.RESULT),
+            'inspect the existing prefill build')
     require(not (upload.GATE_ROOT / 'build').exists(), 'retire the completed Gate engine')
     native, foundation, source, recipe, proof = ctx.project()
     parent = bank.previous.read(upload.ROOT / 'record.json')
-    controls = {*parent['controller_sources'], THIS, CLOCK, MEASURE}
+    controls = {*parent['controller_sources'], *controls}
     pins = bank.stage.source.pin(bank.P, sorted(controls))
     require(pins['revision'] == revision and controls == pins['source_sha256'].keys(),
             'commit the observation controls and generating source before preparation')
@@ -118,17 +129,31 @@ def prepare(ctx, revision):
                build_tools={name: bank.sha(name) for name in ('/usr/bin/cmake', '/usr/bin/ninja')},
                driver=parent['driver'], retained_decode_reference=upload.upload.decode_reference(recover=True),
                active=False, passed=False, complete=False, ownership_closed=True, commands=[],
-               scope='V2 status-copy, checked wait, status-to-Gate handoff and first dequant host intervals.',
-               retention='Preserve the V2 prefill and coherent decode references through the observation bracket.')
-    ROOT.mkdir(mode=0o700)
+               scope=ctx.scope, retention=ctx.retention)
+    root.mkdir(mode=0o700)
     for name in ('source', 'owned', 'tmp', 'cache'):
-        (ROOT / name).mkdir(mode=0o700)
+        (root / name).mkdir(mode=0o700)
     for name, content in source.items():
-        path = ROOT / 'source' / name
+        path = root / 'source' / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(content)
     ctx.check(row, committed=False)
     ctx.save(row)
+
+
+def run_stage(ctx, revision, action, controls):
+    builder.ROOT, builder.KEY, builder.check, builder.save = ctx.ROOT, ctx.KEY, ctx.check, ctx.save
+    if action == 'projection':
+        _, _, sources, recipe, proof = ctx.project()
+        print(dict(source_files=len(sources), overlays=proof['overlays'], recipe_sha256=bank.signature(recipe)))
+    elif action == 'prepare':
+        prepare(ctx, revision, controls)
+    elif action == 'host':
+        bank.stage.host(root_path=ctx.ROOT, check_build=ctx.check, save_record=ctx.save)
+    else:
+        row = bank.previous.read(ctx.ROOT / 'record.json')
+        builder.TARGETS = row['recipe']['targets']
+        builder.execute(action)
 
 
 if __name__ == '__main__':
@@ -140,15 +165,4 @@ if __name__ == '__main__':
         builder.guards.no_model_owners([])
         row = bank.previous.read(ROOT / 'record.json') if action in ('configure', 'compile', 'host') else None
         revision = row['source_commit'] if row else bank.basis.validation.git('rev-parse', 'HEAD').decode().strip()
-        ctx = context(revision)
-        builder.ROOT, builder.KEY, builder.check, builder.save = ROOT, KEY, ctx.check, ctx.save
-        if action == 'projection':
-            _, _, sources, recipe, proof = ctx.project()
-            print(dict(source_files=len(sources), overlays=proof['overlays'], recipe_sha256=bank.signature(recipe)))
-        elif action == 'prepare':
-            prepare(ctx, revision)
-        elif action == 'host':
-            bank.stage.host(root_path=ROOT, check_build=ctx.check, save_record=ctx.save)
-        else:
-            builder.TARGETS = row['recipe']['targets']
-            builder.execute(action)
+        run_stage(context(revision), revision, action, (THIS, CLOCK, MEASURE))

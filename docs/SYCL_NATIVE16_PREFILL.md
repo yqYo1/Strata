@@ -1559,13 +1559,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in the `queue.memcpy` enqueue region on its subsequent request. The
   measured wrapper includes any runtime-internal waiting for earlier GPU
   work. Physical PCIe service and removable wall time remain open.
-  Next isolate moving only the first independent Gate dequantization
-  before the status copy on the existing in-order split queue. Audit its
-  shared-weight and GEMM scratch lifetimes and checked retirement before
-  enabling it. Keep route-status validation ahead of any shared result
-  update to the residual. Compare the same request bodies, QSA and decode
-  settings and observe whether the changed order reduces total clean prefill
-  time. The explicit wait alone is a small measured interval.
+  The [first Gate issue experiment](../bench/sycl/prefill_first_gate_issue.py)
+  moves only the first independent Gate dequantization before the status
+  copy. The selected path checks the current in-order queue, the same GEMM
+  stream, a device scratch span disjoint from both status locations and
+  the original weight geometry. The already queued routed readers precede the
+  scratch write. Status check and cancellation still precede the first shared
+  GEMM and residual write. An error after issue reaches the existing outer
+  checked lease while scratch and weight owners remain live. The first GEMM
+  verifies the prepared block geometry and consumes that block once.
+  Run both modes on the comparable traced 16386-input ragged route first.
+  Require the original work and response hashes, 48 completed layer windows,
+  and zero or 48 preissues after the checked drains. Then run three balanced
+  independent 117489-input pairs with one first-use and one subsequent
+  request per process. Keep direct output, batched expert upload, QSA, KV and
+  decode fixed. Require two faster subsequent prompt times and a paired
+  median ratio below one for a repeated gain. Measure the 1000 tok/s
+  milestone and the wider model qualification separately.
   Removed and verified the clock-only build and captures after matching
   their inventories to pushed `941d07a96`. The native recovery at
   `2c6645de4` matched the 1172 projected sources, compiler and recipe inputs,
