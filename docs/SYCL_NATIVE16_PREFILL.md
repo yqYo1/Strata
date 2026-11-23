@@ -1590,15 +1590,89 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Whole-model adoption, physical-context qualification of this variant and
   sustained decode remain open.
 
-  Use the retained V2 prefill reference for the next isolated QSA score-key
-  reuse test. The component at `328b7589d` reduced score-plus-selection
-  time by about 2.3% in three processes with matching scores and selected
-  IDs. The five V2 source inputs match the build receipt and accept the
-  reversible `9639531fd` → `a29048486` change. The independent append/restore
-  fixture at `0cfa87d2d` composes reversibly and the score scratch structure
-  is identical. Qualify the actual append, overwrite and RESTORE boundary
-  on V2 before model timing. Keep GDN, attention, selection mapping and
-  decode fixed in that comparison.
+  The isolated QSA score-key change projects onto the retained V2 source.
+  The corrected same-build engine and fixture at `9dd552bec` cover 138
+  fresh objects, thirteen targets and all seven `Gemm` includers. The six
+  B570 processes closed at `9d19c029f` with normal exits and no fresh GPU
+  faults. Both score stride checks match every score and selected ID. The
+  indexer test saves 2299 cells, appends fourteen and restores with a changed
+  suffix in a second epoch. It matches the freshly packed scores, IDs and
+  guards over four slices per epoch and detects the stale extent after a
+  deliberate scratch overwrite.
+
+  All fifteen timing pairs qualify. The paired process time ratios are
+  0.976715, 0.976928 and 0.975243. The median of the three process medians
+  is 473.311 → 461.273 ms for a twelve-chunk interval. All intervals exceed
+  460 ms and timer control stays below 0.019 ms. This passes the component
+  gain gate. Production RESTORE, physical context and sustained decode remain
+  separate model gates. Removed the six finished component captures after
+  verifying pushed `3529763e8` and the model engine and fixture hashes.
+  The removed inventory is 53 files and 2226601 bytes with SHA-256
+  `586ce9f362f38c5147cbf8c09ee929d16f9cf31400741305055662eddaf352c0`.
+
+  The same-build 16386-token admission closes at `2652a30dd`. Both modes
+  complete two requests with the same work, reference responses, checked
+  routes, normal exits, zero fresh faults and all fifteen final model asset
+  hashes verified. The 65 score calls in each of twelve QSA layers pack
+  137281 rows in the control and pack 10243 plus reuse 127038 in the
+  candidate. The held V2 score engine can now enter the clean 117489-token
+  comparison. Keep GDN, attention, selection mapping, expert transfer, KV
+  and decode fixed. Removed the closed `0`, `1` and `host` captures after
+  verifying pushed `b79c93403`. The campaign and runtime receipt hashes
+  still match. Removed 144 files totaling 21450935 bytes with
+  inventory SHA-256 `a25d225560cafabb9b607d1b1e00f98d04a57d5f328099984f384b33f82c8339`.
+
+  The clean 117489-token model comparison closed at `63d1765fe`. It used
+  three counterbalanced pairs with two fresh requests per process. All twelve
+  requests matched work, response digests and actual score dispatch. The
+  candidate reused 6512508 of 6756935 score-key row visits per QSA layer.
+  All six processes exited normally with closed owners and zero fresh GPU
+  faults. All fifteen final model asset hashes matched.
+
+  Across the three independent processes per mode, median warmed prefill was
+  998.44 tok/s for repacking and 997.51 tok/s for retention. The paired change
+  in warmed prompt time was +0.1408%,
+  +0.0932% and -0.4981%. It missed the repeated warm gain criterion and the
+  repeated 1000 tok/s criterion. First-request client TTFT changed by -5.058,
+  -5.965 and +1.244 s. The medians were 134.652 and 129.766 s. Keep these as
+  observations for a future first-use comparison. Select batched upload and
+  copied attention output on the retained V2 build for the next server
+  RESTORE and handoff checks. This is the configuration with a three-process
+  warmed median of 1008.865 tok/s at `297adab4d`.
+
+  Recovered the measured 1171-source build, 138 objects, thirteen targets
+  and original recipe from the pushed history at `ae54bc954`. The five closed
+  receipts and both experiment controllers are archived at `63d1765fe`.
+  The original indexer and counter commits remain reachable
+  on `feature/sycl`. Removed the finished `verify/prefill-qsa-groups` worktree
+  and branch locally and remotely. Removed the following closed captures
+  under `~/.local/state/strata-sycl/post-reboot-tuning-20261007` and verified
+  both retained phase-reference executable hashes and the compact receipts.
+
+  | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
+  | --- | ---: | ---: | --- |
+  | `prefill-score-keys-native-v3/{build,cache,host-control,owned,ownership.json,source,tmp}` | 1371 | 211470562 | `7e9588a5683aa21eb1c5ecde4da0b7579b323677badea8d53ea18d30c7f4fc91` |
+  | `prefill-score-keys-model-speed-v1/{0..5,host}` | 424 | 63301814 | `2ac1b4c0ecbd1cd4218c74b1d6a434f1d439125915ca54e6b4afba693c76ad4c` |
+
+  The model preparation at `df0520d8b` stopped before writing a campaign
+  receipt or launching a model. It read the score mode before the plan
+  attached that field. The correction at `0b2a929b8` uses the declared
+  process index. Removed the three verified partial preparation files
+  (13374 bytes, inventory SHA-256
+  `d4885d299a470118409821a7921878e02c7b49c39101be2f090b1b5c20784679`) before
+  preparing the successful admission.
+
+  The first build is closed as failed at `842d478b3`. Configure and link
+  exited zero. The census expected six `Gemm` includers and the score
+  fixture adds a seventh. No device case was launched. The source and
+  recipe recovery matches all 1171 paths, 138 fresh objects, 30 external
+  link inputs and thirteen target hashes. The target-set digest is
+  `3fa36507f88b0c438fc663c47fb1a19e82584ca4232ca45f09fc7714a64c9ba8`.
+  The corrected build declares the exact additional object at `d9c276bf5`.
+  Removed the failed build's `build`, `cache`, `owned`, `ownership.json`,
+  `source` and `tmp` after verifying pushed `464fa520e` and the inventory.
+  The original failure receipt still matches. Removed 1368 files and
+  211467437 bytes with inventory SHA-256 `d2a5d9839293fd3347060b26366080d9d599c5ba2562f8c2d451aa01d7d9be43`.
 
   The Gate issue build recovers all 1171 projected source files, its exact
   recipe and actual inputs, 137 fresh objects and twelve target hashes from
