@@ -635935,5 +635935,165 @@
     },
     "environment_template_sha256": "63cef73a2b0bf3cdd19690a5d0cdd04a2d11353783b7f071128d9fc77dc9bb3c",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_qsa_key_page_v1": {
+    "plan": {
+      "commands": [
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_CPU_SERVICE_PROFILE=1",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/qsa_key_page_component.cpp.o.d",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/qsa_key_page_component.cpp.o",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/src/kernels/sycl/qsa_key_page_component.cpp"
+        ],
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_CPU_SERVICE_PROFILE=1",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_QSA_PREFILL_KEY_PAGE_COMPONENT=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/qsa_bf16_prefix_layout_bench.cpp.o.d",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/qsa_bf16_prefix_layout_bench.cpp.o",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/tests/sycl/qsa_bf16_prefix_layout_bench.cpp"
+        ],
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-v",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-O3",
+          "-DNDEBUG",
+          "-Wl,-t",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/qsa_bf16_prefix_layout_bench.cpp.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/qsa_key_page_component.cpp.o",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-qsa-key-page-v1/sycl_qsa_bf16_prefix_ordered_exp_bench",
+          "libstrata_kernels.a",
+          "libstrata_core.a",
+          "libstrata_sycl_runtime.a"
+        ]
+      ],
+      "sources": {
+        "src/kernels/sycl/qsa_key_page_component.cpp": "0b6c0c1b3049cb56e3e274efdab91ea545363993f8694462630e10d72e54c4b6",
+        "tests/sycl/qsa_bf16_prefix_layout_bench.cpp": "82baa5dceb0a6980da7229ecfd51009757bfa42b7455925f5674a4fcbde58c9e"
+      },
+      "controls": "779d72e5bd7b8ed1f49bac6ad82b6d126e52bcb99d012ce2acd33f60f77f8688",
+      "parent": "a4560c2e2ba537f4c0944e4ffcde2cd9d66eeea11081932c5fe0bb7574f705c5",
+      "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+      "build_environment_sha256": "13b5a8ef9dfb87e44a0adcc05ed122bbc5aeab5ac6d8e097cf74b36098a2b10e",
+      "runtime_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
+      "order": [
+        "build",
+        "smoke",
+        "boundary",
+        "0",
+        "1",
+        "2"
+      ],
+      "shapes": {
+        "smoke": [
+          [
+            97,
+            3,
+            33,
+            "gather"
+          ]
+        ],
+        "boundary": [
+          [
+            262143,
+            3,
+            33,
+            "clustered"
+          ],
+          [
+            262144,
+            3,
+            33,
+            "clustered"
+          ]
+        ],
+        "timing": [
+          [
+            78453,
+            8192,
+            33,
+            "gather"
+          ],
+          [
+            78453,
+            8192,
+            2051,
+            "gather"
+          ],
+          [
+            78453,
+            8192,
+            2051,
+            "clustered"
+          ],
+          [
+            78453,
+            8192,
+            2051,
+            "blocks4"
+          ]
+        ]
+      },
+      "timing_pairs_per_shape": 6,
+      "arm_order": "(process + pair + order) % 2",
+      "minimum_timing_ms": {
+        "33": 0.5,
+        "2051": 10
+      },
+      "gate": "Require a lower paired median in all three blocks4 timing processes. Keep spread and clustered measurements for a separate coverage decision."
+    },
+    "controller_commit": "9ca6601c78da5efff9875f55e44011c0f2777ba2",
+    "measured_model": false,
+    "stages": []
   }
 }

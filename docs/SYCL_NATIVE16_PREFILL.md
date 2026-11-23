@@ -1483,8 +1483,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   linker command against the retained V2 build. The result reader accepts
   the three planned report formats and rejects misordered arms, changed
   widths, undersized intervals, a failed bit check and excessive timer
-  overhead. Device compilation, numerical execution and clean paired
-  timing remain pending after the Gate comparison.
+  overhead. Build the standalone fixture in the serialized interval after
+  the second Gate block. Run its device checks and timing after the Gate
+  comparison. The fixture uses the retained V2 archives until the component
+  decision. Review its artifacts and reference at that decision.
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
