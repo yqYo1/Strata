@@ -628459,7 +628459,7 @@
     "passed": false
   },
   "prefill_moe_status_capture_v3": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "8484ac154fd320c1554d288c98c3f1aa7a41e524",
     "sources": {
       "count": 823,
@@ -628578,7 +628578,24 @@
       "LC_ALL": "C.UTF-8",
       "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v3/tmp"
     },
-    "outcomes": {},
+    "outcomes": {
+      "build": {
+        "error": "RuntimeError('unplanned link inputs: /usr/lib/i386-linux-gnu/libdl.so.2, /usr/lib/i386-linux-gnu/libpthread.so.0, /usr/lib/x86_64-linux-gnu/libdl.so.2, /usr/lib/x86_64-linux-gnu/libpthread.so.0')",
+        "complete": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    },
     "active": false,
     "ownership_closed": true,
     "passed": false
