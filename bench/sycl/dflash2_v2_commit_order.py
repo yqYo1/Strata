@@ -118,9 +118,7 @@ def save(row):
     bank.stage.write(bank.RESULT, result)
 
 
-def run(row, case, env, requests):
-    plan = row['plan']
-    path = ROOT / case
+def run_case(plan, path, case, env, requests, inspect_case):
     cursor, = (s.removeprefix('-- cursor: ') for s in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if s.startswith('-- cursor: '))
@@ -150,7 +148,7 @@ def run(row, case, env, requests):
         outcome['native_identity'] = {k: identity.get(k) for k in ('pid', 'start_ticks')}
         require(model.owner_module.closed(entry) and entry['exit_code'] == 0,
                 entry.get('error') or 'native owner or exit differs')
-        outcome.update(inspect(stderr.read_text(), plan, entry['pid'], CASES[case], outcome['requests']))
+        outcome.update(inspect_case(stderr.read_text(), entry['pid'], outcome['requests']))
         require(all(bank.sha(p) == h for p, h in plan['drafter_assets'].items()), 'draft assets changed')
         outcome.update(complete=True, host_probe_accepted=True)
     except Exception as error:
@@ -158,11 +156,18 @@ def run(row, case, env, requests):
     finally:
         basis.validation.finish(outcome, owner, cursor, plan['boot'])
         outcome['passed'] = outcome['passed'] and outcome.get('driver_after') == plan['driver']
-        row['outcomes'][case] = outcome
-        complete = len(row['outcomes']) == len(CASES) and outcome['passed']
-        row.update(stage=('closed' if complete else 'partial') if outcome['passed'] else 'failed',
-                   complete=complete, passed=complete, active=False, ownership_closed=outcome['ownership_closed'])
-        save(row)
+    return outcome
+
+
+def run(row, case, env, requests):
+    plan = row['plan']
+    outcome = run_case(plan, ROOT / case, case, env, requests,
+                       lambda log, pid, responses: inspect(log, plan, pid, CASES[case], responses))
+    row['outcomes'][case] = outcome
+    complete = len(row['outcomes']) == len(CASES) and outcome['passed']
+    row.update(stage=('closed' if complete else 'partial') if outcome['passed'] else 'failed',
+               complete=complete, passed=complete, active=False, ownership_closed=outcome['ownership_closed'])
+    save(row)
     print({k: outcome.get(k) for k in ('passed', 'native_exit_code', 'fresh_faults', 'error')}, flush=True)
     require(outcome['passed'], outcome.get('error', 'DFlash2 commit-order check failed'))
 

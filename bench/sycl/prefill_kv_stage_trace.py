@@ -50,7 +50,8 @@ def check_clean_request(text, start, rows, chunk, *, reuse):
     return dict(reloaded_pages=sum(r[1] for r in actual), reused_pages=sum(r[2] for r in actual))
 
 
-def check_request(text, start, rows, chunk, *, reuse, external_tap=False, historical=False):
+def check_request(text, start, rows, chunk, *, reuse, external_tap=False, historical=False,
+                  tap_layers=()):
     """Use the separately observed append positions to check the stage's own counters."""
     require(0 <= start < 262144 and 0 < rows <= 262144 - start and chunk > 0, 'invalid request range')
     require(not (historical and reuse), 'historical engine has no KV reuse selector')
@@ -91,7 +92,8 @@ def check_request(text, start, rows, chunk, *, reuse, external_tap=False, histor
                     'incomplete layer or chunk count')
             if layer % 4 == 3:
                 require(len(receipts) == len(positions), 'missing QSA application or host publication')
-                loaded, kept, calls = expected_prefix(receipts, layer, reuse and not external_tap)
+                keep = reuse and not external_tap and layer not in tap_layers
+                loaded, kept, calls = expected_prefix(receipts, layer, keep)
                 expected = (loaded, kept) if not historical and loaded + kept else None
                 require(stage == expected, f'layer {layer} stage counters {stage} differ from {expected}')
                 totals['reloaded_pages'] += loaded
