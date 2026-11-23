@@ -1292,10 +1292,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   first-request TTFT was 129.132 and 127.671 s. Batching passes the
   repeated 1000 tok/s gate for this workload and configuration.
   Use the same coherent engine and fix batched issue for the next isolated
-  attention-output store comparison. Verify the current fixture and model
-  dispatch before collecting the copy/direct pairs. Complete ordinary and
-  near-full fallback, physical final slot, RESTORE, state handoff and
-  sustained decode before adoption.
+  attention-output store comparison. `prefill_kv_upload_compare.py
+  store-fixture` runs the current correctness fixture with full UR tracing
+  and parameter validation. Check exact BF16 results for 1, 63, 8191 and
+  8192 rows, buffer guards, invalid spans and checked cancellation.
+  `store-admit` adds direct output for the first two fresh traced requests.
+  Match the admitted batched copy work and decode-cache return. Require 720
+  direct stores and zero output-copy bytes per request.
+  `store-time` holds batched upload, input copies, KV reuse and scalar gather
+  fixed. Each process handles the four established fresh requests. Run three
+  independent pairs in copy/direct, direct/copy and copy/direct order. Select
+  a speed gain when at least two pairs improve warmed prompt time and the
+  paired median ratio is below one. Keep first-use and warmed TTFT and the
+  repeated 1000 tok/s gate. Stop on the first source, dispatch, work, ownership,
+  runtime, fault or budget failure. Record all eligible pairs through closure.
+  Complete ordinary and near-full fallback, physical final slot, RESTORE,
+  state handoff and sustained decode before adoption.
   On the earlier upload build, `prefill_split_upload_compare.py profile`
   runs clean, CPU accounting and clean, each with the first two established
   fresh inputs. Only the
