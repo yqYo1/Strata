@@ -1641,9 +1641,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   warmed median of 1008.865 tok/s at `297adab4d`.
 
   Recovered the measured 1171-source build, 138 objects, thirteen targets
-  and original recipe from the pushed history at `ae54bc954`. The complete
-  result and the archived model and V2 fixture controllers are available
-  at `63d1765fe`. The original indexer and counter commits remain reachable
+  and original recipe from the pushed history at `ae54bc954`. The five closed
+  receipts and both experiment controllers are archived at `63d1765fe`.
+  The original indexer and counter commits remain reachable
   on `feature/sycl`. Removed the finished `verify/prefill-qsa-groups` worktree
   and branch locally and remotely. Removed the following closed captures
   under `~/.local/state/strata-sycl/post-reboot-tuning-20261007` and verified
