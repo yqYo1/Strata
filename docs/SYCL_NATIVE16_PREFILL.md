@@ -1500,15 +1500,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   from the committed plan at `f88150349`. Both compiler commands and the
   link closed with exit zero. The recorded build checks 698 compiler
   inputs and 27 link inputs, and pins the 1612984-byte fixture by SHA-256.
-  Run the device checks and timing after the Gate comparison. The fixture
-  uses the retained V2 archives until the component decision. Review its
-  artifacts and reference at that decision.
+  The traced small check at `85d137a61` and the 262143/262144-cell boundary
+  checks at `378554ea6` pass exact BF16 output, input and guard checks.
+  At `371770ab8`, all 72 timing pairs complete across three independent
+  processes, with matching output bits, intact guards, normal exits and zero
+  fresh GPU faults. The grouped width-2051 paired time ratios are
+  1.09984, 1.09974 and 1.09816. The clustered, spread and width-33 gather
+  cases also take longer in each process. The component misses its speed
+  gate. Use the retained V2 ordered-exp layout for the next model
+  measurement and measure the MoE status-to-launch transition below.
+  The completed component build and five capture directories at
+  `prefill-qsa-key-page-v1` total 2496784 regular bytes. Verify the exact
+  Git-generated source, compile/link recipe and final fixture inputs before
+  retiring that build. Review the capture identities with that retirement
+  before building another engine.
   At 117489 tokens the 1000 tok/s time budget is 117.489 seconds. The three
   original Gate processes at `06a199714` need warmed reductions of
   0.288–1.420 seconds. If the savings came from the profiled 27.073
   seconds of QSA service and carried through to model wall time, that
   would require 1.06–5.24% less QSA service. Check the effect in clean
-  model timing if the component passes.
+  model timing for a future eligible component.
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
@@ -1675,8 +1686,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The placement-plus-reuse arm won two against original, with a median
   prompt-time reduction of 0.308%. Each mode missed the repeated
   1000 tok/s gate. Keep the combined result as a timing candidate and
-  use the retained V2 reference for the QSA component trial. Full-context,
+  use the retained V2 reference for the next long-prefill trial. Full-context,
   RESTORE and sustained decode gates remain open for the combined arm.
+  Review the closed `prefill-shared-gate-speed-v1` process captures and
+  `prefill-shared-gate-native-v1` generation before the next engine build.
+  Recover the exact Gate source projection, recipe and final inputs from Git
+  and check current consumers before deleting the executable or captures.
   The long comparison reads the committed V2 admission receipt. Both short-run
   captures under the shared state directory were removed and verified absent.
   The V1 failure and V2 exact comparisons remain in Git at `df349d38d` and
