@@ -615936,7 +615936,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_kv_upload_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "3abb9ff3a5066006db449294c4e5d67eab91e55a",
     "native_source_commit": "3abb9ff3a5066006db449294c4e5d67eab91e55a",
     "projection": {
@@ -616087,8 +616087,8 @@
       "recipe_sha256": "3c8a6e4b6b5c5ca978fbdd9789c551accce7c129056cea07e6192860b86eb08a"
     },
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "scope": "Compare demand and batched issue in the original 128-slot split workspace. Keep KV reuse, scalar gather and attention copy fixed.",
     "retention": "Keep the measured KV/gather and independent decode references. Review the third generation on comparison closure or failed admission.",
@@ -616098,6 +616098,68 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/compile_commands.json": "614e50d70ec25fe0194d33f924c7898e50a1e32145f3fcd40304f907db375bf7",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/CMakeFiles/rules.ninja": "91ed0ab24fa65d13263f4e25c79905ac8e154d79bc1142a8f91c6dcdc6a13841"
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/strata",
+        "sha256": "a4b623ddb1ec012ed211eb4fc97a4f336be2101aa9a668675818b911b49d1be8",
+        "bytes": 26550328
+      },
+      "prefill_moe_routes_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/prefill_moe_routes_test",
+        "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+        "bytes": 111336
+      },
+      "prefill_moe_workspace_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/prefill_moe_workspace_test",
+        "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+        "bytes": 67448
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/sycl_expert_bank_test",
+        "sha256": "dd69762b225b612ba88ae1cf3542b0e9e0dcefcb6ab4f4b9db1c165c270b1326",
+        "bytes": 542560
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "d424f14d84f1d5d019657fca07f69faf01c98c44b7791bf404d7778a0004e252",
+        "bytes": 14320144
+      },
+      "sycl_native16_paired_gemm_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/sycl_native16_paired_gemm_bench",
+        "sha256": "fe8b62aef8f1e7649fcd3b5755cbf45caa905ee02b3acd7f73c0c3f0670f72a9",
+        "bytes": 14260800
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/strata_full_context_diagnostic",
+        "sha256": "054d2429b2797f7c564a6886876a18f54026cd2ee0504575491597acda9af62d",
+        "bytes": 26550432
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/sycl_moe_upload_census_host_test",
+        "sha256": "d88f84a73fa8b0d5d5094268bcd3526a8183f90d26f9468de41baf4d7c96906a",
+        "bytes": 107360
+      },
+      "prefill_fullfit_upload_plan_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/prefill_fullfit_upload_plan_test",
+        "sha256": "2a60487e48d7b9c18a4e6021252fcf4b5b3438f6de2bec55964e32a83baf29c3",
+        "bytes": 109640
+      },
+      "sycl_prefill_attention_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/sycl_prefill_attention_bank_test",
+        "sha256": "281c1b3d4660b3b923c95b86153cb1204bf19d715526c5325da312d6069ca67e",
+        "bytes": 2840536
+      },
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v1/build/sycl_moe_accum_test",
+        "sha256": "dd6907816387f6fd3372adda34a22f489c9c7ea202f6ab7d78ab996de9dda269",
+        "bytes": 3123824
+      }
+    },
     "controller_sources": {
       "files": 386,
       "sha256": "dc0534abbf7419ad3240e21f87c47f6afb5fdfcc33f04583cd697bd708dde066"
@@ -616106,6 +616168,44 @@
       "files": 1171,
       "sha256": "0f69b11dc9041daf5e92e0df9c64271ff4a50d9a4bfde09e9aa91eb94171c8d0"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1474,
+        "sha256": "9a9a325b6962f02050476587739ace87896baca2afece764803c4e7bbd6dbe0b"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "6004187b851bf0af7c8aca0ab257960394af77edc100b0628bd5a42f23d157fa"
+      },
+      "links": {
+        "files": 30,
+        "sha256": "aa037df9a9963d78817d68cec3c5e6921ddd9d32a5121362c1706acb194a9346"
+      },
+      "objects": {
+        "files": 137,
+        "sha256": "b55b7ac80fd8cf1db76a857cc05020327bb88961029e61f85d82fcf1b095b5cb"
+      },
+      "produced": {
+        "files": 148,
+        "sha256": "2faf44e5969ffbfa168c85bcf8175df28a0df3070b0ae1c44b67c4fa87b30995"
+      },
+      "Gemm_includers": {
+        "files": 6,
+        "sha256": "7a79fc60f0a6ddd7a20f9a4cd4bffd2dc9403ab7d91b9543119d3e1a229bd7a9"
+      },
+      "class_definition_includers": {
+        "files": 3,
+        "sha256": "87075e0704d527f190132c758e11c63464f93441c85a20dd3ee380510feb6344"
+      },
+      "AOT_finalization_recipe_sha256": "a8b11869b3ef9c8a355587e95c112322a63c2daf66f1e6aee6247019d8592f01",
+      "temporary_generated_link_objects": 51,
+      "temporary_generated_link_paths_sha256": "008f6c6e6ffb383a1b0b1b219dce6e5e8e989e5abf3c8499131e9fcd2285b6e3",
+      "temporary_link_scope": "Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.",
+      "translation_units": 134,
+      "fresh_objects": 137,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
