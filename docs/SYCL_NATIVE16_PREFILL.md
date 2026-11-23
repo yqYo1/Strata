@@ -1312,6 +1312,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   paired median ratio is below one. Keep first-use and warmed TTFT and the
   repeated 1000 tok/s gate. Stop on the first source, dispatch, work, ownership,
   runtime, fault or budget failure. Record all eligible pairs through closure.
+  The six independent processes and 24 requests closed at `be8caf613`.
+  Copy process medians were 969.15, 960.97 and 970.35 tok/s. Direct process
+  medians in pair order were 981.52, 963.53 and 977.22 tok/s. Warmed prompt time
+  fell by 1.260%, 0.266% and 0.703%, so direct store passes the gain screen.
+  Median client TTFT was 121.510 and 120.536 s warmed, and 133.182 and 133.265 s
+  on the first request. All requests matched their work and route, every
+  owner exited normally, the GPU fault count was zero and the final 15 model
+  asset hashes matched. Both arms missed the repeated 1000 tok/s gate for
+  this cohort. The earlier batched-upload cohort used the same executable and
+  its 1000+ observations remain valid for that timing period.
+  Keep the closed timing record and its runtime manifest for the same-build
+  physical-context comparison. The raw process directories `0` through `5`
+  and `host` under `prefill-kv-upload-store-speed-v1` are eligible for
+  retirement after this decision is pushed. Their 424 files total
+  63496014 bytes with inventory SHA-256 `745b7a3d7de1b5a78a8619ed952f35db504d1e3463f041b61e57c2ce49ca0c5c`.
+  The committed result preserves the individual samples and admission checks.
+  Use `bench/sycl/prefill_kv_upload_capacity.py` on the existing V2 diagnostic.
+  Run the host bounds first, then compare the two stores on a 16385-token
+  prompt with four generated tokens and on all 262144 input positions. Require
+  the final checked commit and queue drain with zero generated tokens. Keep
+  aligned KV reuse and the standalone bank fixed. The fully occupied case
+  exercises the host-backed fallback. Test the server's split and near-full
+  RESTORE routes separately.
   Complete ordinary and near-full fallback, physical final slot, RESTORE,
   state handoff and sustained decode before adoption.
   On the pinned V2 build, `ExpertBankPlan::window_rows` is 81920 and the
