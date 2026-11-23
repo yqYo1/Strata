@@ -1394,6 +1394,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   every affected translation unit and the exact archive/link inputs before
   running the dedicated diagnostic target. Exercise one checked terminal
   commit at 262144, zero output and restoration of the parked full snapshot.
+  The retained dependency table identifies two consumers of the changed
+  header. Rebuild both before reusing the measured GPU libraries. Start with
+  the compiled host bounds check, two fresh ordinary-server controls and the
+  diagnostic's short decode check. Compare the later short MTP outputs with
+  those controls. Retire the temporary diagnostic when these checks close.
   Sustained decode remains a separate matched, clean model comparison.
 
   Removed both closed RESTORE capture roots after verifying pushed `1697efe2f`,

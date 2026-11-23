@@ -141,7 +141,7 @@ def exchange(io, arm, expected_plan, vocab):
     return results
 
 
-def inspect(log, arm, responses, previous, pid, probe):
+def inspect(log, arm, responses, previous, pid, probe, *, v2_prefix=None):
     proof = restore.validation.preload_evidence(log, pid)
     require(proof['loader'] == probe['loader']['path'] and not re.search(
         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|cleanup failed|teardown uncertain|conversation cache: skip parking', log),
@@ -167,16 +167,22 @@ def inspect(log, arm, responses, previous, pid, probe):
                 published.append(upto)
             require(published == res['publications'], 'draft callback extents differ from prompt publications')
             if label == 'prefix':
-                original = state.original()['outcomes']['near-base']['requests'][0]
+                original = (state.original()['outcomes']['near-base']['requests'][0]
+                            if v2_prefix is None else v2_prefix)
                 require(res['state'] == original['active_state'] and res['output_sha256'] == original['output_hash'],
                         'initial prefix diverged from the measured ordinary route')
-            reuse, vec8 = control.ARMS[arm]
+            reuse, vec8 = control.ARMS[arm] if v2_prefix is None else (True, False)
             n, old = res['prompt'], res['reused']
             require(int(fields['L']) == n and res['generated'] <= 1, 'wrong final committed position')
             rows = n - old - 1
             res['gather'] = control.gather_counts(frame, vec8)
             res['kv'] = control.kv.check_request(frame, old, rows, restore.capacity.CHUNK, reuse=reuse)
-            state.build.check_dispatch(frame, old, rows, retain_keys=False, store_decay=False)
+            if v2_prefix is None:
+                state.build.check_dispatch(frame, old, rows, retain_keys=False, store_decay=False)
+            else:
+                require('strata prefill score packs:' not in frame and 'strata prefill GDN decay:' not in frame,
+                        'unexpected score or GDN experiment in the retained V2 route')
+                res['attention_store'] = restore.require_store(frame, dict(direct=False), dict(read=rows + 1))
             generations = []
             for phase, ready in (('masked', 0), ('ready', 1)):
                 gen, first, lent = map(int, restore.capacity.one(frame, rf'^strata cache loan: phase={phase} '
