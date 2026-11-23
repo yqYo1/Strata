@@ -39409,5 +39409,75 @@
       "bytes": 1702585,
       "inventory_sha256": "16042c76bd4ef34a1a881050f0222ba98101f9b3443adf57e8cdca4092211990"
     }
+  },
+  "prefill-shared-gate-before-status-drain-20261123": {
+    "classification": "decision support",
+    "stage": "reviewed",
+    "source_revision": "8484ac154fd320c1554d288c98c3f1aa7a41e524",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-shared-gate-before-status-drain-20261123/report.md",
+    "report_sha256": "140230597b448dcd685b2efa418ddb03aeca5de57a668c58ba8af98c8c6cd0cd",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-shared-gate-before-status-drain-20261123-native-review-v2/review.txt",
+    "review_sha256": "979618516e09ee2e0964a71fd47d494a679b10eb4bba53db796c708f86281f4a",
+    "worker": "Orca gpt-6-luna medium, ctx_deaaa349f5ec completed; terminal release pending.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "schedulable_now": false,
+    "finding": "The 47 service gaps motivate an isolated first-Gate placement test. The mixed gather writes status, and cancellation can leave queued work for the outer checked drain.",
+    "consumer": "Confirm exposed time on a matched 117489-input clock before comparing the reorder. Keep weight and scratch ownership and the status check ahead of residual updates."
+  },
+  "prefill-shared-projection-reuse-20261123": {
+    "classification": "decision support",
+    "stage": "reviewed",
+    "source_revision": "bc5d27380fd65e4f0a061ef86420ea0ff5943119",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-shared-projection-reuse-20261123/report.md",
+    "report_sha256": "a502b9eacd21611d6a3cb7fb7b870e6527506d50060cd23bab6a772e27906c47",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-shared-projection-reuse-20261123-native-review-focused/review.txt",
+    "review_sha256": "4a5cc32d7bb859d7177455fc24c698fa71979ab549ac582343b34291ba86d096",
+    "worker": "Orca gpt-6-luna medium, ctx_e35b771d1023 completed; terminal release pending.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "schedulable_now": false,
+    "finding": "Reuse across chunks is distinct from reordering within the first chunk. The owned dq_gu[0] buffer is available after the checked drain, subject to the actual same-queue and span gates. Main verified the 48 shared Gate dimensions.",
+    "consumer": "Use for the current Gate-only placement/reload/reuse comparison at source 2cebe8a15. Review after the first failed gate or the matched 117489-input timing decision."
+  },
+  "prefill-kv-gather-decode-cost-20261123": {
+    "classification": "decision support",
+    "stage": "reviewed",
+    "source_revision": "2831edac97bca29efbaddb86b6f1de5e05e0ae57",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-kv-gather-decode-cost-20261123/report.md",
+    "report_sha256": "94596ffa9c14f414c5e620dbd7a0ea6c67b0240c9e27cec128f28e8da8ac5f32",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-kv-gather-decode-cost-20261123-native-review/review.txt",
+    "review_sha256": "288105dae7d575bb3a12eda8b19fc3fe8fc6015bb1b036be61b4fa32e79dcd08",
+    "worker": "Orca gpt-6-luna medium, ctx_bae66f8150a7 completed; terminal release pending.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "schedulable_now": false,
+    "finding": "Three matched agent follow-up TG ratios close at 27d0ee45e. A change in handoff or runtime state is plausible. The first-window clock measures verification only.",
+    "consumer": "Keep the initial nonpreservation decision. Compare fixed matched work with same-setting controls and focused state at prefill exit and decode rounds 1 and 32 before attributing the difference."
+  },
+  "prefill-qsa-prefix-resource-attribution-20261123": {
+    "classification": "decision support",
+    "stage": "reviewed",
+    "source_revision": "63f195238ab9c80b733a377e452340b5640e5960",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-qsa-prefix-resource-attribution-20261123/report.md",
+    "report_sha256": "24e97acf2ad5de8d27e999f6a4111178617f48f1dc9663bc57edf6a9d14bcd7b",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-qsa-prefix-resource-attribution-20261123-native-review/review.txt",
+    "review_sha256": "1a011e4f8b69ce315d66ed90e51f9b4c095472abedca83b0c90f47c287be1708",
+    "worker": "Orca gpt-6-luna medium, ctx_817f36d5ee23 completed; terminal release pending.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "schedulable_now": false,
+    "finding": "Ties the 27.073-second QSA prefix service to the measured V2 shape, separating live-prefix preparation and selected-key attention. Logical bytes and broad device ceilings leave memory and arithmetic saturation unresolved.",
+    "consumer": "Capture per-call live extent and selected widths, then use supported counters or bounded same-route sweeps along each axis. Keep occupancy unknown without a direct metric or controlled signal."
+  },
+  "prefill-shared-gate-ragged-route-20261123": {
+    "classification": "decision support",
+    "stage": "reviewed",
+    "source_revision": "234976a5277dbb9e1966e6c3465c1b49f88dc250",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-shared-gate-ragged-route-20261123/report.md",
+    "report_sha256": "9c9ad856b45ea7371c40bde0b6202633422ab2467b890e72950efa750753323c",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-shared-gate-ragged-route-20261123-native-review/review.txt",
+    "review_sha256": "688393ca3bd49848a5a48f83e913acf0d5bbb3240af991a814b4973594f551c8",
+    "worker": "Orca gpt-6-luna medium, ctx_0234a2e97053 completed; terminal release pending.",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "schedulable_now": false,
+    "finding": "Window mode and input length alone leave mixed scratch eligibility unresolved. The checked per-request route and actual expansion counters establish it. Treat allocation or route refusal distinctly from numerical mismatch.",
+    "consumer": "Use for the 16386-input admission and 117489-input split receipt. Review after the first refusal or the three completed admissions."
   }
 }
