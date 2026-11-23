@@ -1314,7 +1314,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   runtime, fault or budget failure. Record all eligible pairs through closure.
   Complete ordinary and near-full fallback, physical final slot, RESTORE,
   state handoff and sustained decode before adoption.
-  The following closed captures are approved for removal from
+  Removed and verified the following closed captures under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
   admission uses the fixture and model receipts recorded at `3c23f0b78`.
   The exact executable and same-build fixture remain in the current build.

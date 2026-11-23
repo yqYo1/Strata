@@ -39291,5 +39291,42 @@
       },
       "reason": "Worker and reviewer closed. Keep the source-linked report and short review. The source view and transaction captures have served their consumers."
     }
+  },
+  "prefill-v2-physical-restore-route-20261123": {
+    "classification": "decision support",
+    "stage": "closed",
+    "source_commit": "53e21f9160d6113fa5b20e3b7b597f078f027511",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-v2-physical-restore-route-20261123/report.md",
+    "report_sha256": "7342d8b022b402534c15da01ecec8108e01f6bd39079b52e6b04f7d85f798716",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-v2-physical-restore-route-20261123-native-review/review.json",
+    "review_sha256": "03fd0ba767dcbba571d8938feafe0504c928fc59c74035e951ecbe186eee18d3",
+    "schedulable_now": false,
+    "worker": "Orca gpt-6-luna medium with 18 protected inputs and worker-side IPC verified. Task task_b1acd4224d59, dispatch ctx_b2d9bfaab9be, completion acknowledged and owned terminal closed.",
+    "reviewer": "Native Codex gpt-6-luna max. The read-only review exited normally.",
+    "finding": "Moderate, revision-specific synthesis: it ties the 59411e1 V2 upload overlays to the independent attention-store selector and current standalone/server controllers. Strong overlap remains with prior batch-capacity, mixed-final-slot, and restored-page reports. Good source-gate depth: it checks same-queue/private-bank batch guards, separate store receipts, 117K admission, and controller limits. It avoids treating requested routes or expected fallbacks as physical qualification, but one RESTORE premise is wrong.",
+    "correction": "At 253,919 parked tokens, the pinned restore controller reuses that prefix and reads an 8,209-token suffix (8,208 rows in its new-row calculation). Layer-major admission sees the current prefill rows, not the cumulative context: this is below the strict >16,384-row split-admission floor, not above the 117,488 maximum. The expected batching bypass stands, but because split accumulation is not admitted.",
+    "consumer": "Main’s same-build V2 upload decision and separate full-context/RESTORE gate plan for native production.",
+    "next_review": "Run mixed final-slot qualification only after a source-pinned diagnostic entry accepts the actual cache-minted scratch lease and a same-build fixture demonstrates checked bind, retire, and refill/publication. Assert mixed ownership, vec8 dispatch, terminal commit, and drains; the required adapter is absent from this packet.",
+    "capture_retirement": {
+      "stage": "approved",
+      "inventory": {
+        "paths": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-v2-physical-restore-route-20261123-control",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-v2-physical-restore-route-20261123",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-v2-physical-restore-route-20261123/worker-filesystem-proof.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-v2-physical-restore-route-20261123-native-review/events.jsonl",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-v2-physical-restore-route-20261123-native-review/exit.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-v2-physical-restore-route-20261123-native-review/launch-argv.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-v2-physical-restore-route-20261123-native-review/schema.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-v2-physical-restore-route-20261123-native-review/stderr.txt",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-v2-physical-restore-route-20261123-native-review/task.txt"
+        ],
+        "files": 41,
+        "bytes": 1604953,
+        "inventory_sha256": "617721c9b92baece52f23c72ce8a8860ce5a19ce11e9ce7f5d799098e19d9e0c"
+      },
+      "reason": "Source-pinned V2 route audit and reviewed correction are retained. The closed preflight, IPC and review evidence has served its dispatch and review consumers."
+    }
   }
 }
