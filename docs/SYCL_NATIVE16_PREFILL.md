@@ -1457,6 +1457,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   guard preservation and checked retirement. Time the pack, attention and
   drain together, and keep the grouped and spread cases separate.
   [Intel SYCL subgroup guide](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/sub-groups-and-simd-vectorization.html)
+  The [isolated source generator](../bench/sycl/prefill_qsa_key_page_source.py)
+  reads the exact projected ordered-exp source and checks a reversible
+  producer/consumer delta. Use its separate export with the ordinary
+  ordered-exp reference in the layout fixture. For source admission, use
+  the retained Gate build's two compile database entries and replace the
+  fixture definition with `STRATA_QSA_PREFILL_KEY_PAGE_COMPONENT=1`.
+  The fixture places the guarded K span on a 256-byte boundary in both
+  arms. Its boundary mode explicitly selects the final mapped and first
+  masked cell at extents 262143 and 262144.
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
