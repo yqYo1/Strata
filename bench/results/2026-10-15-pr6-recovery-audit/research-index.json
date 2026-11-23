@@ -39220,5 +39220,37 @@
     "correction": "Earlier warm prompt and TTFT ratios are 0.974529 and 0.974533. The historical snapshot had four closed processes in a six-process plan. The report does not independently verify the exact three-file source merge. Use the separately verified Git projection.",
     "consumer": "KV/gather batch comparison and review of ordinary and near-full fallback. See d92f63fa7 and the Prefill split upload decision.",
     "next_review": "Review the report and digest at the end of that comparison. Keep the measured and source-qualified decision in Git."
+  },
+  "prefill-batched-bank-capacity-20261123": {
+    "classification": "decision support",
+    "stage": "reviewed_and_owners_closed",
+    "source_commit": "60dc1fa2e3829a38b57240e96d2634aa470dff40",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/prefill-batched-bank-capacity-20261123/report.md",
+    "report_sha256": "8c103efe46178554e61f99f091fb29ec85d2bb53024ebe9f8ab1f30fd1400407",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-batched-bank-capacity-20261123-native-review-v2/review.json",
+    "review_sha256": "bf8b55855ce8b4889a8e4c75e11939288a3f5a1d9ed0929c06df5826ecd7a4a1",
+    "worker": "Orca gpt-6-luna medium. Verified worker-side IPC, exact worker_done for task_ea584d88b4c6 and ctx_048c1fa07d0e, and operator terminal closure.",
+    "reviewer": "Native Codex gpt-6-luna max. Initial review reached its deadline. The focused second review closed with the checked digest.",
+    "schedulable_now": false,
+    "finding": "At maximum stride, 16 slots save 298188800 bytes and 32 save 255590400 bytes relative to 128. Layer packing and the 117488-row split cap still govern effective geometry.",
+    "correction": "Capacity savings alone do not change requested expert H2D bytes or demonstrate a longer or faster route. The current 128-slot selector also changes scheduling if bank size changes. A future test needs explicit eligibility for both budgets and matched same-queue scheduling.",
+    "consumer": "Selection of a bank-size-only trial after the current 128-slot upload timing decision. Record actual loan and refill extent. Compare overlapping copies separately.",
+    "next_review": "Revisit usefulness when both time arms close or when the maintained bank budget changes.",
+    "capture_retirement": {
+      "stage": "recorded_before_deletion",
+      "inventory": {
+        "paths": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-batched-bank-capacity-20261123-control",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-batched-bank-capacity-20261123-native-review",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/prefill-batched-bank-capacity-20261123-native-review-v2/native-review.jsonl",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-inputs/prefill-batched-bank-capacity-20261123"
+        ],
+        "files": 34,
+        "bytes": 2158513,
+        "inventory_sha256": "e0d27feefbb05309a35e97ce1ec6478b2de5381d4d5d1142aa335f9a1ffa8c48"
+      },
+      "reason": "Worker and both native review attempts closed. Keep the report, bounded corrected digest and source revision."
+    }
   }
 }

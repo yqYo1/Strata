@@ -1273,9 +1273,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `b8aa2d3cb` selects from the admitted request's slot budget once, then
   checks each layer's packed extent and queue before use. The V2 build
   applies that fix to the same upload unit and device-tested helper.
-  Run both traced modes on the new image. Keep KV reuse, scalar gather and
-  attention copies fixed for three counterbalanced timing pairs after both
-  modes match the intended work. Compare batch issue before its interaction
+  The V2 admission closed at `541992caf`. Both traced modes processed
+  two fresh 117489-token requests with the same split, KV, gather and
+  attention-copy work. The batched mode issued all 48 layer windows.
+  Per-request uploads were 18878 and 18900 with the same requested bytes
+  in each mode. Every request restored the same 1124 borrowed decode slots.
+  Both owners exited normally with quiet validation, no new GPU fault and
+  all fifteen final model asset hashes verified.
+  Keep KV reuse, scalar gather and attention copies fixed for three
+  counterbalanced timing pairs. Compare batch issue before its interaction
   with direct output. Use `bench/sycl/prefill_kv_upload_build.py` and
   `bench/sycl/prefill_kv_upload_compare.py`. Complete ordinary and near-full
   fallback, state handoff and sustained decode before adoption.
