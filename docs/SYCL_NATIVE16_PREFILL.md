@@ -1408,10 +1408,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   events have unique native flow joins within the enclosing RAW clock
   bounds. Both processes close with quiet validation and zero fresh GPU
   faults. This qualifies the copy fixture and collector pairing.
-  The two closed fixture roots `prefill-kv-upload-unitrace-fixture-v1`
-  and `prefill-kv-upload-unitrace-fixture-v2` in the same state directory
-  are eligible for retirement after this evidence is pushed. Their
-  20 files total 514279 bytes, inventory SHA-256
+  Removed and verified both closed fixture roots after pushing their results.
+  The roots were `prefill-kv-upload-unitrace-fixture-v1` and
+  `prefill-kv-upload-unitrace-fixture-v2` in the same state directory. The
+  20 retired files total 514279 bytes, with inventory SHA-256
   `83ee06b2c05daa40cdedf19d0696c5eda130fbb8657047c7208aed03ceb3fc98`.
   Run `bench/sycl/prefill_kv_upload_model_pti.py` on the direct-store
   split route. The three fresh processes each use the same first and second
