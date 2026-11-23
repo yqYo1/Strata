@@ -1339,11 +1339,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Both 16385-token controls at `b4eb71fee` pass on the current diagnostic.
   They check 16384 resident BF16 rows, four matching output IDs, and equal
   input-copy, KV prefix and host-mirror counters. Direct output writes 96
-  pieces in place and removes 16106127360 requested copy bytes. Both owners exit
-  normally with quiet validation and zero fresh GPU faults. The physical
-  pair follows under `prefill_kv_upload_capacity_v1`.
-  Complete ordinary and near-full fallback, physical final slot, RESTORE,
-  state handoff and sustained decode before adoption.
+  pieces in place and removes 16106127360 requested copy bytes. Both owners
+  exit normally with quiet validation and zero fresh GPU faults.
+  Both standalone physical-context cases close at `6d5debd9c` under
+  `prefill_kv_upload_capacity_v1`. Each batches 262143 tokens and checks the
+  final one-token commit, commit wait and refill drain at position 262144.
+  The full context generates zero output tokens. The matched mode-2
+  fallback holds 114688 BF16 rows in VRAM and 147455 in RAM. Each arm keeps
+  11173888 KV pages and publishes the same host-mirror extent. Direct output
+  writes 672 pieces in place with zero requested output-copy bytes. The
+  copy arm requests 112742891520 such bytes. Both owners exit normally with
+  quiet validation and zero fresh GPU faults. All 15 final model hashes match.
+  Keep the compact timing and diagnostic records for the server comparison.
+  The five case directories and two generated token files under
+  `~/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-capacity-v1`
+  are eligible for retirement after the evidence is pushed. That capture
+  has 225 files and 43453439 bytes with inventory SHA-256
+  `2ff4d65f75fcec95a78e4ca5bf7e0b7c5966aae425263837f872e0d17590f9b0`.
+  Complete ordinary and near-full server fallback, RESTORE, state handoff
+  and sustained decode before adoption.
   On the pinned V2 build, `ExpertBankPlan::window_rows` is 81920 and the
   original split requires `n > window_rows + m.T` and `n <= 117488`.
   The measured 8192-row chunk therefore admits 90113–117488 new rows by
@@ -1375,8 +1389,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   event lifetimes in a bounded check before any long run with it. Change
   one observer per comparison and verify its cost against clean requests.
   The retained UnitTrace launcher and collector hashes still match the
-  qualified tool build. A bounded same-build trace is the other candidate
-  for obtaining device service evidence.
+  qualified tool build. The focused review of the observer paths and the
+  independent recheck of the historical failed owner are in
+  `prefill-v2-observer-isolation-20261123` in the research index. Use the
+  existing V2 expert-bank `--split-upload-smoke` fixture for the first
+  non-counter collector admission. Keep one clean control and the same
+  fixture with collection enabled. Verify checked cancellation, copy
+  identity and ownership before any long trace.
   Removed and verified the following closed captures under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
   admission uses the fixture and model receipts recorded at `3c23f0b78`.
