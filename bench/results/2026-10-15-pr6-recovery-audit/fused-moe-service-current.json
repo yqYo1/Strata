@@ -648164,10 +648164,10 @@
     "commit_order_gate": "423e0a58127444997f1c2581a6f74729e4132cb3",
     "stage_model_evidence": "91186794c8624121f245067433c387785dffd757",
     "previous_prelaunch_refusal": "6d25df124de629ccea20acda7ca632eefc287bbda28379b59d0cbf09887bd8d3",
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "16755c8184acb52fc6b7aba7a8d86113628de70d",
     "host_passed": true,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "active": false,
     "passed": false,
     "complete": false,
@@ -648407,7 +648407,35 @@
         "heads": 0
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 65537,
+        "heads": 0,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": true,
+        "native_identity": {
+          "pid": 2336872,
+          "start_ticks": 382273920,
+          "sid": 2336810
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -648442,6 +648470,23 @@
         "passed": true
       }
     ],
+    "profile_path_stop": {
+      "reason": "Controller interruption after finding a mismatch in the actual and expected expert ranking file paths. Both files contain the same verified bytes.",
+      "actual": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+      "expected": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/data/expert-profile.bin",
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "request_started": true,
+      "requested_input_tokens": 65537,
+      "observed_residual_gpu_rows": 65536,
+      "observed_residual_host_rows": 0,
+      "observed_prefill_slots": 384,
+      "complete_sample": false,
+      "process_exit_code": -15,
+      "scope_empty": true,
+      "direct_child_reaped": true,
+      "fresh_faults": [],
+      "execution_receipt_sha256": "b49f332e96b76fb039510d489e057acca6824ca9a61b351c779d21d467115be5"
+    },
     "source_inputs": {
       "files": 838,
       "sha256": "b8dc77f72fc27db0d7bc8984fe05e5af9ca0c45ef374ced0e204ae4bd62538c4"
