@@ -1571,8 +1571,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   which gives the logged 33693728 transient bytes and exact fixed total.
   The bench exited on SIGTERM with incomplete observation and zero fresh
   GPU faults. All recorded process identities are absent and the session is
-  empty. Preserve the failed receipt. Replay the recorded route when fixing
-  the four-cell plan before starting three fresh admission processes.
+  empty. The preserved route passes a CPU replay with the verified four-cell
+  plan. The original receipt remains failed.
+  `prefill_shared_gate_admission_v2` closed three fresh processes and six
+  matched requests on the same executable. All 16385 batched rows and 144
+  direct attention stores per request used the GPU. The alternate buffer
+  expanded Gate weights 144 times with reload and 48 times with reuse. All
+  modes matched response digests, work, 24 generated tokens and 16 of 21
+  accepted drafts. The 15 final asset hashes match. All owners closed with
+  exit zero and no fresh fault. Start the frozen 117489-input comparison
+  in three balanced blocks of original, reload and reuse. Confirm actual
+  split placement and 720 versus 48 expansions per request. Keep performance,
+  sustained decode and physical-context qualification separate.
   The finished FDE0 build's 1171 original source files, recipe, configured
   inputs, recorded compiler inputs and 12 target hashes match the recovered
   Git projection. The original commits are reachable from pushed `9b92a032f`.
