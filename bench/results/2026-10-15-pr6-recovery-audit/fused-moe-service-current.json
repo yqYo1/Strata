@@ -628178,7 +628178,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_moe_status_capture_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "6f500a3628f94a864cadc2d346969a8f1afe59de",
     "sources": {
       "count": 823,
@@ -628294,7 +628294,24 @@
       "LC_ALL": "C.UTF-8",
       "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v1/tmp"
     },
-    "outcomes": {},
+    "outcomes": {
+      "build": {
+        "error": "RuntimeError('compile-libstrata_ur_status.so failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp: In function ‘bool {anonymous}::capture_status_call(const xpti::function_with_args_t*, bool, uint64_t)’:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:221:8: error: ‘UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH’ was not declared in this scope; did you mean ‘UR_FUNCTION_ENQUEUE_MEM_UNMAP’?\\n  221 |   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {\\n      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |        UR_FUNCTION_ENQUEUE_MEM_UNMAP\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:31: error: ‘ur_enqueue_kernel_launch_params_t’ was not declared in this scope; did you mean ‘ur_enqueue_mem_unmap_params_t’?\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |                               ur_enqueue_mem_unmap_params_t\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: no matching function for call to ‘arguments<<expression error> >(const xpti::function_with_args_t*&, const char [22])’\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note: candidate: ‘template<class T> const T* {anonymous}::arguments(const xpti::function_with_args_t*, const char*)’\\n  175 | template<class T> const T* arguments(const xpti::function_with_args_t* data, const char* name) noexcept {\\n      |                            ^~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note:   template argument deduction/substitution failed:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: template argument 1 is invalid\\n  222 |     const auto* p = arguments<u')",
+        "complete": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    },
     "active": false,
     "ownership_closed": true,
     "passed": false
