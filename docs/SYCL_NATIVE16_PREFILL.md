@@ -10707,6 +10707,55 @@ jobs to the CPU. Measure the CPU service and verifier waits separately
 before attributing that decode time to a hardware resource. Physical
 262144-context and RESTORE checks remain open for DFlash2.
 
+#### DFlash2 KV stage retention outside the tap layers
+
+Candidate source `44a2926a6` uses a typed DFlash2 observer with the same five
+capture layers and tail format. The QSA layers are 3, 7, and then every fourth
+layer through 47. The tap reads QSA output at layers 15 and 35. Those layers
+and the final layer at 47 reload the prefix. The other nine QSA layers can
+retain an aligned prefix under the existing single-layer, private-stage,
+same-queue conditions. Partial-page and packed-suffix retention require
+exclusive stage ownership with an empty layer callback. The same-queue
+condition uses SYCL's in-order submission guarantee. [SYCL queue property](https://github.khronos.org/SYCL_Reference/iface/queue.html#sycl-property-queue-in-order)
+
+The build recipe projects four changes onto the recovered V2 source set and
+checks that every other file matches its build manifest. The projected
+candidate is pending a coherent rebuild and device validation.
+
+The clean trace counters show 20480 prefix pages reloaded per QSA layer in
+both sustained cases. A page has four cells of 1056 bytes. Retaining nine
+layers' prefixes would remove the following requested transfers for fresh
+inputs at chunk size 8192.
+
+| Input tokens | Prefix pages retained across nine layers | Requested H2D bytes removed |
+| --- | ---: | ---: |
+| 32088 | 110592 | 467140608 |
+| 33217 or 33287 | 184320 | 778567680 |
+| 65537 | 516096 | 2179989504 |
+| 117489 | 1935360 | 8174960640 |
+
+At the previously measured large-copy range of 6.292–6.485 GB/s, the last
+row represents about 1.26–1.30 seconds of serialized transfer service.
+The estimate uses logical byte counts and excludes overlap with other work.
+
+Compare both controls in the same rebuilt executable. Use `STRATA_SYCL_PREFILL_KEEP_KV_STAGE=0` or `1` at launch for the paired
+comparison. Keep the DFlash2 pack, canonical head, synchronization, 8192 chunk,
+and borrow policy fixed. Start with bounded short/32769/short requests. Compare
+the full tap and output evidence available from that fixture, validate the
+nine retained and three reloaded QSA layers, and require normal owner closure
+and no fresh Xe fault. Include a resumed ragged tail and exercise physical
+262144 fill and RESTORE before adoption. Verify the handoff and repeat decode
+with matching draft and verifier settings before deciding on the change.
+
+After route admission, use fresh exact 65537-token `bench.sh` prefill inputs
+with first-use and subsequent-request timings in separate groups. Counterbalance
+reload/retain process order and keep individual samples and client TTFT.
+Use 117489 as a separate geometry when its actual residual placement is
+admitted in both arms. Require an observed transfer reduction and reproducible
+timing benefit. Compare the actual phase timings and physical traffic before
+attributing a speedup to PCIe. Keep the verified V2 and coherent decode
+references until this additional build's comparison closes.
+
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
 before release,preserves the MTP transition order,and keeps short-input decode
