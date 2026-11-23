@@ -1478,8 +1478,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   checks before the three clean timing processes. Each shape uses six
   opposite-order pairs. The grouped shape needs a lower paired median in
   each process before model follow-up. Keep clustered and spread samples
-  for the workload-coverage decision. Device compilation, numerical
-  execution and clean paired timing remain pending.
+  for the workload-coverage decision. At `c8e39f14b`, the read-only recipe
+  check recovered both source inputs and the two compiler commands plus
+  linker command against the retained V2 build. The result reader accepts
+  the three planned report formats and rejects misordered arms, changed
+  widths, undersized intervals, a failed bit check and excessive timer
+  overhead. Device compilation, numerical execution and clean paired
+  timing remain pending after the Gate comparison.
   The 22327 M2D/H2D commands carry
   52,103,695,548 requested bytes. Of those, 20024 commands match one of the
   seven exact expert blob sizes, totaling 40,910,873,600 requested bytes
