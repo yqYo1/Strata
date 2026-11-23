@@ -10777,6 +10777,16 @@ have identical hashes. The owned process exits and the session empties with
 no fresh Xe fault. The third plan uses the verified profile from the benchmark
 worktree in every process and pins that file in Git. The comparison criteria
 stay fixed.
+
+The first reload process passes all three 65537-token requests, exits 0
+and leaves no new Xe fault. Initial PP and client TTFT are 756.3 tok/s and
+86.887 s. The next two requests reach 872.9 and 884.6 tok/s with TTFT of
+75.295 and 74.291 s. Each requests 2906652672 bytes of KV prefix H2D copies.
+The same requests each report 64424509440 bytes of BF16 attention-store D2D
+copies and 37.14–37.21 GB of expert bank H2D uploads. These requested byte
+counts support separate transfer questions. The retention comparison needs
+the matched independent processes to finish before assigning any timing gain.
+
 Use 117489 as a separate geometry when its actual residual placement is
 admitted in both arms. Require an observed transfer reduction and reproducible
 timing benefit. Compare the actual phase timings and physical traffic before
