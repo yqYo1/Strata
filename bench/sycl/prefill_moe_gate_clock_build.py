@@ -12,6 +12,7 @@ KEY = 'prefill_moe_gate_clock_native_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 CLOCK = 'bench/sycl/prefill_moe_gate_clock.inc'
+MEASURE = 'bench/sycl/prefill_moe_gate_clock_measure.py'
 UNIT, WINDOW = upload.upload.UNIT, upload.upload.WINDOW
 INCLUDE = 'src/prefill/prefill_moe_gate_clock.inc'
 
@@ -107,7 +108,7 @@ def prepare(ctx, revision):
     require(not (upload.GATE_ROOT / 'build').exists(), 'retire the completed Gate engine')
     native, foundation, source, recipe, proof = ctx.project()
     parent = bank.previous.read(upload.ROOT / 'record.json')
-    controls = {*parent['controller_sources'], THIS, CLOCK}
+    controls = {*parent['controller_sources'], THIS, CLOCK, MEASURE}
     pins = bank.stage.source.pin(bank.P, sorted(controls))
     require(pins['revision'] == revision and controls == pins['source_sha256'].keys(),
             'commit the observation controls and generating source before preparation')
