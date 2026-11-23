@@ -1396,6 +1396,31 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   non-counter collector admission. Keep one clean control and the same
   fixture with collection enabled. Verify checked cancellation, copy
   identity and ownership before any long trace.
+  The first attempt at `60a23f1c9` preserved the exact payloads, guards and
+  checked cancellation. Both owners closed, with no new GPU fault. Its copy
+  label acceptance failed because PTI classifies the fixture's ordinary
+  `std::vector` buffers as `M`, the Level Zero unknown memory type. The
+  original 63415-byte timeline SHA-256 was
+  `685e3e19304402225ce7c4f6a6e6b7f53dd84a83957842541434b7d4d0621521`.
+  The fresh corrected pair at `83da1a72a` passes the same three
+  data/guard/cancellation cases. PTI reports 33 M2D copies (286720 requested
+  bytes), 11 D2D (286720), nine D2M (288256) and three fills. All 56 GPU
+  events have unique native flow joins within the enclosing RAW clock
+  bounds. Both processes close with quiet validation and zero fresh GPU
+  faults. This qualifies the copy fixture and collector pairing.
+  The two closed fixture roots `prefill-kv-upload-unitrace-fixture-v1`
+  and `prefill-kv-upload-unitrace-fixture-v2` in the same state directory
+  are eligible for retirement after this evidence is pushed. Their
+  20 files total 514279 bytes, inventory SHA-256
+  `83ee06b2c05daa40cdedf19d0696c5eda130fbb8657047c7208aed03ceb3fc98`.
+  Run `bench/sycl/prefill_kv_upload_model_pti.py` on the direct-store
+  split route. The three fresh processes each use the same first and second
+  117489-token bench.sh inputs. Enable only the active PTI observer in the
+  middle one. For each request position compare prompt time and TTFT to both
+  controls within the declared 0.8–1.2 ratio. Record the request-to-first-output
+  service, host-to-device activity outside measured kernel intervals, and
+  copy/kernel overlap. The named model trace budget is 1280 MiB per file and
+  2 GiB for the cohort. Reduce and retire the trace after comparison.
   Removed and verified the following closed captures under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007`. The timing
   admission uses the fixture and model receipts recorded at `3c23f0b78`.
