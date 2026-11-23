@@ -1583,8 +1583,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in three balanced blocks of original, reload and reuse. Confirm actual
   split placement and 720 versus 48 expansions per request. Keep performance,
   sustained decode and physical-context qualification separate.
-  The long comparison reads the committed V2 admission receipt. The ended
-  short-run captures are ready to retire under the shared state directory.
+  The long comparison reads the committed V2 admission receipt. Both short-run
+  captures under the shared state directory were removed and verified absent.
   The V1 failure and V2 exact comparisons remain in Git at `df349d38d` and
   `f3707ee5e`.
 
