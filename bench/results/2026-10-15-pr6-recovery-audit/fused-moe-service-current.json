@@ -630724,7 +630724,7 @@
     }
   },
   "prefill_moe_status_capture_v6": {
-    "stage": "control",
+    "stage": "failed",
     "source_commit": "27d0ee45e48c3b605143f8f97a443c22620a3411",
     "sources": {
       "count": 823,
@@ -630929,6 +630929,22 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "observed": {
+        "error": "RuntimeError('observed failed with exit 86: 2 [0]; searching\\n    283301:\\t search path=/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib\\t\\t(LD_LIBRARY_PATH)\\n    283301:\\t  trying file=/opt/intel/oneapi/compiler/2026.2/lib/libcap.so.2\\n    283301:\\t  trying file=/opt/intel/oneapi/umf/1.2/lib/libcap.so.2\\n    283301:\\t  trying file=/opt/intel/oneapi/mkl/2026.1/lib/libcap.so.2\\n    283301:\\t search cache=/etc/ld.so.cache\\n    283301:\\t  trying file=/lib/x86_64-linux-gnu/libcap.so.2\\n    283301:\\t\\n    283301:\\t\\n    283301:\\tcalling init: /lib/x86_64-linux-gnu/libcap.so.2\\n    283301:\\t\\n    283301:\\t\\n    283301:\\tcalling init: /lib/x86_64-linux-gnu/libudev.so.1\\n    283301:\\t\\n    283301:\\t\\n    283301:\\tcalling init: /lib/x86_64-linux-gnu/librt.so.1\\n    283301:\\t\\n    283301:\\t\\n    283301:\\tcalling init: /lib/x86_64-linux-gnu/libhwloc.so.15\\n    283301:\\t\\n    283301:\\t\\n    283301:\\tcalling init: /opt/intel/oneapi/umf/1.2/lib/libumf.so.1\\n    283301:\\t\\n    283301:\\t\\n    283301:\\tcalling init: /opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0\\n    283301:\\t\\nstrata UR validation API: pid=283301 operation=first-init result=0\\nstrata UR validation API: pid=283301 operation=config-release result=0\\n   ---> urPlatformGetApiVersion\\n   <--- urPlatformGetApiVersion(.hPlatform = nullptr, .pVersion = 0x7ffe1b488abc (-1.65535)) -> UR_RESULT_ERROR_INVALID_NULL_HANDLE;\\nstrata UR validation API: pid=283301 operation=postinit result=46\\nstrata UR validation: pid=283301 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\n    283301:\\t\\n    283301:\\tinitialize program: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test\\n    283301:\\t\\n    283301:\\t\\n    283301:\\ttransferring control: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test\\n    283301:\\t\\nstrata UR subscriber: incomplete diagnostic: cannot register XPTI callbacks')",
+        "complete": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "active": false,
