@@ -642761,8 +642761,65 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "role": "2",
+        "passed": true,
+        "environment_sha256": "0abade2260f8dd6ad7de31f08d3cb965aa1c3096fbbe35c4642125dd0ca0bd58",
+        "timer_control_ms": 0.0160002708435,
+        "batches_ms": [
+          {
+            "cold": 473.310656071,
+            "retained": 461.273237705
+          },
+          {
+            "retained": 461.313083172,
+            "cold": 471.685086727
+          },
+          {
+            "cold": 472.347723961,
+            "retained": 460.653933048
+          },
+          {
+            "retained": 461.046281338,
+            "cold": 473.654172897
+          },
+          {
+            "cold": 474.046041012,
+            "retained": 463.030106068
+          }
+        ],
+        "median_paired_time_ratio": 0.9752432576261011,
+        "device": "Intel(R) Arc(TM) B570 Graphics",
+        "driver": "1.17.39758+17",
+        "native_pid": 1220818,
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "clean_timing": true,
+        "compared_batches": 10,
+        "score_stride": 65538,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "stage": "ready"
+    "stage": "closed",
+    "decision": {
+      "paired_time_ratios": [
+        0.9767145698027866,
+        0.976927831728094,
+        0.9752432576261011
+      ],
+      "component_gain": true,
+      "model_tested": false
+    }
   }
 }
