@@ -10685,12 +10685,27 @@ at width four. Both hold every prefill residual row in VRAM, check the
 1124-slot loan refill, reproduce the short output before and after the middle
 request, and exit normally without a fresh Xe fault.
 
-These traced requests use synthetic prefixes and a shared thinking prompt. The
-earlier agent-session failure remains open as a workload-level question. Keep
-its journal and native failure frame until the clean sync-commit suite tests
-that history. Use the same `bench.sh` workload ID for its long prompt, agent
-session and sustained generation. The new result tests the synchronizing
-condition and leaves the speed cost and physical-context/RESTORE checks open.
+The traces use synthetic prefixes. The first clean synchronized `bench.sh`
+suite `dflash2_v2_generation_sync_v1` then completes all six agent turns.
+Its fifth request matches the original failure's body hash and emits 114 tokens
+from 11793 inputs. The engine and benchmark exit 0 with no fresh Xe fault.
+The nominal 32K prompt reads 32088 tokens. The two sustained cases read
+33217 and 33287 tokens and generate 4111 and 11783 tokens with thinking and
+an answer. Their PP is 683.4 and 703.3 tok/s, TG is 8.503 and 8.296 tok/s,
+and client TTFT is 49.061 and 47.586 s. Draft acceptance is 2767/2863 and
+5298/6902. The latter exceeds the 40 percent ceiling for a weak case.
+Find a separate low-acceptance workload for that qualification.
+
+The suite controller rejects the run at its KV route check. It expects KV
+stage retention, while the native DFlash2 layer tap disables retention and
+reloads all staged prefix pages. The failed decision stays in `e0a799263`.
+The corrected checker validates all three long-request frames on replay,
+including 245760 reloaded pages and zero reused pages per sustained case.
+This replay checks the controller. Fresh independent samples are required
+for the corrected performance campaign. The code case sends 1449976 expert
+jobs to the CPU. Measure the CPU service and verifier waits separately
+before attributing that decode time to a hardware resource. Physical
+262144-context and RESTORE checks remain open for DFlash2.
 
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
