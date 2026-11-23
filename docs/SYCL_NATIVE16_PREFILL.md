@@ -1537,9 +1537,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | `prefill-mapped-gu-operator-v1` | 11 | 18513739 | `215e7f265b0f79e2205661595bdc6411c2d8be49cbe180dfa7d1a88d15871654` |
   | `prefill-mapped-gu-timing-v1` | 38 | 19309485 | `f0638a381f79fe1181ce732f4dd8fc3239a683aef6ad743f5fef9254059104dc` |
 
-  The measured 65537-token combination has a committed ordinary generation
-  plan and passing host probes under `prefill_ordinary_generation_v1`.
-  Run the independent process pairs on the retained production executable.
+  The ordinary generation comparison for the 65537-token candidate closed
+  under `prefill_ordinary_generation_v1`. All six independent processes
+  finished the official long prompt, six agent turns and both thinking-on
+  generation workloads with normal exits, matching model assets and no fresh
+  GPU fault. The nominal 32K prompt read 32089 tokens. The sustained code
+  and prose workloads read 33211 and 33281 tokens and generated 2815 and
+  6823 tokens, with 87.009% and 33.935% draft acceptance. All matched work
+  and agent request bodies agree. The paired candidate/original decode
+  geometric-mean ratios are 0.98938 for code, 1.01629 for prose and 0.94992
+  for agent follow-ups. All three agent pairs were slower. Code client TTFT
+  increased in all three pairs, from a process median of 47.458 to 48.526 s.
+  The combined option fails decode preservation on the ordinary route. Keep
+  the original ordinary selection and the separate exact 65537-input speed
+  result at `84c883393`. The phase-boundary effect remains to be localized.
   For the subsequent output-store comparison, the retained `fde0cdd11`
   source already exposes `STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE` and
   its build includes `sycl_prefill_attention_bank_test`.
