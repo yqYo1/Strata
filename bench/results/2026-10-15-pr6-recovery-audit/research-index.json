@@ -39805,7 +39805,95 @@
     "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cross-device-completion-wait-20261124/report.md",
     "finding": "Compares accelerator and storage completion policies, including active polling, a finite spin-to-park window, and runtime-controlled waits.",
     "consumer": "Retrieve only if measured wait attribution identifies significant caller CPU time or tail latency and a synchronization-policy comparison is useful.",
-    "next_scope": "Compare the same completion event with a direct wait, query, and bounded query then wait. Measure throughput, tail latency, waiter CPU time, numerical outcomes and errors."
+    "next_scope": "Compare the same completion event with a direct wait, query, and bounded query then wait. Measure throughput, tail latency, waiter CPU time, numerical outcomes and errors.",
+    "retirement": {
+      "complete": true,
+      "artifacts": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-store-and-wait-pinned-20261124",
+          "files": 14,
+          "bytes": 4110355,
+          "inventory_sha256": "a0acd629d36a33fa4970e85291c2ce29880d2794bb43a63152509d365661fafd"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-direct-store-lifetime-20261124",
+          "files": 3,
+          "bytes": 22848,
+          "inventory_sha256": "795066a63f58f8e091d39d41007ef26961a285217038573144c85117e7e93cdf"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cross-device-completion-wait-20261124-control",
+          "files": 8,
+          "bytes": 11691,
+          "inventory_sha256": "4e751079db74af4b39c2e4121d277a819b64208c5001a02caf6525b3580148de"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cross-device-completion-wait-20261124-native-review",
+          "files": 0,
+          "bytes": 0,
+          "inventory_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cross-device-completion-wait-20261124-native-review-control",
+          "files": 5,
+          "bytes": 4041,
+          "inventory_sha256": "581f3edf7ce4f0c7eefa236c0f1c8bec21861d50d529a5fa1f089167c975f390"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cross-device-completion-wait-20261124-native-review-v2",
+          "files": 1,
+          "bytes": 2083,
+          "inventory_sha256": "ec2aef21c351c9485692feb7416fd1e541f37cbc83aa46ec836c5bd8a5c4655b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/cross-device-completion-wait-20261124-native-review-v2-control",
+          "files": 3,
+          "bytes": 4037,
+          "inventory_sha256": "6ed1d2155ac104931bbf12c1ff5a16aaa554d9712fcbfa1ab3371cb1d0cda87c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-direct-store-lifetime-20261124-control",
+          "files": 8,
+          "bytes": 12057,
+          "inventory_sha256": "7a79b23ab34e81226a75a788f643e51c55cc7fbc1accf560f4dc820f21d4e5e1"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-store-lifetime-20261124-native-review",
+          "files": 0,
+          "bytes": 0,
+          "inventory_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-store-lifetime-20261124-native-review-control",
+          "files": 5,
+          "bytes": 4049,
+          "inventory_sha256": "f0281cc77adcfccd59c7afcae1a0602bc5196d1cbdb202c41b7bb53f746a83b4"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-store-lifetime-20261124-native-review-v2",
+          "files": 1,
+          "bytes": 2144,
+          "inventory_sha256": "3b30d4012398a115034a139574ae3cdbb11003d287a37cfc427728918f863d59"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-store-lifetime-20261124-native-review-v2-control",
+          "files": 3,
+          "bytes": 4045,
+          "inventory_sha256": "446862f4cdf95d253b45196abc9b5b61ed1c596144df87d88662240ffb6c0a58"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cross-device-completion-wait-20261124/worker-filesystem-proof.json",
+          "bytes": 6479,
+          "sha256": "56b4905ac0f07ed23e028447d10be0d0f63e4b1d2ea74eb6582ff0b656df622c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/cross-device-completion-wait-20261124/worker-orca-status.json",
+          "bytes": 7900,
+          "sha256": "22325d71f973714b6c5026cf965c2410ad30d919eef70c02b54b37d5fd5c06c4"
+        }
+      ],
+      "reason": "Both Orca tasks and native reviews are closed. Keep the usable knowledge report and compact review decisions. The duplicate source view, transactions, raw rejected report and reviewer captures have no remaining reader."
+    }
   },
   "dflash2-direct-store-lifetime-20261124": {
     "classification": "decision_support",
@@ -39833,6 +39921,9 @@
       "sha256": "99a2e73c2f1cef6a2cf5e400e016b0635546cffaeea011b6b2be498af6f2124a",
       "contract": "With the attention bank reader disabled, the writer uses the same update and BF16 rounding as the scratch path and validates the disjoint device spans. The window drains before its MoE consumer."
     },
-    "consumer": "A future same-binary direct-store test compares the actual DFlash2 tap data, state handoff and emitted work before measuring request speed."
+    "consumer": "A future same-binary direct-store test compares the actual DFlash2 tap data, state handoff and emitted work before measuring request speed.",
+    "retirement": {
+      "shared_record": "cross-device-completion-wait-20261124"
+    }
   }
 }
