@@ -1156,7 +1156,9 @@ _ON = re.compile(r"DFlash2 drafter on\b|sfnx: DFlash2 on card 0\b")      # (the 
 def fallback_note(log_text: str) -> str:
     """From one engine start's log: ``Drafting: MTP (DFlash2 didn't fit)`` when the engine fell back from DFlash2, else ``""``. The engine
     names the reason in its own words; two are told apart: no room in graphics memory, and a mode this build does not support."""
-    text = str(log_text or "")
+    # The launcher logs its command before exec.
+    text = "\n".join(line for line in str(log_text or "").splitlines()
+                     if not (line.startswith("[strata] ") and " engine started: " in line))
     if _ON.search(text):
         return ""
     if "--draft dflash2" not in text:
