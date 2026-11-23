@@ -628176,5 +628176,127 @@
     },
     "environment_template_sha256": "de4fe59cdf70ddf1e814d5dd20873a4e6c558fe169caece19b8e654f3f37df2b",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "prefill_moe_status_capture_v1": {
+    "stage": "prepared",
+    "source_commit": "6f500a3628f94a864cadc2d346969a8f1afe59de",
+    "sources": {
+      "count": 823,
+      "sha256": "927c7a7cd814315e13ef34792571b5edff504fc6f1f50b80c50828e57bfc4bbe"
+    },
+    "plan": {
+      "order": [
+        "prepare",
+        "build",
+        "host",
+        "control",
+        "observed"
+      ],
+      "fixture_arg": "--smoke",
+      "scope": "Use unchanged native V2 device fixture and Intel 2026.2 XPTI. Compare the default observer on CPU, exercise sparse filtering on synthetic CPU callbacks, then run the same small device workload with and without sparse host observation.",
+      "acceptance": "Exact CPU filter and application output, actual paired 4-byte copy and wait/launch coverage on the native device route, parameter validation, owned exit zero and no fresh driver fault. No GPU timing, model, or diagnosis of the original PTI gap."
+    },
+    "budgets": {
+      "wall": 100,
+      "cpu": 100,
+      "rss_cap": 4294967296,
+      "text_cap": 8388608,
+      "file_cap": 16777216,
+      "total_cap": 67108864
+    },
+    "device": {
+      "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+      "native_build_sha256": "a4560c2e2ba537f4c0944e4ffcde2cd9d66eeea11081932c5fe0bb7574f705c5",
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/strata",
+        "sha256": "1b56f94c7434cc332ada4092bf6bb69b677bde1df10c049867e7c0884462c5d2",
+        "bytes": 26550328
+      },
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+        "sha256": "dd69762b225b612ba88ae1cf3542b0e9e0dcefcb6ab4f4b9db1c165c270b1326",
+        "bytes": 542560
+      },
+      "native_validation_probe": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+        }
+      },
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "timeline_commit": "4bc26aaa9cbdd8d4084336826361aae7bb886449",
+      "environment_sha256": "4ff5d596a384207ba7dad0fc9e91389c75e2ca29d1ca4cbd0b36212deb5089f8"
+    },
+    "commands": {
+      "libstrata_ur_status.so": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++17",
+        "-O2",
+        "-pthread",
+        "-I/opt/intel/oneapi/compiler/2026.2/include",
+        "-fPIC",
+        "-shared",
+        "-DXPTI_CALLBACK_API_EXPORTS",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v1/libstrata_ur_status.so.d",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libxptifw.so.1.0.1",
+        "-Wl,-rpath,/opt/intel/oneapi/compiler/2026.2/lib",
+        "-Wl,--no-undefined",
+        "-Wl,--dependency-file=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v1/libstrata_ur_status.so.link.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v1/libstrata_ur_status.so"
+      ],
+      "ur_call_guard_test": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++17",
+        "-O2",
+        "-pthread",
+        "-I/opt/intel/oneapi/compiler/2026.2/include",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v1/ur_call_guard_test.d",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_guard_test.cpp",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libxptifw.so.1.0.1",
+        "-Wl,-rpath,/opt/intel/oneapi/compiler/2026.2/lib",
+        "-Wl,--no-undefined",
+        "-Wl,--dependency-file=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v1/ur_call_guard_test.link.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v1/ur_call_guard_test"
+      ]
+    },
+    "compiler_files": {
+      "count": 293,
+      "sha256": "b7baa53da50c7d979402deac226b42e5145c432d153c933b879d8b36b5933257"
+    },
+    "dispatcher": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/lib/libxptifw.so.1.0.1",
+      "bytes": 118464,
+      "sha256": "e86145b0ca073c019b791d59ad877d49df7165c9190b1ec300f0b073914e9ddd"
+    },
+    "compiler_environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v1/tmp"
+    },
+    "outcomes": {},
+    "active": false,
+    "ownership_closed": true,
+    "passed": false
   }
 }
