@@ -1583,6 +1583,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in three balanced blocks of original, reload and reuse. Confirm actual
   split placement and 720 versus 48 expansions per request. Keep performance,
   sustained decode and physical-context qualification separate.
+  The long comparison reads the committed V2 admission receipt. The ended
+  short-run captures are ready to retire under the shared state directory.
+  The V1 failure and V2 exact comparisons remain in Git at `df349d38d` and
+  `f3707ee5e`.
+
+  | Capture directory | Entries | Regular bytes | Inventory SHA-256 |
+  | --- | --- | --- | --- |
+  | `prefill-shared-gate-admission-v1` | 76 | 10734500 | `052e5ab0cbf91610717453530739c5c44985d1570fb3c98cbd0d4fbe5bc3f7d2` |
+  | `prefill-shared-gate-admission-v2` | 216 | 32299517 | `88fb85d3b11b565887cf906c26c3f0554bd12b8d7039200b1be7863109a2fc90` |
   The finished FDE0 build's 1171 original source files, recipe, configured
   inputs, recorded compiler inputs and 12 target hashes match the recovered
   Git projection. The original commits are reachable from pushed `9b92a032f`.
