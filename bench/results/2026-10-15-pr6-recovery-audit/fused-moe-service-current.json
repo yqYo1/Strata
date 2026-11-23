@@ -647475,7 +647475,7 @@
       "reason": "Both traced model processes closed. The 64K comparison uses the original committed model evidence and the retained native build."
     }
   },
-  "dflash2_prefill_kv_stage_speed_v3": {
+  "dflash2_prefill_kv_stage_speed_v4": {
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
       "args": [
@@ -647669,16 +647669,17 @@
     "stage_model_evidence": "91186794c8624121f245067433c387785dffd757",
     "preceding_attempts": [
       "16755c8184acb52fc6b7aba7a8d86113628de70d",
-      "fe958812755d6dce0faded3dd41073edf7371196"
+      "fe958812755d6dce0faded3dd41073edf7371196",
+      "2da6d6261ff7328136a63ef055151b954563e3a8"
     ],
     "ranking_profile": {
       "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/data/expert-profile.bin",
       "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
       "old_path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin"
     },
-    "stage": "failed",
-    "source_commit": "debe8a62cb7838f0f6aa6b3cc8eed57777c94b4c",
-    "host_passed": true,
+    "stage": "prepared",
+    "source_commit": "fa1cd37eea42b371572a8b2da0df0800d8f2e7a8",
+    "host_passed": false,
     "ownership_closed": true,
     "active": false,
     "passed": false,
@@ -647687,8 +647688,8 @@
       {
         "index": 0,
         "arm": "reload",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/0",
-        "port": 56717,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/0",
+        "port": 33577,
         "binary": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
           "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
@@ -647698,9 +647699,9 @@
           "/bin/sh",
           "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/0/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/0/config.json",
           "--port",
-          "56717",
+          "33577",
           "--prefill-exact-tokens",
           "65537",
           "--think",
@@ -647713,21 +647714,21 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/0/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/0/bench"
         ],
         "generated": {
-          "config.json": "e95508cac1fcc929a430f4bbbca73807e6f96ae87c7e1d32b699309ca2944553",
+          "config.json": "97f6c33e676dfb08424a879eda12ffbd588938046f82e4cd46b72564d94171cb",
           "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
         },
-        "environment_sha256": "f12bbf51e7163199f04f136abf5d95f68ea76b43c51fb4891e02fd068c1e6570",
+        "environment_sha256": "d05e1998787b516796f01f7d3c7ace18001a5625cef85e953d340d4d4f1e67aa",
         "read": 65537,
         "heads": 0
       },
       {
         "index": 1,
         "arm": "retain",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/1",
-        "port": 33471,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/1",
+        "port": 35325,
         "binary": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
           "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
@@ -647737,9 +647738,9 @@
           "/bin/sh",
           "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/1/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/1/config.json",
           "--port",
-          "33471",
+          "35325",
           "--prefill-exact-tokens",
           "65537",
           "--think",
@@ -647752,21 +647753,21 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/1/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/1/bench"
         ],
         "generated": {
-          "config.json": "73eaf65717d38b70d3ca0211e3970a1aa10e2192ba307356214a2b7600a08d42",
+          "config.json": "3d1286d2e52738d4e26508eac53669e535b7257eff3a5f91a98d625358efdb79",
           "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
         },
-        "environment_sha256": "cdfdfe9f78ad7e61632e9b10e34bccd94e26408a7923220cecf2166bf968542e",
+        "environment_sha256": "632a38a3f22f3e03981c62876e05da225b41aa01215fb40e3da1909e4b7de9a0",
         "read": 65537,
         "heads": 0
       },
       {
         "index": 2,
         "arm": "retain",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/2",
-        "port": 54097,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/2",
+        "port": 53483,
         "binary": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
           "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
@@ -647776,9 +647777,9 @@
           "/bin/sh",
           "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/2/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/2/config.json",
           "--port",
-          "54097",
+          "53483",
           "--prefill-exact-tokens",
           "65537",
           "--think",
@@ -647791,21 +647792,21 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/2/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/2/bench"
         ],
         "generated": {
-          "config.json": "eb9e5117f566e02d9b6f88d63906f4be1c3291dd850d5c649ec1ceaf77840319",
+          "config.json": "81aae8bfcc84c88f8d0ff7ac47e6376c78b7919afc256cb65ecdec931ce0cad8",
           "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
         },
-        "environment_sha256": "bef064e3edc2a52e6b2a01d62e3bafa55f8eda25b10276febaeb7dae03804904",
+        "environment_sha256": "591d4827cdcd8b3fea2002e856e09be204f8efb9907f5c952767e4f715fda8be",
         "read": 65537,
         "heads": 0
       },
       {
         "index": 3,
         "arm": "reload",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/3",
-        "port": 47175,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/3",
+        "port": 35445,
         "binary": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
           "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
@@ -647815,9 +647816,9 @@
           "/bin/sh",
           "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/3/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/3/config.json",
           "--port",
-          "47175",
+          "35445",
           "--prefill-exact-tokens",
           "65537",
           "--think",
@@ -647830,21 +647831,21 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/3/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/3/bench"
         ],
         "generated": {
-          "config.json": "2c85b50ef1d9afe3805daa5d558ec250c1b130c59152fb805cfae37e39acade8",
+          "config.json": "7f2124e852175950de77151d5d8ee0d06a4ff36a80098309acd5fd45eae23b96",
           "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
         },
-        "environment_sha256": "dce317aa1f7b5f11a629620f1b71a6527e1702ec4c37835d7a1b3c35b7544990",
+        "environment_sha256": "65f78bd1fd27cf80efa3d48e57dd57c605fe627d86cb120780475e28891d4248",
         "read": 65537,
         "heads": 0
       },
       {
         "index": 4,
         "arm": "reload",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/4",
-        "port": 49561,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/4",
+        "port": 59253,
         "binary": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
           "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
@@ -647854,9 +647855,9 @@
           "/bin/sh",
           "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/4/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/4/config.json",
           "--port",
-          "49561",
+          "59253",
           "--prefill-exact-tokens",
           "65537",
           "--think",
@@ -647869,21 +647870,21 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/4/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/4/bench"
         ],
         "generated": {
-          "config.json": "ef8b10727dc3fbe6c1f79eec4b659f4dde27b81f45fe0108027c09cf55da592d",
+          "config.json": "90a2fd5d1481a02b3472b49ee5f96cdc2c03930bdc1b1fcc094e4c5a9b169812",
           "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
         },
-        "environment_sha256": "164313176d1bfeb4f681ab8af654b0c5775120eabf12b013f4c4e4cc102cc634",
+        "environment_sha256": "ea8f1d4ab76171013cea31a2fc62c938afdac122f0380c283fe7f42ea910b129",
         "read": 65537,
         "heads": 0
       },
       {
         "index": 5,
         "arm": "retain",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/5",
-        "port": 37803,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/5",
+        "port": 47245,
         "binary": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
           "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
@@ -647893,9 +647894,9 @@
           "/bin/sh",
           "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/5/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/5/config.json",
           "--port",
-          "37803",
+          "47245",
           "--prefill-exact-tokens",
           "65537",
           "--think",
@@ -647908,399 +647909,18 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3/5/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v4/5/bench"
         ],
         "generated": {
-          "config.json": "9bfacb8aeaad9ea4ff1370e46bcf347a48f5452edd6027bdeb227eda758ad2e9",
+          "config.json": "7f53502749d38413dc6901905bc8fbaf73f8e170279286e451bea612765f529e",
           "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
         },
-        "environment_sha256": "ef2bc9810cf807abdb8da08728cc6fa4ff16a91ad724b4902e6a02cf32a1bd79",
+        "environment_sha256": "ff284b8acb751cb4dbc912b7a55c111e109a01872b99aaea10395d2e05bd51c9",
         "read": 65537,
         "heads": 0
       }
     ],
-    "processes": [
-      {
-        "index": 0,
-        "read": 65537,
-        "heads": 0,
-        "complete": true,
-        "host_probe_accepted": true,
-        "model_executed": true,
-        "clean_speed": true,
-        "native_identity": {
-          "pid": 2358849,
-          "start_ticks": 382330717,
-          "sid": 2358782
-        },
-        "request_routes_checked_before_continue": 3,
-        "native_exit_code": 0,
-        "validation": {
-          "pid": 2358849,
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "routes": [
-          {
-            "store": {
-              "pieces": 384,
-              "direct": 0,
-              "copy_bytes": 64424509440,
-              "gpu_rows": 65536,
-              "host_rows": 0,
-              "window_mode": 10,
-              "maximum_rows": 65536
-            },
-            "bank": [
-              "18222",
-              "37214720000",
-              "0"
-            ],
-            "jobs": [
-              "18222",
-              "20621",
-              "125829120"
-            ],
-            "tap_vram_bytes": 845776220,
-            "kv": {
-              "reloaded_pages": 688128,
-              "reused_pages": 0,
-              "requested_prefix_H2D_bytes": 2906652672
-            },
-            "request_work": [
-              65537,
-              0,
-              65537,
-              24,
-              13,
-              15
-            ]
-          },
-          {
-            "store": {
-              "pieces": 384,
-              "direct": 0,
-              "copy_bytes": 64424509440,
-              "gpu_rows": 65536,
-              "host_rows": 0,
-              "window_mode": 10,
-              "maximum_rows": 65536
-            },
-            "bank": [
-              "18204",
-              "37173094400",
-              "0"
-            ],
-            "jobs": [
-              "18204",
-              "20591",
-              "125829120"
-            ],
-            "tap_vram_bytes": 845776220,
-            "kv": {
-              "reloaded_pages": 688128,
-              "reused_pages": 0,
-              "requested_prefix_H2D_bytes": 2906652672
-            },
-            "request_work": [
-              65537,
-              0,
-              65537,
-              24,
-              13,
-              15
-            ]
-          },
-          {
-            "store": {
-              "pieces": 384,
-              "direct": 0,
-              "copy_bytes": 64424509440,
-              "gpu_rows": 65536,
-              "host_rows": 0,
-              "window_mode": 10,
-              "maximum_rows": 65536
-            },
-            "bank": [
-              "18182",
-              "37137228800",
-              "0"
-            ],
-            "jobs": [
-              "18182",
-              "20568",
-              "125829120"
-            ],
-            "tap_vram_bytes": 845776220,
-            "kv": {
-              "reloaded_pages": 688128,
-              "reused_pages": 0,
-              "requested_prefix_H2D_bytes": 2906652672
-            },
-            "request_work": [
-              65537,
-              0,
-              65537,
-              24,
-              13,
-              15
-            ]
-          }
-        ],
-        "samples": [
-          {
-            "actual_read_tokens": 65537,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 86657.0,
-            "prompt_tps": 756.3,
-            "ttft_s": 86.887,
-            "total_s": 89.282,
-            "generated_tokens": 24,
-            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 65537,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 75075.7,
-            "prompt_tps": 872.9,
-            "ttft_s": 75.295,
-            "total_s": 77.38,
-            "generated_tokens": 24,
-            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 65537,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 74087.6,
-            "prompt_tps": 884.6,
-            "ttft_s": 74.291,
-            "total_s": 76.22,
-            "generated_tokens": 24,
-            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          }
-        ],
-        "subsequent_median_ms": 74581.65,
-        "ownership_closed": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        },
-        "passed": true,
-        "arm": "reload"
-      },
-      {
-        "index": 1,
-        "read": 65537,
-        "heads": 0,
-        "complete": false,
-        "host_probe_accepted": true,
-        "model_executed": true,
-        "clean_speed": true,
-        "native_identity": {
-          "pid": 2380910,
-          "start_ticks": 382384337,
-          "sid": 2380849
-        },
-        "request_routes_checked_before_continue": 3,
-        "native_exit_code": 0,
-        "validation": {
-          "pid": 2380910,
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "routes": [
-          {
-            "store": {
-              "pieces": 384,
-              "direct": 0,
-              "copy_bytes": 64424509440,
-              "gpu_rows": 65536,
-              "host_rows": 0,
-              "window_mode": 10,
-              "maximum_rows": 65536
-            },
-            "bank": [
-              "18222",
-              "37214720000",
-              "0"
-            ],
-            "jobs": [
-              "18222",
-              "20621",
-              "125829120"
-            ],
-            "tap_vram_bytes": 845776220,
-            "kv": {
-              "reloaded_pages": 172032,
-              "reused_pages": 516096,
-              "requested_prefix_H2D_bytes": 726663168
-            },
-            "request_work": [
-              65537,
-              0,
-              65537,
-              24,
-              13,
-              15
-            ]
-          },
-          {
-            "store": {
-              "pieces": 384,
-              "direct": 0,
-              "copy_bytes": 64424509440,
-              "gpu_rows": 65536,
-              "host_rows": 0,
-              "window_mode": 10,
-              "maximum_rows": 65536
-            },
-            "bank": [
-              "18204",
-              "37173094400",
-              "0"
-            ],
-            "jobs": [
-              "18204",
-              "20591",
-              "125829120"
-            ],
-            "tap_vram_bytes": 845776220,
-            "kv": {
-              "reloaded_pages": 172032,
-              "reused_pages": 516096,
-              "requested_prefix_H2D_bytes": 726663168
-            },
-            "request_work": [
-              65537,
-              0,
-              65537,
-              24,
-              13,
-              15
-            ]
-          },
-          {
-            "store": {
-              "pieces": 384,
-              "direct": 0,
-              "copy_bytes": 64424509440,
-              "gpu_rows": 65536,
-              "host_rows": 0,
-              "window_mode": 10,
-              "maximum_rows": 65536
-            },
-            "bank": [
-              "18182",
-              "37137228800",
-              "0"
-            ],
-            "jobs": [
-              "18182",
-              "20568",
-              "125829120"
-            ],
-            "tap_vram_bytes": 845776220,
-            "kv": {
-              "reloaded_pages": 172032,
-              "reused_pages": 516096,
-              "requested_prefix_H2D_bytes": 726663168
-            },
-            "request_work": [
-              65537,
-              0,
-              65537,
-              24,
-              13,
-              15
-            ]
-          }
-        ],
-        "samples": [
-          {
-            "actual_read_tokens": 65537,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 88110.3,
-            "prompt_tps": 743.8,
-            "ttft_s": 88.325,
-            "total_s": 90.712,
-            "generated_tokens": 24,
-            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 65537,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 73691.3,
-            "prompt_tps": 889.3,
-            "ttft_s": 73.891,
-            "total_s": 75.709,
-            "generated_tokens": 24,
-            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 65537,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 73670.6,
-            "prompt_tps": 889.6,
-            "ttft_s": 73.879,
-            "total_s": 76.039,
-            "generated_tokens": 24,
-            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          }
-        ],
-        "subsequent_median_ms": 73680.95000000001,
-        "ownership_closed": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        },
-        "passed": false,
-        "error": "RuntimeError('work changed outside KV retention')"
-      }
-    ],
+    "processes": [],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -648324,63 +647944,12 @@
       "acceptance": "Require matched exact inputs and route, ordinary all-GPU residuals, 384 staged slots, identical work outside KV retention and all per-layer KV counts. Compare first use and subsequent PP and client TTFT separately. A warmed speed benefit needs all three paired prompt-time ratios below one. Keep any smaller or mixed effects in the comparison.",
       "stop": "Stop on first source, clock, owner, route, work, fault or budget failure. Keep all eligible samples. No speed-based exclusions. This short output does not qualify sustained decode."
     },
-    "request_hashes": {
-      "65537": [
-        "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
-        "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
-        "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d"
-      ]
-    },
-    "host_results": [
-      {
-        "role": "benchmark",
-        "passed": true
-      },
-      {
-        "role": "server",
-        "passed": true
-      }
-    ],
-    "serialization_replay": {
-      "original_failed": true,
-      "source_changed": false,
-      "requests_matched": 3,
-      "matching_request_output_and_draft_sha256": "8de845259a0b32ddcd08f4445da86ba224bfa843bed5529d3cb35376e2383843",
-      "journal_sha256": [
-        "c0108287f3ea2696c25b60a6d4361366421d82a144a0ef80205e1958ab64bceb",
-        "e091d4e8a0ac4349f8861044f539c7801aa841810eea16e269ac5f7371b87036"
-      ],
-      "requested_prefix_H2D_bytes_removed": [
-        2179989504,
-        2179989504,
-        2179989504
-      ],
-      "matched_native_work_after_JSON": true,
-      "warm_median_ms": [
-        74581.65,
-        73680.95000000001
-      ],
-      "warm_median_TTFT_s": [
-        74.793,
-        73.885
-      ],
-      "reason": "Native route construction stores the bank and MoE job record as tuples in the live process. The committed reload uses JSON arrays decoded as lists. Replay reproduces the original failure and matches all non-KV records after one JSON round trip. Fresh timing evidence is required."
-    },
+    "request_hashes": {},
     "source_inputs": {
       "files": 838,
-      "sha256": "da5706d64591295961b4740243e76a36682c57bb38f6d973916c6d9a8e3c826c"
+      "sha256": "35f9267f1b59f49ce42c16eb484a4f15397b360615c7acfc95376288f83a08eb"
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
-    "raw_capture_retirement": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-speed-v3",
-      "inventory": {
-        "files": 155,
-        "bytes": 25060235,
-        "inventory_sha256": "cc782cdc82dff8f4336b07b3e81efb2ab9ae3930c072f62884c736248432fa97"
-      },
-      "complete": true,
-      "scope": "Closed V3 KV timing comparison. Original failure, useful clocks, route counts and journal digests are in Git. The V4 parser replayed every native frame and refused an altered expert upload count."
-    }
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
