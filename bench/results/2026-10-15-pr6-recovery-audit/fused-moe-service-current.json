@@ -639143,7 +639143,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "prefill_first_gate_issue_native_v1": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "f6f1446feaa3f32cf5d818e4679d7cbfdf93b93c",
     "native_source_commit": "f6f1446feaa3f32cf5d818e4679d7cbfdf93b93c",
     "projection": {
@@ -639297,8 +639297,8 @@
       "recipe_sha256": "3c8a6e4b6b5c5ca978fbdd9789c551accce7c129056cea07e6192860b86eb08a"
     },
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "scope": "Move only the first shared Gate dequant before the status read on the same checked queue.",
     "retention": "Keep the measured V2 prefill and coherent decode generations through the bounded admission and speed comparison. Review this third generation at closure.",
@@ -639308,6 +639308,68 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/compile_commands.json": "c0a8b5d977f7bfec403a8974cea4c178c1ba58a5354a2eb688ca24337178cc75",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/CMakeFiles/rules.ninja": "70b8c26047989fbd37a30f08fecfc5077898c4c7bc229e7a84971d447ea12975"
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/strata",
+        "sha256": "a726253121ec2b89eaa5df16d129fb8b6fe0c448689506cf1ef14d49fcf96c41",
+        "bytes": 26550872
+      },
+      "prefill_moe_routes_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/prefill_moe_routes_test",
+        "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+        "bytes": 111336
+      },
+      "prefill_moe_workspace_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/prefill_moe_workspace_test",
+        "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+        "bytes": 67448
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/sycl_expert_bank_test",
+        "sha256": "dd69762b225b612ba88ae1cf3542b0e9e0dcefcb6ab4f4b9db1c165c270b1326",
+        "bytes": 542560
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "d424f14d84f1d5d019657fca07f69faf01c98c44b7791bf404d7778a0004e252",
+        "bytes": 14320144
+      },
+      "sycl_native16_paired_gemm_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/sycl_native16_paired_gemm_bench",
+        "sha256": "fe8b62aef8f1e7649fcd3b5755cbf45caa905ee02b3acd7f73c0c3f0670f72a9",
+        "bytes": 14260800
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/strata_full_context_diagnostic",
+        "sha256": "7f6f6c1eec812e8fc7a44e8932ff07367f7d1b18b7d4590009f4397d5b58b319",
+        "bytes": 26550960
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/sycl_moe_upload_census_host_test",
+        "sha256": "d88f84a73fa8b0d5d5094268bcd3526a8183f90d26f9468de41baf4d7c96906a",
+        "bytes": 107360
+      },
+      "prefill_fullfit_upload_plan_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/prefill_fullfit_upload_plan_test",
+        "sha256": "2a60487e48d7b9c18a4e6021252fcf4b5b3438f6de2bec55964e32a83baf29c3",
+        "bytes": 109640
+      },
+      "sycl_prefill_attention_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/sycl_prefill_attention_bank_test",
+        "sha256": "281c1b3d4660b3b923c95b86153cb1204bf19d715526c5325da312d6069ca67e",
+        "bytes": 2840536
+      },
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-first-gate-issue-native-v1/build/sycl_moe_accum_test",
+        "sha256": "dd6907816387f6fd3372adda34a22f489c9c7ea202f6ab7d78ab996de9dda269",
+        "bytes": 3123824
+      }
+    },
     "controller_sources": {
       "files": 390,
       "sha256": "ff7f603af93958a3e9aff7733dc342896bd5bd763c2fee68d329189bfd729bf3"
@@ -639316,6 +639378,44 @@
       "files": 1171,
       "sha256": "6ed303604dd14be0bfac2f2c0fc8146592ff0ae1ac93f5cee044949a983270b9"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1474,
+        "sha256": "34b98c56cbcb39127ec8884a66f056edd76767cd9536a6daf78c85cb4bcc2654"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "73c85ad212bdbab91290b85e0805fea49c497831364e3739c3a0984c6795ecc3"
+      },
+      "links": {
+        "files": 30,
+        "sha256": "aa037df9a9963d78817d68cec3c5e6921ddd9d32a5121362c1706acb194a9346"
+      },
+      "objects": {
+        "files": 137,
+        "sha256": "dcb2c710b48850dd4a4df932729968169d7096c6feedc2801b5e16b860794ea4"
+      },
+      "produced": {
+        "files": 148,
+        "sha256": "0f01e383b2c04254bc0569dd4e28f3153e335cb64b9a213b2424b2f1c5c6bd59"
+      },
+      "Gemm_includers": {
+        "files": 6,
+        "sha256": "7006187e7f6fb3be37693674630df80f8bb6d1d88d8c8e32276e2b10b9bdc94f"
+      },
+      "class_definition_includers": {
+        "files": 3,
+        "sha256": "1a1cc5e0b72b4634239bb60caf37744802fbe6bff8f4566a48b549f4cd0e85ac"
+      },
+      "AOT_finalization_recipe_sha256": "4fb627af2c594205333ea7846c70f12ab14b983d24d6e46e9cc3adc6af81e11a",
+      "temporary_generated_link_objects": 51,
+      "temporary_generated_link_paths_sha256": "afd4ba822f06f3c6c0ddadddc1fa7b03868c2fd634fbb78e6757de4b25e0e1ea",
+      "temporary_link_scope": "Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.",
+      "translation_units": 134,
+      "fresh_objects": 137,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
