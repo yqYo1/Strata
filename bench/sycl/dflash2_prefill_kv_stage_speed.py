@@ -13,11 +13,12 @@ bank, basis, require = gate.bank, gate.basis, gate.require
 generation, build = gate.generation, gate.build
 comparison = basis.comparison
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_kv_stage_speed_v3'
+KEY = 'dflash2_prefill_kv_stage_speed_v4'
 ROOT = bank.B / KEY.replace('_', '-')
 MODEL_PROOF = '91186794c8624121f245067433c387785dffd757'
 FINGERPRINT_REFUSAL = '16755c8184acb52fc6b7aba7a8d86113628de70d'
 PROFILE_PATH_STOP = 'fe958812755d6dce0faded3dd41073edf7371196'
+SERIALIZATION_STOP = '2da6d6261ff7328136a63ef055151b954563e3a8'
 PROFILE_SOURCE = 'data/expert-profile.bin'
 READ, RUNS, HEADS = 65537, 3, 0
 ORDER = ('reload', 'retain', 'retain', 'reload', 'reload', 'retain')
@@ -40,6 +41,14 @@ def baseline():
             and stopped['scope_empty'] and stopped['direct_child_reaped'] and stopped['fresh_faults'] == []
             and stopped['actual'] != stopped['expected'] and bank.sha(profile) == stopped['sha256'],
             'recover the interrupted comparison and verify the identical local ranking profile')
+    timing = bank.previous.historic(SERIALIZATION_STOP, 'dflash2_prefill_kv_stage_speed_v3')
+    replay = timing['serialization_replay']
+    require(timing['stage'] == 'failed' and not timing['active'] and timing['ownership_closed']
+            and len(timing['processes']) == 2 and timing['processes'][0]['passed']
+            and not timing['processes'][1]['passed'] and replay['original_failed']
+            and replay['requests_matched'] == RUNS and replay['matched_native_work_after_JSON']
+            and all(p['native_exit_code'] == 0 and p['fresh_faults'] == [] for p in timing['processes']),
+            'recover the original timing stop and successful footer replay')
     base = generation.sync_baseline()
     native = bank.previous.read(build.DFLASH2_KV_ROOT / 'record.json')
     build.context('dflash2-kv-stage').check(native)
@@ -59,7 +68,7 @@ def baseline():
             'require the closed same-executable 32K and live prefix comparison')
     return dict(base, binary=native['binaries']['strata'], native_source_commit=native['native_source_commit'],
                 native_build_sha256=native_hash, stage_model_evidence=MODEL_PROOF,
-                preceding_attempts=[FINGERPRINT_REFUSAL, PROFILE_PATH_STOP],
+                preceding_attempts=[FINGERPRINT_REFUSAL, PROFILE_PATH_STOP, SERIALIZATION_STOP],
                 ranking_profile=dict(path=str(profile), sha256=stopped['sha256'], old_path=stopped['actual']))
 
 
@@ -106,7 +115,9 @@ def request_route(text, plan):
     pages = KV.check_clean_request(text, 0, READ - 1, 8192, reuse=plan['arm'] == 'retain',
                                    tap_layers=gate.TAPPED_QSA_LAYERS)
     pages['requested_prefix_H2D_bytes'] = pages['reloaded_pages'] * KV.PAGE * KV.CELL_BYTES
-    return dict(store=store, bank=drain[0], jobs=jobs[0], tap_vram_bytes=int(tap[0]), kv=pages,
+    bank_counts = dict(zip(('uploads', 'requested_H2D_bytes', 'permanent_hits'), map(int, drain[0]), strict=True))
+    moe_counts = dict(zip(('dequants', 'jobs', 'source_H2D_bytes'), map(int, jobs[0]), strict=True))
+    return dict(store=store, bank=bank_counts, jobs=moe_counts, tap_vram_bytes=int(tap[0]), kv=pages,
                 request_work=list(map(int, header[0])))
 
 
