@@ -1448,6 +1448,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   aliasing, cancellation and error retirement. Keep the route-status check
   before any shared result updates the residual. Use the control's existing
   QSA and decode settings in both arms.
+  The sparse XPTI subscriber's V6 device run stopped after the second
+  registration attempt at `ea8be6e5f`. V7 accepts a repeated registration
+  when both exact callbacks are already active. CPU controls exercise that
+  case and preserve all four selected callback pairs. The same-build B570
+  fixture closes with identical output, one repeat notification, eight
+  four-byte copies, 50 waits and seven selected launches. Both device owners
+  exit normally without fresh GPU faults. `prefill_moe_status_capture_v7`
+  qualifies this fixture. Attribute the actual 117489-token transition
+  with a separately bounded, matched observer comparison.
   Removed and verified the completed `host`, `0`, `1` and `2` captures under
   `prefill-kv-upload-model-pti-v1` after pushing the comparison and reduction.
   The 218 retired files total 838023688 bytes with inventory SHA-256
