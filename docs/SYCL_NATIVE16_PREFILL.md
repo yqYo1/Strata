@@ -1604,22 +1604,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.976715, 0.976928 and 0.975243. The median of the three process medians
   is 473.311 → 461.273 ms for a twelve-chunk interval. All intervals exceed
   460 ms and timer control stays below 0.019 ms. This passes the component
-  gain gate. The retained engine at `prefill-score-keys-native-v3` now has
-  an imminent same-build model comparison. Start with the traced 16386-token
-  input and verify actual packing counts under both selectors before clean
-  117489-token timing. Keep GDN, attention, selection mapping and decode
-  fixed. Production RESTORE, physical context and sustained decode remain
+  gain gate. Production RESTORE, physical context and sustained decode remain
   separate model gates. Removed the six finished component captures after
   verifying pushed `3529763e8` and the model engine and fixture hashes.
   The removed inventory is 53 files and 2226601 bytes with SHA-256
   `586ce9f362f38c5147cbf8c09ee929d16f9cf31400741305055662eddaf352c0`.
 
+  The same-build 16386-token admission closes at `2652a30dd`. Both modes
+  complete two requests with the same work, reference responses, checked
+  routes, normal exits, zero fresh faults and all fifteen final model asset
+  hashes verified. The 65 score calls in each of twelve QSA layers pack
+  137281 rows in the control and pack 10243 plus reuse 127038 in the
+  candidate. The held V2 score engine can now enter the clean 117489-token
+  comparison. Keep GDN, attention, selection mapping, expert transfer, KV
+  and decode fixed. Retire the admitted `0`, `1` and `host` captures after
+  pushing the closed result. Their 144 files total 21450935 bytes with
+  inventory SHA-256 `a25d225560cafabb9b607d1b1e00f98d04a57d5f328099984f384b33f82c8339`.
+
   The model preparation at `df0520d8b` stopped before writing a campaign
   receipt or launching a model. It read the score mode before the plan
-  attached that field. Derive the environment from the declared process
-  index. Retire the three partial preparation files, 13374 bytes with
-  inventory SHA-256 `d4885d299a470118409821a7921878e02c7b49c39101be2f090b1b5c20784679`,
-  after pushing the correction.
+  attached that field. The correction at `0b2a929b8` uses the declared
+  process index. Removed the three verified partial preparation files
+  (13374 bytes, inventory SHA-256
+  `d4885d299a470118409821a7921878e02c7b49c39101be2f090b1b5c20784679`) before
+  preparing the successful admission.
 
   The first build is closed as failed at `842d478b3`. Configure and link
   exited zero. The census expected six `Gemm` includers and the score
