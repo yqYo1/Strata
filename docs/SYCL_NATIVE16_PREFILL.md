@@ -1566,12 +1566,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The finished FDE0 build's 1171 original source files, recipe, configured
   inputs, recorded compiler inputs and 12 target hashes match the recovered
   Git projection. The original commits are reachable from pushed `9b92a032f`.
-  Retire `prefill-large-gather-kv-model-v1/build` under the shared state
-  directory after verifying the V2 and Gate readers
-  against their original evidence. Its 190 entries comprise 177053149 bytes
-  of regular files. Inventory SHA-256 is
+  Retired `prefill-large-gather-kv-model-v1/build` under the shared state
+  directory. With that path absent, the exact V2 device inputs, shared Gate
+  source projection and coherent decode reference verified successfully.
+  The 190 entries comprise 177053149 bytes of regular files. The inventory hash is
   `e60c9e8715d43df55630b8cea31cf2d51bcd02023a2063b9c24a5596efbe1b89`.
-  Keep the original `record.json` for source and workload recovery.
+  The original `record.json` still verifies for source and workload recovery.
   For the subsequent output-store comparison, the retained `fde0cdd11`
   source already exposes `STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE` and
   its build includes `sycl_prefill_attention_bank_test`.
