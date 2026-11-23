@@ -647456,6 +647456,23 @@
     "comparison": {
       "matched": true,
       "requested_prefix_H2D_bytes_removed": 467140608
+    },
+    "raw_capture_retirement": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-model-v1",
+      "reload": {
+        "files": 59,
+        "bytes": 12553910,
+        "inventory_sha256": "9b605af2a0dcfa659ae06977cda76753e65721ca36a4ec35de1f88b97d763135"
+      },
+      "retain": {
+        "files": 59,
+        "bytes": 12553911,
+        "inventory_sha256": "e1c426e0c2ddcdd8e63fe235a02d23306c45a06449b749564c800ef90a96a191"
+      },
+      "record_sha256": "ee2bfafc700113a3835ee24fce6460cb46641fbeda10f88dde2773796e029dae",
+      "evidence_commit": "91186794c8624121f245067433c387785dffd757",
+      "complete": true,
+      "reason": "Both traced model processes closed. The 64K comparison uses the original committed model evidence and the retained native build."
     }
   },
   "dflash2_prefill_kv_stage_speed_v1": {
@@ -647650,9 +647667,9 @@
     ],
     "commit_order_gate": "423e0a58127444997f1c2581a6f74729e4132cb3",
     "stage_model_evidence": "91186794c8624121f245067433c387785dffd757",
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "f31d2ae141276387d8ae7c2a20615cb35e64633d",
-    "host_passed": false,
+    "host_passed": true,
     "ownership_closed": true,
     "active": false,
     "passed": false,
@@ -647918,6 +647935,16 @@
       "stop": "Stop on first source, clock, owner, route, work, fault or budget failure. Keep all eligible samples. No speed-based exclusions. This short output does not qualify sustained decode."
     },
     "request_hashes": {},
+    "host_results": [
+      {
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "role": "server",
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 838,
       "sha256": "919280eacda2c745b9f7fe401b58c72ce09bdbad4e43e37c08c99f8635d58414"
