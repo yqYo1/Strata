@@ -501,8 +501,9 @@ def run(index, experiment=None):
     require(native['native_validation_probe'] == row['native_validation_probe'] and
             native['boot'] == row['boot'], 'campaign native context changed runtime/boot')
     root, env = Path(plan['root']), policy.environment(row, plan)
+    environment_fingerprint = getattr(policy, 'environment_fingerprint', fingerprint)
     require(not (root / 'execution.json').exists() and (plan['read'], plan['heads']) == policy.ORDER[index]
-            and fingerprint(env) == plan['environment_sha256'] and
+            and environment_fingerprint(env) == plan['environment_sha256'] and
             all(digest(root / n) == sha for n, sha in plan['generated'].items()), 'process plan changed')
     cursor = next(v.split(': ', 1)[1] for v in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines() if v.startswith('-- cursor: '))

@@ -13,9 +13,10 @@ bank, basis, require = gate.bank, gate.basis, gate.require
 generation, build = gate.generation, gate.build
 comparison = basis.comparison
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_kv_stage_speed_v1'
+KEY = 'dflash2_prefill_kv_stage_speed_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 MODEL_PROOF = '91186794c8624121f245067433c387785dffd757'
+PREVIOUS_KEY = 'dflash2_prefill_kv_stage_speed_v1'
 READ, RUNS, HEADS = 65537, 3, 0
 ORDER = ('reload', 'retain', 'retain', 'reload', 'reload', 'retain')
 WORKLOAD_ID = 'native_gdn_20261018'
@@ -24,6 +25,12 @@ SELECTOR = generation.v2.state.KV
 
 
 def baseline():
+    previous = basis.validation.committed(bank.RESULT, (PREVIOUS_KEY,))
+    refusal = previous['prelaunch_refusal']
+    require(previous['stage'] == 'failed' and previous['ownership_closed'] and not previous['active']
+            and not previous['processes'] and not refusal['native_execution_attempted']
+            and refusal['plan_environment_sha256'] != refusal['runner_environment_sha256'],
+            'recover the original prelaunch environment fingerprint refusal')
     base = generation.sync_baseline()
     native = bank.previous.read(build.DFLASH2_KV_ROOT / 'record.json')
     build.context('dflash2-kv-stage').check(native)
@@ -42,7 +49,8 @@ def baseline():
                     for case in proof['outcomes'].values()),
             'require the closed same-executable 32K and live prefix comparison')
     return dict(base, binary=native['binaries']['strata'], native_source_commit=native['native_source_commit'],
-                native_build_sha256=native_hash, stage_model_evidence=MODEL_PROOF)
+                native_build_sha256=native_hash, stage_model_evidence=MODEL_PROOF,
+                previous_prelaunch_refusal=bank.signature(refusal))
 
 
 def environment(row, plan):
@@ -177,7 +185,8 @@ def experiment():
 
     ctx.pins, ctx.current, ctx.save = pins, current, save
     runner = SimpleNamespace(ROOT=ROOT, ORDER=[(READ, HEADS)] * len(ORDER), RUNS=RUNS,
-        current=current, environment=environment, save=save, request_route=request_route,
+        current=current, environment=environment, environment_fingerprint=generation.suite.signature,
+        save=save, request_route=request_route,
         after_execution=check_work, decision=decision, validate_model_text=validate_model_text,
         verify_model_assets=verify_model_assets)
     ctx.run = lambda index: comparison.run(index, runner)

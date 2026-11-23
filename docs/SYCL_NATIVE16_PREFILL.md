@@ -10767,6 +10767,10 @@ adopting the candidate.
 After route admission, use fresh exact 65537-token `bench.sh` prefill inputs
 with first-use and subsequent-request timings in separate groups. Counterbalance
 reload/retain process order and keep individual samples and client TTFT.
+The first timing plan closes with a prelaunch refusal because its generator
+and exact-prefill runner use different environment fingerprint encodings.
+No native process starts. The second plan selects the generator's fingerprint
+function explicitly and freezes new inputs under the same comparison criteria.
 Use 117489 as a separate geometry when its actual residual placement is
 admitted in both arms. Require an observed transfer reduction and reproducible
 timing benefit. Compare the actual phase timings and physical traffic before
