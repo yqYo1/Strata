@@ -1353,42 +1353,59 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   after pushing the evidence. The retired capture had 225 files and 43453439
   bytes with inventory SHA-256
   `2ff4d65f75fcec95a78e4ca5bf7e0b7c5966aae425263837f872e0d17590f9b0`.
-  Complete ordinary and near-full server fallback, RESTORE, state handoff
-  and sustained decode before adoption.
   On the pinned V2 build, `ExpertBankPlan::window_rows` is 81920 and the
   original split requires `n > window_rows + m.T` and `n <= 117488`.
   The measured 8192-row chunk therefore admits 90113–117488 new rows by
-  length. The existing near-full RESTORE shape of 253919 reused and 8209
-  fresh tokens gives 8208 new rows for the V2 split-fallback check.
-  [The retained-build controller](../bench/sycl/prefill_kv_upload_restore.py)
-  starts with the 32769-token version of the same sequence, then the near-full
-  fallback. The split RESTORE comparison parks 172012 tokens at a page
-  boundary and reads 90116 fresh tokens. Both near-full sequences reach a
-  262128-token prompt with room for one output and eight reserved slots.
-  Hold copied attention output, aligned KV reuse, scalar gathers, the 128-slot
-  request and stock decode fixed. Enable conversation caching and state/loan
-  validation for the native pipe. Compare demand and batched upload only on
-  the split sequence. Require the actual restored extent, one 90115-row
-  read, the all-GPU split and 48 checked batched uploads. Verify the snapshot,
-  original ordinary request state, first emitted token and decode expert
-  cache return. Measure sustained decode and the server terminal slot with
-  their own qualified entrypoints.
+  length. The server RESTORE qualification holds copied attention output,
+  aligned KV reuse, scalar gathers, the 128-slot request and stock decode
+  fixed. It enables conversation caching and state/loan validation for the
+  native pipe. Both near-full sequences reach a 262128-token prompt with
+  room for one output and eight reserved slots.
+
   The V2 ordinary server test at `bb4604e04` restored 32769 tokens and read
   8209 more. The near-full fallback at `989af4815` restored 253919 tokens,
   read 8209 and emitted one token at a 262128-token prompt. Both matched the
-  earlier state and output checks and returned 1124 borrowed decode-cache
-  slots. Neither produced a new GPU fault.
+  earlier state and output checks, returned 1124 borrowed decode-cache slots
+  and closed with zero fresh GPU faults.
   The first split-demand case stays failed at `74ad10536`. The native server
   exited normally after restoring 172012 tokens, processing all 90115 batched
   rows in VRAM, checking the scratch and bank drain, and emitting one token.
   Its demand allocator recorded 127 permanent slot mappings, zero permanent
   hits and 19993 uploads. The mappings record reservations in the last
-  partial bank. The initial reader incorrectly required their count to be
-  zero after demand retirement. The replacement plan checks the actual
-  drain, upload/dequant conservation and the spare-slot bound. Batching
-  bypasses demand reservations and must still report zero permanent slots.
-  Replay the original reader input on the host, then launch a fresh matched
-  pair with the same commands, settings and request bodies.
+  partial bank. The initial reader incorrectly required their count to be zero
+  after retirement. The new plan checks the actual drain, upload/dequant
+  conservation and the spare-slot bound. The host replay accepted the original
+  demand mapping and rejected three malformed receipts at `dea6ae5ee`.
+
+  The fresh demand and batched split pair closed at `1697efe2f`. Each restored
+  the same 172012-token RAM snapshot, read 90116 fresh tokens, ran all 90115
+  batched rows on the GPU and emitted one token. The state fingerprints and
+  outputs matched for all three requests in each process. Both checked the
+  split guard and final drain, returned 1124 decode-cache slots and recorded
+  19993 uploads requesting 41108940800 bytes. The demand run ended with 127
+  permanent slot mappings. Batching used all 48 layer windows and ended with
+  zero permanent mappings. Both reported zero permanent hits and zero fresh
+  GPU faults. All fifteen final model asset hashes matched. Both result keys
+  and the revised controller recover at `1697efe2f`.
+
+  The next terminal test applies the diagnostic-only changes at `1919720d9`
+  and `fa4b9855a` to the measured V2 source. The generator, its diagnostic
+  header and host fixture each pass a reversible source projection. Check
+  every affected translation unit and the exact archive/link inputs before
+  running the dedicated diagnostic target. Exercise one checked terminal
+  commit at 262144, zero output and restoration of the parked full snapshot.
+  Sustained decode remains a separate matched, clean model comparison.
+
+  Removed both closed RESTORE capture roots after verifying pushed `1697efe2f`,
+  their completed owners, exact Git result copies and both retained engine
+  hashes. These roots had no remaining consumers after the reader replay and
+  fresh pair.
+
+  | State root under `~/.local/state/strata-sycl/post-reboot-tuning-20261007` | Files | Bytes | Inventory SHA-256 |
+  | --- | ---: | ---: | --- |
+  | `prefill-kv-upload-restore-v1` | 170 | 31398803 | `a1262495ce37337b1319068b419f7fe2b52e257bc560040073f57f4b3a98bdd5` |
+  | `prefill-kv-upload-restore-v2` | 112 | 21151564 | `5d0b6047f5341a43939b88967ea8d6b07e8806d1db0622def5d7b8b69339c787` |
+
   For MoE attribution, the first matched request at `297adab4d` ran 7441
   fused jobs out of 23816 in each of Gate/Up and Down. Those jobs accounted
   for 52231136 of 56394240 routed rows (92.62%). The 18878 dequantizations
