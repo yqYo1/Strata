@@ -1351,10 +1351,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   copy arm requests 112742891520 such bytes. Both owners exit normally with
   quiet validation and zero fresh GPU faults. All 15 final model hashes match.
   Keep the compact timing and diagnostic records for the server comparison.
-  The five case directories and two generated token files under
+  Removed and verified the five case directories and two generated token files under
   `~/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-capacity-v1`
-  are eligible for retirement after the evidence is pushed. That capture
-  has 225 files and 43453439 bytes with inventory SHA-256
+  after pushing the evidence. The retired capture had 225 files and 43453439
+  bytes with inventory SHA-256
   `2ff4d65f75fcec95a78e4ca5bf7e0b7c5966aae425263837f872e0d17590f9b0`.
   Complete ordinary and near-full server fallback, RESTORE, state handoff
   and sustained decode before adoption.
