@@ -1609,9 +1609,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   input and verify actual packing counts under both selectors before clean
   117489-token timing. Keep GDN, attention, selection mapping and decode
   fixed. Production RESTORE, physical context and sustained decode remain
-  separate model gates. Retire the six finished component captures after
-  pushing the results. Their inventory is 53 files and 2226601 bytes with
-  SHA-256 `586ce9f362f38c5147cbf8c09ee929d16f9cf31400741305055662eddaf352c0`.
+  separate model gates. Removed the six finished component captures after
+  verifying pushed `3529763e8` and the model engine and fixture hashes.
+  The removed inventory is 53 files and 2226601 bytes with SHA-256
+  `586ce9f362f38c5147cbf8c09ee929d16f9cf31400741305055662eddaf352c0`.
 
   The first build is closed as failed at `842d478b3`. Configure and link
   exited zero. The census expected six `Gemm` includers and the score
