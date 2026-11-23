@@ -642412,9 +642412,34 @@
       "acceptance": "First run a host peer for each geometry. Check exact input and state extents, snapshot and expert-cache bytes. Require matched original ordinary state/output. The aligned 90115-row split pair must match state and work and exercise 48 checked upload windows only with batching.",
       "stop": "Stop at the first input, path, state, output, runtime, ownership, fault or budget failure."
     },
-    "outcomes": {},
-    "stage": "prepared",
+    "outcomes": {
+      "host": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "host_cases": [
+          "ordinary",
+          "near-fallback",
+          "split-demand"
+        ],
+        "gpu_executed": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
+    "stage": "running",
     "active": false,
-    "ownership_closed": true
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false
   }
 }
