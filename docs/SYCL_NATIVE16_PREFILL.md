@@ -1604,10 +1604,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   recipe and actual inputs, 137 fresh objects and twelve target hashes from
   the pinned Git source and build receipt. Both retained phase reference
   executables match their hashes. The completed speed and admission controls
-  are recoverable from Git. The Gate issue variant has no imminent binary
-  consumer, so retire the verified build and raw speed captures after this
-  result is reachable from the pushed primary branch. Keep the compact build,
-  campaign and runtime receipts.
+  are recoverable from Git. Removed and verified the completed build and raw
+  speed captures after confirming their inventories and source reachability
+  from pushed `feb720f15`. The compact build, campaign and runtime receipt
+  hashes still match.
 
   | State root and selected children | Regular files | Bytes | Inventory SHA-256 |
   | --- | --- | ---: | --- |
