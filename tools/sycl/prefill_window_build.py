@@ -220,8 +220,9 @@ def census(row,native,stdout):
     expected_classes.update({
         'CMakeFiles/sycl_moe_down_scatter_bench.dir/bench/sycl/moe_down_scatter.cpp.o',
         'CMakeFiles/sycl_native16_paired_gemm_bench.dir/bench/sycl/native16_gemm.cpp.o'})
+    expected_classes.update(row.get('projection', {}).get('extra_gemm_includers', ()))
     require(len(selected)>100 and {str(Path(p).relative_to(build)) for p in classes}==expected_classes,
-        'complete fresh engine and all six production/fixture Gemm includers required')
+        'complete fresh engine and the declared set of Gemm includers required')
     for header,names in {
         'include/strata/prefill/moe_accum_plan.hpp':
             {'src/prefill/prefill.cpp','tests/prefill_moe_workspace.cpp'},

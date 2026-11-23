@@ -14,8 +14,9 @@ bank, require = build.bank, build.require
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 CONTROLS = (THIS, build.THIS, model.THIS,
             *(str(Path(m.__file__).resolve().relative_to(bank.P)) for m in (keys, keys.device)))
-BUILD_KEY = 'prefill_score_keys_native_v2'
+BUILD_KEY = 'prefill_score_keys_native_v3'
 BUILD_ROOT = bank.B / BUILD_KEY.replace('_', '-')
+REFUSED_BUILD = bank.B / 'prefill-score-keys-native-v2'
 COMPONENT_KEY = 'prefill_score_keys_component_v2'
 COMPONENT_ROOT = bank.B / COMPONENT_KEY.replace('_', '-')
 COUNTS = 'e88604bca4535fac04d4f8f61a3dc4469634ddaf'
@@ -71,6 +72,7 @@ def build_context(revision):
         proof = dict(proof, score_key_source=keys.SOURCE, indexer_boundary_source=keys.BOUNDARY_SOURCE,
                      score_dispatch_source=COUNTS, score_parent_build_sha256=bank.signature(bank.builder.compact(parent)),
                      object_count=len(objects) + 1, object_set_sha256=bank.signature(sorted([*objects, FIXTURE_OBJECT])),
+                     extra_gemm_includers=[FIXTURE_OBJECT],
                      overlays=proof['overlays'] | overlays)
         return native, foundation, source, recipe, proof
 
@@ -146,6 +148,8 @@ if __name__ == '__main__':
         bank.builder.guards.no_model_owners([])
         if phase == 'build':
             require(action in ('projection', 'prepare', 'configure', 'compile', 'host'), 'select a build action')
+            if action == 'prepare':
+                require(not (REFUSED_BUILD / 'build').exists(), 'retire the closed census-refused build first')
             record = BUILD_ROOT / 'record.json'
             revision = (bank.previous.read(record)['source_commit'] if record.exists() else
                         bank.basis.validation.git('rev-parse', 'HEAD').decode().strip())
