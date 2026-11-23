@@ -698,6 +698,7 @@ struct MoeWindowContext {
     uint64_t gu_fused_jobs = 0, gu_fused_rows = 0;
     uint64_t down_fused_jobs = 0, down_fused_rows = 0;
     uint64_t vec8_gather_jobs = 0, vec8_gather_rows = 0;
+    uint64_t shared_gate_windows = 0, shared_gate_chunks = 0, shared_gate_expansions = 0;
     std::unique_ptr<sycl_backend::command_profile::Trace> command_trace;
 };
 bool prefill_moe_large_vec8_requested() {

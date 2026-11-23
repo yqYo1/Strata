@@ -1402,6 +1402,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 (unsigned long long)window_context->vec8_gather_rows,
                 (unsigned long long)(window_context->jobs - window_context->vec8_gather_jobs),
                 (long long)native16::prefill_moe_vec8_min_rows);
+        if (window_context->shared_gate_windows)
+            std::fprintf(stderr, "strata MoE prefill shared Gate: windows=%llu chunks=%llu expansions=%llu final_drain=checked\n",
+                (unsigned long long)window_context->shared_gate_windows,
+                (unsigned long long)window_context->shared_gate_chunks,
+                (unsigned long long)window_context->shared_gate_expansions);
         std::fprintf(stderr, "strata MoE GU fusion: fused_jobs=%llu fused_rows=%llu separate_jobs=%llu min_rows=2334\n",
             (unsigned long long)window_context->gu_fused_jobs,
             (unsigned long long)window_context->gu_fused_rows,
