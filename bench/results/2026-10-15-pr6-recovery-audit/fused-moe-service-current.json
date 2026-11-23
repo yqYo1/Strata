@@ -628601,7 +628601,7 @@
     "passed": false
   },
   "prefill_moe_status_capture_v4": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "4961aa2cbd2554987d673c431ddcc2dc32f15f49",
     "sources": {
       "count": 823,
@@ -628720,9 +628720,54 @@
       "LC_ALL": "C.UTF-8",
       "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/tmp"
     },
-    "outcomes": {},
+    "outcomes": {
+      "build": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
     "active": false,
     "ownership_closed": true,
-    "passed": false
+    "passed": false,
+    "artifacts": {
+      "libstrata_ur_status.so": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/libstrata_ur_status.so",
+        "bytes": 39112,
+        "sha256": "3a5246094837f0354ad95115e05844bb39dafdcd633d5c7ad34ced2db3053ed6"
+      },
+      "ur_call_guard_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-moe-status-capture-v4/ur_call_guard_test",
+        "bytes": 23000,
+        "sha256": "8b8459139003768f46be912c1ef41cff2e740f8241c7a272d05f3556c89bedfd"
+      }
+    },
+    "device_cases": {
+      "control": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+          "--smoke"
+        ],
+        "env_sha256": "4f6471128c2e2dcc7e0f31a9b67e978f6e0ae56c975e071142dba206b227711b"
+      },
+      "observed": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-native-v2/build/sycl_expert_bank_test",
+          "--smoke"
+        ],
+        "env_sha256": "9d0fa5747fde1ec49319be1db1d979ab8b9e137fc48f3e8617f3101e0f9b7691"
+      }
+    }
   }
 }
