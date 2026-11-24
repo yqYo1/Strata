@@ -10708,15 +10708,16 @@ before attributing that decode time to a hardware resource.
 
 The weak-acceptance screen has a draft synthetic evidence dossier at
 `/tmp/strata-dflash2-weak-evidence-dossier.6bv652qn/dossier-workload.patch`
-with SHA-256 `7a59c5a7a7514253f52fb24c4d2196dc56ca29bc8135864453e034282f7eca5d`.
+with SHA-256 `a358827857ab699bd9ac5918bf0ea7eec747144518a6c87d41c4d7521cbd5f6b`.
 It adds a single optional workload to the same client and keeps the two v5
-defaults. The client counts the actual body before timing and verifies
-32K or more fresh inputs and enough room for the 16K output budget.
-After the frozen bank cohort, validate the patched client and pin one
-thinking-on request on the retained DFlash2 route. The screen needs
-1,024 generated tokens, visible output and at least 256 offered drafts.
-Repeat the case only after a complete eligible sample reports acceptance
-at or below 0.40. The draft has no model result.
+defaults. The client counts the actual body before timing and checks
+the timed body hash, 32K or more fresh inputs and room for the 16K
+output budget. It records observed weak acceptance per eligible request.
+When the serialized comparison permits, host-check the patched client
+and pin one thinking-on request on the retained DFlash2 route. The screen
+needs 1,024 generated tokens, visible output, at least 256 offered drafts
+and acceptance at or below 0.40. Confirm with independent process samples.
+The revised draft passes the application and syntax checks and has no model result.
 
 The standalone DFlash2 physical-context check
 `dflash2_prefill_physical_context_v1` passes on native source `96832af6f`.
@@ -11140,6 +11141,15 @@ SHA-256 and bound to its closed native identity. Its 48 layer receipts
 cover all 15 chunks and leave the embedding and PLE inputs in scratch.
 Keep this capture until both traced probes close.
 [Diagnostic controller](../bench/sycl/dflash2_prefill_window_long_direct.py)
+
+The direct writer admission closes at `bb98d1e1f`. It matches both short
+controls and the long request's 32 outputs, target-state fingerprints,
+expert work, KV, DFlash2 coverage, cache refill and verifier work.
+All 720 attention stores use the direct path. Requested output copies
+drop by 120,795,955,200 bytes and the input copy counters match exactly.
+The owned process exits 0 with all 15 model assets verified and zero new
+Xe faults. Full draft tap payload, sustained generation and clean speed
+have separate checks.
 
 The quiet follow-up uses `--longer` at 122,881 inputs after the matched
 direct admission. It compares copy and direct in three counterbalanced
