@@ -40448,5 +40448,43 @@
     "classification": "knowledge_collection",
     "finding": "The original papers and first-party Hugging Face/vLLM material are credible for method descriptions. The report correctly treats moving upstream docs as no proof of support in this Strata hybrid, and separates acceptance or yield from end-to-end speed.",
     "consumer": "Retrieve adaptive verification after matched measurements on this Arc B570/Zen 3 path capture draft, verifier, CPU-expert, and transition costs, calibrated acceptance, and live memory headroom; compare held-out full wall time per token and latency against fixed width four."
+  },
+  "dflash2-serving-context-cap-and-window-fallback-20261124": {
+    "source_commit": "75fa721e599b01feb0d82ff52fa1079cb330a191",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-serving-context-cap-and-window-fallback-20261124/report.md",
+    "report_sha256": "9807aafbb5490fc27c2caa4633d65b83d8f8cec6b1ef15c9c27cc07fff523cdc",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-serving-context-and-accumulator-20261124-native-review/review.json",
+    "review_sha256": "7e7a37bb0e689a2cd430eeba5ebc38bd4195bc84f28187fad3475fb95e384f03",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_a6b82b88db88, ctx_e01cd8e69a53",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "Hashes match. GEN rejects max_new<1; zero output is diagnostic-only. The guard admits/rejects 262135/262136 at max_new=1 and 262128/262129 at max_new=8. The standalone 262144 zero-output terminal commit/drain is real, but not serving evidence. Source caps relocated mode16 at 131072 rows; longer prompts fall back to mode10 or mode2 on accumulator miss. Fallback timing cannot validate mode16; the 262136 admission error is expected. source_owner is not closed-owner proof.",
+    "consumer": "After the bank timing cohort, verify the retained native GEN admission and refusal at 262135/262136 with one token of output room. Record the actual fallback bank and compute mode, decode-cache refill and all owners closed. Consider extending mode16 only as a later performance candidate. Live RESTORE has a separate state check."
+  },
+  "blocked-accumulator-lifetime-for-large-gpu-batches-20261124": {
+    "source_commit": "75fa721e599b01feb0d82ff52fa1079cb330a191",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/blocked-accumulator-lifetime-for-large-gpu-batches-20261124/report.md",
+    "report_sha256": "40cebb797672b27cffcf783972fd80b3ae753441679a6d187f81cef2c4d5f3bb",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-serving-context-and-accumulator-20261124-native-review/review.json",
+    "review_sha256": "7e7a37bb0e689a2cd430eeba5ebc38bd4195bc84f28187fad3475fb95e384f03",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_ec89e96df253, ctx_4ee019e7355d",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Hashes match. The cited papers and Vulkan specification support the method analogies. The 122880-row and 587 MB figures are planning inputs, not measured bottlenecks. On this Arc hybrid, retrieval is practical only after owner-level peak allocation shows the FP32 tail is limiting and row-group last writers are known.",
+    "consumer": "Retrieve only if the measured per-owner footprint identifies the FP32 tail as limiting admission and the final writer per row group is observable. Capture row/expert census, drain lifetime, cache and copy counts before selecting a bounded alternative."
   }
 }
