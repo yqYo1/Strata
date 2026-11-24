@@ -16,9 +16,10 @@ model, split = gate.model, gate.split
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 FIXTURE_KEY = 'dflash2_prefill_direct_store_component_v1'
 FIXTURE_ROOT = bank.B / FIXTURE_KEY.replace('_', '-')
-KEY = 'dflash2_prefill_direct_store_admission_v1'
+KEY = 'dflash2_prefill_direct_store_admission_v2'
 ROOT = bank.B / KEY.replace('_', '-')
-READ, CHUNK = 84721, 8192
+READ, CHUNK = split.CASES['boundary'], 8192
+BOUNDARY = gate.SPLIT_REFERENCE
 SPLIT_TIMING = '7af266dcf73937d0f78ac0ecc0c88eec55cc2211'
 ARMS = {'copy': False, 'direct': True}
 SELECTOR = 'STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE'
@@ -109,6 +110,16 @@ def model_inputs(revision):
             and proof['providers_sha256'] == bank.signature(providers) and proof['split_timing'] == SPLIT_TIMING
             and all(proof[k] == row[k] for k in ('native_source_commit', 'native_build_sha256', 'driver', 'boot')),
             'complete the same-build traced attention-store check')
+    boundary = bank.previous.historic(BOUNDARY, split.KEY)
+    checked = boundary['outcomes']['boundary']
+    geometry = checked['split']
+    require(boundary['stage'] == 'closed' and boundary['complete'] and boundary['ownership_closed']
+            and checked['passed'] and checked['ownership_closed'] and checked['native_exit_code'] == 0
+            and checked['fresh_faults'] == [] and geometry['prefill_slots'] == 128
+            and geometry['store']['gpu_rows'] == geometry['store']['maximum_rows'] == READ - 1
+            and geometry['store']['pieces'] == PIECES and geometry['store']['copy_bytes'] == COPY_BYTES
+            and boundary['plan']['binary'] == native['projection']['dflash2_kv_base_binary'],
+            'recover the measured first split extent on the V2 parent')
     pins = inputs(revision, [gate.device.THIS])
     plans, launches = {}, {}
     for arm, direct in ARMS.items():
@@ -120,11 +131,12 @@ def model_inputs(revision):
         env.update(STRATA_TRACE='1', STRATA_SYCL_CACHE_LOAN_AUDIT='1', STRATA_STATE_HASH='1')
         env = native_environment(row, env)
         short = model.request_ids(Path(config['tokenizer']))['ids']
-        require(len(short) == 82 and (READ - 1) % CHUNK == 2800, 'expected the checked short input and split tail')
+        require(len(short) == 82 and (READ - 1) % CHUNK == 1, 'expected the checked short input and one-row split tail')
         long = [i % 4096 for i in range(READ - len(short))] + short
         requests = [(ids, split.OUTPUT) for ids in (short, long, short)]
         wire = [dict(read=len(ids), output=budget, sha256=model.restore.signature_bytes(model.wire(ids, budget)))
                 for ids, budget in requests]
+        require(wire == boundary['plan']['cases']['boundary']['wire'], 'first split extent has a different wire input')
         plans[arm] = dict(command=[row['binary']['path'], '--serve', *args],
                           environment_sha256=bank.signature(env), wire=wire, direct=direct)
         launches[arm] = env, requests
@@ -137,6 +149,7 @@ def model_inputs(revision):
                 binary=row['binary'], boot=row['boot'], driver=row['driver'], runtime_manifest=row['runtime_manifest'],
                 validation=row['native_validation_probe'], drafter_assets=row['dflash2_assets'],
                 order=list(ARMS), cases=plans, limits=model.LIMITS, component_sha256=bank.signature(component),
+                split_boundary_reference=BOUNDARY,
                 scope='Copy then direct in independent traced processes. Require matching all-GPU split geometry, '
                       'per-layer retained KV, cache refill, active state and short/long/short DFlash2 outputs. '
                       'Stop on any changed input, ownership, route, runtime error, or fault. This is admission; '

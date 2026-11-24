@@ -10867,15 +10867,21 @@ GPU and bus resource attribution open.
 The measured 117,489-token copy route requests 115,495,403,520 D2D
 bytes for attention stores, including 720 piece drains. The compiled
 direct-store option retains the drains and can remove those copies.
-The new controller at `d864280c2` checks same-build fixture parity, then
-compares copying and direct writes at 84,721 inputs with a 2,800-row tail.
-Its host replay checks the existing 117,489-input copy route and rejects
-that frame when the direct route is expected. Hold aligned KV retention,
-batched expert uploads, synchronized commits and the DFlash2 configuration
-fixed. The expected change at 84,721 inputs is 528 direct stores and removal
-of 83,283,148,800 requested D2D bytes. The traced model admission precedes
-clean speed measurements. The older MTP split store comparison motivates the
-test with three warm gains.
+The original `d864280c2` campaign uses 84,721 inputs. Its copy process
+finishes all three wire requests with exit 0 and no fresh Xe fault.
+It takes the ordinary 512-slot route, holds all 84,720 BF16 rows on the
+GPU and limits the window to 81,920 rows. The request uses 480 copies
+covering 80,530,636,800 requested D2D bytes. The split admission
+requires more than 81,920 plus 8,192 batched rows. Host replay reproduces
+the refusal in `d3776db05`. The original outcome remains failed.
+
+The replacement campaign uses the first observed split extent of 90,114
+inputs with a one-row last chunk. It pins the earlier V2 wire
+and geometry from `77ce8ac63`. Hold aligned KV retention, batched expert
+uploads, synchronized commits and DFlash2 fixed. The traced checks expect
+576 direct stores to replace 88,584,683,520 requested D2D bytes. Clean
+speed measurements will follow route admission. The older MTP split
+store comparison motivates this test with three warm gains.
 
 The retained DFlash2 build's traced attention-store fixture completes four
 cases and checks 168,417,280 BF16 values. It rejects overlapping, empty and
