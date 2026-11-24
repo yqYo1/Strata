@@ -10832,7 +10832,13 @@ earlier 13.671 tok/s control at `ce3ef1a3a`. The paired snapshot at
 `69dad9672` gives 16.588 tok/s with matching work and output hashes. Both
 processes retire with no fresh Xe fault. The first pair's 0.636% decode
 difference and the 50.828/49.777 s TTFTs remain part of the six-process
-cohort. The next pair starts with the snapshot.
+cohort. In the opposite order, the snapshot returns 16.626 tok/s and
+the incumbent 16.427 tok/s. That pair favors the snapshot by 1.212%.
+Its TTFTs are 50.336 and 50.713 s in launch order. Both processes match
+the first pair's request, output, draft counts, expert and KV work and close
+normally with zero fresh Xe faults. The paired directions differ. Preserve
+the incumbent decode selection while the last pair and distinct workloads
+remain pending.
 [Decode comparison](../bench/sycl/dflash2_snapshot_decode.py).
 
 The closed `dflash2-snapshot-direct-prefill-v1/{host,0,1,2,3,4,5}` scopes
