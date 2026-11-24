@@ -11047,12 +11047,21 @@ bytes with 32 slots and 25,381,888 bytes with one slot. The shared arena
 and separate allocation bounds still fit those two arithmetic cases.
 Use the fixed 118,785-input case first to compare bank size, then use
 122,881 as the first longer shape to check actual device admission.
-The fixed-input controller draft `/tmp/strata-dflash2-window-bank32.wug47kb8/bank32-admission.patch`
-has SHA-256 `e4c2f2e68260db15a4da001916927952672669c63c18cd14c4c2372f5fe22b32`. It pins `04e2e4538`
-and derives usable slots from the committed and installed layer manifests.
-At 32 nominal slots and 85,196,800 bytes, layer strides predict 32 to 56
-usable slots. Require all 48 observed rows and the unchanged copy, work,
-state and owner checks when the active writer comparison closes.
+The fixed-input 32-slot admission closes at `7e32088f5` on the same
+executable with the copied writer and demand uploads. The
+[controller](../bench/sycl/dflash2_prefill_window_bank.py) recovers the
+original 128-slot trace and matches all 48 packed geometries. The
+85,196,800-byte allocation supplies 32 to 56 slots by layer. The
+82 / 118,785 / 82 requests match outputs, committed state, retained KV,
+draft taps, loan refill and expert work. The 118,785-token request has
+23,803 uploads and dequantizations, 26,455 jobs, 48 windows and
+48,749,337,600 requested expert H2D bytes. The device free-memory
+query stays at 4,197,769,216 bytes. The margin beyond the 512 MiB
+reserve rises from 39,214,080 to 294,804,480 bytes. All owners close
+and Xe reports no new fault. This traced capacity result leaves clean
+speed open. Prepare an independent 122,881-input case on the same
+32-slot path, verify the 122,880-row prefix and actual token handoff,
+then measure clean speed only after its admission passes.
 
 The same-build admission in
 [dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
@@ -11112,14 +11121,16 @@ the owner, borrowed view or layer storage can be released. Validate all
 48 window receipts, equivalent expert bytes, active state and cache
 restoration before clean timing. Keep bank-size and writer changes in
 their own comparisons.
-The opt-in and fixture draft `/tmp/strata-relocated-prefill-batch-exact.bb9zpuoo/ordered-upload-and-retirement.patch`
-has SHA-256 `866c83f3cdddae80dac099afd8d954c7b49c723dbfd650b5f873f1de40952d32`.
+The opt-in and fixture draft `/tmp/strata-relocated-upload-owned-rejection.mzli5skl/ordered-upload-owned-rejection.patch`
+has SHA-256 `e1f595cfbc559b000bc96d8945c5fabe3a4c8cc5f623ef3482a52de0507f4667`.
+Its patched source-map SHA-256 is
+`da88bb9c81bafc63d10e4fab8bd01c2ea1c1183fcf6f86d1a1e11aa79e338b7c`.
 It applies to the actual 1,171-file `96832af6f` build projection.
 All 1,171 retained source hashes match the build record. Its source map
 has SHA-256 `eb40e6500d0b5c3220857e00fe910d756dc8bba0933c7711b0d013add579cb70`.
 The Git tree at the native label differs in 40 recorded files and lacks
 one generated source. Reconstruct and verify the original build projection
-before applying the four-file candidate. Its recorded recipe SHA-256 is
+before applying the five-file candidate. Its recorded recipe SHA-256 is
 `bcb24fac83c007bff68ffaa6f12c521d9acea5bfe911f4f3d3ded910b183eabe`.
 It gates the existing ordered batch at 128 slots and effective relocated
 mode16. Default demand and existing coalesced routes retain their policy.
@@ -11127,15 +11138,30 @@ The host-only fixture calls the real batch loop and checked lease with
 an injected submitter. It accepts four copies, rejects the fifth, and
 checks the earlier reader and the final bank after drain with owners
 still live. The native fixture adds cancellation after an ordered
-per-expert batch. Both new cases need execution from the candidate build,
-followed by the full mode16 work and state comparison. The first
-32-slot admission uses the current executable while this work proceeds.
+per-expert batch. The production-path diagnostic enables
+`STRATA_SYCL_PREFILL_TEST_REJECT_BATCH_COPY=1` before exec on the
+opted-in relocated batch path. It waits for a prior dequantization
+submission and one accepted copy in the later group before rejecting
+the second copy in the host callback. The outer checked drain records
+queue completion and the live route, slab, bank and workspace. The
+candidate has passed patch application against the exact projection.
+Build it coherently, run the original fixtures and verify this bounded
+error path before the normal all-48-layer state and speed comparison.
 
 Retired the direct-writer trace in `dflash2-prefill-window-direct-v1`
 after closing its owner and matching all three requests at `3b8cdaf51`.
 The quiet comparison reads that commit. The sorted path, length and
 SHA-256 inventory covers 60 files and 12,617,210 bytes, with SHA-256
 `4c428b60919f957a3accdab6f2157628ee5a5fa52e032f5641dcb2f7ebd0c9a9`.
+
+The raw quiet writer capture at
+`/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1` was retired. Commit `d78ca9361`
+preserves all 18 original samples, routes and ownership checks.
+The two CSV rows at `64794c652` refer to that commit. The next
+admission uses its own committed trace and this comparison's committed
+evidence. The sorted path, size and SHA-256 inventory covers 431 files
+and 74,889,601 bytes with SHA-256
+`3173ce3f1fb1977a9ae16070ebbe3a24a706c7db7fb0e1b907f09f600c18e100`.
 
 The six-process quiet capture under
 `dflash2-prefill-window-speed-v1` was retired after recording the 18 original
