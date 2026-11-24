@@ -670561,5 +670561,54 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_long_routing_train_replay_v1": {
+    "stage": "prepared",
+    "passed": false,
+    "plan": {
+      "source_commit": "8c4591875ce3d5b4c47ba235b592c27f97e4add0",
+      "sources": {
+        "bench/sycl/dflash2_long_routing_replay.py": "e19b0d8f5ee837df1d694c4e34086f1077841a9401ba810da0d68db21a126b22",
+        "bench/sycl/dflash2_long_routing.py": "ae047a2a28ba108a39663c55648b8a660bdcf78d2d1cf7af676562456afba67f",
+        "bench/sycl/prefill_kv_stage_trace.py": "4f4639f34d1d29277b7edb92a0d5a09310181ed774ac3853a81aa677d020c627",
+        "bench/sycl/dflash2_verifier_routing_check.py": "3fdfcbe4eb5b9e9225c3073b79d809b8518774ebed2343708667b3676b765df3",
+        "tools/sycl/dflash2_expert_routing.py": "c74a0fe6952310e98ce03d696a4de2dffd9c83cd762010fcfbc208c0f416a84f",
+        "tests/core/test_dflash2_expert_routing.py": "84815ce7532e3a111e85ff5edfcccc3e7a9d90a2f7878b094ea1c3521f40936c"
+      },
+      "original": "9f21303b1a90fe1ab4b39b4a20fd3d5b01c80d3d",
+      "original_source_commit": "1bc5813e94633e294c01ff2edcebb6cab849d4ae",
+      "original_source_inputs": {
+        "files": 841,
+        "sha256": "78abef9e6fc98b41e99d9d30d09a7d76a88041bed390f897e047d77c7054f0e3"
+      },
+      "original_record_sha256": "775599ffa4475805c4127e8853137a72c0a210622c3a019a1e3212d0f5330c28",
+      "original_error": "ValueError('clean request contains the diagnostic trace')",
+      "original_native_identity": {
+        "pid": 904145,
+        "start_ticks": 388669884,
+        "sid": 904086
+      },
+      "native_exit_code": 0,
+      "capture_sha256": {
+        "config.json": "f7581a4d6f45c1557da472b9d032eb2dc5617fd9b3a4c2b54eb157f58e3ce2d8",
+        "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878",
+        "execution.json": "c64f3807efdec46c3517160c2808a1fe849a30fe317fc75ab61d8d3ea836e7a7",
+        "engine-start.json": "c77fd0b57ffe5614c2404d6f53484fc93efcb25ebaae1b9fa2d0a76a5f37cca6",
+        "engine-exit.json": "68e4cb384e3552c40f9ad00212c1431d0ce1f048f21b46327369f2f7de8daf2c",
+        "engine.stderr": "949f80b299097cb8dff03002f60addc909d58e591866c9e467f364424c508fa9",
+        "validation.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expert-routing.dat": "0451e19b17ea8e7e908fc601621bfe9da34ed7bb671aa6d41192c7381a4ee423",
+        "bench/2026-11-25-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json": "4b7aef6a36d5f8259081df3b356edd6349cb77d4c32002bf75531fb479e083cc",
+        "bench/2026-11-25-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl": "c39d1d64e9db6aff9f06d9912336ba3647297ce33f9f82364eab7ec818710875",
+        "bench/2026-11-25-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json": "fd51c2dd18b818748217e364135c6a8253f4dbcc1f5b9d1a7c335091287d9ed0"
+      },
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-long-routing-train-v1/0",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+        "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+        "bytes": 26546256
+      },
+      "scope": "Replay exact captured training work through the traced KV, CPU census and routing readers. Preserve the original failed checker and use the separate replay for training eligibility."
+    }
   }
 }
