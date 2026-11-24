@@ -11042,15 +11042,21 @@ and 32 slots estimates 67,992,576 free bytes beyond the same 512 MiB
 reserve at that query, within the arena and single-allocation limits.
 Compare the bank size at fixed input extent before moving the boundary.
 
-The next same-build admission uses
+The same-build admission in
 [dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
-to change the attention writer at 118,785 inputs. It reuses the proven
-mode16 copy process at wire lengths 82, 118,785 and 82. Require 720 direct
-stores, zero requested copies, matched expert work and KV, and matching
-short state before and after the long request. The full DFlash2 tail
-coverage, draft counts and emitted output must match. The trace records
-tap coverage and final target state. Tap contents and live RESTORE
-remain separate checks. A later quiet comparison measures throughput.
+closes on the 82 / 118,785 / 82 wire requests. The long request uses
+48 MoE windows and 720 direct BF16 stores. Requested attention copies
+drop by 116,769,423,360 bytes. Expert H2D remains 48,749,337,600 bytes for
+23,803 uploads and dequantizations and 26,455 jobs. Both owners drain,
+and the free-memory margin beyond the 512 MiB reserve is 39,222,272 bytes.
+
+The short-request fingerprints agree before and after the long request.
+Retained KV, active target state, cache refill, DFlash2 tap coverage
+and all three outputs agree with the copied reference. The native
+process exits normally, all 15 model asset hashes pass and Xe reports
+no new fault. The trace measures tap coverage and final state.
+A separate quiet comparison will measure throughput. Tap contents,
+live RESTORE and sustained decode have their own qualification.
 
 The six-process quiet capture under
 `dflash2-prefill-window-speed-v1` was retired after recording the 18 original
