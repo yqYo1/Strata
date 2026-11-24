@@ -40102,5 +40102,41 @@
     "classification": "knowledge_collection",
     "finding": "Original non-LLM sparse-processing sources contrast bounded transfer deduplication, host staging and copy/compute overlap. Their published results are on CUDA designs. Applicability conditions and data-dependent reuse failure cases are indexed for future retrieval.",
     "consumer": "Retrieve the overlap and reuse sections when a fixed-bank Xe2 experiment needs a bounded staging policy. Review retention after the relevant A/B or the next library audit."
+  },
+  "dflash2-layer-residency-value-20261124": {
+    "source_commit": "423b51fbf1e37a5ddfe7188ea3979f35c048d96a",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-layer-residency-value-20261124/report.md",
+    "report_sha256": "43a83c944aaba91e9148fec0cc50a17fc03699b2d8e969e80bd466f95cf514eb",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-residency-and-sparse-distribution-20261124-native-review/review.json",
+    "review_sha256": "5222fd29d9c4c0593f697b2dfa1a032b836ac87b662734e9b0c3fb8eaf92aa28",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_f776077c1459, ctx_5ed5196886cc",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "The reviewed per-layer quota has 26 slots for each of 47 layers and 34 for the last. 2.575 GB for packed slots versus 3.344 GB at the maximum blob size is a layout scenario. Actual slot ownership and free VRAM require a measured ledger. The 47.93 GB/s decode floor is logical packed work.",
+    "consumer": "Recover the existing decode job observer or capture held-out unique expert jobs by layer, verified width, format and residency. Include measured slot sizes and ownership. Compare fixed-width and byte-budget maps before changing decode placement."
+  },
+  "sparse-matrix-engine-work-distribution-20261124-v2": {
+    "source_commit": "423b51fbf1e37a5ddfe7188ea3979f35c048d96a",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sparse-matrix-engine-work-distribution-20261124-v2/report.md",
+    "report_sha256": "5bacf21065116656fda233aa7f6aa614bec38df6ff953889e05c4fd14bebc295",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-residency-and-sparse-distribution-20261124-native-review/review.json",
+    "review_sha256": "5222fd29d9c4c0593f697b2dfa1a032b836ac87b662734e9b0c3fb8eaf92aa28",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_5b4504c0a67e, ctx_575823c4fd21",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Reviews sparse accelerators with uneven lane work, bounded descriptors and ordered reduction. Methods from those designs need Xe2 dispatch, DPAS and workload-shape evidence.",
+    "consumer": "Retrieve when actual MoE job rows and DPAS dispatch indicate a work-distribution bottleneck. Review during the next research-library cleanup."
   }
 }
