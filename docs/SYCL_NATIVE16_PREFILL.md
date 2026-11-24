@@ -11098,8 +11098,15 @@ the owner, borrowed view or layer storage can be released. Validate all
 48 window receipts, equivalent expert bytes, active state and cache
 restoration before clean timing. Keep bank-size and writer changes in
 their own comparisons.
-The opt-in and fixture draft `/tmp/strata-relocated-prefill-batch-reviewed.qllmc77n/ordered-upload-and-retirement.patch`
-has SHA-256 `9e2771e95b45f4992c7af3b4b4a6705759e72f8a33f6c902494edcdde49652f5` against `96832af6f`.
+The opt-in and fixture draft `/tmp/strata-relocated-prefill-batch-exact.bb9zpuoo/ordered-upload-and-retirement.patch`
+has SHA-256 `866c83f3cdddae80dac099afd8d954c7b49c723dbfd650b5f873f1de40952d32`.
+It applies to the actual 1,171-file `96832af6f` build projection.
+All 1,171 retained source hashes match the build record. Its source map
+has SHA-256 `eb40e6500d0b5c3220857e00fe910d756dc8bba0933c7711b0d013add579cb70`.
+The Git tree at the native label differs in 40 recorded files and lacks
+one generated source. Reconstruct and verify the original build projection
+before applying the four-file candidate. Its recorded recipe SHA-256 is
+`bcb24fac83c007bff68ffaa6f12c521d9acea5bfe911f4f3d3ded910b183eabe`.
 It gates the existing ordered batch at 128 slots and effective relocated
 mode16. Default demand and existing coalesced routes retain their policy.
 The host-only fixture calls the real batch loop and checked lease with
