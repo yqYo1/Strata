@@ -214,7 +214,8 @@ int main(int argc, char** argv) {
     using strata::kernels::cpu::iq256_single_gu_rows;
     int dispatch_arm = -1;
     const bool iq3s_pair = argc == 2 && !std::strcmp(argv[1], "--iq3s-pair");
-    if (argc != 1 && !iq3s_pair) {
+    const bool iq3xxs_split_accum = argc == 2 && !std::strcmp(argv[1], "--iq3xxs-split-accum");
+    if (argc != 1 && !iq3s_pair && !iq3xxs_split_accum) {
         const char* arm = std::getenv("STRATA_IQ3_PAIR");
         const char* audit = std::getenv("STRATA_IQ3_PAIR_AUDIT");
         const char* single = std::getenv("STRATA_IQ_SINGLE_EXACT");
@@ -288,6 +289,10 @@ int main(int argc, char** argv) {
     unsigned paired = 0;
     if (!pair_cases<block_iq3_xxs, 18, strata::kernels::cpu::iq3xxs_pair_gu_rows>(
             paired, dispatch_arm)) return 1;
+    unsigned split_cases = 0;
+    if (iq3xxs_split_accum && !pair_cases<block_iq3_xxs, 18, strata::kernels::cpu::decode_iq3xxs_pair_split_accum_gu_rows>(
+            split_cases)) return 1;
+    if (iq3xxs_split_accum) std::printf("IQ3_XXS split accumulator exact PASS: %u cases\n", split_cases);
     unsigned iq3s_paired = 0;
     if (iq3s_pair && !pair_cases<block_iq3_s, 21, strata::kernels::cpu::iq3s_pair_gu_rows>(
             iq3s_paired)) return 1;

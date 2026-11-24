@@ -263,7 +263,7 @@ def receipt(entry):
         'direct_child_reaped', 'session_empty', 'session_anchored', 'errors', 'cleanup', 'peak_session_rss_bytes')}
 
 
-def build_check(row, root, *, iq3s=False):
+def build_check(row, root, *, iq3s=False, iq3xxs_split_accum=False):
     allowed = input_map(row)
     paths = {str((Path(line.strip()) if Path(line.strip()).is_absolute() else
         ROOT / 'build' / line.strip()).resolve()) for line in
@@ -276,10 +276,15 @@ def build_check(row, root, *, iq3s=False):
     need(all(str(P / name) in paths for name in required_units),
         'required real production/fixture units absent')
     units = json.loads((ROOT / 'build/compile_commands.json').read_text())
+    driver = 'bench/sycl/cpu_roofline/iq3_pair.cpp'
     for name in required_units:
-        matches = [x for x in units if x['file'] == str(P / name)
-            and (name != 'bench/sycl/cpu_roofline/iq3_pair.cpp' or
-                 ('-DSTRATA_BENCH_IQ3S_PAIR=1' in shlex.split(x['command'])) == iq3s)]
+        matches = [x for x in units if x['file'] == str(P / name)]
+        if name == driver:
+            variants = ('-DSTRATA_BENCH_IQ3S_PAIR=1', '-DSTRATA_BENCH_IQ3XXS_SPLIT_ACCUM=1')
+            wanted = [flag for flag, selected in zip(variants, (iq3s, iq3xxs_split_accum), strict=True)
+                      if selected]
+            matches = [x for x in matches if
+                       [flag for flag in variants if flag in shlex.split(x['command'])] == wanted]
         need(len(matches) == 1, 'unique compile unit: ' + name)
         argv = shlex.split(matches[0]['command'])
         need(Path(argv[0]).resolve() == Path(CXX).resolve() and '-O3' in argv and
