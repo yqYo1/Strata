@@ -11014,6 +11014,22 @@ for each request. Compare prompt time, client TTFT, requested bytes and
 the 1,000 tok/s target separately. Keep sustained decode, task,
 physical context and RESTORE qualification separate from that screen.
 
+The first clean pair completes all six exact requests and closes both
+owners without a fresh Xe fault. First-use prefill is 144.425 and
+134.971 seconds. Warmed prefill is 133.138 and 122.529 seconds, or
+892.197 and 969.443 tok/s. Warmed client TTFT is 133.370 and
+122.760 seconds. Requests match KV and emitted verifier work. The
+wider arm saves 16.736 to 16.843 GB of requested expert H2D per prompt,
+with no change to requested attention-output copies. Fusion also covers
+more rows in each prompt; the first has 49,927,500 versus 52,814,590
+fused GU and Down rows. Attribute the speed change to the measured
+window policy as a whole. The remaining repetitions determine eligibility.
+
+The raw 118,785-token traced captures in `dflash2-prefill-window-admission-v2` were
+retired after the quiet readers passed. The inventory covers 119
+files and 25259917 bytes with SHA-256 `aee4c4bf5ce05cccd528d159ea15f5635e249cddbb5eb195775707862ef8a185`.
+Commit `4b25af35d` preserves the traced results and their source identity.
+
 Retired the 120,001-input raw captures under
 `dflash2-prefill-window-admission-v1` after rechecking all 119 files and
 25287322 bytes, inventory SHA-256 `03a45191a750065c34cfd8fa980ab89e874cc77699f4410edc86b34b66f973ba`.
