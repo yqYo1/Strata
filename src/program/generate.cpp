@@ -5577,19 +5577,21 @@ int main(int argc, char** argv) {
             (size_t) o.conversation_cache_slots);
         // Save only on a switch/rewind, not on each continuing request. No graph
         // addresses change: all parked images live in ordinary host vectors.
+        // DFlash2 rebuilds its draft context from the request's captured tail.
+        const strata::core::QsaState* const snapshot_mtp_kv = use_df2 ? nullptr : &mtp.kv_state();
         auto park_current = [&](size_t held) -> bool {
             if (!conversations.enabled() || !live_ok || live.empty()) return true;
             const strata::core::ConversationView view{live, live_imgs, checks, cvec_cached};
             auto reuse = conversations.take_reuse();
             size_t estimate = 0;
-            if (!strata::core::conversation_snapshot_bytes(view, ss, g, mtp.kv_state(), estimate, err)) {
+            if (!strata::core::conversation_snapshot_bytes(view, ss, g, snapshot_mtp_kv, estimate, err)) {
                 std::fprintf(stderr, "strata serve: conversation cache: skip parking (%s)\n", err.c_str());
                 err.clear(); // A recoverable miss must not poison the batched draft prefill's error channel.
                 return true;
             }
             const size_t fresh_estimate = estimate;
             if (!reuse.kv.empty() && !strata::core::conversation_snapshot_capture_bytes(
-                    reuse, view, ss, g, mtp.kv_state(), estimate, err)) {
+                    reuse, view, ss, g, snapshot_mtp_kv, estimate, err)) {
                 reuse = {};
                 estimate = fresh_estimate;
                 err.clear();
@@ -5622,7 +5624,7 @@ int main(int argc, char** argv) {
                 }
                 strata::core::SavedConversation image;
                 size_t reused_bytes = 0;
-                if (!strata::core::conversation_snapshot_save(image, view, ss, g, mtp.kv_state(), err,
+                if (!strata::core::conversation_snapshot_save(image, view, ss, g, snapshot_mtp_kv, err,
                         std::move(reuse), &reused_bytes)) return false;
                 if (!strata::core::conversation_memory_admit(strata::core::conversation_available_memory(), 0, floor)) {
                     std::fprintf(stderr, "strata serve: conversation cache: skip parking (physical RAM floor after capture, or telemetry unavailable)\n");
@@ -6347,7 +6349,7 @@ int main(int argc, char** argv) {
             if (parked.tokens > resume) incoming.emplace(conversations.take(parked.index));
             // Reject the entire image before parking/overwriting the outgoing
             // state. Invalid entries can safely fall back to its existing prefix.
-            if (incoming && !strata::core::conversation_snapshot_validate(*incoming, ss, g, mtp.kv_state(), err)) {
+            if (incoming && !strata::core::conversation_snapshot_validate(*incoming, ss, g, snapshot_mtp_kv, err)) {
                 std::fprintf(stderr, "strata serve: conversation cache: discard invalid snapshot (%s)\n", err.c_str());
                 incoming.reset();
                 err.clear();
@@ -6360,7 +6362,7 @@ int main(int argc, char** argv) {
             }
             if (incoming) {
                 const auto t0 = Clock::now();
-                if (strata::core::conversation_snapshot_restore(*incoming, ss, g, mtp.kv_state(), err) !=
+                if (strata::core::conversation_snapshot_restore(*incoming, ss, g, snapshot_mtp_kv, err) !=
                     strata::core::ConversationRestore::restored) {
                     // Already prevalidated above: a failure here is fatal, never
                     // permission to decode from a partially restored session.
@@ -6369,16 +6371,19 @@ int main(int argc, char** argv) {
                 }
                 if (std::getenv("STRATA_SNAPSHOT_VERIFY") != nullptr) {
                     strata::core::ConversationVerification checked;
-                    if (!strata::core::conversation_snapshot_verify(*incoming, ss, g, mtp.kv_state(), checked, err)) {
+                    if (!strata::core::conversation_snapshot_verify(*incoming, ss, g, snapshot_mtp_kv, checked, err)) {
                         std::printf("ERR verifying restored session: %s\n", err.c_str());
                         return 1;
                     }
+                    const int64_t draft_resident = snapshot_mtp_kv
+                        ? snapshot_mtp_kv->n_slots * strata::kernels::qsa_real_shapes().page_size : 0;
                     std::fprintf(stderr, "strata serve: SNAPSHOT_VERIFY draft=%016llx cells=%lld mode=%d source=%s resident=%lld "
                                          "main=%016llx main_layers=%zu main_bytes=%zu draft_bytes=%zu "
                                          "running=%016llx running_bytes=%zu upto=%zu result=PASS\n",
-                                 (unsigned long long) checked.draft_hash, (long long) incoming->kv.back().cells,
-                                 mtp.kv_state().kv_mode, "ram",
-                                 (long long) (mtp.kv_state().n_slots * strata::kernels::qsa_real_shapes().page_size),
+                                 (unsigned long long) checked.draft_hash,
+                                 snapshot_mtp_kv ? (long long) incoming->kv.back().cells : 0ll,
+                                 snapshot_mtp_kv ? snapshot_mtp_kv->kv_mode : 0, "ram",
+                                 (long long) draft_resident,
                                  (unsigned long long) checked.main_hash, checked.main_layers, checked.main_bytes,
                                  checked.draft_bytes, (unsigned long long) checked.running_hash, checked.running_bytes,
                                  incoming->live.ids.size());

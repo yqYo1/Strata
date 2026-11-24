@@ -105,9 +105,9 @@ void fixture(int format, int experts, bool zero_qsa, bool ple) {
     image.kv.reserve((size_t) g.n_qsa_layers() + 1);
     if (!zero_qsa) { image.kv.push_back(first.image(g, true)); image.kv.push_back(last.image(g, true)); }
     image.kv.push_back(draft.image(g, false));
-    check(conversation_snapshot_validate(image, ss, g, draft.st, error), "complete image validates without CUDA");
+    check(conversation_snapshot_validate(image, ss, g, &draft.st, error), "complete image validates without CUDA");
     size_t estimate = 0;
-    check(conversation_snapshot_bytes({image.live.ids,image.live.imgs,image.checkpoints,true},ss,g,draft.st,estimate,error),
+    check(conversation_snapshot_bytes({image.live.ids,image.live.imgs,image.checkpoints,true},ss,g,&draft.st,estimate,error),
           "capture estimate works without CUDA");
     check(estimate == image.bytes(), "estimate covers checkpoint/indexer/spare payloads");
     auto unchanged = [&] {
@@ -118,7 +118,7 @@ void fixture(int format, int experts, bool zero_qsa, bool ple) {
     };
     auto reject = [&](const std::function<void(SavedConversation&)>& mutate, const char* label) {
         auto bad = image; mutate(bad);
-        check(conversation_snapshot_restore(bad,ss,g,draft.st,error) == ConversationRestore::invalid,label);
+        check(conversation_snapshot_restore(bad,ss,g,&draft.st,error) == ConversationRestore::invalid,label);
         check(unchanged(), "invalid restore did not touch any layer or running-state buffer");
     };
     reject([](auto& s){s.kv.back().k.pop_back();}, "late draft corruption rejected before first layer write");
@@ -139,7 +139,7 @@ void fixture(int format, int experts, bool zero_qsa, bool ple) {
         reject([](auto& s){s.live.dead.pop_back();}, "missing indexer spare key rejected");
         reject([](auto& s){s.live.block_pos.pop_back();}, "missing indexer metadata rejected");
         ss.qsa_states = nullptr;
-        check(!conversation_snapshot_validate(image,ss,g,draft.st,error), "missing QSA targets rejected");
+        check(!conversation_snapshot_validate(image,ss,g,&draft.st,error), "missing QSA targets rejected");
         ss.qsa_states = layers.data();
         reject([](auto& s){s.layer_lo = 4;}, "snapshot from another layer range rejected");
         // #216's carve: a split stage owning layers [4, 8) holds GDN rows 3..5 and QSA ordinal 1 only
@@ -153,12 +153,19 @@ void fixture(int format, int experts, bool zero_qsa, bool ple) {
         part.gdn.resize(zs.gdn); part.tails.resize(zs.tail); part.dead.resize(zs.dead);
         part.block_pos.resize(zs.block_pos);
         check(conversation_checkpoint_validate(part,stage,g,error), "carve-sized checkpoint validates");
-        check(!conversation_snapshot_validate(image,stage,g,draft.st,error), "whole-model snapshot rejected by a carve");
+        check(!conversation_snapshot_validate(image,stage,g,&draft.st,error), "whole-model snapshot rejected by a carve");
         stage.qsa_alloc = 2;
         check(!conversation_session_sizes(g,stage,zs,error), "carve past the last QSA ordinal rejected");
         stage.qsa_alloc = 1; stage.gdn_alloc = 7;
         check(!conversation_session_sizes(g,stage,zs,error), "carve past the GDN rows rejected");
     }
+    auto target_only_image = image;
+    target_only_image.kv.pop_back();
+    check(conversation_snapshot_validate(target_only_image, ss, g, nullptr, error),
+          "target-only snapshot validates without an MTP ring");
+    check(conversation_snapshot_restore(image, ss, g, nullptr, error) == ConversationRestore::invalid &&
+          conversation_snapshot_restore(target_only_image, ss, g, &draft.st, error) == ConversationRestore::invalid &&
+          unchanged(), "snapshot modes disagree before any destination writes");
     auto bad_geometry = g; bad_geometry.ssm_state_size = std::numeric_limits<int64_t>::max();
     check(!conversation_state_sizes(bad_geometry,z,error), "running-state arithmetic overflow rejected");
     bad_geometry = g; bad_geometry.qsa_interval = 0;
@@ -173,23 +180,23 @@ void fixture(int format, int experts, bool zero_qsa, bool ple) {
         copy_calls = sync_calls = fail_copy = fail_sync = 0;
     };
     reset(); fail_sync = 1;
-    check(conversation_snapshot_restore(image,ss,g,draft.st,error)==ConversationRestore::transfer_failed,
+    check(conversation_snapshot_restore(image,ss,g,&draft.st,error)==ConversationRestore::transfer_failed,
           "pre-transfer CUDA synchronization failure is fatal");
     check(copy_calls==0 && unchanged(), "pre-sync failure did not mutate state");
     reset(); fail_copy = 1;
-    check(conversation_snapshot_restore(image,ss,g,draft.st,error)==ConversationRestore::transfer_failed,
+    check(conversation_snapshot_restore(image,ss,g,&draft.st,error)==ConversationRestore::transfer_failed,
           "first CUDA transfer failure is fatal");
     check(unchanged(), "first-copy failure did not mutate state");
     reset(); fail_copy = 2;
-    check(conversation_snapshot_restore(image,ss,g,draft.st,error)==ConversationRestore::transfer_failed,
+    check(conversation_snapshot_restore(image,ss,g,&draft.st,error)==ConversationRestore::transfer_failed,
           "partial CUDA transfer failure is fatal, not an invalid-image fallback");
     check(!unchanged(), "fault fixture genuinely produced partial state");
     reset(); fail_sync = 2;
-    check(conversation_snapshot_restore(image,ss,g,draft.st,error)==ConversationRestore::transfer_failed,
+    check(conversation_snapshot_restore(image,ss,g,&draft.st,error)==ConversationRestore::transfer_failed,
           "post-transfer CUDA synchronization failure is fatal");
     check(copy_calls>0 && !unchanged(), "post-sync failure occurred after state writes");
     reset();
-    check(conversation_snapshot_restore(image,ss,g,draft.st,error)==ConversationRestore::restored,
+    check(conversation_snapshot_restore(image,ss,g,&draft.st,error)==ConversationRestore::restored,
           "injected host transfer backend completes a valid restore");
     check(gdn==image.live.gdn && history==image.live.ple && ss.ple_prev[0]==8 && ss.ple_prev[1]==9,
           "successful restore publishes correct running state and PLE window");
@@ -203,13 +210,13 @@ void fixture(int format, int experts, bool zero_qsa, bool ple) {
     reset(); copied_bytes = 0;
     const ConversationView view{image.live.ids,image.live.imgs,image.checkpoints,true};
     SavedConversation full,incremental;
-    check(conversation_snapshot_save(full,view,ss,g,draft.st,error), "full capture through host transfer backend");
+    check(conversation_snapshot_save(full,view,ss,g,&draft.st,error), "full capture through host transfer backend");
     const size_t full_copies = copied_bytes;
     ConversationKvReuse reuse{full.kv,9,9};
     size_t peak = 0, reused = 0;
-    check(conversation_snapshot_capture_bytes(reuse,view,ss,g,draft.st,peak,error), "incremental capture admission without transfers");
+    check(conversation_snapshot_capture_bytes(reuse,view,ss,g,&draft.st,peak,error), "incremental capture admission without transfers");
     copied_bytes = 0;
-    const bool saved_incrementally = conversation_snapshot_save(incremental,view,ss,g,draft.st,error,std::move(reuse),&reused);
+    const bool saved_incrementally = conversation_snapshot_save(incremental,view,ss,g,&draft.st,error,std::move(reuse),&reused);
     if (!saved_incrementally) std::fprintf(stderr,"capture error: %s\n",error.c_str());
     check(saved_incrementally, "incremental capture through host backend");
     check(reused > 0 && copied_bytes + reused == full_copies, "reused byte count measures transfers actually omitted");
@@ -221,13 +228,36 @@ void fixture(int format, int experts, bool zero_qsa, bool ple) {
     reuse = {full.kv,9,9};
     reuse.kv.back().k.pop_back();
     copy_calls = sync_calls = 0;
-    check(!conversation_snapshot_capture_bytes(reuse,view,ss,g,draft.st,peak,error), "malformed retained draft rejected before admission");
+    check(!conversation_snapshot_capture_bytes(reuse,view,ss,g,&draft.st,peak,error), "malformed retained draft rejected before admission");
     check(!copy_calls && !sync_calls, "invalid retained storage performs no CUDA calls");
     reuse = {full.kv,9,9};
     fail_copy = copy_calls + 1;
     SavedConversation unpublished;
-    check(!conversation_snapshot_save(unpublished,view,ss,g,draft.st,error,std::move(reuse)), "incremental capture copy failure is reported");
+    check(!conversation_snapshot_save(unpublished,view,ss,g,&draft.st,error,std::move(reuse)), "incremental capture copy failure is reported");
     check(unpublished.kv.empty() && unpublished.live.ids.empty(), "failed incremental capture cannot publish a partial image");
+
+    reset();
+    SavedConversation target;
+    check(conversation_snapshot_save(target, view, ss, g, nullptr, error) &&
+          target.kv.size() == static_cast<size_t>(g.n_qsa_layers()), "capture target-only payload");
+    if (!zero_qsa) {
+        ConversationKvReuse target_reuse{target.kv, 9, 9};
+        SavedConversation refreshed;
+        reused = 0;
+        check(conversation_snapshot_capture_bytes(target_reuse, view, ss, g, nullptr, peak, error) &&
+              conversation_snapshot_save(refreshed, view, ss, g, nullptr, error, std::move(target_reuse), &reused) &&
+              refreshed.bytes() <= peak && reused > 0, "retain target-only K/V prefix");
+        target = std::move(refreshed);
+        first.data[0][0] ^= 1;
+    }
+    gdn[0] ^= 1;
+    draft.data[0][0] = 0x31;
+    ConversationVerification verified;
+    check(conversation_snapshot_restore(target, ss, g, nullptr, error) == ConversationRestore::restored &&
+          conversation_snapshot_verify(target, ss, g, nullptr, verified, error) &&
+          verified.main_layers == target.kv.size() && verified.draft_bytes == 0 &&
+          verified.draft_hash == 0 && verified.running_bytes > 0 && draft.data[0][0] == 0x31,
+          "restore verifies main K/V and running state with no draft payload");
 #endif
 }
 }

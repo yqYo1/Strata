@@ -10713,6 +10713,12 @@ The 16,385-token check generates four tokens. The full check consumes
 122,880 batched BF16 residual rows in VRAM and 139,263 in host memory,
 captures a 2,046-row DFlash2 tail, completes the commit and refill drain,
 and exits 0. Xe reports zero fresh faults. Server RESTORE remains pending.
+On the measured source, parking requires a populated MTP ring. The DFlash2
+launch leaves that ring empty, causing the snapshot estimate to reject the
+conversation before capture. The fix passes an optional MTP ring and retains
+the target K/V and running state for DFlash2. Verify target-only capture,
+incremental reuse and restored bytes before testing the engine's live
+conversation switch on Arc.
 
 The first corrected suite process `bdd9ff4ce` passes the route, ownership
 and output gates. It exits 0 with no fresh Xe fault. The sustained code
