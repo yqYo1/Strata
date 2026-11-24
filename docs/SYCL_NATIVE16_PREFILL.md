@@ -10706,24 +10706,27 @@ for the corrected performance campaign. The code case sends 1449976 expert
 jobs to the CPU. Measure the CPU service and verifier waits separately
 before attributing that decode time to a hardware resource.
 
-The weak-acceptance screen's synthetic dossier and native controller are
-prepared in `/tmp/strata-dflash2-weak-evidence-dossier.6bv652qn/dossier-workload-and-screen.patch`.
-Its SHA-256 is `e7d5c09fb0ccf07416150c335db34c2485aa7afba5c69b4f07a88f6e8a65cfb4`.
-The patch passes static syntax and application checks. It keeps the two
-v5 defaults and adds a diagnostic through `bench.sh`. The journal and
-final reader both check the counted wire body, 32768–65536 actual fresh
-inputs, zero reuse, and context for 16384 output tokens. The existing
-long-generation eligibility checks cover at least 1024 output tokens,
-thinking and a visible answer. A request is weak only with at least 256
-offered drafts and observed acceptance at most 0.40.
+The [weak-acceptance dossier screen](../bench/sycl/dflash2_evidence_dossier.py)
+keeps the two v5 defaults and adds one opt-in diagnostic through
+`bench.sh`. The journal and final reader both check the counted wire
+body, 32768–65536 actual fresh inputs, zero reuse, and context for
+16384 output tokens. Its sample eligibility requires 1024 output tokens,
+thinking and a visible answer. The weak classification requires at least
+256 offered drafts and observed acceptance at most 0.40.
 
-The code remains outside the frozen regular-code cohort. When its last
-owner closes, commit the exact dossier frontend and controller, run the
-host tests including the real-pack count-only control, and then prepare
-the one-process incumbent pilot. The screen pins the completed incumbent
-at `ea197d7a0` and records actual acceptance even when it exceeds 0.40.
-A successful screen leaves independent repeats and the agent session
-as separate measurements. No dossier native result exists yet.
+Before starting the one-process pilot, run the two frontend host suites
+`tools.test_strata_bench` and `tools.test_strata_bench_failfast` with
+the benchmark interpreter `/home/yayoi/.local/share/strata-sycl/venv/bin/python3`
+(SHA-256 `e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f`).
+Use `-B -m unittest` and `PYTHONNOUSERSITE=1`. For the real count-only
+control, set `STRATA_BENCH_REAL_PACK` to
+`/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s`.
+Set `STRATA_BENCH_REAL_PACK_SHA256` to
+`d58a004711ec8a9b9d1c73e598dff22a45de4d7561b56e41d6f291573dea5af6`,
+the five tokenizer-file inventory hash checked by the fixture. The
+native pilot pins the closed incumbent at `ea197d7a0` and uses the same
+fixed request identity, explicit 16384 output cap and full context.
+Independent repeats and the agent session have separate outcomes.
 
 The standalone DFlash2 physical-context check
 `dflash2_prefill_physical_context_v1` passes on native source `96832af6f`.

@@ -528,7 +528,7 @@ class Suite:
         self.quick = quick
         self.want_long_generation = want_long_generation
         self.long_generation_only = long_generation_only
-        if generation_workload is not None and (generation_workload not in long_generation.WORKLOADS or
+        if generation_workload is not None and (generation_workload not in long_generation.WORKLOAD_SPECS or
                                                not long_generation_only or prefill_only):
             raise ValueError("a long-generation workload selection requires --long-generation-only")
         self.generation_workload = generation_workload
@@ -548,6 +548,8 @@ class Suite:
             raise ValueError("unsupported long-generation input case")
         if generation_input_case != long_generation.STANDARD_INPUT_CASE and not (want_long_generation and long_generation_only):
             raise ValueError("split long-generation input requires --long-generation-only")
+        if generation_workload == long_generation.DOSSIER_WORKLOAD and generation_input_case != long_generation.STANDARD_INPUT_CASE:
+            raise ValueError("evidence-dossier has its own fixed diagnostic input")
         self.generation_input_case = generation_input_case
         self.frozen_generation_inputs = {}
         self.journal = journal
@@ -567,14 +569,15 @@ class Suite:
             phase.startswith(('prefill-scaling/', 'long-generation/')))
         gate_begun = False
         if self.journal:
+            case = (self.generation_case_metadata().get("long_generation_input")
+                    if phase.startswith("long-generation/") else None)
             payload = json.dumps(chat_body(messages, max_tokens, think, kwargs.get("tools"),
                                            kwargs.get("request_overrides"))).encode()
             request_index = self.journal.append("start", phase, run, turn,
                 request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think,
                 **({"gate_required": True} if gated else {}),
-                **({"input_case": self.generation_input_case,
-                    "target_input_tokens": long_generation.SPLIT_TARGET_INPUT_TOKENS}
-                   if phase.startswith("long-generation/") and self.generation_case_metadata() else {}))
+                **({"input_case": case["case"], "target_input_tokens": case["target_input_tokens"]}
+                   if case else {}))
         def gate_result(status, error=None):
             if self.journal:
                 self.journal.append("gate", phase, run, turn, request_index=request_index,
@@ -726,6 +729,15 @@ class Suite:
 
     def generation_case_metadata(self):
         lg = long_generation
+        if self.generation_workload == lg.DOSSIER_WORKLOAD:
+            return {"long_generation_input": dict(case=lg.DOSSIER_WORKLOAD, version=lg.DOSSIER_VERSION,
+                target_input_tokens=None, minimum_input_tokens=lg.MIN_INPUT_TOKENS,
+                maximum_input_tokens=lg.DOSSIER_MAX_INPUT_TOKENS, context_reserve=lg.CONTEXT_RESERVE,
+                max_tokens=self.generation_max_tokens, workload=self.workload_identity(),
+                selected_workloads=[lg.DOSSIER_WORKLOAD],
+                instructions_sha256={lg.DOSSIER_WORKLOAD: hashlib.sha256(
+                    lg.DOSSIER_WORKLOAD_SPEC["instruction"].encode()).hexdigest()},
+                count_preflight="One count-only request of the final timed body, outside TTFT.")}
         if self.generation_input_case == lg.STANDARD_INPUT_CASE:
             return {}
         selected = [self.generation_workload] if self.generation_workload else list(lg.WORKLOADS)
@@ -742,6 +754,8 @@ class Suite:
             native_evidence="Actual per-arm route/placement and same-request continued decode require the owned native log;client counts alone do not qualify split admission.")}
 
     def generation_version(self):
+        if self.generation_workload == long_generation.DOSSIER_WORKLOAD:
+            return long_generation.DOSSIER_VERSION
         return "split-v1" if self.generation_case_metadata() else long_generation.WORKLOAD_VERSION
 
     def generation_sampling_metadata(self):
@@ -749,27 +763,32 @@ class Suite:
 
     def generation_eligibility(self, raw, sample, maximum, phase, run):
         lg = long_generation
-        if self.generation_case_metadata():
-            return lg.split_sample_eligibility(raw, sample,
-                self.frozen_generation_inputs.get((phase, run)), maximum, self.ctx)
+        proof = self.frozen_generation_inputs.get((phase, run))
+        if self.generation_workload == lg.DOSSIER_WORKLOAD:
+            return lg.dossier_sample_eligibility(raw, sample, proof, maximum, self.ctx)
+        if self.generation_input_case == lg.SPLIT_INPUT_CASE:
+            return lg.split_sample_eligibility(raw, sample, proof, maximum, self.ctx)
         return lg.sample_eligibility(raw, sample, maximum=maximum, context=self.ctx)
 
     def run_long_generation(self):
         lg = long_generation
-        split = bool(self.generation_case_metadata())
+        split = self.generation_input_case == lg.SPLIT_INPUT_CASE
+        dossier = self.generation_workload == lg.DOSSIER_WORKLOAD
         target = lg.SPLIT_TARGET_INPUT_TOKENS if split else lg.TARGET_INPUT_TOKENS
+        if dossier:
+            target = None
         minimum = lg.SPLIT_MIN_INPUT_TOKENS if split else lg.MIN_INPUT_TOKENS
         maximum = self.generation_max_tokens
-        required = target + maximum + 512
+        required = (minimum if target is None else target) + maximum + 512
         known_context = type(self.ctx) is int and self.ctx > 0
-        if (known_context and self.ctx < required) or ((split or maximum != lg.MAX_OUTPUT_TOKENS) and not known_context):
+        if (known_context and self.ctx < required) or ((split or dossier or maximum != lg.MAX_OUTPUT_TOKENS) and not known_context):
             self.out["skipped"]["long-generation"] = f"context {self.ctx} is below {required}"
             return
         selected = [self.generation_workload] if self.generation_workload else list(lg.WORKLOADS)
         self.log(f"long generation: {', '.join(selected)}, {self.runs} runs, "
                  f"{lg.MIN_OUTPUT_TOKENS}..{maximum} actual tokens including thinking")
-        cases = {name: {"expected_mtp": spec["expected_mtp"], "requests": []}
-                 for name, spec in lg.WORKLOADS.items()}
+        cases = {name: {"expected_mtp": lg.WORKLOAD_SPECS[name]["expected_mtp"], "requests": []}
+                 for name in dict.fromkeys((*lg.WORKLOADS, *selected))}
         order = []
         self.out["long_generation"] = dict(workload_version=self.generation_version(),
             **self.generation_case_metadata(), complete=False, workloads=cases, order=order,
@@ -783,14 +802,17 @@ class Suite:
         for run in range(self.runs):
             names = selected if run % 2 == 0 else list(reversed(selected))
             for name in names:
-                words = max(50, int((target - self.overhead) / self.tokens_per_word))
-                filler = long_prompt(words)
-                # Remove the unrelated five-sentence instruction, retaining the upstream word-list generator.
-                filler = filler.split("\n", 1)[1].rsplit("\n\n", 1)[0]
-                messages = [{"role": "system", "content": "Follow the final task. The background word list is "
-                             "irrelevant reference data. Do not summarize it. Complete the task in detail."},
-                            {"role": "user", "content": f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]\n"
-                             f"<background>\n{filler}\n</background>\n\nTask:\n{lg.WORKLOADS[name]['instruction']}"}]
+                if dossier:
+                    messages = lg.evidence_dossier_messages(run, self.nonce)
+                else:
+                    words = max(50, int((target - self.overhead) / self.tokens_per_word))
+                    filler = long_prompt(words)
+                    # Remove the unrelated five-sentence instruction, retaining the upstream word-list generator.
+                    filler = filler.split("\n", 1)[1].rsplit("\n\n", 1)[0]
+                    messages = [{"role": "system", "content": "Follow the final task. The background word list is "
+                                 "irrelevant reference data. Do not summarize it. Complete the task in detail."},
+                                {"role": "user", "content": f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]\n"
+                                 f"<background>\n{filler}\n</background>\n\nTask:\n{lg.WORKLOADS[name]['instruction']}"}]
                 overrides = {"chat_template_kwargs": {"enable_thinking": lg.THINKING}, "reasoning_budget_tokens": 0}
                 overrides.update(lg.sampling_request(self.generation_sampling, run))
                 phase = "long-generation/" + name
@@ -799,17 +821,24 @@ class Suite:
                     tag = f"[long-generation-split-v1 {name} run {run} {self.nonce}]"
                     assert messages[-1]["content"].startswith(old)
                     messages[-1]["content"] = tag + messages[-1]["content"][len(old):]
+                if split or dossier:
                     body = chat_body(messages, maximum, lg.THINKING, request_overrides=overrides)
-                    proof = dict(input_case=self.generation_input_case,
+                    input_case = lg.DOSSIER_WORKLOAD if dossier else self.generation_input_case
+                    upper = lg.DOSSIER_MAX_INPUT_TOKENS if dossier else lg.SPLIT_MAX_INPUT_TOKENS
+                    proof = dict(input_case=input_case,
                         body_sha256=hashlib.sha256(json.dumps(body).encode()).hexdigest())
                     try:
                         proof["counted_input_tokens"] = count_chat_body_tokens(self.base, self.key, body, 30)
                         counted = proof["counted_input_tokens"]
-                        if not (minimum <= counted <= lg.SPLIT_MAX_INPUT_TOKENS and
-                                counted + maximum + lg.CONTEXT_RESERVE <= self.ctx):
-                            raise ValueError("counted split input is outside selector/context bounds;no timed request or repair")
+                        if not (minimum <= counted <= upper and counted + maximum + lg.CONTEXT_RESERVE <= self.ctx):
+                            reason = (
+                                "counted split input is outside selector/context bounds;no timed request or repair"
+                                if split else "counted evidence-dossier input is outside its context bounds"
+                            )
+                            raise ValueError(reason)
                     except Exception as error:
-                        reason = "split count-only preflight failed: " + str(error)
+                        label = "split" if split else "evidence-dossier"
+                        reason = f"{label} count-only preflight failed: {error}"
                         if self.journal:
                             self.journal.append("count-preflight-failed", phase, run, proof=proof, error=reason)
                         self.out["terminal_failure"] = dict(phase=phase, run=run, error=reason)
@@ -835,7 +864,7 @@ class Suite:
                     if self.generation_speed_only and not reason:
                         reason = "MTP counters are missing or invalid"
                     self.out["failures"].append({"where": f"long-generation/{name}/{run}", "error": reason})
-                    if split:
+                    if split or dossier:
                         self.out["terminal_failure"] = dict(phase=phase, run=run, error=reason)
                         raise EngineRequestError(reason)
         for case in cases.values():
@@ -1648,7 +1677,7 @@ def parse_arguments(argv=None):
     ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, >=1K-output MTP workloads (thinking on, up to 16K output)")
     ap.add_argument("--long-generation-only", action="store_true", help="run only the new long-generation workloads and warm-up")
     ap.add_argument("--long-generation-speed-only", action="store_true", help="allow valid zero-draft throughput baselines; keep agreement eligibility separate (requires --long-generation-only)")
-    ap.add_argument("--long-generation-workload", choices=tuple(long_generation.WORKLOADS),
+    ap.add_argument("--long-generation-workload", choices=tuple(long_generation.WORKLOAD_SPECS),
                     help="select one diagnostic workload with --long-generation-only; does not qualify the MTP pair")
     ap.add_argument("--long-generation-input-case", choices=long_generation.INPUT_CASES,
                     default=long_generation.STANDARD_INPUT_CASE,
@@ -1858,7 +1887,8 @@ def main(argv=None) -> int:
                        "quant": machine.get("quant"), "context": machine.get("context"),
                        "long_generation_version": suite.generation_version(),
                        "long_generation_thinking": long_generation.THINKING,
-                       "long_generation_instructions": long_generation.WORKLOADS,
+                       "long_generation_instructions": (long_generation.WORKLOAD_SPECS
+                           if a.long_generation_workload == long_generation.DOSSIER_WORKLOAD else long_generation.WORKLOADS),
                        "calibration": [suite.tokens_per_word, suite.overhead],
                        "agent_files": [(n, hashlib.sha256(v.encode()).hexdigest()) for n, v in ([] if a.prefill_only else suite.agent_files())],
                        "agent_max_tokens": AGENT_THINK_MAX_TOKENS if a.think else AGENT_MAX_TOKENS},

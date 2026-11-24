@@ -135,9 +135,9 @@ def read_subset(root, workload_id):
 
 
 
-def routes(text, samples, arm):
+def routes(text, samples, arm, *, phase=PHASE):
     speed.validate_model_text(text, {'arm': arm})
-    require(len(samples) == 5 and samples[-1]['phase'] == PHASE
+    require(len(samples) == 5 and samples[-1]['phase'] == phase
             and not any(mark in text for mark in ('strata trace:', 'strata decode timing:', 'strata decode service:')),
             'four warmups and one long request in one quiet process required')
     native, leaf = leaf_reader.evidence(text, samples, 4, arm == 'leaves')

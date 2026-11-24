@@ -791,6 +791,77 @@ class SplitGenerationTest(unittest.TestCase):
             bench.Suite("", "", 131072, 1, True, generation_input_case=lg.SPLIT_INPUT_CASE)
 
 
+
+class DossierGenerationTest(unittest.TestCase):
+    def suite(self, context=262144, runs=1, **kwargs):
+        return bench.Suite("http://localhost", "", context, runs, True, log=lambda _: None,
+            want_long_generation=True, long_generation_only=True,
+            generation_workload=lg.DOSSIER_WORKLOAD, workload_id="dossier-wire", **kwargs)
+
+    def test_count_frozen_body_and_observed_acceptance_in_both_receipts(self):
+        for accepted, weak in ((160, True), (161, False)):
+            with self.subTest(accepted=accepted), tempfile.TemporaryDirectory() as tmp:
+                journal = bench.RequestJournal(Path(tmp))
+                suite = self.suite(journal=journal)
+                def timed(_base, _key, messages, cap, think, **kwargs):
+                    body = bench.chat_body(messages, cap, think, request_overrides=kwargs["request_overrides"])
+                    self.assertEqual(body, count.call_args.args[2])
+                    self.assertTrue(think)
+                    self.assertTrue(body["chat_template_kwargs"]["enable_thinking"])
+                    self.assertEqual(cap, 16384)
+                    raw = response(offered=400, accepted=accepted)
+                    raw["request_sha256"] = hashlib.sha256(json.dumps(body).encode()).hexdigest()
+                    raw["usage"]["prompt_tokens"] = raw["timings"]["prompt_n"] = 41000
+                    return raw
+                with patch.object(bench, "count_chat_body_tokens", return_value=41000) as count, \
+                        patch.object(bench, "chat", side_effect=timed):
+                    suite.run_long_generation()
+                result = suite.out["long_generation"]
+                self.assertTrue(result["complete"])
+                self.assertFalse(result["classification"]["qualified"])
+                sample, = result["workloads"][lg.DOSSIER_WORKLOAD]["requests"]
+                rows = [json.loads(line) for line in (Path(tmp) / "requests.jsonl").read_text().splitlines()]
+                start, = (row for row in rows if row["kind"] == "start")
+                end, = (row["sample"] for row in rows if row["kind"] == "result")
+                self.assertEqual(start["input_case"], lg.DOSSIER_WORKLOAD)
+                for row in (sample, end):
+                    self.assertEqual(row["count_preflight_body_sha256"], start["request_sha256"])
+                    self.assertEqual(row["counted_input_tokens"], 41000)
+                    self.assertTrue(row["eligible"])
+                    self.assertIs(row["weak_draft_observed"], weak)
+
+    def test_out_of_bounds_count_stops_before_inference(self):
+        for ctx, prompt in ((262144, 32767), (262144, 65537), (81920, 65536)):
+            with self.subTest(context=ctx, prompt=prompt):
+                suite = self.suite(context=ctx)
+                with patch.object(bench, "count_chat_body_tokens", return_value=prompt) as count, \
+                        patch.object(bench, "chat") as chat:
+                    with self.assertRaises(bench.EngineRequestError):
+                        suite.run_long_generation()
+                self.assertEqual(count.call_count, 1)
+                chat.assert_not_called()
+                self.assertFalse(suite.out["long_generation"]["complete"])
+
+    def test_timed_body_mismatch_is_ineligible_in_journal_and_stops_next_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            suite = self.suite(runs=2, journal=bench.RequestJournal(Path(tmp)))
+            raw = response(offered=400, accepted=160)
+            raw["request_sha256"] = "b" * 64
+            raw["usage"]["prompt_tokens"] = raw["timings"]["prompt_n"] = 41000
+            with patch.object(bench, "count_chat_body_tokens", return_value=41000) as count, \
+                    patch.object(bench, "chat", return_value=raw) as chat:
+                with self.assertRaises(bench.EngineRequestError):
+                    suite.run_long_generation()
+            self.assertEqual((count.call_count, chat.call_count), (1, 1))
+            rows = [json.loads(line) for line in (Path(tmp) / "requests.jsonl").read_text().splitlines()]
+            journal_sample, = (row["sample"] for row in rows if row["kind"] == "result")
+            report_sample, = suite.out["long_generation"]["workloads"][lg.DOSSIER_WORKLOAD]["requests"]
+            for row in (journal_sample, report_sample):
+                self.assertFalse(row["speed_eligible"])
+                self.assertFalse(row["weak_draft_observed"])
+            self.assertFalse(suite.out["long_generation"]["complete"])
+
+
 @unittest.skipUnless(os.environ.get('STRATA_BENCH_REAL_PACK'), 'optional pinned real tokenizer fixture')
 class RealPackExactCounts(unittest.TestCase):
     def test_boundary_bodies_with_real_tokenizer_without_inference(self):
@@ -836,6 +907,21 @@ class RealPackExactCounts(unittest.TestCase):
                         body_sha256=hashlib.sha256(json.dumps(body).encode()).hexdigest(),
                         token_ids_sha256=hashlib.sha256(json.dumps(ids,separators=(',',':')).encode()).hexdigest(),
                         native_engine_executed=False,physical_engine_rows_qualified=False)),flush=True)
+                messages = lg.evidence_dossier_messages(0, "dflash2-snapshot-evidence-dossier-v1")
+                body = bench.chat_body(messages, lg.MAX_OUTPUT_TOKENS, lg.THINKING,
+                    request_overrides={"chat_template_kwargs": {"enable_thinking": lg.THINKING},
+                                       "reasoning_budget_tokens": 0})
+                counted = bench.count_chat_body_tokens(base, "", body, 30)
+                normalized, tools, kwargs = openai_to_messages(service.with_shared(body, "openai"))
+                ids = service.encode_prompt(normalized, tools, kwargs, store=False)
+                self.assertEqual(counted, len(ids))
+                self.assertGreaterEqual(counted, lg.MIN_INPUT_TOKENS)
+                self.assertLessEqual(counted, lg.DOSSIER_MAX_INPUT_TOKENS)
+                self.assertLessEqual(counted + lg.MAX_OUTPUT_TOKENS + lg.CONTEXT_RESERVE, 131072)
+                print("DOSSIER_REAL_PACK " + json.dumps(dict(
+                    counted_input_tokens=counted, maximum_output_tokens=lg.MAX_OUTPUT_TOKENS,
+                    body_sha256=hashlib.sha256(json.dumps(body).encode()).hexdigest(),
+                    native_engine_executed=False)), flush=True)
         finally:
             httpd.shutdown();httpd.server_close();worker.join(3)
         self.assertFalse(worker.is_alive())

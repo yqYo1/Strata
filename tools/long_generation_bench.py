@@ -52,6 +52,80 @@ WORKLOADS = {
 }
 
 
+DOSSIER_WORKLOAD = "evidence-dossier"
+DOSSIER_VERSION = "evidence-dossier-v1"
+DOSSIER_MAX_INPUT_TOKENS = 65536
+DOSSIER_WORKLOAD_SPEC = {
+    "expected_mtp": "weak",
+    "instruction": (
+        "Review the fictional evidence packet. Write an audit of the proposed "
+        "efficiency and stability claims, with at least eight materially different "
+        "examples from the documents. Show conversions when possible. Cite the "
+        "source ID and the replication ID in each example. Identify a direction "
+        "reversal, a normalization artifact, a comparison with incompatible "
+        "windows, and at least one case where the replication is genuinely "
+        "compatible with the primary record. Explain which conclusions remain "
+        "supported after those corrections and design a focused follow-up for "
+        "each unresolved measurement type. Use the records to make decisions. "
+        "Provide the full audit with the evidence and calculations in the response."
+    ),
+}
+WORKLOAD_SPECS = {**WORKLOADS, DOSSIER_WORKLOAD: DOSSIER_WORKLOAD_SPEC}
+
+
+def evidence_dossier_messages(run, workload_id):
+    """Generate a bounded, deterministic packet of fictional methods records."""
+    sites = ("Loam", "Quince", "Dune", "Tern", "Sedge", "Aster", "Mica", "Thyme")
+    methods = (
+        ("pressure", "kilopascals", "pascals", 1000),
+        ("flow", "litres per minute", "millilitres per minute", 1000),
+        ("mass", "grams", "milligrams", 1000),
+        ("delay", "seconds", "milliseconds", 1000),
+    )
+    documents = []
+    for number in range(216):
+        site = sites[number % len(sites)]
+        outcome, units, small_units, factor = methods[(number // 7) % len(methods)]
+        baseline = 28 + (29 * number) % 79
+        change = ((13 * number) % 23) - 11
+        trial = baseline + change
+        minutes = 18 + (number % 7) * 3
+        replicates = (number % 4) + 3
+        omit = "omitted" if number % 5 == 0 else "included"
+        window = minutes - 3 if number % 6 == 0 else minutes
+        replicate_trial = trial if number % 11 else baseline - change
+        normalization_note = "The summary presents one reading per station for both arms."
+        if number % 9 == 0:
+            normalization_note = (
+                f"The dashboard compares a reference aggregate of {4 * baseline} from four stations with "
+                f"a trial aggregate of {8 * trial} from eight stations. It labels both values per station. "
+                "The calibration sheet identifies both as sums with no division already applied."
+            )
+        documents.append(
+            f"Record P{number:03d}, site {site}. The protocol measures {outcome} over "
+            f"{minutes} minutes. The displayed reference and trial medians are "
+            f"{baseline} and {trial} {units}. The table labels these readings as "
+            "unadjusted. Empty instrument intervals are excluded from the median "
+            "but their duration is included in the log. The protocol requires the "
+            "same observation window and the same empty-interval treatment before "
+            "combining measurements. A reviewer proposed pooling records with the "
+            "same outcome using just the site label. That proposal has not been "
+            "approved and the individual calibration sheets are authoritative.\n"
+            f"Replication R{number:03d} uses {replicates} consecutive runs, each "
+            f"with a {window}-minute observation window. It {omit} the last warmup "
+            f"from the result. It records the reference as {baseline * factor} and "
+            f"the trial as {replicate_trial * factor} {small_units}. The summary "
+            "rounds to whole display units only after aggregation. The operator "
+            "says that the baseline console was left in its default configuration. "
+            + normalization_note
+        )
+    return [
+        {"role": "system", "content": "Use only the supplied fictional evidence. Explain the audit in the final response."},
+        {"role": "user", "content": f"[{DOSSIER_VERSION} run {run} {workload_id}]\n"
+         + "\n\n".join(documents) + "\n\nTask:\n" + DOSSIER_WORKLOAD_SPEC["instruction"]},
+    ]
+
+
 def sampling_plan(profile="greedy", seed=None):
     """Keep legacy wire requests; opt in to a separate reproducible distribution.
 
@@ -183,4 +257,37 @@ def split_sample_eligibility(raw, sample, proof, maximum=MAX_OUTPUT_TOKENS, cont
         input_case=SPLIT_INPUT_CASE, target_input_tokens=SPLIT_TARGET_INPUT_TOKENS,
         counted_input_tokens=proof.get("counted_input_tokens"), count_preflight_body_sha256=sha,
         native_route_qualified=False, timing_frontend_state="post-count-preflight")
+    return result
+
+
+def dossier_sample_eligibility(raw, sample, proof, maximum=MAX_OUTPUT_TOKENS, context=None):
+    """Apply the same counted-body evidence in the journal and the final report."""
+    result = sample_eligibility(raw, sample, maximum=maximum, context=context)
+    proof = proof if isinstance(proof, dict) else {}
+    prompt = (raw.get("usage") or {}).get("prompt_tokens")
+    read = (raw.get("timings") or {}).get("prompt_n")
+    cached = sample.get("reused_tokens")
+    counted = proof.get("counted_input_tokens")
+    sha = proof.get("body_sha256")
+    errors = []
+    if type(context) is not int or context <= 0:
+        errors.append("evidence dossier needs known context and output room")
+    if (type(prompt) is not int or type(read) is not int or type(cached) is not int or
+            not MIN_INPUT_TOKENS <= prompt <= DOSSIER_MAX_INPUT_TOKENS or
+            (read, cached) != (prompt, 0)):
+        errors.append("evidence dossier needs matching actual prompt/read counts and zero reuse")
+    if (not isinstance(sha, str) or len(sha) != 64 or
+            any(c not in "0123456789abcdef" for c in sha) or
+            raw.get("request_sha256") != sha or sample.get("request_sha256") != sha or
+            proof.get("input_case") != DOSSIER_WORKLOAD or
+            type(counted) is not int or counted != prompt):
+        errors.append("evidence dossier timed body or count differs from preflight")
+    result["ineligible_reasons"].extend(errors)
+    result["speed_ineligible_reasons"].extend(errors)
+    eligible = not result["ineligible_reasons"]
+    result.update(eligible=eligible, agreement_eligible=eligible,
+        speed_eligible=not result["speed_ineligible_reasons"],
+        input_case=DOSSIER_WORKLOAD, counted_input_tokens=counted,
+        count_preflight_body_sha256=sha, timing_frontend_state="post-count-preflight",
+        weak_draft_observed=bool(eligible and 5 * sample["drafts_accepted"] <= 2 * sample["drafts_offered"]))
     return result
