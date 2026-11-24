@@ -39782,5 +39782,39 @@
     "schedulable_now": false,
     "finding": "DFlash2 draft clocks are host elapsed intervals including queue completion. Expert jobs are work counts; physical PCIe traffic remains unknown.",
     "consumer": "Track verifier width and emitted count against the same-binary clean reference before interpreting a clock split. Bound observer overhead."
+  },
+  "dflash2-pack-host-pipeline-20261124": {
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "stage": "reviewed",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-pack-host-pipeline-20261124/report.md",
+    "report_bytes": 7876,
+    "report_sha256": "f6802d4df2319ce24b6cacb408db3f65078d5a58af70615d8281a6f502c8d03a",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-pack-pipeline-20261124-native-review/review.json",
+    "review_sha256": "58945f38e520d72f1fe6f7a6e67fe3a1e50e0d8a37251fedeef55df98b91c4e5",
+    "schedulable_now": false,
+    "finding": "The review distinguishes pack activation from steady-state draft clocks. One in-order queue can preserve tensor submission order. A multi-queue design needs explicit event edges and a drain before retiring a slot.",
+    "consumer": "First bound the measured handoff interval. Compare serial and two-slot pack loading only if activation is material and the packed bytes and allocation budget match."
+  },
+  "dflash2-direct-attention-bank-composition-20261124": {
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "stage": "reviewed",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-direct-attention-bank-composition-20261124/report.md",
+    "report_bytes": 10193,
+    "report_sha256": "482cfbcfcf9c3b8744c597a7baefccb4085280cf90d3ac4c48d7e97ff1c50ff8",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-direct-attention-20261124-native-review/review.json",
+    "review_sha256": "c221631568cc51342cf50339516af3a540dfa14469c7d285dc61d1da4278ad38",
+    "schedulable_now": false,
+    "finding": "The proposed direct attention-output writer has a separate correctness gate. Requested D2D bytes express the comparison work. The reviewed partial final window fits the split range.",
+    "consumer": "Exercise 84,721 tokens with an actual 2,800-row final piece in matched copy/direct arms before combining direct writes with KV retention.",
+    "writer": {
+      "path": "src/prefill/sycl/native16.cpp",
+      "sha256": "99a2e73c2f1cef6a2cf5e400e016b0635546cffaeea011b6b2be498af6f2124a"
+    }
   }
 }
