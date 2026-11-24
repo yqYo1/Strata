@@ -10727,18 +10727,15 @@ The 16,385-token check generates four tokens. The full check consumes
 captures a 2,046-row DFlash2 tail, completes the commit and refill drain,
 and exits 0. Xe reports zero fresh faults.
 
-The native serving check will exercise the largest legal input at a
+The native serving controller exercises the largest legal input at a
 one-token output budget. GEN reserves eight extra slots. The plan sends
 82 / 262,136 rejected / 262,135 admitted / 82 input tokens to the same
-DFlash2 process. It checks the observed ordinary fallback and executor,
+DFlash2 process with the measured direct writer selected. It checks the
+observed ordinary fallback, executor and direct stores,
 BF16 device and host extents, the last admitted prompt slot, cache refill,
 short-request state and closed owners. The mode16 relocated allocator
 has a 131,072-row limit. This case checks safety of the route above that
-limit. The draft at
-`/tmp/strata-dflash2-max-serving-context.tuzlgb57/serving-boundary.patch`
-has SHA-256 `b6d83ac1e5e3661a7dcb389134701bec1b3972aa9ef16b347689dc4b829f1c9f`.
-It passed patch and syntax checks. Commit its exact inputs and plan after
-the frozen nine-process comparison, then execute it.
+limit. [Native serving boundary controller](../bench/sycl/dflash2_prefill_window_serving_boundary.py)
 
 Live server RESTORE remains pending. On the measured source, parking
 requires a populated MTP ring. The DFlash2
@@ -11150,6 +11147,16 @@ drop by 120,795,955,200 bytes and the input copy counters match exactly.
 The owned process exits 0 with all 15 model assets verified and zero new
 Xe faults. Full draft tap payload, sustained generation and clean speed
 have separate checks.
+
+The input-borrow admission closes at `6d41e26f9` with copied output.
+All 690 eligible input spans borrow their existing GPU buffer. This
+removes 115,762,790,400 requested GPU-local copy bytes and preserves all
+720 output stores. Target-state fingerprints, the first verifier window,
+expert work, cache refill, KV and DFlash2 coverage, and 32 generated
+tokens per request match the original control. Ownership and all 15
+model asset checks pass with zero fresh Xe faults. The quiet reader
+comparison can reuse the existing input receipt parser, replayed against
+all three copied requests in the last quiet control.
 
 The quiet follow-up uses `--longer` at 122,881 inputs after the matched
 direct admission. It compares copy and direct in three counterbalanced

@@ -118,7 +118,8 @@ def save(row):
     bank.stage.write(bank.RESULT, result)
 
 
-def run_case(plan, path, case, env, requests, inspect_case):
+def run_case(plan, path, case, env, requests, inspect_case, *, request_reader=model.request,
+             limits=model.LIMITS):
     cursor, = (s.removeprefix('-- cursor: ') for s in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if s.startswith('-- cursor: '))
@@ -135,7 +136,7 @@ def run_case(plan, path, case, env, requests, inspect_case):
         outcome['info'] = model.INFO
         reuse = plan['cases'][case].get('reused', [0] * len(requests))
         for (ids, budget), reused_tokens in zip(requests, reuse, strict=True):
-            done = model.request(io, ids, budget, reused_tokens=reused_tokens)
+            done = request_reader(io, ids, budget, reused_tokens=reused_tokens)
             outcome['requests'].append(done)
             print(case, done, flush=True)
         io.send(b'QUIT\n')
@@ -143,7 +144,7 @@ def run_case(plan, path, case, env, requests, inspect_case):
 
     try:
         entry, _, stderr = owner.run('model', plan['cases'][case]['command'], env, bank.P,
-                                     interaction=interact, **model.LIMITS)
+                                     interaction=interact, **limits)
         outcome['native_exit_code'] = entry.get('exit_code')
         identity = entry.get('direct_identity', {})
         outcome['native_identity'] = {k: identity.get(k) for k in ('pid', 'start_ticks')}
