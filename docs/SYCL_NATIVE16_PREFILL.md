@@ -10880,9 +10880,9 @@ experts differ as planned. The trained profile raises measured CPU job
 counts by 7.57–8.19% over the stock profile on these six synthetic cases.
 Stock remains the reference for the next workload-specific comparison.
 
-The causal replay uses only the first 64, 256 or 1,024 verifier windows of the closed 33,287-input prose request to select a
-profile for the suffix. These boundaries follow 107, 408 and 1,594
-emitted tokens. The full new ranks reduce suffix CPU jobs by 5.23%, 15.00%
+The causal replay uses only the first 64, 256 or 1,024 verifier windows
+of the closed 33,287-input prose request to select a profile for the suffix.
+These boundaries follow 107, 408 and 1,594 emitted tokens. The full new ranks reduce suffix CPU jobs by 5.23%, 15.00%
 and 18.91%, with 818–956 new experts. At the 256-window boundary, matching
 96-slot limits and gain thresholds gives 131,382 fewer suffix jobs from
 unique-expert counts and 147,795 from routed-row counts against 4,513,444.
@@ -10896,10 +10896,10 @@ then compare on an independent sustained workload. These forecasts
 describe one recorded routing sequence.
 [Replay controller](../bench/sycl/dflash2_causal_rank_replay.py)
 
-The V1 case outputs at `dflash2-expert-rank-live-check-v1/{stock,trained}`
-are eligible for retirement after preserving the original failure and the V2
-replacement. The inventory covers 60 files and 15,051,769 bytes. Its digest
-for sorted paths, sizes and hashes is
+Retired the V1 outputs at `dflash2-expert-rank-live-check-v1/{stock,trained}`
+after preserving the original failure and the V2 replacement in Git. The
+inventory covers 60 files and 15,051,769 bytes. Its digest for sorted paths,
+sizes and hashes is
 `8b159f49a6ee9e1881ff5074ac246372943568f51fe5ba799ebeb765622b18b0`. The raw
 prose route and engine log still support the bounded placement fixture.
 
