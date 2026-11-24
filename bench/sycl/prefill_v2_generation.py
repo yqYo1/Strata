@@ -18,9 +18,12 @@ TERMINAL = 'd5d60596f40225727797ab9d18e630a1883ce1de'
 RESTORE = '1697efe2f16cd35927c3ab320304633fa395f5b4'
 
 
-def baseline():
-    native = bank.previous.read(upload.build.ROOT / 'record.json')
-    upload.build.context().check(native)
+def baseline(*, historical=False):
+    if historical:
+        *_, native = upload.build.checked_upload_project(executable_required=False)
+    else:
+        native = bank.previous.read(upload.build.ROOT / 'record.json')
+        upload.build.context().check(native)
     measured = upload.experiment('time')
     speed = bank.previous.read(measured.ROOT / 'record.json')
     timing = bank.previous.historic(upload.UPLOAD_TIMING, upload.KEYS['time'])

@@ -38,7 +38,7 @@ def candidate(base):
 
 
 def inputs(revision):
-    base = generation.sync_baseline()
+    base = generation.sync_baseline(historical=True)
     native = candidate(base)
     proof = bank.previous.historic(generation.COMMIT_ORDER_GATE, device.KEY)
     positive = proof['outcomes']['long']

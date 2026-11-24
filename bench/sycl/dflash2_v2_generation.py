@@ -21,8 +21,8 @@ ORDER = ('dflash2',) * 3
 WORKLOADS = suite.evidence_reader.SUSTAINED_WORKLOADS
 
 
-def baseline():
-    row = v2.baseline()
+def baseline(*, historical=False):
+    row = v2.baseline(historical=historical)
     gate = bank.previous.historic(NATIVE_GATE, model.KEY)
     plan, result = gate['plan'], gate['outcome']
     require(gate['complete'] and gate['passed'] and gate['ownership_closed'] and not gate['active']
@@ -37,8 +37,8 @@ def baseline():
                 validated_dflash2_args=plan['command'][2:])
 
 
-def sync_baseline():
-    row = baseline()
+def sync_baseline(*, historical=False):
+    row = baseline(historical=historical)
     gate = bank.previous.historic(COMMIT_ORDER_GATE, 'dflash2_v2_commit_order_v1')
     plan = gate['plan']
     require(gate['stage'] == 'closed' and gate['passed'] and gate['complete'] and gate['ownership_closed']

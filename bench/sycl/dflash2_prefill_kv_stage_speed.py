@@ -52,7 +52,7 @@ def baseline(read=READ):
             and replay['requests_matched'] == RUNS and replay['matched_native_work_after_JSON']
             and all(p['native_exit_code'] == 0 and p['fresh_faults'] == [] for p in timing['processes']),
             'recover the original timing stop and successful footer replay')
-    base = generation.sync_baseline()
+    base = generation.sync_baseline(historical=True)
     native = bank.previous.read(build.DFLASH2_KV_ROOT / 'record.json')
     build.context('dflash2-kv-stage').check(native)
     proof = bank.previous.historic(MODEL_PROOF, gate.KEY)

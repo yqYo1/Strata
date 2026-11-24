@@ -81,7 +81,8 @@ def project(expected=None):
     return native, foundation, source, recipe, proof
 
 
-def checked_upload_project(expected=None):
+def checked_upload_project(expected=None, *, executable_required=True):
+    """Recover exact parent inputs, with a live executable for a V2 comparison."""
     native, foundation, source, recipe, proof = project(expected)
     baseline = bank.previous.read(ROOT / 'record.json')
     base_hashes = bank.stage.hashed(source)
@@ -89,10 +90,13 @@ def checked_upload_project(expected=None):
             and baseline['ownership_closed'] and not baseline['active']
             and builder.compact(baseline) == bank.basis.validation.committed(bank.RESULT, (KEY,))
             and baseline['source_files'] == base_hashes and baseline['recipe'] == recipe
-            and baseline['projection'] == proof
-            and baseline['external_inputs'] == native['external_inputs']
-            and bank.sha(baseline['binaries']['strata']['path']) == baseline['binaries']['strata']['sha256'],
-            'recover the qualified split-prefill baseline and preserve its executable')
+            and baseline['projection'] == proof and baseline['foundation'] == foundation
+            and baseline['external_inputs'] == native['external_inputs'],
+            'recover the qualified split-prefill source, recipe and build receipt')
+    if executable_required:
+        binary = baseline['binaries']['strata']
+        require(bank.sha(binary['path']) == binary['sha256'],
+                'preserve the executable for a live V2 comparison')
     return native, foundation, source, recipe, proof, baseline
 
 
@@ -118,7 +122,8 @@ def shared_gate_project(expected=None):
 
 
 def dflash2_kv_project(expected=None):
-    native, foundation, source, recipe, proof, baseline = checked_upload_project(expected)
+    native, foundation, source, recipe, proof, baseline = checked_upload_project(
+        expected, executable_required=False)
     base_hashes = baseline['source_files']
     for path in DFLASH2_KV_PATHS:
         before = source[path]

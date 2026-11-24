@@ -23,25 +23,8 @@ FIXTURES = ('src/core/conversation_validation_test.cpp',
             'src/core/conversation_snapshot_test.cpp', 'cmake/sycl_backend.cmake')
 
 
-def recover_v2(expected):
-    native, foundation, files, recipe, proof = base.project(expected)
-    previous = bank.previous.read(base.ROOT / 'record.json')
-    require(previous['stage'] == 'built' and previous['passed'] and previous['complete']
-            and previous['ownership_closed'] and not previous['active']
-            and builder.compact(previous) == bank.basis.validation.committed(bank.RESULT, (base.KEY,))
-            and previous['source_files'] == bank.stage.hashed(files)
-            and previous['recipe'] == recipe and previous['projection'] == proof
-            and previous['external_inputs'] == native['external_inputs'],
-            'recover the previously measured V2 source and recipe from Git')
-    return native, foundation, files, recipe, proof, previous
-
-
 def project(expected=None):
-    # Construct from the older recipe even after its executable is retired.
-    # The ordinary live-baseline reader retains its binary checks.
-    source = bank.basis.core.source.device.load_module('target_snapshot_parent', base.__file__)
-    source.checked_upload_project = recover_v2
-    native, foundation, files, recipe, proof = source.dflash2_kv_project(expected)
+    native, foundation, files, recipe, proof = base.dflash2_kv_project(expected)
     parent = bank.previous.read(PARENT_ROOT / 'record.json')
     original = bank.stage.hashed(files)
     require(parent['stage'] == 'built' and parent['complete'] and parent['passed']
