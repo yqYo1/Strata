@@ -13,8 +13,9 @@ import dflash2_width_admission as audit
 
 bank, basis, require = snapshot.bank, snapshot.basis, snapshot.require
 model = native.model
-KEY = "dflash2_width_admission_v2"
+KEY = "dflash2_width_admission_v3"
 STARTUP_REFUSAL = "7a79943bd195373c777548142db055b071c5b3e6"
+LOAN_AUDIT_REFUSAL = "e0134492b1551b7695d2082d168fe59a7020a082"
 ROOT = bank.B / KEY.replace("_", "-")
 TEST = bank.P / "bench/sycl/test_dflash2_width_admission.py"
 ORDER = ("host", "4", "5")
@@ -32,7 +33,7 @@ CONTROLLERS = (
     TEST, bank.P / native.THIS,
 )
 OBSERVER = dict(
-    STRATA_TRACE="1", STRATA_SYCL_Q6_ROUTE_AUDIT="1", STRATA_SYCL_CACHE_LOAN_AUDIT="1",
+    STRATA_TRACE="1", STRATA_SYCL_Q6_ROUTE_AUDIT="1", STRATA_SYCL_CACHE_LOAN_AUDIT="0",
     STRATA_SYCL_CACHE_SCRATCH_LEASE="0", STRATA_PREFILL_RELEASE_HEADS="1",
     STRATA_PREFILL_RELEASE_MTP_EXPERTS="0", STRATA_SYCL_DECODE_Q6_DPAS_HEAD="1",
 )
@@ -46,6 +47,12 @@ def inputs(revision):
             and refused["head_release"] == refused["cache_scratch_lease"] == "0"
             and not refused["initial_gate_passed"] and not refused["native_generation_executed"],
             "preserve the failed initialization and verify physical process closure")
+    incompatible = bank.previous.historic(LOAN_AUDIT_REFUSAL, "dflash2_width_admission_v2_startup_refusal")
+    require(incompatible["direct_child_reaped"] and incompatible["session_empty"]
+            and not incompatible["fresh_faults"] and incompatible["canonical_head_ready"]
+            and incompatible["cache_loan_audit"] == "1" and incompatible["cache_scratch_lease"] == "0"
+            and not incompatible["initial_gate_passed"] and not incompatible["native_generation_executed"],
+            "preserve the audited startup failure and the observed canonical head setup")
     base = snapshot.baseline()
     selected = base["snapshot_arm"]
     image = selected["binary"]
@@ -88,7 +95,7 @@ def inputs(revision):
         env = model.native_environment(base, dict(case_env, **OBSERVER))
         require(env.get("STRATA_COMMIT_SYNC") == "1" and env.get("STRATA_WATCHDOG_S") == "240"
                 and env.get("STRATA_SYCL_DECODE_Q6_DPAS_HEAD") == env.get("STRATA_PREFILL_RELEASE_HEADS") == "1"
-                and env.get("STRATA_SYCL_CACHE_SCRATCH_LEASE") == "0"
+                and env.get("STRATA_SYCL_CACHE_SCRATCH_LEASE") == env.get("STRATA_SYCL_CACHE_LOAN_AUDIT") == "0"
                 and env.get("STRATA_SYCL_DECODE_Q6_COLUMNS") == "1"
                 and env.get("STRATA_SYCL_DECODE_Q6_CENTERING", "0") == "0"
                 and env.get("STRATA_SYCL_DECODE_Q6_NATIVE_HALF", "0") == "0",
@@ -107,7 +114,7 @@ def inputs(revision):
     require(normalized[0] == normalized[1], "another native setting differs between widths")
     plan = dict(
         source_commit=revision, inputs=dict(files=len(pins), sha256=bank.signature(pins)),
-        native_sources=native_sources, previous_startup_refusal=STARTUP_REFUSAL,
+        native_sources=native_sources, startup_refusals=[STARTUP_REFUSAL, LOAN_AUDIT_REFUSAL],
         **selected, boot=base["boot"], driver=base["driver"],
         runtime_manifest=base["runtime_manifest"], model_assets_sha256=bank.signature(base["model_assets"]),
         validation=base["native_validation_probe"], drafter_assets=base["dflash2_assets"],
@@ -116,7 +123,7 @@ def inputs(revision):
         cases=cases, native_limits=model.LIMITS,
         scope="Run host accounting checks, then one fresh 82-input/32-output native request per width. "
               "Use the same smaller prefill chunk and expert cache in both arms. "
-              "Keep cache scratch borrowing off and enable the canonical head initialization prerequisite. "
+              "Disable borrowing and its observer. Keep the canonical DPAS head enabled. "
               "Require true full-width replays after the first anchor, complete commits, validated head "
               "dispatch, normal child exit and no new Xe fault. Stop on first failure. Diagnostic only.",
     )
