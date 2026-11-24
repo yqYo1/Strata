@@ -4,6 +4,7 @@ import fcntl
 import hashlib
 import json
 from pathlib import Path
+import re
 import sys
 
 sys.dont_write_bytecode = True
