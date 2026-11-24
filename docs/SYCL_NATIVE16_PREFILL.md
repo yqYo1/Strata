@@ -10740,6 +10740,12 @@ completion waits separately to locate the cost. The two further clean
 processes remain pending. Use a synthetic multi-source methods dossier for
 the next weak-acceptance screen.
 
+The first clean control in `dflash2_v2_decode_clocks_v1` reads 33217 tokens
+and emits 4111 at 12.222 tok/s after the official code subset warmups. It
+accepts 2767 of 2863 drafts and closes normally with no fresh Xe fault.
+Use the clocked process and the second clean control to check observer
+overhead and separate verifier waits from CPU expert service.
+
 #### DFlash2 KV stage retention outside the tap layers
 
 Candidate `44a2926a6` retains the aligned prefix on nine untapped QSA layers
