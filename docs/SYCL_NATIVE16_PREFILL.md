@@ -10802,8 +10802,9 @@ and 1,056.523 tok/s for the target-only snapshot. Client warm TTFT is 116.513 s
 and 116.508 s. The three paired warm PP deltas are +0.418%, −0.005% and
 +0.035%. First-use PP spans 923.343–969.236 in the parent and
 966.937–969.805 with the snapshot. All processes exit normally with no new Xe
-faults. The snapshot remains pending physical context, direct tap content and
-matched sustained decode checks. [Performance CSV](../bench/performance-records.csv).
+faults. The copy-route physical context check is now complete. Direct tap
+content and matched sustained decode remain open.
+[Performance CSV](../bench/performance-records.csv).
 The archived coherent source and recipe recover fully from Git, and all
 12 local executable hashes match the original receipt. A checks-only
 absence test identifies an active ancestor dependency on its
@@ -10814,12 +10815,26 @@ use verified historical metadata. The comparison adds no native build.
 The target snapshot standalone route at `808b938f2` pins the full-context
 reference at `0795b5ada` and the actual near-capacity restore at `962acee66`.
 It reuses the same 16,385- and 262,144-token fixtures on the snapshot build's
-linked diagnostics. The short case must match the four deterministic output
-IDs. The full case checks the final slot, zero output IDs, mixed residual
-placement, KV stage counts and the real DFlash2 handoff. The 262,128-token
-case qualifies native copy-route RESTORE near capacity. The standalone
-`dflash2_snapshot_physical_context_v1` host check passes 134 boundary cases
-and 9,459 KV hash cases. The two GPU cases are queued after the speed comparison.
+linked diagnostics. The host fixture passes 134 boundary cases and 9,459 KV hash cases. The
+16,385-token device check at `076593d51` matches all four deterministic
+output IDs. The full check at `46a668472` processes 262,143 batched rows
+(122,880 GPU and 139,263 host residual rows) and consumes the final slot with
+zero output IDs. It validates the actual KV stage and the 2,046-row DFlash2
+tail. Both native processes exit zero with no new Xe fault. The 262,128-token
+RESTORE result qualifies near-capacity copy-route server state separately.
+The matched sustained regular-code comparison requires this exact physical
+diagnostic, the existing near-capacity RESTORE and the closed long-prefill
+timing cohort. It uses only the selected engine as a paired timing factor.
+[Decode comparison](../bench/sycl/dflash2_snapshot_decode.py).
+
+The closed `dflash2-snapshot-direct-prefill-v1/{host,0,1,2,3,4,5}` scopes
+contain 430 disposable files totaling 74,740,985 bytes. The SHA-256 of
+sorted relative path, size and content-hash triples is
+`c5f79a1b35c39ab8597acec5f625969bebe455a61a8dabe0d8e95d11ca67914d`.
+The comparison at `ad8652973` retains the individual samples, bindings,
+actual routes and ownership. The matched decode preparation consumes that
+committed evidence. Retire the seven capture scopes and keep the local
+`record.json` used by exact build and precedent checks.
 
 Retire the first raw restore capture at `dflash2-target-snapshot-restore-v1`.
 The original failure, offline replay and independent passing replacement
