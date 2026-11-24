@@ -52,19 +52,20 @@ def environment(row, plan):
     return env
 
 
-def request_route(text, plan, *, direct=False):
+def request_route(text, plan, *, direct=False, read=READ, slots=window.SLOTS):
     mode = window.ARMS[plan['arm']]
-    route = window.window_result(text, mode, direct=direct)
+    rows = read - 1
+    route = window.window_result(text, mode, direct=direct, slots=slots, rows=rows)
     layout = window.workspace.one(text, 'strata prefill: layer-major candidate, ')
-    expected = dict(tokens=window.ROWS, chunk=window.store.CHUNK, residual_dtype='bf16',
-                    residual_element_bytes=2, residual_gpu_rows=window.ROWS,
-                    residual_gpu=window.ROWS * window.workspace.ROW, residual_host=0)
+    expected = dict(tokens=rows, chunk=window.store.CHUNK, residual_dtype='bf16',
+                    residual_element_bytes=2, residual_gpu_rows=rows,
+                    residual_gpu=rows * window.workspace.ROW, residual_host=0)
     require(all(layout[key] == str(value) for key, value in expected.items()),
             'quiet benchmark must execute the proven all-GPU BF16 layout')
     tap, = re.findall(r'^strata DFlash2: eager, prompt_tail_rows=2046 cold_prefix=0 '
                       r'vram_bytes=([1-9][0-9]*)$', text, re.M)
     require('strata loan audit:' not in text, 'unexpected cache-loan observer')
-    pages = speed.KV.check_clean_request(text, 0, window.ROWS, window.store.CHUNK,
+    pages = speed.KV.check_clean_request(text, 0, rows, window.store.CHUNK,
                                          reuse=True, tap_layers=gate.TAPPED_QSA_LAYERS)
     request, = re.findall(speed.generation.clock.footer.HEADER, text, re.M)
     return dict(route, kv=pages, tap_vram_bytes=int(tap), request_work=list(map(int, request)))
