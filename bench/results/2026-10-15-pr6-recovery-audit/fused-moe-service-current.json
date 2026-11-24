@@ -674327,7 +674327,7 @@
       "limits": "The server cases preserve output room. Full physical fill, public HTTP and clean prefill/decode performance have their own gates.",
       "stop": "Stop on the first source, route, input, verification or ownership failure."
     },
-    "stage": "running",
+    "stage": "failed",
     "outcomes": {
       "host": {
         "complete": true,
@@ -674345,6 +674345,61 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "short-copy": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "native_exit_code": 0,
+        "GPU_executed": true,
+        "requests": [
+          {
+            "prompt": 32769,
+            "read": 32769,
+            "reused": 0,
+            "output_hash": "da8c326d8b17883e05109f856f3fd093a3a9fde6473d42082d1f2c58be30e909",
+            "finish": "length",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768
+            ]
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "finish": "length",
+            "publications": [
+              32
+            ]
+          },
+          {
+            "prompt": 40978,
+            "read": 8209,
+            "reused": 32769,
+            "output_hash": "4ec308a86927b5455193f71ed63ddefb06069cc0575c2ad34e4899f6ba5abd05",
+            "finish": "length",
+            "publications": [
+              40961,
+              40977
+            ]
+          }
+        ],
+        "error": "RuntimeError('missing or duplicate the exact live snapshot')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "plans": [
