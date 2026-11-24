@@ -5,8 +5,10 @@
 #include "strata/kernels/cpu/iq_avx2.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <limits>
+#include <type_traits>
 #if defined(__clang__) && (defined(__znver3__) || defined(__znver3))
 #include <immintrin.h>
 #include <stdint.h>
@@ -159,6 +161,7 @@ static inline __m256i iq3xxs_pair_chunk(const uint8_t* block, int p, __m256i q8)
     return _mm256_madd_epi16(dot, _mm256_set1_epi16(2 * (gas >> 28) + 1));
 }
 
+template <bool Balanced>
 __attribute__((noinline)) void iq3xxs_pair_dot(const uint8_t* GGML_RESTRICT g,
     const uint8_t* GGML_RESTRICT u, const uint8_t* GGML_RESTRICT activation,
     float& gout, float& uout) {
@@ -167,24 +170,36 @@ __attribute__((noinline)) void iq3xxs_pair_dot(const uint8_t* GGML_RESTRICT g,
         const auto* gb = g + b * sizeof(block_iq3_xxs);
         const auto* ub = u + b * sizeof(block_iq3_xxs);
         const auto* ab = activation + b * sizeof(block_q8_K);
-        __m256i gate_pairs[4], up_pairs[4];
-        #pragma clang loop unroll(full)
-        for (int p = 0; p < 8; p += 2) {
-            const auto first = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
-                ab + offsetof(block_q8_K, qs) + 32 * p));
-            const auto gate_first = iq3xxs_pair_chunk(gb, p, first);
-            const auto up_first = iq3xxs_pair_chunk(ub, p, first);
-            const auto second = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
-                ab + offsetof(block_q8_K, qs) + 32 * (p + 1)));
-            gate_pairs[p / 2] = _mm256_add_epi32(gate_first, iq3xxs_pair_chunk(gb, p + 1, second));
-            up_pairs[p / 2] = _mm256_add_epi32(up_first, iq3xxs_pair_chunk(ub, p + 1, second));
+        __m256i gi, ui;
+        if constexpr (Balanced) {
+            __m256i gate_pairs[4], up_pairs[4];
+            #pragma clang loop unroll(full)
+            for (int p = 0; p < 8; p += 2) {
+                const auto first = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
+                    ab + offsetof(block_q8_K, qs) + 32 * p));
+                const auto gate_first = iq3xxs_pair_chunk(gb, p, first);
+                const auto up_first = iq3xxs_pair_chunk(ub, p, first);
+                const auto second = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
+                    ab + offsetof(block_q8_K, qs) + 32 * (p + 1)));
+                gate_pairs[p / 2] = _mm256_add_epi32(gate_first, iq3xxs_pair_chunk(gb, p + 1, second));
+                up_pairs[p / 2] = _mm256_add_epi32(up_first, iq3xxs_pair_chunk(ub, p + 1, second));
+            }
+            // Reduce the eight chunks at depth three before the per-block FMA.
+            // Each merged lane is bounded by 8 * 4 * 62 * 128 * 31 < INT32_MAX.
+            gi = _mm256_add_epi32(_mm256_add_epi32(gate_pairs[0], gate_pairs[1]),
+                                  _mm256_add_epi32(gate_pairs[2], gate_pairs[3]));
+            ui = _mm256_add_epi32(_mm256_add_epi32(up_pairs[0], up_pairs[1]),
+                                  _mm256_add_epi32(up_pairs[2], up_pairs[3]));
+        } else {
+            gi = ui = _mm256_setzero_si256();
+            #pragma clang loop unroll(full)
+            for (int p = 0; p < 8; ++p) {
+                const auto a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
+                    ab + offsetof(block_q8_K, qs) + 32 * p));
+                gi = _mm256_add_epi32(gi, iq3xxs_pair_chunk(gb, p, a));
+                ui = _mm256_add_epi32(ui, iq3xxs_pair_chunk(ub, p, a));
+            }
         }
-        // Reduce the eight chunks at depth three before the per-block FMA.
-        // Each merged lane is bounded by 8 * 4 * 62 * 128 * 31 < INT32_MAX.
-        const auto gi = _mm256_add_epi32(_mm256_add_epi32(gate_pairs[0], gate_pairs[1]),
-                                        _mm256_add_epi32(gate_pairs[2], gate_pairs[3]));
-        const auto ui = _mm256_add_epi32(_mm256_add_epi32(up_pairs[0], up_pairs[1]),
-                                        _mm256_add_epi32(up_pairs[2], up_pairs[3]));
         uint16_t gd, ud;
         float ad;
         std::memcpy(&gd, gb + offsetof(block_iq3_xxs, d), sizeof gd);
@@ -465,11 +480,22 @@ bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* ac
         (a < o + output_bytes && o < a + f.act_bytes))
         return false;
     const auto* activation = static_cast<const uint8_t*>(act);
-    for (int r = r0; r < r1; ++r) {
-        const auto* g = blob + size_t(r) * f.gu_row;
-        float gv, uv;
-        iq3xxs_pair_dot(g, g + f.up_off, activation, gv, uv);
-        ff[r] = (gv / (1.f + std::exp(-gv))) * uv;
+    static const bool balanced = [] {
+        const char* value = std::getenv("STRATA_IQ3_PAIR_REDUCTION");
+        return value && std::strcmp(value, "tree") == 0;
+    }();
+    const auto run_rows = [&](auto reduction) {
+        for (int r = r0; r < r1; ++r) {
+            const auto* g = blob + size_t(r) * f.gu_row;
+            float gv, uv;
+            iq3xxs_pair_dot<decltype(reduction)::value>(g, g + f.up_off, activation, gv, uv);
+            ff[r] = (gv / (1.f + std::exp(-gv))) * uv;
+        }
+    };
+    if (balanced) {
+        run_rows(std::true_type{});
+    } else {
+        run_rows(std::false_type{});
     }
     return true;
 }

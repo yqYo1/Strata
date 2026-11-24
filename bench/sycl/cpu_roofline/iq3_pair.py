@@ -30,6 +30,10 @@ ROOT = B / 'cpu-iq3-pair-dispatch-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY = 'cpu_iq3_pair_dispatch_v3'
 PRIOR_EVIDENCE = 'ee5a8e41307a97bdb7155004e4bc9c2a33af5e33'
+REDUCTION_EVIDENCE = 'cf0a6b175261f013099965dcb9ca19d1e840ad2d'
+REDUCTION_PROPOSAL = 'fb7af68e907ed4681e9650691d84b8c08dc192c5'
+REDUCTIONS = ('linear', 'tree')
+REDUCTION_TRIAL = False
 GGML = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011')
 GGML_REV = '3cf03257f219afbe7334045ff7c6a06ac68c627d'
 SDK = B / 'prefill-expert-staging-v3/sdk-inputs.json'
@@ -153,6 +157,14 @@ def save(row):
     data = json.loads(RESULT.read_text()); data[KEY] = compact(row); write(RESULT, data)
 
 
+def paired_launch(environment, arm):
+    paired = 1 if REDUCTION_TRIAL else arm
+    child = dict(environment, STRATA_IQ3_PAIR=str(paired))
+    if REDUCTION_TRIAL:
+        child['STRATA_IQ3_PAIR_REDUCTION'] = REDUCTIONS[arm]
+    return child, paired
+
+
 def prepare():
     need(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'one fresh component plan')
     revision = git(P, 'rev-parse', 'HEAD').decode().strip()
@@ -162,8 +174,26 @@ def prepare():
          len(prior['decision']['cells']) == 8 and all(c['component_gain_qualified'] for c in prior['decision']['cells']),
          'committed direct component gain required before production entry')
     helper = 'src/kernels/cpu/iq_single_avx2.cpp'
-    need(hashlib.sha256(git(P, 'show', prior['source_commit'] + ':' + helper)).hexdigest() == digest(P / helper),
-         'preserve measured pair arithmetic')
+    if REDUCTION_TRIAL:
+        dispatch = json.loads(git(P, 'show', REDUCTION_EVIDENCE + ':' +
+                                  str(RESULT.relative_to(P))))['cpu_iq3_pair_dispatch_v3']
+        need(dispatch['stage'] == 'closed' and dispatch['passed'] and dispatch['complete']
+             and dispatch['ownership_closed'] and dispatch['correctness']['passed']
+             and all(c['component_gain_qualified'] for c in dispatch['decision']['cells']),
+             'recover the measured paired production entry')
+        need(git(P, 'merge-base', REDUCTION_PROPOSAL, revision).decode().strip() == REDUCTION_PROPOSAL,
+             'committed balanced-loop proposal required')
+        def paired_dot_source(revision):
+            source = git(P, 'show', revision + ':' + helper)
+            start = source.index(b'static inline __m256i iq3xxs_pair_chunk(')
+            end = source.index(b'__attribute__((noinline)) void iq2s_dot', start)
+            return source[start:end]
+
+        need(paired_dot_source(dispatch['source_commit']) == paired_dot_source(REDUCTION_PROPOSAL + '^'),
+             'linear IQ3_XXS dot and chunk must match the qualified production source')
+    else:
+        need(hashlib.sha256(git(P, 'show', prior['source_commit'] + ':' + helper)).hexdigest() == digest(P / helper),
+             'preserve measured pair arithmetic')
     need(git(GGML, 'rev-parse', 'HEAD').decode().strip() == GGML_REV, 'official GGML revision')
     project, dependency = pins(P, revision, PROJECT), pins(GGML, GGML_REV, ('ggml',))
     need(digest(SDK) == SDK_SHA, 'existing official SDK inventory changed')
@@ -176,8 +206,10 @@ def prepare():
         TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
     host = host_inventory(env)
     allowed.update(host['files'])
-    tools = {str(Path(p).resolve()):digest(p) for p in
-        (CC, CXX, '/usr/bin/cmake', '/usr/bin/ninja', '/usr/bin/git', '/usr/bin/ldd', sys.executable)}
+    commands = [CC, CXX, '/usr/bin/cmake', '/usr/bin/ninja', '/usr/bin/git', sys.executable]
+    if not REDUCTION_TRIAL:
+        commands.append('/usr/bin/ldd')
+    tools = {str(Path(command).resolve()): digest(command) for command in commands}
     allowed.update(tools)
     for directory in Path('/usr/share').glob('cmake-*/Modules'):
         for path in directory.rglob('*'):
@@ -227,6 +259,21 @@ def prepare():
         budgets=dict(build_wall=300, build_cpu=1200, build_rss=8 << 30, check_wall=60, check_text_cap=64 << 10,
             measure_wall=180, measure_rss=1 << 30,
             text_cap=1 << 20, file_cap=16 << 20, total_cap=384 << 20))
+    if REDUCTION_TRIAL:
+        row.update(reductions=list(REDUCTIONS), dispatch_reference=REDUCTION_EVIDENCE,
+                   reduction_proposal=REDUCTION_PROPOSAL)
+        row['environment'].update(STRATA_IQ3_PAIR='1', STRATA_IQ3_PAIR_REDUCTION=REDUCTIONS[0])
+        row['protocol'].update(
+            question='Does balanced integer reduction improve IQ3_XXS expert execution on Zen 3?',
+            correctness='Both reductions use the paired production entry. Require exact GGML bits, canaries, '
+                        'refusal coverage, prefill phase separation and equal real-pool output checksums.',
+            comparison='One CPU-only production library. Compare linear and tree in three counterbalanced '
+                       'fresh-process pairs. Keep paired dispatch, audit and input bytes fixed. Measure all '
+                       'eight existing 640/128-row, reuse/stream and activation-packing cells.',
+            limits='Component timing on one worker and output checks on the pool. '
+                   'Measure the five-worker pool and sustained DFlash2 model separately.')
+        row['retention'] = ('Keep the CPU-only comparison build through numerical checks and its six '
+                            'timed processes. Verify Git recovery and retire it after closure.')
     save(row)
     print('Prepared CPU-only pair plan;commit before compilation.', flush=True)
 
@@ -235,6 +282,11 @@ def load():
     row = json.loads((ROOT / 'record.json').read_text())
     data = json.loads(git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))))
     need(data[KEY] == compact(row), 'commit exact component state before next stage')
+    if REDUCTION_TRIAL:
+        need(row['reductions'] == list(REDUCTIONS) and row['order'] == list(ORDER)
+             and row['dispatch_reference'] == REDUCTION_EVIDENCE
+             and row['reduction_proposal'] == REDUCTION_PROPOSAL,
+             'reduction contrast differs from its committed plan')
     need(pins(P, row['source_commit'], PROJECT) == row['project_inputs'] and
          pins(GGML, GGML_REV, ('ggml',)) == row['ggml_inputs'], 'source drift')
     need(machine() == row['machine'] and digest(METADATA) == row['metadata_sha256'] and
@@ -360,10 +412,12 @@ def execute(stage):
         return entry, out, err
     try:
         if stage == 'build':
-            direct = json.loads(git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))))['cpu_iq3_pair_component_v2']
-            need(direct.get('retirement', {}).get('completed') and
-                 not (B / 'cpu-iq3-pair-component-v2').exists(),
-                 'retire closed direct-component generation before a new auxiliary build')
+            if not REDUCTION_TRIAL:
+                direct = json.loads(git(P, 'show', 'HEAD:' +
+                    str(RESULT.relative_to(P))))['cpu_iq3_pair_component_v2']
+                need(direct.get('retirement', {}).get('completed') and
+                     not (B / 'cpu-iq3-pair-component-v2').exists(),
+                     'retire closed direct-component generation before a new auxiliary build')
             allowed = input_map(row)
             run('configure', row['configure'], 60, cpu=120, rss=2 << 30)
             run('compile', row['build'], 240, cpu=row['budgets']['build_cpu'], rss=row['budgets']['build_rss'])
@@ -371,27 +425,36 @@ def execute(stage):
             row['build_evidence'] = build_check(row, root)
             row['binaries'] = {name:dict(path=str(ROOT / 'build' / name), sha256=digest(ROOT / 'build' / name)) for name in TARGETS}
             row['runtime_inputs'] = {}
-            for name in TARGETS:
-                _, out, _ = run('links-' + name, ['/usr/bin/ldd', str(ROOT / 'build' / name)], 10)
-                need(not any(v in out.read_text().lower() for v in ('sycl', 'libze_', 'cuda', 'amdhip', 'libur_')), 'GPU runtime linked')
-                for path in re.findall(r'(/[^\s]+)', out.read_text()):
-                    resolved = str(Path(path).resolve())
-                    need(allowed.get(resolved) == digest(resolved), 'unfrozen CPU shared library: ' + resolved)
-                    row['runtime_inputs'][resolved] = digest(resolved)
+            if REDUCTION_TRIAL:
+                actual = row['build_evidence']['external_link_inputs']
+                providers = {path: sha for path, sha in actual.items() if '.so' in Path(path).name}
+                need(providers and all(not any(marker in Path(path).name.lower() for marker in
+                     ('libsycl', 'libze_', 'libcuda', 'libamdhip', 'libur_')) for path in providers),
+                     'CPU-only actual linker inputs required')
+                row['runtime_inputs'] = providers
+            else:
+                for name in TARGETS:
+                    _, out, _ = run('links-' + name, ['/usr/bin/ldd', str(ROOT / 'build' / name)], 10)
+                    need(not any(v in out.read_text().lower() for v in
+                                 ('sycl', 'libze_', 'cuda', 'amdhip', 'libur_')), 'GPU runtime linked')
+                    for path in re.findall(r'(/[^\s]+)', out.read_text()):
+                        resolved = str(Path(path).resolve())
+                        need(allowed.get(resolved) == digest(resolved), 'unfrozen CPU shared library: ' + resolved)
+                        row['runtime_inputs'][resolved] = digest(resolved)
             row['same_build_library'] = dict(path=str(ROOT / 'build/libexpert_cpu.a'),
                 sha256=digest(ROOT / 'build/libexpert_cpu.a'))
             row['stage'] = 'built'
         elif stage == 'check':
             checks, checksums = [], []
             for case in row['check_plan']:
-                env = dict(row['environment'], STRATA_IQ3_PAIR=str(case['arm']))
+                env, paired = paired_launch(row['environment'], case['arm'])
                 entry, out, err = run(case['label'], case['argv'], row['budgets']['check_wall'],
                     cpu=60, text=row['budgets']['check_text_cap'], environment=env)
                 need(not err.stat().st_size, 'fixture stderr')
                 content = out.read_text().strip()
                 if case['kind'] == 'exact':
                     expected = ('IQ single exact PASS: 384 single and 80 paired cases, bitwise GGML parity and row canaries\n'
-                        f'IQ3 production dispatch PASS arm={case["arm"]} calls=80 nt1_rows=20480 pair_rows={10240 * case["arm"]} prefill_pair_rows=0')
+                        f'IQ3 production dispatch PASS arm={paired} calls=80 nt1_rows=20480 pair_rows={10240 * paired} prefill_pair_rows=0')
                     need(content == expected, 'complete arithmetic/phase/dispatch fixture;skip77 is not a pass')
                 else:
                     match = re.fullmatch(r'cpu_service_pool PASS observer=0 formats=7 nt=1\.\.4 cases=28 checksum_fnv1a64_le=([0-9a-f]{16})', content)
@@ -405,10 +468,11 @@ def execute(stage):
         else:
             f = row['fixture']
             need(fixture_hash(f) == f['sha256'], 'actual model range drift')
+            environment, paired = paired_launch(row['environment'], ORDER[index])
             argv = [row['binaries']['cpu_iq3_pair']['path'], f['shard'], *[str(f[k]) for k in
-                ('gate', 'up', 'down', 'blob_bytes', 'total_experts')], str(ORDER[index]), str(index)]
+                ('gate', 'up', 'down', 'blob_bytes', 'total_experts')], str(paired), str(index)]
             entry, out, err = run('measure', argv, row['budgets']['measure_wall'],
-                rss=row['budgets']['measure_rss'], environment=dict(row['environment'], STRATA_IQ3_PAIR=str(ORDER[index])))
+                rss=row['budgets']['measure_rss'], environment=environment)
             need(not err.stat().st_size, 'CPU component stderr')
             rows = [json.loads(line) for line in out.read_text().splitlines()]
             samples = [v for v in rows if v['kind'] == 'sample']
@@ -417,7 +481,7 @@ def execute(stage):
             need(len(inputs) == 1 and len(validation) == 2 and all(v['cases'] == 2016 and v['bitwise'] and
                 v['finite'] and v['inputs_unchanged'] for v in validation) and len(samples) == 40 and
                 rows[-1] == dict(kind='closed', passed=True), 'complete actual-model component output required')
-            need(inputs[0]['arm'] == ORDER[index] and inputs[0]['process'] == index and
+            need(inputs[0]['arm'] == paired and inputs[0]['process'] == index and
                 inputs[0]['experts'] == 252 and inputs[0]['group'] == 6 and
                 inputs[0]['blob_bytes'] == f['blob_bytes'], 'actual native input identity')
             if row['processes']:
@@ -425,10 +489,10 @@ def execute(stage):
                 need(all(first[k] == inputs[0][k] for k in ('CPU', 'experts', 'blob_bytes',
                     'weight_input_fingerprint_fnv1a64', 'activation_input_fingerprint_fnv1a64')),
                     'stop first actual input/core/fingerprint mismatch')
-            need(all(s['arm'] == ORDER[index] and s['process'] == index and s['wall_s'] >= .25 and
+            need(all(s['arm'] == paired and s['process'] == index and s['wall_s'] >= .25 and
                 s['passes'] < 1000000 and s['timer_s'] < .001 * s['fastest_warm_pass_s'] and
                 s['outputs_match_untimed_reference'] and s['timed_dispatch_calls'] == s['expert_calls'] and
-                s['timed_nt1_rows'] == s['row_ops'] and s['timed_pair_rows'] == ORDER[index] * s['row_ops']
+                s['timed_nt1_rows'] == s['row_ops'] and s['timed_pair_rows'] == paired * s['row_ops']
                 for s in samples), 'sample identity/duration/output/actual dispatch gate')
             need({(s['rows'], s['pack'], s['stream'], s['rep']) for s in samples} ==
                 {(n, q, t, k) for n in (640, 128) for q in (0, 1) for t in (0, 1) for k in range(5)},
@@ -452,7 +516,12 @@ def execute(stage):
 
 
 if __name__ == '__main__':
-    need(len(sys.argv) == 2, 'use prepare|build|check|0..5')
+    if sys.argv[1:2] == ['--reduction']:
+        sys.argv.pop(1)
+        REDUCTION_TRIAL = True
+        KEY = 'cpu_iq3_pair_reduction_v1'
+        ROOT = B / KEY.replace('_', '-')
+    need(len(sys.argv) == 2, 'use [--reduction] prepare|build|check|0..5')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
