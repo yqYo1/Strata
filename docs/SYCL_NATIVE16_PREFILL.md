@@ -11160,6 +11160,24 @@ first-use and warmed PP and client TTFT with each individual 1,000 tok/s
 decision. The existing 118,785-input entry point keeps its parameters.
 [Quiet comparison controller](../bench/sycl/dflash2_prefill_window_writer_speed.py)
 
+The 122,881-input writer comparison closes at `bd179280a`. All 18
+requests match the pinned work, and all six processes exit normally without
+fresh Xe faults. Copied-to-direct warmed rates in paired order are
+997.361/1005.357, 995.841/1003.629 and 995.142/1005.701 tok/s. The direct
+process median is 1005.357 tok/s, and all six individual warmed direct samples
+exceed 1,000 tok/s. Median warmed client TTFT goes from 123.622 to 122.460 s.
+First-use prompt time improves in two pairs. Advance the direct writer to
+model qualification. The live GEN boundary, all five tap payloads, live
+RESTORE, agent session and sustained decode are separate pending checks.
+
+Retired the closed raw capture under
+`dflash2-prefill-window-122881-writer-speed-v1` after matching the original
+owners, routes and 18 samples to `bd179280a`. The sorted relative paths,
+lengths and SHA-256 values cover 431 files and 74,894,970 bytes with inventory
+SHA-256 `1ef98473cf4f44dd77cef27185a1afd6e642a4e52bc6b4b6275dacac625af2e9`.
+The independent traced copy capture remains available to the input-borrow
+diagnostic.
+
 For a same-route attribution check, the retained indexed UnitTrace
 launcher and collector match the hashes in
 `cpu-profiler-current.json:unitrace_current_runtime_probe_v2`. The current
