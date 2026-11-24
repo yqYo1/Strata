@@ -39969,5 +39969,48 @@
       "bytes": 4517676,
       "inventory_sha256": "30412f2a8174d2f9e2ca2a1dd48224901ea337224492d3dda8d9d16696fecb36"
     }
+  },
+  "target-verifier-rejected-row-methods-20261124": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "schedulable_now": false,
+    "task": "task_f1dc51e3c5f0",
+    "dispatch": "ctx_ba735e359552",
+    "source_commit": "0c9a46c3b7b2717873055619f005f64ce37b822e",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/target-verifier-rejected-row-methods-20261124/report.md",
+    "report_sha256": "9f4339f98a2bc9d0668727d3510bf06e77595c894e33546f870139113bcb36ca",
+    "report_bytes": 10598,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/target-verifier-rejected-row-methods-20261124-native-review/review.json",
+    "review_sha256": "de138bf8e21c7602a5bbd1a59bd7c04b255d289bba79db222a2275764ba04dec",
+    "protected_inputs_sha256": "6501310518caec8a28819b08ae84768b81953ccd1ed4ba93389f3658ea32f926",
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "owners_closed": true,
+    "related": [
+      "dflash2-window-policy-20261124",
+      "decode-exact-vocab-bounds-20261124"
+    ],
+    "finding": "Exact staged verification has a state and repeat-read tradeoff. The fixed workload rejects 96 of 2863 offers, so it offers little room for an early rejection optimization.",
+    "consumer": "Revisit after a representative lower-acceptance workload demonstrates material rejected-suffix cost.",
+    "retirement": {
+      "files": 50,
+      "bytes": 2029478,
+      "inventory_sha256": "a68ddba4185f56f3b9241ea1602134173b970990969ec235cf15970712f52bdc"
+    }
+  },
+  "dflash2-split-stage-candidate-20261124": {
+    "classification": "decision_support",
+    "stage": "failed_preflight",
+    "schedulable_now": false,
+    "task": "task_ff8ab2962915",
+    "dispatch": "ctx_5021249ed4bd",
+    "source_commit": "0c9a46c3b7b2717873055619f005f64ce37b822e",
+    "worker": "Orca gpt-6-luna medium",
+    "failure": "The 13 read-only inputs and Orca status passed. A separate inbox check required a Run-bound pane and refused with stable_pane_required.",
+    "worker_read_only": true,
+    "owners_closed": true,
+    "next_scope": "Reuse the original local split evidence in the controller. Fresh worker Tasks use the explicit Run ID for a read-only inbox peek when needed."
   }
 }

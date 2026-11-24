@@ -1,92 +1,82 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-11-22T01:09:53+00:00",
+  "queried_utc": "2026-11-24T01:09:27+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "queried_utc": "2026-11-19T20:12:25.098075+00:00",
-    "observed_sha": "58ee3227720629ff2e41d640165ebe89c880dfef"
+    "queried_utc": "2026-11-22T01:09:53+00:00",
+    "observed_sha": "6e38f588a646c0ee6948a74afbe670eb75896106"
   },
-  "observed_sha": "6e38f588a646c0ee6948a74afbe670eb75896106",
+  "observed_sha": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
   "changed_since_previous_observation": true,
   "source_fetched": true,
-  "fetch_command": "git fetch --no-write-fetch-head --no-recurse-submodules origin",
+  "fetch_command": "git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main",
   "remote_check": {
-    "command": "git ls-remote --exit-code origin refs/heads/main",
-    "observed_sha": "6e38f588a646c0ee6948a74afbe670eb75896106",
+    "command": "git ls-remote --symref origin HEAD refs/heads/main",
+    "observed_sha": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
     "matches_fetched_origin_main": true,
-    "checked_utc": "2026-11-22T01:09:53+00:00",
-    "tag": "v0.2.18",
-    "tag_object": "2b02185645e985d16da927c527cce542e7f7747e",
-    "peeled_tag_commit": "6e38f588a646c0ee6948a74afbe670eb75896106"
+    "checked_utc": "2026-11-24T01:09:27+00:00",
+    "tag": "v0.2.20",
+    "tag_object": "4920a3a4be0f3951dc84678b32a37eb12999b54f",
+    "peeled_tag_commit": "a34979fc94f3d126b9bb8210f4ad311345688b52",
+    "commits_after_release_tag": 16
   },
   "new_interval": {
     "start": "146df3c468739147f520ac3816de806f71232571",
-    "target": "6e38f588a646c0ee6948a74afbe670eb75896106",
-    "commits": 2395,
-    "changed_paths": 8286,
-    "describe": "v0.2.18",
-    "source_access": "Fetched in the independent ghq clone and matched remote main and the peeled tag. Path counts use rename detection with no candidate limit.",
+    "target": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+    "commits": 2547,
+    "changed_paths": 8550,
+    "describe": "16 commits past annotated v0.2.20",
+    "source_access": "Fetched origin/main in the independent ghq clone and verified the advertised main and annotated release tag.",
     "integration_state": "fetched_not_imported",
     "whole_function_ledger_complete": false,
     "unmodified_hardware_tuned_performance_complete": false,
     "since_previous_check": {
-      "start": "58ee3227720629ff2e41d640165ebe89c880dfef",
-      "target": "6e38f588a646c0ee6948a74afbe670eb75896106",
-      "commits": 501,
-      "changed_paths": 765,
+      "start": "6e38f588a646c0ee6948a74afbe670eb75896106",
+      "target": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+      "commits": 152,
+      "changed_paths": 835,
       "by_top_level_area": {
-        ".github": 3,
-        ".gitignore": 1,
+        ".github": 2,
         "AGENTS.md": 1,
         "README.md": 1,
-        "app": 170,
-        "docs": 32,
-        "engine": 280,
-        "terminal": 245,
-        "tools": 32
+        "app": 171,
+        "docs": 39,
+        "engine": 416,
+        "terminal": 187,
+        "tools": 18
       },
       "status": "fetched_not_imported"
     },
     "source_only_review": {
-      "state": "preliminary_not_full_function_ledger",
+      "state": "candidate_slices_identified",
+      "release_note": "https://github.com/Niko1221/Strata/releases/tag/v0.2.20",
+      "release_commit": "a34979fc94f3d126b9bb8210f4ad311345688b52",
       "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
-      "release_note": "https://github.com/Niko1221/Strata/releases/tag/v0.2.18",
-      "release_commit": "6e38f588a646c0ee6948a74afbe670eb75896106",
-      "versions": "App and Terminal 0.2.18. Control and engine packages 0.1.64.",
       "required_function_candidates": [
-        "23d94d00a, dd6da3a9d, 18cce81d0: individual model discovery and context metadata fields.",
-        "4f0e0f8b0, a73ef2419: request clocks across yield and reset of parked-session metrics after recovery.",
-        "9ff9e5c01: Bash, Zsh and Fish completion from the CLI parser.",
-        "12d491da4: protect mapped PLE rows from premature page-cache eviction during launch."
+        "6bd3485da and 00810bdd9: shared model discovery and schema fixes, config and installer interactions.",
+        "1f1057b3f and 7ddb2bfd7: branching conversation checkpoints and Intel free-memory reporting.",
+        "062b6ec72: SYCL GENI/cvec bounds and DEVICE_LOST propagation. Review separately from SSD spill.",
+        "73d4f4196: MCP installation cancellation order and portability checks."
       ],
       "inference_component_candidates": [
-        "e8701bbdd: DFlash2 planar Q6_K head projection assembly in engine/sycl. Check actual local head layout and ownership before testing.",
-        "928aa3d16: SYCL verifier device-plan selection for the no-host setting. Check Intel discrete-device applicability and preserve independent local safety controls.",
-        "d59c36752: optional non-native router window batching is in engine/src. Verify actual IQ3_S routing and the SYCL resolver before treating it as a candidate."
+        "f44ed40b8: Battlemage grouped routed-expert prefill and weight reuse.",
+        "4de1074d8: Battlemage GDN recurrence pairing and tiling.",
+        "9e3ad2778: Unsloth and NVFP4 SYCL multi-row quantization kernels.",
+        "4414c2988: cold-expert CPU SIMD independently from the all-tier planner."
       ],
-      "reviewed_component_slices": {
-        "e8701bbdd": "Keep the fork's canonical and DPAS-1 row-major head storage. The upstream gather requires planar storage. Packed-only mode 2 explicitly refuses DFlash2. Revisit the gather when evaluating a planar head owner.",
-        "928aa3d16": "The explicit STRATA_VERIFY_NO_HOST setting is absent from the measured width-four template. Evaluate the two settings' precedence independently when that device-plan route has a named comparison.",
-        "aef30d8fc": "Changes the STRATA_WINDOW_SYNC default for a unified-memory iGPU. Preserve the discrete B570 control.",
-        "host": "Port individual model retrieval with context metadata separately from live clocks, recovery counters and CLI completion. Check the actual fork engine's recovery log contract before adapting the cache-clear consumer.",
-        "review_index_keys": [
-          "niko-0218-dflash2-planar-head-20261122",
-          "niko-0218-serve-discovery-state-20261122"
-        ],
-        "model_performance_verified": false
-      }
+      "model_performance_verified": false
     },
     "prior_pending_component_review": {
-      "commit": "0a6d935887fc05a0a0f34600884fd7165f364053",
+      "commit": "13932a536d0f5daed3fcca4e7a76e826817cdc86",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
       "key": "new_interval",
-      "status": "The prior v0.2.16 interval decisions and pending imports remain recoverable at the original observation."
+      "status": "The v0.2.18 reference and open decisions remain in Git."
     },
     "unmodified_b570_bench_admission": {
-      "launcher": "tools/bench.sh changes to terminal/ and invokes .venv/bin/python tools/strata_bench.py.",
       "build_source": "engine/sycl/CMakeLists.txt",
-      "next": "Qualify the unmodified Intel Arc Qwen route and use the same long, agent, and thinking-enabled generation workloads on default and hardware-tuned settings."
+      "launcher": "tools/bench.sh enters terminal and executes .venv/bin/python tools/strata_bench.py.",
+      "next": "Check the unmodified Qwen Arc launch and measure the standard long and agent suite and matched sustained workloads. Include hardware-tuned settings."
     }
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
@@ -94,12 +84,12 @@
   "whole_function_ledger_complete": false,
   "required_function_port_complete": false,
   "new_inference_components_adopted": [],
-  "current_engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
-  "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+  "current_engine_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+  "current_engine_sha256": "1b56f94c7434cc332ada4092bf6bb69b677bde1df10c049867e7c0884462c5d2",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-11-24T01:09:53+00:00",
-  "pending": "Complete the cumulative non-inference feature ledger through 6e38f588a, including the new engine/terminal/app layout, offline DFlash2 readiness, service and desktop changes, and pending Intel setup and signed feed functions. The base functional import remains scoped to 146df3c4 plus enumerated incremental ports. Native session persistence, BGEN/capability, native v3.1 execution, matched unmodified hardware-tuned Niko performance, and DFlash2 repeated workloads/physical capacity/RESTORE/adoption remain open. Assess upstream inference per component and phase. DeepSeek and 35B execution remain excluded.",
-  "legacy_upstream_clone_root": "Preserved main 99f3dbd0b21d1401b3769e0c0d963913607f380b, 628 ahead / 8335 behind origin/main. Only remote refs fetched; existing checkout untouched.",
+  "next_check_utc": "2026-11-26T01:09:27+00:00",
+  "pending": "Continue the cumulative non-inference ledger through 6a6db7ff5, including the new app, terminal and engine paths. The partial functional import remains scoped to 146df3c4 and incremental ports. Keep unmodified hardware-tuned upstream performance and component-specific inference evaluation open. Preserve the DFlash2 configuration and troubleshoot device-lost propagation separately. DeepSeek and 35B execution remain excluded.",
+  "legacy_upstream_clone_root": "Preserved the existing main checkout at 99f3dbd0b. Only remote-tracking refs were advanced.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
     "target": "477ac13cbe8e582c20484871ce459d20d82df09d",
