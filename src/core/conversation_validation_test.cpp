@@ -37,6 +37,10 @@ cudaError_t cudaDeviceSynchronize() { return __wrap_cudaDeviceSynchronize(); }
 cudaError_t cudaGetLastError() { return __wrap_cudaGetLastError(); }
 const char* cudaGetErrorString(cudaError_t) { return "injected host transfer error"; }
 
+namespace strata::core {
+strata::kernels::QsaAttnPools qsa_attn_pools(const QsaState&) { std::abort(); }
+}
+
 namespace strata::kernels {
 // The host fixtures exercise the identity K/V layout.
 void kv_stream_reset(const KvStreamMap&, void*) { std::abort(); }

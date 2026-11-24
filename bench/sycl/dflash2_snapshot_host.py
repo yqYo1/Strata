@@ -13,7 +13,8 @@ import measurement_owner as owner
 
 bank = reference.bank
 require = reference.require
-KEY = 'dflash2_target_snapshot_host_v1'
+PREVIOUS = 'dflash2_target_snapshot_host_v1'
+KEY = 'dflash2_target_snapshot_host_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 TARGET = 'sycl_conversation_transfer_test'
 COMPILER = Path('/opt/intel/oneapi/compiler/2026.2/bin/icpx')
@@ -49,6 +50,9 @@ def source_matches(revision):
 
 def prepare():
     require(not ROOT.exists() and KEY not in bank.basis.validation.committed(bank.RESULT), 'fresh host fixture')
+    prior = bank.basis.validation.committed(bank.RESULT, (PREVIOUS,))
+    require(prior['stage'] == 'failed' and prior['ownership_closed'] and not prior['active']
+            and 'qsa_attn_pools' in prior['link_failure'], 'preserve the closed first fixture attempt')
     base, allowed = read_inputs()
     revision = git('rev-parse', 'HEAD').decode().strip()
     source_matches(revision)
@@ -70,7 +74,8 @@ def prepare():
         (ROOT / folder).mkdir(mode=0o700)
     save(dict(stage='prepared', source_commit=revision, controller=THIS,
               frozen_tools=dict(base['build_tools'], **{str(COMPILER): compiler_digest}),
-              external_inputs=base['external_inputs'], environment=environment, configure=command,
+              preceding_attempt=PREVIOUS, external_inputs=base['external_inputs'],
+              environment=environment, configure=command,
               build=['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', TARGET, '--parallel', '3'],
               dependency_command=['/usr/bin/ninja', '-C', str(ROOT / 'build'), '-t', 'deps'],
               executable=str(ROOT / 'build' / TARGET), passed=False, active=False, ownership_closed=True,
@@ -132,7 +137,8 @@ def execute(stage):
         entry, out, err = owned.run(label, argv, row['environment'], bank.P, wall=wall, cpu=cpus,
                                     rss_cap=3 << 30, text_cap=4 << 20, file_cap=8 << 20, total_cap=48 << 20)
         require(owner.closed(entry) and entry['exit_code'] == 0,
-                label + ' failed: ' + err.read_text(errors='replace')[-1300:])
+                label + ' failed: ' + (err.read_text(errors='replace') or
+                                       out.read_text(errors='replace'))[-1300:])
         return out, err
 
     try:
