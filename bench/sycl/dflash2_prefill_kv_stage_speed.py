@@ -128,15 +128,15 @@ def command(plan, read=READ):
             '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
 
 
-def request_route(text, plan):
+def request_route(text, plan, *, direct=False):
     read = plan['read']
     require('strata loan audit:' not in text, 'expected quiet prefill')
     if read == gate.SPLIT_READ:
-        route = gate.split.split_route(text, read)
+        route = gate.split.split_route(text, read, direct=direct)
         store, slots = route['store'], route['prefill_slots']
     else:
         require('strata MoE split complete:' not in text, 'expected ordinary prefill')
-        store = gate.model.restore.require_store(text, dict(direct=False), plan)
+        store = gate.model.restore.require_store(text, dict(direct=direct), plan)
         require(store['gpu_rows'] == read - 1 and store['host_rows'] == 0 and store['window_mode'] == 10,
                 '64K must admit the ordinary all-GPU residual route')
         route, slots = {}, 384
