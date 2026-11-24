@@ -119,7 +119,8 @@ def save(row):
 
 
 def run_case(plan, path, case, env, requests, inspect_case, *, request_reader=model.request,
-             limits=model.LIMITS):
+             limits=model.LIMITS, expected_info=None):
+    expected_info = model.INFO if expected_info is None else expected_info
     cursor, = (s.removeprefix('-- cursor: ') for s in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if s.startswith('-- cursor: '))
@@ -131,9 +132,9 @@ def run_case(plan, path, case, env, requests, inspect_case, *, request_reader=mo
         info = {}
         while (line := io.line(600)).startswith('INFO '):
             info.update(x.split('=', 1) for x in line.split()[1:] if '=' in x)
-        require(line == 'READY 262144 stop' and all(info.get(k) == v for k, v in model.INFO.items()),
+        require(line == 'READY 262144 stop' and all(info.get(k) == v for k, v in expected_info.items()),
                 'unexpected context, drafter or placement')
-        outcome['info'] = model.INFO
+        outcome['info'] = expected_info
         reuse = plan['cases'][case].get('reused', [0] * len(requests))
         for (ids, budget), reused_tokens in zip(requests, reuse, strict=True):
             done = request_reader(io, ids, budget, reused_tokens=reused_tokens)
