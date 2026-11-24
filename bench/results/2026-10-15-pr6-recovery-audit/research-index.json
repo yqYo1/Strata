@@ -40829,5 +40829,43 @@
     "schedulable_now": false,
     "finding": "Current IQ3_XXS selection does not reach IQ3_S. Existing full-range component gain cannot select a production row slice without checking the actual pool partition, ISA recipe and oracle.",
     "consumer": "Qualify sliced decode NT1 production entry with the existing CPU fixture and independent source and dispatch evidence. Check prefill and multirow scope before a timed matched model comparison."
+  },
+  "dflash2-wide-verifier-shape-budget-20261125": {
+    "source_commit": "6e2f433aba2a164f2ee4c53a2c1e7b42b7089481",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-wide-verifier-shape-budget-20261125/report.md",
+    "report_sha256": "c4790760c249fd28b96374e834390a624c154b601fe4fca5ead1bc232630e4b4",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-width-and-bank-alias-20261125.OmdBH9/review.json",
+    "review_sha256": "48fadb3becebfafbbb6ae2d44cb2c05103a9915b3ad326c9e220c5384b5e7206",
+    "stage": "native_reviewed",
+    "classification": "decision_support",
+    "worker": "Orca gpt-6-luna medium, task_26f22995f6af, ctx_665da1cc8b3e",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_startup_ipc_qualified": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "finding": "Seven draft slots are provisioned in the audited source, with separate verifier capacity, padding and live VRAM checks still open at T=5. This is source feasibility only.",
+    "consumer": "Finish the confidence comparison at width four. If the window yield and per-window costs justify more draft work, qualify T=5 at the real verifier entry, including dense and expert padding, state commit, memory and the final context slots, before any paired speed comparison."
+  },
+  "dflash2-prefill-borrow-and-direct-alias-lifetime-20261125": {
+    "source_commit": "6e2f433aba2a164f2ee4c53a2c1e7b42b7089481",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-prefill-borrow-and-direct-alias-lifetime-20261125/report.md",
+    "report_sha256": "ae982db69426b563c72673a512bd6368e4c8f1c9abb5793417e1ecdb5191a467",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-width-and-bank-alias-20261125.OmdBH9/review.json",
+    "review_sha256": "48fadb3becebfafbbb6ae2d44cb2c05103a9915b3ad326c9e220c5384b5e7206",
+    "stage": "native_reviewed",
+    "classification": "decision_support",
+    "worker": "Orca gpt-6-luna medium, task_3be847bfb933, ctx_c0711ab0a144",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_startup_ipc_qualified": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "finding": "Borrowed input and a direct attention store may alias the same bank range. The review also flags a possible stale native16 tap source when the intermediate store is skipped. In-place and cross-queue lifetimes require verification.",
+    "consumer": "Finish the independent input-borrow speed comparison and verify the five tap payloads and RESTORE. Audit writer alias safety and checked retirement before a combined diagnostic with the final committed row and all taps."
   }
 }
