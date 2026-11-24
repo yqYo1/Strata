@@ -650634,5 +650634,199 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "cpu_iq3_pair_reduction_v1": {
+    "stage": "closed",
+    "source_commit": "4a119c2462bc9ce267a2cac6435cde77bf6a6c80",
+    "original_evidence": "d8a8c2ad54f3904fbf4ffb402d240835c3e0e78a",
+    "complete": true,
+    "production_selected": false,
+    "model_trial_qualified": false,
+    "correctness": {
+      "passed": true,
+      "single_cases_per_arm": 384,
+      "paired_cases_per_arm": 80,
+      "audited_entry_calls_per_arm": 80,
+      "pool_cases_per_arm": 28,
+      "pool_checksum": "e5d7a50a8e7d5ac5",
+      "prefill_pair_rows": 0
+    },
+    "decision": {
+      "cells": [
+        {
+          "rows": 640,
+          "pack": 0,
+          "stream": 0,
+          "process_median_ns_per_expert": [
+            261278.21056547618,
+            283353.21682847897,
+            280650.4791666667,
+            264301.89140271494,
+            274158.8834115806,
+            279811.3341307815
+          ],
+          "paired_candidate_over_reference": [
+            1.0844885083039513,
+            1.0618557350353635,
+            1.0206174268324373
+          ],
+          "geometric_mean_ratio": 1.0553207650960155,
+          "component_gain_qualified": false
+        },
+        {
+          "rows": 640,
+          "pack": 0,
+          "stream": 1,
+          "process_median_ns_per_expert": [
+            271240.27777777775,
+            280895.07380952383,
+            280122.6349206349,
+            264629.69444444444,
+            264903.916005291,
+            294280.346031746
+          ],
+          "paired_candidate_over_reference": [
+            1.0355949938956193,
+            1.0585457369352138,
+            1.1108946612396182
+          ],
+          "geometric_mean_ratio": 1.0678841727489594,
+          "component_gain_qualified": false
+        },
+        {
+          "rows": 640,
+          "pack": 1,
+          "stream": 0,
+          "process_median_ns_per_expert": [
+            267892.9212538226,
+            281329.16025641025,
+            273325.67133956385,
+            268837.0514592934,
+            265329.2545454545,
+            287626.40065681445
+          ],
+          "paired_candidate_over_reference": [
+            1.05015525957051,
+            1.0166964332330883,
+            1.0840357620932453
+          ],
+          "geometric_mean_ratio": 1.0499359521054972,
+          "component_gain_qualified": false
+        },
+        {
+          "rows": 640,
+          "pack": 1,
+          "stream": 1,
+          "process_median_ns_per_expert": [
+            268870.03505291004,
+            287173.9880952381,
+            278378.8088624339,
+            264930.12103174604,
+            268180.751984127,
+            284509.81984126987
+          ],
+          "paired_candidate_over_reference": [
+            1.0680773260535563,
+            1.0507631513484128,
+            1.0608882917074876
+          ],
+          "geometric_mean_ratio": 1.059885771873416,
+          "component_gain_qualified": false
+        },
+        {
+          "rows": 128,
+          "pack": 0,
+          "stream": 0,
+          "process_median_ns_per_expert": [
+            53498.36465016804,
+            54856.16823308271,
+            54437.31576492537,
+            52050.27653880464,
+            53533.31131498471,
+            56466.22195357834
+          ],
+          "paired_candidate_over_reference": [
+            1.0253802820290583,
+            1.0458602602109355,
+            1.054786647165102
+          ],
+          "geometric_mean_ratio": 1.0419360923568304,
+          "component_gain_qualified": false
+        },
+        {
+          "rows": 128,
+          "pack": 0,
+          "stream": 1,
+          "process_median_ns_per_expert": [
+            54211.36065323565,
+            55296.51968864469,
+            55628.54047619048,
+            52302.50529100529,
+            53444.66132478633,
+            57457.72714285714
+          ],
+          "paired_candidate_over_reference": [
+            1.0200171886913203,
+            1.0635922728113978,
+            1.07508824489846
+          ],
+          "geometric_mean_ratio": 1.0526296341673003,
+          "component_gain_qualified": false
+        },
+        {
+          "rows": 128,
+          "pack": 1,
+          "stream": 0,
+          "process_median_ns_per_expert": [
+            54989.96559849199,
+            55411.441120607786,
+            54318.2866232154,
+            52833.41900452488,
+            53165.34426229508,
+            56015.57565579015
+          ],
+          "paired_candidate_over_reference": [
+            1.0076645896670167,
+            1.0281047043077667,
+            1.0536107013514902
+          ],
+          "geometric_mean_ratio": 1.0296220599830561,
+          "component_gain_qualified": false
+        },
+        {
+          "rows": 128,
+          "pack": 1,
+          "stream": 1,
+          "process_median_ns_per_expert": [
+            54374.30952380953,
+            56142.10015873016,
+            55609.832722832725,
+            53354.20664315109,
+            54030.61141636142,
+            56801.01761904762
+          ],
+          "paired_candidate_over_reference": [
+            1.032511504980979,
+            1.0422764430697646,
+            1.0512747520352375
+          ],
+          "geometric_mean_ratio": 1.041992721515373,
+          "component_gain_qualified": false
+        }
+      ],
+      "complete": true,
+      "inference_adopted": false,
+      "model_trial_qualified": false,
+      "next": "Only winning production-entry cells plus the real-pool phase correctness may motivate an explicit decode-only model-build plan;this single-core comparison does not qualify model gain or adoption."
+    },
+    "conclusion": "All 24 paired process medians favor the linear reduction. Preserve the original decode candidate and 240 samples in Git.",
+    "retirement": {
+      "completed": true,
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-reduction-v1",
+      "inventory_sha256": "bb62b74ca9c360951aaee56a5b3a9c1bd49b5368efa79058939488bd4431e380",
+      "files": 99,
+      "bytes": 23625042,
+      "exact_source_and_recipe_recovered": true
+    }
   }
 }
