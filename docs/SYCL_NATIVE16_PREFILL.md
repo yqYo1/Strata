@@ -10775,9 +10775,10 @@ Client TTFT is 48.020 and 47.470 s. Body hashes, output lengths and
 draft counts agree with the preceding native run. Code still submits 1449976
 CPU expert jobs. At that work per emitted token, 70 tok/s would require
 about 24700 CPU expert jobs per wall-second. Measure CPU execution and GPU
-completion waits separately to locate the cost. The two further clean
-processes remain pending. Use a synthetic multi-source methods dossier for
-the next weak-acceptance screen.
+completion waits separately to locate the cost. The original suite has one
+of three planned clean samples. Use the current DFlash2 engine for the
+remaining qualification, including a synthetic multi-source methods
+dossier for the weak-acceptance screen.
 
 `dflash2_v2_decode_clocks_v1` closes three independent processes after the
 official code subset warmups. Each reads 33217 fresh tokens, emits 4111 and
@@ -10801,6 +10802,13 @@ Retired the three process directories and host captures under
 `dflash2-v2-decode-clocks-v1` after `e26315def` recorded the decision.
 The 220 files cover 44944545 bytes with inventory SHA-256
 `c5dd97b629ece6b32ac7e2bf7bea3f19f79f9b093ce2dce48def856b0f06be02`.
+
+Retired the 196,380,087 bytes of generated files for native V2 source
+`59411e1de` on 2026-11-25 JST. The exact original inputs, recipe and
+executable matched the published build receipt. The retained DFlash2
+decode admission and target-only RESTORE projection both passed with only
+the old `record.json` readable. The current native build is `96832af6f`.
+Read the archived V2 samples from their commits.
 
 #### DFlash2 KV stage retention outside the tap layers
 
