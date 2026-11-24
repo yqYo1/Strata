@@ -10995,8 +10995,8 @@ lower of the two earlier measurements it leaves 39,218,176 bytes of
 estimated slack. Verify the actual 96/48 window dispatch pair and
 the same state boundary before clean speed timing.
 
-The closed 120,001-input captures under
-`dflash2-prefill-window-admission-v1` contain 119 files and
+Retired the 120,001-input raw captures under
+`dflash2-prefill-window-admission-v1` after rechecking all 119 files and
 25287322 bytes, inventory SHA-256 `03a45191a750065c34cfd8fa980ab89e874cc77699f4410edc86b34b66f973ba`.
 The original commit, compact fallback replay and layout limits preserve
 the useful evidence. The 118,785-input campaign reconstructs the
