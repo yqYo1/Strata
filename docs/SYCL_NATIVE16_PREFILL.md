@@ -10851,6 +10851,13 @@ need separate live checks before a placement change. Use the committed
 ordered delta to reconstruct the generated rank. Bind this exact candidate
 to the fresh held-out prose plan before launch.
 
+The closed training capture under `dflash2-long-routing-train-v1/0` has
+73 disposable files totaling 33,429,802 bytes, with inventory SHA-256
+`21af0158889a5cc477058a2f898a060e46e28936ac6cd4a3f2da6e479ff5c76f`. The capture and replay receipts preserve their provenance.
+Keep only the 2,133,843-byte verified expert histogram for diagnosing
+a possible held-out transfer miss. Review that remaining file at the
+held-out decision.
+
 The private-output retirement covers the following closed case paths relative
 to the project tuning state directory. The inventory SHA-256 covers sorted
 relative paths, byte lengths and content hashes. The committed comparison
