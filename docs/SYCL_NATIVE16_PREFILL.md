@@ -10712,8 +10712,23 @@ The 16,385-token check generates four tokens. The full check consumes
 262,144 tokens through the final slot with zero output tokens. It processes
 122,880 batched BF16 residual rows in VRAM and 139,263 in host memory,
 captures a 2,046-row DFlash2 tail, completes the commit and refill drain,
-and exits 0. Xe reports zero fresh faults. Server RESTORE remains pending.
-On the measured source, parking requires a populated MTP ring. The DFlash2
+and exits 0. Xe reports zero fresh faults.
+
+The native serving check will exercise the largest legal input at a
+one-token output budget. GEN reserves eight extra slots. The plan sends
+82 / 262,136 rejected / 262,135 admitted / 82 input tokens to the same
+DFlash2 process. It checks the observed ordinary fallback and executor,
+BF16 device and host extents, the last admitted prompt slot, cache refill,
+short-request state and closed owners. The mode16 relocated allocator
+has a 131,072-row limit. This case checks safety of the route above that
+limit. The draft at
+`/tmp/strata-dflash2-max-serving-context.tuzlgb57/serving-boundary.patch`
+has SHA-256 `b6d83ac1e5e3661a7dcb389134701bec1b3972aa9ef16b347689dc4b829f1c9f`.
+It passed patch and syntax checks. Commit its exact inputs and plan after
+the frozen nine-process comparison, then execute it.
+
+Live server RESTORE remains pending. On the measured source, parking
+requires a populated MTP ring. The DFlash2
 launch leaves that ring empty, causing the snapshot estimate to reject the
 conversation before capture. The fix passes an optional MTP ring and retains
 the target K/V and running state for DFlash2. The SYCL host transfer fixture
