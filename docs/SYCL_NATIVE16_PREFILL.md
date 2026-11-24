@@ -11069,6 +11069,12 @@ the throughput candidate only on a warmed prompt-time improvement in
 all three pairs. Retain first-use, TTFT and the repeated 1,000 tok/s decision
 separately.
 
+Retired the direct-writer trace in `dflash2-prefill-window-direct-v1`
+after closing its owner and matching all three requests at `3b8cdaf51`.
+The quiet comparison reads that commit. The sorted path, length and
+SHA-256 inventory covers 60 files and 12,617,210 bytes, with SHA-256
+`4c428b60919f957a3accdab6f2157628ee5a5fa52e032f5641dcb2f7ebd0c9a9`.
+
 The six-process quiet capture under
 `dflash2-prefill-window-speed-v1` was retired after recording the 18 original
 samples at `6fb701c7f` and both CSV rows at `a7ec4fa7e`. All six owners
