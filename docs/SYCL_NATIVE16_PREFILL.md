@@ -10974,7 +10974,33 @@ split admission and native build, which remain available.
 The 120,001-input controller at `0711ba6c0` verifies the committed
 120,000-row budget, inherited launch, generated short/long/short inputs
 and same native binary in a host-only preflight. The writer cohort retains all 841 original source inputs.
-The capacity plan is prepared for its first native reference process.
+The prepared 120,001-input comparison closes at `51d7c88d9` as a
+capacity refusal. The mode10 reference passes with all 120,000 residual
+rows on the GPU, 128 slots, 96 windows and 80,047,001,600 requested
+expert H2D bytes. Its free-memory query reports 4,197,773,312 bytes.
+The mode16 request reports 4,197,777,408 bytes at the same boundary.
+That falls 633,344 bytes short of the required 4,198,410,752 bytes.
+The native planner selects mode10 with the same bank, 96 windows and
+the same logical expert transfers. Both processes exit zero with no
+new Xe faults. The fallback's three outputs, active state hashes and
+long KV stage counters replay identically to the reference. The
+original mode16 admission remains failed.
+
+For the next independent comparison, choose 118,785 inputs and 118,784
+batched rows. This crosses the mode10 split limit and ends on a
+4,096-row half chunk. Keep 128 slots, demand uploads, the 512 MiB reserve,
+attention copying, DFlash2 and the 262144 configured capacity. The
+mode16 budget is 4,158,555,136 bytes including the reserve. At the
+lower of the two earlier measurements it leaves 39,218,176 bytes of
+estimated slack. Verify the actual 96/48 window dispatch pair and
+the same state boundary before clean speed timing.
+
+The closed 120,001-input captures under
+`dflash2-prefill-window-admission-v1` contain 119 files and
+25287322 bytes, inventory SHA-256 `03a45191a750065c34cfd8fa980ab89e874cc77699f4410edc86b34b66f973ba`.
+The original commit, compact fallback replay and layout limits preserve
+the useful evidence. The 118,785-input campaign reconstructs the
+shared split admission and keeps the same native build.
 
 After the closed timing bracket, split admission and host reader checks
 were committed, the five local capture directories below were removed.

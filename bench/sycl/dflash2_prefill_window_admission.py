@@ -1,4 +1,4 @@
-"""Check the 120,001-token DFlash2 window at a fixed 128-slot expert bank."""
+"""Check the 118,785-token DFlash2 window at a fixed 128-slot expert bank."""
 
 import fcntl
 from pathlib import Path
@@ -12,10 +12,11 @@ bank, basis, require = store.bank, store.basis, store.require
 device, split, model = store.gate.device, store.split, store.model
 workspace = split.workspace
 
-KEY = 'dflash2_prefill_window_admission_v1'
+KEY = 'dflash2_prefill_window_admission_v2'
+PREVIOUS_FALLBACK = '51d7c88d9e75205f59deb0408e0148302f53a5e1'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-ROWS, SLOTS, HEADROOM = 120000, 128, 512 << 20
+ROWS, SLOTS, HEADROOM = 118784, 128, 512 << 20
 READ = ROWS + 1
 ARMS = {'window10': 10, 'window16': 16}
 MODE = 'STRATA_SYCL_PREFILL_MOE_WINDOW'
@@ -89,8 +90,9 @@ def inputs(revision):
                                         'driver', 'boot', 'runtime_manifest', 'validation',
                                         'drafter_assets', 'limits')}
     plan.update(source_commit=revision, inputs=dict(launch=source['inputs'], readers=reader_sources),
-                preceding_admission_sha256=bank.signature(admission), cases=cases, order=list(ARMS),
-                scope='Check actual 120001-input DFlash2 window admission in independent traced processes. '
+                preceding_admission_sha256=bank.signature(admission), prior_capacity_attempt=PREVIOUS_FALLBACK,
+                cases=cases, order=list(ARMS),
+                scope=f'Check actual {READ}-input DFlash2 window admission in independent traced processes. '
                       'Hold expert bank128, H2D demand policy, copied attention, core placement, canonical '
                       'released target head and KV retention fixed. Require all-GPU BF16 rows, 96/48 '
                       'windows, checked retirement and unaltered short reset; record long fingerprints. '
