@@ -10834,6 +10834,23 @@ DFlash2 arguments. Bind the resolved order and require the remaining argv
 to match the measured stock configuration exactly. Retire that attempt's
 empty `dflash2-long-routing-train-v1/0/{cache,tmp}` staging directories.
 
+The 33,217-input code capture emits 4,111 tokens and records 1,345 verifier
+windows, 4,208 target rows and 1,449,976 CPU jobs. The original result at
+`9f21303b1` records normal native exit evidence and a failed clean KV
+reader. The separate offline replay at `a52280ef7` checks the same raw
+capture with the traced reader, all model asset hashes and the original
+owner records. Its 22,727 layer/expert pairs conserve 1,812,670 CPU entries
+and 2,956,400,972,800 logical blob bytes.
+
+Freeze the 1,256-slot ranking from code only. Its route replay forecasts
+1,160,220 CPU jobs, 1,370,110 CPU entries and 2,360,242,176,000 logical
+blob bytes on that training request. The first 132 physical slots and
+per-layer quotas match exactly. The loader's shorter warm-up loans leave
+prefixes of 1,023, 1,053 and 1,141 slots. Their identities and prompt clocks
+need separate live checks before a placement change. Use the committed
+ordered delta to reconstruct the generated rank. Bind this exact candidate
+to the fresh held-out prose plan before launch.
+
 The private-output retirement covers the following closed case paths relative
 to the project tuning state directory. The inventory SHA-256 covers sorted
 relative paths, byte lengths and content hashes. The committed comparison
