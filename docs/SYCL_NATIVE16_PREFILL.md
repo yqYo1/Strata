@@ -10829,6 +10829,9 @@ passes the speed reader's route checks and refuses altered tail or extent.
 Run the same-ELF reload/retain speed comparison with the verified split
 geometry. The trace measures logical copy requests. Physical bus service
 and clean speed remain separate checks.
+Retired 59 files and 12606542 bytes from the closed trace's `long`
+directory after `3c156ee10`. The inventory SHA-256 is
+`57ea8657f9544df7e442461a2a2f85952d0e6d6bc8b063eb10f92ec60db29767`.
 
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
