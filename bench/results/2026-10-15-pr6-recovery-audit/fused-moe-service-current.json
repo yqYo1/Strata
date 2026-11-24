@@ -673835,7 +673835,7 @@
     "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
   },
   "dflash2_target_snapshot_native_v2": {
-    "stage": "configured",
+    "stage": "built",
     "source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
     "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
     "projection": {
@@ -674007,8 +674007,8 @@
       "recipe_sha256": "3c8a6e4b6b5c5ca978fbdd9789c551accce7c129056cea07e6192860b86eb08a"
     },
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "scope": "Target-only conversation snapshots for the same DFlash2 long-prefill and decode routes. Check same-device A/B/A prompt reuse, cache payloads, a nonaligned resumed suffix and near-capacity conversation switching. Rebuild all engine units with the retained recipe.",
     "retention": "Keep the incumbent DFlash2 prefill control and the independent coherent decode reference for this comparison. Reconcile the earlier V2 executable consumer before the new generation. Retire the extra generation at qualification closure.",
@@ -674018,6 +674018,68 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/compile_commands.json": "ed4a305d783f3e7939a61cb514711ca314e700f6eb0712c96ae6898aafbd51c7",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/CMakeFiles/rules.ninja": "47eb8d07acb614c07d21adcfeddeeec39e57db82c0b3e543567a23ddf8b00ea6"
     },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/strata",
+        "sha256": "405bea1ac1628c88e78fea245350cd7ce2f0cab8a8a53b44262e483b8d5d5cf7",
+        "bytes": 26550352
+      },
+      "prefill_moe_routes_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/prefill_moe_routes_test",
+        "sha256": "cdbb62855a8aaeaff881fa7853f544996f5b99bab5708d500ee9e85e89768616",
+        "bytes": 111336
+      },
+      "prefill_moe_workspace_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/prefill_moe_workspace_test",
+        "sha256": "b7c6244dad5135c3f869f69449fd80368084e3c7fd4d4099be706a2d77c4f3f2",
+        "bytes": 67448
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/sycl_expert_bank_test",
+        "sha256": "dd69762b225b612ba88ae1cf3542b0e9e0dcefcb6ab4f4b9db1c165c270b1326",
+        "bytes": 542560
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/sycl_moe_down_scatter_bench",
+        "sha256": "d424f14d84f1d5d019657fca07f69faf01c98c44b7791bf404d7778a0004e252",
+        "bytes": 14320144
+      },
+      "sycl_native16_paired_gemm_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/sycl_native16_paired_gemm_bench",
+        "sha256": "fe8b62aef8f1e7649fcd3b5755cbf45caa905ee02b3acd7f73c0c3f0670f72a9",
+        "bytes": 14260800
+      },
+      "strata_full_context_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/strata_full_context_diagnostic",
+        "sha256": "431dd10c79ddae0a8dc00fc4bdc7b9f874ddb621b3d3df4467a39ccbefb9f37e",
+        "bytes": 26554536
+      },
+      "full_context_diagnostic_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/full_context_diagnostic_host_test",
+        "sha256": "fb0986707b74ece3dbbb5f9e4f602e2bda08d324cab310a835f2c30a14953e0e",
+        "bytes": 91448
+      },
+      "sycl_moe_upload_census_host_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/sycl_moe_upload_census_host_test",
+        "sha256": "d88f84a73fa8b0d5d5094268bcd3526a8183f90d26f9468de41baf4d7c96906a",
+        "bytes": 107360
+      },
+      "prefill_fullfit_upload_plan_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/prefill_fullfit_upload_plan_test",
+        "sha256": "2a60487e48d7b9c18a4e6021252fcf4b5b3438f6de2bec55964e32a83baf29c3",
+        "bytes": 109640
+      },
+      "sycl_prefill_attention_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/sycl_prefill_attention_bank_test",
+        "sha256": "281c1b3d4660b3b923c95b86153cb1204bf19d715526c5325da312d6069ca67e",
+        "bytes": 2840536
+      },
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/sycl_moe_accum_test",
+        "sha256": "dd6907816387f6fd3372adda34a22f489c9c7ea202f6ab7d78ab996de9dda269",
+        "bytes": 3123824
+      }
+    },
     "controller_sources": {
       "files": 388,
       "sha256": "4df86def9fef3c022edc4046b0881d939407452f9665850dfa96cfa7e4ddbaa3"
@@ -674026,6 +674088,44 @@
       "files": 1171,
       "sha256": "e28ba38869c135026faf009c516b7042390e9493341ae200c2db24efdd57cd07"
     },
-    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736",
+    "actual_inputs": {
+      "compiled": {
+        "files": 1474,
+        "sha256": "46bd7c7e9d088674d46f35acb9834104f3bacb0641c91e6c345b516f2498b5e1"
+      },
+      "generated": {
+        "files": 1,
+        "sha256": "aac8efb94d1265821715c8470e5ef9a66b95d2c9e284226477c934b3f0b1c961"
+      },
+      "links": {
+        "files": 30,
+        "sha256": "aa037df9a9963d78817d68cec3c5e6921ddd9d32a5121362c1706acb194a9346"
+      },
+      "objects": {
+        "files": 137,
+        "sha256": "dbb4792f28536dedf906ce4f9db73fcc92b0a0d9a05b3152dc89f063f836f1da"
+      },
+      "produced": {
+        "files": 148,
+        "sha256": "c7b68fe0452153733242a7ad4cb556a9b3370a8c83605a4aeb9c7509360cb95f"
+      },
+      "Gemm_includers": {
+        "files": 6,
+        "sha256": "ad5756b337527a4d92a89e1351d7c4ae144a3ce156540a04493cd5ddfc0c1d8c"
+      },
+      "class_definition_includers": {
+        "files": 3,
+        "sha256": "42da2467b0acf656d9c68239a35d5850be95c81b8bc2f4b23976ad5f119dd628"
+      },
+      "AOT_finalization_recipe_sha256": "bb8a584bad5de668a983de639acea4ab3b9898902d0ee61736c257ad188af2ff",
+      "temporary_generated_link_objects": 51,
+      "temporary_generated_link_paths_sha256": "713996d4d59372bc585470f423bb46a6ae15351e14161c35bfd01348259f7a84",
+      "temporary_link_scope": "Missing ld-trace objects must be .o outputs inside this owned compiler TMPDIR;no missing external file is accepted. Temporary object bytes are not retained.",
+      "translation_units": 134,
+      "fresh_objects": 137,
+      "partial_archive_reuse": false,
+      "uncovered": 0
+    }
   }
 }
