@@ -11075,6 +11075,24 @@ the throughput candidate only on a warmed prompt-time improvement in
 all three pairs. Retain first-use, TTFT and the repeated 1,000 tok/s decision
 separately.
 
+Ordered batching remains a separate candidate at fixed 118,785 inputs.
+The original split-upload comparison runs at 117,489 inputs and moves
+963.923 to 989.117 warmed tok/s in three matched pairs. The later retained-KV
+comparison at the same length moves 995.678 to 1,008.865 tok/s. These are
+older split routes with MTP. The relocated mode16 route forces demand
+uploads through the eligibility guard in `layer_major.inc`.
+
+For a relocated trial, keep the 128-slot private bank and select the
+previously faster ordered batch. Recheck actual blob stride and the host
+source range, the in-order queue used by all dequant consumers, and
+disjointness from the extra workspace. A later batch may overwrite the
+private slots only after the previous readers on that queue. A partial
+submission or cancellation must reach the checked retirement lease before
+the owner, borrowed view or layer storage can be released. Validate all
+48 window receipts, equivalent expert bytes, active state and cache
+restoration before clean timing. Keep bank-size and writer changes in
+their own comparisons.
+
 Retired the direct-writer trace in `dflash2-prefill-window-direct-v1`
 after closing its owner and matching all three requests at `3b8cdaf51`.
 The quiet comparison reads that commit. The sorted path, length and
