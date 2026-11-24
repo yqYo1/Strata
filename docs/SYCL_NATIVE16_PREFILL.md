@@ -11069,6 +11069,13 @@ A later DFlash2-only loan change has its own width-five control and verifies
 ownership through refill and publication. The head kernel is another unit.
 Keep these checks separate from the original spec4 long-prefill comparison.
 
+The first loan-off width-four process exits during canonical DPAS
+initialization because it also disabled the independent head-release
+setting. The owner reaps the child, its session empties and Xe records
+no fresh fault. Preserve that failed run at `7a79943bd`. The replacement
+plan selects the required head setting for both widths with cache scratch
+borrowing disabled. Recheck the frozen host plan before either GPU arm.
+
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
 `e26315def2` observes 110.29 ms of CPU-pool caller time and 106.11 ms of GPU
