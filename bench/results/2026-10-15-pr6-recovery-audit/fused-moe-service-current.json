@@ -653855,11 +653855,88 @@
       "component_sha256": "32869fe61c1dc9dfbe369abbb0c92e41a062b56d8a35fc6ec48c80d26af36a34",
       "scope": "Copy then direct in independent traced processes. Require matching all-GPU split geometry, per-layer retained KV, cache refill, active state and short/long/short DFlash2 outputs. Stop on any changed input, ownership, route, runtime error, or fault. This is admission; the subsequent clean benchmark measures prompt speed."
     },
-    "stage": "prepared",
+    "stage": "failed",
     "complete": false,
     "passed": false,
     "active": false,
     "ownership_closed": true,
-    "outcomes": {}
+    "outcomes": {
+      "copy": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 84721,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 25,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "info": {
+          "context": "262144",
+          "spec": "4",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256"
+        },
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 3280688,
+          "start_ticks": 384483853
+        },
+        "error": "RuntimeError('split prefill must hold every BF16 residual row in VRAM')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    },
+    "shape_replay": {
+      "same_verdict": true,
+      "missing": "split_128_slot_route",
+      "split_active": false,
+      "effective_slots": 512,
+      "staged_bank": false,
+      "placement": {
+        "pieces": 480,
+        "direct": 0,
+        "copy_bytes": 80530636800,
+        "gpu_rows": 84720,
+        "host_rows": 0,
+        "window_mode": 10,
+        "maximum_rows": 81920
+      },
+      "min_split_batched_rows": 90113,
+      "native_source_path": "src/prefill/layer_major.inc",
+      "native_source_sha256": "6f7f0a7ddd425afb6b80a28d7c147d1318ddca7fbff3277a68c14989f9de9134",
+      "prior_split_boundary_evidence": "77ce8ac63ea6039fd3c9195582eaeaca14b9ed0a",
+      "prior_split_boundary_read": 90114
+    }
   }
 }
