@@ -10943,7 +10943,16 @@ qualified DFlash2 timing routes explicitly enable that prefill loan.
 A wider-width comparison needs either a separately qualified loan-off
 spec4 control or a verified prefill retirement boundary that supports the
 new width. Keep the current long-prefill loan for the measured mode16 path.
-Apply the startup and placement checks before any wider device experiment.
+The first isolated width comparison uses the ordinary canonical head and
+turns the scratch loan off in both arms. Check actual widths one through
+the requested cap, all accepted prefixes, packed-only head rejection,
+and the configured and effective last-slot and output bounds on the host
+before a short device test. In the retained serve loop the verifier commits
+the accepted prefix plus its anchor before publishing output and checking EOS
+or max-new. Preserve that observable ordering in the initial check.
+A later DFlash2-only loan change has its own width-five control and verifies
+ownership through refill and publication. The head kernel is another unit.
+Keep these checks separate from the original spec4 long-prefill comparison.
 
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
