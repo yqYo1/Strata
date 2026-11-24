@@ -10706,6 +10706,18 @@ for the corrected performance campaign. The code case sends 1449976 expert
 jobs to the CPU. Measure the CPU service and verifier waits separately
 before attributing that decode time to a hardware resource.
 
+The weak-acceptance screen has a draft synthetic evidence dossier at
+`/tmp/strata-dflash2-weak-evidence-dossier.6bv652qn/dossier-workload.patch`
+with SHA-256 `7a59c5a7a7514253f52fb24c4d2196dc56ca29bc8135864453e034282f7eca5d`.
+It adds a single optional workload to the same client and keeps the two v5
+defaults. The client counts the actual body before timing and verifies
+32K or more fresh inputs and enough room for the 16K output budget.
+After the frozen bank cohort, validate the patched client and pin one
+thinking-on request on the retained DFlash2 route. The screen needs
+1,024 generated tokens, visible output and at least 256 offered drafts.
+Repeat the case only after a complete eligible sample reports acceptance
+at or below 0.40. The draft has no model result.
+
 The standalone DFlash2 physical-context check
 `dflash2_prefill_physical_context_v1` passes on native source `96832af6f`.
 The 16,385-token check generates four tokens. The full check consumes
