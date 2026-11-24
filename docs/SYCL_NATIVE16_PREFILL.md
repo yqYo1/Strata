@@ -10810,6 +10810,14 @@ The original failure, offline replay and independent passing replacement
 carry its useful evidence. The retired scope covers 63 files and
 12,397,987 bytes. Its SHA-256 over sorted path/size/content triples is
 `896eff827a958570db58ecbf77f7c7d17ec1bb28cd1377dd2151963131512e3e`.
+The closed V2 scopes `host`, `short-copy` and `near-copy` under
+`dflash2-target-snapshot-restore-v2` have 119 disposable files totaling
+25,042,495 bytes. Path/size/content inventory SHA-256 is
+`051ad22313e99ae6140a4869055fa06b32c26571857d2c2151d68db6c57a13a8`.
+The committed results preserve the actual routes, state hashes and
+ownership. The direct-prefill comparison consumes the committed restore
+receipt. Keep `record.json` for the exact prospective continuation
+workloads and retire the three closed capture scopes.
 
 The first corrected suite process `bdd9ff4ce` passes the route, ownership
 and output gates. It exits 0 with no fresh Xe fault. The sustained code
