@@ -10811,7 +10811,9 @@ It reuses the same 16,385- and 262,144-token fixtures on the snapshot build's
 linked diagnostics. The short case must match the four deterministic output
 IDs. The full case checks the final slot, zero output IDs, mixed residual
 placement, KV stage counts and the real DFlash2 handoff. The 262,128-token
-restore closes the server gate; the new standalone plan still needs execution.
+case qualifies native copy-route RESTORE near capacity. The standalone
+`dflash2_snapshot_physical_context_v1` host check passes 134 boundary cases
+and 9,459 KV hash cases. The two GPU cases are queued after the speed comparison.
 
 Retire the first raw restore capture at `dflash2-target-snapshot-restore-v1`.
 The original failure, offline replay and independent passing replacement
