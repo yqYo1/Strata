@@ -11109,6 +11109,18 @@ It shares the long-request reader and reuses the copy control at
 expert work, target fingerprints, KV, taps, refill and the first verifier
 window. The draft applies to the benchmark source and awaits execution.
 
+The quiet follow-up at the same 122,881 inputs is drafted in
+`/tmp/strata-dflash2-122881-writer-speed.youc6g7x/long-writer-speed.patch`
+with SHA-256 `7bc9e416500db649338c6f65b3eb4661d422795fd2921b1a8af52cb934bd6554`.
+It reuses the existing writer comparator with `--longer`. After the
+closed bank cohort and matched direct admission, compare copy and direct
+in three counterbalanced fresh-process pairs at bank32. Require the
+original exact bodies, unchanged expert and DFlash2 work, 720 stores and
+the observed 48-window route. Keep first-use and warmed PP and client TTFT
+with each individual 1,000 tok/s decision. The existing 118,785-input
+entry point keeps its parameters. Both patches pass the application check.
+Commit the exact follow-up inputs after the current comparison closes.
+
 The same-build admission in
 [dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
 closes on the 82 / 118,785 / 82 wire requests. The long request uses
