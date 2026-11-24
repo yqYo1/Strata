@@ -174,8 +174,8 @@ def routes(log, samples, root):
             and len(re.findall(r'^strata cache loan: phase=ready generation=\d+ chunk=8192 first=132 '
                                r'lent=1124 decode_ready=1$', frame, re.M)) == 1,
             'long residual, DFlash2 tap or restored expert cache route differs')
-    kv = leaves.speed.KV.check_clean_request(frame, 0, read - 1, 8192, reuse=True,
-                                             tap_layers=leaves.speed.gate.TAPPED_QSA_LAYERS)
+    kv = leaves.speed.KV.check_request(frame, 0, read - 1, 8192, reuse=True,
+                                       tap_layers=leaves.speed.gate.TAPPED_QSA_LAYERS)
     formats = census.manifest_formats(metadata['manifest'])
     membership = census.expected_membership(metadata['profile'])
     observed = census.extract(log, bindings, formats, membership)[-1]
