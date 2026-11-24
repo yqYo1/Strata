@@ -10800,8 +10800,25 @@ six execution threads, the 70 tok/s budget allows 85.7 CPU milliseconds per
 output before considering GPU work. One native blob per logged CPU job
 covers 2,956,400,972,800 logical bytes per code request. This corresponds
 to 50.34 GB/s of logical visits at 70 tok/s. Physical traffic and resource
-saturation remain open. The next [confidence comparison](../bench/sycl/dflash2_decode_confidence.py)
+saturation remain open. The [confidence comparison](../bench/sycl/dflash2_decode_confidence.py)
 holds spec4 and placement fixed and changes only the draft threshold.
+
+All four clean processes close at `ce3ef1a3a` with 33,217 fresh input tokens
+and zero fresh Xe faults. The confidence 0.6 arm generates 4,111 tokens twice
+and measures 13.671 and 13.778 tok/s. Confidence 0 reproduces 3,723 outputs
+and 13.642 and 13.649 tok/s. It offers 3,132 drafts and accepts 2,679 in
+both repeats. The baseline offers 2,863 and accepts 2,767. The verifier
+uses 1,045 windows at confidence 0 and 1,344 to 1,348 at 0.6. Per output,
+CPU expert jobs rise from 352.71 to 378.55. Retain 0.6. The different output
+lengths fail the matched-work performance gate in both pairs.
+
+The current binary already records routed expert IDs in its multi-token
+callback. Qualify a bounded capture against the independently reported CPU
+census and window widths after refill. This provides a way to obtain
+per-expert visits and row multiplicity before considering a new engine build.
+Use separate training and held-out requests. Keep the first 132 slot
+identities fixed for the measured 8192-token prefill loan. Verify the actual
+cache boundaries and prompt clocks separately before a decode-rank adoption.
 
 #### DFlash2 KV stage retention outside the tap layers
 
