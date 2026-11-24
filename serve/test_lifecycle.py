@@ -150,7 +150,9 @@ class Lifecycle(unittest.TestCase):
     def test_discover_chat_unload_and_stream_reload(self):
         self.assertEqual(self.request("/api/health")[1]["service"], "strata")
         self.assertFalse(self.request("/v1/status")[1]["loaded"])
-        self.assertEqual(self.request("/v1/models")[1]["data"][0]["status"]["value"], "unloaded")
+        model = self.request("/v1/models")[1]["data"][0]
+        self.assertEqual(model["status"]["value"], "unloaded")
+        self.assertEqual(self.request(f"/v1/models/{model['id']}"), (200, model))
         self.assertTrue(self.request("/props")[1]["models_autoload"])
         self.assertEqual(self.engine.starts, 0)
         chat = {"messages": [{"role": "user", "content": "Hello"}], "max_tokens": 32, "reasoning_effort": "none"}

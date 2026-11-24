@@ -4,7 +4,8 @@
     python -m serve.server --engine strata --config strata.json --port 8080   (the real engine, resident)
 
 Endpoints: POST /v1/chat/completions (OpenAI, stream and non-stream), POST /v1/messages (Anthropic, stream and
-non-stream), GET /v1/models, GET /models, GET /props, GET /slots, GET /health, GET /mcp. One sequence at a time behind a FIFO (plan: one resident sequence).
+non-stream), GET /v1/models, GET /v1/models/{id}, GET /models, GET /props, GET /slots, GET /health, GET /mcp.
+One sequence at a time behind a FIFO (plan: one resident sequence).
 Image generation (optional, when the config has an "images" section): POST /v1/images/generations (OpenAI's shape,
 plus seed and steps) runs stable-diffusion.cpp's sd-cli for Qwen-Image-2.1-Turbo, one job at a time on the GPU the
 text engine uses (serve/images.py).
@@ -55,7 +56,7 @@ from http.client import HTTPException
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Iterator, Protocol
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -8148,11 +8149,14 @@ def make_handler(svc: Service):
                 for k in ("started", "first_token"):
                     s.pop(k, None)
                 self._json(200, s)
-            elif path in ("/v1/models", "/models"):
+            elif path in ("/v1/models", "/models") or path.startswith(("/v1/models/", "/models/")):
                 if self._authorized():
                     loaded = svc.loaded()
-                    model = {"id": svc.model, "object": "model", "status": {"value": "loaded"},
-                             "meta": {"n_ctx": svc.reported_ctx()},
+                    metadata = {"object": "model", "created": int(svc.started_at), "owned_by": "strata"}
+                    ctx = svc.reported_ctx()
+                    model = {"id": svc.model, **metadata, "status": {"value": "loaded"},
+                             "max_model_len": ctx, "context_length": ctx, "max_context_length": ctx,
+                             "meta": {"n_ctx": ctx},
                              "architecture": {"input_modalities": ["text", "image"] if svc.vision is not None else ["text"],
                                               "output_modalities": ["text"]}}
                     if not loaded and (svc.idle_unload_s or getattr(svc.engine, "unloaded", False)):
@@ -8163,9 +8167,20 @@ def make_handler(svc: Service):
                     data = [model, *({**model, "id": x, "alias_of": svc.model} for x in svc.aliases)]
                     data = data if loaded else []
                     if svc.images is not None:            # the image model: POST /v1/images/generations
-                        data.append({"id": svc.images.model, "object": "model", "status": {"value": "loaded"},
+                        data.append({"id": svc.images.model, **metadata, "status": {"value": "loaded"},
                                      "architecture": {"input_modalities": ["text"], "output_modalities": ["image"]}})
-                    self._json(200, {"object": "list", "data": data})
+                    if path in ("/v1/models", "/models"):
+                        self._json(200, {"object": "list", "data": data})
+                        return
+                    prefix = "/v1/models/" if path.startswith("/v1/models/") else "/models/"
+                    model_id = unquote(path[len(prefix):])
+                    entry = next((entry for entry in data if entry["id"] == model_id), None)
+                    if entry is None:
+                        self._json(404, {"error": {"message": f"The model '{model_id}' does not exist",
+                                                   "type": "invalid_request_error", "param": "model",
+                                                   "code": "model_not_found"}})
+                    else:
+                        self._json(200, entry)
             elif path == "/props":
                 if self._authorized():
                     self._props()
