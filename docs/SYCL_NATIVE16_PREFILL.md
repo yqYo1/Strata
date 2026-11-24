@@ -11059,9 +11059,27 @@ draft taps, loan refill and expert work. The 118,785-token request has
 query stays at 4,197,769,216 bytes. The margin beyond the 512 MiB
 reserve rises from 39,214,080 to 294,804,480 bytes. All owners close
 and Xe reports no new fault. This traced capacity result leaves clean
-speed open. Prepare an independent 122,881-input case on the same
-32-slot path, verify the 122,880-row prefix and actual token handoff,
-then measure clean speed only after its admission passes.
+speed open.
+
+The independent 122,881-input admission closes at `bb974ff52` on
+the same 32-slot copied-writer path. The 122,880 GPU prefix rows
+span 15 full 8192-row chunks and 48 MoE windows. The first DFlash2
+verifier window is `[122880, 1]`. The measured device free query
+is 4,197,777,408 bytes, leaving 160,562,176 bytes beyond the 512 MiB
+reserve. Packing, loan refill, tap coverage and both short controls
+match. The long input accounts for 48,769,305,600 requested expert H2D bytes,
+19,968,000 more than the 118,785-input control, and 120,795,955,200
+attention-copy bytes. All 15 model assets pass their final hash checks.
+The process exits normally with closed ownership and no new Xe fault.
+
+Measure bank128/118785 against bank32/118785 and bank32/118785 against
+bank32/122881 under one copied-writer policy. Keep first-use and later
+prompt and client TTFT samples separate. Same-length arms must repeat
+the counted wire inputs and expert, KV and verifier work. Cross-length
+differences produce adjacent slopes for this route; use additional
+lengths and held-out samples before fitting a time model. The capacity
+traces cover the short state handoff with 32 outputs. Adopt a faster
+route only after clean timing and the existing model gates.
 
 The same-build admission in
 [dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
