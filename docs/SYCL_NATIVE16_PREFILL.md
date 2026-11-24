@@ -10911,6 +10911,20 @@ uses 1,045 windows at confidence 0 and 1,344 to 1,348 at 0.6. Per output,
 CPU expert jobs rise from 352.71 to 378.55. Retain 0.6. The different output
 lengths fail the matched-work performance gate in both pairs.
 
+The target snapshot source `4b4ac554` provisions eight DFlash2 draft rows.
+Its separate target-cache scratch reader admission requires spec4. Both
+qualified DFlash2 timing routes explicitly enable that prefill loan.
+A wider-width comparison needs either a separately qualified loan-off
+spec4 control or a verified prefill retirement boundary that supports the
+new width. Keep the current long-prefill loan for the measured mode16 path.
+Apply the startup and placement checks before any wider device experiment.
+
+Even at five emitted tokens per verifier window, 70 tok/s allows only
+71.43 ms for a complete window. The older regular-code clock bracket at
+`e26315def2` observes 110.29 ms of CPU-pool caller time and 106.11 ms of GPU
+completion waits per window on its own configuration. A same-placement
+width test needs actual yield and service measurements for both new arms.
+
 The [routing check](../bench/sycl/dflash2_verifier_routing_check.py) closes
 at `c13a80bd4` on the same engine. For 11,793 inputs and 32 outputs, 10
 verifier windows contain 37 target rows and 5,460 observed layer/expert
