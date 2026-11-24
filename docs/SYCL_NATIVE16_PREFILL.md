@@ -10758,6 +10758,11 @@ completion separately before combining changes. Keep the same code subset
 for the focused next comparison and repeat the independent controls when
 judging a gain near their observed spread.
 
+Retired the three process directories and host captures under
+`dflash2-v2-decode-clocks-v1` after `e26315def` recorded the decision.
+The 220 files cover 44944545 bytes with inventory SHA-256
+`c5dd97b629ece6b32ac7e2bf7bea3f19f79f9b093ce2dce48def856b0f06be02`.
+
 #### DFlash2 KV stage retention outside the tap layers
 
 Candidate `44a2926a6` retains the aligned prefix on nine untapped QSA layers
