@@ -43,6 +43,14 @@ The upstream benchmark uses the unmodified source under `engine/sycl/` and
 the matching `tools/bench.sh`. Its execution and hardware-tuned comparison
 remain pending. [Niko1221's v0.2.20 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.20).
 
+The Arc BMG direct kernels accept the weight formats of five of this Qwen
+pack's 48 layers. They also cap each grouped expert at 32 rows and apply separate
+layout and launch guards. Check those actual row groups before testing the
+direct kernels. Broad grouped scheduling and GDN pairing have their own
+shape and correctness checks. The next host unit covers model list and
+individual retrieval, stable `created` and `owned_by`, and all three
+context size fields, including loaded-state and alias coverage.
+
 The v0.2.18 decisions remain linked under `new_interval.prior_pending_component_review`
 in the status record. Canonical Q6_K gathering stays selected for this fork's
 head layout. The outstanding model metadata and recovery-counter ports still

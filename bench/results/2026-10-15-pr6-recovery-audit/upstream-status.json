@@ -65,7 +65,34 @@
         "9e3ad2778: Unsloth and NVFP4 SYCL multi-row quantization kernels.",
         "4414c2988: cold-expert CPU SIMD independently from the all-tier planner."
       ],
-      "model_performance_verified": false
+      "model_performance_verified": false,
+      "review_index_keys": [
+        "niko-0220-b570-component-boundaries-20261124",
+        "niko-0220-shared-function-boundaries-20261124"
+      ],
+      "local_bmg_direct_screen": {
+        "source_commit": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+        "source_paths": [
+          "engine/sycl/src/prefill/prefill.cpp",
+          "engine/sycl/src/prefill/bmg_direct_experts.cpp"
+        ],
+        "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+        "layers": 48,
+        "format_pairs": {
+          "18/20": 14,
+          "18/42": 3,
+          "21/20": 9,
+          "21/42": 1,
+          "22/20": 15,
+          "22/42": 5,
+          "23/20": 1
+        },
+        "format_matching_layers": 5,
+        "member_max_rows": 32,
+        "layout_and_row_eligibility_measured": false,
+        "decision": "Keep direct compressed BMG conditional on actual row and phase dispatch. The 5 format-matching layers do not establish eligible grouped rows. Evaluate the shared grouped schedule and GDN pairing independently."
+      },
+      "next_required_host_port": "Combine /v1/models lists and individual retrieval with stable created/owned_by, all three context fields and host coverage for loaded state, aliases, image entries and unknown IDs."
     },
     "prior_pending_component_review": {
       "commit": "13932a536d0f5daed3fcca4e7a76e826817cdc86",
