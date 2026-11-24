@@ -649337,10 +649337,142 @@
         35
       ]
     },
-    "stage": "prepared",
-    "complete": false,
-    "passed": false,
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
     "active": false,
-    "ownership_closed": true
+    "ownership_closed": true,
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "requests": [
+        {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        },
+        {
+          "prompt": 117489,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 25,
+          "finish": "length"
+        },
+        {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        }
+      ],
+      "info": {
+        "context": "262144",
+        "spec": "4",
+        "kv": "int8",
+        "kv_resident": "20480",
+        "expert_slots": "1256"
+      },
+      "native_exit_code": 0,
+      "native_identity": {
+        "pid": 2747209,
+        "start_ticks": 383230154
+      },
+      "validation": {
+        "pid": 2747209,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "split": {
+        "store": {
+          "pieces": 720,
+          "direct": 0,
+          "copy_bytes": 115495403520,
+          "gpu_rows": 117488,
+          "host_rows": 0,
+          "window_mode": 10,
+          "maximum_rows": 117488
+        },
+        "tail_bytes": 531988480,
+        "extra_bytes": 531988736,
+        "prefill_slots": 128,
+        "split_guard_checked": true,
+        "uploads": 23802
+      },
+      "states": [
+        {
+          "L": "114",
+          "gdn": "4f5ea7ff8b50a528",
+          "ple": "658c6b4cf144dfa8",
+          "tail": "60845c54dfa17711",
+          "pooled": "cd5a74ed9881eb7e",
+          "kv": "928417f78152ab15",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        },
+        {
+          "L": "117521",
+          "gdn": "f886bd202156939c",
+          "ple": "07c2f20941718b71",
+          "tail": "fd5f2fab91f45d3c",
+          "pooled": "1f33e9a66f9747a5",
+          "kv": "9d33226898b2d90f",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        },
+        {
+          "L": "114",
+          "gdn": "4f5ea7ff8b50a528",
+          "ple": "658c6b4cf144dfa8",
+          "tail": "60845c54dfa17711",
+          "pooled": "cd5a74ed9881eb7e",
+          "kv": "928417f78152ab15",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        }
+      ],
+      "loan": [
+        1,
+        132,
+        1124
+      ],
+      "tap_rows": [
+        81,
+        2046,
+        81
+      ],
+      "kv_stage": {
+        "reloaded_pages": 645120,
+        "reused_pages": 1935360,
+        "prefix_H2D_calls": 168,
+        "mirror_D2H_calls": 720,
+        "mirror_D2H_bytes": 1488807936,
+        "requested_prefix_H2D_bytes": 2724986880
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    }
   }
 }

@@ -10817,11 +10817,18 @@ and benchmark processes close normally, with quiet validation and no new
 Xe fault. The V4 timing gate supports further testing of retention.
 Sustained decode, physical capacity and RESTORE checks remain open.
 
-Use 117489 as a separate geometry when its actual residual placement is
-admitted in both arms. Require an observed transfer reduction and reproducible
-timing benefit. Compare the actual phase timings and physical traffic before
-attributing a speedup to PCIe. Keep the verified V2 and coherent decode
-references until this additional build's comparison closes.
+The 117489-input candidate trace `dflash2_prefill_kv_stage_split_model_v1`
+holds all 117488 BF16 rows in VRAM, checks the split tail and restores
+1124 expert-cache slots. The three wire requests, active state and outputs
+agree with the original V2 split proof at `77ce8ac63`. The candidate exits
+normally with no fresh Xe fault. Nine untapped QSA layers retain 1935360
+pages and three layers reload 645120 pages. This removes 8174960640 bytes
+of requested prefix copies. Attention-store and expert-bank copy requests
+are 115495403520 and 48747929600 bytes. Replay of the same model frame
+passes the speed reader's route checks and refuses altered tail or extent.
+Run the same-ELF reload/retain speed comparison with the verified split
+geometry. The trace measures logical copy requests. Physical bus service
+and clean speed remain separate checks.
 
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
