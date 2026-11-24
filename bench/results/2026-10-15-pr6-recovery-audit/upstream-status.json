@@ -92,7 +92,30 @@
         "layout_and_row_eligibility_measured": false,
         "decision": "Keep direct compressed BMG conditional on actual row and phase dispatch. The 5 format-matching layers do not establish eligible grouped rows. Evaluate the shared grouped schedule and GDN pairing independently."
       },
-      "next_required_host_port": "Combine /v1/models lists and individual retrieval with stable created/owned_by, all three context fields and host coverage for loaded state, aliases, image entries and unknown IDs."
+      "model_discovery_port": {
+        "state": "implemented_host_verified",
+        "fork_commit": "affe682594a030d81e844b42dd0abf245ad9cd20",
+        "upstream_source": "terminal/serve/server.py",
+        "upstream_commits": [
+          "23d94d00aed4808a8a09dd91bb64141ffd6ab62c",
+          "dd6da3a9dc4832c19597702d89b5ada7d67be1c3",
+          "18cce81d0a409c9440f8d9376b6341de443aa7df",
+          "6bd3485daccce0953e9379a35709f0b02a212397"
+        ],
+        "destination": "serve/server.py",
+        "behavior": "Both model-list endpoints and individual model retrieval. Stable created and owned_by fields, text context aliases, and the existing lazy-loaded, text, vision and image model entries.",
+        "host_verification": {
+          "tests": [
+            "serve.test_server.WebApp.test_model_discovery_and_props",
+            "serve.test_server.ModelAliases",
+            "serve.test_lifecycle.Lifecycle.test_discover_chat_unload_and_stream_reload",
+            "serve.test_images.OverHttp.test_listed"
+          ],
+          "passed": 8,
+          "native_model_runs": 0
+        }
+      },
+      "next_required_host_port": "Continue the shared configuration, installer and model-discovery behavior review for 6bd3485da and 00810bdd9. The model enumeration and retrieval slice has host coverage."
     },
     "prior_pending_component_review": {
       "commit": "13932a536d0f5daed3fcca4e7a76e826817cdc86",
