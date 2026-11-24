@@ -40638,5 +40638,43 @@
     "classification": "knowledge_collection",
     "finding": "Strong alternatives analysis covers lifetimes, stable addresses, shape tails, cancellation, dispatch and compilation tradeoffs, and measures that separate host submission from copy or device idle. Primary sources and license/provenance support retrieval.",
     "consumer": "Retrieve after an admitted exact-122881 window has a qualified observer and still shows host submission gaps or ready-device idle/tail gaps after copy and dependency time are separated."
+  },
+  "exact-dflash2-verifier-head-projection-methods-20261124": {
+    "source_commit": "2f9f38ed21adaee6013b8fff0f6fe5e63c0ee37e",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/exact-dflash2-verifier-head-projection-methods-20261124/report.md",
+    "report_sha256": "83b713bf7561a85bc01625686aed569be60a91c5f301cd7c8b248037fc2fd930",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-exact-head-and-prefix-state-20261124-native-review/review.json",
+    "review_sha256": "52d2876d24d1f07414e9fc1f361f6eebfef3258acf0c423b3e4ddc290bc4b754",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_51b8968c83cd, ctx_09f9d5031ad2",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Fusion saves full-logit traffic, not projection MACs; lazy prefixes can skip rejected-suffix rows but may lose T=4 C4 batching. Greedy argmax is distinguished from stochastic p/q acceptance and exact residual correction; shortlists are approximate, while certified bounds remain hypothetical. The pinned head contract is Q8_1 x Q6_K, 2560x248320, DPAS C4. Prior evidence of 96/2863 rejects weakens the lazy-row case.",
+    "consumer": "Retrieve only after matched T=4/C4 measurements report projection and selection time and share of verifier-window cost, logits traffic, and accepted-prefix/rejected-suffix histograms; require measured removable head cost to exceed the candidate's staging or batching penalty."
+  },
+  "speculative-recurrent-state-prefix-commit-methods-20261124": {
+    "source_commit": "2f9f38ed21adaee6013b8fff0f6fe5e63c0ee37e",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/speculative-recurrent-state-prefix-commit-methods-20261124/report.md",
+    "report_sha256": "e233030657f63fc274e64ff51d5ba54614b62bbe858d286ccef65e5b3fb9bda0",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-exact-head-and-prefix-state-20261124-native-review/review.json",
+    "review_sha256": "52d2876d24d1f07414e9fc1f361f6eebfef3258acf0c423b3e4ddc290bc4b754",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_bdd52ba890e6, ctx_344ededde4dc",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Separates state bytes, checkpoint/replay service, ordering and FP32 reassociation limits; composition is only real-arithmetic associative, and Strata's pinned path is ordered replay from canonical state. Gap: valid-row, padding, and tree masks are implicit per method; generic a=0 no-op is not reconciled with pinned n_keep>=1 and its row-position mask. No method is shown bitwise exact outside the sequential recurrence contract.",
+    "consumer": "Retrieve only after measuring snapshot bytes per request/layer against live VRAM headroom or checkpoint/commit service on the critical path; record accepted-prefix and ragged/tree masks, n_keep mapping, event dependencies, and zero-prefix semantics."
   }
 }
