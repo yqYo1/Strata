@@ -10842,10 +10842,26 @@ cohort. In the opposite order, the snapshot returns 16.626 tok/s and
 the incumbent 16.427 tok/s. That pair favors the snapshot by 1.212%.
 Its TTFTs are 50.336 and 50.713 s in launch order. Both processes match
 the first pair's request, output, draft counts, expert and KV work and close
-normally with zero fresh Xe faults. The paired directions differ. Preserve
-the incumbent decode selection while the last pair and distinct workloads
-remain pending.
+normally with zero fresh Xe faults. The final incumbent at `ea197d7a0`
+returns 16.738 tok/s and its paired snapshot returns 16.658 tok/s.
+Their client TTFT is 49.829 and 49.869 s. The closed cohort's six
+independent processes preserve the same 33,217 fresh input tokens,
+4,111 generated tokens, 2,767 accepted of 2,863 drafts, output and
+thinking hashes, and actual expert and KV work. All six close without a
+new Xe fault. Candidate/parent TG changes are −0.636%, +1.212% and
+−0.478%. The process medians are 16.694 and 16.626 tok/s for parent and
+snapshot. Retain the incumbent decode selection for the next screen.
+Low acceptance, direct tap payload and agent-session checks remain open.
 [Decode comparison](../bench/sycl/dflash2_snapshot_decode.py).
+
+The closed `dflash2-snapshot-regular-code-v1/{host,0,1,2,3,4,5}` scopes
+contain 436 files and 89,811,740 bytes. The sorted relative path,
+size and content-hash tuples have SHA-256 `c9b636ccb0bf8ac406a8d3a43cfac051769ff7b5cc164670aecc327c3fabc688`.
+The complete committed result retains the original sample, route and
+closure evidence for each process. Retire these scopes and retain
+`record.json`. Keep the incumbent native build for the dossier pilot and
+the snapshot build for direct-tap and matched agent checks. The original
+coherent build still has an active historical admission reader.
 
 The closed `dflash2-snapshot-direct-prefill-v1/{host,0,1,2,3,4,5}` scopes
 contain 430 disposable files totaling 74,740,985 bytes. The SHA-256 of
