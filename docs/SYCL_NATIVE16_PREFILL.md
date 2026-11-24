@@ -10897,6 +10897,38 @@ The single traced batch in each arm takes 109.716 s with copying and
 107.873 s with direct stores. These clocks are for admission. Use three
 counterbalanced clean process pairs at 117,489 inputs to measure speed.
 
+The first three clean processes at `5740cbbcb`, `d1b8f5654` and
+`f8110caa8` all detach the same 521,472,000-byte canonical target
+head before prefill admission. Each long request reports the owned-RAM
+D2H snapshot and the matching declared H2D restore. The inherited native
+environment sets `STRATA_PREFILL_RELEASE_HEADS=1` and head mode1.
+The generic benchmark runner records a fixed legacy `heads=0` field.
+The inherited native selector and request frames establish actual placement.
+
+The first three processes report 4,239,458,304–4,320,702,464 free
+device bytes at admission. Those measurements already include head
+detachment. The 117,488-row mode10 layout charges 4,057,356,672 bytes
+including the 512 MiB reserve. At 131,071 rows, mode16 with 128 expert
+slots requires 4,561,275,904 bytes including 729,799,424 for the extra
+owner. That exceeds the measured minimum by 321,817,600 bytes. Even
+122,880 rows with 128 slots need 53,347,328 more bytes. The same model
+and reserve with 96 slots would have 31,849,472 bytes of estimated spare
+capacity at 122,880 rows. At 131,071 rows, one slot leaves 16,307,200
+bytes. All figures use the source planner and the observed memory budget.
+
+First check 120,001 input tokens with a fixed 128-slot bank. Mode16 at
+120,000 batched rows needs 4,198,410,752 bytes including the reserve.
+The estimated free-memory margin is 41,047,552 bytes. The required
+arena is 1,118,349,056 bytes and the largest separate allocation is
+2,457,600,000 bytes, within the measured limits. Keep demand expert
+uploads, copied attention, head detachment and aligned KV retention in
+both arms. At this length, mode10 should use 96 windows with an 81,920-row
+maximum. Mode16 should use 48, with the relocated work buffers that enable
+a complete window. Check all-GPU placement, exact lifetime guards, head
+restore, target and DFlash2 handoff, and both short reset requests.
+Record long-state fingerprints and changes in expert work. Use clean
+timing and numerical/task evidence separately after this gate.
+
 After the closed timing bracket, split admission and host reader checks
 were committed, the five local capture directories below were removed.
 The benchmark consumes the committed plans and results. The exact native
