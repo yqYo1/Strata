@@ -10727,15 +10727,20 @@ The 16,385-token check generates four tokens. The full check consumes
 captures a 2,046-row DFlash2 tail, completes the commit and refill drain,
 and exits 0. Xe reports zero fresh faults.
 
-The native serving controller exercises the largest legal input at a
-one-token output budget. GEN reserves eight extra slots. The plan sends
-82 / 262,136 rejected / 262,135 admitted / 82 input tokens to the same
-DFlash2 process with the measured direct writer selected. It checks the
-observed ordinary fallback, executor and direct stores,
-BF16 device and host extents, the last admitted prompt slot, cache refill,
-short-request state and closed owners. The mode16 relocated allocator
-has a 131,072-row limit. This case checks safety of the route above that
-limit. [Native serving boundary controller](../bench/sycl/dflash2_prefill_window_serving_boundary.py)
+The native serving check at `15630ce07` rejects 262,136 inputs at a
+one-token output budget and admits 262,135 in the same DFlash2 process.
+GEN reserves eight extra slots. The admitted request uses the ordinary
+mode10 fallback, executes all 480 eligible attention stores directly
+and generates one token. It verifies the final admitted prefill position,
+BF16 device and host extents, and cache refill. The 82-token controls
+on both sides match state and 32 output tokens. All 15 model assets
+match their pins. The process exits 0 with closed ownership and zero
+fresh Xe faults. [Native serving boundary controller](../bench/sycl/dflash2_prefill_window_serving_boundary.py)
+
+Retired the closed raw `dflash2-prefill-window-serving-boundary-v1` capture
+after matching it to `15630ce07`. The sorted relative paths, lengths and
+SHA-256 values cover 60 files and 12,871,271 bytes with inventory
+SHA-256 `a111b82a4bfcb9deb4630712f4c60bc92a3c0e9cfe90cb33710e3b73ac3f15ca`.
 
 Live server RESTORE remains pending. On the measured source, parking
 requires a populated MTP ring. The DFlash2
@@ -10774,15 +10779,13 @@ Both retained V2 and DFlash2 KV-stage recipes compile
 `STRATA_CPU_SERVICE_PROFILE`. The measured bracket kept per-worker and
 job-census observers disabled. The retained V2 and KV-stage builds have
 identical pool and version-two leaf producer inputs. Their relevant snapshot and footer call sites match
-in the actual build projections. The next attribution draft is
-`/tmp/strata-dflash2-code-worker-leaves.54vtdsua/cpu-leaf-observer.patch`
-with SHA-256 `230858925d1ea0c4c0044164956fb6fafca4056de138c049781dd6cc04895d67`.
-It reuses the exact regular-code body and four warmups, the fixed 1,256
+in the actual build projections. The [decode CPU leaf controller](../bench/sycl/dflash2_decode_cpu_leaves.py)
+reuses the exact regular-code body and four warmups, the fixed 1,256
 expert slots, five workers and width at most four. The two pairs reverse
 the clean and observer order. Verify the actual current-build code route
 and match the request, expert and format/width counters before attributing
 GU, hidden quantization or Down service. Keep summed concurrent worker CPU
-time separate from caller-wall latency. This draft awaits execution.
+time separate from caller-wall latency.
 Sustained strong and weak acceptance measurements remain separate.
 
 #### DFlash2 KV stage retention outside the tap layers
