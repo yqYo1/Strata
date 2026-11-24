@@ -10896,6 +10896,20 @@ zero requested attention-output copies. The copy arm requests
 The single traced batch in each arm takes 109.716 s with copying and
 107.873 s with direct stores. These clocks are for admission. Use three
 counterbalanced clean process pairs at 117,489 inputs to measure speed.
+
+After the closed timing bracket, split admission and host reader checks
+were committed, the five local capture directories below were removed.
+The benchmark consumes the committed plans and results. The exact native
+build, runtime manifest and model inputs remain available for it.
+
+| Removed capture | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-prefill-handoff-timing-v1` | 145 | 25222239 | `ad54efafccd749199d5f1c0aff41cee5eb87ddf88a4a43b3f25af1b2f41ff84c` |
+| `dflash2-prefill-handoff-timing-v2` | 147 | 25731273 | `7c290dde68f6319df15d9e868355af10058d5ef9fd879cfc2db56bf4f8cb9ede` |
+| `dflash2-prefill-direct-store-component-v1` | 7 | 439170 | `45fd55f704869f18e41ca80c2509af884a674c17a669c84b30b606270419e229` |
+| `dflash2-prefill-direct-store-admission-v1` | 60 | 12565183 | `934a2b6f9b54b0cb5453637fcdd46d014c43c94ae7a567d76185314e04108d71` |
+| `dflash2-prefill-direct-store-admission-v2` | 119 | 25155693 | `ba6a228751d1788b664a8edc3e12ecd92f274396777ec97e47be3f1235b22310` |
+
 Retired 59 files and 12606542 bytes from the closed trace's `long`
 directory after `3c156ee10`. The inventory SHA-256 is
 `57ea8657f9544df7e442461a2a2f85952d0e6d6bc8b063eb10f92ec60db29767`.
