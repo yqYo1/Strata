@@ -660996,10 +660996,200 @@
       "reference": "4b25af35d4ff9f7f080b0ac562d0f39347a2656c",
       "packed_layers_sha256": "b122de626509801416f205eefcf736da5063fe266bed080d526929ee4305cf7c"
     },
-    "stage": "prepared",
-    "complete": false,
-    "passed": false,
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
-    "active": false
+    "active": false,
+    "comparison": {
+      "matched_work": true,
+      "matched_state": true,
+      "distinct_process": true,
+      "backing_bytes_removed": 255590400
+    },
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "requests": [
+        {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        },
+        {
+          "prompt": 118785,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 25,
+          "finish": "length"
+        },
+        {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        }
+      ],
+      "info": {
+        "context": "262144",
+        "spec": "4",
+        "kv": "int8",
+        "kv_resident": "20480",
+        "expert_slots": "1256"
+      },
+      "native_exit_code": 0,
+      "native_identity": {
+        "pid": 4113926,
+        "start_ticks": 386404732
+      },
+      "validation": {
+        "pid": 4113926,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "route": {
+        "free_bytes": 4197769216,
+        "arena_bytes": 1180698624,
+        "allocation_limit": 10132807680,
+        "logical_copy_bytes": 116769423360,
+        "fixed_with_headroom": 3902964736,
+        "free_bytes_beyond_reserve": 294804480,
+        "requested_bank_H2D_bytes": 48749337600,
+        "uploads": 23803,
+        "jobs": 26455,
+        "dequants": 23803,
+        "windows": 48,
+        "maximum_rows": 118784
+      },
+      "states": [
+        {
+          "L": "114",
+          "gdn": "4f5ea7ff8b50a528",
+          "ple": "658c6b4cf144dfa8",
+          "tail": "60845c54dfa17711",
+          "pooled": "cd5a74ed9881eb7e",
+          "kv": "928417f78152ab15",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        },
+        {
+          "L": "118817",
+          "gdn": "07fbc47bb1787699",
+          "ple": "1094d3eb3754b38e",
+          "tail": "52a71bdec69b6f53",
+          "pooled": "1c3b0f51755e751e",
+          "kv": "b7d8333c330eb760",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        },
+        {
+          "L": "114",
+          "gdn": "4f5ea7ff8b50a528",
+          "ple": "658c6b4cf144dfa8",
+          "tail": "60845c54dfa17711",
+          "pooled": "cd5a74ed9881eb7e",
+          "kv": "928417f78152ab15",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        }
+      ],
+      "kv_stage": {
+        "reloaded_pages": 645120,
+        "reused_pages": 1935360,
+        "prefix_H2D_calls": 168,
+        "mirror_D2H_calls": 720,
+        "mirror_D2H_bytes": 1505230848,
+        "requested_prefix_H2D_bytes": 2724986880
+      },
+      "tap_rows": [
+        81,
+        2046,
+        81
+      ],
+      "loan": {
+        "phase": "ready",
+        "generation": "1",
+        "chunk": "8192",
+        "first": "132",
+        "lent": "1124",
+        "decode_ready": "1"
+      },
+      "packed_layers_sha256": "b122de626509801416f205eefcf736da5063fe266bed080d526929ee4305cf7c",
+      "usable_slots_by_layer": [
+        39,
+        56,
+        43,
+        43,
+        43,
+        43,
+        43,
+        39,
+        56,
+        43,
+        56,
+        43,
+        49,
+        56,
+        39,
+        43,
+        39,
+        36,
+        39,
+        43,
+        49,
+        45,
+        39,
+        43,
+        43,
+        36,
+        43,
+        36,
+        36,
+        36,
+        49,
+        39,
+        43,
+        39,
+        43,
+        36,
+        56,
+        39,
+        39,
+        43,
+        36,
+        39,
+        39,
+        39,
+        36,
+        36,
+        39,
+        32
+      ],
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    }
   }
 }
