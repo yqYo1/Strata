@@ -11113,22 +11113,30 @@ lengths and held-out samples before fitting a time model. The capacity
 traces cover the short state handoff with 32 outputs. Adopt a faster
 route only after clean timing and the existing model gates.
 
-The 122,881-input direct-writer follow-up is prepared at
+The 122,881-input attention copy follow-up is prepared at
 `/tmp/strata-dflash2-122881-direct.smuq2b_5/long-direct-admission.patch`
-with SHA-256 `06668777c404cea4073ffd76bad4f46e310d2419734d3efed16b42d19d5a02f8`.
-It shares the long-request reader and reuses the copy control at
-`bb974ff52`. It changes the writer only and checks all 720 stores,
-expert work, target fingerprints, KV, taps, refill and the first verifier
-window. The draft applies to the benchmark source and awaits execution.
+with SHA-256 `8016896e581661d7da518bd30eac06dea26ca0ee5ad8b82dd2b4bb35a9ba1d30`.
+It reuses the copy control at `bb974ff52` and has a separate plan and
+record for each selector. Run the direct writer first. It requires all 720
+direct stores with copied input unchanged. The optional `--reader` probe
+holds output copying fixed and requires all 690 eligible input spans to
+borrow the bank, removing 115,762,790,400 requested input copy bytes.
+Both probes verify unchanged expert work, target fingerprints, retained KV,
+draft taps, cache refill and the first verifier window. The retained original
+copy stderr is pinned by SHA-256 and bound to its closed native identity.
+Its 48 layer receipts cover the 15 full chunks, with layers 0 and 1 excluded
+from input borrowing. Keep this capture until both traced probes close.
+The revised patch passes source application and syntax checks.
 
 The quiet follow-up at the same 122,881 inputs is drafted in
 `/tmp/strata-dflash2-122881-writer-speed.youc6g7x/long-writer-speed.patch`
-with SHA-256 `7bc9e416500db649338c6f65b3eb4661d422795fd2921b1a8af52cb934bd6554`.
+with SHA-256 `16d1e216e28ae16cd3c187a13e8d8c07cbca73ca7b851432f29698b10ed07793`.
 It reuses the existing writer comparator with `--longer`. After the
 closed bank cohort and matched direct admission, compare copy and direct
 in three counterbalanced fresh-process pairs at bank32. Require the
-original exact bodies, unchanged expert and DFlash2 work, 720 stores and
-the observed 48-window route. Keep first-use and warmed PP and client TTFT
+original exact bodies, unchanged expert and DFlash2 work, 720 stores,
+115,762,790,400 requested input-copy bytes and the observed 48-window
+route in both arms. Keep first-use and warmed PP and client TTFT
 with each individual 1,000 tok/s decision. The existing 118,785-input
 entry point keeps its parameters. Both patches pass the application check.
 Commit the exact follow-up inputs after the current comparison closes.
