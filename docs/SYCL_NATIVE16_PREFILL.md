@@ -8007,6 +8007,20 @@ one-use source/controller are archived at the source commit above;normal Git
 history restores them. Both inference engine generations remain protected.
 The best-median two-thread point is also in the cumulative CSV.
 
+The DFlash2 code observation at `e26315def2` emits 4,111 tokens from
+4,208 target verifier rows and records 1,449,976 CPU expert jobs. The
+installed expert manifest exactly matches `tests/data/native_experts/iq3_s.txt`.
+Each of its 48 layers can contribute at most 42,080 unique jobs at top 10.
+Assigning the observed jobs to the least expensive available layers first
+gives a logical packed-weight floor of 2,814,737,408,000 bytes. At the same
+job count per output token, 70 tok/s requires at least 47.93 GB/s of logical
+weight visits. At the 33.72 GB/s sequential calibration, at least 29.6% of
+those bytes would need to be avoided or served from cache or another device.
+The effective DDR bandwidth for this access pattern and
+the actual cache reuse are open. The worker clock comparison checks its
+observed format and width counts against the exact manifest before comparing
+logical weight visits with and without grouping.
+
 The earlier source-matched decode-resource comparison reused the429b
 engine's profile-ON build and existing leaf,census and disjoint caller
 observers. It kept CPU leaf sums,caller regions,nested wait CPU and draft

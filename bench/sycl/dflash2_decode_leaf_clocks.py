@@ -1,5 +1,6 @@
-"""Bracket the worker leaf clock on the qualified DFlash2 regular-code route."""
+"""Measure worker leaf clocks and logical weights on the DFlash2 code route."""
 
+from collections import Counter
 from pathlib import Path
 import sys
 
@@ -12,6 +13,7 @@ KEY = 'dflash2_decode_leaf_clocks_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 CLOCK_REFERENCE = 'e26315def2fb25b591ac6070b78236276ef2456d'
+EXPERT_LAYOUT = 'tests/data/native_experts/iq3_s.txt'
 ORDER = ('caller-before', 'worker', 'caller-after')
 WORKER = 'STRATA_CPU_SERVICE'
 
@@ -29,6 +31,10 @@ def baseline():
             and native['native_source_commit'] == row['native_source_commit']
             and '-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON' in native['recipe']['configure'],
             'recover the observed DFlash2 caller clocks and compiled worker observer')
+    args = row['validated_dflash2_args']
+    pack = Path(args[args.index('--pack') + 1])
+    require((pack / 'native_experts.txt').read_bytes() == (bank.P / EXPERT_LAYOUT).read_bytes(),
+            'the packed expert sizes must match the committed model manifest')
     return dict(row, decode_clock_reference=CLOCK_REFERENCE)
 
 
@@ -36,6 +42,29 @@ def environment(row, plan):
     env = control.environment(row, dict(plan, arm='clocks'))
     env[WORKER] = str(int(plan['arm'] == 'worker'))
     return env
+
+
+def logical_weight_work(groups, target_rows):
+    sizes, layers = {}, Counter()
+    for gate, down, size in leaves.census.manifest_formats(bank.P / EXPERT_LAYOUT):
+        pair = gate, down
+        require(pair in leaves.service.TYPES and size > 0 and sizes.get(pair, size) == size,
+                'each measured format pair must have one packed expert size')
+        sizes[pair] = size
+        layers[pair] += 1
+
+    grouped_bytes = ungrouped_bytes = 0
+    entries = Counter()
+    for group in groups:
+        pair = group['gu'], group['down']
+        require(pair in sizes, 'worker format absent from the model manifest')
+        jobs, width = group['jobs'], group['nt']
+        grouped_bytes += jobs * sizes[pair]
+        ungrouped_bytes += jobs * width * sizes[pair]
+        entries[pair] += jobs * width
+    require(all(count <= layers[pair] * target_rows * 10 for pair, count in entries.items()),
+            'CPU format entries exceed all verified rows on the matching layers')
+    return dict(logical_job_blob_bytes=grouped_bytes, logical_ungrouped_blob_bytes=ungrouped_bytes)
 
 
 def routes(text, samples, arm):
@@ -59,9 +88,11 @@ def routes(text, samples, arm):
         if name == 'CPU_SERVICE_THREAD' and int(values['request']) == leaf['request']:
             workers.append({key: int(values[key]) for key in ('slot', *fields)})
     require(len(workers) == leaf['thread_count'], 'worker coverage differs from the checked leaf sums')
+    weight_work = logical_weight_work(leaf['format_nt'], evidence['clocks']['target_rows'])
     evidence['worker_service'] = dict(request=leaf['request'], operations=by_op, per_slot=workers,
         format_nt=leaf['format_nt'], cpu_jobs=leaf['cpu_jobs'], cpu_entries=leaf['cpu_entries'],
-        aggregation='CPU and wall totals overlap across workers. Dedicated slot64 also contributes.')
+        **weight_work,
+        aggregation='Worker time can overlap. Weight bytes charge one packed expert per job, or per token row without grouping.')
     return evidence
 
 
@@ -78,8 +109,12 @@ def decision(processes):
     matched = work[0] == work[1] == work[2]
     observed = samples[1]['decode_ms']
     ratios = [observed / samples[i]['decode_ms'] for i in (0, 2)]
+    weights = processes[1]['routes']['worker_service']['logical_job_blob_bytes']
+    emitted = samples[1]['generated_tokens']
     return dict(matched_work=matched, worker_over_caller_wall=ratios,
                 bounded_leaf_attribution=matched and all(1 / control.LIMIT <= x <= control.LIMIT for x in ratios),
+                logical_expert_weight_bytes_per_output=weights / emitted,
+                logical_expert_weight_GBps_at_70=weights * 70 / emitted / 1e9,
                 decode_ms=[s['decode_ms'] for s in samples], physical_RAM_bytes='unknown',
                 clean_speed_qualified=False)
 
@@ -94,12 +129,13 @@ def experiment():
         unit='Switch the worker leaf clock before launch. All arms keep the qualified caller and rounded clocks.',
         acceptance='Use the original 33217-read regular-code body, thinking and exact source, assets and route. '
                    'Bind every native/request/copy record and all adaptive width-one-through-four leaf work '
-                   'to independently reported expert jobs and entries. Check conserved operation and thread totals.',
+                   'to independently reported expert jobs and entries. Check thread totals and the exact packed '
+                   'weight sizes for the observed format mix.',
         decision='Require matched work, three fresh owners and both paired ratios within the previous 1.10 envelope. '
                  'Use the checked GU, hidden-quantization and Down aggregate clocks to select an experiment. '
                  'Run the fixed-cache format census separately when it is needed to confirm a specific kernel cell.',
         scope='The screen measures incremental worker-observer overhead. Retain the caller-clock controls as '
-              'their own observations. Worker CPU totals overlap and do not measure DRAM traffic.',
+              'their own observations. Worker CPU totals overlap. Physical DRAM traffic needs its own measurement.',
         stop='Keep the original failed or excessive-overhead outcome. Stop on the first changed input, '
              'source, runtime, ownership, route, work, output or fault condition.')
     reference_pins = control.experiment().pins
@@ -107,7 +143,7 @@ def experiment():
 
     def pins(revision):
         values = reference_pins(revision)
-        paths = (THIS, Path(leaves.__file__), Path(leaves.service.__file__), Path(leaves.census.__file__))
+        paths = (THIS, EXPERT_LAYOUT, Path(leaves.__file__), Path(leaves.service.__file__), Path(leaves.census.__file__))
         for path in paths:
             name = str(path.relative_to(bank.P)) if isinstance(path, Path) else path
             actual = bank.P / name
