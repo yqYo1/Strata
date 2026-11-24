@@ -657504,7 +657504,7 @@
     "split_model_sha256": "49a3f850631a135f90a706739787e2f081c29092db763b540d91f70a248083c4",
     "previous_speed": "6e5bb20067e0d3f8abc45f547d226f2f16e1f4f3",
     "window_admission_sha256": "9946ffeb470feaf806341f42a838551e3e5e907266780953c4008cd27875420b",
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "a2f20a36b7f854a19975e4b3a11ff44b76df8342",
     "host_passed": true,
     "ownership_closed": true,
@@ -657747,7 +657747,174 @@
         "heads": 1
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "native_identity": {
+          "pid": 3683176,
+          "start_ticks": 385415768,
+          "sid": 3683102
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3683176,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "free_bytes": 4320706560,
+            "arena_bytes": 1180698624,
+            "allocation_limit": 10132807680,
+            "logical_copy_bytes": 116769423360,
+            "fixed_with_headroom": 3554574592,
+            "free_bytes_beyond_reserve": 766131968,
+            "requested_bank_H2D_bytes": 55570022400,
+            "uploads": 27131,
+            "jobs": 37504,
+            "dequants": 33323,
+            "windows": 96,
+            "maximum_rows": 81920,
+            "kv": {
+              "reloaded_pages": 645120,
+              "reused_pages": 1935360
+            },
+            "tap_vram_bytes": 845776220,
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ]
+          },
+          {
+            "free_bytes": 4239601664,
+            "arena_bytes": 1180698624,
+            "allocation_limit": 10132807680,
+            "logical_copy_bytes": 116769423360,
+            "fixed_with_headroom": 3554574592,
+            "free_bytes_beyond_reserve": 685027072,
+            "requested_bank_H2D_bytes": 55351142400,
+            "uploads": 27022,
+            "jobs": 37396,
+            "dequants": 33205,
+            "windows": 96,
+            "maximum_rows": 81920,
+            "kv": {
+              "reloaded_pages": 645120,
+              "reused_pages": 1935360
+            },
+            "tap_vram_bytes": 845776220,
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ]
+          },
+          {
+            "free_bytes": 4239597568,
+            "arena_bytes": 1180698624,
+            "allocation_limit": 10132807680,
+            "logical_copy_bytes": 116769423360,
+            "fixed_with_headroom": 3554574592,
+            "free_bytes_beyond_reserve": 685022976,
+            "requested_bank_H2D_bytes": 55337011200,
+            "uploads": 27013,
+            "jobs": 37404,
+            "dequants": 33229,
+            "windows": 96,
+            "maximum_rows": 81920,
+            "kv": {
+              "reloaded_pages": 645120,
+              "reused_pages": 1935360
+            },
+            "tap_vram_bytes": 845776220,
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              16
+            ]
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 144424.5,
+            "prompt_tps": 822.5,
+            "ttft_s": 144.661,
+            "total_s": 146.946,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 131939.0,
+            "prompt_tps": 900.3,
+            "ttft_s": 132.168,
+            "total_s": 134.369,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 134336.4,
+            "prompt_tps": 884.2,
+            "ttft_s": 134.573,
+            "total_s": 137.029,
+            "generated_tokens": 24,
+            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
+            "drafts_offered": 16,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 133137.7,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "window10"
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -657771,7 +657938,13 @@
       "acceptance": "Use three counterbalanced fresh process pairs through the pinned bench.sh exact-prefill mode. Verify each actual all-GPU route, VRAM headroom and retirement. Match counted request bodies. Keep first-use and warmed PP/TTFT separate. Advance the warm gain only if all three paired ratios are below one with matched KV and emitted verifier work. Record transfer reduction and repeated 1000 tok/s separately.",
       "stop": "Stop on changed inputs, route mismatch, fallback, runtime, correctness, ownership or fault. Retain mixed timings and differing work. The short output exercises handoff."
     },
-    "request_hashes": {},
+    "request_hashes": {
+      "118785": [
+        "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+        "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+        "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f"
+      ]
+    },
     "host_results": [
       {
         "role": "benchmark",
