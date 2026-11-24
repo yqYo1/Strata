@@ -10952,9 +10952,24 @@ restore, target and DFlash2 handoff, and both short reset requests.
 Record long-state fingerprints and changes in expert work. Use clean
 timing and numerical/task evidence separately after this gate.
 
-The two closed writer pairs at `811d1c752` reduce warmed prompt time by
-1.066% and 0.148%. Their direct-store process rates are 978.160 and
-983.682 tok/s. The third pair and the final speed decision remain open.
+The 117,489-input writer comparison closes at `5d57cc7c9`.
+All six independent processes and 18 fresh prompts match work, close
+normally and report no new Xe fault. Warmed prompt time falls by
+1.066%, 0.148% and 0.483% in the three pairs. The warmed process medians
+aggregate to 968.737 tok/s for copying and 978.160 for direct output.
+Median warmed client TTFT is 121.532 and 120.369 s respectively. The
+third first-use direct request takes 143.866 s in prefill versus
+131.195 s with copies. Keep that variability and the first-use scope.
+Both arms miss repeated 1,000 tok/s. Full direct-store context,
+sustained decode, RESTORE and default adoption remain open.
+
+The closed raw writer capture `dflash2-prefill-direct-store-speed-v1`
+has 431 files and 74900417 bytes, inventory SHA-256
+`6408e13aa10949e7f2b3750861f819d9ccd0d1db9732ae2c61656edb3bd8155a`. All unique useful samples, route decisions,
+case identities and pinned sources are in the exact result above.
+Its closed logs, duplicate process state, per-process caches and routine
+frontend output have no further consumer. The 120,001-input plan
+uses the separate split admission and native build, which remain available.
 The 120,001-input controller at `0711ba6c0` verifies the committed
 120,000-row budget, inherited launch, generated short/long/short inputs
 and same native binary in a host-only preflight. The writer cohort
