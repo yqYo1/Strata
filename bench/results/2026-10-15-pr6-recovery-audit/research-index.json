@@ -40066,5 +40066,41 @@
       "bytes": 1342688,
       "inventory_sha256": "145cace2793f422af5d7ac2fa6c3af0cf29f6ce861ec034430e28f08af05414e"
     }
+  },
+  "dflash2-cpu-payload-bound-20261124": {
+    "source_commit": "05ccea7171d28c5f556f14432f57bf6bdda764f5",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-cpu-payload-bound-20261124/report.md",
+    "report_sha256": "78197999482d103b7f3f48b32f3e25c579168c2e26e4e570282d19070ed15c1a",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-payload-and-sparse-staging-20261124-native-review/review.json",
+    "review_sha256": "b56fbc9a147b776cd12f1d9b596baac0a1865c1a6670c0560036a98ef0de1bab",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_2b26debe81fa, ctx_a6ac48da63b0",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "For the pinned H2560/FF640 IQ3_S GU and Q2_0 Down example, 18 bytes per 64 Q2_0 weights gives 1,868,800 logical weight bytes per cold expert job. Applying this example to every job at the observed 4,111-output/1,449,976-job ratio gives 46.14 GB/s at 70 tok/s. The observed sequential host-read calibration is 33.72 GB/s. Format mix and cache traffic are unknown.",
+    "consumer": "Resolve per-format unique jobs and multirow reuse from the committed worker-clock comparison before selecting a CPU or RAM optimization. Reassess the report after that measurement."
+  },
+  "sparse-accelerator-staging-patterns-20261124": {
+    "source_commit": "05ccea7171d28c5f556f14432f57bf6bdda764f5",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sparse-accelerator-staging-patterns-20261124/report.md",
+    "report_sha256": "7be21e142c7cf2dc527f607a66e63e3b67182081bc57c333f5f4249908915921",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-payload-and-sparse-staging-20261124-native-review/review.json",
+    "review_sha256": "b56fbc9a147b776cd12f1d9b596baac0a1865c1a6670c0560036a98ef0de1bab",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_801ec175289b, ctx_53084de64185",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Original non-LLM sparse-processing sources contrast bounded transfer deduplication, host staging and copy/compute overlap. Their published results are on CUDA designs. Applicability conditions and data-dependent reuse failure cases are indexed for future retrieval.",
+    "consumer": "Retrieve the overlap and reuse sections when a fixed-bank Xe2 experiment needs a bounded staging policy. Review retention after the relevant A/B or the next library audit."
   }
 }
