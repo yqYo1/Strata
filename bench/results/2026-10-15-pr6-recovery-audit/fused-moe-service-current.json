@@ -679557,7 +679557,7 @@
     "dossier_body_sha256": "124227d17f6f1808af0d18fc2588f8db9cb40008ec2f510532b9b58210e3db30",
     "dossier_counted_input": 45627,
     "dossier_host_sha256": "5a04ae5cf075a63fa31d81e624a3e76bf0914fb759643179f8e5bf77aaf87a36",
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "6bd15ac32bf0a3665897ed0cd88b1e0c62496708",
     "host_passed": true,
     "ownership_closed": true,
@@ -679605,7 +679605,146 @@
         "environment_sha256": "6dea3fc5f6cce1dc259bbbc6fb15eeb77e7725d1d39eaa867f51179521398c05"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "incumbent",
+        "complete": false,
+        "host_probe_accepted": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+          "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+          "bytes": 26546256
+        },
+        "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+        "native_identity": {
+          "pid": 1889941,
+          "start_ticks": 391060664,
+          "sid": 1889881
+        },
+        "evidence": {
+          "samples": [
+            {
+              "prompt_tokens": 74,
+              "read_tokens": 74,
+              "reused_tokens": 0,
+              "generated_tokens": 24,
+              "drafts_offered": 21,
+              "drafts_accepted": 19,
+              "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+              "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "reasoning_sha256": "8e053119e57f03adfc04f8cb9262afbd88c9a5db275b76f48485bdb9a5c2e5ed",
+              "phase": "warm-up/chat",
+              "run": null,
+              "turn": null,
+              "decode_ms": 2249.4,
+              "prompt_ms": 23445.5,
+              "ttft_s": 23.636
+            },
+            {
+              "prompt_tokens": 260,
+              "read_tokens": 260,
+              "reused_tokens": 0,
+              "generated_tokens": 1,
+              "drafts_offered": 0,
+              "drafts_accepted": 0,
+              "request_sha256": "594654368dc51ae275b3731900fc7945ebac56315a083099e54503d3d1889212",
+              "output_sha256": "b344d80e24a3679999fa964450b34bc24d1578a35509f934c1418b0a20d21a67",
+              "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "phase": "calibration",
+              "run": 200,
+              "turn": null,
+              "decode_ms": 114.4,
+              "prompt_ms": 18488.5,
+              "ttft_s": 18.604
+            },
+            {
+              "prompt_tokens": 906,
+              "read_tokens": 906,
+              "reused_tokens": 0,
+              "generated_tokens": 1,
+              "drafts_offered": 0,
+              "drafts_accepted": 0,
+              "request_sha256": "91f5573b2d4ef5275aac76c1ad1a515579f82dd8bbcc069c242c18e9f00bb923",
+              "output_sha256": "b344d80e24a3679999fa964450b34bc24d1578a35509f934c1418b0a20d21a67",
+              "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "phase": "calibration",
+              "run": 800,
+              "turn": null,
+              "decode_ms": 118.9,
+              "prompt_ms": 8162.2,
+              "ttft_s": 8.282
+            },
+            {
+              "prompt_tokens": 1068,
+              "read_tokens": 1068,
+              "reused_tokens": 0,
+              "generated_tokens": 8,
+              "drafts_offered": 6,
+              "drafts_accepted": 5,
+              "request_sha256": "89d9393eeaee90f0e44dee68fa252e27e43882f8dc4118ee1eec2fd319a4da0d",
+              "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "reasoning_sha256": "66cb010328920c2eb17ba87f47c743dffeeff81062a6c3807dbf5ccb03e71444",
+              "phase": "warm-up/prompt",
+              "run": null,
+              "turn": null,
+              "decode_ms": 705.9,
+              "prompt_ms": 9082.3,
+              "ttft_s": 9.203
+            },
+            {
+              "prompt_tokens": 45627,
+              "read_tokens": 45627,
+              "reused_tokens": 0,
+              "generated_tokens": 16384,
+              "drafts_offered": 11652,
+              "drafts_accepted": 10738,
+              "request_sha256": "124227d17f6f1808af0d18fc2588f8db9cb40008ec2f510532b9b58210e3db30",
+              "output_sha256": "2ce79bff22000bd56313a015975c1a8f562ec803721a3a85d5658445c4de1f4c",
+              "reasoning_sha256": "3ad769f207bc2227d02e42b2170b3881b5f5564037e32f9c26c0d859adffe5d8",
+              "phase": "long-generation/evidence-dossier",
+              "run": 0,
+              "turn": null,
+              "decode_ms": 1018506.5,
+              "prompt_ms": 120236.8,
+              "ttft_s": 59.268
+            }
+          ],
+          "journal": {
+            "valid": true,
+            "complete": true,
+            "complete_prefix_rows": 12,
+            "last_sha256": "d1d5a7827357b68ac89364afe00ecfcb6a74a9952bfb55554e923b5cbb8c99ae",
+            "pending": [],
+            "pending_gates": [],
+            "failed_gates": [],
+            "errors": []
+          },
+          "decode_rates": {
+            "evidence-dossier": 16.08629890923622
+          },
+          "count_preflight": {
+            "body_sha256": "124227d17f6f1808af0d18fc2588f8db9cb40008ec2f510532b9b58210e3db30",
+            "counted_input_tokens": 45627,
+            "input_case": "evidence-dossier"
+          },
+          "weak_draft_observed": false
+        },
+        "error": "RuntimeError('complete native CPU footers')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
