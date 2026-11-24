@@ -10805,6 +10805,14 @@ absence test identifies an active ancestor dependency on its
 that generation for the current readers until their build lineage can
 use verified historical metadata. The comparison adds no native build.
 
+The target snapshot standalone route at `808b938f2` pins the full-context
+reference at `0795b5ada` and the actual near-capacity restore at `962acee66`.
+It reuses the same 16,385- and 262,144-token fixtures on the snapshot build's
+linked diagnostics. The short case must match the four deterministic output
+IDs. The full case checks the final slot, zero output IDs, mixed residual
+placement, KV stage counts and the real DFlash2 handoff. The 262,128-token
+restore closes the server gate; the new standalone plan still needs execution.
+
 Retire the first raw restore capture at `dflash2-target-snapshot-restore-v1`.
 The original failure, offline replay and independent passing replacement
 carry its useful evidence. The retired scope covers 63 files and
@@ -10875,9 +10883,19 @@ worker-leaf processes. The IQ3_XXS Gate/Up format covers 17 layers and
 and 3,711 jobs. Width 1 is 80.37% of that format and 28.63% of all CPU jobs.
 It ranges from 15,958 to 35,706 jobs across those layers. The most frequent
 N1 bin alone, with IQ4_NL Down, uses 24.64–24.70 CPU ms per output. Use
-both observed Down layouts and the measured expert-access mix to select
-the scalar versus AVX2 grid-load comparison. Scope component timing to
-the paired N1 producer and require a separate production-dispatch check.
+both observed Down layouts in the [scalar and AVX2 grid-load comparison](../bench/sycl/cpu_roofline/iq3xxs_gather.py).
+The direct trial holds activation packing and the weight layout fixed within
+each comparison. A production-dispatch measurement follows any repeatable gain.
+
+Even eliminating that entire N1 bin would leave at least 131.4 CPU ms per
+output, about 45.7 tok/s at six fully occupied execution threads with zero
+other work. At the measured six-core continuous-read reference of 39.3035 GB/s,
+the long code trace would need about 22 percent fewer logical weight bytes to
+fit the 70 tok/s budget if every byte were read from RAM at that rate. Read the
+logged visits as a workload bound under that assumption. Physical RAM traffic
+and cache reuse still need attribution. Continue work on CPU expert visits
+and verifier yield alongside the direct kernel comparison.
+[Continuous-read samples](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 
 The [confidence comparison](../bench/sycl/dflash2_decode_confidence.py)
 holds spec4 and placement fixed and changes only the draft threshold.
