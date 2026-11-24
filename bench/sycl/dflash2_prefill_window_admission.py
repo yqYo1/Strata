@@ -101,7 +101,7 @@ def inputs(revision):
     return plan, envs, requests, reference
 
 
-def window_result(frame, mode):
+def window_result(frame, mode, *, direct=False):
     predicted = budget(mode)
     maximum = predicted['maximum_rows']
     wide = mode == 16
@@ -137,8 +137,11 @@ def window_result(frame, mode):
                     guard='checked', final_drain='checked', decode_changed='0'), 'split/relocated owner did not retire')
     attention = workspace.one(frame, 'strata prefill attention bank: ')
     pieces, copy_bytes = model.restore.capacity.expected_store(ROWS, ROWS, maximum)
+    direct_pieces = pieces if direct else 0
+    copy_bytes = 0 if direct else copy_bytes
     head = frame.find(HEAD_DETACH + '\n')
-    require(attention == dict(requested='0', pieces=str(pieces), direct='0', requested_D2D_bytes=str(copy_bytes))
+    require(attention == dict(requested=str(int(direct)), pieces=str(pieces), direct=str(direct_pieces),
+                              requested_D2D_bytes=str(copy_bytes))
             and 0 <= frame.find('strata prefill heads: draft_reader=absent-dflash2') < head
             < frame.index('strata MoE accumulator admission: '),
             'attention writer or head retirement differs from the fixed policy')
@@ -153,7 +156,7 @@ def window_result(frame, mode):
                 maximum_rows=maximum)
 
 
-def inspect(log, plan, pid, arm, responses):
+def inspect(log, plan, pid, arm, responses, *, direct=False):
     proof = basis.validation.preload_evidence(log, pid)
     markers = list(re.finditer(r'^strata trace: request (\d+) 0$', log, re.M))
     require(proof['loader'] == plan['validation']['loader']['path']
@@ -167,7 +170,7 @@ def inspect(log, plan, pid, arm, responses):
             and log.count('strata prefill heads: target detached ') == 1
             and 'strata prefill heads: draft detached ' not in log,
             'only the long request may detach the target head')
-    observed = window_result(middle, ARMS[arm])
+    observed = window_result(middle, ARMS[arm], direct=direct)
     kv = store.speed.KV.check_request(middle, 0, ROWS, store.CHUNK, reuse=True,
                                       tap_layers=store.gate.TAPPED_QSA_LAYERS)
     masked = workspace.records(middle, 'strata cache loan: phase=masked ')

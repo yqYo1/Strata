@@ -11042,12 +11042,22 @@ and 32 slots estimates 67,992,576 free bytes beyond the same 512 MiB
 reserve at that query, within the arena and single-allocation limits.
 Compare the bank size at fixed input extent before moving the boundary.
 
-A same-ELF direct-writer admission draft is kept at
-`/tmp/strata-dflash2-window-direct.fmeojwrr/admission.patch` with SHA-256 `d7cc9cf6b00d61b0ea34a494f546a1ccb832412142b2a3a35b3b7c0e07a98dd7`.
-The replay preserves the original mode16 copy footer and refuses synthetic
-wrong-writer, short-store-count and fallback cases. The draft isolates the
-writer at 118,785 inputs after the window comparison passes. Actual direct
-stores, state and replay output need the fresh native check.
+The next same-build admission uses
+[dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
+to change the attention writer at 118,785 inputs. It reuses the proven
+mode16 copy process at wire lengths 82, 118,785 and 82. Require 720 direct
+stores, zero requested copies, matched expert work and KV, and matching
+short state before and after the long request. The full DFlash2 tail
+coverage, draft counts and emitted output must match. The trace records
+tap coverage and final target state. Tap contents and live RESTORE
+remain separate checks. A later quiet comparison measures throughput.
+
+The six-process quiet capture under
+`dflash2-prefill-window-speed-v1` was retired after recording the 18 original
+samples at `6fb701c7f` and both CSV rows at `a7ec4fa7e`. All six owners
+closed and the next admission consumes the committed records. The
+sorted path, length and SHA-256 inventory covers 431 files and
+74,886,752 bytes, with SHA-256 `7ae006cf0e7d1e832e001131a7688f746963037d451588e5f17b1637f2b8448d`.
 
 The raw 118,785-token traced captures in `dflash2-prefill-window-admission-v2` were
 retired after the quiet readers passed. The inventory covers 119
