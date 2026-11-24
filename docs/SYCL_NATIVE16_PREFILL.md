@@ -11005,9 +11005,14 @@ dequantizations from 46,677 to 23,803. Both request the same
 116,769,423,360 bytes of copied attention output. The short and long
 generated work, active state hashes and retained KV agree.
 The traced prompt intervals are 163.565 and 152.267 seconds.
-Schedule an independent quiet exact-input comparison before claiming a
-speedup. Use the trace-derived layouts to check actual dispatch, with
-demand uploads held fixed. The counters describe requested work.
+The counters describe requested work. The clean controller
+`dflash2_prefill_window_speed.py` compares the two layouts through
+`bench.sh --prefill-exact-tokens 118785` at the same fixed demand-upload
+policy. Three counterbalanced fresh-process pairs produce one first-use
+and two subsequent requests per process. Validate actual dispatch and KV
+for each request. Compare prompt time, client TTFT, requested bytes and
+the 1,000 tok/s target separately. Keep sustained decode, task,
+physical context and RESTORE qualification separate from that screen.
 
 Retired the 120,001-input raw captures under
 `dflash2-prefill-window-admission-v1` after rechecking all 119 files and
