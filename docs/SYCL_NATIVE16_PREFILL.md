@@ -8030,6 +8030,22 @@ already reflected in the current allocation. Replay alternate cache quotas
 against the packed budget and actual unique expert jobs. Include the
 existing 1,124-slot prompt loan in the placement and restore comparison.
 
+The observed 4,111 outputs over 1,345 verifier windows give 3.057
+tokens per window. At that yield, 70 tok/s allows 43.66 ms of total
+decode time per window. Even eight emitted tokens would allow only
+114.29 ms per window. Compare measured yield and complete window latency
+together before selecting a wider verifier.
+
+Both native sources `59411e1d` and `96832af6` support up to eight DFlash2
+block rows, while the configured prefill cache loan requires spec4.
+The early launch check uses the capped draft width and the final loan
+check still uses the raw spec width. The canonical Q6 DPAS head also
+selects its optimized path only at verifier width four. An isolated
+wider decode test needs both arms on a supported non-loan prompt path
+and a check of actual head dispatch, committed rows and emitted yield.
+Keep the existing spec4 prefill route available. Use the pending worker
+attribution to decide whether to prioritize per-window cost or yield.
+
 The earlier source-matched decode-resource comparison reused the429b
 engine's profile-ON build and existing leaf,census and disjoint caller
 observers. It kept CPU leaf sums,caller regions,nested wait CPU and draft
