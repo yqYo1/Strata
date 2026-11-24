@@ -629938,7 +629938,7 @@
     },
     "outcomes": {
       "build": {
-        "error": "RuntimeError('compile-libstrata_ur_status.so failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp: In function ‘bool {anonymous}::capture_status_call(const xpti::function_with_args_t*, bool, uint64_t)’:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:221:8: error: ‘UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH’ was not declared in this scope; did you mean ‘UR_FUNCTION_ENQUEUE_MEM_UNMAP’?\\n  221 |   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {\\n      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |        UR_FUNCTION_ENQUEUE_MEM_UNMAP\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:31: error: ‘ur_enqueue_kernel_launch_params_t’ was not declared in this scope; did you mean ‘ur_enqueue_mem_unmap_params_t’?\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |                               ur_enqueue_mem_unmap_params_t\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: no matching function for call to ‘arguments<<expression error> >(const xpti::function_with_args_t*&, const char [22])’\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note: candidate: ‘template<class T> const T* {anonymous}::arguments(const xpti::function_with_args_t*, const char*)’\\n  175 | template<class T> const T* arguments(const xpti::function_with_args_t* data, const char* name) noexcept {\\n      |                            ^~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note:   template argument deduction/substitution failed:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: template argument 1 is invalid\\n  222 |     const auto* p = arguments<u')",
+        "error": "RuntimeError('compile-libstrata_ur_status.so failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp: In function \u2018bool {anonymous}::capture_status_call(const xpti::function_with_args_t*, bool, uint64_t)\u2019:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:221:8: error: \u2018UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH\u2019 was not declared in this scope; did you mean \u2018UR_FUNCTION_ENQUEUE_MEM_UNMAP\u2019?\\n  221 |   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {\\n      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |        UR_FUNCTION_ENQUEUE_MEM_UNMAP\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:31: error: \u2018ur_enqueue_kernel_launch_params_t\u2019 was not declared in this scope; did you mean \u2018ur_enqueue_mem_unmap_params_t\u2019?\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |                               ur_enqueue_mem_unmap_params_t\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: no matching function for call to \u2018arguments<<expression error> >(const xpti::function_with_args_t*&, const char [22])\u2019\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note: candidate: \u2018template<class T> const T* {anonymous}::arguments(const xpti::function_with_args_t*, const char*)\u2019\\n  175 | template<class T> const T* arguments(const xpti::function_with_args_t* data, const char* name) noexcept {\\n      |                            ^~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note:   template argument deduction/substitution failed:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: template argument 1 is invalid\\n  222 |     const auto* p = arguments<u')",
         "complete": false,
         "ownership_closed": true,
         "fresh_faults": [],
@@ -680174,7 +680174,7 @@
       },
       "scope": "Run host accounting checks, then one fresh 82-input/32-output native request per width. Use spare VRAM via the same smaller prefill chunk and expert cache in both arms. No loans. Require true full-width replays after the first anchor, complete commits, validated head dispatch, normal child exit and no new Xe fault. Stop on first failure. Diagnostic only."
     },
-    "stage": "partial",
+    "stage": "failed",
     "outcomes": {
       "host": {
         "passed": true,
@@ -680182,10 +680182,50 @@
         "exit_code": 0,
         "error": null,
         "GPU_executed": false
+      },
+      "4": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "requests": [],
+        "native_exit_code": 1,
+        "native_identity": {
+          "pid": 1982063,
+          "start_ticks": 391283427
+        },
+        "error": "RuntimeError(\"RuntimeError('protocol EOF before expected line')\")",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "passed": false,
     "complete": false,
-    "ownership_closed": true
+    "ownership_closed": false
+  },
+  "dflash2_width_admission_v1_startup_refusal": {
+    "initial_gate_passed": false,
+    "native_exit_code": 1,
+    "fresh_faults": [],
+    "direct_child_reaped": true,
+    "session_empty": true,
+    "survivor_count": 0,
+    "live_parent_or_child_observed": false,
+    "native_generation_executed": false,
+    "error": "strata generate: native head: DPAS requires STRATA_PREFILL_RELEASE_HEADS=1",
+    "head_release": "0",
+    "cache_scratch_lease": "0",
+    "canonical_head": "1",
+    "execution_sha256": "2212f74513dcc375dc581c1aea5ea64e66b83eab53a3f688b2f3bd25a61b6076",
+    "stderr_sha256": "3c6f16e63fd112e6d8ec9ca19ad26a6ae06b5166eb580313a91a5dbfd2d0a332",
+    "next": "Use the required head initialization setting in both arms. Keep cache scratch disabled and the short request below the chunk floor."
   }
 }
