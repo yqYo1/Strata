@@ -70,9 +70,9 @@ def inputs(revision, root=ROOT):
     return plan, launches
 
 
-def split_route(frame, count):
+def split_route(frame, count, *, direct=False):
     rows = count - 1
-    store = model.restore.require_store(frame, dict(direct=False), dict(read=count))
+    store = model.restore.require_store(frame, dict(direct=direct), dict(read=count))
     require(store['gpu_rows'] == store['maximum_rows'] == rows and store['host_rows'] == 0
             and store['window_mode'] == 10, 'split prefill must hold every BF16 residual row in VRAM')
     admission = workspace.one(frame, 'strata MoE split admission: ')
@@ -110,7 +110,7 @@ def committed_state(frame, request):
     return {k: state[k] for k in model.restore.ACTIVE_STATE}
 
 
-def inspect(log, plan, pid, count, requests):
+def inspect(log, plan, pid, count, requests, *, direct=False):
     proof = basis.validation.preload_evidence(log, pid)
     require(proof['loader'] == plan['validation']['loader']['path']
             and log.count('strata native head DPAS: ready=1 columns=4 layout=canonical') == 1
@@ -121,7 +121,7 @@ def inspect(log, plan, pid, count, requests):
     starts = [mark.start() for mark in markers] + [len(log)]
     frames = [log[start:end] for start, end in zip(starts, starts[1:])]
     middle = frames[1]
-    route = split_route(middle, count)
+    route = split_route(middle, count, direct=direct)
     taps = re.findall(r'^strata DFlash2: eager, prompt_tail_rows=(\d+) cold_prefix=0 vram_bytes=([1-9]\d*)$', log, re.M)
     require([int(rows) for rows, _ in taps] == [81, 2046, 81]
             and requests[0] == requests[2] and all(r['offered'] > 0 for r in requests)
