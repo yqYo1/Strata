@@ -11040,7 +11040,13 @@ and zero permanent slot hits. The warm minimum free query is
 would free 255,590,400 bytes. The source layout for 126,977 input tokens
 and 32 slots estimates 67,992,576 free bytes beyond the same 512 MiB
 reserve at that query, within the arena and single-allocation limits.
-Compare the bank size at fixed input extent before moving the boundary.
+Applying the same planner to the lower traced copy/direct free query of
+4,197,769,216 bytes gives 26,303,488 bytes of margin at 126,977 and
+160,553,984 bytes at 122,881. At 131,072 inputs it is short by 107,916,288
+bytes with 32 slots and 25,381,888 bytes with one slot. The shared arena
+and separate allocation bounds still fit those two arithmetic cases.
+Use the fixed 118,785-input case first to compare bank size, then use
+122,881 as the first longer shape to check actual device admission.
 
 The same-build admission in
 [dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
