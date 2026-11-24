@@ -41218,5 +41218,38 @@
     "consumer": "Correct the gate to require each eligible request to have ≥256 offers and ≤0.40 acceptance; then freeze a named deployment corpus and validate it in the native benchmark, with held-out requests checked per request.",
     "schedulable_now": false,
     "owners_closed": true
+  },
+  "dflash2-t4-t5-dispatch-bounds-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "43cf082412cf08761e211835a941d1afda8d2dc3",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "view_commit": "076593d512353c8c797708fb6a48346f05249e87",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-t4-t5-dispatch-bounds-20261125/report.md",
+    "report_sha256": "202c1451a7ee7f81cd6cc27cc1671cebac0e3c2fd03aad032241df663bd59fb8",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-width-and-no-host-final-20261125.9iyis25z/review.json",
+    "review_sha256": "93b107778a4ff9b37d03c0ca64edfffec419f97a218350f61d45b056e726a065",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Useful for the width decision: T5 adds a verifier row and plan capacity, loses C4 on the ordinary head, and fails the current spec4 cache-loan gate. No runtime correctness or speed evidence; EOS can follow commit. The head route and loan eligibility are separate constraints.",
+    "consumer": "Run the host-only width 4/5 row-map and admission/allocation checks, including every accepted prefix, EOS/max-new, final-context, head route, and cache-loan lifecycle; then gate a short device correctness smoke."
+  },
+  "niko-no-host-b570-byte-budget-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "43cf082412cf08761e211835a941d1afda8d2dc3",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "view_commit": "076593d512353c8c797708fb6a48346f05249e87",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/niko-no-host-b570-byte-budget-20261125/report.md",
+    "report_sha256": "18f340d3998b88c970215dfba0e87b1684a5a54dc5e3bd3983b1463c3ccee418",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-width-and-no-host-final-20261125.9iyis25z/review.json",
+    "review_sha256": "93b107778a4ff9b37d03c0ca64edfffec419f97a218350f61d45b056e726a065",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Supports holding full NO_HOST and considering a separate hybrid route. Logical blob visits are not measured PCIe traffic; the 6.29–6.49 GB/s large-copy reference is not a physical expert-transfer counter. Device planning with CPU service and full device routing remain distinct options. Physical traffic and matched performance are unknown.",
+    "consumer": "Recover the per-layer expert-size ledger and mirror-cap accounting for the 1256-slot B570 setup; if coverage permits, run the single-window hybrid check with counters distinguishing device-planned work from CPU-served jobs.",
+    "upstream_commit": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa"
   }
 }
