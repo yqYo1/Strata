@@ -672150,13 +672150,13 @@
       "read_tokens": 33287
     },
     "rank_candidate_freeze": "d162a13477145fc09857b2e2f6989e56450332725c4ece4ab4d435190b66fdd0",
-    "stage": "ready",
+    "stage": "closed",
     "source_commit": "aef7c80cde0a8dec6439098cd300f474c4afb01f",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -672196,7 +672196,187 @@
         "environment_sha256": "0bf5fbda48ea76f7d50d7efcc252e9e673b9a3724fff8a88ada25ff66df39ed2"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "holdout",
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_identity": {
+          "pid": 949251,
+          "start_ticks": 388795326,
+          "sid": 949192
+        },
+        "evidence": {
+          "samples": [
+            {
+              "prompt_tokens": 74,
+              "read_tokens": 74,
+              "reused_tokens": 0,
+              "generated_tokens": 24,
+              "drafts_offered": 21,
+              "drafts_accepted": 19,
+              "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+              "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "reasoning_sha256": "8e053119e57f03adfc04f8cb9262afbd88c9a5db275b76f48485bdb9a5c2e5ed",
+              "phase": "warm-up/chat",
+              "run": null,
+              "turn": null,
+              "prompt_ms": 26165.4,
+              "decode_ms": 2725.2,
+              "ttft_s": 26.393
+            },
+            {
+              "prompt_tokens": 257,
+              "read_tokens": 257,
+              "reused_tokens": 0,
+              "generated_tokens": 1,
+              "drafts_offered": 0,
+              "drafts_accepted": 0,
+              "request_sha256": "7c23b93c39240351a355a0b7193ad8fe30027c20e2d7c17c26b17d64626353c8",
+              "output_sha256": "b344d80e24a3679999fa964450b34bc24d1578a35509f934c1418b0a20d21a67",
+              "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "phase": "calibration",
+              "run": 200,
+              "turn": null,
+              "prompt_ms": 20850.5,
+              "decode_ms": 195.6,
+              "ttft_s": 21.048
+            },
+            {
+              "prompt_tokens": 903,
+              "read_tokens": 903,
+              "reused_tokens": 0,
+              "generated_tokens": 1,
+              "drafts_offered": 0,
+              "drafts_accepted": 0,
+              "request_sha256": "d0044867653d47151aed3803b2d0740aff7879046d7875ae78152590e6218487",
+              "output_sha256": "b344d80e24a3679999fa964450b34bc24d1578a35509f934c1418b0a20d21a67",
+              "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "phase": "calibration",
+              "run": 800,
+              "turn": null,
+              "prompt_ms": 9776.2,
+              "decode_ms": 195.4,
+              "ttft_s": 9.973
+            },
+            {
+              "prompt_tokens": 1068,
+              "read_tokens": 1068,
+              "reused_tokens": 0,
+              "generated_tokens": 8,
+              "drafts_offered": 6,
+              "drafts_accepted": 5,
+              "request_sha256": "5bfbe662a340000044f832b1c766d95073683f7b9dfcc7e44ee6d63af2458613",
+              "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "reasoning_sha256": "66cb010328920c2eb17ba87f47c743dffeeff81062a6c3807dbf5ccb03e71444",
+              "phase": "warm-up/prompt",
+              "run": null,
+              "turn": null,
+              "prompt_ms": 11365.4,
+              "decode_ms": 985.6,
+              "ttft_s": 11.51
+            },
+            {
+              "prompt_tokens": 33287,
+              "read_tokens": 33287,
+              "reused_tokens": 0,
+              "generated_tokens": 11783,
+              "drafts_offered": 6902,
+              "drafts_accepted": 5298,
+              "request_sha256": "4105a52cee04afa6e39ec6f3dcfea67e4f68d1af2e860ac40398c18d832b076c",
+              "output_sha256": "b851e6afb7fa7d1b68aa298ed7e3b19e9caa9f46fd5d22db7be119044281072a",
+              "reasoning_sha256": "315a7c472dba28667e78621a8822f5d94055c67b98588c43390d1eee49d287cd",
+              "phase": "long-generation/varied-prose",
+              "run": 0,
+              "turn": null,
+              "prompt_ms": 54337.2,
+              "decode_ms": 1151623.3,
+              "ttft_s": 55.891
+            }
+          ],
+          "journal": {
+            "valid": true,
+            "complete": true,
+            "complete_prefix_rows": 11,
+            "last_sha256": "511e9d6a440b6c1e4ed189974321c3498cff1b60f38ae765b276351d70fca39e",
+            "pending": [],
+            "pending_gates": [],
+            "failed_gates": [],
+            "errors": []
+          },
+          "decode_rates": {
+            "varied-prose": 10.23164432327828
+          }
+        },
+        "routes": {
+          "attention_store": {
+            "pieces": 240,
+            "direct": 0,
+            "copy_bytes": 32721469440,
+            "gpu_rows": 33286,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 33286
+          },
+          "kv": {
+            "reloaded_pages": 61440,
+            "reused_pages": 184320,
+            "prefix_H2D_calls": 48,
+            "mirror_D2H_calls": 336,
+            "mirror_D2H_bytes": 421800192,
+            "requested_prefix_H2D_bytes": 259522560
+          },
+          "windows": 6485,
+          "target_rows": 13387,
+          "cpu_jobs": 4668262,
+          "cpu_entries": 5982938,
+          "logical_job_blob_bytes": 9529065216000,
+          "jobs_NT": [
+            3634175,
+            802302,
+            182981,
+            48804,
+            0,
+            0,
+            0,
+            0
+          ],
+          "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+          "distinct_layer_expert_pairs": 23202,
+          "routing_bytes": 57028224,
+          "routing_sha256": "08dce3920dea2de8752b16cbbbaddc07e9486515dfde39264c92fa116b27926f",
+          "usage_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-long-routing-holdout-v1/0/verifier-usage.json",
+          "usage_sha256": "747f62afbfc126b706872fdb98bac1a8758338fd514d6b507115636b5c139262"
+        },
+        "validation": {
+          "pid": 949251,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "postconditions_complete": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -672225,6 +672405,12 @@
         "passed": true
       }
     ],
+    "decision": {
+      "role": "holdout",
+      "observed_acceptance": 0.7676035931614025,
+      "admitted_routing": true,
+      "references": "747f62afbfc126b706872fdb98bac1a8758338fd514d6b507115636b5c139262"
+    },
     "source_inputs": {
       "files": 841,
       "sha256": "01874c74cf2abd888d5e71d14600b02a4c1486ede073c2a2611575085da09a14"
