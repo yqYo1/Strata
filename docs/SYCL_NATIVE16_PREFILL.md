@@ -10929,7 +10929,7 @@ and routing evidence already retain the necessary samples, identities and
 outcomes. Keep both compact on-disk controller records and the live native
 build.
 
-The old `prefill-kv-upload-native-v2` generation is selected for retirement.
+Retired `prefill-kv-upload-native-v2` on 2026-11-25 JST.
 The host proof with controller `c24b3e93e` recovers all original inputs,
 the recipe and the executable for source `59411e1de`. The original build
 receipt matches published `8f21276e9` with compact digest
