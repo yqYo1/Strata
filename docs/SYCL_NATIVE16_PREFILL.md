@@ -10794,10 +10794,16 @@ both tap layers and the final layer. A one-page edge refresh at the nine
 layers would use a further 38,016 bytes. Verify that the Q8 stage owns
 exact valid cells, scales and index state before testing any such variant.
 
-The [direct prefill comparison](../bench/sycl/dflash2_snapshot_direct_prefill.py)
-pins three counterbalanced pairs at 122,881 fresh input tokens. Both native
-executables use mode16, the direct writer and the same private-process
-configuration. Record warm and first-use clocks, TTFT and actual routes.
+The direct prefill comparison at `ad8652973` closes three counterbalanced
+pairs and 18 requests with the same mode16 direct writer at 122,881 fresh
+input tokens. Each build exceeds 1,000 tok/s on all six warmed requests.
+The median of the three warm process rates is 1,056.456 tok/s for the parent
+and 1,056.523 tok/s for the target-only snapshot. Client warm TTFT is 116.513 s
+and 116.508 s. The three paired warm PP deltas are +0.418%, −0.005% and
++0.035%. First-use PP spans 923.343–969.236 in the parent and
+966.937–969.805 with the snapshot. All processes exit normally with no new Xe
+faults. The snapshot remains pending physical context, direct tap content and
+matched sustained decode checks. [Performance CSV](../bench/performance-records.csv).
 The archived coherent source and recipe recover fully from Git, and all
 12 local executable hashes match the original receipt. A checks-only
 absence test identifies an active ancestor dependency on its
