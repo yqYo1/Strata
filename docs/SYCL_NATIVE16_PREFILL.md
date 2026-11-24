@@ -11025,6 +11025,27 @@ Fusion covers more rows in each prompt. The first has 49,927,500 versus 52,814,5
 fused GU and Down rows. Attribute the speed change to the measured
 window policy as a whole. The remaining repetitions determine eligibility.
 
+The reversed-order pair closes six more requests with matched KV and
+verifier work, normal exits and no fresh Xe faults. Warmed prefill rises
+from 901.605 to 955.795 tok/s. Warmed client TTFT changes from
+131.988 to 124.536 seconds. Expert transfer savings reproduce
+for all three prompts. The third pair completes the declared screen.
+
+All six measured mode16 prompts have one upload per dequantization
+and zero permanent slot hits. The warm minimum free query is
+4,239,462,400 bytes. Reducing the staged bank from 128 to 32 slots
+would free 255,590,400 bytes. The source layout for 126,977 input tokens
+and 32 slots estimates 67,996,672 free bytes beyond the same 512 MiB
+reserve at that query, within the arena and single-allocation limits.
+Compare the bank size at fixed input extent before moving the boundary.
+
+A same-ELF direct-writer admission draft is kept at
+`/tmp/strata-dflash2-window-direct.fmeojwrr/admission.patch` with SHA-256 `d7cc9cf6b00d61b0ea34a494f546a1ccb832412142b2a3a35b3b7c0e07a98dd7`.
+The replay preserves the original mode16 copy footer and refuses synthetic
+wrong-writer, short-store-count and fallback cases. The draft isolates the
+writer at 118,785 inputs after the window comparison passes. Actual direct
+stores, state and replay output need the fresh native check.
+
 The raw 118,785-token traced captures in `dflash2-prefill-window-admission-v2` were
 retired after the quiet readers passed. The inventory covers 119
 files and 25259917 bytes with SHA-256 `aee4c4bf5ce05cccd528d159ea15f5635e249cddbb5eb195775707862ef8a185`.
