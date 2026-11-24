@@ -10825,6 +10825,11 @@ RESTORE result qualifies near-capacity copy-route server state separately.
 The matched sustained regular-code comparison requires this exact physical
 diagnostic, the existing near-capacity RESTORE and the closed long-prefill
 timing cohort. It uses only the selected engine as a paired timing factor.
+The first incumbent at `d52c05635` returns 4,111 tokens at 16.694 tok/s.
+The accepted draft count is 2,767 of 2,863. The request, output and thinking
+hashes, expert and KV work, executable, boot and runtime manifest match the
+earlier 13.671 tok/s control at `ce3ef1a3a`. Keep the new cohort paired and
+report the wall-clock difference separately from implementation effects.
 [Decode comparison](../bench/sycl/dflash2_snapshot_decode.py).
 
 The closed `dflash2-snapshot-direct-prefill-v1/{host,0,1,2,3,4,5}` scopes
@@ -11045,6 +11050,22 @@ gain-first routed-row policy gives the largest projected cut at 3.27%.
 Keep it for the next matched runtime trial. Actual copy traffic and
 throughput remain unmeasured.
 [Replay controller](../bench/sycl/dflash2_causal_rank_replay.py)
+
+The offline per-layer quota replay at `ef751d6c1` uses the verified
+training and held-out captures from the fixed-quota forecast. It preserves
+132 physical prefix slots and the original 1,256-slot, 2,575,206,400-byte
+payload limits. The held-out jobs are 4,668,262 stock, 4,666,104 with
+training ranks at fixed quotas and 4,664,640 with variable quotas.
+The variable arm uses 2,474,752,000 resident payload bytes. Held-out logical
+weight visits increase by 0.173% against stock, so this heuristic fails the
+predeclared byte screen. Keep the fixed quota for the next native test.
+The exact manifest has 47,717,120,000 raw bytes outside the stock cache.
+A full host mirror also needs its runtime alignment and allocation proof.
+Charging a raw blob for each logged CPU job at 70 tok/s would require
+50.34 GB/s for code and 56.61 GB/s for prose. The measured 6.292–6.485 GB/s
+large-copy reference would cover about 12.5–12.9% and 11.1–11.5% of those
+respective logical bytes. These are conditional transfer envelopes.
+For a hybrid experiment, measure actual coverage and moved bytes.
 
 Retired the V1 outputs at `dflash2-expert-rank-live-check-v1/{stock,trained}`
 after preserving the original failure and the V2 replacement in Git. The
