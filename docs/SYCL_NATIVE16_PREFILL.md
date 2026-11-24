@@ -11102,8 +11102,14 @@ The source-only opt-in draft `/tmp/strata-relocated-prefill-batch.8sx3q4kv/order
 has SHA-256 `8be9b6377ad8d0822f74bfa86b718f36acb15f1b5aba50a9efff908a326bc179` against `96832af6f`.
 It uses the existing ordered batch only at 128 slots and effective
 relocated mode16. The existing demand and coalesced selections retain
-their current routes. Apply after closing the pinned writer comparison
-and reviewing early-error ownership.
+their current routes. The owner review confirms the outer lease stays
+armed on early return and drains before the source, private bank, route
+and relocated workspace retire. Existing fixture coverage does not
+exercise a later rejected submission on this owned route. The next
+safety check should accept earlier valid copies, reject a later one on
+the host and observe the drain before releasing owners. The first
+32-slot comparison can reuse the current executable while this test is
+prepared.
 
 Retired the direct-writer trace in `dflash2-prefill-window-direct-v1`
 after closing its owner and matching all three requests at `3b8cdaf51`.
