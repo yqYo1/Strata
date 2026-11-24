@@ -651823,7 +651823,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "dflash2_target_snapshot_host_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "b24c4b0fdfe364650435bd871c260c3e63db9d20",
     "controller": "bench/sycl/dflash2_snapshot_host.py",
     "frozen_tools": {
@@ -651928,6 +651928,9 @@
     "passed": false,
     "active": false,
     "ownership_closed": true,
-    "scope": "Transfer-injected host fixture. Exercise target-only packing, cache reuse, validation and byte readback along with the existing MTP and error cases. No native inference launch."
+    "scope": "Transfer-injected host fixture. Exercise target-only packing, cache reuse, validation and byte readback along with the existing MTP and error cases. No native inference launch.",
+    "error": "RuntimeError('build failed: ')",
+    "link_failure": "The isolated host test lacked the qsa_attn_pools symbol referenced by the streaming-ring branch.",
+    "build_stdout_sha256": "d49005a3002b3b818ee7b3939559119591c3e15f24e63fe8383ec761ebf3923f"
   }
 }
