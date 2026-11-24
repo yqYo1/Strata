@@ -4794,6 +4794,7 @@ class Service:
         self.literals = literal_tags(getattr(tokenizer, "control_tokens", ()))   # texts that stay text inside a message
         self.fit_max_tokens = fit_max_tokens          # default: clamp the output cap to the room left; False (--no-fit-max-tokens) = 400
         self.aliases: list[str] = []                  # #297: other names of the model (the config's `aliases`)
+        self.strict_model = os.environ.get("STRATA_STRICT_MODEL", "").strip().lower() in ("1", "true", "yes", "on")
         self.answer_room = True                       # 0.1.45: see ANSWER_ROOM_MIN_CAP (the config's "answer_room": false turns it off)
         self.reasoning_close_retry = False            # #1053 (opt-in): close the thinking once when a reply ends inside it
         self.codex_compaction_cache = False           # #924 (opt-in): a Codex compaction is rendered with its conversation's tools
@@ -5112,9 +5113,24 @@ class Service:
 
     def model_for(self, req) -> str:
         """The name to answer with: the request's own when it is the model's name or an alias (#297), else the model's.
-        Other names are still served, as before."""
+        Accepted placeholder names resolve to the loaded model."""
         asked = req.get("model") if isinstance(req, dict) else None
         return asked if isinstance(asked, str) and asked in self.aliases else self.model
+
+    def check_model(self, req: dict) -> dict | None:
+        """Validate explicit Strata model IDs and honor optional strict matching."""
+        asked = req.get("model")
+        if not isinstance(asked, str) or not (name := asked.strip()):
+            return None
+        normalized = name.lower()
+        if not self.strict_model and not normalized.startswith("qwen3.8-flash-next"):
+            return None
+        loaded = [n.strip().lower() for n in self.model_names() if n]
+        if normalized in loaded or (not self.strict_model and any(n.startswith(normalized + "-") for n in loaded)):
+            return None
+        aliases = f" (aliases: {', '.join(self.aliases)})" if self.aliases else ""
+        return {"message": f"The model '{name}' is not loaded; currently serving '{self.model}'{aliases}",
+                "type": "invalid_request_error", "param": "model", "code": "model_not_found"}
 
     def reported_ctx(self) -> int:
         """The context the endpoints report (/v1/status, /v1/models, /props, /health, /slots, /metrics): the engine's,
@@ -8318,6 +8334,10 @@ def make_handler(svc: Service):
                         self._json(503, {"error": {"type": "server_error", "message": str(e)}})
                     return
                 if path in ("/v1/chat/completions", "/v1/messages", "/v1/responses"):
+                    model_error = svc.check_model(req)
+                    if model_error is not None:
+                        self._json(404, {"error": model_error})
+                        return
                     self.record = svc.begin_request(path, req)
                 if path == "/v1/responses":
                     self._responses(req)
@@ -10006,6 +10026,9 @@ def _main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> i
     ap.add_argument("--no-fit-max-tokens", action="store_true",
                     help="answer 400 when prompt + max_tokens does not fit the context, like llama.cpp "
                          "(also \"fit_max_tokens\": false in the config). A prompt that alone does not fit is always 400")
+    ap.add_argument("--strict-model", action="store_true",
+                    help="match nonempty model IDs against the loaded model and its aliases "
+                         "(also \"strict_model\": true in the config or $STRATA_STRICT_MODEL=1)")
     ap.add_argument("--api-key", default=os.environ.get("STRATA_API_KEY", ""),
                     help="require this key on /v1/* (Authorization: Bearer ... or x-api-key); also $STRATA_API_KEY. "
                          "Several keys: separate them with commas (key1,key2), as llama.cpp does")
@@ -10366,6 +10389,8 @@ def _main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> i
         raise SystemExit(f"[strata] config {e}")
     if svc.aliases:
         print(f"[strata] model aliases: {', '.join(svc.aliases)}", flush=True)
+    if a.strict_model or cfg.get("strict_model") is True:
+        svc.strict_model = True
     svc.api_key = preflight_api_key
     try:
         svc.telemetry_key = api_key_of(os.environ.get("STRATA_TELEMETRY_KEY") or cfg.get("telemetry_read_key", ""))
