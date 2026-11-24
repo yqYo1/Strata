@@ -3585,6 +3585,13 @@ class WebApp(unittest.TestCase):
                     self.assertEqual(model["id"], svc.model)
                     self.assertEqual(model["status"]["value"], "loaded")
                     self.assertEqual(model["meta"]["n_ctx"], 262144)
+                    self.assertEqual(model["created"], int(svc.started_at))
+                    self.assertEqual(model["owned_by"], "strata")
+                    for key in ("max_model_len", "context_length", "max_context_length"):
+                        self.assertEqual(model[key], 262144)
+                    detail_code, _, detail_body = self.get(f"{path}/{svc.model}")
+                    self.assertEqual(detail_code, 200)
+                    self.assertEqual(json.loads(detail_body), model)
                     self.assertEqual(model["architecture"]["input_modalities"],
                                      ["text", "image"] if vision else ["text"])
                 code, _, body = self.get("/props?model=" + svc.model + "&autoload=false")
@@ -5176,7 +5183,18 @@ class ModelAliases(unittest.TestCase):
         self.assertEqual([m["id"] for m in data], ["qwen3.8-flash-next-iq3_xxs", "qwen", "local-model"])
         self.assertEqual(data[0]["aliases"], ["qwen", "local-model"])
         self.assertEqual(data[1]["alias_of"], "qwen3.8-flash-next-iq3_xxs")
+        self.assertEqual(self.get("/v1/models/q%77en"), data[1])
+        self.assertEqual(self.get("/models/local-model"), data[2])
         self.assertEqual(self.get("/props?model=local-model")["model_alias"], "qwen3.8-flash-next-iq3_xxs")
+
+    def test_unknown_model_retrieval(self):
+        for path in ("/v1/models/missing", "/models/missing"):
+            with self.subTest(path=path):
+                with self.assertRaises(urllib.error.HTTPError) as raised:
+                    self.get(path)
+                with raised.exception as response:
+                    self.assertEqual(response.code, 404)
+                    self.assertEqual(json.load(response)["error"]["code"], "model_not_found")
 
     def test_requests_are_answered_under_the_alias(self):
         msgs = [{"role": "user", "content": "hi"}]

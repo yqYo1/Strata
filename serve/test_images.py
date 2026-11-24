@@ -341,8 +341,15 @@ class OverHttp(unittest.TestCase):
 
     def test_listed(self):
         code, data, _ = self.get("/v1/models")
-        ids = [m["id"] for m in json.loads(data)["data"]]
-        self.assertIn("qwen-image-2.1-turbo", ids)
+        self.assertEqual(code, 200)
+        models = {m["id"]: m for m in json.loads(data)["data"]}
+        model = models["qwen-image-2.1-turbo"]
+        self.assertEqual(model["architecture"]["output_modalities"], ["image"])
+        self.assertEqual(model["created"], int(self.svc.started_at))
+        self.assertEqual(model["owned_by"], "strata")
+        code, body, _ = self.get("/v1/models/qwen-image-2.1-turbo")
+        self.assertEqual(code, 200)
+        self.assertEqual(json.loads(body), model)
         st = json.loads(self.get("/v1/status")[1])
         self.assertTrue(st["image_generation"]["enabled"])
         self.assertTrue(json.loads(self.get("/health")[1])["image_generation"])

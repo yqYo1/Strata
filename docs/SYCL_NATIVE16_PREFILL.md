@@ -8007,6 +8007,45 @@ one-use source/controller are archived at the source commit above;normal Git
 history restores them. Both inference engine generations remain protected.
 The best-median two-thread point is also in the cumulative CSV.
 
+The DFlash2 code observation at `e26315def2` emits 4,111 tokens from
+4,208 target verifier rows and records 1,449,976 CPU expert jobs. The
+installed expert manifest exactly matches `tests/data/native_experts/iq3_s.txt`.
+Each of its 48 layers can contribute at most 42,080 unique jobs at top 10.
+Assigning the observed jobs to the least expensive available layers first
+gives a logical packed-weight floor of 2,814,737,408,000 bytes. At the same
+job count per output token, 70 tok/s requires at least 47.93 GB/s of logical
+weight visits. At the 33.72 GB/s sequential calibration, at least 29.6% of
+those bytes would need to be avoided or served from cache or another device.
+The effective DDR bandwidth for this access pattern and
+the actual cache reuse are open. The worker clock comparison checks its
+observed format and width counts against the exact manifest before comparing
+logical weight visits with and without grouping.
+
+The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
+and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
+native 256-byte slot alignment give 2,575,206,400 bytes for 26 slots in
+each of 47 layers and 34 in the last. The same number at the maximum blob
+size would occupy 3,343,974,400 bytes. That 768,768,000-byte reduction is
+already reflected in the current allocation. Replay alternate cache quotas
+against the packed budget and actual unique expert jobs. Include the
+existing 1,124-slot prompt loan in the placement and restore comparison.
+
+The observed 4,111 outputs over 1,345 verifier windows give 3.057
+tokens per window. At that yield, 70 tok/s allows 43.66 ms of total
+decode time per window. Even eight emitted tokens would allow only
+114.29 ms per window. Compare measured yield and complete window latency
+together before selecting a wider verifier.
+
+Both native sources `59411e1d` and `96832af6` support up to eight DFlash2
+block rows, while the configured prefill cache loan requires spec4.
+The early launch check uses the capped draft width and the final loan
+check still uses the raw spec width. The canonical Q6 DPAS head also
+selects its optimized path only at verifier width four. An isolated
+wider decode test needs both arms on a supported non-loan prompt path
+and a check of actual head dispatch, committed rows and emitted yield.
+Keep the existing spec4 prefill route available. Use the pending worker
+attribution to decide whether to prioritize per-window cost or yield.
+
 The earlier source-matched decode-resource comparison reused the429b
 engine's profile-ON build and existing leaf,census and disjoint caller
 observers. It kept CPU leaf sums,caller regions,nested wait CPU and draft
