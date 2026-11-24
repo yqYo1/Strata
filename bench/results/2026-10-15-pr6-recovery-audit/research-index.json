@@ -41199,9 +41199,9 @@
     "reviewer": "native Codex gpt-6-luna max",
     "finding": "The report distinguishes seven available draft slots from verifier eligibility and the spec4 cache-loan gate. Width-specific timings, exact padded row spans and terminal accounting remain open.",
     "consumer": "Enumerate exact T4/T5 verifier, head, padded-row, DFlash and rollback bounds from source, including terminal accounting. Dynamic rejection/commit and lease-lifetime proofs remain conditional on an authorized build boundary.",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "owners_closed": true,
-    "eligible_next_scope": "Source-only T4/T5 bounds enumeration on the pinned projection. GPU and timing gates remain conditional."
+    "eligible_next_scope": "The source-only width table is complete in dflash2-t4-t5-dispatch-bounds-20261125. Host fixture and device gates are separate."
   },
   "dflash2-low-acceptance-thinking-workload-methods-20261125": {
     "classification": "decision_support",
@@ -41249,7 +41249,24 @@
     "owners_closed": true,
     "schedulable_now": false,
     "finding": "Supports holding full NO_HOST and considering a separate hybrid route. Logical blob visits are not measured PCIe traffic; the 6.29–6.49 GB/s large-copy reference is not a physical expert-transfer counter. Device planning with CPU service and full device routing remain distinct options. Physical traffic and matched performance are unknown.",
-    "consumer": "Recover the per-layer expert-size ledger and mirror-cap accounting for the 1256-slot B570 setup; if coverage permits, run the single-window hybrid check with counters distinguishing device-planned work from CPU-served jobs.",
+    "consumer": "The source-level mirror cap is resolved in niko-sycl-host-mirror-payload-admission-20261125. A hybrid runtime screen still needs allocation and direct route-source evidence.",
     "upstream_commit": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa"
+  },
+  "niko-sycl-host-mirror-payload-admission-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "9b0a6860cbf7fa8578c0b9060ea0eea6a6d90bb3",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "view_commit": "09569c5205965879e8783dcb7e71cfe974a9e58d",
+    "upstream_commit": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/niko-sycl-host-mirror-payload-admission-20261125/report.md",
+    "report_sha256": "e632d4d598a8b787d6b9e5466fbf91f5b5d7ee57b123eb56476d34622ef5ae58",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-niko-mirror-admission-20261125._qm4u0b6/review.json",
+    "review_sha256": "a11af244448b9f4600bfa671d87cb46c07b15dbc9c117010ab406fca348b8c06",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "The aligned 47,717,120,000-byte stock complement requires an explicit 45,507 MiB cap. Each observed expert payload already meets the 256-byte alignment. Actual Arc allocation, mirror coverage and the upstream loan slots are still unverified.",
+    "consumer": "Prove the exact native dispatch, loan and slot identities, a successful B570 allocation, and route-source counters before scheduling the one-window coverage fixture."
   }
 }
