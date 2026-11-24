@@ -40334,5 +40334,43 @@
     "classification": "decision_support",
     "finding": "DFlash2 width 8 needs a compatible ordinary head: verifier widths above 4 fall back from optional C4 to window_mmvq, and a packed-only head is incompatible. More draft yield alone does not establish a decode gain.",
     "consumer": "Compare effective widths 4 and 8 on the same prompt and execution setup, separating the forced T=1 first window. Include the bounded rejection/state check; advance only if width 8 repeatably improves emitted tokens per window time (and tokens/sec), not merely tokens per window."
+  },
+  "dflash2-bank32-longer-window-admission-20261124": {
+    "source_commit": "6d6843d28409312035f5ec9038961d65d118357b",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-bank32-longer-window-admission-20261124/report.md",
+    "report_sha256": "cc8ff1ec8c7c78dfba92acb2a661aad2d67a9b2e414440fdc048ae988e01cf8c",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/bank32-next-extent-and-zen3-traffic-20261124-native-review/review.json",
+    "review_sha256": "be30b67be75ae9d523edd7b8cc8ad24e868a490fb1a388998c17b9449001653e",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_fbd05fbee9d5, ctx_7654a3a80005",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "Classification matches decision support. The report separates bank32 admission from longer-input measurement and details owner, tap, refill and tail gates. Longer-extent allocation receipts are absent, and it does not name the concrete reader guard.",
+    "consumer": "After the fixed 118785-input receipt passes, generalize the extent-specific admission reader. Check whether the 122881st token is handed to the verifier after 15 complete 8192-row prefix chunks. Verify actual tail, tap, cache refill and allocation receipts before timing."
+  },
+  "zen3-mixed-expert-cache-traffic-methods-20261124": {
+    "source_commit": "6d6843d28409312035f5ec9038961d65d118357b",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-mixed-expert-cache-traffic-methods-20261124/report.md",
+    "report_sha256": "b6290d74c33232ba626e5f2b3828a777a5f6a9e3c0769a859df657b837314ecc",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/bank32-next-extent-and-zen3-traffic-20261124-native-review/review.json",
+    "review_sha256": "be30b67be75ae9d523edd7b8cc8ad24e868a490fb1a388998c17b9449001653e",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_4d54cfbda472, ctx_8e272b853013",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Classification fits a knowledge collection and is distinct from worker-clock and cache-placement reports. Applicability is conditional: the 110.29/106.11 ms scopes overlap, and supplied evidence has no load-source or physical DRAM measurements.",
+    "consumer": "Retrieve for a held-out unchanged workload with fixed jobs and worker count; claim cache/DRAM behavior only if supported same-phase IBS and Data Fabric evidence is available."
   }
 }
