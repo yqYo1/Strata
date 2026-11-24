@@ -21,6 +21,7 @@ WORKLOAD_ID = leaves.generation.WORKLOAD_ID
 MAX_OUTPUT = 16384
 ROUTING_FILE = 'expert-routing.dat'
 USAGE_FILE = 'verifier-usage.json'
+FORECAST = 'dflash2_expert_rank_forecast_v1'
 
 
 def request_reference(role):
@@ -58,8 +59,18 @@ def baseline(role):
             and all(bank.sha(plan['routes'][k]) == plan['routes'][k + '_sha256'] for k in ('profile', 'manifest')),
             'routing producers or expert metadata changed')
     metadata = {k: plan['routes'][k] for k in ('profile', 'profile_sha256', 'manifest', 'manifest_sha256')}
-    return dict(base, routing_gate=ROUTING_GATE, routing_gate_sha256=bank.signature(gate),
-                routing_metadata=metadata, routing_workload=request_reference(role))
+    row = dict(base, routing_gate=ROUTING_GATE, routing_gate_sha256=bank.signature(gate),
+               routing_metadata=metadata, routing_workload=request_reference(role))
+    if role == 'holdout':
+        forecast = basis.validation.committed(bank.RESULT, (FORECAST,))
+        geometry = dict(metadata, binary=base['binary']['sha256'], native_source_commit=base['native_source_commit'],
+                        boot=base['boot'], driver=base['driver'])
+        require(forecast['stage'] == 'frozen' and forecast['geometry'] == geometry
+                and bank.sha(forecast['profile']['path']) == forecast['profile']['sha256']
+                and forecast['train']['request_sha256'] != row['routing_workload']['request_sha256'],
+                'require the committed training-only profile before the held-out capture')
+        row['rank_candidate_freeze'] = bank.signature(forecast)
+    return row
 
 
 def configuration(row, plan):
