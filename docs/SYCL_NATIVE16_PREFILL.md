@@ -10691,6 +10691,14 @@ environment before launch. The current server Auto selection chooses the drafter
 Qualify its ordinary launch with the same commit ordering after the frozen
 DFlash2 runs, starting with the launch configuration and a bounded model check.
 
+The V2 split route previously exceeded 1000 tok/s at 117489 tokens with MTP.
+[The DFlash2 split admission](../bench/sycl/dflash2_v2_split_admission.py)
+reuses that engine and prefill placement. It checks 90114 and 117489 inputs
+in fresh processes, including all-GPU BF16 residuals, the checked accumulator
+tail, batched expert uploads, cache refill and actual DFlash2 verifier
+commits. The short request before and after each long request checks the
+decode handoff. A passing traced check permits a separate clean timing plan.
+
 The traces use synthetic prefixes. The first clean synchronized `bench.sh`
 suite `dflash2_v2_generation_sync_v1` then completes all six agent turns.
 Its fifth request matches the original failure's body hash and emits 114 tokens
@@ -10724,6 +10732,42 @@ about 24700 CPU expert jobs per wall-second. Measure CPU execution and GPU
 completion waits separately to locate the cost. The two further clean
 processes remain pending. Use a synthetic multi-source methods dossier for
 the next weak-acceptance screen.
+
+#### DFlash2 KV stage retention outside the tap layers
+
+Candidate `44a2926a6` retains the aligned prefix on nine untapped QSA layers
+when one layer owns the stage on the same in-order queue. Layers 15, 35 and
+47 still reload. The coherent V2-based executable is `7a8e5b1ab2a8…`.
+The traced model check at `91186794c` matches the cache loan, state and
+output for the 32769-token aligned prompt. The unaligned continuation
+still reloads in both arms. The original V1/V2 timing refusals remain at
+`16755c818` and `fe9588127`. The V3 process and tuple/list comparison
+refusal remain at `2da6d6261`. The V4 reader records named integer fields.
+
+The V4 result at `6e5bb2006` closes six independent processes and 18
+fresh 65537-token requests. Each generates 24 tokens. The outputs, draft
+counts and non-KV execution work agree, with normal closure and no new
+Xe faults.
+
+| Warmed measure | Reload | Retain |
+| --- | ---: | ---: |
+| Median of the three process rates | 869.0 tok/s | 885.4 tok/s |
+| Median client TTFT | 75.631 s | 74.236 s |
+| Requested KV prefix copies per request | 2906652672 B | 726663168 B |
+
+Warmed prompt-time reductions are 0.12%, 3.86% and 1.85% in the matched
+pairs. The first TTFT increases in one pair and decreases in two.
+At 117489 inputs, the aligned 8192-token geometry predicts about 8.17 GB
+of avoidable KV copy requests. Confirm the actual placement and transfers
+on the model. Keep the candidate engine and worktree for that comparison
+after the original V2 split route checks. Sustained decode, the physical
+262144-token fill and RESTORE remain pending.
+
+Retired the six numbered directories and `host` under state
+`dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
+The inventory SHA-256 over relative paths, byte counts and file hashes is
+`44bb7108a2e27c21ae10bd36c9427688d4acea2322c6167ef12e996f98665b57`. Retain the committed result and the compact run receipt.
+The candidate build remains available for the 117489-token comparison.
 
 The new single-card spec4 path separates target-head/verifier retirement from
 optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
