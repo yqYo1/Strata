@@ -11047,6 +11047,12 @@ bytes with 32 slots and 25,381,888 bytes with one slot. The shared arena
 and separate allocation bounds still fit those two arithmetic cases.
 Use the fixed 118,785-input case first to compare bank size, then use
 122,881 as the first longer shape to check actual device admission.
+The fixed-input controller draft `/tmp/strata-dflash2-window-bank32.wug47kb8/bank32-admission.patch`
+has SHA-256 `e4c2f2e68260db15a4da001916927952672669c63c18cd14c4c2372f5fe22b32`. It pins `04e2e4538`
+and derives usable slots from the committed and installed layer manifests.
+At 32 nominal slots and 85,196,800 bytes, layer strides predict 32 to 56
+usable slots. Require all 48 observed rows and the unchanged copy, work,
+state and owner checks when the active writer comparison closes.
 
 The same-build admission in
 [dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
@@ -11077,7 +11083,7 @@ separately.
 
 Ordered batching remains a separate candidate at fixed 118,785 inputs.
 The original split-upload comparison runs at 117,489 inputs and moves
-963.923 to 989.117 warmed tok/s in three matched pairs. The later retained-KV
+963.923 to 989.117 warmed tok/s across three matched blocks. The later retained-KV
 comparison at the same length moves 995.678 to 1,008.865 tok/s. These are
 older split routes with MTP. The relocated mode16 route forces demand
 uploads through the eligibility guard in `layer_major.inc`.
@@ -11092,6 +11098,12 @@ the owner, borrowed view or layer storage can be released. Validate all
 48 window receipts, equivalent expert bytes, active state and cache
 restoration before clean timing. Keep bank-size and writer changes in
 their own comparisons.
+The source-only opt-in draft `/tmp/strata-relocated-prefill-batch.8sx3q4kv/ordered-upload.patch`
+has SHA-256 `8be9b6377ad8d0822f74bfa86b718f36acb15f1b5aba50a9efff908a326bc179` against `96832af6f`.
+It uses the existing ordered batch only at 128 slots and effective
+relocated mode16. The existing demand and coalesced selections retain
+their current routes. Apply after closing the pinned writer comparison
+and reviewing early-error ownership.
 
 Retired the direct-writer trace in `dflash2-prefill-window-direct-v1`
 after closing its owner and matching all three requests at `3b8cdaf51`.
