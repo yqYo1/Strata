@@ -41153,5 +41153,37 @@
     "consumer": "Clarify the IBS caveat and validate counter and clock support for the exact 5600X revision before planning same-work, affinity-controlled measurements.",
     "schedulable_now": false,
     "owners_closed": true
+  },
+  "dflash2-five-tap-exact-readback-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "f607a12f2935f480911c3d8eaed7454a7dfb5eac",
+    "view_commit": "6419fc4c4574ed8ec6ae4ef9d8de6375300d843f",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-five-tap-exact-readback-20261125/report.md",
+    "report_sha256": "f477da54c6f9a29d1a2bf9e7e95188343f24e39bf5ed9dcdd4bac5458e139808",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-five-tap-and-timing-20261125.Z0LkjE/review.json",
+    "review_sha256": "ab50d99e4d9b12237bbfb02102ab5fc046fc2c43ccc09a25dc3a08134e426737",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "The reviewer corrects the half-open extent to 2,046 rows and 104,755,200 bytes for the five FP32 taps. Pin a same-input reference for payload equality. The cited transfer guidance does not establish local extents.",
+    "consumer": "Conditional: verify the source boundary and independent reference, correct byte ceilings, then reassess scheduling.",
+    "schedulable_now": false,
+    "owners_closed": true
+  },
+  "long-inference-paired-cohort-drift-methods-20261125": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "source_commit": "f607a12f2935f480911c3d8eaed7454a7dfb5eac",
+    "view_commit": "6419fc4c4574ed8ec6ae4ef9d8de6375300d843f",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/long-inference-paired-cohort-drift-methods-20261125/report.md",
+    "report_sha256": "e0507636c152ae7884e96c9a37d373427ef0b9cebdd7d8baaf452eff434adefc",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-five-tap-and-timing-20261125.Z0LkjE/review.json",
+    "review_sha256": "ab50d99e4d9b12237bbfb02102ab5fc046fc2c43ccc09a25dc3a08134e426737",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "Fits the task and keeps historical shifts noncausal. Its MLPerf, SPEC, USENIX, and Google Benchmark sources are primary method references, and it distinguishes their rules from recommendations for this workload.",
+    "consumer": "Conditional: before a cohort study, set the practical threshold, fixed block count, interval method, and observer protocol; otherwise retain as reference.",
+    "schedulable_now": false,
+    "owners_closed": true
   }
 }
