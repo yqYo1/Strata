@@ -652279,10 +652279,10 @@
       ],
       "routes_sha256": "7c0275a05e8b1a82fb3c62b7aa0446568e18c369f2d929867598fef29ccfe098"
     },
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "e4d370151587d7c91ecb830b3f1205db729ef247",
     "host_passed": true,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "active": false,
     "passed": false,
     "complete": false,
@@ -652621,6 +652621,46 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 1,
+        "read": 117489,
+        "heads": 0,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "native_identity": {
+          "pid": 3143974,
+          "start_ticks": 384166193,
+          "sid": 3143807
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false,
+        "gate_refusal": {
+          "reason": "ValueError('clean request contains the diagnostic trace')",
+          "native_log_sha256": "d9f65cf3755e969790143ad311b94eac6f23bc37b9580e2f2030ee45cfd2b25f",
+          "request_completed_before_refusal": true,
+          "observed_target_batch_ms": 132358.5,
+          "rounded_native_request_prompt_ms": 133960.0,
+          "eligible_for_comparison": false,
+          "controller_observation_complete": false,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "native_pid_gone": true,
+          "owner_gone": true
+        }
       }
     ],
     "budgets": {
