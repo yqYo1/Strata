@@ -11018,6 +11018,17 @@ completion, including work outside the current native decode timer.
 Prove exact slot restoration before the next prefill and compare on an
 independent sustained workload. These forecasts describe one recorded
 routing sequence.
+
+The same-cap replay at `f6e3af5fa` verifies the original held-out trace
+from `b28a9372b` and the gain-first anchor at `68f8c61b6`. It holds
+the 256-window observation, 96 swaps and 197,913,600-byte cap per direction.
+Gain-first selects 131,382 fewer suffix jobs for unique-expert scoring
+with 197,811,200 bytes and 147,795 fewer for routed-row scoring with
+197,913,600 bytes. Gain per byte selects 127,813 fewer with 187,801,600
+bytes and 140,337 fewer with 189,184,000 bytes, respectively. The
+gain-first routed-row policy gives the largest projected cut at 3.27%.
+Keep it for the next matched runtime trial. Actual copy traffic and
+throughput remain unmeasured.
 [Replay controller](../bench/sycl/dflash2_causal_rank_replay.py)
 
 Retired the V1 outputs at `dflash2-expert-rank-live-check-v1/{stock,trained}`
