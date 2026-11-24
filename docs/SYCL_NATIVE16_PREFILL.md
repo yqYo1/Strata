@@ -10807,7 +10807,15 @@ no fresh Xe fault. The first retain process passes the same work checks and
 removes 2179989504 bytes of requested KV copies per prompt. Its first prefill
 takes 87.414 s versus 85.487 s for reload. The subsequent medians are 74.415
 and 74.501 s, respectively. The first TTFT is 87.674 versus 85.686 s.
-The next two processes reverse the order to check repeatability.
+All three independent pairs now pass their matched-work and ownership checks.
+Across the six processes, the median warmed rate is 869.0 tok/s with reload
+and 885.4 tok/s with retention. The three reductions in warmed prompt time
+are 0.12%, 3.86% and 1.85%. Every request removes 2179989504 bytes of KV
+copy requests. The first-use TTFT is slower in one pair and faster in two.
+The 18 requests use 65537 fresh inputs and 24 output tokens each. Native
+and benchmark processes close normally, with quiet validation and no new
+Xe fault. The V4 timing gate supports further testing of retention.
+Sustained decode, physical capacity and RESTORE checks remain open.
 
 Use 117489 as a separate geometry when its actual residual placement is
 admitted in both arms. Require an observed transfer reduction and reproducible
