@@ -33,12 +33,6 @@ constexpr bool direct_iq3s = true;
 #else
 constexpr bool direct_iq3s = false;
 #endif
-#ifdef STRATA_BENCH_IQ3XXS_GATHER
-constexpr bool direct_iq3xxs_gather = true;
-#else
-constexpr bool direct_iq3xxs_gather = false;
-#endif
-constexpr bool direct_compare = direct_iq3s || direct_iq3xxs_gather;
 constexpr int gu_type = direct_iq3s ? 21 : 18;
 constexpr float sentinel = 123.0f;
 enum class Entry { Oracle, Production };
@@ -102,9 +96,9 @@ struct Inputs {
     std::array<std::array<float, H>, 4> x{};
     std::array<uint64_t, 4> act_hashes{};
     Buffer scratch{4096};
-    explicit Inputs(char** a, unsigned selected_arm, int down_type) : arm(selected_arm) {
+    explicit Inputs(char** a, unsigned selected_arm) : arm(selected_arm) {
         std::string error;
-        const bool valid = cpu::native_fmt(gu_type, down_type, H, FF, fmt, error);
+        const bool valid = cpu::native_fmt(gu_type, 20, H, FF, fmt, error);
         need(valid, error.c_str());
         need(fmt.bytes == number(a[5]) && number(a[6]) == 512, "model geometry");
         const uint64_t gate = number(a[2]), up = number(a[3]), down = number(a[4]);
@@ -153,14 +147,10 @@ struct Inputs {
         } else if constexpr (direct_iq3s) {
             need(cpu::iq3s_pair_gu_rows(fmt, weights[e].data(), act, out, begin, end),
                 "direct IQ3_S pair refused the admitted layout");
-        } else if constexpr (direct_iq3xxs_gather) {
-            const auto produce = arm ? cpu::decode_iq3xxs_pair_gather_gu_rows : cpu::iq3xxs_pair_gu_rows;
-            need(produce(fmt, weights[e].data(), act, out, begin, end),
-                "IQ3_XXS grid lookup refused the admitted layout");
         } else { const void* ap[]{act}; float* fp[]{out};
             cpu::native_gu_rows(fmt, weights[e].data(), ap, 1, fp, begin, end,
                 cpu::NativeGuPhase::Decode); }
-        if constexpr (direct_compare) if (entry == Entry::Production) {
+        if constexpr (direct_iq3s) if (entry == Entry::Production) {
             ++direct_calls; direct_rows += end - begin;
             direct_pair_rows += arm ? end - begin : 0;
         }
@@ -193,18 +183,15 @@ struct Inputs {
     }
 };
 int main(int argc, char** argv) try {
-    need(argc == (direct_iq3xxs_gather ? 10 : 9),
-        "shard gate up down blob_bytes total_experts arm process [down_type]");
-    const uint64_t down_type = direct_iq3xxs_gather ? number(argv[9]) : 20;
-    need(down_type == 20 || down_type == 42, "measured Down layout");
+    need(argc == 9, "shard gate up down blob_bytes total_experts arm process");
     const auto arm = number(argv[7]), process = number(argv[8]);
     need(arm <= 1 && process < 6, "arm/process");
     const char* single = std::getenv("STRATA_IQ_SINGLE_EXACT");
     need(single && std::string(single) == "0", "reference requires SINGLE_EXACT=0");
     const char* pair = std::getenv("STRATA_IQ3_PAIR");
     const char* audit = std::getenv("STRATA_IQ3_PAIR_AUDIT");
-    need(pair && std::string(pair) == (direct_compare ? "0" : std::to_string(arm)) && audit &&
-        std::string(audit) == (direct_compare ? "0" : "1"),
+    need(pair && std::string(pair) == (direct_iq3s ? "0" : std::to_string(arm)) && audit &&
+        std::string(audit) == (direct_iq3s ? "0" : "1"),
         "comparison selection/audit must be fixed before exec");
     need(!std::getenv("STRATA_IQ_MT_MIN") && !std::getenv("STRATA_IQ2_PAIR_AUDIT"),
         "no alternate NT rule or GU audit");
@@ -214,21 +201,17 @@ int main(int argc, char** argv) try {
     need(!sched_getaffinity(0, sizeof mask, &mask) && CPU_COUNT(&mask) == 1 &&
         CPU_ISSET(cores[0], &mask), "actual affinity");
     std::cout << std::setprecision(12);
-    const auto setup = Clock::now(); Inputs in(argv, arm, static_cast<int>(down_type)); const double setup_s = elapsed(setup);
+    const auto setup = Clock::now(); Inputs in(argv, arm); const double setup_s = elapsed(setup);
     std::cout << "{\"kind\":\"input\",\"arm\":" << arm << ",\"process\":" << process <<
         ",\"CPU\":" << cores[0] << ",\"experts\":" << experts << ",\"group\":" << group <<
-        ",\"blob_bytes\":" << in.fmt.bytes << ",\"gu_type\":" << gu_type <<
-        (direct_iq3xxs_gather ? ",\"down_type\":" + std::to_string(down_type) : "") <<
-        ",\"setup_s_excluded\":" << setup_s <<
+        ",\"blob_bytes\":" << in.fmt.bytes << ",\"gu_type\":" << gu_type << ",\"setup_s_excluded\":" << setup_s <<
         ",\"weight_input_fingerprint_fnv1a64\":\"" << hash(in.weight_hashes.data(),
             in.weight_hashes.size() * sizeof(in.weight_hashes[0])) <<
         "\",\"activation_input_fingerprint_fnv1a64\":\"" << hash(in.act_hashes.data(),
             sizeof(in.act_hashes)) << "\",\"activation_bytes\":" << in.fmt.act_bytes <<
-        ",\"reference\":\"" << (direct_iq3s ? "GGML IQ3_S two-dot GU" :
-            direct_iq3xxs_gather ? "IQ3_XXS pair scalar grid loads" : "native_gu_rows/decode IQ3PAIR0") <<
-        "\",\"candidate\":\"" << (direct_iq3s ? "iq3s_pair_gu_rows/direct" :
-            direct_iq3xxs_gather ? "IQ3_XXS pair AVX2 grid gather" : "native_gu_rows/decode IQ3PAIR1") <<
-        "\",\"production_entry\":" << !direct_compare << "}" << std::endl;
+        ",\"reference\":\"" << (direct_iq3s ? "GGML IQ3_S two-dot GU" : "native_gu_rows/decode IQ3PAIR0") <<
+        "\",\"candidate\":\"" << (direct_iq3s ? "iq3s_pair_gu_rows/direct" : "native_gu_rows/decode IQ3PAIR1") <<
+        "\",\"production_entry\":" << !direct_iq3s << "}" << std::endl;
     in.validate();
     for (int rows : {FF, 128}) for (bool pack : {false, true}) for (bool stream : {false, true}) {
         for (auto& out : in.outputs) out.fill(sentinel);
@@ -254,7 +237,7 @@ int main(int argc, char** argv) try {
             const double scheduled = cpu_seconds() - cpu0;
             const auto after = cpu::iq3_gu_audit_snapshot();
             const uint64_t calls = passes * jobs, active = calls * rows;
-            if constexpr (direct_compare) {
+            if constexpr (direct_iq3s) {
                 need(!before.enabled && !after.enabled &&
                     in.direct_calls - direct_calls == calls && in.direct_rows - direct_rows == active &&
                     in.direct_pair_rows - direct_pair_rows == (arm ? active : 0),
@@ -275,10 +258,10 @@ int main(int argc, char** argv) try {
                 ",\"wall_s\":" << wall << ",\"cpu_s\":" << scheduled << ",\"timer_s\":" << cost <<
                 ",\"fastest_warm_pass_s\":" << fastest <<
                 ",\"unique_GU_bytes\":" << jobs * 2 * rows * in.fmt.gu_row <<
-                (direct_compare ? ",\"timed_direct_calls\":" : ",\"timed_dispatch_calls\":") <<
-                    (direct_compare ? in.direct_calls - direct_calls : after.calls - before.calls) <<
-                ",\"timed_nt1_rows\":" << (direct_compare ? in.direct_rows - direct_rows : after.nt1_rows - before.nt1_rows) <<
-                ",\"timed_pair_rows\":" << (direct_compare ? in.direct_pair_rows - direct_pair_rows : after.pair_rows - before.pair_rows) <<
+                (direct_iq3s ? ",\"timed_direct_calls\":" : ",\"timed_dispatch_calls\":") <<
+                    (direct_iq3s ? in.direct_calls - direct_calls : after.calls - before.calls) <<
+                ",\"timed_nt1_rows\":" << (direct_iq3s ? in.direct_rows - direct_rows : after.nt1_rows - before.nt1_rows) <<
+                ",\"timed_pair_rows\":" << (direct_iq3s ? in.direct_pair_rows - direct_pair_rows : after.pair_rows - before.pair_rows) <<
                 ",\"outputs_match_untimed_reference\":true}" << std::endl;
         }
         in.check();

@@ -10910,10 +10910,25 @@ worker-leaf processes. The IQ3_XXS Gate/Up format covers 17 layers and
 516,514 CPU jobs. Widths 1 through 4 contribute 415,143, 80,841, 16,819
 and 3,711 jobs. Width 1 is 80.37% of that format and 28.63% of all CPU jobs.
 It ranges from 15,958 to 35,706 jobs across those layers. The most frequent
-N1 bin alone, with IQ4_NL Down, uses 24.64–24.70 CPU ms per output. Use
-both observed Down layouts in the [scalar and AVX2 grid-load comparison](../bench/sycl/cpu_roofline/iq3xxs_gather.py).
-The direct trial holds activation packing and the weight layout fixed within
-each comparison. A production-dispatch measurement follows any repeatable gain.
+N1 bin alone, with IQ4_NL Down, uses 24.64–24.70 CPU ms per output.
+The scalar and AVX2 gather comparison at `52c563653758d109b4f4ddf76cfa0f1a73abce4a`
+holds activation packing and expert weights fixed within each layout.
+It verifies 80 bitwise gather cases, the 28 pool controls and 2,016 real-model
+cases on both sides of every timed process. All 12 processes close normally.
+Across both layouts and all 48 paired cell ratios, gather takes 1.274–1.422
+times the scalar time per expert. Layout geometric means are 1.340 and 1.323.
+Keep scalar grid loads and archive the rejected candidate with its individual
+samples. The next scheduling candidate uses two independent integer sums
+within a block and preserves the original per-block floating-point order.
+
+Before retiring `cpu-iq3xxs-gather-dual-layout-v1`, recover the source and
+recipe from Git and check the exact final three executables and CPU archive.
+The audit matches 209 project files, 1,376 GGML files, 628 actual compiler
+inputs and 22 external link inputs. The retired root has 107 files and
+23,703,625 bytes. The SHA-256 over sorted path, size, hash and entry type is
+`73ebcafcf833b17c23f4db2a5d180b234d692ccc610c752a588dacd4a31e8ac6`.
+The original comparison commit retains the compact record and every timing
+sample. The active tree carries this decision.
 
 Even eliminating that entire N1 bin would leave at least 131.4 CPU ms per
 output, about 45.7 tok/s at six fully occupied execution threads with zero

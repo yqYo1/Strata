@@ -7,7 +7,6 @@
 #include <cmath>
 #include <cstring>
 #include <limits>
-#include <type_traits>
 #if defined(__clang__) && (defined(__znver3__) || defined(__znver3))
 #include <immintrin.h>
 #include <stdint.h>
@@ -143,27 +142,13 @@ __attribute__((noinline)) void iq3xxs_dot(int n, float * GGML_RESTRICT s, size_t
 // Main-authored pair scheduling of the GGML IQ3_XXS arithmetic above. Decode
 // packed bytes with memcpy so neither scale/sign loads nor padded rows assume
 // an unaligned typed object. Only the activation is shared between gate/up.
-template<bool GatherGrid>
 static inline __m256i iq3xxs_pair_chunk(const uint8_t* block, int p, __m256i q8) {
     const auto* q3 = block + offsetof(block_iq3_xxs, qs) + 8 * p;
     uint32_t gas;
     std::memcpy(&gas, block + offsetof(block_iq3_xxs, qs) + QK_K / 4 + 4 * p, sizeof gas);
-    const auto grid = [&] {
-        if constexpr (GatherGrid) {
-            // Widen the eight packed selectors in lane order. Every lane
-            // indexes a valid entry of the 256-entry uint32_t codebook.
-            int64_t packed;
-            std::memcpy(&packed, q3, sizeof packed);
-            const auto indices = _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(packed));
-            static_assert(std::is_same_v<std::remove_cvref_t<decltype(iq3xxs_grid[0])>,
-                                         unsigned int> && sizeof(unsigned int) == 4);
-            return _mm256_i32gather_epi32(reinterpret_cast<const int*>(iq3xxs_grid), indices, 4);
-        } else {
-            return _mm256_set_epi32(iq3xxs_grid[q3[7]], iq3xxs_grid[q3[6]],
-                iq3xxs_grid[q3[5]], iq3xxs_grid[q3[4]], iq3xxs_grid[q3[3]], iq3xxs_grid[q3[2]],
-                iq3xxs_grid[q3[1]], iq3xxs_grid[q3[0]]);
-        }
-    }();
+    const auto grid = _mm256_set_epi32(iq3xxs_grid[q3[7]], iq3xxs_grid[q3[6]],
+        iq3xxs_grid[q3[5]], iq3xxs_grid[q3[4]], iq3xxs_grid[q3[3]],
+        iq3xxs_grid[q3[2]], iq3xxs_grid[q3[1]], iq3xxs_grid[q3[0]]);
     const auto sign = [&](unsigned shift) {
         int64_t value;
         std::memcpy(&value, keven_signs_q2xs + 8 * ((gas >> shift) & 127), sizeof value);
@@ -174,7 +159,6 @@ static inline __m256i iq3xxs_pair_chunk(const uint8_t* block, int p, __m256i q8)
     return _mm256_madd_epi16(dot, _mm256_set1_epi16(2 * (gas >> 28) + 1));
 }
 
-template<bool GatherGrid>
 __attribute__((noinline)) void iq3xxs_pair_dot(const uint8_t* GGML_RESTRICT g,
     const uint8_t* GGML_RESTRICT u, const uint8_t* GGML_RESTRICT activation,
     float& gout, float& uout) {
@@ -188,8 +172,8 @@ __attribute__((noinline)) void iq3xxs_pair_dot(const uint8_t* GGML_RESTRICT g,
         for (int p = 0; p < 8; ++p) {
             const auto a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
                 ab + offsetof(block_q8_K, qs) + 32 * p));
-            gi = _mm256_add_epi32(gi, iq3xxs_pair_chunk<GatherGrid>(gb, p, a));
-            ui = _mm256_add_epi32(ui, iq3xxs_pair_chunk<GatherGrid>(ub, p, a));
+            gi = _mm256_add_epi32(gi, iq3xxs_pair_chunk(gb, p, a));
+            ui = _mm256_add_epi32(ui, iq3xxs_pair_chunk(ub, p, a));
         }
         // Combining the two integer streams is exact: even with |q8|=128,
         // each lane is bounded by8*4*62*128*31=7872512, below INT32_MAX.
@@ -452,9 +436,8 @@ __attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t b
 }
 
 } // namespace
-template<bool GatherGrid>
-static bool iq3xxs_pair_gu_rows_impl(const NativeFmt& f, const uint8_t* blob, const void* act,
-                                    float* ff, int r0, int r1) {
+bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
+                        float* ff, int r0, int r1) {
     constexpr size_t rows = 640, blocks = 10;
     if (f.gu_type != 18 || f.gu_act != 15 || f.n_embd != 2560 || f.n_ff != 640 ||
         !blob || !act || !ff || r0 < 0 || r1 < r0 || r1 > 640 ||
@@ -478,20 +461,10 @@ static bool iq3xxs_pair_gu_rows_impl(const NativeFmt& f, const uint8_t* blob, co
     for (int r = r0; r < r1; ++r) {
         const auto* g = blob + size_t(r) * f.gu_row;
         float gv, uv;
-        iq3xxs_pair_dot<GatherGrid>(g, g + f.up_off, activation, gv, uv);
+        iq3xxs_pair_dot(g, g + f.up_off, activation, gv, uv);
         ff[r] = (gv / (1.f + std::exp(-gv))) * uv;
     }
     return true;
-}
-
-bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
-                        float* ff, int r0, int r1) {
-    return iq3xxs_pair_gu_rows_impl<false>(f, blob, act, ff, r0, r1);
-}
-
-bool decode_iq3xxs_pair_gather_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
-                                      float* ff, int r0, int r1) {
-    return iq3xxs_pair_gu_rows_impl<true>(f, blob, act, ff, r0, r1);
 }
 
 bool iq3s_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
@@ -542,9 +515,6 @@ bool iq256_single_gu_rows(int type, const uint8_t* blob, size_t row, size_t up_o
 #else
 namespace strata::kernels::cpu {
 bool iq3xxs_pair_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {
-    return false;
-}
-bool decode_iq3xxs_pair_gather_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {
     return false;
 }
 bool iq3s_pair_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {
