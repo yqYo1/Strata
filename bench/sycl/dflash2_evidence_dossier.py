@@ -1,5 +1,6 @@
 """Screen a separate thinking-enabled workload for weak DFlash2 draft agreement."""
 
+import fcntl
 import hashlib
 import json
 from pathlib import Path
@@ -156,5 +157,107 @@ def experiment():
     return ctx
 
 
+FAILED_PILOT = "a51a083d5c841307fbb8b658c481de1efc9accb4"
+REPLAY_KEY = "dflash2_dossier_continuation_replay_v1"
+REPLAY_INPUTS = {
+    "execution.json": "648b2f843bed0d01c44a853c89c3b09ea478646bdb29f970b03278ea6a64e96f",
+    "engine-start.json": "087c0f2b522e039577b7b33b80eeeb4889e76ce0210a6596e83ce83d0a86b86d",
+    "engine-exit.json": "e26e6d849c82ca6b01af130d2e2c6fdd12900ea30355e92c14d75b7fdc7bf986",
+    "engine.stderr": "7fa1e4171f584c36ec5c4ae92cebf1cc51714658aaae4ec5b6424a5daafc6d31",
+    "validation.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config.json": "972d1210892e9b350df6f69cc788facdd1d8f945fab43f22f1c532ee9bbf926c",
+}
+REPLAY_JOURNAL = {
+    "results.json": "2d4973088cedcca6c7a0ef37dea2ed4b223d1c2d4cc625f471f1b6bc6d2e5b67",
+    "requests.jsonl": "bc2fa1c87ec86704ff025fda00acba441c8a839f7f2027967cd54ac1111971e1",
+    "journal-state.json": "f0f0a57ece87fa33fce19bc15a4d4ae936cb82100bc16e6db77fdd1f8728c5c4",
+}
+
+
+def replay_continuation():
+    """Reconcile the original failed pilot without changing its route decision."""
+    from decode_kv_bench import insertion_recipe, native_windows
+
+    root = ROOT / "0"
+    attempt = bank.previous.historic(FAILED_PILOT, KEY)
+    original, = attempt["processes"]
+    committed = basis.validation.committed(bank.RESULT)
+    require(committed[KEY] == attempt and REPLAY_KEY not in committed and attempt["stage"] == "failed"
+            and not attempt["active"] and attempt["ownership_closed"] and not original["fresh_faults"]
+            and original["error"] == "RuntimeError('complete native CPU footers')",
+            "recover the exact closed request-footer rejection")
+    require(all(bank.sha(root / path) == digest for path, digest in REPLAY_INPUTS.items()),
+            "original owned engine evidence changed")
+    result_file, = (root / "bench").glob("*/results.json")
+    require(all(bank.sha(result_file.parent / path) == digest for path, digest in REPLAY_JOURNAL.items()),
+            "original request evidence changed")
+    revision = basis.validation.git("rev-parse", "HEAD").decode().strip()
+    paths = (THIS, "tools/sycl/decode_kv_bench.py", "tools/sycl/generation_engine.py",
+             "tools/strata_tokenizer.py", "tools/strata_bench.py", "serve/server.py")
+    require(all((bank.P / path).read_bytes() == basis.validation.git("show", revision + ":" + path)
+                for path in paths), "commit the exact continuation reader")
+    require(all(bank.sha(bank.P / path) == attempt["sources"][path] for path in paths[-3:]),
+            "the original client, server or tokenizer implementation changed")
+    require(read_suite(root, WORKLOAD_ID) == original["evidence"], "the original API sample differs")
+
+    cfg = bank.previous.read(root / "config.json")
+    tokenizer = Path(cfg["tokenizer"])
+    for filename in ("vocab.json", "merges.txt", "token_type.json", "tokenizer.json"):
+        path = tokenizer / filename
+        require(bank.sha(path) == attempt["model_assets"][str(path)]["sha256"], "original tokenizer changed")
+    require(cfg.get("answer_room") is not False and bank.sha(attempt["binary"]["path"]) == attempt["binary"]["sha256"],
+            "require the default answer-room policy and the original image")
+    execution = bank.previous.read(root / "execution.json")
+    owner, = execution["commands"]
+    require(not execution["active"] and execution["outcome"] == original
+            and owner["exit_code"] == 0 and owner["observation_complete"], "original owned bench did not close")
+    gen = leaves.suite.gen
+    start = bank.previous.read(root / "engine-start.json")
+    end = gen.native_end(root, attempt, dict(config=cfg), attempt["boot"], owner["direct_identity"]["pid"])
+    require(start["native"] == end["native"] == original["native_identity"], "owned native identity differs")
+
+    wrap = insertion_recipe(cfg)["REASONING_WRAP_UP"]
+    sample, = gen.collect_samples(bank.previous.read(result_file)["results"]["long_generation"])
+    require(sample["controller_eligible"] and sample["workload"] == lg.DOSSIER_WORKLOAD,
+            "the original dossier client sample was incomplete")
+    log = (root / "engine.stderr").read_text()
+    evidence = basis.validation.preload_evidence(log, end["native"]["pid"])
+    require(evidence["loader"] == attempt["native_validation_probe"]["loader"]["path"]
+            and not re.search(r"UR_RESULT_ERROR_|ZE_RESULT_ERROR_|teardown uncertain", log),
+            "validation of the original native process differs")
+    frames = native_windows(log)
+    require(len(frames) == 6, "require four warmups and exactly two generation legs")
+    leaves.leaf_reader.evidence("".join(frame + "\n" for frame in frames[:4]),
+                                original["evidence"]["samples"][:4], 4, False)
+    joined = gen.api_segment_evidence("".join(frame + "\n" for frame in frames[4:]), sample,
+                                      insertion_token_counts=(wrap["tokens"],))
+    first, second = joined["segments"]
+    require(first["generated_tokens"] == CAP - CAP // 4 and second["server_inserted_before"] == wrap["tokens"]
+            and joined["server_inserted_tokens"] > 0 and not original["evidence"]["weak_draft_observed"]
+            and sum("strata DFlash2: eager, prompt_tail_rows=2046 cold_prefix=0" in frame
+                    for frame in frames[4:]) == 2, "the checked answer-room continuation differs")
+    receipt = dict(
+        source_commit=revision, failed_pilot=FAILED_PILOT, original_gate_passed=False,
+        native_source_commit=attempt["native_source_commit"], binary_sha256=attempt["binary"]["sha256"],
+        native_exit_code=end["exit_code"], fresh_faults=original["fresh_faults"], replay_only=True,
+        inputs=dict(**REPLAY_INPUTS, **REPLAY_JOURNAL), wrap=wrap, **joined,
+        total_native_prompt_read=sum(row["read_tokens"] for row in joined["segments"]),
+        total_native_prefill_ms=sample["prompt_ms"], client_ttft_s=sample["ttft_s"],
+        draft_acceptance=sample["drafts_accepted"] / sample["drafts_offered"],
+        weak_draft_observed=False, adoption_eligible=False,
+    )
+    committed[REPLAY_KEY] = receipt
+    bank.stage.write(bank.RESULT, committed)
+    print({k: receipt[k] for k in ("native_exit_code", "native_generated_tokens", "server_inserted_tokens",
+                                  "total_native_prompt_read", "exact_native_decode_tps", "draft_acceptance")}, flush=True)
+
+
 if __name__ == "__main__":
-    parent.clock.main(experiment())
+    if sys.argv[1:] == ["replay-continuation"]:
+        require(sys.executable == basis.reference.model.PYTHON, "use the pinned benchmark interpreter")
+        with (bank.B / "owned-v0141-measurement.lock").open("a+") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            bank.builder.guards.no_model_owners([])
+            replay_continuation()
+    else:
+        parent.clock.main(experiment())
