@@ -678815,7 +678815,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "cpu_iq3xxs_split_accum_dual_layout_v1": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "2911c952db940b7a9f71bfe8929feb73545ef166",
     "route_evidence": {
       "leaves_commit": "6bbd3e3e1cab1415a4bba7df675c729bf4213d59",
@@ -679444,6 +679444,58 @@
         "sha256": "2c4425f69c8da2492da0a30c5773023e0bb87b613aabd8df0bc8b1f500cc14d9"
       }
     },
+    "checks": [
+      {
+        "label": "exact",
+        "receipt": {
+          "pid": 1776022,
+          "direct_identity": {
+            "pid": 1776022,
+            "state": "R",
+            "ppid": 1775758,
+            "pgid": 1776022,
+            "sid": 1776022,
+            "start_ticks": 390763276,
+            "rss_bytes": 155648
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.1667625498957932,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 5820416
+        },
+        "passed": true
+      },
+      {
+        "label": "pool",
+        "receipt": {
+          "pid": 1776027,
+          "direct_identity": {
+            "pid": 1776027,
+            "state": "D",
+            "ppid": 1775758,
+            "pgid": 1776027,
+            "sid": 1776027,
+            "start_ticks": 390763293,
+            "rss_bytes": 135168
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.46445699594914913,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 18554880
+        },
+        "passed": true
+      }
+    ],
     "project_inputs": {
       "files": 209,
       "aggregate_sha256": "050f1da631834dc5c6789806fef582d0c4ea112709277c1be9ffcfdfc53a3721"
