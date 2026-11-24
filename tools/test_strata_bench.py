@@ -801,7 +801,7 @@ class DossierGenerationTest(unittest.TestCase):
     def test_count_frozen_body_and_observed_acceptance_in_both_receipts(self):
         for accepted, weak in ((160, True), (161, False)):
             with self.subTest(accepted=accepted), tempfile.TemporaryDirectory() as tmp:
-                journal = bench.RequestJournal(Path(tmp))
+                journal = bench.RequestJournal(Path(tmp), lambda text: text)
                 suite = self.suite(journal=journal)
                 def timed(_base, _key, messages, cap, think, **kwargs):
                     body = bench.chat_body(messages, cap, think, request_overrides=kwargs["request_overrides"])
@@ -844,7 +844,7 @@ class DossierGenerationTest(unittest.TestCase):
 
     def test_timed_body_mismatch_is_ineligible_in_journal_and_stops_next_run(self):
         with tempfile.TemporaryDirectory() as tmp:
-            suite = self.suite(runs=2, journal=bench.RequestJournal(Path(tmp)))
+            suite = self.suite(runs=2, journal=bench.RequestJournal(Path(tmp), lambda text: text))
             raw = response(offered=400, accepted=160)
             raw["request_sha256"] = "b" * 64
             raw["usage"]["prompt_tokens"] = raw["timings"]["prompt_n"] = 41000

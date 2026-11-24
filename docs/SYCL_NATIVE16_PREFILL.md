@@ -10727,6 +10727,12 @@ the five tokenizer-file inventory hash checked by the fixture. The
 native pilot pins the closed incumbent at `ea197d7a0` and uses the same
 fixed request identity, explicit 16384 output cap and full context.
 Independent repeats and the agent session have separate outcomes.
+The first host attempt at `ed9ca66df` runs 54 cases and reports three
+fixture errors because the journal helper lacked its redaction callback.
+The real tokenizer still counts 45,627 tokens for the exact dossier
+body `124227d17f6f1808af0d18fc2588f8db9cb40008ec2f510532b9b58210e3db30`.
+The corrected fixtures supply the existing identity callback and rerun
+the complete host suite.
 
 The standalone DFlash2 physical-context check
 `dflash2_prefill_physical_context_v1` passes on native source `96832af6f`.
