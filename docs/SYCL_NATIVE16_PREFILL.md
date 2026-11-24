@@ -10716,9 +10716,11 @@ and exits 0. Xe reports zero fresh faults. Server RESTORE remains pending.
 On the measured source, parking requires a populated MTP ring. The DFlash2
 launch leaves that ring empty, causing the snapshot estimate to reject the
 conversation before capture. The fix passes an optional MTP ring and retains
-the target K/V and running state for DFlash2. Verify target-only capture,
-incremental reuse and restored bytes before testing the engine's live
-conversation switch on Arc.
+the target K/V and running state for DFlash2. The SYCL host transfer fixture
+passes 1,656 checks, including target-only capture, incremental reuse and
+restored bytes, the existing MTP cases and incompatible snapshot rejection.
+The next native gate is a live conversation switch on Arc with actual
+prompt reuse and byte verification of all 12 target attention layers.
 
 The first corrected suite process `bdd9ff4ce` passes the route, ownership
 and output gates. It exits 0 with no fresh Xe fault. The sustained code
