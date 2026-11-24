@@ -159,7 +159,6 @@ static inline __m256i iq3xxs_pair_chunk(const uint8_t* block, int p, __m256i q8)
     return _mm256_madd_epi16(dot, _mm256_set1_epi16(2 * (gas >> 28) + 1));
 }
 
-template<bool SplitIntegerSum>
 __attribute__((noinline)) void iq3xxs_pair_dot(const uint8_t* GGML_RESTRICT g,
     const uint8_t* GGML_RESTRICT u, const uint8_t* GGML_RESTRICT activation,
     float& gout, float& uout) {
@@ -169,33 +168,15 @@ __attribute__((noinline)) void iq3xxs_pair_dot(const uint8_t* GGML_RESTRICT g,
         const auto* ub = u + b * sizeof(block_iq3_xxs);
         const auto* ab = activation + b * sizeof(block_q8_K);
         __m256i gi = _mm256_setzero_si256(), ui = _mm256_setzero_si256();
-        const auto activation_chunk = [ab](int p) {
-            return _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
+        #pragma clang loop unroll(full)
+        for (int p = 0; p < 8; ++p) {
+            const auto a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
                 ab + offsetof(block_q8_K, qs) + 32 * p));
-        };
-        if constexpr (SplitIntegerSum) {
-            __m256i gi_odd = _mm256_setzero_si256(), ui_odd = _mm256_setzero_si256();
-            #pragma clang loop unroll(full)
-            for (int p = 0; p < 8; p += 2) {
-                const auto even = activation_chunk(p);
-                gi = _mm256_add_epi32(gi, iq3xxs_pair_chunk(gb, p, even));
-                ui = _mm256_add_epi32(ui, iq3xxs_pair_chunk(ub, p, even));
-
-                const auto odd = activation_chunk(p + 1);
-                gi_odd = _mm256_add_epi32(gi_odd, iq3xxs_pair_chunk(gb, p + 1, odd));
-                ui_odd = _mm256_add_epi32(ui_odd, iq3xxs_pair_chunk(ub, p + 1, odd));
-            }
-            // Each signed lane is bounded by 8 * 4 * 62 * 128 * 31 = 7,872,512.
-            gi = _mm256_add_epi32(gi, gi_odd);
-            ui = _mm256_add_epi32(ui, ui_odd);
-        } else {
-            #pragma clang loop unroll(full)
-            for (int p = 0; p < 8; ++p) {
-                const auto a = activation_chunk(p);
-                gi = _mm256_add_epi32(gi, iq3xxs_pair_chunk(gb, p, a));
-                ui = _mm256_add_epi32(ui, iq3xxs_pair_chunk(ub, p, a));
-            }
+            gi = _mm256_add_epi32(gi, iq3xxs_pair_chunk(gb, p, a));
+            ui = _mm256_add_epi32(ui, iq3xxs_pair_chunk(ub, p, a));
         }
+        // Combining the two integer streams is exact: even with |q8|=128,
+        // each lane is bounded by8*4*62*128*31=7872512, below INT32_MAX.
         // Keep GGML's per-block FMA order and its final horizontal float tree.
         uint16_t gd, ud;
         float ad;
@@ -455,9 +436,8 @@ __attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t b
 }
 
 } // namespace
-template<bool SplitIntegerSum>
-static bool iq3xxs_pair_gu_rows_impl(const NativeFmt& f, const uint8_t* blob, const void* act,
-                                    float* ff, int r0, int r1) {
+bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
+                        float* ff, int r0, int r1) {
     constexpr size_t rows = 640, blocks = 10;
     if (f.gu_type != 18 || f.gu_act != 15 || f.n_embd != 2560 || f.n_ff != 640 ||
         !blob || !act || !ff || r0 < 0 || r1 < r0 || r1 > 640 ||
@@ -481,20 +461,10 @@ static bool iq3xxs_pair_gu_rows_impl(const NativeFmt& f, const uint8_t* blob, co
     for (int r = r0; r < r1; ++r) {
         const auto* g = blob + size_t(r) * f.gu_row;
         float gv, uv;
-        iq3xxs_pair_dot<SplitIntegerSum>(g, g + f.up_off, activation, gv, uv);
+        iq3xxs_pair_dot(g, g + f.up_off, activation, gv, uv);
         ff[r] = (gv / (1.f + std::exp(-gv))) * uv;
     }
     return true;
-}
-
-bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
-                        float* ff, int r0, int r1) {
-    return iq3xxs_pair_gu_rows_impl<false>(f, blob, act, ff, r0, r1);
-}
-
-bool decode_iq3xxs_pair_split_accum_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
-                                            float* ff, int r0, int r1) {
-    return iq3xxs_pair_gu_rows_impl<true>(f, blob, act, ff, r0, r1);
 }
 
 bool iq3s_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
@@ -545,9 +515,6 @@ bool iq256_single_gu_rows(int type, const uint8_t* blob, size_t row, size_t up_o
 #else
 namespace strata::kernels::cpu {
 bool iq3xxs_pair_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {
-    return false;
-}
-bool decode_iq3xxs_pair_split_accum_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {
     return false;
 }
 bool iq3s_pair_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {

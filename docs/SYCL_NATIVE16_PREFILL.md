@@ -10927,8 +10927,26 @@ cases on both sides of every timed process. All 12 processes close normally.
 Across both layouts and all 48 paired cell ratios, gather takes 1.274–1.422
 times the scalar time per expert. Layout geometric means are 1.340 and 1.323.
 Keep scalar grid loads and archive the rejected candidate with its individual
-samples. The next scheduling candidate uses two independent integer sums
-within a block and preserves the original per-block floating-point order.
+samples.
+
+The split integer sum comparison at
+`d9559998535a7821b8c27859c9bbb55c44f89953` changes the accumulation chain
+and keeps scalar codebook loads and the per-block floating-point order.
+Its 80 candidate bitwise checks, the existing exact and pool controls,
+and both real-weight validation passes in each of 12 processes succeed.
+The 480 timing samples cover three paired process ratios per cell on
+two expert layouts. Split and single-sum time ratios span 0.999642–1.039390
+on layout 20 and 0.989691–1.016149 on layout 42. Layout geometric means
+are 1.017289 and 1.003176. None of the 16 cells wins all three pairs.
+Keep the single-sum path and retire the component source changes.
+
+Retire `cpu-iq3xxs-split-accum-dual-layout-v1` after recovering the exact
+source and recipe. The audit matches 209 project sources, 1,376 GGML
+inputs, 628 actual compiler and 22 link inputs, the generated header
+and all four final artifacts. The root has 107 files and 23,718,819
+bytes. The SHA-256 over JSON-encoded path, size, hash and entry-type
+tuples is `92b7ba6cff015a7cb1d507ec22daddaebed1ac53f87abb60c5bb3797f5b57e34`.
+The original result commit keeps all samples and the predeclared decision.
 
 Before retiring `cpu-iq3xxs-gather-dual-layout-v1`, recover the source and
 recipe from Git and check the exact final three executables and CPU archive.
