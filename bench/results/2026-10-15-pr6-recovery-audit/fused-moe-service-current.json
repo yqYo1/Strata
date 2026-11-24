@@ -677773,7 +677773,7 @@
     "confidence_evidence": "ce3ef1a3a341d15b1a88bc83802018c960c93be7",
     "direct_comparison_sha256": "7ae01b3de24b158d2c126994e98b92771e4d025ece0b7ee867f11596e84c75f3",
     "physical_context_sha256": "b9c495f96b15289140a59fa79cbc08edca3cee8dc863b40e92930a88aff05968",
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "bcb274ac2cfc9b4cf10421dd3d12ee8e6a508db9",
     "host_passed": true,
     "ownership_closed": true,
@@ -678004,7 +678004,200 @@
         "environment_sha256": "c11fdc87a4eacda3acce429caac0ae73d52340e024eba331f1bfa1d6575fa498"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "incumbent",
+        "complete": true,
+        "host_probe_accepted": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+          "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+          "bytes": 26546256
+        },
+        "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+        "native_identity": {
+          "pid": 1626647,
+          "start_ticks": 390393828,
+          "sid": 1626592
+        },
+        "evidence": {
+          "samples": [
+            {
+              "prompt_tokens": 74,
+              "read_tokens": 74,
+              "reused_tokens": 0,
+              "generated_tokens": 24,
+              "drafts_offered": 21,
+              "drafts_accepted": 19,
+              "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+              "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "reasoning_sha256": "8e053119e57f03adfc04f8cb9262afbd88c9a5db275b76f48485bdb9a5c2e5ed",
+              "phase": "warm-up/chat",
+              "run": null,
+              "turn": null,
+              "decode_ms": 2251.7,
+              "prompt_ms": 23697.0,
+              "ttft_s": 23.889
+            },
+            {
+              "prompt_tokens": 257,
+              "read_tokens": 257,
+              "reused_tokens": 0,
+              "generated_tokens": 1,
+              "drafts_offered": 0,
+              "drafts_accepted": 0,
+              "request_sha256": "7c23b93c39240351a355a0b7193ad8fe30027c20e2d7c17c26b17d64626353c8",
+              "output_sha256": "b344d80e24a3679999fa964450b34bc24d1578a35509f934c1418b0a20d21a67",
+              "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "phase": "calibration",
+              "run": 200,
+              "turn": null,
+              "decode_ms": 112.9,
+              "prompt_ms": 18051.9,
+              "ttft_s": 18.166
+            },
+            {
+              "prompt_tokens": 903,
+              "read_tokens": 903,
+              "reused_tokens": 0,
+              "generated_tokens": 1,
+              "drafts_offered": 0,
+              "drafts_accepted": 0,
+              "request_sha256": "d0044867653d47151aed3803b2d0740aff7879046d7875ae78152590e6218487",
+              "output_sha256": "b344d80e24a3679999fa964450b34bc24d1578a35509f934c1418b0a20d21a67",
+              "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "phase": "calibration",
+              "run": 800,
+              "turn": null,
+              "decode_ms": 113.3,
+              "prompt_ms": 7859.5,
+              "ttft_s": 7.974
+            },
+            {
+              "prompt_tokens": 1068,
+              "read_tokens": 1068,
+              "reused_tokens": 0,
+              "generated_tokens": 8,
+              "drafts_offered": 6,
+              "drafts_accepted": 5,
+              "request_sha256": "5bfbe662a340000044f832b1c766d95073683f7b9dfcc7e44ee6d63af2458613",
+              "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "reasoning_sha256": "66cb010328920c2eb17ba87f47c743dffeeff81062a6c3807dbf5ccb03e71444",
+              "phase": "warm-up/prompt",
+              "run": null,
+              "turn": null,
+              "decode_ms": 764.7,
+              "prompt_ms": 10116.7,
+              "ttft_s": 10.233
+            },
+            {
+              "prompt_tokens": 33217,
+              "read_tokens": 33217,
+              "reused_tokens": 0,
+              "generated_tokens": 4111,
+              "drafts_offered": 2863,
+              "drafts_accepted": 2767,
+              "request_sha256": "4391123df8617cb8f73dd1e74bd6c95c33d22e0374145e5cb5cb7cf863018f9d",
+              "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+              "reasoning_sha256": "0ea23fdf82eb3ae781a8b67374b8e1b70cde5660275918369371cb826be37354",
+              "phase": "long-generation/regular-code",
+              "run": 0,
+              "turn": null,
+              "decode_ms": 246251.3,
+              "prompt_ms": 49519.3,
+              "ttft_s": 50.828
+            }
+          ],
+          "journal": {
+            "valid": true,
+            "complete": true,
+            "complete_prefix_rows": 11,
+            "last_sha256": "41e8297e4fc517b926853a705749ac0800c570f4bc8658b0981d5d2837da3f33",
+            "pending": [],
+            "pending_gates": [],
+            "failed_gates": [],
+            "errors": []
+          },
+          "decode_rates": {
+            "regular-code": 16.69432811116124
+          }
+        },
+        "routes": {
+          "counted_requests": 5,
+          "expert_work": [
+            {
+              "cpu_unique_misses": 7889,
+              "cpu_entries": 11387
+            },
+            {
+              "cpu_unique_misses": 395,
+              "cpu_entries": 395
+            },
+            {
+              "cpu_unique_misses": 395,
+              "cpu_entries": 395
+            },
+            {
+              "cpu_unique_misses": 2718,
+              "cpu_entries": 3814
+            },
+            {
+              "cpu_unique_misses": 1449976,
+              "cpu_entries": 1812670
+            }
+          ],
+          "kv": {
+            "reloaded_pages": 61440,
+            "reused_pages": 184320
+          },
+          "attention_store": {
+            "pieces": 240,
+            "direct": 0,
+            "copy_bytes": 32652656640,
+            "gpu_rows": 33216,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 33216
+          },
+          "window_work": {
+            "windows_min": 1344,
+            "windows_max": 1348,
+            "offered": 2863,
+            "accepted": 2767,
+            "emitted": 4111,
+            "verifier_rows_min": 4207,
+            "verifier_rows_max": 4211
+          }
+        },
+        "validation": {
+          "pid": 1626647,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "postconditions_complete": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
