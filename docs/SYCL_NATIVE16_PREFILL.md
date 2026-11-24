@@ -10890,10 +10890,15 @@ The routed-row policy requests 197,913,600 weight bytes per direction if
 the exact original slots are restored, which is about 61–63 ms of serial
 copy service for both directions at the recorded large-copy bandwidth.
 Placement selection, queue retirement and publication need their own
-clocks. Use the current row metric for the first bounded decode-only
-implementation. Prove exact stock restoration before the next prefill,
-then compare on an independent sustained workload. These forecasts
-describe one recorded routing sequence.
+clocks. Enable the existing row count after prefill and stop it after the
+first 256 completed verifier windows. Compare counting alone against stock
+before testing exchanges with the same count in both arms. The existing
+resident RAM mode can also stage evicted bytes back to the host. Charge
+actual copies, map publication and stock restoration through client
+completion, including work outside the current native decode timer.
+Prove exact slot restoration before the next prefill and compare on an
+independent sustained workload. These forecasts describe one recorded
+routing sequence.
 [Replay controller](../bench/sycl/dflash2_causal_rank_replay.py)
 
 Retired the V1 outputs at `dflash2-expert-rank-live-check-v1/{stock,trained}`
@@ -10922,7 +10927,26 @@ to the project tuning state directory. The inventory SHA-256 covers sorted
 relative paths, byte lengths and content hashes. The committed comparison
 and routing evidence already retain the necessary samples, identities and
 outcomes. Keep both compact on-disk controller records and the live native
-build. The earlier V2 build remains linked by the current admission reader.
+build.
+
+The old `prefill-kv-upload-native-v2` generation is selected for retirement.
+The host proof with controller `c24b3e93e` recovers all original inputs,
+the recipe and the executable for source `59411e1de`. The original build
+receipt matches published `8f21276e9` with compact digest
+`a4560c2e2ba537f4c0944e4ffcde2cd9d66eeea11081932c5fe0bb7574f705c5`.
+With access below the old root limited to its receipt, the real decode
+admission still matches `ce3ef1a3a` on `96832af6f` and the target-only
+RESTORE projection for `3a93dafd7` admits 1,171 source files. Use the
+current DFlash2 engine for the next independent repetitions. The old
+comparison samples and their original gates remain in Git.
+
+The removal covers `build`, `cache`, `host-control`, `owned`,
+`ownership.json`, `source` and `tmp` within that generation only. The
+1,369 files total 196,380,087 bytes. SHA-256 of their sorted relative
+paths, sizes and content hashes in compact JSON is
+`2818a5da5851a838a969ef5504ff2070e78e0441f95d7820eb68da9b16ff3d58`.
+Keep `record.json` for the historical admission reader with SHA-256
+`deb5c0805c272fbc2453fe23f7baa79a09e8e1111e0c68f6ab750133f55704c1`.
 
 - `dflash2-decode-confidence-v1` cases `0`, `1`, `2`, `3`, `host`, `width-check` contain 351 files and 72,335,709 bytes, with inventory SHA-256
   `b6a4579f43ad4a3c05a35696e30f51eacdc4ac3373d14b7cf3f149b018892914`.
