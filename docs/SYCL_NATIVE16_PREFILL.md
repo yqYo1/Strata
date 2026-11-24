@@ -10788,6 +10788,21 @@ GU, hidden quantization or Down service. Keep summed concurrent worker CPU
 time separate from caller-wall latency.
 Sustained strong and weak acceptance measurements remain separate.
 
+The four-process worker-leaf comparison at `6bbd3e3e1` uses 33,217
+fresh inputs and 4,111 outputs in each sustained code request. Clean TG is
+13.678 and 13.711 tok/s. The two instrumented samples are 13.582 and 13.651 tok/s.
+The paired observed/clean latency ratios are 1.00708 and 1.00441. The comparison
+passes the declared overhead screen, with matching request, expert and format/width
+counts and normal exits with zero fresh Xe faults. Across the two observed
+processes, Gate/Up uses 67.4 percent of the concurrent expert CPU time.
+The workers spend 156.1–156.2 CPU milliseconds per output. At the same
+six execution threads, the 70 tok/s budget allows 85.7 CPU milliseconds per
+output before considering GPU work. One native blob per logged CPU job
+covers 2,956,400,972,800 logical bytes per code request. This corresponds
+to 50.34 GB/s of logical visits at 70 tok/s. Physical traffic and resource
+saturation remain open. The next [confidence comparison](../bench/sycl/dflash2_decode_confidence.py)
+holds spec4 and placement fixed and changes only the draft threshold.
+
 #### DFlash2 KV stage retention outside the tap layers
 
 Candidate source `44a2926a6` uses a typed DFlash2 observer with the same five
@@ -11177,8 +11192,8 @@ fresh Xe faults. Copied-to-direct warmed rates in paired order are
 process median is 1005.357 tok/s, and all six individual warmed direct samples
 exceed 1,000 tok/s. Median warmed client TTFT goes from 123.622 to 122.460 s.
 First-use prompt time improves in two pairs. Advance the direct writer to
-model qualification. The live GEN boundary, all five tap payloads, live
-RESTORE, agent session and sustained decode are separate pending checks.
+model qualification. The live GEN boundary is verified above. The five tap
+payloads, live RESTORE, agent session and sustained decode are pending.
 
 Retired the closed raw capture under
 `dflash2-prefill-window-122881-writer-speed-v1` after matching the original
