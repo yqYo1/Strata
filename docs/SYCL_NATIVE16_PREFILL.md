@@ -10995,6 +10995,20 @@ lower of the two earlier measurements it leaves 39,218,176 bytes of
 estimated slack. Verify the actual 96/48 window dispatch pair and
 the same state boundary before clean speed timing.
 
+Both 118,785-input processes close with normal exit and no new Xe
+faults. The mode16 arm uses 48 windows and all 118,784 BF16 rows in
+VRAM. It keeps 39,214,080 bytes beyond the 512 MiB reserve at the
+actual query and checks its split and relocated-workspace drains.
+Compared with mode10, expert H2D requests fall from 80,018,380,800 to
+48,749,337,600 bytes. Expert jobs fall from 48,411 to 26,455 and
+dequantizations from 46,677 to 23,803. Both request the same
+116,769,423,360 bytes of copied attention output. The short and long
+generated work, active state hashes and retained KV agree.
+The traced prompt intervals are 163.565 and 152.267 seconds.
+Schedule an independent quiet exact-input comparison before claiming a
+speedup. Use the trace-derived layouts to check actual dispatch, with
+demand uploads held fixed. The counters describe requested work.
+
 Retired the 120,001-input raw captures under
 `dflash2-prefill-window-admission-v1` after rechecking all 119 files and
 25287322 bytes, inventory SHA-256 `03a45191a750065c34cfd8fa980ab89e874cc77699f4410edc86b34b66f973ba`.
