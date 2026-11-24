@@ -679779,5 +679779,76 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_dossier_continuation_replay_v1": {
+    "source_commit": "76b1bc35396a63405a42bb16a790121ef9c87952",
+    "failed_pilot": "a51a083d5c841307fbb8b658c481de1efc9accb4",
+    "original_gate_passed": false,
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "binary_sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+    "native_exit_code": 0,
+    "fresh_faults": [],
+    "replay_only": true,
+    "original_pilot_record_sha256": "56e11a3a4d17ccd08de1884c465c232e1c38b4aea72c3f2c45e02ac35200d00f",
+    "inputs": {
+      "execution.json": "648b2f843bed0d01c44a853c89c3b09ea478646bdb29f970b03278ea6a64e96f",
+      "engine-start.json": "087c0f2b522e039577b7b33b80eeeb4889e76ce0210a6596e83ce83d0a86b86d",
+      "engine-exit.json": "e26e6d849c82ca6b01af130d2e2c6fdd12900ea30355e92c14d75b7fdc7bf986",
+      "engine.stderr": "7fa1e4171f584c36ec5c4ae92cebf1cc51714658aaae4ec5b6424a5daafc6d31",
+      "validation.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "config.json": "972d1210892e9b350df6f69cc788facdd1d8f945fab43f22f1c532ee9bbf926c",
+      "results.json": "2d4973088cedcca6c7a0ef37dea2ed4b223d1c2d4cc625f471f1b6bc6d2e5b67",
+      "requests.jsonl": "bc2fa1c87ec86704ff025fda00acba441c8a839f7f2027967cd54ac1111971e1",
+      "journal-state.json": "f0f0a57ece87fa33fce19bc15a4d4ae936cb82100bc16e6db77fdd1f8728c5c4"
+    },
+    "wrap": {
+      "tokens": 18,
+      "token_ids_sha256": "8c13ee65ac1092fe69103cea638d02cdcc10e33e0ac0ce4277b654545a66c074"
+    },
+    "segments": [
+      {
+        "prompt_tokens": 45627,
+        "reused_tokens": 0,
+        "read_tokens": 45627,
+        "prompt_ms": 57964,
+        "generated_tokens": 12288,
+        "decode_ms": 770123,
+        "drafts_accepted": 7954,
+        "drafts_offered": 8619,
+        "checkpoints": 0,
+        "server_inserted_before": 0
+      },
+      {
+        "prompt_tokens": 57933,
+        "reused_tokens": 0,
+        "read_tokens": 57933,
+        "prompt_ms": 62273,
+        "generated_tokens": 4078,
+        "decode_ms": 248383,
+        "drafts_accepted": 2784,
+        "drafts_offered": 3033,
+        "checkpoints": 0,
+        "server_inserted_before": 18
+      }
+    ],
+    "native_generated_tokens": 16366,
+    "server_inserted_tokens": 18,
+    "api_generated_tokens": 16384,
+    "decode_ms": 1018506.5,
+    "exact_native_decode_tps": 16.06862597342285,
+    "clock_binding": {
+      "absolute_differences_ms": {
+        "prompt_ms": 0.19999999999708962,
+        "decode_ms": 0.5
+      },
+      "rounding_bound_ms": 1.05
+    },
+    "scope": "One owned API interval; native work and inserted tokens separated. Segment clocks are service accounting, not physical traffic or saturation.",
+    "total_native_prompt_read": 103560,
+    "total_native_prefill_ms": 120236.8,
+    "client_ttft_s": 59.268,
+    "draft_acceptance": 0.9215585307243391,
+    "weak_draft_observed": false,
+    "adoption_eligible": false
   }
 }

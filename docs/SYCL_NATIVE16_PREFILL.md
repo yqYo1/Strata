@@ -10735,6 +10735,23 @@ The corrected fixtures at `23cebdedf` pass all 54 host cases, including
 the exact same real-tokenizer count. The pilot admission binds those
 frontend sources, the body hash and the expected 45,627 actual fresh reads.
 
+The original pilot at `a51a083d5` closes with a footer-gate rejection and no
+fresh Xe fault. The default answer-room policy ends the first engine leg at
+12,288 generated tokens and inserts a tokenizer-verified 18-token closing.
+With the prompt cache disabled, the second leg reads all 57,933 tokens and
+generates another 4,078. The API reports 16,384 output tokens from 16,366
+native outputs plus the closing. The two native legs read 103,560 tokens
+in total. The second prefill consumes 62.273 seconds. Client TTFT is
+59.268 seconds.
+
+The continuation replay verifies both engine legs, the original request,
+closed ownership, normal native exit, and the summed clocks and draft
+counts. Native decode averages 16.0686 tok/s across the two legs with
+10,738 of 11,652 drafts accepted (92.16%). The dossier has high draft
+agreement. The original single-footer gate stays failed. Keep this result
+for continuation-aware benchmarking and investigate prompt reuse within
+the same API request separately. See `dflash2_dossier_continuation_replay_v1`.
+
 The standalone DFlash2 physical-context check
 `dflash2_prefill_physical_context_v1` passes on native source `96832af6f`.
 The 16,385-token check generates four tokens. The full check consumes
