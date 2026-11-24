@@ -40410,5 +40410,43 @@
     "classification": "knowledge_collection",
     "finding": "Report hash and byte count match admission. The collection gives useful measurable comparisons and ownership/SLM caveats, but no source-bound diagnosis. Gunrock, Stream-K, sparse-GEMM papers, CUTLASS docs, and Intel’s Xe guide are credible; most methods are general or CUDA analogies, with Xe2 facts grounded in Intel documentation.",
     "consumer": "Stage counts alone do not identify the limiting resource. Attribute it first using job histograms, launch timing, bytes/traffic, occupancy, and owner/queue evidence; retrieve prior methods only when their specific prerequisites are met."
+  },
+  "dflash2-code-only-cpu-leaf-admission-20261124": {
+    "source_commit": "e4fdf0e637c32d731387e6b895dc8a8276265cfe",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-code-only-cpu-leaf-admission-20261124/report.md",
+    "report_sha256": "dfd079c6f05cfe027598c7f8f6a6682c763f68c47bfd8e71adf94cb3932bdc01",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-worker-leaves-and-width-policy-20261124-native-review/review.json",
+    "review_sha256": "fb55bbd2b856e006ca1ac0ac5748fc613138bca325fea5574ab0075d9394fc45",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_8b4fee2ad25a, ctx_38a06d126270",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "Applies to the retained V2 path with five workers, fixed cache membership, and effective width at most four. C/L/C gives only one leaf process; use balanced C/L, L/C pairs. The V2 record flushes after commit and before its serve header; correlate request ordinals and copy footer. `nt` is job tokens. Wall time includes descheduling; summed worker CPU is aggregate service, not latency. Logs lack expert IDs and physical RAM evidence, so equal totals do not prove identical work or a critical path.",
+    "consumer": "After the prefill sequence, qualify the exact regular-code, four-warmup leaf framing on the current retained engine. Use two reversed clean/leaf pairs and match request, expert footer and observed format/width counters. The unexecuted source draft at /tmp/strata-dflash2-code-worker-leaves.54vtdsua/cpu-leaf-observer.patch has SHA-256 230858925d1ea0c4c0044164956fb6fafca4056de138c049781dd6cc04895d67."
+  },
+  "speculative-verification-width-scheduling-methods-20261124": {
+    "source_commit": "e4fdf0e637c32d731387e6b895dc8a8276265cfe",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/speculative-verification-width-scheduling-methods-20261124/report.md",
+    "report_sha256": "3e5156cd62e0614ece1344c662f1bbe74a5a8c167b5c489c9cde3f79154fc0a5",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-worker-leaves-and-width-policy-20261124-native-review/review.json",
+    "review_sha256": "fb55bbd2b856e006ca1ac0ac5748fc613138bca325fea5574ab0075d9394fc45",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_298d4e126986, ctx_225f867e42bb",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "The original papers and first-party Hugging Face/vLLM material are credible for method descriptions. The report correctly treats moving upstream docs as no proof of support in this Strata hybrid, and separates acceptance or yield from end-to-end speed.",
+    "consumer": "Retrieve adaptive verification after matched measurements on this Arc B570/Zen 3 path capture draft, verifier, CPU-expert, and transition costs, calibrated acceptance, and live memory headroom; compare held-out full wall time per token and latency against fixed width four."
   }
 }
