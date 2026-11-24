@@ -10828,8 +10828,11 @@ timing cohort. It uses only the selected engine as a paired timing factor.
 The first incumbent at `d52c05635` returns 4,111 tokens at 16.694 tok/s.
 The accepted draft count is 2,767 of 2,863. The request, output and thinking
 hashes, expert and KV work, executable, boot and runtime manifest match the
-earlier 13.671 tok/s control at `ce3ef1a3a`. Keep the new cohort paired and
-report the wall-clock difference separately from implementation effects.
+earlier 13.671 tok/s control at `ce3ef1a3a`. The paired snapshot at
+`69dad9672` gives 16.588 tok/s with matching work and output hashes. Both
+processes retire with no fresh Xe fault. The first pair's 0.636% decode
+difference and the 50.828/49.777 s TTFTs remain part of the six-process
+cohort. The next pair starts with the snapshot.
 [Decode comparison](../bench/sycl/dflash2_snapshot_decode.py).
 
 The closed `dflash2-snapshot-direct-prefill-v1/{host,0,1,2,3,4,5}` scopes
