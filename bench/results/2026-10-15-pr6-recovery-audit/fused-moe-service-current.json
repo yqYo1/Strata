@@ -678431,7 +678431,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "cpu_iq3xxs_gather_dual_layout_v1": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "69dad9672122799c88f2d1612afe2fd248af117a",
     "route_evidence": {
       "leaves_commit": "6bbd3e3e1cab1415a4bba7df675c729bf4213d59",
@@ -679059,6 +679059,58 @@
         "sha256": "0993718f02d8447aace2a209387d0b740a6c71f78a1adc7fe69d183210435d11"
       }
     },
+    "checks": [
+      {
+        "label": "exact",
+        "receipt": {
+          "pid": 1689317,
+          "direct_identity": {
+            "pid": 1689317,
+            "state": "R",
+            "ppid": 1689068,
+            "pgid": 1689317,
+            "sid": 1689317,
+            "start_ticks": 390550081,
+            "rss_bytes": 155648
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.1668958542868495,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 4186112
+        },
+        "passed": true
+      },
+      {
+        "label": "pool",
+        "receipt": {
+          "pid": 1689331,
+          "direct_identity": {
+            "pid": 1689331,
+            "state": "D",
+            "ppid": 1689068,
+            "pgid": 1689331,
+            "sid": 1689331,
+            "start_ticks": 390550098,
+            "rss_bytes": 135168
+          },
+          "exit_code": 0,
+          "elapsed_seconds": 0.409945750143379,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "errors": [],
+          "cleanup": [],
+          "peak_session_rss_bytes": 16355328
+        },
+        "passed": true
+      }
+    ],
     "project_inputs": {
       "files": 209,
       "aggregate_sha256": "c093d73a170ed05a275ac19e04c1b8b1848b72850a31ece6d9658b629f563f5f"
