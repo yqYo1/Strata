@@ -40372,5 +40372,43 @@
     "classification": "knowledge_collection",
     "finding": "Classification fits a knowledge collection and is distinct from worker-clock and cache-placement reports. Applicability is conditional: the 110.29/106.11 ms scopes overlap, and supplied evidence has no load-source or physical DRAM measurements.",
     "consumer": "Retrieve for a held-out unchanged workload with fixed jobs and worker count; claim cache/DRAM behavior only if supported same-phase IBS and Data Fabric evidence is available."
+  },
+  "dflash2-bank-and-length-quiet-timing-20261124": {
+    "source_commit": "8bd708b5ebf2d121a84678698645b08b5720cb75",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-bank-and-length-quiet-timing-20261124/report.md",
+    "report_sha256": "b3307e6275714f01e210a5697f59030448c1c66d85ae6e80dbf70b7036258de8",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/bank-length-and-xe2-worklist-20261124-native-review/review.json",
+    "review_sha256": "eb115d94044d47223159510dadc155f33ea4aade7c6899ba2a965b65d1254d91",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_ead5c1518ef0, ctx_6b1890a96ce8",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "Report hash and byte count match admission. The plan controls bank attribution and treats length as scaling; first-use stays separate. The selected prior digest flags a concrete reader gap: require an explicit assertion that the 122881st token reaches the verifier after exactly 15 complete 8192-row chunks, with actual tail and allocation receipts.",
+    "consumer": "The traced 122881-input handoff and route are verified at bb974ff52. Use three complete rotated blocks. Verify the exact count and admitted shape per quiet request. Report both warm-process medians and individual warm samples at 1000 tok/s."
+  },
+  "xe2-irregular-worklist-and-memory-traffic-20261124": {
+    "source_commit": "8bd708b5ebf2d121a84678698645b08b5720cb75",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/xe2-irregular-worklist-and-memory-traffic-20261124/report.md",
+    "report_sha256": "27bc39237e0343a08e8ad3056c3aea482193bf9ee23eec5bd1caf9ff73456255",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/bank-length-and-xe2-worklist-20261124-native-review/review.json",
+    "review_sha256": "eb115d94044d47223159510dadc155f33ea4aade7c6899ba2a965b65d1254d91",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_ad2403d062a0, ctx_a1ed54d74dd1",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Report hash and byte count match admission. The collection gives useful measurable comparisons and ownership/SLM caveats, but no source-bound diagnosis. Gunrock, Stream-K, sparse-GEMM papers, CUTLASS docs, and Intel’s Xe guide are credible; most methods are general or CUDA analogies, with Xe2 facts grounded in Intel documentation.",
+    "consumer": "Stage counts alone do not identify the limiting resource. Attribute it first using job histograms, launch timing, bytes/traffic, occupancy, and owner/queue evidence; retrieve prior methods only when their specific prerequisites are met."
   }
 }
