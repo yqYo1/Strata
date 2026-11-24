@@ -41121,5 +41121,37 @@
     "finding": "The pinned trace supports 934,382,592 requested prefix H2D bytes and a source-level unaligned-edge explanation, not physical traffic. The later host near-case (253,919 reused, 8,209 new, 6,539,157,504 requested bytes) was outside worker input and does not validate this trace.",
     "consumer": "Pin the later near-case receipt separately and identify a candidate variant. Compare it with baseline on a matched restored prefix/continuation; verify Q8 K/V/scales, IDs, taps and output, and report requested bytes separately from measured traffic and elapsed time.",
     "subsequent_main_evidence": "962acee66 near-copy: 253919 reused, 8209 read, 6539157504 requested H2D bytes. This result postdates the worker input."
+  },
+  "dflash2-historical-lineage-reader-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "81b48a574c0b6af6c0e017dfe5684a8ca9a16c79",
+    "view_commit": "9660f2053ee70c3d695de69c8e8b96e9711ed3f2",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-historical-lineage-reader-20261125/report.md",
+    "report_sha256": "aa975b0f3a239f4da9dbeaa889c4afe0633a43cb9f64ac070428eb746bdb7128",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-lineage-and-zen3-clocks-20261125.DqsqvJ/review.json",
+    "review_sha256": "06ad63bfdcbab3060eb31c584d420dc751ec004018ef2b71e9d53b90cc3e3b2a",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "It proposes a bounded contract that pins historical source, recipe, census, and runtime evidence while retaining separate hash and size checks for each selected arm. The supplied evidence does not independently establish those consumer controls; no executable state is inferred.",
+    "consumer": "If wider read-only recovery proceeds, verify the pinned consumers and original record, source map, recipe/census, and runtime/evidence controls; preserve independent identity checks for every planned live arm.",
+    "schedulable_now": false,
+    "owners_closed": true
+  },
+  "zen3-decode-core-clock-simd-smt-methods-20261125": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "source_commit": "81b48a574c0b6af6c0e017dfe5684a8ca9a16c79",
+    "view_commit": "9660f2053ee70c3d695de69c8e8b96e9711ed3f2",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-decode-core-clock-simd-smt-methods-20261125/report.md",
+    "report_sha256": "ea71ca42dfd2469b7fc5072d0c19c5cbc786abf5e3872a0b7cf6689e019e7300",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-lineage-and-zen3-clocks-20261125.DqsqvJ/review.json",
+    "review_sha256": "06ad63bfdcbab3060eb31c584d420dc751ec004018ef2b71e9d53b90cc3e3b2a",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "Useful as an attribution plan only: the supplied CPU-time observations establish no clock, SIMD, front-end, or SMT limit. Qualify the IBS skid caveat: Linux perf says IBS provides precise IP with no skid, unlike regular core PMU sampling; sample-period limits still apply. [Source](https://github.com/torvalds/linux/blob/master/tools/perf/Documentation/perf-amd-ibs.txt)",
+    "consumer": "Clarify the IBS caveat and validate counter and clock support for the exact 5600X revision before planning same-work, affinity-controlled measurements.",
+    "schedulable_now": false,
+    "owners_closed": true
   }
 }
