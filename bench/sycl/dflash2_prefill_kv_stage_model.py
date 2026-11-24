@@ -7,6 +7,7 @@ import sys
 
 sys.dont_write_bytecode = True
 import dflash2_v2_commit_order as device
+import dflash2_v2_split_admission as split
 import prefill_kv_upload_build as build
 
 generation, model = device.generation, device.model
@@ -19,10 +20,13 @@ READ, OUTPUT = 32769, 32
 RAGGED_PREFIX, RAGGED_READ = 83, 8209
 TAPPED_QSA_LAYERS = (15, 35)
 EXPECTED_H2D_REDUCTION = 467140608
+SPLIT_KEY = 'dflash2_prefill_kv_stage_split_model_v1'
+SPLIT_ROOT = bank.B / SPLIT_KEY.replace('_', '-')
+SPLIT_REFERENCE = '77ce8ac63ea6039fd3c9195582eaeaca14b9ed0a'
+SPLIT_READ = split.CASES['long']
 
 
-def inputs(revision):
-    base = generation.sync_baseline()
+def candidate(base):
     native = bank.previous.read(build.DFLASH2_KV_ROOT / 'record.json')
     build.context('dflash2-kv-stage').check(native)
     require(native['stage'] == 'built' and native['complete'] and native['passed']
@@ -30,11 +34,17 @@ def inputs(revision):
             and native['projection']['dflash2_kv_base_binary'] == base['binary']
             and native['projection']['dflash2_kv_source'] == build.DFLASH2_KV_SOURCE
             and native['driver'] == base['driver'], 'require the coherent candidate and its host fixtures')
+    return native
+
+
+def inputs(revision):
+    base = generation.sync_baseline()
+    native = candidate(base)
     proof = bank.previous.historic(generation.COMMIT_ORDER_GATE, device.KEY)
     positive = proof['outcomes']['long']
     require(positive['passed'] and positive['native_exit_code'] == 0 and positive['fresh_faults'] == [],
             'recover the real DFlash2 32769-token model gate')
-    paths = [THIS, device.THIS, build.THIS]
+    paths = [THIS, device.THIS, build.THIS, split.THIS]
     pins = generation.experiment().pins(revision)
     pins.update(bank.stage.source.pin(bank.P, paths)['source_sha256'])
     require(all((bank.P / name).read_bytes() == basis.validation.git('show', revision + ':' + name)
@@ -110,10 +120,10 @@ def inspect(log, pid, plan, arm, requests):
     return result
 
 
-def save(row):
-    bank.stage.write(ROOT / 'record.json', row)
+def save(row, root=ROOT, key=KEY):
+    bank.stage.write(root / 'record.json', row)
     result = bank.previous.read(bank.RESULT)
-    result[KEY] = row
+    result[key] = row
     bank.stage.write(bank.RESULT, result)
 
 
@@ -141,13 +151,85 @@ def run(row, arm, env, requests):
     require(outcome['passed'], 'preserve the original DFlash2 result')
 
 
+def split_inputs(revision):
+    plan, launches = split.inputs(revision, root=SPLIT_ROOT)
+    earlier = bank.previous.historic(SPLIT_REFERENCE, split.KEY)
+    prior_plan, prior = earlier['plan'], earlier['outcomes']['long']
+    prior_case, case = prior_plan['cases']['long'], plan['cases']['long']
+    require(earlier['stage'] == 'closed' and earlier['complete'] and earlier['passed']
+            and prior['passed'] and prior['ownership_closed'] and prior['native_exit_code'] == 0
+            and prior['fresh_faults'] == [] and case['wire'] == prior_case['wire']
+            and case['command'][1:] == prior_case['command'][1:]
+            and all(plan[k] == prior_plan[k] for k in ('binary', 'native_source_commit', 'native_build_sha256',
+                    'boot', 'driver', 'runtime_manifest', 'validation', 'drafter_assets')),
+            'recover the original all-GPU 117489-input DFlash2 route and wire')
+    native = candidate(plan)
+    paths = [THIS, device.THIS, build.THIS]
+    own_pins = bank.stage.source.pin(bank.P, paths)['source_sha256']
+    require(all((bank.P / p).read_bytes() == basis.validation.git('show', revision + ':' + p)
+                for p in paths), 'changed candidate split controller')
+    env, requests = launches['long']
+    env[generation.v2.state.KV] = ARMS['retain']
+    binary = native['binaries']['strata']
+    plan.update(binary=binary, native_source_commit=native['native_source_commit'],
+                native_build_sha256=bank.signature(build.builder.compact(native)), candidate_inputs=own_pins,
+                cases={'long': dict(case, command=[binary['path'], *case['command'][1:]],
+                                    environment_sha256=bank.signature(env))},
+                order=['long'], split_reference=SPLIT_REFERENCE, tap_layers=list(TAPPED_QSA_LAYERS),
+                scope='Check the candidate with aligned KV retention at 117489 fresh inputs. Match the prior '
+                      'split route, exact short/long/short wire and active state, expert-cache refill and tap work.')
+    return plan, env, requests, prior
+
+
+def inspect_split(log, pid, plan, requests, prior):
+    result = split.inspect(log, plan, pid, SPLIT_READ, requests)
+    markers = list(re.finditer(r'^strata trace: request (\d+) 0$', log, re.M))
+    frame = log[markers[1].end():markers[2].start()]
+    trace = generation.v2.state.kv
+    kv = trace.check_request(frame, 0, SPLIT_READ - 1, 8192, reuse=True, tap_layers=plan['tap_layers'])
+    require(all(result[k] == prior[k] for k in ('split', 'states', 'loan', 'tap_rows'))
+            and requests == prior['requests'], 'split stage changed active state, placement or generated work')
+    return dict(result, kv_stage=kv)
+
+
+def split_action(action):
+    if action == 'prepare-split':
+        require(not SPLIT_ROOT.exists() and SPLIT_KEY not in basis.validation.committed(bank.RESULT),
+                'new split candidate plan required')
+        plan, _, _, _ = split_inputs(basis.validation.git('rev-parse', 'HEAD').decode().strip())
+        for name in ('cache', 'tmp'):
+            (SPLIT_ROOT / 'long' / name).mkdir(parents=True, mode=0o700)
+        save(dict(plan=plan, stage='prepared', complete=False, passed=False, active=False,
+                  ownership_closed=True), SPLIT_ROOT, SPLIT_KEY)
+        return
+    row = bank.previous.read(SPLIT_ROOT / 'record.json')
+    plan, env, requests, prior = split_inputs(row['plan']['source_commit'])
+    path = SPLIT_ROOT / 'long'
+    require(row == basis.validation.committed(bank.RESULT, (SPLIT_KEY,)) and row['plan'] == plan
+            and row['stage'] == 'prepared' and row['ownership_closed'] and not row['active']
+            and not (path / 'owned').exists() and not (path / 'execution.json').exists(),
+            'require the committed candidate split plan; no retries')
+    outcome = device.run_case(plan, path, 'long', env, requests,
+                              lambda log, pid, done: inspect_split(log, pid, plan, done, prior))
+    passed = outcome['passed']
+    row.update(stage='closed' if passed else 'failed', complete=passed, passed=passed,
+               active=not outcome['ownership_closed'], ownership_closed=outcome['ownership_closed'], outcome=outcome)
+    save(row, SPLIT_ROOT, SPLIT_KEY)
+    print({k: outcome.get(k) for k in ('passed', 'native_exit_code', 'fresh_faults', 'error')}, flush=True)
+    require(passed, outcome.get('error', 'DFlash2 candidate split admission failed'))
+
+
 def main(action, arm=None):
+    split_actions = ('prepare-split', 'run-split')
     require(sys.executable == basis.reference.model.PYTHON
-            and ((action == 'prepare' and arm is None) or (action == 'run' and arm in ARMS)),
-            'use the pinned Python with prepare or run reload/retain')
+            and ((action in ('prepare', *split_actions) and arm is None) or (action == 'run' and arm in ARMS)),
+            'use the pinned Python with prepare, run reload/retain, prepare-split or run-split')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
+        if action in split_actions:
+            split_action(action)
+            return
         if action == 'prepare':
             require(not ROOT.exists() and KEY not in basis.validation.committed(bank.RESULT), 'new plan required')
             plan, _ = inputs(basis.validation.git('rev-parse', 'HEAD').decode().strip())
