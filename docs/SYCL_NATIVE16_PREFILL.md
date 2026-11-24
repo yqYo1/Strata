@@ -11081,6 +11081,20 @@ the throughput candidate only on a warmed prompt-time improvement in
 all three pairs. Retain first-use, TTFT and the repeated 1,000 tok/s decision
 separately.
 
+The quiet writer comparison closes at `d78ca9361`. All 18 fresh requests
+read 118,785 inputs, emit 24 tokens, and match expert and DFlash2 work.
+Six native processes exit normally with closed ownership and no new Xe
+faults. The warmed copy/direct rates are 948.031/952.762, 992.843/997.192,
+and 969.761/997.611 tok/s in paired order. Warmed TTFT changes from
+125.583/119.871/122.714 to 124.934/119.375/119.292 seconds. First-use prompt
+time improves in two of the three pairs. The direct writer passes the
+predeclared warmed-gain gate in all three pairs. Its process median is
+997.192 tok/s and its highest warm sample is 1,000.711 tok/s. The
+repeated 1,000 tok/s gate remains unmet. Keep the direct writer eligible
+for throughput-route qualification. Preserve the copy writer as the
+fixed control for bank capacity. Physical full context, live RESTORE,
+task/agent and sustained DFlash2 decode gates remain pending.
+
 Ordered batching remains a separate candidate at fixed 118,785 inputs.
 The original split-upload comparison runs at 117,489 inputs and moves
 963.923 to 989.117 warmed tok/s across three matched blocks. The later retained-KV
