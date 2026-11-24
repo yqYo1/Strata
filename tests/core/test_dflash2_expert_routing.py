@@ -56,8 +56,9 @@ class ExpertRoutingTests(unittest.TestCase):
         reference = [(layer, expert) for expert in range(512) for layer in range(48)]
         training = [(0, 511, [5]), (4, 511, [5]), (5, 511, [5]), (6, 511, [5])]
         ranked = routing.rank_by_verifier_jobs(reference, [training], cache_slots=1256, protected_prefix=132)
-        self.assertEqual([row for row in reference if row[0] < 5],
-                         [row for row in ranked if row[0] < 5])
+        for layer in range(5):
+            protected = [expert for actual, expert in ranked if actual == layer][:26]
+            self.assertEqual(protected, list(range(26)))
         before = [(1 << 26) - 1] * 47 + [(1 << 34) - 1]
         after = before.copy()
         for layer in (5, 6):
