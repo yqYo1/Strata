@@ -670653,7 +670653,7 @@
     "native_executed": false
   },
   "dflash2_expert_rank_forecast_v1": {
-    "stage": "frozen",
+    "stage": "scored",
     "source_commit": "dea353a3b3614b0b1c049b548ab41ee74aeeae58",
     "sources": {
       "bench/sycl/dflash2_expert_rank_forecast.py": "bb1412ca4ac3c293beaa8fce3b13e73807f331c7e5ff2699fff5d5a6b5c28140",
@@ -671920,7 +671920,33 @@
         ]
       }
     },
-    "rule": "Select from training only. For the untouched held-out request require fewer CPU jobs and no increase in logical blob bytes before a live rank comparison. Measure actual prefill and decode independently. Compute a held-out oracle bound without selecting from it."
+    "rule": "Select from training only. For the untouched held-out request require fewer CPU jobs and no increase in logical blob bytes before a live rank comparison. Measure actual prefill and decode independently. Compute a held-out oracle bound without selecting from it.",
+    "holdout": {
+      "key": "dflash2_long_routing_holdout_v1",
+      "request_sha256": "4105a52cee04afa6e39ec6f3dcfea67e4f68d1af2e860ac40398c18d832b076c",
+      "candidate_freeze": "d162a13477145fc09857b2e2f6989e56450332725c4ece4ab4d435190b66fdd0",
+      "usage_sha256": "747f62afbfc126b706872fdb98bac1a8758338fd514d6b507115636b5c139262",
+      "generated_tokens": 11783,
+      "read_tokens": 33287,
+      "accepted": 5298,
+      "offered": 6902,
+      "jobs": {
+        "cpu_jobs": 4668262,
+        "cpu_entries": 5982938,
+        "logical_job_blob_bytes": 9529065216000
+      }
+    },
+    "holdout_forecast": {
+      "cpu_jobs": 4666104,
+      "cpu_entries": 5963799,
+      "logical_job_blob_bytes": 9523651481600
+    },
+    "holdout_fixed_work_oracle": {
+      "cpu_jobs": 3370130,
+      "cpu_entries": 4022568,
+      "logical_job_blob_bytes": 6839959500800
+    },
+    "eligible_for_live_comparison": true
   },
   "dflash2_long_routing_holdout_v1": {
     "configuration": {

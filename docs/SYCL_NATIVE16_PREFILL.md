@@ -10847,9 +10847,27 @@ Freeze the 1,256-slot ranking from code only. Its route replay forecasts
 blob bytes on that training request. The first 132 physical slots and
 per-layer quotas match exactly. The loader's shorter warm-up loans leave
 prefixes of 1,023, 1,053 and 1,141 slots. Their identities and prompt clocks
-need separate live checks before a placement change. Use the committed
-ordered delta to reconstruct the generated rank. Bind this exact candidate
-to the fresh held-out prose plan before launch.
+need separate live checks before a placement change. The committed ordered
+delta reconstructs the generated rank. The held-out prose run pins that rank
+before launch and uses the stock profile for capture.
+
+The held-out result at `b28a9372b` reads 33,287 fresh tokens and generates
+11,783 with thinking. It records 5,298 of 6,902 accepted drafts (76.76%),
+6,485 verifier windows and 4,668,262 CPU expert jobs. The native process
+exits normally, all asset checks pass and Xe reports no fresh fault.
+The training rank forecasts 4,666,104 CPU jobs and 0.057% fewer logical
+blob bytes on this trace. The reduction in CPU jobs is 0.046%, compared
+with 19.98% on the training trace. A rank fitted to the held-out trace
+itself would remove 27.81% of jobs at these same quotas and prefix.
+The bound uses routing observations gathered after the request. The training rank earns a small live layout check.
+Clean model throughput and performance across tasks need separate results.
+
+An offline capacity check on the training trace preserves the stock rank
+and adds 12 slots per layer. The total grows from 1,256 to 1,832 slots.
+The added expert payload would occupy 1,124 MiB and reduce observed
+CPU jobs by 3.2% under the existing per-layer rule. Use the same-capacity
+rank check first and continue the CPU Gate/Up work. Device admission
+and throughput need separate measurements.
 
 The closed training capture under `dflash2-long-routing-train-v1/0` has
 73 disposable files totaling 33,429,802 bytes, with inventory SHA-256
