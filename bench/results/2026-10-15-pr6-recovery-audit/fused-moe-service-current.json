@@ -666445,10 +666445,151 @@
         "bench/sycl/dflash2_v2_commit_order.py": "e5b586d5770303be81ba1094c485c63282fd79fdd98922e27791ae68912ca3cf"
       }
     },
-    "stage": "prepared",
-    "complete": false,
-    "passed": false,
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
-    "active": false
+    "active": false,
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "requests": [
+        {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        },
+        {
+          "prompt": 262136,
+          "rejected": true,
+          "expected": "ERR prompt (262136 tokens) + max_new (1) exceeds the context (262144)"
+        },
+        {
+          "prompt": 262135,
+          "generated": 1,
+          "output_sha256": "4c9f01ba9b7eeea9900cd9cbab1fcf8abba5eca628cf63960aec216e83a4b107",
+          "accepted": 0,
+          "offered": 0,
+          "finish": "length",
+          "prefill_last": 262134
+        },
+        {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        }
+      ],
+      "info": {
+        "context": "262144",
+        "spec": "4",
+        "kv": "int8",
+        "kv_resident": "20480",
+        "expert_slots": "1256"
+      },
+      "native_exit_code": 0,
+      "native_identity": {
+        "pid": 522711,
+        "start_ticks": 387782097
+      },
+      "validation": {
+        "pid": 522711,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "state": {
+        "L": "262135",
+        "gdn": "24b9f440707a4797",
+        "ple": "33bf5e79ce2eaee3",
+        "tail": "8178fb8b3d4eac02",
+        "pooled": "2daa685d51b3c3aa",
+        "kv": "cf0a34cc8170d1a0",
+        "mtp": "14650fb0739d0383",
+        "stale": "00519e6a2876d583",
+        "dead": "4e1c44a7ab8a18f8",
+        "pooled_full": "c8ebb2a0a83e71f9",
+        "ple_prev": "248068,198"
+      },
+      "short_states": [
+        {
+          "L": "114",
+          "gdn": "4f5ea7ff8b50a528",
+          "ple": "658c6b4cf144dfa8",
+          "tail": "60845c54dfa17711",
+          "pooled": "cd5a74ed9881eb7e",
+          "kv": "928417f78152ab15",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        },
+        {
+          "L": "114",
+          "gdn": "4f5ea7ff8b50a528",
+          "ple": "658c6b4cf144dfa8",
+          "tail": "60845c54dfa17711",
+          "pooled": "cd5a74ed9881eb7e",
+          "kv": "928417f78152ab15",
+          "mtp": "14650fb0739d0383",
+          "ple_prev": "2790,1518"
+        }
+      ],
+      "fallback": {
+        "requested_window": "16",
+        "relocated_requested": "0",
+        "relocated_active": "0",
+        "effective_window": "10",
+        "extra_bytes": "0",
+        "admission": "ordinary_fallback",
+        "decode_changed": "0"
+      },
+      "execution_window": {
+        "requested_mode": "16",
+        "effective_mode": "10",
+        "maximum_rows": "81920",
+        "mixed_fp16_bytes": "0"
+      },
+      "kv": {
+        "reloaded_pages": 3047424,
+        "reused_pages": 9142272,
+        "prefix_H2D_calls": 372,
+        "mirror_D2H_calls": 1632,
+        "mirror_D2H_bytes": 3321762048,
+        "requested_prefix_H2D_bytes": 12872318976
+      },
+      "physical_prefix_rows": 262134,
+      "device_residual_rows": 81920,
+      "host_residual_rows": 180214,
+      "fallback_bank_bytes": 1363148800,
+      "allocation_limit_bytes": 10132807680,
+      "attention_store": {
+        "requested": "1",
+        "pieces": "480",
+        "direct": "480",
+        "requested_D2D_bytes": "0"
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    }
   }
 }
