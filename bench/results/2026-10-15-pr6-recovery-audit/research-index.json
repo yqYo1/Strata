@@ -40524,5 +40524,43 @@
     "classification": "knowledge_collection",
     "finding": "The references are primary vendor documentation and repositories; NVIDIA's guide is used for method analogy, not Xe2 metric names or ceilings. Current requested H2D and logical-copy totals are not measured PCIe or DRAM traffic. Xe2 tool/metric availability and permissions remain unknown, as do per-kernel versus global scope, XMX normalization and denominator, and whether L3/GTI values are bytes or rates with which interval.",
     "consumer": "Retrieve when the confirmed fast route still has reproducible per-stage device time after host and queue gaps are accounted for. Check actual Xe2 metric availability, units, XMX normalization and per-kernel scope before planning a hardware limit comparison."
+  },
+  "dflash2-mode16-attribution-observer-admission-20261124": {
+    "source_commit": "9a65d9caffe58dd2a97bfd81946e91a2663c6797",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-mode16-attribution-observer-admission-20261124/report.md",
+    "report_sha256": "3846ee95fbf0bcd81914ffe0f6ed4c2d08af7b164516d38bc7219fae266d6a27",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-mode16-observer-and-length-model-20261124-native-review/review.json",
+    "review_sha256": "8e66eb38003857d6c9483cb89c63b3ed4b95ad4a933dc3e8d065010b70c3c2eb",
+    "stage": "native_review_rejected",
+    "worker": "Orca gpt-6-luna medium, task_36f023457669, ctx_ec2b9dd07f0e",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "Hash matches. Split-accumulator mode16 rejects command profiling: “command-service observer is not yet qualified”; this is distinct from `STRATA_TRACE`. Coarse clocks keep broad stage/submit/drain and batch/request boundaries. Bounded UnitTrace adds host/runtime/kernel/copy activity, not app job-ID joins or saturation proof. PTI lists B-series XVE/XMX/memory metrics; live provider groups, per-kernel support, units and normalization remain unverified. Proposed controller hardcodes 117489, so no 122881 discrimination as stated",
+    "consumer": "Reject the suggested controller because it is pinned to 117489. The verified bank32 122881 copy admission at bb974ff52 already has 15 full GPU chunks, checked allocation and the first verifier at [122880,1]. Use a fresh exact-122881 observer bracket with a real provider/closure check. Main’s actual retained indexed collector and 84 runtime provider hashes match the older positive probe on this boot."
+  },
+  "phase-aware-prefill-scaling-and-holdouts-20261124": {
+    "source_commit": "9a65d9caffe58dd2a97bfd81946e91a2663c6797",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/phase-aware-prefill-scaling-and-holdouts-20261124/report.md",
+    "report_sha256": "ab21ab9f470f105acf677de7dc7230789bb804521cadae2997bdace96efb2681",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-mode16-observer-and-length-model-20261124-native-review/review.json",
+    "review_sha256": "8e66eb38003857d6c9483cb89c63b3ed4b95ad4a933dc3e8d065010b70c3c2eb",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_84d69f252269, ctx_05268d454012",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Hash matches. Route/state-stratified fits, separate startup/transition/warm strata and a held-out retrieval trigger are a useful local increment; no global curve is selected from adjacent lengths. Sarathi, NASA and Khronos support the method claims. The NVIDIA citation supports synchronization sensitivity, but its cited capture example sets `--warmUp=0` and does not prescribe warm-up.",
+    "consumer": "Retrieve for a closed same-route length sweep with a predeclared held-out length and independent-process first-use and subsequent samples. Examine residuals and held-out predictions before selecting a route-specific model."
   }
 }
