@@ -64,13 +64,17 @@ def baseline(role):
 
 def configuration(row, plan):
     cfg = confidence.configuration(row, dict(plan, arm='threshold'))
-    option = ('--dump-routing', str(Path(plan['root']) / ROUTING_FILE))
-    args = [*cfg['args'], *option]
-    out = dict(cfg, args=args, user_args=[*cfg['user_args'], *option])
-    require(cfg['args'].count('--dump-routing') == 0 and cfg['args'][cfg['args'].index('--draft-conf') + 1] == '0.6'
-            and model.server.engine_args(out, exe=out['exe'], announce=False) == args,
+    option = ['--dump-routing', str(Path(plan['root']) / ROUTING_FILE)]
+    out = dict(cfg, user_args=[*cfg['user_args'], *option])
+    resolved = model.server.engine_args(out, exe=out['exe'], announce=False)
+    require('--dump-routing' not in cfg['args'] and resolved.count('--dump-routing') == 1,
+            'expected one new routing argument')
+    offset = resolved.index('--dump-routing')
+    require(resolved[offset:offset + 2] == option
+            and resolved[:offset] + resolved[offset + 2:] == cfg['args']
+            and resolved[resolved.index('--draft-conf') + 1] == '0.6',
             'routing must be the only native argument added to the measured default')
-    return out
+    return dict(out, args=resolved)
 
 
 def environment(row, plan):

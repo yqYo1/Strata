@@ -10827,6 +10827,13 @@ and logical blob visits at the fixed cache size. Keep the first 132 slot
 identities fixed in the first placement trial and verify actual cache
 boundaries, prefill clocks and sustained TG separately.
 
+The long capture uses the same official suite with independent code training
+and prose held-out processes. Preparation at `89114d565` stops before a
+native launch because the resolver inserts the recorder flag before the
+DFlash2 arguments. Bind the resolved order and require the remaining argv
+to match the measured stock configuration exactly. Retire that attempt's
+empty `dflash2-long-routing-train-v1/0/{cache,tmp}` staging directories.
+
 The private-output retirement covers the following closed case paths relative
 to the project tuning state directory. The inventory SHA-256 covers sorted
 relative paths, byte lengths and content hashes. The committed comparison
