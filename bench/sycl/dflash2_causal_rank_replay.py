@@ -1,0 +1,206 @@
+"""Score early-routing-only expert placements on the unchanged suffix of a closed trace."""
+
+from collections import Counter
+from hashlib import sha256
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+sys.dont_write_bytecode = True
+import dflash2_expert_rank_forecast as forecast
+
+bank, capture, route, census = forecast.bank, forecast.capture, forecast.routing, forecast.census
+require = forecast.require
+HOLDOUT_COMMIT = 'b28a9372bc1943812a87d170402435cc1c7425f0'
+SCORE_COMMIT = '20a14c34c388b4ba9612e73c21f36407cc29db08'
+HORIZONS = (64, 256, 1024)
+SWAP_LIMITS = (32, 96, 256)
+COPY_GBS = (6.292, 6.485)
+
+
+def digest(data):
+    return sha256(data).hexdigest()
+
+
+def scan_intervals(path, widths, boundaries):
+    """Split validated verifier windows into adjacent intervals."""
+    histograms = [Counter() for _ in range(48)]
+    intervals = []
+    with path.open('rb') as stream:
+        size = stream.seek(0, 2)
+        start = size - sum(widths) * len(histograms) * route.ROUTE_ROW.size
+        require(start >= 0 and start % route.ROUTE_ROW.size == 0, 'trace does not contain the verified suffix')
+        stream.seek(start)
+        for i, width in enumerate(widths, 1):
+            for layer, hist in enumerate(histograms):
+                counts = Counter()
+                for _ in range(width):
+                    row = stream.read(route.ROUTE_ROW.size)
+                    actual, k, *ids, weights = route.ROUTE_ROW.unpack(row)
+                    require(actual == layer and k == 10 and weights == route.ZERO_WEIGHTS
+                            and len(set(ids)) == k and all(0 <= e < 512 for e in ids),
+                            'unexpected verifier routing row')
+                    counts.update(ids)
+                hist.update(counts.items())
+            if i in boundaries:
+                intervals.append(histograms)
+                histograms = [Counter() for _ in range(48)]
+        require(stream.tell() == size and not stream.read(1), 'unexpected routing suffix')
+    require(len(intervals) == len(boundaries), 'missing interval boundary')
+    return intervals
+
+
+def as_usage(slices):
+    usage = []
+    for layer in range(48):
+        visits = Counter()
+        for segment in slices:
+            visits.update(segment[layer])
+        rows = {}
+        for (expert, nt), count in visits.items():
+            rows.setdefault(expert, [0] * 4)[nt - 1] = count
+        usage.extend((layer, e, hits) for e, hits in sorted(rows.items()))
+    return usage
+
+
+def physical_slots(rank):
+    return [[(layer, expert) for expert in experts[:cap]]
+            for layer, (experts, cap) in enumerate(zip(forecast.by_layer(rank), forecast.CAPACITY, strict=True))]
+
+
+def transition(before, after, formats):
+    newly_admitted = changed_slots = new_payload = moved_payload = 0
+    for stock, trained, (_, _, bytes_per_slot) in zip(physical_slots(before), physical_slots(after), formats, strict=True):
+        new = len(set(trained) - set(stock))
+        changed = sum(a != b for a, b in zip(stock, trained, strict=True))
+        newly_admitted += new
+        changed_slots += changed
+        new_payload += new * bytes_per_slot
+        moved_payload += changed * bytes_per_slot
+    require(newly_admitted <= changed_slots <= forecast.CACHE_SLOTS - forecast.PREFIX,
+            'swap changes the protected cache prefix')
+    return dict(new_members=newly_admitted, changed_slots=changed_slots, new_payload_bytes=new_payload,
+                ordered_slot_payload_bytes=moved_payload,
+                new_payload_service_s_at_reference=[new_payload / (g*1e9) for g in reversed(COPY_GBS)])
+
+
+def limited_rank(stock_rank, early_usage, limit, *, rows=False, minimum_gain=1):
+    """Choose up to limit row exchanges using only observed early job counts."""
+    visits = {(l, e): sum((i+1 if rows else 1)*n for i, n in enumerate(counts))
+              for l, e, counts in early_usage}
+    layer_ranks = forecast.by_layer(stock_rank)
+    exchanges, offset = [], 0
+    for layer, (rank, cap) in enumerate(zip(layer_ranks, forecast.CAPACITY, strict=True)):
+        locked = min(cap, max(0, forecast.PREFIX - offset))
+        offset += cap
+        score = lambda expert: visits.get((layer, expert), 0)
+        victims = sorted(range(locked, cap), key=lambda slot: score(rank[slot]))
+        proposals = sorted(rank[cap:], key=score, reverse=True)
+        for slot, expert in zip(victims, proposals):
+            gain = score(expert) - score(rank[slot])
+            if gain < minimum_gain:
+                break
+            exchanges.append((-gain, layer, slot, expert))
+    changed = {}
+    for _, layer, slot, expert in sorted(exchanges)[:limit]:
+        admitted = changed.setdefault(str(layer), layer_ranks[layer][:forecast.CAPACITY[layer]])
+        admitted[slot] = expert
+    return forecast.apply_delta(stock_rank, changed)
+
+
+def main():
+    key = capture.experiment('holdout').KEY
+    original = bank.previous.historic(HOLDOUT_COMMIT, key)
+    score = bank.previous.historic(SCORE_COMMIT, forecast.KEY)
+    require(original['stage'] == 'closed' and original['passed'] and original['complete']
+            and original['ownership_closed'] and not original['active'], 'require a closed qualified routing capture')
+    process, = original['processes']
+    require(process['native_exit_code'] == 0 and process['ownership_closed'] and process['fresh_faults'] == [],
+            'held-out owner or device outcome differs')
+    require(score['holdout']['candidate_freeze'] == original['rank_candidate_freeze'],
+            'held-out placement plan differs')
+    role = capture.experiment('holdout')
+    raw = bank.previous.read(role.ROOT / 'record.json')
+    require(role.compact(raw) == original, 'original capture receipt differs')
+    root = Path(original['plans'][0]['root'])
+    exit_record = bank.previous.read(root / 'engine-exit.json')
+    require(exit_record['exit_code'] == 0, 'original native exit differs')
+    execution = bank.previous.read(root / 'execution.json')
+    require(not execution['active'], 'capture owner is still active')
+    sid = str(process['native_identity']['sid'])
+    members = subprocess.run(['ps', '-o', 'pid=', '--sid', sid], capture_output=True, timeout=15)
+    require(members.returncode == 1 and not members.stdout.strip(), 'original native session is still present')
+    log = (root / 'engine.stderr').read_bytes()
+    samples = process['evidence']['samples']
+    require(samples[-1]['request_sha256'] == score['holdout']['request_sha256'], 'held-out body differs')
+    text = log.decode()
+    native, _ = capture.leaves.leaf_reader.evidence(text, samples, 4, False)
+    bindings, widths = capture.census_inputs(text, samples, native)
+    metadata = original['routing_metadata']
+    for key in ('profile','manifest'):
+        require(bank.sha(metadata[key]) == metadata[key+'_sha256'], 'profile or expert manifest differs')
+    stock_profile = metadata['profile']
+    stock_rank = forecast.make_profile.read_profile(stock_profile)
+    base = census.expected_membership(stock_profile)
+    formats = census.manifest_formats(metadata['manifest'])
+    counted = census.extract(text, bindings, formats, base)[-1]
+    trace = root / capture.ROUTING_FILE
+    validated = process['routes']
+    require(trace.stat().st_size == validated['routing_bytes'] and bank.sha(trace) == validated['routing_sha256'],
+            'original raw trace identity differs')
+    require(len(widths) == validated['windows'] == counted['windows'] and sum(widths) == counted['rows'],
+            'number of recorded verifier rows or windows differs')
+    whole = route.verifier_routing_usage(trace, widths, counted, formats, base,
+                                      max_bytes=original['budgets']['file_cap'])
+    recorded = json.loads(Path(validated['usage_file']).read_bytes())['usage']
+    require([[l, e, c] for l, e, c in whole] == recorded
+            and bank.sha(validated['usage_file']) == validated['usage_sha256'], 'verified expert counts differ')
+    require(all(n < len(widths) for n in HORIZONS), 'no held-out suffix after an early interval')
+    intervals = scan_intervals(trace, widths, (*HORIZONS, len(widths)))
+    require(as_usage(intervals) == whole, 'the intervals do not conserve full-trace counts')
+    trained = forecast.apply_delta(stock_rank, score['profile']['profile_delta'])
+    headers = list(re.finditer(capture.footer.HEADER, text, re.M))
+    frame = text[headers[-2].end():headers[-1].start()]
+    positions = [(int(p), int(w)) for p, w in re.findall(r'^strata trace: window (\d+) (\d+)$', frame, re.M)]
+    require([w for _, w in positions] == widths and positions[0][0] == samples[-1]['read_tokens']-1,
+            'late score must use the final fresh request windows')
+    summary = []
+    for i, h in enumerate(HORIZONS, 1):
+        past, future = as_usage(intervals[:i]), as_usage(intervals[i:])
+        policy = route.rank_by_verifier_jobs(stock_rank, [past], cache_slots=forecast.CACHE_SLOTS,
+                                             protected_prefix=forecast.PREFIX)
+        control, candidate, code_candidate = [route.projected_cpu_expert_work(future, m, formats)
+                  for m in (base, forecast.membership(policy), forecast.membership(trained))]
+        change = transition(stock_rank, policy, formats)
+        capped_candidates = []
+        for limit in SWAP_LIMITS:
+            rank = limited_rank(stock_rank, past, limit)
+            moved = transition(stock_rank, rank, formats)
+            require(moved['changed_slots'] == moved['new_members'] <= limit,
+                    'bounded swap moves an already resident slot')
+            work = route.projected_cpu_expert_work(future, forecast.membership(rank), formats)
+            capped_candidates.append(dict(max_swaps=limit, work=work, transition=moved,
+                                          jobs_removed=control['cpu_jobs']-work['cpu_jobs']))
+        metric_pair = []
+        if h == 256:
+            for metric in ('unique-jobs', 'routed-rows'):
+                for limit in (96, 256):
+                    rank = limited_rank(stock_rank, past, limit, rows=(metric == 'routed-rows'), minimum_gain=2)
+                    work = route.projected_cpu_expert_work(future, forecast.membership(rank), formats)
+                    metric_pair.append(dict(metric=metric, limit=limit, minimum_gain=2, work=work,
+                                            transition=transition(stock_rank, rank, formats)))
+        summary.append(dict(early_windows=h, remaining_windows=len(widths)-h, early_rows=sum(widths[:h]),
+            early_output_tokens=positions[h][0] - positions[0][0],
+            stock=control, early_policy=candidate, code_trained=code_candidate, transition=change,
+            capped_candidates=capped_candidates, matched_rank_metric=metric_pair))
+    print(json.dumps(dict(only_existing_trace=True, record_commit=HOLDOUT_COMMIT, score_commit=SCORE_COMMIT,
+        native_source=original['native_source_commit'], native_sha256=original['binary']['sha256'],
+        trace_sha256=validated['routing_sha256'],
+        stderr_sha256=digest(log), horizons=HORIZONS, input=samples[-1]['read_tokens'], output=samples[-1]['generated_tokens'],
+        evaluated=summary),indent=2))
+
+
+if __name__ == '__main__':
+    main()
