@@ -10693,11 +10693,13 @@ DFlash2 runs, starting with the launch configuration and a bounded model check.
 
 The V2 split route previously exceeded 1000 tok/s at 117489 tokens with MTP.
 [The DFlash2 split admission](../bench/sycl/dflash2_v2_split_admission.py)
-reuses that engine and prefill placement. It checks 90114 and 117489 inputs
-in fresh processes, including all-GPU BF16 residuals, the checked accumulator
-tail, batched expert uploads, cache refill and actual DFlash2 verifier
-commits. The short request before and after each long request checks the
-decode handoff. A passing traced check permits a separate clean timing plan.
+passes on that same engine at 90114 and 117489 fresh inputs. Each long
+request keeps every BF16 residual row in VRAM with the 128-slot bank,
+checks the accumulator tail and restores all 1124 loaned expert slots.
+Both processes capture 2046 DFlash2 tap rows and generate 32 tokens with
+23 of 25 offers accepted. The short requests before and after match their
+output and active state. Both processes exit normally with no fresh Xe fault.
+Use the guarded 117489-token route for a separate clean `bench.sh` comparison.
 
 The traces use synthetic prefixes. The first clean synchronized `bench.sh`
 suite `dflash2_v2_generation_sync_v1` then completes all six agent turns.
