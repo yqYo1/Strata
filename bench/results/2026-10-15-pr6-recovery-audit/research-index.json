@@ -40600,5 +40600,43 @@
     "classification": "decision_support",
     "finding": "Hashes and protected inputs match. The report correctly locates the dossier as a diagnostic subset, preserving default and split behavior. But `expected_mtp: weak` is metadata: generic eligibility requires valid counters and at least 256 offers, while the classifier only reads the existing pair. The timed dossier checks counts but does not tie `request_sha256` to the preflight `body_sha256`.",
     "consumer": "The revised draft keeps default and split modes and checks the exact timed-body digest against count preflight. Its per-request weak flag requires eligibility and at most 40 percent accepted. Host-check selection, hashes, nonselected workloads and high acceptance before three independent native requests when the first screen qualifies. Revised patch SHA-256 a358827857ab699bd9ac5918bf0ea7eec747144518a6c87d41c4d7521cbd5f6b."
+  },
+  "dflash2-hybrid-decode-traffic-bound-and-batching-20261124": {
+    "source_commit": "971f583fc17b77d33c19e3468b146d1e9eafc747",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-hybrid-decode-traffic-bound-and-batching-20261124/report.md",
+    "report_sha256": "b67bffb79830ecb2fcb25ff809ac92c920fe0d1ee95898d341efc05d1e604932",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-decode-traffic-and-launch-overhead-20261124-native-review/review.json",
+    "review_sha256": "b18e298b96b0201de77f8ef8bec8ec142c42e18e4f9d52a4b0c52a232ff4b19b",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_e44f3e38285a, ctx_8300bc3674fd",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "Caller and completion intervals do not establish useful CPU worker service or memory bandwidth. The estimated logical bytes lack a selected expert ID/format ledger. Batching needs measured cross-row reuse. GPU residency needs reuse value and live capacity.",
+    "consumer": "Use the already planned same-work CPU worker and caller clocks. If the measured format/width groups cannot establish coalescible reuse, add a separate per-layer expert-ID census before choosing a batching or GPU placement change."
+  },
+  "dynamic-shape-launch-overhead-methods-20261124": {
+    "source_commit": "971f583fc17b77d33c19e3468b146d1e9eafc747",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dynamic-shape-launch-overhead-methods-20261124/report.md",
+    "report_sha256": "4b69f623e840bca8eb88ff0c575bd03fab00a49616ceab6b14578dec1ddce988",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-decode-traffic-and-launch-overhead-20261124-native-review/review.json",
+    "review_sha256": "b18e298b96b0201de77f8ef8bec8ec142c42e18e4f9d52a4b0c52a232ff4b19b",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_95278280423b, ctx_88ef07aaa49b",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "Strong alternatives analysis covers lifetimes, stable addresses, shape tails, cancellation, dispatch and compilation tradeoffs, and measures that separate host submission from copy or device idle. Primary sources and license/provenance support retrieval.",
+    "consumer": "Retrieve after an admitted exact-122881 window has a qualified observer and still shows host submission gaps or ready-device idle/tail gaps after copy and dependency time are separated."
   }
 }
