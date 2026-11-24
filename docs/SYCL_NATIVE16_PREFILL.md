@@ -10734,6 +10734,27 @@ completion waits separately to locate the cost. The two further clean
 processes remain pending. Use a synthetic multi-source methods dossier for
 the next weak-acceptance screen.
 
+The matched code-only clock bracket at `e26315def2` gives 12.222 and
+11.349 clean tok/s on the older V2 native source `59411e1de2`. Its observed
+4,111 output tokens occupy 1,345 verifier windows. The CPU-pool caller
+interval averages 110.29 ms/window and GPU completion waits 106.11 ms/window.
+With the same yield and interval durations, a model that overlaps them
+perfectly and charges zero other work reaches 27.71 tok/s. Reaching
+70 tok/s at that yield allows 43.66 ms/window for the entire decode path.
+Use these conditional figures to prioritize reducing service times or
+increasing useful verification yield as well as overlap. They do not
+establish worker utilization or a hardware throughput ceiling.
+
+Both retained V2 and DFlash2 KV-stage recipes compile
+`STRATA_CPU_SERVICE_PROFILE`. The measured bracket kept per-worker and
+job-census observers disabled. Check the bindings for adaptive widths
+one through four, unique CPU jobs, actual fixed cache membership and
+overhead before selecting a CPU leaf change. Reuse the existing versioned
+worker records to distinguish GU, hidden quantization and Down service.
+Keep overlapping worker CPU totals separate from caller-wall intervals.
+The long code result holds the benchmark body and acceptance class fixed;
+qualify the strong and weak workloads and current decoder on later engines.
+
 #### DFlash2 KV stage retention outside the tap layers
 
 Candidate source `44a2926a6` uses a typed DFlash2 observer with the same five
