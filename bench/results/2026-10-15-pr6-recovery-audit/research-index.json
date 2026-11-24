@@ -39925,5 +39925,49 @@
     "retirement": {
       "shared_record": "cross-device-completion-wait-20261124"
     }
+  },
+  "decode-exact-vocab-bounds-20261124": {
+    "classification": "knowledge_collection",
+    "stage": "native_reviewed_conditional_reference",
+    "schedulable_now": false,
+    "source_commit": "37be0142551cac4d78f444b0493c9e3c4c3ee859",
+    "native_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
+    "source_manifest_sha256": "373473e67a76397e1c1f23aca54e9f1e3e3e9b5881142d0bfadb818b85ef2505",
+    "task": "task_769db47d6d19",
+    "dispatch": "ctx_2c5e11cbda62",
+    "worker": "Orca gpt-6-luna medium",
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "owners_closed": true,
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/decode-exact-vocab-bounds-20261124/report.md",
+    "report_sha256": "132cf58d3beec48cfaa3f585099f32ba4fb06061e66a7db5fe3c307a425020e6",
+    "report_bytes": 10019,
+    "reviewer": "Native Codex gpt-6-luna max",
+    "first_review": {
+      "result": "wall timeout",
+      "exit_code": 143
+    },
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/decode-exact-vocab-bounds-20261124-native-review-bounded/review.json",
+    "review_sha256": "262e0779ea9d8e6aaa85922a1f12c199f789ffa57161505d8a6284cd76f2760f",
+    "review_classification": "decision_support",
+    "related": "exact_head_selection_collection_20261105",
+    "finding": "Useful novelty: exact greedy pruning of the target verifier’s Q6_K/Q8_1 vocabulary head, distinct from DFlash2 drafter-head work. It identifies tiled dense reduction as the exact comparison when pruning coverage is weak. The bounds and speed benefit remain conditional, not locally proven.",
+    "correction": "Treat a bound as valid only if it encloses the actual quantized-row scores and FP32 arithmetic, including scale and rounding effects. Confirm the existing reduction’s tie semantics before using token IDs to break ties. If certification fails, disable pruning and use the full exact reduction; inconclusive groups must be scored exactly. The report has no local sampler/kernel proof or Arc performance evidence.",
+    "consumer": "Retrieve for a greedy target-verifier head optimization. Pair with exact_head_selection_collection_20261105; require source-confirmed arithmetic and tie behavior, then compare the full T=4 production path against certified pruning and tiled dense reduction.",
+    "retirement": {
+      "reason": "Closed transaction receipts and duplicate Git source views. The report and reviewed digest remain.",
+      "paths": [
+        "research/decode-exact-vocab-bounds-20261124-control",
+        "research-inputs/decode-exact-vocab-bounds-20261124",
+        "review/decode-exact-vocab-bounds-20261124-native-review",
+        "review/decode-exact-vocab-bounds-20261124-native-review-bounded/prompt.txt",
+        "review/decode-exact-vocab-bounds-20261124-native-review-bounded/stderr",
+        "research/decode-exact-vocab-bounds-20261124/worker-orca-ipc.json",
+        "research/decode-exact-vocab-bounds-20261124/worker-filesystem-proof.json"
+      ],
+      "files": 29,
+      "bytes": 4517676,
+      "inventory_sha256": "30412f2a8174d2f9e2ca2a1dd48224901ea337224492d3dda8d9d16696fecb36"
+    }
   }
 }
