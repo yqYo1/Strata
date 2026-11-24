@@ -8021,6 +8021,15 @@ the actual cache reuse are open. The worker clock comparison checks its
 observed format and width counts against the exact manifest before comparing
 logical weight visits with and without grouping.
 
+The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
+and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
+native 256-byte slot alignment give 2,575,206,400 bytes for 26 slots in
+each of 47 layers and 34 in the last. The same number at the maximum blob
+size would occupy 3,343,974,400 bytes. That 768,768,000-byte reduction is
+already reflected in the current allocation. Replay alternate cache quotas
+against the packed budget and actual unique expert jobs. Include the
+existing 1,124-slot prompt loan in the placement and restore comparison.
+
 The earlier source-matched decode-resource comparison reused the429b
 engine's profile-ON build and existing leaf,census and disjoint caller
 observers. It kept CPU leaf sums,caller regions,nested wait CPU and draft
