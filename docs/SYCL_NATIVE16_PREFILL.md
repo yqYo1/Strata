@@ -11014,28 +11014,31 @@ for each request. Compare prompt time, client TTFT, requested bytes and
 the 1,000 tok/s target separately. Keep sustained decode, task,
 physical context and RESTORE qualification separate from that screen.
 
-The first clean pair completes all six exact requests and closes both
-owners without a fresh Xe fault. First-use prefill is 144.425 and
-134.971 seconds. Warmed prefill is 133.138 and 122.529 seconds, or
-892.197 and 969.443 tok/s. Warmed client TTFT is 133.370 and
-122.760 seconds. Requests match KV and emitted verifier work. The
-wider arm saves 16.736 to 16.843 GB of requested expert H2D per prompt,
-and both arms request 116.769 GB of attention-output copies per prompt.
-Fusion covers more rows in each prompt. The first has 49,927,500 versus 52,814,590
-fused GU and Down rows. Attribute the speed change to the measured
-window policy as a whole. The remaining repetitions determine eligibility.
+The six independent processes close normally without new Xe faults. The
+paired requests match body hashes, counted tokens, retained KV and emitted
+verifier work. The final process passes the full model-asset recheck. All 18
+requests are retained in the compact result. The
+three paired warmed rates are 892.197, 901.605, 896.957 tok/s for mode10
+and 969.443, 955.795, 972.635 tok/s for mode16. The median improves from
+896.957 to 969.443 tok/s (+8.08%). Warmed client TTFT changes from
+132.734 to 122.760 seconds. The predeclared repeated warmed-gain screen
+passes. All three mode16 process medians remain below 1,000 tok/s. Separate
+first-use samples and the per-request routes are preserved in
+`dflash2_prefill_window_speed_v1`.
 
-The reversed-order pair closes six more requests with matched KV and
-verifier work, normal exits and no fresh Xe faults. Warmed prefill rises
-from 901.605 to 955.795 tok/s. Warmed client TTFT changes from
-131.988 to 124.536 seconds. Expert transfer savings reproduce
-for all three prompts. The third pair completes the declared screen.
+The larger window reduces the total from 96 to 48 across 48 MoE layers.
+Mode16 removes 16.737 to 16.843 GB of requested expert H2D per request. For
+the first body, fused GU and Down cover 49,927,500 versus 52,814,590 rows.
+Both arms request 116.769 GB of
+attention-output copies. Measure the writer change separately. Mode16
+qualification still needs sustained decode, task/agent, physical context
+and live RESTORE checks.
 
-All six measured mode16 prompts have one upload per dequantization
+All nine measured mode16 prompts have one upload per dequantization
 and zero permanent slot hits. The warm minimum free query is
-4,239,462,400 bytes. Reducing the staged bank from 128 to 32 slots
+4,239,458,304 bytes. Reducing the staged bank from 128 to 32 slots
 would free 255,590,400 bytes. The source layout for 126,977 input tokens
-and 32 slots estimates 67,996,672 free bytes beyond the same 512 MiB
+and 32 slots estimates 67,992,576 free bytes beyond the same 512 MiB
 reserve at that query, within the arena and single-allocation limits.
 Compare the bank size at fixed input extent before moving the boundary.
 
