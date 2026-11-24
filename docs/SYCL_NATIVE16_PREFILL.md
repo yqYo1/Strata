@@ -10989,6 +10989,30 @@ and cache reuse still need attribution. Continue work on CPU expert visits
 and verifier yield alongside the direct kernel comparison.
 [Continuous-read samples](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 
+The [committed-row replay](../bench/sycl/dflash2_window_group_replay.py)
+uses the qualified prose trace at `b28a9372b`. Its full 6,485-window
+audit reproduces 4,668,262 CPU jobs and 9,529,065,216,000 logical
+weight bytes. Advances between successive windows identify 11,779
+committed target rows before the terminal window. At their original
+boundaries the 5,250,789 CPU expert entries use 4,279,395 jobs and
+8,738,470,041,600 logical bytes. The replay keeps those same entries
+and resident slots while grouping contiguous rows. Each CPU job still
+handles at most four rows.
+
+| Rows per group | CPU jobs | Logical bytes | Reduction from committed baseline | Logical bandwidth at 70 committed rows/s |
+| --- | --- | --- | --- | --- |
+| 4 | 3,452,486 | 7,037,019,776,000 | 19.47% | 41.82 GB/s |
+| 8 | 2,969,486 | 6,052,126,387,200 | 30.74% | 35.97 GB/s |
+| 16 | 2,526,328 | 5,149,365,632,000 | 41.07% | 30.60 GB/s |
+
+These groups assume the recorded committed routes are available at
+batch formation. Use the result to prioritize measuring verifier yield,
+the native grouping geometry and CPU service at wider widths. Physical
+RAM traffic, achieved acceptance and end-to-end throughput require
+their own measurements. The full source and capture identifiers and
+the one-visit sensitivity calculation are in the committed replay
+result under `dflash2_committed_window_group_replay_v1`.
+
 The [confidence comparison](../bench/sycl/dflash2_decode_confidence.py)
 holds spec4 and placement fixed and changes only the draft threshold.
 

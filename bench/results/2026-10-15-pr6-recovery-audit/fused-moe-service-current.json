@@ -679244,5 +679244,62 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_committed_window_group_replay_v1": {
+    "stage": "closed",
+    "passed": true,
+    "native_executed": false,
+    "source_commit": "d6f2b82947018f85e8e6169bd2072fb076c03f19",
+    "sources": {
+      "bench/sycl/dflash2_expert_rank_forecast.py": "bb1412ca4ac3c293beaa8fce3b13e73807f331c7e5ff2699fff5d5a6b5c28140",
+      "bench/sycl/dflash2_long_routing.py": "e2996f2d57c844df5ba2be085353213982194032b4b613b589e4bcc9b6ea992a",
+      "bench/sycl/dflash2_long_routing_replay.py": "e19b0d8f5ee837df1d694c4e34086f1077841a9401ba810da0d68db21a126b22",
+      "tools/make_profile.py": "7afbd361e2afedcc1aa87a0e51b026a6177462c646901f9056a3f81f2224986d",
+      "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
+      "tools/sycl/dflash2_expert_routing.py": "c74a0fe6952310e98ce03d696a4de2dffd9c83cd762010fcfbc208c0f416a84f",
+      "bench/sycl/dflash2_window_group_replay.py": "f95d0c802348e550b27bf58c4869b9ac8ed0a9fac6ec93d2e44a9cffcd75c91e",
+      "bench/sycl/dflash2_causal_rank_replay.py": "24c93f0981f4fa6e3d6f069e9a932ba4b9d9c30adc107594fa3d6baaaf0e2962"
+    },
+    "trace_commit": "b28a9372bc1943812a87d170402435cc1c7425f0",
+    "trace_sha256": "08dce3920dea2de8752b16cbbbaddc07e9486515dfde39264c92fa116b27926f",
+    "input_tokens": 33287,
+    "original_output_tokens": 11783,
+    "original_windows": 6485,
+    "offered_target_rows": 13387,
+    "processed_committed_rows": 11779,
+    "original_offered": {
+      "cpu_jobs": 4668262,
+      "cpu_entries": 5982938,
+      "logical_job_blob_bytes": 9529065216000
+    },
+    "committed_in_original_windows": {
+      "cpu_jobs": 4279395,
+      "cpu_entries": 5250789,
+      "logical_job_blob_bytes": 8738470041600
+    },
+    "committed_tiles": {
+      "4": {
+        "jobs_nt4": 3452486,
+        "bytes_nt4": 7037019776000,
+        "jobs_once": 3452486,
+        "bytes_once": 7037019776000,
+        "entries": 5250789
+      },
+      "8": {
+        "jobs_nt4": 2969486,
+        "bytes_nt4": 6052126387200,
+        "jobs_once": 2764264,
+        "bytes_once": 5626203008000,
+        "entries": 5250789
+      },
+      "16": {
+        "jobs_nt4": 2526328,
+        "bytes_nt4": 5149365632000,
+        "jobs_once": 2133611,
+        "bytes_once": 4337169280000,
+        "entries": 5250789
+      }
+    },
+    "scope": "Logical visits on one recorded prose trace. Contiguous committed-row groups assume their routing is already known. The terminal window is excluded from all committed-row comparisons."
   }
 }
