@@ -10824,8 +10824,20 @@ The workers spend 156.1–156.2 CPU milliseconds per output. At the same
 six execution threads, the 70 tok/s budget allows 85.7 CPU milliseconds per
 output before considering GPU work. One native blob per logged CPU job
 covers 2,956,400,972,800 logical bytes per code request. This corresponds
-to 50.34 GB/s of logical visits at 70 tok/s. Physical traffic and resource
-saturation remain open. The [confidence comparison](../bench/sycl/dflash2_decode_confidence.py)
+to 50.34 GB/s of logical visits at 70 tok/s. Physical traffic and resource saturation remain open.
+
+The verified training histogram at `a52280ef7` and its stock residency
+reconstruct the exact CPU job totals by format and width in both observed
+worker-leaf processes. The IQ3_XXS Gate/Up format covers 17 layers and
+516,514 CPU jobs. Widths 1 through 4 contribute 415,143, 80,841, 16,819
+and 3,711 jobs. Width 1 is 80.37% of that format and 28.63% of all CPU jobs.
+It ranges from 15,958 to 35,706 jobs across those layers. The most frequent
+N1 bin alone, with IQ4_NL Down, uses 24.64–24.70 CPU ms per output. Use
+both observed Down layouts and the measured expert-access mix to select
+the scalar versus AVX2 grid-load comparison. Scope component timing to
+the paired N1 producer and require a separate production-dispatch check.
+
+The [confidence comparison](../bench/sycl/dflash2_decode_confidence.py)
 holds spec4 and placement fixed and changes only the draft threshold.
 
 All four clean processes close at `ce3ef1a3a` with 33,217 fresh input tokens
