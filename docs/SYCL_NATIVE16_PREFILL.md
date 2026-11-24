@@ -11141,6 +11141,18 @@ with each individual 1,000 tok/s decision. The existing 118,785-input
 entry point keeps its parameters. Both patches pass the application check.
 Commit the exact follow-up inputs after the current comparison closes.
 
+For a same-route attribution check, the retained indexed UnitTrace
+launcher and collector match the hashes in
+`cpu-profiler-current.json:unitrace_current_runtime_probe_v2`. The current
+build is on the same boot and driver and all 84 runtime provider hashes
+match that probe. The native projection and long request shape differ.
+The command-event observer refuses the relocated accumulator route.
+Qualify the external collector or the existing coarse clocks on the
+actual long route, with matched clean timings and bounded capture.
+Use the resulting service intervals to select a next measurement of
+hardware limits. Requested copy bytes and overlapping queue clocks leave
+physical PCIe, VRAM and arithmetic saturation open.
+
 The same-build admission in
 [dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
 closes on the 82 / 118,785 / 82 wire requests. The long request uses
