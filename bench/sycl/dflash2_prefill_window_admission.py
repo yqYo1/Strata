@@ -27,12 +27,12 @@ HEAD_DETACH = (f'strata prefill heads: target detached bytes={HEAD_BYTES} source
                f'D2H={HEAD_BYTES} H2D-on-restore={HEAD_BYTES}')
 
 
-def budget(mode):
+def budget(mode, *, slots=SLOTS):
     split_active = mode == 16
     maximum = ROWS if split_active else 81920
     scratch = workspace.workspace(maximum, split=split_active, relocated=split_active)
     prefix = ((ROWS + 3) // 4 * 4) * 2056 + 256
-    allocations = dict(bank=SLOTS * workspace.STRIDE, residual=ROWS * workspace.ROW,
+    allocations = dict(bank=slots * workspace.STRIDE, residual=ROWS * workspace.ROW,
                        prefix_and_status=prefix, relocated_owner=scratch['extra'])
     return dict(maximum_rows=maximum, windows=48 * ((ROWS + maximum - 1) // maximum),
                 extra_bytes=scratch['extra'], tail_bytes=scratch['tail_payload'],
@@ -101,8 +101,8 @@ def inputs(revision):
     return plan, envs, requests, reference
 
 
-def window_result(frame, mode, *, direct=False):
-    predicted = budget(mode)
+def window_result(frame, mode, *, direct=False, slots=SLOTS):
+    predicted = budget(mode, slots=slots)
     maximum = predicted['maximum_rows']
     wide = mode == 16
     admission = workspace.one(frame, 'strata MoE accumulator admission: ')
@@ -119,8 +119,8 @@ def window_result(frame, mode, *, direct=False):
             and int(admission['fixed_including_headroom_bytes']) == predicted['fixed_with_headroom'] <= free
             and predicted['shared_arena'] <= arena and predicted['largest_allocation'] <= limit
             and int(work['windows']) == predicted['windows'] and work['GPU_resident_windows_only'] == '1'
-            and bank_owner['requested_slots'] == bank_owner['effective_slots'] == str(SLOTS)
-            and bank_owner['staged'] == '1' and int(bank_owner['device_bytes']) == SLOTS * workspace.STRIDE
+            and bank_owner['requested_slots'] == bank_owner['effective_slots'] == str(slots)
+            and bank_owner['staged'] == '1' and int(bank_owner['device_bytes']) == slots * workspace.STRIDE
             and bank_owner['general_map'] == 'private_scratch_never_published',
             'window request did not admit the expected bank, memory bounds, or complete GPU windows')
     require(int(split_owner['rows']) == ROWS and split_owner['active'] == str(int(wide))
@@ -156,7 +156,7 @@ def window_result(frame, mode, *, direct=False):
                 maximum_rows=maximum)
 
 
-def inspect(log, plan, pid, arm, responses, *, direct=False):
+def inspect(log, plan, pid, arm, responses, *, direct=False, slots=SLOTS):
     proof = basis.validation.preload_evidence(log, pid)
     markers = list(re.finditer(r'^strata trace: request (\d+) 0$', log, re.M))
     require(proof['loader'] == plan['validation']['loader']['path']
@@ -170,7 +170,7 @@ def inspect(log, plan, pid, arm, responses, *, direct=False):
             and log.count('strata prefill heads: target detached ') == 1
             and 'strata prefill heads: draft detached ' not in log,
             'only the long request may detach the target head')
-    observed = window_result(middle, ARMS[arm], direct=direct)
+    observed = window_result(middle, ARMS[arm], direct=direct, slots=slots)
     kv = store.speed.KV.check_request(middle, 0, ROWS, store.CHUNK, reuse=True,
                                       tap_layers=store.gate.TAPPED_QSA_LAYERS)
     masked = workspace.records(middle, 'strata cache loan: phase=masked ')
