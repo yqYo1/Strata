@@ -10762,6 +10762,21 @@ path/size/content inventory SHA-256
 `89cd9466b0884bda5953526c3f7d5aa965d6b221f06a27278bbf930be6c31789`.
 The independent research inputs already hold their pinned source views.
 
+The coherent V2 build at `4ceaff174` checks 137 fresh objects and
+12 executables. Its host control passes at `6edb4d260`, and the two host
+protocol cases pass at `4f0b96218`. The first Arc run exits normally
+with no new Xe fault and restores 32,769 tokens before reading 8,209
+fresh tokens. The original gate at `817480a85` rejects the native log
+grammar. It looked for the extent directly before the parenthesis.
+The corrected reader at `5af5140cf` matches the emitted word `tokens`.
+Its replay of that same capture checks 465,624,576 target KV bytes across
+12 layers, 118,069,304 running-state bytes and the exact resumed extent.
+The DFlash2 tail covers 2,046 rows. The unaligned continuation reloads
+its KV stage and requests 934,382,592 prefix H2D bytes. Keep the first
+failure intact and repeat 32K with the corrected reader before the
+near-capacity continuation. Review the first raw capture after that
+fresh 32K outcome.
+
 The first corrected suite process `bdd9ff4ce` passes the route, ownership
 and output gates. It exits 0 with no fresh Xe fault. The sustained code
 request reads 33217 tokens and emits 4111 at PP 694.5 and TG 12.635 tok/s.

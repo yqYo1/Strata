@@ -674601,5 +674601,65 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_target_snapshot_restore_v1_parser_replay": {
+    "stage": "closed",
+    "replay_passed": true,
+    "gpu_launched_for_replay": false,
+    "original_gate_unchanged": true,
+    "parser_commit": "5af5140cf19eef2347f9c6a5a2f390731b874c19",
+    "original_failed_capture_commit": "817480a855126e56c8fda785d93b55fcf0778c01",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "native_sha256": "405bea1ac1628c88e78fea245350cd7ce2f0cab8a8a53b44262e483b8d5d5cf7",
+    "native_pid": 1221835,
+    "native_start_ticks": 389432676,
+    "raw_log_sha256": "d1a7fbac5b83c7fd779bb1acbe8204d4f06547376e61e6f80712a337bcc25fc4",
+    "restored_tokens": 32769,
+    "target_snapshot": {
+      "layer_count": 12,
+      "target_kv_bytes": 465624576,
+      "running_bytes": 118069304,
+      "draft_bytes": 0,
+      "target_kv_hash": "6b9444d9e9b8eee1",
+      "running_hash": "92e1c5e185456913"
+    },
+    "request_read_reused_and_taps": [
+      {
+        "prompt": 32769,
+        "read": 32769,
+        "reused": 0,
+        "tail_rows": 2046
+      },
+      {
+        "prompt": 33,
+        "read": 33,
+        "reused": 0,
+        "tail_rows": 32
+      },
+      {
+        "prompt": 40978,
+        "read": 8209,
+        "reused": 32769,
+        "tail_rows": 2046
+      }
+    ],
+    "continuation_copy": {
+      "pieces": 96,
+      "direct": 0,
+      "copy_bytes": 8068792320,
+      "gpu_rows": 8208,
+      "host_rows": 0,
+      "window_mode": 10,
+      "maximum_rows": 8208
+    },
+    "continuation_kv_stage": {
+      "reloaded_pages": 221208,
+      "reused_pages": 0,
+      "prefix_H2D_calls": 96,
+      "mirror_D2H_calls": 480,
+      "mirror_D2H_bytes": 104011776,
+      "requested_prefix_H2D_bytes": 934382592
+    },
+    "qualification": "Same closed V1 capture. Checks byte roundtrip, real reuse and resumed extent. V2 fresh 32K and near-capacity cases remain required."
   }
 }
