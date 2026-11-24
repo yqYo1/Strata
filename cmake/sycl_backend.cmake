@@ -37,6 +37,21 @@ target_link_libraries(sycl_transfer_ceiling PRIVATE strata_sycl_runtime)
 target_compile_features(sycl_transfer_ceiling PRIVATE cxx_std_17)
 
 target_include_directories(strata_sycl_runtime PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/include/strata/sycl/compat)
+
+if(STRATA_BUILD_CONVERSATION_TESTS)
+  add_executable(sycl_conversation_transfer_test
+    src/core/conversation_validation_test.cpp
+    src/core/conversation_state.cpp
+    src/core/conversation_snapshot.cpp)
+  target_include_directories(sycl_conversation_transfer_test PRIVATE include include/strata/sycl/compat)
+  target_compile_features(sycl_conversation_transfer_test PRIVATE cxx_std_20)
+  target_compile_definitions(sycl_conversation_transfer_test PRIVATE
+    STRATA_ENABLE_SYCL=1 CONVERSATION_TEST_TRANSFERS=1)
+  target_compile_options(sycl_conversation_transfer_test PRIVATE -fsycl)
+  target_link_options(sycl_conversation_transfer_test PRIVATE -fsycl)
+  add_test(NAME sycl_conversation_transfer_test COMMAND sycl_conversation_transfer_test)
+  set_tests_properties(sycl_conversation_transfer_test PROPERTIES TIMEOUT 120)
+endif()
 # The compiler's default asserts every global range fits in signed int. Large
 # context/USM operations cannot make that promise. Keep the same index contract
 # in every consumer and at device link; tensor dimensions still validate bounds.

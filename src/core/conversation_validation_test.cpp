@@ -27,6 +27,23 @@ extern "C" cudaError_t __wrap_cudaDeviceSynchronize() {
     return ++sync_calls == fail_sync ? cudaErrorUnknown : cudaSuccess;
 }
 extern "C" cudaError_t __wrap_cudaGetLastError() { return cudaSuccess; }
+#if defined(STRATA_ENABLE_SYCL)
+// The compatibility API has C++ linkage. This host executable links only
+// the snapshot units and uses the same injected transfer backend.
+cudaError_t cudaMemcpy(void* dst, const void* src, size_t n, cudaMemcpyKind kind) {
+    return __wrap_cudaMemcpy(dst, src, n, kind);
+}
+cudaError_t cudaDeviceSynchronize() { return __wrap_cudaDeviceSynchronize(); }
+cudaError_t cudaGetLastError() { return __wrap_cudaGetLastError(); }
+const char* cudaGetErrorString(cudaError_t) { return "injected host transfer error"; }
+
+namespace strata::kernels {
+// The host fixtures exercise the identity K/V layout.
+void kv_stream_reset(const KvStreamMap&, void*) { std::abort(); }
+void kv_ring_restore(const QsaAttnPools&, const KvHostPools&, int, int64_t, int64_t,
+                     int64_t, const QsaShapes&, void*) { std::abort(); }
+}
+#endif
 #endif
 
 using namespace strata::core;
