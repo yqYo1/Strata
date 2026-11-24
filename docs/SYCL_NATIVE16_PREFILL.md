@@ -11020,8 +11020,8 @@ owners without a fresh Xe fault. First-use prefill is 144.425 and
 892.197 and 969.443 tok/s. Warmed client TTFT is 133.370 and
 122.760 seconds. Requests match KV and emitted verifier work. The
 wider arm saves 16.736 to 16.843 GB of requested expert H2D per prompt,
-with no change to requested attention-output copies. Fusion also covers
-more rows in each prompt; the first has 49,927,500 versus 52,814,590
+and both arms request 116.769 GB of attention-output copies per prompt.
+Fusion covers more rows in each prompt. The first has 49,927,500 versus 52,814,590
 fused GU and Down rows. Attribute the speed change to the measured
 window policy as a whole. The remaining repetitions determine eligibility.
 
