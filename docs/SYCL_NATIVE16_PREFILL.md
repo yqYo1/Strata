@@ -10872,6 +10872,36 @@ The revised controller keeps one live prompt with checkpoint creation
 disabled and gives each intervening request a different first token.
 It verifies zero reuse and relates each state length to committed verifier
 rows before comparing the first and last short fingerprints in each arm.
+Both arms close at `489ac7c6c` with 12 successful requests. Each arm checks
+the active state extents, its own repeated short fingerprint and all 1,256
+slot payloads at four returns. Both native processes exit normally and
+all final assets match, with no fresh Xe fault. The two sets of resident
+experts differ as planned. The trained profile raises measured CPU job
+counts by 7.57–8.19% over the stock profile on these six synthetic cases.
+Stock remains the reference for the next workload-specific comparison.
+
+The causal replay uses only the first 64, 256 or 1,024 verifier windows of the closed 33,287-input prose request to select a
+profile for the suffix. These boundaries follow 107, 408 and 1,594
+emitted tokens. The full new ranks reduce suffix CPU jobs by 5.23%, 15.00%
+and 18.91%, with 818–956 new experts. At the 256-window boundary, matching
+96-slot limits and gain thresholds gives 131,382 fewer suffix jobs from
+unique-expert counts and 147,795 from routed-row counts against 4,513,444.
+The routed-row policy requests 197,913,600 weight bytes per direction if
+the exact original slots are restored, which is about 61–63 ms of serial
+copy service for both directions at the recorded large-copy bandwidth.
+Placement selection, queue retirement and publication need their own
+clocks. Use the current row metric for the first bounded decode-only
+implementation. Prove exact stock restoration before the next prefill,
+then compare on an independent sustained workload. These forecasts
+describe one recorded routing sequence.
+[Replay controller](../bench/sycl/dflash2_causal_rank_replay.py)
+
+The V1 case outputs at `dflash2-expert-rank-live-check-v1/{stock,trained}`
+are eligible for retirement after preserving the original failure and the V2
+replacement. The inventory covers 60 files and 15,051,769 bytes. Its digest
+for sorted paths, sizes and hashes is
+`8b159f49a6ee9e1881ff5074ac246372943568f51fe5ba799ebeb765622b18b0`. The raw
+prose route and engine log still support the bounded placement fixture.
 
 An offline capacity check on the training trace preserves the stock rank
 and adds 12 slots per layer. The total grows from 1,256 to 1,832 slots.

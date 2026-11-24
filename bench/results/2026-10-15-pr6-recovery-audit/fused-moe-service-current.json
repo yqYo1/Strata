@@ -673470,5 +673470,179 @@
         "passed": true
       }
     }
+  },
+  "dflash2_causal_rank_replay_v1": {
+    "only_existing_trace": true,
+    "record_commit": "b28a9372bc1943812a87d170402435cc1c7425f0",
+    "score_commit": "20a14c34c388b4ba9612e73c21f36407cc29db08",
+    "native_source": "96832af6f7119631a78e16f066129860faf0a619",
+    "native_sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+    "trace_sha256": "08dce3920dea2de8752b16cbbbaddc07e9486515dfde39264c92fa116b27926f",
+    "stderr_sha256": "6d4a4924485de26670e199318b8653cf3435da7237b3ee239e22d275430a0eb5",
+    "horizons": [
+      64,
+      256,
+      1024
+    ],
+    "input": 33287,
+    "output": 11783,
+    "source_commit": "803f02ebfb3d437743864f6cf399b9d808367eac",
+    "controller": "bench/sycl/dflash2_causal_rank_replay.py",
+    "controller_sha256": "4b3095611a77adabc21b683246a0d9a1cc2aea6ed165fe570906306a23f673ba",
+    "physical_layout_commit": "489ac7c6c7316dcfb1db75a6762b25d218610727",
+    "evaluated": [
+      {
+        "early_windows": 64,
+        "remaining_windows": 6421,
+        "early_rows": 122,
+        "early_output_tokens": 107,
+        "stock": {
+          "cpu_jobs": 4630245,
+          "cpu_entries": 5937451,
+          "logical_job_blob_bytes": 9451172044800
+        },
+        "early_policy": {
+          "cpu_jobs": 4387902,
+          "cpu_entries": 5632223,
+          "logical_job_blob_bytes": 8946329011200
+        },
+        "code_trained": {
+          "cpu_jobs": 4624352,
+          "cpu_entries": 5913676,
+          "logical_job_blob_bytes": 9438259097600
+        },
+        "new_payload_bytes": 1690086400,
+        "capped": [
+          {
+            "limit": 32,
+            "cpu_jobs": 4611257,
+            "requested_new_weight_bytes": 65587200
+          },
+          {
+            "limit": 96,
+            "cpu_jobs": 4578430,
+            "requested_new_weight_bytes": 198681600
+          },
+          {
+            "limit": 256,
+            "cpu_jobs": 4504627,
+            "requested_new_weight_bytes": 533964800
+          }
+        ]
+      },
+      {
+        "early_windows": 256,
+        "remaining_windows": 6229,
+        "early_rows": 463,
+        "early_output_tokens": 408,
+        "stock": {
+          "cpu_jobs": 4513444,
+          "cpu_entries": 5794618,
+          "logical_job_blob_bytes": 9212487296000
+        },
+        "early_policy": {
+          "cpu_jobs": 3836589,
+          "cpu_entries": 4839133,
+          "logical_job_blob_bytes": 7822687206400
+        },
+        "code_trained": {
+          "cpu_jobs": 4500934,
+          "cpu_entries": 5763133,
+          "logical_job_blob_bytes": 9186067200000
+        },
+        "new_payload_bytes": 1843123200,
+        "capped": [
+          {
+            "limit": 32,
+            "cpu_jobs": 4461520,
+            "requested_new_weight_bytes": 66406400
+          },
+          {
+            "limit": 96,
+            "cpu_jobs": 4382062,
+            "requested_new_weight_bytes": 197811200
+          },
+          {
+            "limit": 256,
+            "cpu_jobs": 4190127,
+            "requested_new_weight_bytes": 536115200
+          }
+        ],
+        "matched_rank_metric": [
+          {
+            "metric": "unique-jobs",
+            "cap": 96,
+            "minimum_gain": 2,
+            "cpu_jobs": 4382062,
+            "logical_job_blob_bytes": 8941934848000,
+            "requested_new_weight_bytes": 197811200
+          },
+          {
+            "metric": "unique-jobs",
+            "cap": 256,
+            "minimum_gain": 2,
+            "cpu_jobs": 4190127,
+            "logical_job_blob_bytes": 8544470118400,
+            "requested_new_weight_bytes": 536115200
+          },
+          {
+            "metric": "routed-rows",
+            "cap": 96,
+            "minimum_gain": 2,
+            "cpu_jobs": 4365649,
+            "logical_job_blob_bytes": 8909343872000,
+            "requested_new_weight_bytes": 197913600
+          },
+          {
+            "metric": "routed-rows",
+            "cap": 256,
+            "minimum_gain": 2,
+            "cpu_jobs": 4181545,
+            "logical_job_blob_bytes": 8527031808000,
+            "requested_new_weight_bytes": 535987200
+          }
+        ]
+      },
+      {
+        "early_windows": 1024,
+        "remaining_windows": 5461,
+        "early_rows": 1777,
+        "early_output_tokens": 1594,
+        "stock": {
+          "cpu_jobs": 4046040,
+          "cpu_entries": 5226097,
+          "logical_job_blob_bytes": 8256966784000
+        },
+        "early_policy": {
+          "cpu_jobs": 3280953,
+          "cpu_entries": 4121367,
+          "logical_job_blob_bytes": 6697439897600
+        },
+        "code_trained": {
+          "cpu_jobs": 4012358,
+          "cpu_entries": 5171001,
+          "logical_job_blob_bytes": 8186708172800
+        },
+        "new_payload_bytes": 1972019200,
+        "capped": [
+          {
+            "limit": 32,
+            "cpu_jobs": 3983395,
+            "requested_new_weight_bytes": 66918400
+          },
+          {
+            "limit": 96,
+            "cpu_jobs": 3870556,
+            "requested_new_weight_bytes": 198528000
+          },
+          {
+            "limit": 256,
+            "cpu_jobs": 3679119,
+            "requested_new_weight_bytes": 534630400
+          }
+        ]
+      }
+    ],
+    "scope": "Offline replay of one verified request with past-only selection and a disjoint suffix. Keep stock for the comparison. Validate reversible 96-slot decode placement and an independent workload."
   }
 }
