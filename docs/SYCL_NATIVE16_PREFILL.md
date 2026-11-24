@@ -10786,6 +10786,25 @@ shapes for assessing a partial-page retention proposal. The 122,881-input
 direct route still needs the five-tap payload check and matched prefill
 and sustained decode measurements after the snapshot fix.
 
+Both restored continuations have two chunks and a four-cell cache page.
+In the final chunk, preserving stage data on the nine eligible layers
+would remove at most 389,321,856 requested prefix bytes at 32K and
+2,491,112,448 near capacity. These bounds preserve the initial reload,
+both tap layers and the final layer. A one-page edge refresh at the nine
+layers would use a further 38,016 bytes. Verify that the Q8 stage owns
+exact valid cells, scales and index state before testing any such variant.
+
+The [direct prefill comparison](../bench/sycl/dflash2_snapshot_direct_prefill.py)
+pins three counterbalanced pairs at 122,881 fresh input tokens. Both native
+executables use mode16, the direct writer and the same private-process
+configuration. Record warm and first-use clocks, TTFT and actual routes.
+The archived coherent source and recipe recover fully from Git, and all
+12 local executable hashes match the original receipt. A checks-only
+absence test identifies an active ancestor dependency on its
+`build/build.ninja` in `coherent_original_reuse.verify_original`. Keep
+that generation for the current readers until their build lineage can
+use verified historical metadata. The comparison adds no native build.
+
 Retire the first raw restore capture at `dflash2-target-snapshot-restore-v1`.
 The original failure, offline replay and independent passing replacement
 carry its useful evidence. The retired scope covers 63 files and
