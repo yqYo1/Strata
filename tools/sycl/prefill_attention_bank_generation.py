@@ -234,18 +234,23 @@ def routes(text, samples, arm):
     return result
 
 
-def run(index):
+def run(index, *, native_context=None):
     row = build.read(ROOT / 'record.json')
     providers, manifest = current(row)
     require(row['host_passed'] and row['ownership_closed'] and not row['active']
             and row['stage'] in ('ready','running') and len(row['processes']) == index < len(ORDER),
             'complete previous arms in order')
     plan = row['plans'][index]; root = Path(plan['root']); env = environment(row, plan)
+    native = row if native_context is None else native_context(row, plan)
+    require(plan['binary'] == native['binary'] and sha(native['binary']['path']) == native['binary']['sha256'],
+            'selected native executable differs')
     require(not (root/'execution.json').exists() and not (root/'launch.json').exists(), 'inspect the prior attempt')
     cursor = next(line.removeprefix('-- cursor: ') for line in subprocess.check_output(
         ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
         if line.startswith('-- cursor: '))
     outcome = dict(index=index, arm=plan['arm'], complete=False, host_probe_accepted=False)
+    if native_context is not None:
+        outcome.update(binary=native['binary'], native_source_commit=native['native_source_commit'])
     owner = None
     start_clock = time.clock_gettime_ns(time.CLOCK_BOOTTIME) - time.monotonic_ns()
 
@@ -266,7 +271,7 @@ def run(index):
                 text = line.decode().strip()
                 if text.startswith('Running the suite'):
                     require(not checked, 'duplicate suite start')
-                    outcome['native_identity'] = official.native_live(root, plan, row, env,
+                    outcome['native_identity'] = official.native_live(root, plan, native, env,
                         dict(runtime_files=providers), manifest, entry)
                     checked = True
                     persist()
@@ -286,7 +291,7 @@ def run(index):
         outcome['evidence'] = evidence
         if row['processes']:
             official.matched(evidence['samples'], row['processes'][0]['evidence']['samples'])
-        end = gen.native_end(root,row,dict(config=configuration(row,plan)),row['boot'],entry['pid'])
+        end = gen.native_end(root,native,dict(config=configuration(row,plan)),row['boot'],entry['pid'])
         log = (root/'engine.stderr').read_text()
         probe = validation.preload_evidence(log,end['native']['pid'])
         require(probe['loader'] == row['native_validation_probe']['loader']['path']
