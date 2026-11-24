@@ -672445,7 +672445,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "dflash2_expert_rank_live_check_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "active": false,
     "complete": false,
     "passed": false,
@@ -672703,6 +672703,86 @@
       ],
       "purpose": "Trace native cache-window, short chunk and long return with each fixed profile. Require exact cache membership, payload and request-reset evidence before clean timing."
     },
-    "outcomes": {}
+    "outcomes": {
+      "stock": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 257,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 903,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 24,
+            "finish": "length"
+          },
+          {
+            "prompt": 1068,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 24,
+            "finish": "length"
+          },
+          {
+            "prompt": 11793,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 24,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "info": {
+          "context": "262144",
+          "spec": "4",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256"
+        },
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 1038252,
+          "start_ticks": 389011016
+        },
+        "error": "RuntimeError('missing or repeated native evidence: ^strata serve: STATE_HASH L=.*$')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    }
   }
 }
