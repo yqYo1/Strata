@@ -10917,10 +10917,12 @@ capacity at 122,880 rows. At 131,071 rows, one slot leaves 16,307,200
 bytes. All figures use the source planner and the observed memory budget.
 
 First check 120,001 input tokens with a fixed 128-slot bank. Mode16 at
-120,000 batched rows needs 4,198,410,752 bytes including the reserve.
-The estimated free-memory margin is 41,047,552 bytes. The required
-arena is 1,118,349,056 bytes and the largest separate allocation is
-2,457,600,000 bytes, within the measured limits. Keep demand expert
+120,000 batched rows needs 3,661,539,840 bytes in additional allocations.
+Adding the reserve once gives 4,198,410,752 bytes. The estimated margin is
+41,047,552 bytes. The layout requires 1,118,349,056 bytes of the shared
+arena that is already owned before the free-memory query. Its largest
+separate allocation is 2,457,600,000 bytes. Record both the forecast
+from the reference arm's free memory and actual slack in the mode16 arm. Keep demand expert
 uploads, copied attention, head detachment and aligned KV retention in
 both arms. At this length, mode10 should use 96 windows with an 81,920-row
 maximum. Mode16 should use 48, with the relocated work buffers that enable

@@ -35,6 +35,7 @@ def budget(mode):
                        prefix_and_status=prefix, relocated_owner=scratch['extra'])
     return dict(maximum_rows=maximum, windows=48 * ((ROWS + maximum - 1) // maximum),
                 extra_bytes=scratch['extra'], tail_bytes=scratch['tail_payload'],
+                incremental_allocations=allocations, reserve_bytes=HEADROOM,
                 fixed_with_headroom=sum(allocations.values()) + HEADROOM,
                 shared_arena=scratch['region'] + scratch['mixed_tail'],
                 largest_allocation=max(allocations.values()))
@@ -143,6 +144,8 @@ def window_result(frame, mode):
             and int(uploads['uploads']) + int(uploads['permanent_hits']) == int(work['dequants']) > 0,
             'demand upload or retirement differs')
     return dict(free_bytes=free, arena_bytes=arena, allocation_limit=limit, logical_copy_bytes=copy_bytes,
+                fixed_with_headroom=predicted['fixed_with_headroom'],
+                free_bytes_beyond_reserve=free - predicted['fixed_with_headroom'],
                 requested_bank_H2D_bytes=int(uploads['requested_H2D_bytes']), uploads=int(uploads['uploads']),
                 jobs=int(work['jobs']), dequants=int(work['dequants']), windows=int(work['windows']),
                 maximum_rows=maximum)
@@ -216,7 +219,10 @@ def main(action):
     row['outcomes'][action] = observed
     if action == order[-1] and observed['passed']:
         control = row['outcomes'][order[0]]
+        wide_budget = plan['cases'][action]['budget']['fixed_with_headroom']
         row['comparison'] = dict(independent_native_processes=control['native_identity'] != observed['native_identity'],
+            wide_budget_slack_at_control_free=control['route']['free_bytes'] - wide_budget,
+            actual_wide_budget_slack=observed['route']['free_bytes_beyond_reserve'],
             short_state_and_outputs_match=(control['states'][0], control['requests'][0])
                                           == (observed['states'][0], observed['requests'][0]),
             long_state_fingerprint_matches=control['states'][1] == observed['states'][1],
