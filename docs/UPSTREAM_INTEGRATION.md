@@ -16,9 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check | 2026-11-22 01:09:53 UTC / November 22 10:09:53 JST. Fetched main and verified its remote ref. |
-| Observed upstream | `6e38f588a646c0ee6948a74afbe670eb75896106`, the commit tagged v0.2.18 |
-| Next check at the approximate 48-hour cadence | 2026-11-24 01:09 UTC / November 24 10:09 JST |
+| Last actual check | 2026-11-24 01:09:27 UTC / November 24 10:09:27 JST. Fetched main and verified its remote ref. |
+| Observed upstream | `6a6db7ff58c283cf28d2b913404b5fa31a767eaa`, 16 commits after v0.2.20 |
+| Published release | v0.2.20, at `a34979fc94f3d126b9bb8210f4ad311345688b52` |
+| Next check at the approximate 48-hour cadence | 2026-11-26 01:09 UTC / November 26 10:09 JST |
 | Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4` plus individually tested ports, including GPU-list ordering, three server/Web fixes and offline DFlash2 pack readiness. Service and app changes remain open. |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
@@ -33,22 +34,19 @@ own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
-The latest check adds 501 commits and 765 changed paths since `58ee32277`.
-The release adds Hy4-Flash and also changes shared Terminal, App and serving
-functions. The observed Qwen-facing candidates include individual model
-discovery with context metadata, request timing and recovery metrics, and
-CLI shell completion. The SYCL DFlash2 planar-Q6 head change and the
-verifier's no-host option are separate component evaluations. The matched
-unmodified Arc Qwen benchmark uses the source under `engine/sycl/` and the
-standard entrypoint at `tools/bench.sh`. [Niko1221's v0.2.18 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.18).
+Since v0.2.18 the fetched interval adds 152 commits and changes 835 paths.
+The Qwen-facing feature review covers model discovery and API schema, setup and
+installer changes, conversation branching, and SYCL device-loss propagation.
+Evaluate the Battlemage grouped expert path, GDN pairing and tiling, Unsloth
+multi-row SYCL formats, and cold-expert CPU SIMD as individual components.
+The upstream benchmark uses the unmodified source under `engine/sycl/` and
+the matching `tools/bench.sh`. Its execution and hardware-tuned comparison
+remain pending. [Niko1221's v0.2.20 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.20).
 
-The source review keeps canonical Q6_K gathering on the current Qwen engine.
-The v0.2.18 DFlash2 gather handles upstream's planar Q6_K layout.
-The explicit no-host verifier further needs a matching launch configuration,
-and the synchronization default targets integrated GPUs. The next isolated
-host port is individual model retrieval with its context metadata. The
-recovery-counter port needs the matching engine log contract. The status
-file records these decisions under `new_interval.source_only_review`.
+The v0.2.18 decisions remain linked under `new_interval.prior_pending_component_review`
+in the status record. Canonical Q6_K gathering stays selected for this fork's
+head layout. The outstanding model metadata and recovery-counter ports still
+need the matching API and engine log contracts.
 
 The weighted expert-profile builder and its 45-prompt collector come from
 the checked `58ee32277` tree. The collector uses this fork's routing
