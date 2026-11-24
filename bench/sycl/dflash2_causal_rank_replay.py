@@ -1,6 +1,7 @@
 """Score early-routing-only expert placements on the unchanged suffix of a closed trace."""
 
 from collections import Counter
+from fractions import Fraction
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -15,6 +16,7 @@ bank, capture, route, census = forecast.bank, forecast.capture, forecast.routing
 require = forecast.require
 HOLDOUT_COMMIT = 'b28a9372bc1943812a87d170402435cc1c7425f0'
 SCORE_COMMIT = '20a14c34c388b4ba9612e73c21f36407cc29db08'
+TRANSFER_REFERENCE = '68f8c61b6bee758d4ce74963d2aafbfead495dea'
 HORIZONS = (64, 256, 1024)
 SWAP_LIMITS = (32, 96, 256)
 COPY_GBS = (6.292, 6.485)
@@ -86,8 +88,26 @@ def transition(before, after, formats):
                 new_payload_service_s_at_reference=[new_payload / (g*1e9) for g in reversed(COPY_GBS)])
 
 
-def limited_rank(stock_rank, early_usage, limit, *, rows=False, minimum_gain=1):
-    """Choose up to limit row exchanges using only observed early job counts."""
+def fit_transfer_budget(exchanges, formats, limit, payload_bytes, *, by_efficiency):
+    """Pick distinct exchanges within the same outbound and restore byte limit."""
+    require(limit > 0 and payload_bytes > 0 and len(formats) == 48
+            and all(n > 0 for _, _, n in formats), 'invalid transfer budget')
+    if by_efficiency:
+        exchanges = sorted(exchanges, key=lambda row: (Fraction(row[0], formats[row[1]][2]), row))
+    selected = []
+    for row in exchanges:
+        size = formats[row[1]][2]
+        if size > payload_bytes:
+            continue
+        selected.append(row)
+        payload_bytes -= size
+        if len(selected) == limit:
+            break
+    return selected
+
+
+def limited_rank(stock_rank, early_usage, limit, *, rows=False, minimum_gain=1, transfer=None):
+    """Rank exchanges using early requests, with an optional limit on copied bytes."""
     visits = {(l, e): sum((i+1 if rows else 1)*n for i, n in enumerate(counts))
               for l, e, counts in early_usage}
     layer_ranks = forecast.by_layer(stock_rank)
@@ -103,14 +123,49 @@ def limited_rank(stock_rank, early_usage, limit, *, rows=False, minimum_gain=1):
             if gain < minimum_gain:
                 break
             exchanges.append((-gain, layer, slot, expert))
+    ordered = sorted(exchanges)
+    if transfer is None:
+        selected = ordered[:limit]
+    else:
+        formats, size_limit, by_efficiency = transfer
+        selected = fit_transfer_budget(ordered, formats, limit, size_limit, by_efficiency=by_efficiency)
     changed = {}
-    for _, layer, slot, expert in sorted(exchanges)[:limit]:
+    for _, layer, slot, expert in selected:
         admitted = changed.setdefault(str(layer), layer_ranks[layer][:forecast.CAPACITY[layer]])
         admitted[slot] = expert
     return forecast.apply_delta(stock_rank, changed)
 
 
-def main():
+def compare_transfer_budget(past, future, stock, base, formats, validated):
+    prior = bank.previous.historic(TRANSFER_REFERENCE, 'dflash2_causal_rank_replay_v1')
+    require(prior['only_existing_trace'] and prior['record_commit'] == HOLDOUT_COMMIT
+            and prior['trace_sha256'] == validated['routing_sha256'], 'recover the same qualified held-out trace')
+    early, = (cell for cell in prior['evaluated'] if cell['early_windows'] == 256)
+    anchor, = (row for row in early['matched_rank_metric'] if row['metric'] == 'routed-rows' and row['cap'] == 96)
+    budget = anchor['requested_new_weight_bytes']
+    require(budget == 197_913_600 and anchor['minimum_gain'] == 2, 'original transfer reference differs')
+    stock_work = route.projected_cpu_expert_work(future, base, formats)
+    require(stock_work['cpu_jobs'] == early['stock']['cpu_jobs'], 'stock suffix changed')
+    comparisons = []
+    for metric in ('unique-jobs', 'routed-rows'):
+        for efficient in (False, True):
+            rank = limited_rank(stock, past, 96, rows=(metric == 'routed-rows'), minimum_gain=2,
+                                transfer=(formats, budget, efficient))
+            moved = transition(stock, rank, formats)
+            require(moved['changed_slots'] == moved['new_members'] <= 96
+                    and moved['ordered_slot_payload_bytes'] <= budget, 'exchange exceeds the frozen cap')
+            work = route.projected_cpu_expert_work(future, forecast.membership(rank), formats)
+            comparisons.append(dict(metric=metric, priority='gain-per-byte' if efficient else 'gain',
+                work=work, transition=moved, jobs_removed=stock_work['cpu_jobs'] - work['cpu_jobs']))
+    reference, = (row for row in comparisons if row['metric'] == 'routed-rows' and row['priority'] == 'gain')
+    require(reference['work']['cpu_jobs'] == anchor['cpu_jobs']
+            and reference['transition']['new_payload_bytes'] == budget,
+            'gain-first under its own byte ceiling failed to reproduce')
+    return dict(early_windows=256, max_swaps=96, max_bytes_each_direction=budget,
+                stock=stock_work, rows=comparisons, prior_commit=TRANSFER_REFERENCE)
+
+
+def main(*, transfer_budget=False):
     key = capture.experiment('holdout').KEY
     original = bank.previous.historic(HOLDOUT_COMMIT, key)
     score = bank.previous.historic(SCORE_COMMIT, forecast.KEY)
@@ -166,6 +221,16 @@ def main():
     positions = [(int(p), int(w)) for p, w in re.findall(r'^strata trace: window (\d+) (\d+)$', frame, re.M)]
     require([w for _, w in positions] == widths and positions[0][0] == samples[-1]['read_tokens']-1,
             'late score must use the final fresh request windows')
+    if transfer_budget:
+        index = HORIZONS.index(256) + 1
+        result = compare_transfer_budget(as_usage(intervals[:index]), as_usage(intervals[index:]),
+                                         stock_rank, base, formats, validated)
+        print(json.dumps(dict(only_existing_trace=True, record_commit=HOLDOUT_COMMIT,
+            native_source=original['native_source_commit'], trace_sha256=validated['routing_sha256'],
+            input=samples[-1]['read_tokens'], output=samples[-1]['generated_tokens'],
+            transfer_budget=result), indent=2))
+        return
+
     summary = []
     for i, h in enumerate(HORIZONS, 1):
         past, future = as_usage(intervals[:i]), as_usage(intervals[i:])
@@ -203,4 +268,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    require(sys.argv[1:] in ([], ['--transfer-budget']), 'select the original or the fixed-transfer replay')
+    main(transfer_budget=bool(sys.argv[1:]))
