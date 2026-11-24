@@ -156,8 +156,9 @@ CLOCK_COMPARISON = (
 
 
 def inputs(ctx, row, plan):
+    native = ctx.native_context(row, plan) if hasattr(ctx, 'native_context') else row
     return {'config.json': ctx.configuration(row, plan), 'plan.json': {
-        'binary': row['binary'], 'native_validation_probe': row['native_validation_probe']}}
+        'binary': native['binary'], 'native_validation_probe': native['native_validation_probe']}}
 
 
 def prepare(ctx):
@@ -177,6 +178,7 @@ def prepare(ctx):
             port = sock.getsockname()[1]
         plan = dict(index=index, arm=arm, root=str(root), port=port, binary=row['binary'])
         files = inputs(ctx, row, plan)
+        plan['binary'] = files['plan.json']['binary']
         for name, data in files.items():
             build.stage.write(root / name, data)
         plan.update(command=ctx.command(plan), generated={n: build.sha(root / n) for n in files},
@@ -203,7 +205,8 @@ def experiment():
         for i, (p, arm) in enumerate(zip(row['plans'], ctx.ORDER, strict=True)):
             root = ctx.ROOT / str(i)
             data = inputs(ctx, row, p)
-            require(p['index'] == i and p['root'] == str(root) and p['arm'] == arm and p['binary'] == row['binary']
+            require(p['index'] == i and p['root'] == str(root) and p['arm'] == arm
+                    and p['binary'] == data['plan.json']['binary']
                     and p['command'] == ctx.command(p) and suite.signature(ctx.environment(row, p)) == p['environment_sha256']
                     and set(p['generated']) == set(data) and all(
                     build.previous.read(root/n) == value and build.sha(root/n) == p['generated'][n] for n,value in data.items()),
