@@ -135,6 +135,28 @@ def prepare(read, root, key):
                                  ownership_closed=True, active=False), root, key)
 
 
+def inspect(log, plan, pid, answers, read, reference, *, direct=False):
+    result = window.inspect(log, plan, pid, CONTROL, answers, direct=direct, slots=SLOTS, read=read)
+    start = log.index(f'strata trace: request {read} 0\n')
+    end = log.index('strata trace: request 82 0', start)
+    middle = log[start:end]
+    layers = window.workspace.records(middle, 'strata packed expert bank: ')
+    require(len(layers) == 48 and bank.signature(layers) == plan['packed_layers_sha256'],
+            'observed per-layer packed bank geometry differs')
+    summary = window.workspace.one(middle, 'strata MoE expert bank complete: ')
+    require(summary['permanent_hits'] == '0' and result['route']['uploads'] == result['route']['dequants'],
+            'unexpected expert slot reuse')
+    if read == LONG_READ:
+        windows = [(int(pos), int(width))
+                   for pos, width in re.findall(r'^strata trace: window (\d+) (\d+)$', middle, re.M)]
+        require(windows and windows[0] == (read - 1, 1)
+                and middle.index('strata DFlash2: eager, ') < middle.index(f'strata trace: window {read - 1} 1\n'),
+                'last prompt token or DFlash2 verifier handoff differs')
+        result['first_verifier_window'] = list(windows[0])
+    window.store.speed.verify_model_assets(reference, {'args': plan['cases'][CASE]['command'][2:]})
+    return dict(result, packed_layers_sha256=bank.signature(layers),
+                usable_slots_by_layer=[int(layer['slots']) for layer in layers])
+
 def run(read, job_root, key):
     row = bank.previous.read(job_root / 'record.json')
     root = job_root / CASE
@@ -144,29 +166,8 @@ def run(read, job_root, key):
     plan, env, requests, reference, control = inputs(row['plan']['source_commit'], read, job_root)
     require(plan == row['plan'], 'frozen bank inputs changed')
 
-    def inspect(log, pid, answers):
-        result = window.inspect(log, plan, pid, CONTROL, answers, slots=SLOTS, read=read)
-        start = log.index(f'strata trace: request {read} 0\n')
-        end = log.index('strata trace: request 82 0', start)
-        middle = log[start:end]
-        layers = window.workspace.records(middle, 'strata packed expert bank: ')
-        require(len(layers) == 48 and bank.signature(layers) == plan['packed_layers_sha256'],
-                'observed per-layer packed bank geometry differs')
-        summary = window.workspace.one(middle, 'strata MoE expert bank complete: ')
-        require(summary['permanent_hits'] == '0' and result['route']['uploads'] == result['route']['dequants'],
-                'unexpected expert slot reuse')
-        if read == LONG_READ:
-            windows = [(int(pos), int(width))
-                       for pos, width in re.findall(r'^strata trace: window (\d+) (\d+)$', middle, re.M)]
-            require(windows and windows[0] == (read - 1, 1)
-                    and middle.index('strata DFlash2: eager, ') < middle.index(f'strata trace: window {read - 1} 1\n'),
-                    'last prompt token or DFlash2 verifier handoff differs')
-            result['first_verifier_window'] = list(windows[0])
-        window.store.speed.verify_model_assets(reference, {'args': plan['cases'][CASE]['command'][2:]})
-        return dict(result, packed_layers_sha256=bank.signature(layers),
-                    usable_slots_by_layer=[int(layer['slots']) for layer in layers])
-
-    outcome = window.device.run_case(plan, root, CASE, env, requests, inspect)
+    outcome = window.device.run_case(plan, root, CASE, env, requests,
+        lambda log, pid, answers: inspect(log, plan, pid, answers, read, reference))
     if outcome['passed'] and read == LONG_READ:
         matched = all(outcome[key][i] == control[key][i] for key in ('requests', 'states') for i in (0, 2))
         persistent = all(outcome[key] == control[key] for key in ('info', 'loan', 'tap_rows', 'usable_slots_by_layer'))

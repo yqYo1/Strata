@@ -11104,7 +11104,7 @@ match. The long input accounts for 48,769,305,600 requested expert H2D bytes,
 attention-copy bytes. All 15 model assets pass their final hash checks.
 The process exits normally with closed ownership and no new Xe fault.
 
-The copied-writer bank and length comparison closes at \`3c0693de0\`.
+The copied-writer bank and length comparison closes at `3c0693de0`.
 All nine independent processes and 27 inputs pass their route and workload
 checks. All owners close and Xe reports zero fresh faults. At 118,785
 inputs the three 128-slot warmed rates are 993.238, 991.374, 992.486 tok/s
@@ -11122,39 +11122,33 @@ First use and subsequent samples remain in the comparison record.
 Use further matched lengths and a held-out case before fitting a time
 model. The capacity traces cover the short state handoff with 32 outputs.
 Retired the nine private process cache directories under
-\`dflash2-prefill-window-bank-speed-v1\` after all owners closed.
+`dflash2-prefill-window-bank-speed-v1` after all owners closed.
 The temporary inventory covered 495 files and 111,182,472 bytes
-with SHA-256 \`a6bf939be989228278d918a6afcd3ef81d7bbc48deaac5b848d265636b81e13a\`. Keep the generated request evidence and
+with SHA-256 `a6bf939be989228278d918a6afcd3ef81d7bbc48deaac5b848d265636b81e13a`. Keep the generated request evidence and
 the separate original traced copy capture for the follow-up.
 
 
-The 122,881-input attention copy follow-up is prepared at
-`/tmp/strata-dflash2-122881-direct.smuq2b_5/long-direct-admission.patch`
-with SHA-256 `8016896e581661d7da518bd30eac06dea26ca0ee5ad8b82dd2b4bb35a9ba1d30`.
-It reuses the copy control at `bb974ff52` and has a separate plan and
-record for each selector. Run the direct writer first. It requires all 720
-direct stores with copied input unchanged. The optional `--reader` probe
-holds output copying fixed and requires all 690 eligible input spans to
-borrow the bank, removing 115,762,790,400 requested input copy bytes.
-Both probes verify unchanged expert work, target fingerprints, retained KV,
-draft taps, cache refill and the first verifier window. The retained original
-copy stderr is pinned by SHA-256 and bound to its closed native identity.
-Its 48 layer receipts cover the 15 full chunks, with layers 0 and 1 excluded
-from input borrowing. Keep this capture until both traced probes close.
-The revised patch passes source application and syntax checks.
+The installed 122,881-input diagnostic controller reuses the copy result at
+`bb974ff52` and saves a separate plan and record for each selector. Run the
+direct writer first. It requires all 720 direct stores with copied input
+unchanged. The optional `--reader` probe holds output copying fixed and
+requires all 690 eligible input spans to borrow the bank, removing
+115,762,790,400 requested input copy bytes. Both probes verify unchanged
+expert work, target fingerprints, retained KV, draft taps, cache refill
+and the first verifier window. The original copy stderr is pinned by
+SHA-256 and bound to its closed native identity. Its 48 layer receipts
+cover all 15 chunks and leave the embedding and PLE inputs in scratch.
+Keep this capture until both traced probes close.
+[Diagnostic controller](../bench/sycl/dflash2_prefill_window_long_direct.py)
 
-The quiet follow-up at the same 122,881 inputs is drafted in
-`/tmp/strata-dflash2-122881-writer-speed.youc6g7x/long-writer-speed.patch`
-with SHA-256 `16d1e216e28ae16cd3c187a13e8d8c07cbca73ca7b851432f29698b10ed07793`.
-It reuses the existing writer comparator with `--longer`. After the
-closed bank cohort and matched direct admission, compare copy and direct
-in three counterbalanced fresh-process pairs at bank32. Require the
-original exact bodies, unchanged expert and DFlash2 work, 720 stores,
-115,762,790,400 requested input-copy bytes and the observed 48-window
-route in both arms. Keep first-use and warmed PP and client TTFT
-with each individual 1,000 tok/s decision. The existing 118,785-input
-entry point keeps its parameters. Both patches pass the application check.
-Commit the exact follow-up inputs after the current comparison closes.
+The quiet follow-up uses `--longer` at 122,881 inputs after the matched
+direct admission. It compares copy and direct in three counterbalanced
+fresh-process pairs at bank32. Each case requires the original exact
+bodies, unchanged expert and DFlash2 work, 720 stores, 115,762,790,400
+requested input-copy bytes and the observed 48-window route. Keep
+first-use and warmed PP and client TTFT with each individual 1,000 tok/s
+decision. The existing 118,785-input entry point keeps its parameters.
+[Quiet comparison controller](../bench/sycl/dflash2_prefill_window_writer_speed.py)
 
 For a same-route attribution check, the retained indexed UnitTrace
 launcher and collector match the hashes in

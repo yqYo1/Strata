@@ -71,11 +71,11 @@ def request_route(text, plan, *, direct=False, read=READ, slots=window.SLOTS):
     return dict(route, kv=pages, tap_vram_bytes=int(tap), request_work=list(map(int, request)))
 
 
-def after_execution(outcome, row, plan):
+def after_execution(outcome, row, plan, *, read=READ):
     require(outcome['clean_speed'] and outcome['native_identity'] not in
             [p['native_identity'] for p in row['processes']], 'require a fresh quiet process')
     for route, sample in zip(outcome['routes'], outcome['samples'], strict=True):
-        require(route['request_work'] == [READ, 0, READ, sample['generated_tokens'],
+        require(route['request_work'] == [read, 0, read, sample['generated_tokens'],
                     sample['drafts_accepted'], sample['drafts_offered']], 'native and client request work differs')
     outcome['arm'] = plan['arm']
 
