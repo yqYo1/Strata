@@ -10812,13 +10812,33 @@ uses 1,045 windows at confidence 0 and 1,344 to 1,348 at 0.6. Per output,
 CPU expert jobs rise from 352.71 to 378.55. Retain 0.6. The different output
 lengths fail the matched-work performance gate in both pairs.
 
-The current binary already records routed expert IDs in its multi-token
-callback. Qualify a bounded capture against the independently reported CPU
-census and window widths after refill. This provides a way to obtain
-per-expert visits and row multiplicity before considering a new engine build.
-Use separate training and held-out requests. Keep the first 132 slot
-identities fixed for the measured 8192-token prefill loan. Verify the actual
-cache boundaries and prompt clocks separately before a decode-rank adoption.
+The [routing check](../bench/sycl/dflash2_verifier_routing_check.py) closes
+at `c13a80bd4` on the same engine. For 11,793 inputs and 32 outputs, 10
+verifier windows contain 37 target rows and 5,460 observed layer/expert
+pairs. The 156,288-byte record reconstructs exactly 10,182 CPU jobs and
+13,956 CPU entries, matching the independent format/width counts and
+20,898,918,400 logical blob bytes. The cache loan returns all 1,124
+slots after the unchanged 132-slot prefix. The native exit is zero with
+zero fresh Xe faults.
+
+Use the same recorder with separate long training and held-out requests
+before ranking experts or building a new image. Forecast jobs, routed entries
+and logical blob visits at the fixed cache size. Keep the first 132 slot
+identities fixed in the first placement trial and verify actual cache
+boundaries, prefill clocks and sustained TG separately.
+
+The private-output retirement covers the following closed case paths relative
+to the project tuning state directory. The inventory SHA-256 covers sorted
+relative paths, byte lengths and content hashes. The committed comparison
+and routing evidence already retain the necessary samples, identities and
+outcomes. Keep both compact on-disk controller records and the live native
+build. The earlier V2 build remains linked by the current admission reader.
+
+- `dflash2-decode-confidence-v1` cases `0`, `1`, `2`, `3`, `host`, `width-check` contain 351 files and 72,335,709 bytes, with inventory SHA-256
+  `b6a4579f43ad4a3c05a35696e30f51eacdc4ac3373d14b7cf3f149b018892914`.
+
+- `dflash2-verifier-routing-check-v1` cases `near` contain 60 files and 12,613,235 bytes, with inventory SHA-256
+  `95ab52bfb0d00226e351bbd7764963fe2a8eb8c546a51f3b94565271eeb86b9b`.
 
 #### DFlash2 KV stage retention outside the tap layers
 
