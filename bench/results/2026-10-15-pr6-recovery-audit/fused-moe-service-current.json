@@ -653549,5 +653549,54 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_prefill_direct_store_component_v1": {
+    "plan": {
+      "source_commit": "d864280c24c4382a05104ffcf8df800bcdd18fa3",
+      "sources_count": 840,
+      "sources_sha256": "aef7ddcde4655d5f86acbd7767039d9f2960c927c01abe7a3b3181948ce9cb9a",
+      "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+      "native_build_sha256": "927e584bfaa1701d751fc28b3c2781521b8cf1992cfc701bdfc1da25be586162",
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+        "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+        "bytes": 26546256
+      },
+      "fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/sycl_prefill_attention_bank_test",
+        "sha256": "281c1b3d4660b3b923c95b86153cb1204bf19d715526c5325da312d6069ca67e",
+        "bytes": 2840536
+      },
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/sycl_prefill_attention_bank_test",
+        "correctness"
+      ],
+      "budgets": {
+        "wall": 180,
+        "cpu": 180,
+        "rss_cap": 6442450944,
+        "text_cap": 4194304,
+        "file_cap": 536870912,
+        "total_cap": 536870912
+      },
+      "environment_sha256": "64cfb21ff396b7e31ea1c04dde74c465c7f60c97e1cc70a34b77b97bb86f8766",
+      "providers_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51",
+      "split_timing": "7af266dcf73937d0f78ac0ecc0c88eec55cc2211",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "scope": "Check exact BF16 store bits, a partial chunk, bounds and checked cancellation."
+    },
+    "stage": "prepared",
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true
   }
 }

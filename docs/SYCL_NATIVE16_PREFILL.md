@@ -10851,15 +10851,31 @@ The first observed handoff request completes with 132,358.5 ms in
 target batching and 133,960 ms in the rounded native prompt clock.
 Its clean-only reader rejects the trace and the owned session closes.
 The corrected reader verifies the same frame and all 48 layers.
-`dflash2_prefill_handoff_timing_v2` uses the committed clean control,
-a fresh observed process and a final clean process.
+The corrected bracket closes at `22e5133af` with the initial clean control,
+one traced process and a fresh closing clean process. Both clean controls
+deliver 864.7–869.2 tok/s on first use and 952.3–959.3 tok/s thereafter.
+Client TTFT spans 135.463–136.163 s on first use and 122.756–123.641 s
+thereafter. All three processes exit normally with no fresh Xe fault.
+The traced request spends 132.197 s in first-use target batching. The two
+warmed batches take 121.338 and 120.402 s, with another 1.536 and 1.566 s
+outside the batch. Traced-minus-clean total latency varies from −1.412 to
++0.406 s on those warmed requests. The warmed clean median from
+`7af266dcf` needs about 5.0 s less prompt time to reach 1000 tok/s. Prioritize
+time inside target batching. These host-observed intervals leave the physical
+GPU and bus resource attribution open.
 
 The measured 117,489-token copy route requests 115,495,403,520 D2D
 bytes for attention stores, including 720 piece drains. The compiled
 direct-store option retains the drains and can remove those copies.
-Check same-build fixture parity and the 84,721-token split with a
-2,800-row tail before timing it with DFlash2. The older MTP split
-store comparison supports this measurement with three warm gains.
+The new controller at `d864280c2` checks same-build fixture parity, then
+compares copying and direct writes at 84,721 inputs with a 2,800-row tail.
+Its host replay checks the existing 117,489-input copy route and rejects
+that frame when the direct route is expected. Hold aligned KV retention,
+batched expert uploads, synchronized commits and the DFlash2 configuration
+fixed. The expected change at 84,721 inputs is 528 direct stores and removal
+of 83,283,148,800 requested D2D bytes. The traced model admission precedes
+clean speed measurements. The older MTP split store comparison motivates the
+test with three warm gains.
 Retired 59 files and 12606542 bytes from the closed trace's `long`
 directory after `3c156ee10`. The inventory SHA-256 is
 `57ea8657f9544df7e442461a2a2f85952d0e6d6bc8b063eb10f92ec60db29767`.
