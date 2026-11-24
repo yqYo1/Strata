@@ -10841,9 +10841,25 @@ pages and three layers reload 645120 pages. This removes 8174960640 bytes
 of requested prefix copies. Attention-store and expert-bank copy requests
 are 115495403520 and 48747929600 bytes. Replay of the same model frame
 passes the speed reader's route checks and refuses altered tail or extent.
-Run the same-ELF reload/retain speed comparison with the verified split
-geometry. The trace measures logical copy requests. Physical bus service
-and clean speed remain separate checks.
+The same-executable comparison at `7af266dcf` raises the warmed median
+from 942.577 to 958.932 tok/s at 117,489 inputs. All three matched pairs
+favor retention. The subsequent clean handoff control at `4e68b1ac7`
+measures 864.7 tok/s on first use and 959.3 and 959.2 tok/s after it.
+The trace clocks measure native intervals and logical copy requests.
+
+The first observed handoff request completes with 132,358.5 ms in
+target batching and 133,960 ms in the rounded native prompt clock.
+Its clean-only reader rejects the trace and the owned session closes.
+The corrected reader verifies the same frame and all 48 layers.
+`dflash2_prefill_handoff_timing_v2` uses the committed clean control,
+a fresh observed process and a final clean process.
+
+The measured 117,489-token copy route requests 115,495,403,520 D2D
+bytes for attention stores, including 720 piece drains. The compiled
+direct-store option retains the drains and can remove those copies.
+Check same-build fixture parity and the 84,721-token split with a
+2,800-row tail before timing it with DFlash2. The older MTP split
+store comparison supports this measurement with three warm gains.
 Retired 59 files and 12606542 bytes from the closed trace's `long`
 directory after `3c156ee10`. The inventory SHA-256 is
 `57ea8657f9544df7e442461a2a2f85952d0e6d6bc8b063eb10f92ec60db29767`.
