@@ -11098,18 +11098,17 @@ the owner, borrowed view or layer storage can be released. Validate all
 48 window receipts, equivalent expert bytes, active state and cache
 restoration before clean timing. Keep bank-size and writer changes in
 their own comparisons.
-The source-only opt-in draft `/tmp/strata-relocated-prefill-batch.8sx3q4kv/ordered-upload.patch`
-has SHA-256 `8be9b6377ad8d0822f74bfa86b718f36acb15f1b5aba50a9efff908a326bc179` against `96832af6f`.
-It uses the existing ordered batch only at 128 slots and effective
-relocated mode16. The existing demand and coalesced selections retain
-their current routes. The owner review confirms the outer lease stays
-armed on early return and drains before the source, private bank, route
-and relocated workspace retire. Existing fixture coverage does not
-exercise a later rejected submission on this owned route. The next
-safety check should accept earlier valid copies, reject a later one on
-the host and observe the drain before releasing owners. The first
-32-slot comparison can reuse the current executable while this test is
-prepared.
+The opt-in and fixture draft `/tmp/strata-relocated-prefill-batch-reviewed.qllmc77n/ordered-upload-and-retirement.patch`
+has SHA-256 `9e2771e95b45f4992c7af3b4b4a6705759e72f8a33f6c902494edcdde49652f5` against `96832af6f`.
+It gates the existing ordered batch at 128 slots and effective relocated
+mode16. Default demand and existing coalesced routes retain their policy.
+The host-only fixture calls the real batch loop and checked lease with
+an injected submitter. It accepts four copies, rejects the fifth, and
+checks the earlier reader and the final bank after drain with owners
+still live. The native fixture adds cancellation after an ordered
+per-expert batch. Both new cases need execution from the candidate build,
+followed by the full mode16 work and state comparison. The first
+32-slot admission uses the current executable while this work proceeds.
 
 Retired the direct-writer trace in `dflash2-prefill-window-direct-v1`
 after closing its owner and matching all three requests at `3b8cdaf51`.
