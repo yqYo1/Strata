@@ -11104,14 +11104,29 @@ match. The long input accounts for 48,769,305,600 requested expert H2D bytes,
 attention-copy bytes. All 15 model assets pass their final hash checks.
 The process exits normally with closed ownership and no new Xe fault.
 
-Measure bank128/118785 against bank32/118785 and bank32/118785 against
-bank32/122881 under one copied-writer policy. Keep first-use and later
-prompt and client TTFT samples separate. Same-length arms must repeat
-the counted wire inputs and expert, KV and verifier work. Cross-length
-differences produce adjacent slopes for this route; use additional
-lengths and held-out samples before fitting a time model. The capacity
-traces cover the short state handoff with 32 outputs. Adopt a faster
-route only after clean timing and the existing model gates.
+The copied-writer bank and length comparison closes at \`3c0693de0\`.
+All nine independent processes and 27 inputs pass their route and workload
+checks. All owners close and Xe reports zero fresh faults. At 118,785
+inputs the three 128-slot warmed rates are 993.238, 991.374, 992.486 tok/s
+and the 32-slot rates are 993.117, 991.090, 992.523 tok/s, each in its
+block order. The paired warmed bank32 changes are -0.012, -0.029, 0.004 percent.
+The shrink provides the measured VRAM savings for the longer route while
+the predeclared repeated bank nonregression gate fails.
+
+At bank32, 122,881 inputs yield 994.881, 997.587, 997.117 warmed tok/s across three
+independent processes, with median 997.117 tok/s and median client TTFT
+123.458 s. The highest individual warmed sample is 1000.203 tok/s.
+The repeated 1,000 tok/s gate remains unmet. The three local warmed
+prefill slopes for the added 4,096 inputs are 0.953, 0.812, 0.868 ms/token.
+First use and subsequent samples remain in the comparison record.
+Use further matched lengths and a held-out case before fitting a time
+model. The capacity traces cover the short state handoff with 32 outputs.
+Retired the nine private process cache directories under
+\`dflash2-prefill-window-bank-speed-v1\` after all owners closed.
+The temporary inventory covered 495 files and 111,182,472 bytes
+with SHA-256 \`a6bf939be989228278d918a6afcd3ef81d7bbc48deaac5b848d265636b81e13a\`. Keep the generated request evidence and
+the separate original traced copy capture for the follow-up.
+
 
 The 122,881-input attention copy follow-up is prepared at
 `/tmp/strata-dflash2-122881-direct.smuq2b_5/long-direct-admission.patch`
